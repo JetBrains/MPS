@@ -16,10 +16,12 @@
 package jetbrains.mps.generator.impl;
 
 import jetbrains.mps.util.CollectConsumer;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.mps.openapi.model.SNode;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -194,6 +196,28 @@ import java.util.stream.StreamSupport;
       return Stream.empty();
     }
     return rec.valueStream();
+  }
+
+  /*package*/ LMSnapshot snapshot(@NotNull final TransitionTrace activeTransition) {
+    final ArrayList<LabelRecordBase<InputKeyRecord, SNode>> records = new ArrayList<>();
+    final ArrayList<SNode> values = new ArrayList<>();
+    forEachWithInput((label, nm) -> {
+      nm.forEachRecord(record -> {
+        InputKeyRecord kr = InputKeyRecord.of(record.key(), activeTransition);
+        record.valuesInto(values);
+        LabelRecordBase<InputKeyRecord, SNode> lr = new LabelRecordBase<>(label, kr, null, values);
+        values.clear();
+        records.add(lr);
+      });
+    });
+    final ArrayList<LabelRecordBase<InputKeyRecord, SNode>> composites = new ArrayList<>();
+    forEachComposite(lr -> {
+      InputKeyRecord k1 = lr.key1 != null ? InputKeyRecord.of(lr.key1, activeTransition) : null;
+      InputKeyRecord k2 = lr.key2 != null ? InputKeyRecord.of(lr.key2, activeTransition) : null;
+      // Note, lr.values are accessed by reference. When this code moves to major step end, shall make a copy!
+      composites.add(new LabelRecordBase<>(lr.label, k1, k2, lr.values));
+    });
+    return new LMSnapshot(records, myConditionalRoots.copy(), composites);
   }
 
   private static final class KK {
@@ -382,8 +406,18 @@ import java.util.stream.StreamSupport;
 
   // replacement for ArrayList<Pair<K,V>>, grow only
   /*package*/ static final class PairList<K,V> {
-    private Object[] myValues = new Object[8];
+    private Object[] myValues;
     private int myCount = 0;
+
+    /*package*/ PairList() {
+      myValues = new Object[8];
+    }
+
+    // copy cons
+    private PairList(@NotNull Object[] values) {
+      myValues = values;
+      myCount = values.length / 2;
+    }
 
     public void forEach(BiConsumer<K,V> consumer) {
       for (int i = 0; i < myCount; ) {
@@ -437,5 +471,9 @@ import java.util.stream.StreamSupport;
       myValues = nv;
       return nv;
     }
+
+    /*package*/ PairList<K,V> copy() {
+        return new PairList<>(Arrays.copyOf(myValues, myCount * 2));
+      }
   }
 }

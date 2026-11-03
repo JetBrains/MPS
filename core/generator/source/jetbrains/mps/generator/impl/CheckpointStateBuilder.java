@@ -29,10 +29,8 @@ import org.jetbrains.mps.openapi.model.SModel;
 import org.jetbrains.mps.openapi.model.SNode;
 import org.jetbrains.mps.openapi.model.SNodeId;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -114,20 +112,14 @@ class CheckpointStateBuilder {
    * Invoke prior to {@link #create(CheckpointIdentity)}
    * Optional, for a hypothetical (didn't check/think over too much) scenario when CP comes as the very first step.
    *  @param originalInputModel non-null
-   * @param stepLabels non-null
+   * @param lmSnapshot non-null
    */
-  /*package*/ void addMappings(SModel originalInputModel, final LMCollector stepLabels) {
-    // FIXME LMCollector is a mechanism GM uses to export its state, see GeneratorMappings.exposed(), this doesn't mean however that
-    //       we shall use it as API to access LMs. Use of LMCollector here is provisional until I build mapping records from a snapshot state (the one built
-    //       likely from LMCollector) created on each individual transform state, while transient models/nodes of the step are still valid.
-    //       Use of GeneratorMappings is wrong as it represents state at particular transformation step and shall not live beyond the step as its associated
-    //       models/nodes are (generally) not valid once step is over.
-
-    // FIXME likely, GeneratorMappings shall care about MappingMemento only (pass TransitionTrace there as well).
-    //
+  /*package*/ void addMappings(SModel originalInputModel, final LMSnapshot lmSnapshot) {
     // FIXME stepLabels.export is commented out as we restore MappingsMemento for the CPState through persisted state and MappingLabelExtractor, to get
     // correct node ids (those changed to pre-ordered values for CP models to stay the same on regeneration). Another alternative would be to keep
     // SNodeId->SNodeId map in ConsistentNodeIdentityHelper and update values in myMemento, which seems too much work for me now.
+    // XXX stepLabels used to be LMCollector, but the general idea to use LM holder to populate builder rather than access snapshot.forEach() here
+    // is still very appealing to me
 //    stepLabels.export(this);
     // IMPORTANT need to create CP model first, as DebugMappingsBuilder need cloned nodes to substitute
     // reference targets from transient model to that in CP model (see DMB.substitute)
@@ -139,7 +131,7 @@ class CheckpointStateBuilder {
        * GeneratorMappings keep nodes from transient models as ML output. They are not necessarily always
        * nodes from the very last step (i.e. if there's a transformation step that records ML and subsequent post-processing
        * script that modifies the model again, SNode values in GeneratorMappings would be 'stale' and likely from a model already
-       * disposed (unless transients are kept). That's why we stick to SNodeId only.
+       * disposed (unless transients are kept)). That's why we stick to SNodeId only.
        * It's unlikely (i.e. I can't imagine a reasonable scenario, other than explicit genContext.registerLabel) that an output node won't be from a transient model
        * or that we would mistakenly take a wrong one (i.e. if aforementioned script removes a node registered as an output and adds another one with the same id).
        *
@@ -153,18 +145,6 @@ class CheckpointStateBuilder {
         return outputNode;
       }
       return tn;
-    });
-    //
-    final ArrayList<LabelRecordBase<InputKeyRecord, SNode>> records = new ArrayList<>();
-    final ArrayList<SNode> values = new ArrayList<>();
-    stepLabels.forEachWithInput((label, nm) -> {
-      nm.forEachRecord(record -> {
-        InputKeyRecord kr = InputKeyRecord.of(record.key(), myTransitionTrace.getActiveTransition());
-        record.valuesInto(values);
-        LabelRecordBase<InputKeyRecord, SNode> lr = new LabelRecordBase<>(label, kr, null, values);
-        values.clear();
-        records.add(lr);
-      });
     });
     // labels first
     Comparator<LabelRecordBase<InputKeyRecord, SNode>> c1 = Comparator.comparing(LabelRecordBase::label);
@@ -198,30 +178,14 @@ class CheckpointStateBuilder {
       }
       return 0;
     });
-    records.sort(c1.thenComparing(c2).thenComparing(c3).thenComparing(c4));
-    records.forEach(dmb::withInput);
-    //
-//    LinkedHashSet<String> conditionalRootLabels = new LinkedHashSet<>();
-    HashSet<String> conditionalRootLabels = new HashSet<>(); // FIXME would be nice to have it explicitly sorted, but that triggers
-    // reordering in a lot of checkpoint models (250+ diff tests failing), shall do it together with some other change
-    stepLabels.forEachNoInput((l, nm) -> conditionalRootLabels.add(l));
-    for (String label : conditionalRootLabels) {
-      dmb.withoutInput(label, stepLabels.streamNoInput(label).toList());
-    }
-    //
-    final ArrayList<LabelRecordBase<InputKeyRecord, SNode>> composites = new ArrayList<>();
-    stepLabels.forEachComposite(lr -> {
-      InputKeyRecord k1 = lr.key1 != null ? InputKeyRecord.of(lr.key1, myTransitionTrace.getActiveTransition()) : null;
-      InputKeyRecord k2 = lr.key2 != null ? InputKeyRecord.of(lr.key2, myTransitionTrace.getActiveTransition()) : null;
-      // Note, lr.values are accessed by reference. When this code moves to major step end, shall make a copy!
-      composites.add(new LabelRecordBase<>(lr.label, k1, k2, lr.values));
-    });
     // unlike single-key LMs, for composite keys we shall assume one of the keys could be null
     Comparator<LabelRecordBase<InputKeyRecord, SNode>> c5 = Comparator.comparing(LabelRecordBase::key1, Comparator.nullsFirst(InputKeyRecord.comparator()));
     Comparator<LabelRecordBase<InputKeyRecord, SNode>> c6 = Comparator.comparing(LabelRecordBase::key2, Comparator.nullsFirst(InputKeyRecord.comparator()));
-    composites.sort(c1.thenComparing(c5).thenComparing(c6));
+    lmSnapshot.forEachWithInput(c1.thenComparing(c2).thenComparing(c3).thenComparing(c4), dmb::withInput);
+    lmSnapshot.forEachConditionalRoot((l, s) -> dmb.withoutInput(l, s.toList()) );
     // I don't care to compare outputs as I do for regular MLs, I'd like to notice duplicating key pairs ASAP.
-    composites.forEach(dmb::withComposite);
+    lmSnapshot.forEachCompositeInput(c1.thenComparing(c5).thenComparing(c6), dmb::withComposite);
+
     myDebugMappingNode = dmb.done();
     // see MPSSPRT-455
     OriginalModelTag.installTo(myDebugMappingNode, originalInputModel.getReference());
@@ -245,7 +209,7 @@ class CheckpointStateBuilder {
     //
     // Update model imports. The reason we didn't do it on model clone is that we need imports in a predictable order for different
     // generation modes. In-place, parallel options affect order of roots and order of imports (ModelDependencyScanner from
-    // ModelDependencyUpdate collects imports in the order roots are iterated.
+    // ModelDependencyUpdate collects imports in the order roots are iterated).
     //
     // ReferenceResolvers could have added references to nodes in other checkpoint models, we need to propagate these
     // dependencies into imports to ensure subsequent module.forget() could find and clear all dependant models as well

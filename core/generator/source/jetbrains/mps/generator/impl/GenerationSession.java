@@ -361,7 +361,7 @@ class GenerationSession {
             });
             // FIXME what about composite labels here? Why don't we copy them?
           }
-          cpBuilder.addMappings(myOriginalInputModel, stepLabels);
+          cpBuilder.addMappings(myOriginalInputModel, stepLabels.snapshot(transitionTrace.getActiveTransition()));
         }
         CheckpointState cpState = cpBuilder.create(checkpointIdentity);
         xmodelEnv.publishCheckpoint(myOriginalInputModel.getReference(), cpState);
