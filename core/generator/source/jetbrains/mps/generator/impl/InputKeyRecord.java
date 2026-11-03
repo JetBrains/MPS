@@ -26,7 +26,7 @@ import java.util.Objects;
 public final class InputKeyRecord {
   // LM's input node, verbatim (as is)
   final SNodeReference inputNode;
-  // with respect to traced origin, i.e. not necessarily == inputNode.getNodeId()
+  // with respect to traced origin, i.e. not necessarily == inputNode.getNodeId(), never null
   final SNodeId inputNodeId;
   final String inputNodeName;
   final SModelReference inputModel;

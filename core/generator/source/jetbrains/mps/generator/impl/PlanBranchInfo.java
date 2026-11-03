@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2025 JetBrains s.r.o.
+ * Copyright 2003-2026 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import java.util.function.Consumer;
  */
 /*package*/ final class PlanBranchInfo {
   SModel inputModel;
-  List<LMCollector> actualStateCopyOfLastBitTransformStepMappings;
+  LMSnapshot actualStateCopyOfLastBitTransformStepMappings;
   ModelTransitions transitionTrace;
   int majorStepAtFork;
   int minorStepAtFork;

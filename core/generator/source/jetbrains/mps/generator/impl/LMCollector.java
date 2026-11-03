@@ -214,7 +214,8 @@ import java.util.stream.StreamSupport;
     forEachComposite(lr -> {
       InputKeyRecord k1 = lr.key1 != null ? InputKeyRecord.of(lr.key1, activeTransition) : null;
       InputKeyRecord k2 = lr.key2 != null ? InputKeyRecord.of(lr.key2, activeTransition) : null;
-      // Note, lr.values are accessed by reference. When this code moves to major step end, shall make a copy!
+      // Note, lr.values are accessed by reference. Now that this code runs to major step end, AND there's only 1 snapshot per step,
+      // I can reuse them by reference as GM would be abandoned right after snapshot is made
       composites.add(new LabelRecordBase<>(lr.label, k1, k2, lr.values));
     });
     return new LMSnapshot(records, myConditionalRoots.copy(), composites);
@@ -416,7 +417,7 @@ import java.util.stream.StreamSupport;
     // copy cons
     private PairList(@NotNull Object[] values) {
       myValues = values;
-      myCount = values.length / 2;
+      myCount = values.length;
     }
 
     public void forEach(BiConsumer<K,V> consumer) {
@@ -455,7 +456,7 @@ import java.util.stream.StreamSupport;
 
     // grow to fit at least 2 new elements
     private Object[] grow() {
-      if (myCount + 2 < myValues.length) {
+      if (myCount + 2 <= myValues.length) {
         return myValues;
       }
       int newLen;
@@ -473,7 +474,7 @@ import java.util.stream.StreamSupport;
     }
 
     /*package*/ PairList<K,V> copy() {
-        return new PairList<>(Arrays.copyOf(myValues, myCount * 2));
-      }
+      return myCount == 0 ? new PairList<>() : new PairList<>(Arrays.copyOf(myValues, myCount));
+    }
   }
 }

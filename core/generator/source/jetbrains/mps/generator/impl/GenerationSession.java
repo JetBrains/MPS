@@ -62,7 +62,6 @@ import org.jetbrains.mps.openapi.model.SModel;
 import org.jetbrains.mps.openapi.model.SModelName;
 import org.jetbrains.mps.openapi.model.SModelReference;
 import org.jetbrains.mps.openapi.model.SNode;
-import org.jetbrains.mps.openapi.model.SNodeId;
 import org.jetbrains.mps.openapi.model.SNodeReference;
 import org.jetbrains.mps.openapi.module.SModuleReference;
 import org.jetbrains.mps.openapi.util.ProgressMonitor;
@@ -71,7 +70,6 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -79,7 +77,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Queue;
-import java.util.function.Function;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -106,7 +103,7 @@ class GenerationSession {
   // != null unless session is abandoned/disposed
   private GenerationSessionContext mySessionContext;
   private final IPerformanceTracer ttrace;
-  private StepArguments myStepArguments;
+  private LMSnapshot myLastBigTransformStepMappings;
   private QueryProviderCache myQuerySource;
   private int myBranchCounter = 0;
 
@@ -191,7 +188,7 @@ class GenerationSession {
 
       PlanBranchInfo majorBranch = new PlanBranchInfo();
       majorBranch.inputModel = currInputModel;
-      majorBranch.actualStateCopyOfLastBitTransformStepMappings = Collections.emptyList();
+      majorBranch.actualStateCopyOfLastBitTransformStepMappings = null;
       majorBranch.majorStepAtFork = 0;
       majorBranch.minorStepAtFork = 0;
       majorBranch.branch = myGenerationPlan.getSteps();
@@ -264,7 +261,7 @@ class GenerationSession {
     SModel currInputModel = branchInfo.inputModel;
     List<Step> branchSteps = branchInfo.branch;
     final ModelTransitions transitionTrace = branchInfo.transitionTrace;
-    final ArrayDeque<LMCollector> lastBigTransformStepMappings = new ArrayDeque<>(branchInfo.actualStateCopyOfLastBitTransformStepMappings);
+    myLastBigTransformStepMappings = branchInfo.actualStateCopyOfLastBitTransformStepMappings;
 
     // FIXME refactor, need another approach to forked branch numbering (why not 1..n for every branch, provided I can tell models by other means?)
     int minorStep = branchInfo.minorStepAtFork;
@@ -295,11 +292,6 @@ class GenerationSession {
           // XXX revisit. De we need to break if there were no transformations at a step?
           break;
         }
-        if (transformStep.isLabeledTransformationsKept()) {
-          // FIXME both transform and checkpoint steps need myStepArgument; need better sharing than just access to the field
-          //       another method initialized and generously didn't clean.
-          lastBigTransformStepMappings.push(myStepArguments.mappingLabels.exposed());
-        }
         // FIXME this is a quick-n-dirty hack to get generation target attribute w/o keeping it explicitly in branchInfo;
         //       shall come up with a reasonable strategy which attributes to copy and when or if I shall rather expose
         //       ModelConfigurator from Fork step instead, and apply it at the end of a branch.
@@ -317,57 +309,14 @@ class GenerationSession {
         CheckpointIdentity lastPersistedCheckpoint = transitionTrace.getMostRecentCheckpoint();
         SModel checkpointModel = xmodelEnv.createBlankCheckpointModel(myOriginalInputModel.getReference(), lastPersistedCheckpoint, checkpointIdentity);
         CheckpointStateBuilder cpBuilder = new CheckpointStateBuilder(currInputModel, checkpointModel, transitionTrace, myLogger);
-        // myStepArguments may be null if Checkpoint is the very first step. Not quite sure it's legitimate scenario, though, need to think it over.
-        if (myStepArguments != null) {
-          // Shall populate state with last generator's MappingLabels. Note, ML could have been added from post-processing scripts. Generator
-          // instance could be different, we keep GeneratorMappings with step arguments, that span all pre/post scripts along with transformations.
-          final LMCollector stepLabels = myStepArguments.mappingLabels.exposed();
-          // stepLabels is likely the last one pushed into lastBigTransformStepMappings when previous Transform step had happened.
-          // FIXME however, this remove is no-op as GM#exposed() gives new instance each time, deal with that.
-          //       Likely, shall have transformStep#isLabeledTransformationsKept() == true for any Transform step that preceeds CP step,
-          //       not only the one with few MC sets
-          lastBigTransformStepMappings.remove(stepLabels);
-          final Function<SNodeId, SNode> getCurrentInputNode = currInputModel::getNode;
-          for (LMCollector prev : lastBigTransformStepMappings) {
-            prev.forEachNoInput((l, conditionalRoot) -> {
-              SNode copiedRoot = getCurrentInputNode.apply(conditionalRoot.getNodeId());
-              if (copiedRoot != null) {
-                // if root is in the last model, add record unless there's already record for the label.
-                // seems that we can keep multiple (label, conditionalRoot) pairs, and findAny().isEmpty() here
-                // is just a dumb way not to deal with possible duplicates now. I.e. imagine 2 conditional roots under same ML,
-                // one added at transformStep1, another at transformStep2. Now I don't copy the one from
-                // transformStep1 (findAny.isEmpty == false), although used to do that with GM. Is that right?
-                if (stepLabels.streamNoInput(l).findAny().isEmpty()) {
-                  stepLabels.add(l, copiedRoot);
-                }
-              }
-            });
-            prev.forEachWithInput((l, prevStepMappings) -> {
-              final NodeMap lastStepMappings = stepLabels.streamWithInput(l).findAny().orElse(null);
-              prevStepMappings.forEachRecord(r -> {
-                if (lastStepMappings != null && lastStepMappings.containsKey(r.key())) {
-                  // there's already labeled transformation for the same input node, no reason to override with value from previous steps
-                  return;
-                }
-                if (r.count() == 1) {
-                  // intentionally do not care about multiple outputs, just don't want to project multiple outputs into actual transient model
-                  // and it's of no real use anyway as we don't restore x-model references in case there are multiple outputs.
-                  SNode copiedOutput = getCurrentInputNode.apply(r.soleValue().getNodeId());
-                  if (copiedOutput != null) {
-                    stepLabels.add(l, r.key(), copiedOutput);
-                  }
-                }
-              });
-            });
-            // FIXME what about composite labels here? Why don't we copy them?
-          }
-          cpBuilder.addMappings(myOriginalInputModel, stepLabels.snapshot(transitionTrace.getActiveTransition()));
+        // myLastBigTransformStepMappings could be null if Checkpoint is the very first step. Not quite sure if it's a legitimate scenario, though, need to think it over.
+        if (myLastBigTransformStepMappings != null) {
+          cpBuilder.addMappings(myOriginalInputModel, myLastBigTransformStepMappings);
         }
         CheckpointState cpState = cpBuilder.create(checkpointIdentity);
         xmodelEnv.publishCheckpoint(myOriginalInputModel.getReference(), cpState);
-        myStepArguments = null; // XXX what if there are few subsequent CPs (e.g. from different plans), why do we clear step arguments and
-        // prevent other CPs from saving MLs?
-        lastBigTransformStepMappings.clear();
+        myLastBigTransformStepMappings = null; // XXX what if there are few subsequent CPs (e.g. from different plans),
+        // why do we clear LMs we know to this moment and prevent other CPs from saving MLs?
       } else if (planStep instanceof Fork forkStep) {
         ForkCondition forkCondition = forkStep.getCondition();
         // proceed with this fork if either:
@@ -391,7 +340,7 @@ class GenerationSession {
         bi.majorStepAtFork = majorStep;
         bi.minorStepAtFork = minorStep + 100 + 1; // XXX +1 is sort of/mild hack, we'd like to see branch input model first, with its output next. With
         // just +100, both input model and first output get the identical minorStep stereotype
-        bi.actualStateCopyOfLastBitTransformStepMappings = new ArrayList<>(lastBigTransformStepMappings);
+        bi.actualStateCopyOfLastBitTransformStepMappings = myLastBigTransformStepMappings;
         // bi.inputModel, clone of currInputModel, already has ORIGIN_TRACE values properly set, no need to do anything in fork().
         bi.transitionTrace = transitionTrace.fork();
         forkQueue.add(bi);
@@ -408,6 +357,10 @@ class GenerationSession {
       printMappingConfigurations("apply mapping configurations:", mappingConfigurations);
     }
 
+    if (!planStep.shallMergeLabeledTransformations()) {
+      // non-merging step starts LM tracking anew, even if it ends up transforming nothing
+      myLastBigTransformStepMappings = null;
+    }
     if (mappingConfigurations.isEmpty() && inputModel.getRootNodes().iterator().hasNext()) {
       myLogger.warning("No mapping configurations for the step, skip generation of the model");
       return inputModel;
@@ -442,12 +395,22 @@ class GenerationSession {
 
     try {
       final GeneratorMappings gml = new GeneratorMappings(activeStep.getPrivateLabels(), myLogger);
-      myStepArguments = new StepArguments(activeStep, myNewTrace, gml, transitionTrace, myQuerySource, myRoleValidation, ttrace, stepCounter);
-      SModel outputModel = executeMajorStepInternal(inputModel, progress, myStepArguments);
+      final StepArguments stepArguments = new StepArguments(activeStep, myNewTrace, gml, transitionTrace, myQuerySource, myRoleValidation, ttrace, stepCounter);
+      SModel outputModel = executeMajorStepInternal(inputModel, progress, stepArguments);
       if (myLogger.getErrorCount() > 0) {
         myLogger.warning(String.format("model '%s' has been generated with errors", inputModel.getName()));
       }
-//      myStepArguments = null;
+      // Shall keep state of all MLs. ML could have been added from post-processing scripts, not only at transformation rules.
+      // Generator instances could be different. We keep GeneratorMappings in StepArguments, that span all pre/post scripts along with transformations.
+      LMSnapshot stepLabels = stepArguments.mappingLabels.exposed(transitionTrace);
+      if (planStep.shallMergeLabeledTransformations()) {
+        // when there is a composite step, with MCs grouped into distinct "major" steps withing a single 'transform' plan statement, we need to
+        // unite all LMs from these individual groups
+        myLastBigTransformStepMappings = myLastBigTransformStepMappings == null ? stepLabels : stepLabels.merge(myLastBigTransformStepMappings, outputModel);
+      } else {
+        // keep snapshot just of this step, disregard any LMs from previous steps
+        myLastBigTransformStepMappings = stepLabels;
+      }
       return outputModel;
     } finally {
       recordAccessedTransientModels();

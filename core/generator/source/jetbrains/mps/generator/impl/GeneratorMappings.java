@@ -300,11 +300,11 @@ public final class GeneratorMappings {
 
   /**
    * We don't need to keep complete GeneratorMappings, just a subset with labeled input->output
-   * and conditional roots, LMCollector is enough.
+   * and conditional roots.
    *
    * @return set of labeled records to get exposed in checkpoint models (excluding MLs considered 'private')
    */
-  /*package*/ LMCollector exposed() {
+  /*package*/ LMSnapshot exposed(TransitionTrace transitionTrace) {
     // this is a third iteration I believe to make "persistence snapshot" of GM,
     // first one being MappingMemento, the next one unused GM#export(). Now GenerationSession
     // needs to keep tack of LMs from few steps, that's why we expose state as an object, rather than
@@ -312,6 +312,7 @@ public final class GeneratorMappings {
     // work doesn't leave me too much room for creativity here.
     // What is beneficial is that we now keep only labels we gonna need (i.e. not complete GM with
     // copied/template nodes)
+    // FIXME now with LMSnapshot, which seems to be 4th generation of GM snapshot, we shall create one right away, without intermediate LMCollector
     final LMCollector exposed = new LMCollector();
     final Set<String> privateLabels = myPrivateLabels.stream().map(LabelDeclaration::getName).collect(Collectors.toUnmodifiableSet());
     myLabeledMappings.forEachNoInput((l, n) -> {
@@ -329,7 +330,7 @@ public final class GeneratorMappings {
         exposed.addComposite(lr);
       }
     });
-    return exposed;
+    return exposed.snapshot(transitionTrace);
   }
 
   private static final class TagNodeList {

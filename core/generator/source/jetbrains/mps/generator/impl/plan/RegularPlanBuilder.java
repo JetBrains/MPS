@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2023 JetBrains s.r.o.
+ * Copyright 2003-2026 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -466,9 +466,15 @@ public class RegularPlanBuilder implements GenerationPlanBuilder {
         GenerationPartitioner gp = new GenerationPartitioner(generators.collect(Collectors.toList()));
         List<List<TemplateMappingConfiguration>> mappingSets = gp.createMappingSets();
         // if there's only 1 step, there's no need to collect its labels for propagation, they are already there in the last (and only) set of MLs.
+        // XXX perhaps, shall simplify condition by removing mappingSets.size() > 1, however, that would yield different results when
+        //     GenerationSession.myLastBigTransformStepMappings != null before a step with single MC. Not sure if it's good or bad.
         final boolean needToPropagateLabeledTransforms = isBeforeCheckpoint && mappingSets.size() > 1;
+        boolean firstInSeries = true;
         for (List<TemplateMappingConfiguration> tmc4Step : mappingSets) {
-          steps.add(new Transform(tmc4Step, needToPropagateLabeledTransforms));
+          // FIXME not very good logic, first Transform in this series shall use false just in case there's GS.myLastBigTransformStepMappings != null
+          //       so that we reset it, to match existing behavior, revisit.
+          steps.add(new Transform(tmc4Step, needToPropagateLabeledTransforms && !firstInSeries));
+          firstInSeries = false;
         }
       } else {
         ArrayList<TemplateMappingConfiguration> tmc = new ArrayList<>();

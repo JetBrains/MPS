@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2018 JetBrains s.r.o.
+ * Copyright 2003-2026 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -113,16 +113,16 @@ public interface ModelGenerationPlan {
 
   final class Transform implements Step {
     private final TemplateMappingConfiguration[] myMapCfg;
-    private final boolean myKeepLabeledTransformations;
+    private final boolean myMergeLabeledTransformations;
 
     public Transform(@NotNull Collection<TemplateMappingConfiguration> tmc) {
       myMapCfg = tmc.toArray(new TemplateMappingConfiguration[0]);
-      myKeepLabeledTransformations = false;
+      myMergeLabeledTransformations = false;
     }
 
-    public Transform(@NotNull Collection<TemplateMappingConfiguration> tmc, boolean keepLabeledTransforms) {
+    public Transform(@NotNull Collection<TemplateMappingConfiguration> tmc, boolean mergeLabeledTransformations) {
       myMapCfg = tmc.toArray(new TemplateMappingConfiguration[0]);
-      myKeepLabeledTransformations = keepLabeledTransforms;
+      myMergeLabeledTransformations = mergeLabeledTransformations;
     }
 
 
@@ -143,8 +143,8 @@ public interface ModelGenerationPlan {
       return rv;
     }
 
-    public boolean isLabeledTransformationsKept() {
-      return myKeepLabeledTransformations;
+    public boolean shallMergeLabeledTransformations() {
+      return myMergeLabeledTransformations;
     }
 
     // alternatively, why not to give control over rule/switch manager to the step?
