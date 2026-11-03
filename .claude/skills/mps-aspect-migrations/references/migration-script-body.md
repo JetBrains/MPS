@@ -59,7 +59,7 @@ To adapt it, keep the skeleton (`ForEachStatement` over `model.nodes(C)`, then a
 
 For any other smodel operation, see `references/property-and-mutation-ops.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin. If a name is ambiguous in scope, `stillBroken` is above 0. Put that reference's persistent `r:…/id` in its `target` instead.
 
-After the three writes, run `mps_mcp_check_root_node_problems` on the script, which should report no problems. Then `SYNC_VERSION` (idempotent; it confirms the factory's bump), `MAKE`, and `mps_mcp_run_migrations` as in the skill's workflow.
+After the three writes, run `mps_mcp_check_root_node_problems` on the script, which should report no problems. To report what the sweep could not migrate, add a `check()`: [check-method.md](check-method.md). Then `SYNC_VERSION` (idempotent; it confirms the factory's bump), `MAKE`, and `mps_mcp_run_migrations` as in the skill's workflow.
 
 ## Transform Pattern Variables
 

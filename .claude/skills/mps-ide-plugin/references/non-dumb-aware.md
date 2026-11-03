@@ -10,9 +10,9 @@ By default, actions generated from `ActionDeclaration` are "dumb-aware": they ca
       "role": "actions",
       "nodes": [
         { "concept": "jetbrains.mps.lang.plugin.structure.ActionReference",
-          "references": [ { "role": "action", "target": "ShowHelpForNode"     } ] },
+          "references": [ { "role": "actionDeclaration", "target": "ShowHelpForNode"     } ] },
         { "concept": "jetbrains.mps.lang.plugin.structure.ActionReference",
-          "references": [ { "role": "action", "target": "GenerateJavaSources" } ] }
+          "references": [ { "role": "actionDeclaration", "target": "GenerateJavaSources" } ] }
       ]
     }
   ]

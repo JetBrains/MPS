@@ -14,8 +14,10 @@ Inside the `code` block (written as BaseLanguage/Java snippet), five expressions
 - `getEditorContext()` — access the `EditorContext` for repository, selection, and node operations.
 - `getSelectedNode()` — the currently selected `SNode`.
 - `getEditedNode()` — the node being displayed in the editor.
-- `getNodeSubstituteChooser()` — access the substitute menu state (e.g., `isVisible()`).
+- `getNodeSubstituteChooser()` — access the substitute menu state (e.g., `isVisible()`); its type `NodeSubstituteChooser` is in `jetbrains.mps.nodeEditor.cellMenu`; a helper class that declares or casts to that type must import the model `jetbrains.mps.nodeEditor.cellMenu@java_stub`.
 - `getData(String key)` — retrieve platform data keys from the editor context.
+
+A cell's text colour is `cell.getStyle().get(StyleAttributes.TEXT_COLOR)` (`jetbrains.mps.editor.runtime.style`). A style's `red` is `jetbrains.mps.nodeEditor.MPSColors.red` (0xB20000), not `java.awt.Color.RED`: compare with `MPSColors`.
 
 Example from `TestEditorMenuTraceCellMenuReplaceNode_Test`:
 ```java
@@ -53,6 +55,12 @@ assert false is action applicable -> ShowRegularEditor ;
 
 Applicability is the action's enabled state, which may not depend on what the test is about: `is action applicable by id: $Paste` is true in any writable editor with a selection, whatever the clipboard holds. To test a paste, paste and compare the tree.
 
-**These expressions in parsed Java.** `mps_mcp_parse_java_and_insert` cannot produce them. Parse the statement with a placeholder where the expression goes (e.g. `EditorComponent ec = null;`), then replace the placeholder with `mps_mcp_update_node` `SET CHILD` and `{"concept": "jetbrains.mps.lang.test.structure.EditorComponentExpression"}`. Typed locals and casts need their stub models imported with `mps_mcp_model_dependency`, by the `@java_stub` name: `jetbrains.mps.nodeEditor@java_stub` (`EditorComponent`), `jetbrains.mps.openapi.editor.cells@java_stub` (`EditorCell_Label`, e.g. `((EditorCell_Label) ec.getSelectedCell()).getText()` to read the label at the caret), `org.junit@java_stub` (`Assert`).
+**These expressions in parsed Java.** `mps_mcp_parse_java_and_insert` cannot produce them. Parse the statement with a placeholder where the expression goes (e.g. `EditorComponent ec = null;`), then replace the placeholder with `mps_mcp_update_node` `SET CHILD` and `{"concept": "jetbrains.mps.lang.test.structure.EditorComponentExpression"}`. Typed locals and casts need their stub models imported with `mps_mcp_model_dependency`, by the `@java_stub` name: `jetbrains.mps.nodeEditor@java_stub` (`EditorComponent`), `jetbrains.mps.openapi.editor.cells@java_stub` (`EditorCell_Label`, e.g. `((EditorCell_Label) ec.getSelectedCell()).getText()` to read the label at the caret), `org.junit@java_stub` (`Assert`). Write the placeholder type fully qualified (`jetbrains.mps.nodeEditor.EditorComponent ec = null;`): once a parsed call adds `jetbrains.mps.openapi.editor@java_stub` (e.g. via `getDeletionApprover()`), the short name `EditorComponent` is ambiguous and stays unresolved in later parses.
+
+**Reading the editor in `code`.** `code` runs off the EDT, so read cells inside `SwingUtilities.invokeAndWait(() -> ec.getEditorContext().getRepository().getModelAccess().runReadAction(() -> { … }))`, with `ec` the `editor component`:
+- shown text: join `((EditorCell_Label) c).getText()` over `CellTraversalUtil.iterateTree(ec.getRootCell(), ec.getRootCell(), true)` (`jetbrains.mps.openapi.editor.cells`);
+- caret cell: `ec.getSelectedCell().getCellId()`; caret in a reference: `ec.getSelectedCell().getSNode() == ref && ec.getSelectedCell().isReferenceCell()`;
+- matching-label brace pair: `BracesFinder.findBracesToHighlight(cell)` (stub `jetbrains.mps.nodeEditor.braces`) returns a `BracePair` with `myFirstCell` / `mySecondCell`;
+- cells marked by two-step deletion: `ec.getDeletionApprover().getCellsApprovedForDeletion()` → `getCellId()`.
 
 After the `code` runs, MPS first compares the node tree with the `result` section, and then the selection with the `result` annotation (see `references/editor-test-case/root-and-caret.md`). Without a `result` annotation, the selection is not checked.

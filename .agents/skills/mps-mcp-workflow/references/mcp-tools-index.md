@@ -62,7 +62,7 @@
 
 ## Generation
 
-- `mps_mcp_generation`: PLAN (a model's generation plan), TRANSIENT_MODELS (what a MAKE with `saveTransientModels:true` kept), TRACE (which rule made a node), DROP_TRANSIENT_MODELS. See [`analysis-tools/generation.md`](analysis-tools/generation.md).
+- `mps_mcp_generation`: PLAN (a model's generation plan), TRANSIENT_MODELS (what a MAKE with `saveTransientModels:true` kept), TRACE (which rule made a node, or what it became), DROP_TRANSIENT_MODELS. See [`analysis-tools/generation.md`](analysis-tools/generation.md).
 
 ## BaseLanguage and Run Configurations
 

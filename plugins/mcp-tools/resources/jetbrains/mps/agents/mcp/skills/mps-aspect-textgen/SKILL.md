@@ -34,7 +34,7 @@ Companion names in this skill are lazy dependencies: load only those relevant to
 3. Fill the `textGenBlock` body — a `StatementList` of `append`s, `indent buffer`, `with indent { ... }`, and standard BaseLanguage control flow. See `references/statements-and-appends.md` for the part vocabulary and `references/json-blueprints.md` for AST shapes.
 4. Push formatting heuristics ("should this go on a new line?") into the behavior aspect and call them back from textgen (`node.hasNewLineAfter()` pattern). See `references/delegating-to-behavior.md`.
 5. For large-file languages (imports area, headers, shared state), declare a `TextUnitLayout`, a `UnitContextDeclaration` in the base `LanguageTextGenDeclaration`, and per-concept `UnitContextObject`s. See `references/layout-and-context-objects.md`.
-6. Validate with `mps_mcp_check_root_node_problems`, rebuild the language module, regenerate any consumer, and inspect the produced text.
+6. Validate with `mps_mcp_check_root_node_problems`, rebuild the language module, regenerate any consumer, and inspect the produced text. When the text is wrong, first read the last step model of a make with `saveTransientModels: true` (`references/debugging-misgeneration.md` in the `mps-aspect-generator` skill root after loading that companion skill from the same origin): a wrong model is a generator fault, a right one a TextGen fault.
 
 ## TextGen vs. Generator
 

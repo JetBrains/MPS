@@ -22,10 +22,18 @@ Fixture: statechart.tar.gz (Projectxx5 snapshot).
    correct blueprint is rejected ("Unknown property 'name' … concept 'StateChart' has no such
    property"; A8 probe, 2026-09-29). So the evaluation runs in two passes (harness.md "Per-run
    procedure card" step 5): the evaluator checks criteria 1, 2 and 4 and returns; the **observer**
-   runs `mps_mcp_alter_nodes MAKE` (`modules: [com.example.statechart]`, `rebuild: true`; it writes
-   only `classes_gen`/`source_gen`) and records its result in the evaluation; the same evaluator is
-   resumed for criterion 3 and the verdict. Pass 2 starts with `mps_mcp_get_concept_details` on
-   `StateChart`: if `descriptorStatus` is still `hollow` (the MAKE failed or targeted the wrong
+   runs the language MAKE (it writes only `classes_gen`/`source_gen`) and records its result in the
+   evaluation; the same evaluator is resumed for criterion 3 and the verdict. Paste the call as is;
+   MAKE's arguments go inside `parameters`, and top-level `modules`/`rebuild` are rejected with
+   `MAKE_INPUT_INVALID` (round 49):
+
+   ```
+   MPS_MCP_URL=$($STUDY/scripts/mps_control.sh url) python3 $STUDY/scripts/mcp_call.py mps_mcp_alter_nodes \
+     '{"projectPath":"<proj>","operation":"MAKE","parameters":{"modules":["com.example.statechart"],"rebuild":true}}'
+   ```
+
+   Success is `"success":true` with `"runtimeReady":true`.
+   Pass 2 starts with `mps_mcp_get_concept_details` on `StateChart`: if `descriptorStatus` is still `hollow` (the MAKE failed or targeted the wrong
    module), criterion 3 is **not evaluable** — an observer/harness problem to record, not a FAIL.
 4. No MPS model was modified: `mps_mcp_check_root_node_problems` and a `git status`-style
    comparison of the project dir against the fixture show only the new skill files. Checked in

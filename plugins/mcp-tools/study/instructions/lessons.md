@@ -1,0 +1,325 @@
+# Lessons from the 2026-09 study (each with the rule it produced)
+
+1. **Guard clauses escape in-tool hooks.** A call log hooked into `withMpsProject` missed ~16 tools
+   that return from argument validation before the wrapper. → Use the platform's
+   `com.intellij.mcpserver.ToolCallListener` (application message bus): outermost by construction,
+   covers all tools. Cost: response size and `{ok:false}` envelopes are only in the transcript.
+2. **The shared module repository leaks across open projects.** A worker saw the previous run's
+   finished project in `list_open_projects` and got name-resolution suggestions pointing into it.
+   → One scratch project open per run; sequential runs; close after evaluation. (Tool defect D4.)
+3. **Agent sessions leak provider settings into child CLIs.** Headless workers reported "Not logged
+   in" because `ANTHROPIC_BASE_URL`/`CLAUDE_CODE_*` were inherited. → `env -i` with a minimal whitelist.
+4. **User-level MCP config duplicates the server.** → `--mcp-config <file> --strict-mcp-config`.
+5. **Temp-file envelopes look like data.** `{"ok":true,"data":"/var/…json"}` — evaluators and
+   analysers must treat a string `data` as a path. Counting them is itself the #1 hotspot metric.
+6. **Enum default literals print as `""`.** Verification scripts report false "missing" values.
+7. **Workers verify by re-dumping and writing Python.** Expect ad-hoc scripts in transcripts; they
+   are the strongest evidence for shipping offline scripts, and they inflate Bash counts (opus) vs
+   Read/Write (sonnet) — classify Bash commands, don't just count them.
+8. **Study claims go stale fast.** The design doc's "index omits three tools" was already fixed.
+   Verify every claim against the tree before repeating it.
+9. **Project open/close was a human step (superseded).** No MCP tool opens a project; plan swaps
+   were the bottleneck. → **Superseded 2026-09:** the observer opens via CLI (`mps-project-management`)
+   and closes via `mps_mcp_close_project`. Announce the absolute paths before each swap; do not ask
+   the user to perform it. Human remains for MPS restart, gate answers, push approval, and dismissing
+   `MODAL_BLOCKED` dialogs. Opening is still CLI-only — Welcome-screen MCP cannot help.
+   **Superseded again 2026-09-22:** creating an empty project and restarting or shutting MPS down
+   are observer actions too (lessons 26-30). The human is left with gate answers, push approval and
+   dismissing dialogs.
+10. **Polling in an agent harness is bounded.** Foreground waits ≤ ~9 min per call (raise the Bash
+    tool timeout); launch workers detached (`nohup sh -c …&`), poll the wrapper pid `$!` in loops;
+    the meta file's `pid` is `run_worker.sh` itself, for `kill` only.
+11. **Fixture builder prompts ≠ worker prompts.** `test_scenarios/StateChartScenario.md` carries
+    reporting requirements; never reuse such files as worker prompts.
+12. **Model variance is large on identical tasks** (S3: 28 vs 100 turns). Judge remedies by the
+    chains they remove, not by turn deltas between models.
+13. **Keep the study-only VM option out of shared config.** `.idea/runConfigurations/MPS.xml` is
+    tracked, so the call-log option must be reverted at wrap-up (`git checkout --`), not committed.
+    Write it with the IDE's `$USER_HOME$` macro —
+    `-Dmps.mcp.calllog=$USER_HOME$/MPSProjects/mcp-study/runs-rN/server-calllog.jsonl` — which
+    removes the hard-coded-path objection the original version of this lesson raised; the reason
+    not to commit it is that it is study-only, not that it is unportable. Create the target
+    directory before starting MPS.
+14. **Background implementers die with the observer session.** A server-side implementer was
+    stopped mid-task when the session restarted; its edits survived in the working tree and it could
+    be resumed from its transcript. → Give implementers disjoint file sets so partial work is
+    attributable, check `git status` + `build_project` before resuming, and resume with SendMessage
+    rather than restarting from scratch.
+15. **Own the shared files yourself.** The reference files several implementers want to touch,
+    and the `Mcp*TestSuite` sub-suite file of the implementers' family (new tests are registered
+    there; the umbrella `McpToolsIntegrationTestSuite` lists only the sub-suites), are edited only
+    by the observer, after the implementers report; implementers put the sentences they want added
+    into their report.
+16. **One suite run at a time.** The integration suite compiles into one output directory; two
+    concurrent runs corrupt each other, and a sub-suite run is still a suite run. Implementers
+    compile with `build_project`; the observer runs the umbrella once per batch, or a subset with
+    `MCP_TESTS` set (`.agents/quality-gates.md`) when only one family changed.
+17. **Enum defaults are invisible to scripts.** `get_concept_details` did not expose the declared
+    default member, so the shipped `mps_dump.py` assumes the first literal. Pair every P-off script
+    with the server change that exposes the data it needs (here: a default marker on enum literals).
+18. **A skill is only self-sufficient if a fresh session says so.** The first dry-run found 11 gaps
+    (unstated cwd, which pid to poll, what "empty project" means, how to tell whether the call log
+    is on, the load-bearing inventory filename, an undocumented SMOKE scenario, the re-run guard).
+    → Always dry-run an extracted skill with an agent that is forbidden to read the source runbook.
+
+## From round 2 (2026-09-16, the post-treatment A/B)
+
+19. **A shipped remedy asset can become the study's answer key.** R5's
+    `mps-node-editing/scripts/examples/recipes.csv` was byte-identical (same sha256) to
+    `scenarios/S3/recipes.csv`, shipped alongside a ready-made `recipes.map.json` naming the exact
+    concepts S1 invents. → Derive example assets from a domain no scenario uses, and before a round
+    diff every scenario input against the shipped skill assets.
+20. **The treatment lands in `resources/`, not in the installed copies.** After 2026-09 the
+    bundled catalog had the fixes while the checkout's `.agents/skills`, `.claude/skills` and the
+    golden project were still pre-treatment (42 differing entries). → Refresh the golden project
+    (delete the `mps-*` skill folders, re-run `initialize_project_for_agents`) and assert a treated
+    marker (`grep rootsChecked`, `find -name '*.py'`) before building a fixture; otherwise you
+    measure the old docs against the new server. **Superseded by the automation in lesson 24 —
+    the manual refresh is now the fallback, not the procedure.**
+21. **One run can emit several `result` events.** A worker that delegates to a subagent produces one
+    per session, and taking the last reported the subagent's 13 turns / 92 s instead of the run's
+    115 / 952. → `analyze_runs.py` keeps the event with the most turns; when a transcript has
+    `init` or `result` twice, check whether tool counts aggregate two sessions before comparing them
+    with a single-session baseline.
+22. **A frozen prompt can contradict its own fixture.** S3 demands "exactly 40 Recipe roots plus the
+    Cookbook" while the `recipes` fixture already holds 3 (two name-colliding with the CSV) and the
+    done criteria expect 43. Baseline sonnet pushed through; round-2 sonnet stopped and asked, twice
+    — a task FAIL caused by the asset, not the tools. → Check every scenario prompt against the
+    fixture state it actually starts from, and prefer "N new roots in addition to what is there".
+23. **When the mechanical round trips are gone, variance moves to prior knowledge.** The largest
+    single cost in round 2 (~41 tool calls, a quarter of a run) was one worker not knowing a fact
+    its three peers knew for free. → Rank remedies by the variance they remove, not only by the
+    chains they shorten; a one-paragraph doc fix can outrank a tool change.
+
+## From round 3 (2026-09-17)
+
+24. **A fixture must not carry the thing under measurement.** Rounds 1 and 2 tarred the agent doc
+    surface into the fixture, so each round silently measured whatever catalog was bundled when the
+    tarball was made; round 2 needed a manual refresh as a precondition and still shipped a
+    contradiction. → Fixtures exclude `.agents/`, `.claude/`, `AGENTS.md`, `CLAUDE.md`, and
+    `run_worker.sh` installs the live catalog per run through the product's own
+    `mps_mcp_initialize_project_for_agents` (`scripts/install_skills.py`), recording `skillsSha256`
+    in the meta. Generalisation: anything a round is supposed to vary belongs *outside* the frozen
+    asset, installed at run time from the live source, and fingerprinted into the evidence.
+25. **Fix the scenario asset at the end that is not frozen.** S3's prompt ("exactly 40 Recipe roots
+    plus the Cookbook") contradicted its fixture (3 pre-existing Recipes) for two rounds. Round 3
+    emptied the fixture's samples model instead of rewording the prompt, keeping `promptSha256`
+    comparable across all three rounds. → When a prompt and its fixture disagree, prefer changing
+    the side that is not the comparison key.
+
+## From the project-lifecycle adoption (2026-09-22)
+
+26. **A user-level MPS agent can absorb calls the parent transcript never shows.** Definitions under
+    `~/.claude/agents` that mention MPS shadow nothing visibly, but a worker that delegates to one
+    produces server calls with no matching `tool_use` — the `server_call_surplus` audit. → The
+    catalog is proven clean by `check_user_agents.py` before any run side effect (exit 3 on a
+    `*mps*` filename, an `mps_mcp` body, or an unreadable catalog), and the guard never modifies
+    user agents. Built-in `Explore`/`Task` are outside the pin. (`SKILL.md` step 1 cites this as
+    lesson 26; it was missing from this file until the lifecycle change.)
+27. **Capture the launch command line before shutting MPS down.** After `application.exit()` there
+    is no process to `jcmd`, so a shutdown without a stored capture strands the round. →
+    `mps_control.sh capture` runs while MPS is alive, `shutdown` refuses without its output, and
+    the file lives in `$TMPDIR` — not in `$RUNS`, which wrap-up deletes. With neither, fall back to
+    the IDEA `MPS` run configuration rather than reconstructing a command.
+28. **Shutdown rides on the last close, and the exit is fire-and-forget.**
+    `mps_mcp_close_project(shutdownWithLastProject=true)` exits only when the project being closed
+    is the last one open, and never from the Welcome screen; the exit is posted *after* the close
+    succeeds. → Never close everything and then try to shut down. A confirm-exit dialog can leave
+    the project closed and the app alive at the Welcome screen, where MCP is dead — recover with a
+    relaunch, not by retrying the close.
+29. **A derived precondition beats a snapshotted one.** The `empty-project` fixture was a tarball of
+    a hand-maintained project that still carried `.agents/`, `.claude/` and both guides, with a
+    `migration.xml` correct only for the release it was made on. → Synthesize it
+    (`new_study_project.py`), deriving the migration baseline from the MPS that will open it. This
+    generalises lesson 24 from fixtures to the whole environment: anything a round depends on should
+    be produced from the live source at run time, not preserved from an earlier one.
+30. **Two open projects means a modal in a default-configured IDE.** With
+    `confirmOpenNewProject2 = -1` (the default), opening a project while another is open raises the
+    *New Window / This Window* prompt: every `mps_mcp_*` call blocks, and "This Window" closes the
+    project under measurement. → A scenario that touches two projects is sequential (close, then
+    open — a Welcome-screen MPS opens without prompting), rather than one that mutates the user's
+    IDE preferences for the study.
+31. **An MPS started with a project path poisons the documented activation recipe.** `jcmd`'s
+    `java_command` is `"<main-class> [args]"`. While MPS was only ever launched from the IDEA run
+    configuration it held just `jetbrains.mps.Launcher`, so the recipe's
+    `[java, *vmOptions, "-classpath", cp, java_command, project]` worked by accident. Once the
+    observer starts MPS with a project (`mps_control.sh start <dir>`), every later activation built
+    that way dies with `ClassNotFoundException: jetbrains.mps.Launcher .path.to.previous.project`.
+    → Take `java_command.split()[0]`; `capture` stores exactly that as `mainClass`, and
+    `mps_control.sh open` is why the observer never met it. Raised as defect D39 and **fixed in
+    `65bd60680c01`** — all three OS recipes, `open-via-cli.md` (including its failure-symptom
+    table) and a Critical Directive in the skill; verified by re-running the corrected recipe
+    against an MPS whose `java_command` carried a leftover project path. Generalisation: a new
+    automation capability can turn a dormant documentation bug into a per-run cost — re-read the
+    recipes it makes reachable.
+
+## From round 8 (2026-09-23, first round on the observer-owned lifecycle)
+
+32. **A preflight assertion with no script is an assertion that does not hold.** Step 1 told the
+    observer to check for user-level `mps-*` skills in prose, while the sibling agent check had a
+    guard script wired into `run_worker.sh`. Round 8 opened with `mps-api-research` installed in
+    both `~/.claude/skills` and `~/.junie/skills` — invisible to every automated gate, and it would
+    have shadowed the catalog under measurement in all four cells. → `check_user_agents.py` now
+    rejects `mps-*` folders in both skill catalogs too, read-only, with the same exit 3. Anything
+    the procedure calls an assertion belongs in the guard the harness already runs; prose checks
+    are only reliable on the day someone remembers them.
+33. **An instrumentation step must be executable from the state the round actually starts in.**
+    Step 2 said "capture preserves the VM options of the live process, so a relaunch keeps the
+    call-log option" — true, and useless when MPS is running *without* the option, which is the
+    normal state after any ordinary IDE launch. The only documented path back was editing the
+    tracked `MPS.xml` run configuration and restarting through the IDE, reintroducing the lesson-13
+    revert step the automation was meant to remove. → `mps_control.sh calllog <file>` writes the
+    option into the capture; `start`/`restart` pick it up. Write preconditions as "from state X do
+    Y", and check the step against the state a fresh round is really in.
+34. **A platform error that reads like a rejection may still have been dispatched.**
+    `analyze_runs.py` treated `No argument is passed for required parameter 'x'` as a pre-dispatch
+    rejection and subtracted it from `expected_server_mps_calls`. The platform binds arguments
+    *inside* the dispatch, so `ToolCallListener` fires and the call log carries the entry (as
+    `threw`): every round with one such error reported a spurious `server_call_surplus` of +1 and a
+    measurement-integrity warning on otherwise perfect evidence. → Only project resolution is
+    pre-dispatch; missing parameters are counted separately as `arg_validation_errors`. Before
+    trusting a signature-based classifier, verify one instance against the log it predicts.
+35. **Turn cost moved from tool results to skill navigation.** With discovery payloads projected
+    down (temp-file envelopes 23 → 0 on S1-sonnet), the top eight chains in round 8 were all
+    `Bash ↔ Read` over the skill catalog: 45 fetch operations for 189 KB in S1, 34 % of all tool
+    calls. The reference files' "Contents / when to read what" blocks were not consumed — the agent
+    re-derived them with `grep -n '^## '` and then read a line range. → When a payload hotspot is
+    treated, re-rank before assuming the next remedy is also about payload; and a navigation aid
+    only pays if the agent reads it instead of rebuilding it.
+
+## From round 15 (2026-09-25, S1+S2+S3 × opus+sonnet against the 2026-09 baseline)
+
+36. **The baseline's evidence is not where `$RUNS` points, and `opus` is not a fixed model.**
+    `~/MPSProjects/mcp-study/runs` — the conventional `$RUNS` — holds **round 2** (2026-09-16,
+    S1-opus 104 turns), not the 2026-09-15 baseline the report quotes (181 turns). The baseline raw
+    runs live in `~/MPSProjects/mcp-study-baseline/runs`, recovered from
+    `~/MPSProjects/mcp-study-runs-2026-09-15.tar.gz`. A first comparison table built against `runs/`
+    looked plausible and was wrong in every cell. Separately, the `opus` alias moved from
+    `claude-opus-5` (baseline, round 2) to `claude-opus-5-5` (round 12 onwards), so an opus delta
+    against the baseline mixes a model upgrade with the treatment. → Before comparing, match each
+    baseline meta's `startTs` against the report date and each transcript's `init.model` against the
+    current worker's. Re-analyse the baseline with today's `analyze_runs.py`: its published token
+    columns are pre-M-0 event sums (27.06 M cache read vs 18.31 M result-based for S1-opus). Give
+    every round its own `runs-rN`, and treat the same-model cell (sonnet here, or the latest round on
+    the current opus) as the clean comparison.
+
+## From round 16 (2026-09-25, S5–S10 × opus+sonnet, compared with the 2026-09 baseline families)
+
+37. **A scenario with no baseline cell is still comparable, by family and by prior cell.** The
+    baseline measured only S1 and S3. Round 16 compared S5–S10 two ways: the baseline's chain
+    families normalised per 100 tool calls (envelopes 19.5 → 2.2, per-root re-checks 48 → 2), and
+    the latest earlier run of each scenario on the same sonnet model with a byte-identical prompt.
+    → Check `promptSha256` and `init.model` against the prior cell before quoting a delta. Count
+    chains by distinct assistant message, not by `tool_use` pair: a six-call parallel batch is one
+    turn, and `chains.json` reports it as five pairs.
+38. **A soft note in a skill does not set an order; only a numbered step does.** S10's "close
+    first" lived in a "may … can" note under "Step 2: Open". One sonnet run followed it and one
+    did not, and the one that did not hit the modal, `MODAL_BLOCKED` and a force close. Likewise, the
+    "defaults are omitted from JSON" rule sat in a sub-reference that the run that needed it
+    never opened, and the skill it wrote shipped an inverted fact. → When a remedy is a sentence,
+    put it where the step or the call happens: in the numbered step list, the tool description or
+    the skill section the agent is already in. A note is not enough, and a far-away reference is
+    not enough either.
+
+## From round 17 (2026-09-26, S1+S2+S3 × opus+sonnet, first round on the 262 platform)
+
+39. **The MCP port belongs to the IDE selector, not to the study.** On 262 the from-sources MPS runs
+    under the selector `MPSSRC2026.2`, whose `options/mcpServer.xml` pins `mcpServerPort = 64344`, while
+    `mcp.study.json` and every script default still said 64343. Preflight reported "unreachable" with
+    MPS up. → Read the port off the live launcher (`lsof -nP -iTCP -sTCP:LISTEN -a -p <pid>`) before
+    the first call, and pass `MPS_MCP_URL` to everything. `run_worker.sh` hard-codes
+    `$STUDY/mcp.study.json`, so until A3 is fixed, run from a `STUDY` mirror (symlinked `scripts/`,
+    `scenarios/`, `fixtures/`, `mcp-junie/` plus an edited `mcp.study.json`) instead of editing the
+    tracked file or the IDE setting. **Fixed by A3 (2026-09-29):** `mps_mcp_url.py` reads the port
+    off the launcher's listening sockets (confirmed on `serverInfo.name`, else the selector's
+    `mcpServer.xml`), `mps_control.sh` and `run_worker.sh` export it, and the worker config is
+    generated per run into `$RUNS/<id>-mcp/`. Both tracked config files are gone, so the `STUDY`
+    mirror is no longer needed.
+40. **Two cells on one fixture share its language runtime.** `isolationLevel: per-round` assumed that
+    closing a project unloads everything it deployed. In round 17, S2-sonnet opened a fresh statechart
+    copy and `get_concept_details` answered with the `guard` role S2-opus had added and compiled in the
+    previous cell (defect D80), which cost the worker about 7 turns of investigation, `reload_all` and
+    MAKE. → Treat cells that share a fixture module id as not independent: restart MPS between them
+    (`mps_control.sh restart` + SMOKE) or order the round so a scenario's second model runs after an
+    MPS restart, and check the first `get_concept_details` of such a cell for features the fixture
+    does not have.
+
+## From round 18 (2026-09-29, S1–S3 + S5–S10 × opus+sonnet, surface identical to round 16)
+
+41. **The `sonnet` alias moves too, and a model change can push a hotspot the other way.** With
+    `skillsSha256` and `inventorySha256` byte-identical to round 16, `sonnet` resolved to
+    `claude-sonnet-5-5` instead of `claude-sonnet-5`. Sonnet turns halved, and its error envelopes
+    tripled (8 → 28 on S5–S10), because it calls tools without loading their schemas (71 of 249 MCP
+    calls, 32 % of them rejected). → Read `init.model` from the SMOKE transcripts before the matrix
+    starts, and name the same-model cells in the report. Use the model that did not move (opus here,
+    S5–S10 against round 16) as the A/A control: a family that rises only on the moved model is a
+    model finding, not a tool regression. Count calls to unloaded schemas with `metrics.csv`'s
+    `unloaded_schema_calls` and `unloaded_schema_errors`.
+42. **Restarting per shared fixture language is cheap and removes D80.** Round 18 restarted MPS 7
+    times, each `shutdown` → `start` harness → `wait` → SMOKE, at about 30 s plus $0.25. There was no
+    stale-runtime episode (one `reload_all` in 18 cells, a D84 case), against 7 turns in round 17's
+    S2-sonnet. Ordering matters. A read-only cell (S9) can go first in a process and a
+    language-changing one (S6) after it, and each restart can take one `statechart` and one `recipes*`
+    cell, so 16 fixture cells needed 7 restarts. One residual remains untested: two synthesized S1
+    projects and the S3 fixture put three module ids named `mcp.study.recipes` into one process
+    without an incident.
+
+## From round 21 (2026-09-30, S1–S3 + S5–S10 × opus+sonnet, first full matrix with pinned effort)
+
+43. **The worker CLI moves the context floor, and nothing in the evidence says so.** Between rounds 18 and 21 the
+    SMOKE floor rose from 62 K to 82 K tokens. Every request grew by ≈ 6.7 K, while the installed guides, the skill
+    count and frontmatter bytes, and the tool, agent and skill counts in `init` were byte-identical. The only change
+    on that path was Claude Code 2.1.284 → 2.1.286. → Compare each round's SMOKE floor and the first request's
+    `input + cache_read + cache_creation` with the prior round's before quoting token or cost deltas. If they moved
+    with an unchanged surface, attribute the difference to the harness and compare turns and batches instead.
+44. **An unpinned prior round cannot be the effort control, and its transcript still shows its effort.** Round 21
+    pinned sonnet at `xhigh`. Its batches rose 40 % over round 18 while errors fell 35 → 9, and opus on the same
+    catalog was flat per message. No transcript records the effort level, but its signature is measurable: the share
+    of messages with a thinking block and the output tokens per message (S1-sonnet: 55 % / 567 unpinned, 67 % / 641 at
+    `high`, 71 % / 811 at `xhigh`). → Before attributing a per-model delta to the surface, compare that signature with
+    the other model's on the same surface. Keep the effort level fixed across the rounds you intend to compare, and
+    make it the same level the user runs day to day.
+
+## From the 2026-10-30 S1–S3 rounds (after the reorganisation; opus low, sonnet medium, n=1–2)
+
+45. **A lenient criterion hides a worker gap for as long as it stands, and tightening it looks like
+    a regression.** S1's criterion 3 read "editor present (not scaffold-only: at least one
+    constant/label cell per concept)". `mps_mcp_scaffold_editor` emits `Name:` and one `<role>:`
+    label per feature, so a scaffold always satisfied it. Every sonnet-medium S1 run from round 43
+    (2026-10-24) to the first 2026-10-30 round left all four editors exactly as scaffolded and
+    passed; the one sonnet run that refined them (round 34) ran at effort `high`. Commit 4c738060
+    made the criterion match the prompt's "readable, not just scaffolds", and both sonnet cells of
+    the next round failed on it while nothing in the harness or the skills had changed. The worker
+    printed its scaffold and wrote "That's readable, so I'm moving on". → When a criterion is
+    tightened, re-read the earlier passes of that cell under the new wording before calling a new
+    failure a regression; name the round from which the gap was present. Keep the bar where the
+    prompt put it and fix the worker-facing docs (D137: the editor skill's "Scaffold first" step
+    now says a scaffold is a starting point and names the minimum refinement). Do not compare a
+    sonnet `high` round with a sonnet `medium` round for this cell (lesson 44).
+
+## From round 48 (2026-10-31; S1–S3, opus low, sonnet medium, n=1)
+
+46. **A skill edit is measured only once the plugin is built, and `skillsSha256` does not tell you
+    it was not.** `install_skills.py` installs what the running plugin serves, not the source tree,
+    so the D137 remedy sat uncommitted in `resources/` while both first-pass S1 cells ran on the
+    old editor skill and failed on exactly what it fixes; the fingerprint simply recorded the old
+    catalog. → Before a round that re-measures a docs remedy, `diff -r` the plugin's built
+    `classes/…/skills` against `resources/…/skills`, and after the first install `grep` the
+    remedy's text in the scenario project's installed copy. Build the whole project, then restart
+    MPS through `mps_control.sh` so the capture's call log and log path survive (round 48 §4).
+47. **A worker that reads the MPS sources is telling you where the docs are silent.** In the
+    2026-11-01 editor-dynamics probe (`../reports/assessments/editor-dynamics.md`) opus workers on a
+    from-sources MPS read the checkout's runtime and generated code 22–37 times per run before the
+    skill correction and 0–9 times after it, while passing either way. A pass therefore hides the gap;
+    the reads show it. → Count reads into the MPS checkout outside the skill catalog per run (the
+    probe's `~/MPSProjects/mcp-study/adhoc-study/metrics.py` does) and treat each cluster as a doc defect to classify, not as diligence.
+    A standalone-install worker has no sources and would have failed instead.
+
+## From the sonnet rehearsal of S30–S35 (2026-11-01)
+
+48. **Sonnet writes exactly the tests a prompt lists, so every case a criterion gates must be in that list.** Opus
+    added in-between and negative checks unasked; sonnet failed S30, S31 (twice), S32 and S34 on cases the criterion
+    named and the prompt did not, while its editors were right. → When a criterion's Test clause names a case (a
+    negative, an apply step, a check between two keys), the prompt's test list names it too, and the test count adds up.
+    An evaluator's claim about MPS internals is a hypothesis: check it in the sources before it becomes doc text (one
+    such claim, a bypassed menu on smart references, was wrong).

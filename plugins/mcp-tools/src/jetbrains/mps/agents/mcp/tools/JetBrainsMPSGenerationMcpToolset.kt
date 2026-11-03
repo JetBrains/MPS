@@ -49,7 +49,9 @@ class JetBrainsMPSGenerationMcpToolset : AbstractOps() {
 
     @McpTool
     @McpDescription("""
-        Generation debugging, read-only except DROP_TRANSIENT_MODELS. PLAN {model (reference or full name), ignoreExternalPlan (default false), detail (full|steps, default full)} → the
+        Shows what generation does: the plan, each step's output model, and which rule, template or loop produced a node.
+        Use it to understand a generator, yours or an unfamiliar one, and to check a change, not only when output is wrong.
+        Read-only except DROP_TRANSIENT_MODELS. PLAN {model (reference or full name), ignoreExternalPlan (default false), detail (full|steps, default full)} → the
         generation plan make would use for the model, what the IDE's "Show Generation Plan" prints:
         {model, modelReference, generatable, planComputed, planSource EXPLICIT|DEFAULT, explicitPlanOrigin FACET|DEVKIT (when
         the model has an external plan from a `generator` module facet or an imported devkit's @genplan), explicitPlanSources?
@@ -81,8 +83,9 @@ class JetBrainsMPSGenerationMcpToolset : AbstractOps() {
         TEMPLATE_CALL (a template call, weave or call-site macro, or a rule's template reference), LOOP (a loop macro),
         TEMPLATE (the parent of a template fragment) or UNKNOWN, plus `templateRoot`, `templateModel` and `generatorModule`;
         interpreted generators record LOOP and TEMPLATE, compiled ones only rules and calls. compactTemplates keeps only
-        the innermost template within each template root, which can hide the rule that encloses it. BACKWARD from a node of
-        the original model has no steps: start from a node of one of its transient models.
+        the innermost template within each template root, which can hide the rule that encloses it. FORWARD from a node of
+        the original model shows what it became, step by step; BACKWARD from one has no steps: start from a node of one of
+        its transient models.
         TRANSIENT_MODELS {model? (an original model by reference or name, or a transient model by reference; omitted = all)}
         → the transient models the project's last make kept (MAKE with saveTransientModels:true), what the Project view's
         Transient models folder shows: {saveTransientModelsSetting, originals:[{model, originalModelReference (or

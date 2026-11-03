@@ -28,8 +28,8 @@ Full FQN reference for every concept in the build-language stack.
 | `BuildSource_JavaModule` | `...structure.BuildSource_JavaModule` | parts |
 | `BuildSource_JavaLibrary` | `...structure.BuildSource_JavaLibrary` | parts |
 | `BuildSource_JavaContentRoot` | `...structure.BuildSource_JavaContentRoot` | inside JavaModule |
-| `BuildSource_JavaSourceFolder` | `...structure.BuildSource_JavaSourceFolder` | source dir |
-| `BuildSource_JavaDependencyJar` / `_OnModule` / `_OnLibrary` | `...structure.BuildSource_JavaDependency...` | Java deps |
+| `BuildSource_JavaContentFolder` | `...structure.BuildSource_JavaContentFolder` | source / test / excluded folder (`kind`, `relativePath`) |
+| `BuildSource_JavaDependencyJar` / `Module` / `Library` | `...structure.BuildSource_JavaDependency...` | Java deps |
 | `BuildLayout` | `...structure.BuildLayout` | project.layout |
 | `BuildLayout_Folder` | `...structure.BuildLayout_Folder` | layout |
 | `BuildLayout_Zip` | `...structure.BuildLayout_Zip` | layout |
@@ -38,7 +38,7 @@ Full FQN reference for every concept in the build-language stack.
 | `BuildLayout_Fileset` | `...structure.BuildLayout_Fileset` | layout |
 | `BuildLayout_ImportContent` | `...structure.BuildLayout_ImportContent` | layout |
 | `BuildLayout_CopyOfContainer` | `...structure.BuildLayout_CopyOfContainer` | layout |
-| `BuildMpsLayout_ModuleJar` | `...structure.BuildMpsLayout_ModuleJar` (role `Saw0i` in XML) | layout |
+| `BuildLayout_CompileOutputOf` | `...structure.BuildLayout_CompileOutputOf` (reference `module`) | layout: compiled classes of a declared `BuildSource_CompilablePart` — a `BuildSource_JavaModule` or an MPS `BuildMps_Module` |
 
 ## `jetbrains.mps.build.mps` (`0cf935df-4699-4e9c-a132-fa109541cba3`)
 

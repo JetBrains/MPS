@@ -18,6 +18,8 @@ import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.io.FileUtil
 import jetbrains.mps.checkers.ConstraintsChecker
+import jetbrains.mps.checkers.ErrorReportHelper
+import jetbrains.mps.smodel.SModelStereotype
 import jetbrains.mps.checkers.RefScopeChecker
 import jetbrains.mps.checkers.TargetConceptChecker2
 import jetbrains.mps.classloading.ClassLoaderManager
@@ -272,6 +274,13 @@ abstract class AbstractOps : McpToolset {
         )
         private val LINK_ATTRIBUTE_LINK_ID = MetaAdapterFactory.getProperty(
             CORE_LANG_HI, CORE_LANG_LO, 0x2eb1ad060897da51L, 0x129f3f612792fc5cL, "linkId"
+        )
+
+        // lang.test's test annotations (`has error`, …) are ISuppressErrors; like lang.test's TestsErrorsChecker,
+        // the problem check does not let them hide the errors a test asserts.
+        private val ABSTRACT_TEST_NODE_ANNOTATION = MetaAdapterFactory.getConcept(
+            0x8585453e6bfb4d80uL.toLong(), 0x98deb16074f1d86cuL.toLong(), 0x11e0d52da47L,
+            "jetbrains.mps.lang.test.structure.AbstractTestNodeAnnotation"
         )
 
         // Specialization label for the synthetic structure-level problems reported by
@@ -2525,6 +2534,14 @@ abstract class AbstractOps : McpToolset {
      * `mps_mcp_parse_java_and_insert`, so an insertion surfaces exactly the same problems an explicit
      * check would. The two typesystem checkers are best-effort: a failure in either is logged and
      * swallowed instead of aborting the whole check.
+     *
+     * A problem that an `ISuppressErrors` node suppresses is dropped, as the MPS editor and model
+     * checker do (`SuppressErrorsChecker`'s post-processor): the suppressor is the problem node, an
+     * ancestor, or an attribute of either (e.g. a `SuppressErrorsAnnotation`, or the `before` / `result`
+     * trees of an `EditorTestCase`, which suppress cardinality errors of an unfinished expected tree).
+     * As there, problems on detached nodes and in stub models are kept, and — as lang.test's own
+     * `TestsErrorsChecker` does — suppressors that are test annotations (`has error`, …) are ignored, so
+     * the errors a `NodesTestCase` asserts stay visible.
      */
     protected fun runRootCheckers(
         mpsProject: MPSProject,
@@ -2534,9 +2551,10 @@ abstract class AbstractOps : McpToolset {
         val host = mpsProject.platform
         val monitor = EmptyProgressMonitor()
         val problems = mutableMapOf<SNode, MutableList<NodeReportItem>>()
+        val suppressors = ErrorReportHelper()
         val collector = Consumer<NodeReportItem> { item ->
             val problemNode = item.node.resolve(repo)
-            if (problemNode != null) {
+            if (problemNode != null && !isSuppressed(suppressors, problemNode, item)) {
                 problems.getOrPut(problemNode) { mutableListOf() }.add(item)
             }
         }
@@ -2564,6 +2582,13 @@ abstract class AbstractOps : McpToolset {
         checkAttributeFeatureIds(root, collector)
 
         return problems
+    }
+
+    /** See [runRootCheckers]: mirrors `SuppressErrorsChecker`'s post-processor minus lang.test's own annotations. */
+    private fun isSuppressed(helper: ErrorReportHelper, node: SNode, item: NodeReportItem): Boolean {
+        val model = node.model ?: return false
+        if (SModelStereotype.isStubModel(model)) return false
+        return helper.getActiveSuppressors(node, item).any { !it.concept.isSubConceptOf(ABSTRACT_TEST_NODE_ANNOTATION) }
     }
 
     /**
@@ -4306,6 +4331,8 @@ abstract class AbstractOps : McpToolset {
         val targetLanguageNamespaces: Set<String>,
         val inputModels: List<SModelReference>,
         val transientsPresent: Boolean,
+        /** Generator modules in this make (requested, or owned by a requested language); reloaded with the languages. */
+        val generatorModuleRefs: Set<SModuleReference>,
     )
 
     /** Outcome of [ensureLanguageRuntime]: every make that ran (last one is decisive), the extra stage if any, and what is still not served. */
@@ -4435,7 +4462,9 @@ abstract class AbstractOps : McpToolset {
                 val inputModels = (models.asSequence() + expandedModules.asSequence().flatMap { it.models.asSequence() })
                     .filter { (it as? GeneratableSModel)?.isGeneratable == true }
                     .map { it.reference }.distinct().toList()
-                MakePreparation(list, s, ids, refs, namespaces, inputModels, nonCheckpointTransientModules(mpsProject).isNotEmpty())
+                val generatorRefs = (expandedModules.asSequence() + models.asSequence().mapNotNull { it.module })
+                    .filterIsInstance<jetbrains.mps.smodel.Generator>().map { it.moduleReference }.toSet()
+                MakePreparation(list, s, ids, refs, namespaces, inputModels, nonCheckpointTransientModules(mpsProject).isNotEmpty(), generatorRefs)
             }
             val resourcesList = preparation.resourcesList
             val session = preparation.session
@@ -4589,10 +4618,18 @@ abstract class AbstractOps : McpToolset {
                             // afterLanguagesLoaded fires synchronously inside CLM.reload, so
                             // by the time it returns the latch is down for the target
                             // languages.
-                            if (targetLanguageModuleRefs.isNotEmpty()) {
+                            //
+                            // The make's generators are reloaded too, like DefaultMakeTask reloads the modules
+                            // its compilation affected: a generator registers with its language's runtime only
+                            // when its module loads with the generator's activator class present, and a rebuild
+                            // that reloads the language alone left a fresh language's runtime without its
+                            // generator (PLAN: NO_GENERATORS until mps_mcp_reload_all; see the test
+                            // `a language made with its generator lists the generator in its runtime`).
+                            val modulesToReload = targetLanguageModuleRefs + preparation.generatorModuleRefs
+                            if (modulesToReload.isNotEmpty()) {
                                 try {
                                     val classLoaderManager = mpsProject.getComponent(ClassLoaderManager::class.java)
-                                    classLoaderManager?.reload(targetLanguageModuleRefs, EmptyProgressMonitor())
+                                    classLoaderManager?.reload(modulesToReload, EmptyProgressMonitor())
                                     languageReloadLatch.countDown() // Treat explicit reload completion as definitive
                                 } catch (e: CancellationException) {
                                     throw e

@@ -2,6 +2,7 @@
 # MPS process control for the study observer: capture, shutdown, start, wait, restart.
 #
 # usage: mps_control.sh capture|calllog|idelog|open|shutdown|start|wait|restart [project-dir]
+#        mps_control.sh install <app-or-root-or-launcher>
 #        mps_control.sh url [--json] [--timeout SECONDS]
 #
 # [project-dir] is optional everywhere and always the SAME project: the one to close on shutdown,
@@ -26,7 +27,7 @@
 # selector uses 64344, not 64343). `wait` re-detects on every iteration until the URL is confirmed.
 #
 # The capture lives in $TMPDIR (CAPTURE=$TMPDIR/mps-study-cmdline.json), NOT in $RUNS: wrap-up
-# deletes ~/MPSProjects/mcp-study/, and mps-project-management restricts helper dumps to $TMPDIR.
+# cleans ~/MPSProjects/mcp-study/workspace/, and mps-project-management restricts helper dumps to $TMPDIR.
 # It must be taken while MPS is alive — after the application exits there is nothing left to
 # inspect (study lesson 27). `shutdown` therefore refuses without it.
 #
@@ -36,8 +37,10 @@
 # screen with MCP unusable (study lesson 28) — this script reports that state instead of retrying.
 #
 # There is still no MCP tool that opens a project: `start` passes the path on the command line.
-# If MPS is down and no capture exists, use the IDEA `MPS` run configuration with the project path
-# as a program argument instead of reconstructing a command.
+# If MPS is down and no capture exists, a from-sources MPS uses the IDEA `MPS` run configuration.
+# A standalone install does not: set MPS_INSTALL to the .app or install root and run `install`,
+# which records that launcher. `start` and `open` then invoke the launcher. Replaying a standalone
+# JVM command is the wrong family and is refused.
 set -uo pipefail
 
 STUDY=${STUDY:-"$(cd "$(dirname "$0")/.." && pwd)"}
@@ -116,6 +119,11 @@ do_capture() {
   cwd=$(lsof -a -p "$pid" -d cwd 2>/dev/null | awk 'END{print $NF}')
   dump="${TMPDIR:-/tmp}/mps-study-jcmd.txt"
   "$jcmd" "$pid" VM.command_line > "$dump" || die "jcmd VM.command_line failed for pid $pid"
+  local parent_bin="" parent_pid
+  parent_pid=$(ps -ww -p "$pid" -o ppid= 2>/dev/null | tr -d ' ')
+  if [ -n "$parent_pid" ]; then
+    parent_bin=$(ps -ww -p "$parent_pid" -o args= 2>/dev/null | awk '{print $1}')
+  fi
 
   PID="$pid" JAVA="$java" CWD="$cwd" DUMP="$dump" OUT="$CAPTURE" python3 - <<'PY'
 import json, os, re
@@ -156,6 +164,77 @@ json.dump({"pid": int(os.environ["PID"]), "javaBin": os.environ["JAVA"],
 print(json.dumps({"ok": True, "capture": os.environ["OUT"], "pid": int(os.environ["PID"]),
                   "selector": selector, "callLog": calllog is not None, "logPathOption": logpath,
                   "vmOptions": len(vm), "classpathChars": len(classpath)}))
+PY
+  # Classify after the dump is written. A standalone selector must not be restarted as java.
+  if [ -n "$parent_bin" ]; then
+    python3 "$STUDY/scripts/mps_launch.py" annotate --capture "$CAPTURE" --parent-bin "$parent_bin"
+  else
+    python3 "$STUDY/scripts/mps_launch.py" annotate --capture "$CAPTURE"
+  fi
+}
+
+capture_kind() {
+  if [ ! -f "$CAPTURE" ]; then echo sources; return; fi
+  python3 "$STUDY/scripts/mps_launch.py" kind --capture "$CAPTURE"
+}
+
+do_install() {
+  local path="${1:?install needs a standalone MPS: .app, install root, or the launcher}"
+  python3 "$STUDY/scripts/mps_launch.py" install --path "$path" --out "$CAPTURE" || exit 3
+}
+
+# Standalone start/open invoke the install's launcher. Study -D flags go into a copy of that
+# install's vmoptions for `start` only; `open` must not override the running instance's selector.
+launch_plan() {
+  local mode="$1" project="${2:-}"
+  if [ -n "$project" ]; then
+    python3 "$STUDY/scripts/mps_launch.py" plan --capture "$CAPTURE" --mode "$mode" \
+      --assistant-auto "${MIGRATION_ASSISTANT_AUTO:-false}" --project "$project"
+  else
+    python3 "$STUDY/scripts/mps_launch.py" plan --capture "$CAPTURE" --mode "$mode" \
+      --assistant-auto "${MIGRATION_ASSISTANT_AUTO:-false}"
+  fi
+}
+
+do_start_standalone() {
+  local project="${1:-}" log="${TMPDIR:-/tmp}/mps-study-start.log" plan
+  plan=$(launch_plan start "$project") || die "standalone launch plan failed"
+  PLAN="$plan" LOGFILE="$log" python3 - <<'PY'
+import json, os, subprocess, sys
+plan = json.loads(os.environ["PLAN"])
+if not plan.get("ok"):
+    sys.exit(plan.get("error") or "standalone plan failed")
+env = os.environ.copy()
+env.update(plan.get("env") or {})
+log = open(os.environ["LOGFILE"], "ab")
+proc = subprocess.Popen(plan["argv"], env=env, stdout=log, stderr=log,
+                        stdin=subprocess.DEVNULL, start_new_session=True)
+print(json.dumps({"ok": True, "kind": "standalone", "pid": proc.pid,
+                  "project": plan.get("project"), "launcher": plan["argv"][0],
+                  "log": os.environ["LOGFILE"], "vmoptions": plan.get("vmoptions")}))
+PY
+}
+
+do_open_standalone() {
+  local project="$1" plan
+  plan=$(launch_plan open "$project") || die "standalone activation plan failed"
+  PLAN="$plan" python3 - <<'PY'
+import json, os, subprocess, sys, time
+plan = json.loads(os.environ["PLAN"])
+if not plan.get("ok"):
+    sys.exit(plan.get("error") or "standalone plan failed")
+t0 = time.time()
+try:
+    p = subprocess.run(plan["argv"], capture_output=True, text=True, timeout=120)
+except subprocess.TimeoutExpired:
+    raise SystemExit("activation did not exit within 120s: it started a second IDE, so the "
+                     "launcher does not match the running instance")
+elapsed = round(time.time() - t0, 1)
+if p.returncode != 0:
+    raise SystemExit("activation failed (exit %s after %ss): %s"
+                     % (p.returncode, elapsed, (p.stderr or p.stdout or "").strip()[-400:]))
+print(json.dumps({"ok": True, "kind": "standalone", "activatedSeconds": elapsed,
+                  "project": plan.get("project"), "launcher": plan["argv"][0]}))
 PY
 }
 
@@ -237,7 +316,9 @@ do_open() {
   [ -n "$(mps_pid)" ] || die "MPS is not running — use 'start' (a cold start), not 'open'"
   [ -d "$project" ] || die "no such project directory: $project"
   resolve_url
-
+  if [ "$(capture_kind)" = standalone ]; then
+    do_open_standalone "$project" || exit 3
+  else
   CAPTURE="$CAPTURE" PROJECT="$project" python3 - <<'ACTIVATE'
 import json, os, subprocess, time
 cap = json.load(open(os.environ["CAPTURE"]))
@@ -258,6 +339,7 @@ if p.returncode != 0:
                      % (p.returncode, elapsed, (p.stderr or p.stdout or "").strip()[-400:]))
 print(json.dumps({"ok": True, "activatedSeconds": elapsed, "project": project}))
 ACTIVATE
+  fi
   [ $? -eq 0 ] || exit 3
   # Exit 0 only means the request was handed over; confirm the open actually landed.
   local waited=0
@@ -370,8 +452,15 @@ first so the close of the last one carries the shutdown."
 # re-taken from an MPS that this script started silently keeps =false (check with
 # ps -ww -p <pid> -o args=).
 do_start() {
-  [ -f "$CAPTURE" ] || die "no capture at $CAPTURE — use the IDEA \`MPS\` run configuration instead"
+  if [ ! -f "$CAPTURE" ] && [ -n "${MPS_INSTALL:-}" ]; then
+    do_install "$MPS_INSTALL" >/dev/null || exit 3
+  fi
+  [ -f "$CAPTURE" ] || die "no capture at $CAPTURE — from sources, use the IDEA \`MPS\` run configuration; for a standalone install, set MPS_INSTALL and run 'install'"
   [ -z "$(mps_pid)" ] || die "MPS is already running (pid $(mps_pid)) — use 'restart' or activate it"
+  if [ "$(capture_kind)" = standalone ]; then
+    do_start_standalone "${1:-}"
+    return
+  fi
   local project="${1:-}" log="${TMPDIR:-/tmp}/mps-study-start.log"
 
   CAPTURE="$CAPTURE" PROJECT="$project" LOGFILE="$log" ASSISTANT_AUTO="${MIGRATION_ASSISTANT_AUTO:-false}" python3 - <<'PY'
@@ -409,7 +498,9 @@ do_wait() {
   URL_CONFIRMED=false
   while [ "$waited" -lt "$READY_WAIT" ]; do
     [ "$URL_CONFIRMED" = true ] || resolve_url 2
-    if python3 "$STUDY/scripts/tools_inventory.py" --out "${TMPDIR:-/tmp}/mps-study-ready.json" >/dev/null 2>&1; then
+    # A guessed URL (mcpServer.xml or the default) can answer before detection confirms it; keep
+    # polling, or `wait` reports ready on a port nothing has proven belongs to this MPS.
+    if [ "$URL_CONFIRMED" = true ] && python3 "$STUDY/scripts/tools_inventory.py" --out "${TMPDIR:-/tmp}/mps-study-ready.json" >/dev/null 2>&1; then
       listed=$(open_projects "$want")
       waited=$((SECONDS - start))
       if [ -n "$want" ]; then
@@ -444,6 +535,7 @@ case "${1:-}" in
   capture)  do_capture ;;
   calllog)  do_calllog "${2:-}" ;;
   idelog)   do_idelog "${2:-}" ;;
+  install)  do_install "${2:-}" ;;
   open)     do_open "${2:-}" ;;
   shutdown) do_shutdown "${2:-}" ;;
   start)    do_start "${2:-}" ;;
@@ -453,8 +545,10 @@ case "${1:-}" in
     [ -f "$CAPTURE" ] || do_capture >/dev/null
     do_shutdown "${2:-}" && do_start "${2:-}" && do_wait "${2:-}" ;;
   *) echo "usage: $(basename "$0") capture|calllog|idelog|open|shutdown|start|wait|restart [project-dir]
+       $(basename "$0") install <app-or-root-or-launcher>
        $(basename "$0") url [--json] [--timeout SECONDS]
        calllog takes a call-log FILE (or nothing, to clear it), not a project directory
-       idelog takes a log DIRECTORY (or nothing, for the platform default), not a project directory" >&2
+       idelog takes a log DIRECTORY (or nothing, for the platform default), not a project directory
+       install records a standalone launcher; it does not start MPS" >&2
      exit 2 ;;
 esac

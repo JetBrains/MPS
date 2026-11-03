@@ -4,7 +4,7 @@
 and `S12-sonnet-1` both passed, neither misread the prompt, and every pinned answer below matched both
 left-behind states (`study/HOTSPOT_REPORT_round30.md`).
 
-Fixture: `expressions.tar.gz`, as S11 (`../../fixtures/README.md`). In the fixture `Bool <: Number`
+Fixture: `expressions.tar.gz`, as S11 (`../../instructions/fixtures.md`). In the fixture `Bool <: Number`
 is false. The loop this cell replays was run live on `samples/expressions` on 2026-10-07 (MPS
 2026.1, build 261.25134; `../../../docs/type-query-use-cases.md` §1.2): before the rule
 `check_root_node_problems` reports "type Bool is not a subtype of Number" with
@@ -29,7 +29,7 @@ for `+` is `jetbrains.mps.samples.Expressions.structure.ArithmeticSimpleMathExpr
 observer does not MAKE: the worker's build is what is measured.
 
 Making the sandbox solution or the scratch model fails by design (the sample has no generator for
-`SimpleMathWrapper`, `../../fixtures/README.md`). A worker that sees that failure has not broken the
+`SimpleMathWrapper`, `../../instructions/fixtures.md`). A worker that sees that failure has not broken the
 language; record it, it fails nothing. "Before the build" below means before the first `MAKE` of
 the language that included the new rule, read from the transcript.
 

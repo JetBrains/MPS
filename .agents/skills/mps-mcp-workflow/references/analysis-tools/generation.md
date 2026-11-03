@@ -1,6 +1,6 @@
 # `mps_mcp_generation` — plans, transient models, traces
 
-`mps_mcp_generation` does what the UI's Show Generation Plan, the Project view's Transient models folder and the Generation Trace tool do. `operation` is one of `PLAN`, `TRANSIENT_MODELS`, `TRACE`, `DROP_TRANSIENT_MODELS`; `parameters` is required, pass `{}` when nothing applies. For the debugging recipe, see `references/debugging-misgeneration.md` in the `mps-aspect-generator` skill root after loading that companion skill from the same origin.
+`mps_mcp_generation` does what the UI's Show Generation Plan, the Project view's Transient models folder and the Generation Trace tool do. `operation` is one of `PLAN`, `TRANSIENT_MODELS`, `TRACE`, `DROP_TRANSIENT_MODELS`; `parameters` is required, pass `{}` when nothing applies. For the observation and debugging recipe, see `references/debugging-misgeneration.md` in the `mps-aspect-generator` skill root after loading that companion skill from the same origin.
 
 ## Operations
 

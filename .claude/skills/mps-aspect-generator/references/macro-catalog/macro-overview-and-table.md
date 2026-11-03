@@ -17,9 +17,9 @@ All macro concepts live in `jetbrains.mps.lang.generator.structure`. Attach any 
 | `MapSrcNodeMacro` (`$MAP_SRC$`) | `MapSrcNodeMacro` | `sourceNodeQuery`, `mapperFunction` | `SourceSubstituteMacro_SourceNodeQuery`, `MapSrcMacro_MapperFunction` |
 | `MapSrcListMacro` | `MapSrcListMacro` | `sourceNodesQuery`, `mapperFunction` | `SourceSubstituteMacro_SourceNodesQuery`, `MapSrcMacro_MapperFunction` |
 | `ReferenceMacro` (`$REF$`) | `ReferenceMacro` | `referentFunction` | `ReferenceMacro_GetReferent` |
-| `TemplateSwitchMacro` (`$SWITCH$`) | `TemplateSwitchMacro` | `sourceNodeQuery` (opt) + ref `templateSwitch` | — |
+| `TemplateSwitchMacro` (`$SWITCH$`) | `TemplateSwitchMacro` | `sourceNodeQuery` (opt) + ref `template` (the switch) + `actualArgument` (switch parameters) | `SourceSubstituteMacro_SourceNodeQuery` |
 | `IncludeMacro` (`$INCLUDE$`) *(not found in this MPS distribution)* | `IncludeMacro` | ref `includeTemplate` | — |
-| `WeaveMacro` (`$WEAVE$`) | `WeaveMacro` | `nodesToWeaveQuery` + `ruleConsequence` (child = `TemplateDeclarationReference`) | `SourceSubstituteMacro_SourceNodesQuery` |
+| `WeaveMacro` (`$WEAVE$`) | `WeaveMacro` | `nodesToWeaveQuery` + `ruleConsequence` (child = `TemplateDeclarationReference`) + `anchorQuery` (opt) | `SourceSubstituteMacro_SourceNodesQuery` |
 | `InsertMacro` (`$INSERT$`) | `InsertMacro` | `createNodeQuery` + ref `mappingLabel` (opt) | `InsertMacro_CreateNodeQuery` |
 | `InsertCallSiteMacro` (`$CALL-SITE$`) | `InsertCallSiteMacro` | — | — |
 | `LabelMacro` (`$LABEL$`) | `LabelMacro` | `input1` (opt), `input2` (opt) + ref `mappingLabel` | `LabelMacroInputQuery` |

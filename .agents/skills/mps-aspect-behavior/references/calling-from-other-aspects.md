@@ -17,8 +17,8 @@ When writing hand-written code (inside checking rules, typesystem rules, generat
 Call shapes by method kind:
 
 - **Instance methods** (non-virtual or virtual): `someNode.m(...)` — for virtual methods the implementation is chosen by the node's actual concept at runtime; for non-virtual ones by the static node type at the call site.
-- **Static methods**: `ConceptName.m(...)` — qualified by the concept name, no receiver node.
-- **Virtual static methods**: invoked on a `concept<X>` value, e.g. `someNode.concept.getPrecedenceLevel()` or `conceptParam.m(...)` (a `concept<Expression>` parameter in baseLanguage's actions calls `expression.getPrecedenceLevel()` this way). Dispatch picks the override for the runtime concept.
+- **Static methods**: `concept/ConceptName/.m(...)`, a concept receiver and no node: `DotExpression{operand: jetbrains.mps.lang.smodel.structure.ConceptIdRefExpression{conceptDeclaration → ConceptName}, operation: jetbrains.mps.lang.behavior.structure.Node_ConceptMethodCall{baseMethodDeclaration → m, actualArgument*}}`. Do not use the deprecated `ConceptRefExpression` (`conceptNode/X/`) as the receiver.
+- **Virtual static methods**: the same `Node_ConceptMethodCall`, invoked on any `concept<X>` value, e.g. `someNode.concept.getPrecedenceLevel()` or `conceptParam.m(...)` (a `concept<Expression>` parameter in baseLanguage's actions calls `expression.getPrecedenceLevel()` this way). Dispatch picks the override for the runtime concept.
 
 This is why extracting logic repeated across several aspects of a concept into one behavior method pays off: every aspect (editor, constraints, typesystem, generator, intentions, textgen) can reach it with the same one-line call.
 

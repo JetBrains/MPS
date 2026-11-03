@@ -1,0 +1,76 @@
+# flows-gen fixture build log (S23/S24). projectPath=/Users/vaclav/MPSProjects/mcp-study/fixtures-build/flows-gen on every call. Blueprints: /Users/vaclav/MPSProjects/mcp-study/fixtures-build/flows-gen-blueprints/
+1. mps_mcp_list_open_projects -> ok 1 project flows-gen, MPS 2026.1 build 261.25134
+2. mps_mcp_create_module type=language name=mcp.study.flows dir=<proj>/languages/mcp.study.flows withGenerator=true -> ok lang 96b3227d-8209-460a-b6de-254a3f1b1f2f(mcp.study.flows); structure r:d84a36bd-946c-4d96-8553-cd9df4829dcd; generator 5ce4c5bb-74e8-4314-916c-aa37311b76a8(mcp.study.flows.generator); templates r:f5e41ac0-4666-4735-892f-9ad21437fb0e(mcp.study.flows.generator.templates@generator)
+3. mps_mcp_module_dependency ADD mcp.study.flows -> jetbrains.mps.baseLanguage scope=Generation Target -> ok added
+4. mps_mcp_create_module type=solution name=mcp.study.flowsdemo dir=<proj>/solutions/mcp.study.flowsdemo -> ok 6840f4e4-28e9-4a5f-ad6d-16cb627116a4(mcp.study.flowsdemo)
+5. mps_mcp_create_model module=mcp.study.flowsdemo name=mcp.study.flowsdemo.flows -> ok r:55d55113-0641-4a83-904e-e7db961310e5(mcp.study.flowsdemo.flows)
+6. mps_mcp_model_used_language ADD language mcp.study.flows on flows model -> ok added
+7. mps_mcp_alter_structure CREATE_CONCEPTS make=true conceptsJson=01-concepts.json -> ok makeStatus=success recoveryStage=module-rebuild; Flow=.../7787628450228108317 Step=...318 Approve=...319 Notify=...320 Wait=...321 Comment=...322 Escalation=...323 (r:d84a36bd-946c-4d96-8553-cd9df4829dcd(mcp.study.flows.structure)/<id>)
+8. mps_mcp_insert_root_node_from_json model=flows json=02-samples.json -> ok Release=r:55d55113-0641-4a83-904e-e7db961310e5(mcp.study.flowsdemo.flows)/7787628450228113618 Hotfix=.../7787628450228113625 releaseStuck=.../7787628450228113629 hotfixStuck=.../7787628450228113630; stillBroken=0
+9. mps_mcp_check_root_node_problems model=flows -> ok no problems (4 roots)
+10-13. mps_mcp_model_used_language ADD language {jetbrains.mps.lang.generator, jetbrains.mps.lang.generator.generationContext, jetbrains.mps.baseLanguage, jetbrains.mps.lang.smodel} on templates@generator -> ok added=false providedByDevKit=jetbrains.mps.devkit.templates (no-op, each)
+14. mps_mcp_model_dependency ADD templates@generator -> mcp.study.flows.structure -> ok added=1
+15. mps_mcp_get_concept_details ClassConcept,InstanceMethodDeclaration,StringLiteral,IntegerConstant detail=shape -> ok (sourceNodes + featureIds: StringLiteral.value f3061a53-9226-4cc5-a443-f952ceaf5816/1070475926800/1070475926801, IntegerConstant.value .../1068580320020/1068580320021, name ceab5195-25ea-4f22-9b92-103b95ca8c0c/1169194658468/1169194664001)
+16. mps_mcp_get_concept_details languageRefs=mcp.study.flows detail=shape -> ok (feature sourceNodes: owner ...324 steps ...325 role ...327 channel ...328 Notify.text ...329 hours ...330 Comment.text ...331 to ...332 afterHours ...333 flow ...334)
+17. mps_mcp_get_concept_details 17 generator/smodel concepts detail=shape -> ok (roles verified; one wrong FQN guess GenerationContextOp_GetOutputByLabelAndInput lives in ...generationContext.structure)
+18. mps_mcp_update_node ADD CHILD main.mappingLabel json=03-label-flowClass.json -> ok flowClass=T/7787628450228113631  (T = r:f5e41ac0-4666-4735-892f-9ad21437fb0e(mcp.study.flows.generator.templates@generator)/, main=T/7787628450227719486)
+19. mps_mcp_update_node ADD CHILD main.mappingLabel json=04-label-approversMethod.json -> ok approversMethod=T/7787628450228113632
+20. mps_mcp_parse_java_and_insert CLASS root mode, package mcp.study.flows.out, class FlowClass {OWNER; run(trail){trail.add("step");}; approvers(){r...}} -> ok FlowClass=T/7787628450228113633 (OWNER literal ...637, run stmt ...644, r.add stmt ...657, "x" in r.add ...978, approvers method ...649)
+21. mps_mcp_check_root_node_problems FlowClass autoApplyQuickFixes=true -> ok no problems (info "recommended to use string type" x5, not applied)
+22. mps_mcp_update_node ADD CHILD FlowClass.smodelAttribute json=05-fc-rootanno.json -> ok RootTemplateAnnotation=T/7787628450228120449
+23. mps_mcp_update_node ADD CHILD FlowClass.smodelAttribute json=06-fc-name.json ($PROPERTY$ name = node.name + "Flow") -> ok T/7787628450228120450
+24. mps_mcp_update_node ADD CHILD OWNER literal.smodelAttribute json=07-fc-owner.json ($PROPERTY$ node.owner) -> ok T/7787628450228120467
+25. mps_mcp_update_node ADD CHILD run stmt.smodelAttribute json=08-fc-copysrcl.json ($COPY_SRCL$ node.steps) -> ok T/7787628450228120482
+26. mps_mcp_update_node ADD CHILD r.add stmt.smodelAttribute json=09-fc-loop.json ($LOOP$ node.steps.ofConcept<Approve>) -> ok T/7787628450228120497
+27. mps_mcp_update_node ADD CHILD r.add "x".smodelAttribute json=10-fc-role.json ($PROPERTY$ node.role) -> ok T/7787628450228120515
+28. mps_mcp_update_node ADD CHILD approvers method.smodelAttribute json=11-fc-label.json ($LABEL$ approversMethod, default key) -> ok T/7787628450228120845
+29. mps_mcp_check_root_node_problems FlowClass -> ok no problems (same 5 infos)
+30. mps_mcp_insert_root_node_from_json templates json=12-templatedecls.json -> ok WaitStatement=T/7787628450228126491 (applicable Wait) EscalateMethod=T/7787628450228126492 (applicable Escalation)
+31. mps_mcp_parse_java_and_insert CLASS child of WaitStatement.contentNode: class WaitContext { run(trail){ trail.add("wait:" + 0); } } -> ok WaitContext=T/7787628450228126493 (stmt ...500, IntegerConstant ...663); problems: "No template fragments found" (expected before fragment)
+32. mps_mcp_parse_java_and_insert CLASS child of EscalateMethod.contentNode: class EscalateContext { escalate_x(trail){ trail.add("x"); } } -> ok EscalateContext=T/7787628450228128406 (method ...408, literal ...570); same expected problem
+33. mps_mcp_check_root_node_problems WaitStatement autoApplyQuickFixes=true -> ok only "No template fragments found" (no fixes applied)
+34. mps_mcp_check_root_node_problems EscalateMethod autoApplyQuickFixes=true -> ok only "No template fragments found" (no fixes applied)
+35. mps_mcp_print_node WaitStatement deep -> ok (ids above)
+36. mps_mcp_print_node EscalateMethod deep -> ok (ids above)
+37. mps_mcp_update_node ADD CHILD wait stmt.smodelAttribute json=13-ws-fragment.json -> ok TemplateFragment=T/7787628450228134401
+38. mps_mcp_update_node ADD CHILD IntegerConstant.smodelAttribute json=14-ws-hours.json ($PROPERTY$ node.hours) -> ok T/7787628450228134402
+39. mps_mcp_update_node ADD CHILD escalate_x method.smodelAttribute json=13-ws-fragment.json -> ok TemplateFragment=T/7787628450228134417
+40. mps_mcp_update_node ADD CHILD escalate_x method.smodelAttribute json=15-em-name.json ($PROPERTY$ name "escalate_" + node.name) -> ok T/7787628450228134418
+41. mps_mcp_update_node ADD CHILD "x" literal.smodelAttribute json=16-em-value.json ($PROPERTY$ "escalate:" + node.to + ":" + node.afterHours) -> ok T/7787628450228134435
+42. mps_mcp_check_root_node_problems WaitStatement -> ok no problems (1 info)
+43. mps_mcp_check_root_node_problems EscalateMethod -> ok no problems (1 info)
+44. mps_mcp_update_node ADD CHILD main.rootMappingRule json=17-root-rule.json -> ok Root_MappingRule=T/7787628450228140315 (Flow -> FlowClass, label flowClass)
+45. mps_mcp_update_node ADD CHILD main.weavingMappingRule json=23-weave-escalation.json -> ok Weaving_MappingRule=T/7787628450228140316 (contextNodeQuery ...317, anchorQuery ...326, consequence -> EscalateMethod)
+46. mps_mcp_update_node ADD CHILD main.dropRootRule json=24-drop-escalation.json -> ok DropRootRule=T/7787628450228140352
+47. mps_mcp_update_node ADD CHILD main.reductionMappingRule json=18-r1-wait-zero.json -> ok R1=T/7787628450228140353 (condition ...354, AbandonInput ...382)
+48. mps_mcp_update_node ADD CHILD main.reductionMappingRule json=19-r2-wait.json -> ok R2=T/7787628450228140402 (-> WaitStatement)
+49. mps_mcp_update_node ADD CHILD main.reductionMappingRule json=20-r3-approve.json -> ok R3=T/7787628450228140404 (InlineTemplateWithContext ...405, empty contentNode)
+50. mps_mcp_update_node ADD CHILD main.reductionMappingRule json=21-r4-notify.json -> ok R4=T/7787628450228140406 (InlineSwitch ...407; case slack ...408 consequence ...418; case mail ...419 consequence ...429; default DismissTop ...430 msg error "unknown channel")
+51. mps_mcp_update_node ADD CHILD main.reductionMappingRule json=22-r5-comment.json -> ok R5=T/7787628450228140486 (AbandonInput)
+52. mps_mcp_print_node main deep -> ok (ids above)
+53. mps_mcp_parse_java_and_insert CLASS child R3 consequence.contentNode: class ApproveContext { run(trail){ trail.add("approve:x"); } } -> ok T/7787628450228140488
+54. mps_mcp_parse_java_and_insert CLASS child slack case.contentNode: class SlackContext { run(trail){ trail.add("notify:slack:x"); } } -> ok T/7787628450228146734
+55. mps_mcp_parse_java_and_insert CLASS child mail case.contentNode: class MailContext { run(trail){ trail.add("mail:x"); } } -> ok T/7787628450228153367
+56. mps_mcp_check_root_node_problems main autoApplyQuickFixes=true -> ok no problems (3 infos, none applied)
+57. mps_mcp_print_node R4 deep -> ok (case context stmt ids)
+58. mps_mcp_print_node ApproveContext deep -> ok (stmt ...495, literal ...652)
+59. mps_mcp_update_node ADD CHILD ApproveContext stmt.smodelAttribute json=13-ws-fragment.json -> ok TemplateFragment=T/7787628450228173803
+60. mps_mcp_update_node ADD CHILD "approve:x".smodelAttribute json=25-r3-value.json ("approve:" + node.role) -> ok T/7787628450228173804
+61. mps_mcp_update_node ADD CHILD SlackContext stmt ...741.smodelAttribute json=13-ws-fragment.json -> ok TemplateFragment=T/7787628450228173821
+62. mps_mcp_update_node ADD CHILD "notify:slack:x" ...898.smodelAttribute json=26-r4-slack-value.json ("notify:slack:" + node.text) -> ok T/7787628450228173822
+63. mps_mcp_update_node ADD CHILD MailContext stmt ...374.smodelAttribute json=13-ws-fragment.json -> ok TemplateFragment=T/7787628450228173839
+64. mps_mcp_update_node ADD CHILD "mail:x" ...531.smodelAttribute json=27-r4-mail-value.json ("mail:" + node.text) -> ok T/7787628450228173840
+65. mps_mcp_check_root_node_problems templates model perRoot=true -> ok 4 roots, 0 errors 0 warnings (10 "use string type" infos)
+66. (extra, pre-defect sanity) mps_mcp_alter_nodes MAKE modules=[mcp.study.flows, mcp.study.flows.generator, mcp.study.flowsdemo] rebuild=true -> ok success, details WARNING "zero wait in Hotfix"; HotfixFlow.run had no wait line (correct-order baseline); no solution classes_gen written
+67. mps_mcp_get_module_facets mcp.study.flowsdemo -> ok java facet compile=mps classes=${module}/classes_gen
+68. mps_mcp_read_ide_log sinceMinutes=6 grep compile|flowsdemo|classes_gen -> ok 0 records
+69. D-ORDER: mps_mcp_alter_nodes MOVE_CHILD R1 (T/7787628450228140353) position=1 -> ok index=1 (order now R2,R1,R3,R4,R5)
+70. mps_mcp_alter_nodes MAKE modules=[mcp.study.flows, mcp.study.flows.generator, mcp.study.flowsdemo] rebuild=true -> ok success, no messages (warning gone)
+71. (shell) read solutions/mcp.study.flowsdemo/source_gen/mcp/study/flows/out/{ReleaseFlow,HotfixFlow}.java -> match FIXTURE.md step 6 (HotfixFlow has trail.add("wait:" + 0);); classes_gen/mcp/study/flows/out/{ReleaseFlow,HotfixFlow}.class present; generator/source_gen/mcp/study/flows/generator/Generator.java extends TemplateModuleInterpreted2
+72. mps_mcp_check_root_node_problems templates@generator perRoot=true -> ok 4 roots 0 errors 0 warnings (10 infos)
+73. mps_mcp_check_root_node_problems mcp.study.flows.structure perRoot=true -> ok 7 roots 0 errors 0 warnings ("no editor" infos)
+74. mps_mcp_check_root_node_problems mcp.study.flowsdemo.flows -> ok no problems (4 roots)
+75. mps_mcp_check_root_node_problems module mcp.study.flows perRoot=true -> ok 6 models (incl. generator) 0 errors 0 warnings
+76. mps_mcp_generation DROP_TRANSIENT_MODELS {} -> ok droppedModules=0 droppedCheckpointModels=3
+77. mps_mcp_read_ide_log sinceMinutes=30 minLevel=WARN -> ok only background WARNs (none from the build window)
+# Not done here (left to observer): mps_mcp_close_project and tar of flows-gen/ (instructions: do not close projects).

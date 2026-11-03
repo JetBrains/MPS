@@ -35,7 +35,7 @@ All FQNs below are usable directly in the `concept` field of JSON blueprints.
 | `jetbrains.mps.lang.plugin.structure.ActionConstructionParameterDeclaration` | — | Parameter passed when the action is **instantiated** inside an `ActionInstance` |
 | `jetbrains.mps.lang.plugin.structure.ActionParameterCondition` | (interface) | Super of `RequiredCondition`, etc. Attached to a param to declare it mandatory/derived. |
 | `jetbrains.mps.lang.plugin.structure.RequiredCondition` | required | Marks a parameter as required (action is disabled if missing). Alternatively, set the parameter's `isOptional` property to the inverse. |
-| `jetbrains.mps.lang.plugin.structure.EditorTabReference` | — | Used inside an `Order` root to point at an `EditorTab` |
+| `jetbrains.mps.lang.plugin.structure.EditorTabReference` | — | Used inside an `Order` to point at an `EditorTab` (reference `editorTab`) |
 | `jetbrains.mps.lang.plugin.structure.ActionReference` | — | Used inside a `NonDumbAwareActions` root to point at an `ActionDeclaration` |
 | `jetbrains.mps.lang.plugin.structure.IdeaActionsDescriptor` | actions | Child of `IdeaConfigurationXml` — lists actions to emit into plugin.xml |
 | `jetbrains.mps.lang.plugin.structure.ActionGroupMember` | (interface) | Anything that can appear in a group's element list |

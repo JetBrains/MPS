@@ -215,7 +215,15 @@ class FamiliesTest(unittest.TestCase):
                          "GT_expected_parser_inserts\tGP_genplan_models\tGP_param_equals_writes\tGP_set_plan_calls\t"
                          "GP_devkit_export_calls\tGP_devkit_used_calls\tGP_plan_facet_writes\tGP_attach_workarounds\t"
                          "GP_descriptor_reads\tGP_plan_edits\tGP_plan_root_reinserts\tGP_plan_steps_detail\t"
-                         "GP_rebuild_makes\tGP_param_model_reads", header)
+                         "GP_rebuild_makes\tGP_param_model_reads\tMG_deprecate_calls\tMG_old_renames\t"
+                         "MG_structure_deletes\tMG_tighten_in_place\tMG_virtual_package_writes\t"
+                         "MG_substitute_menu_writes\tMG_substitute_menu_legacy\tMG_migration_models\tMG_pure_scripts\t"
+                         "MG_class_scripts\tMG_move_child\tMG_move_ref\tMG_move_prop\tMG_move_concept\t"
+                         "MG_check_method_writes\tMG_migrate_manually_writes\tMG_set_id_writes\tMG_sync_version\t"
+                         "MG_runtime_stale_hits\tMG_run_check\tMG_run_apply\tMG_apply_with_errors\tMG_console_runs\t"
+                         "MG_console_write_cmds\tMG_sandbox_node_writes\tMG_find_instances\tMG_mps_migration_dumps\t"
+                         "MG_publication_probe\tGT_red_runs_before_fix\tGT_runs_after_generator_write\t"
+                         "NP_node_ptr_writes\tNP_hand_pointer_writes", header)
 
     def test_t12_inline_module_problems_count_nowhere(self) -> None:
         answer = ok("no problems found", scope="module", moduleProblems=["generation target is not set"])
@@ -517,6 +525,35 @@ class FamiliesTest(unittest.TestCase):
                        + call("m", "mps_mcp_alter_nodes", "MAKE", {"models": [MODEL], "note": "$Undo"}))
         self.assertCounts(f, ET_platform_id_writes=2, ET_applicability_writes=1, ET_ide_service_writes=0)
 
+    def test_t28b_node_pointer_literal_and_hand_built_pointers(self) -> None:
+        literal = {"concept": "jetbrains.mps.lang.smodel.structure.NodePointerExpression", "children": [
+            {"role": "ref", "nodes": [{"concept": "jetbrains.mps.lang.modelapi.structure.NamedNodeReference",
+                                       "references": [{"role": "target", "target": "Pancakes"}]}]}]}
+        old = {"concept": "jetbrains.mps.lang.smodel.structure.NodePointerExpression_Old"}
+        creator = {"concept": "jetbrains.mps.baseLanguage.structure.ClassCreator", "references": [
+            {"role": "baseMethodDeclaration",
+             "target": "6ed54515-acc8-4d1e-a16c-9fd6cfe951ea/java:jetbrains.mps.smodel(MPS.Core/)/~SNodePointer.<init>"}]}
+        java = 'SNode p = new jetbrains.mps.smodel.SNodePointer("r:38cfdf05(m)", "1").resolve(repo);'
+        f = self.count(write("a", "mps_mcp_update_node", {"operation": "ADD", "kind": "CHILD", "childJson": literal})
+                       + write("b", "mps_mcp_update_node", {"operation": "ADD", "kind": "CHILD", "childJson": literal},
+                               REJECTED)
+                       + write("c", "mps_mcp_update_node", {"operation": "ADD", "kind": "CHILD", "childJson": old})
+                       + write("d", "mps_mcp_parse_java_and_insert", {"parameters": {"code": java}}, REJECTED)
+                       + write("e", "mps_mcp_update_node", {"operation": "ADD", "kind": "CHILD",
+                                                            "childJson": json.dumps(creator)})
+                       + write("f", "mps_mcp_parse_java_and_insert",
+                               {"parameters": {"code": "PersistenceFacade.getInstance().createNodeReference(s);"}})
+                       + write("g", "mps_mcp_update_node", {"operation": "SET", "kind": "PROPERTY",
+                                                            "properties": [[NODE, "name", "SNodePointerHelper"]]})
+                       + write("h", "mps_mcp_parse_java_and_insert",
+                               {"parameters": {"code": "SNodeReference r = SNodePointer.deserialize(s);"}})
+                       + write("i", "mps_mcp_update_node", {"operation": "ADD", "kind": "CHILD", "childJson": {
+                           "concept": "jetbrains.mps.baseLanguage.structure.InstanceMethodCallOperation", "references": [
+                               {"role": "baseMethodDeclaration", "target": "8865b7a8-5271-43d3-884c-6fd1d9cfdd34/java:"
+                                "org.jetbrains.mps.openapi.persistence(MPS.OpenAPI/)/~PersistenceFacade.createNodeReference"
+                                "%28java.lang.String%29"}]}}))
+        self.assertCounts(f, NP_node_ptr_writes=1, NP_hand_pointer_writes=5)
+
     def test_t29_ide_service_writes_count_attempts_too(self) -> None:
         java = "UndoManager.getInstance(project).undo(FileEditorManager.getInstance(project).getSelectedEditor());"
         f = self.count(write("p", "mps_mcp_parse_java_and_insert", {"parameters": {"code": java}})
@@ -645,6 +682,28 @@ class FamiliesTest(unittest.TestCase):
         self.assertCounts(self.count(events), GT_runtime_source_reads=len(hunts), GT_kitchen_source_reads=1,
                           GT_expected_parser_inserts=1, ET_runtime_source_reads=1)
 
+    def test_t38_generator_test_runs_before_and_after_the_fix(self) -> None:
+        def run(tool_id: str, text: str) -> list[dict]:
+            return [tool(tool_id, "mcp__mps__execute_run_configuration", {"projectPath": "/p", "configurationName": "T"}),
+                    result(tool_id, text)]
+        head = ("<TEST_FAILURE_BEGIN>RecipeClasses:testTransformAndMatch0()\\n"
+                "java.lang.AssertionError: Transformation output model doesn't match reference one:")
+        # The S36 red: fail-fast per root, A under Porridge, B as a nested missing child under Lemonade.
+        red = (head + "\\nNode: Porridge vs Porridge\\n  Node: PORTIONS vs PORTIONS\\n"
+               "    Node: integer constant vs integer constant\\n      Different property: value = 1, expected: 3\\n"
+               "Node: Lemonade vs Lemonade\\n  Node: steps():String[] vs steps():String[]\\n"
+               "          Node: array with initializer vs array with initializer\\n"
+               "            Node: null vs StringLiteral='Squeeze the lemons'\\n"
+               "            Excessive node, no counterpart to match to")
+        no_generator = head + "\\nNode: null vs Porridge\\nNode: null vs Lemonade"
+        f = self.count(run("a", no_generator) + run("b", red) + run("c", red.replace("\\n", "\n"))
+                       + run("d", "Tests passed: 1")
+                       + write("r", "mps_mcp_update_node", {"nodeReference": TEMPLATE_NODE}, {"ok": False, "error": "bad"})
+                       + run("e", red)
+                       + write("w", "mps_mcp_update_node", {"nodeReference": TEMPLATE_NODE})
+                       + run("f", "Tests passed: 1") + run("g", red))
+        self.assertCounts(f, ET_test_runs=7, GT_red_runs_before_fix=3, GT_runs_after_generator_write=2, G_errors=1)
+
     def test_t36_generation_plan_attachment_maintenance_and_workarounds(self) -> None:
         plans = "r:5f00(mcp.study.plans.kitchen@genplan)"
         plan = {"concept": "jetbrains.mps.lang.generator.plan.structure.Plan",
@@ -710,6 +769,197 @@ class FamiliesTest(unittest.TestCase):
                           GP_devkit_export_calls=1, GP_devkit_used_calls=1, GP_plan_facet_writes=1,
                           GP_attach_workarounds=4, GP_descriptor_reads=2, GP_plan_edits=3, GP_plan_root_reinserts=1,
                           GP_plan_steps_detail=2, GP_rebuild_makes=1, GP_param_model_reads=1, GN_plan=3)
+
+    def test_t37_language_evolution_columns(self) -> None:
+        struct = "r:56db(mcp.study.loans.structure)"
+        sandbox = "r:9a1b(mcp.study.loans.sandbox)"
+        alter = lambda tid, op, prm, payload=None: write(tid, "mps_mcp_alter_structure",  # noqa: E731
+                                                         {"operation": op, "parameters": json.dumps(prm)}, payload)
+        loan = {"conceptRef": "mcp.study.loans.structure.Loan"}
+        pure = {"concept": "jetbrains.mps.lang.migration.structure.PureMigrationScript", "children": [{"role": "part", "nodes": [
+            {"concept": "jetbrains.mps.lang.migration.structure.MoveNodeMigrationPart", "children": [{"role": "specialization", "nodes": [
+                {"concept": "jetbrains.mps.lang.migration.structure.MoveContainmentLink"}]}]},
+            {"concept": "jetbrains.mps.lang.migration.structure.MoveNodeMigrationPart", "children": [{"role": "specialization", "nodes": [
+                {"concept": "jetbrains.mps.lang.migration.structure.MoveReferenceLink"}]}]}]}]}
+        replace = {"concept": "PureMigrationScript", "children": [{"role": "part", "nodes": [
+            {"concept": "MoveNodeMigrationPart", "children": [{"role": "specialization", "nodes": [{"concept": "MoveConcept"}]}]},
+            {"concept": "MoveNodeMigrationPart", "children": [{"role": "specialization", "nodes": [{"concept": "MoveProperty"}]}]},
+            {"concept": "MoveNodeMigrationPart", "children": [{"role": "specialization", "nodes": [{"concept": "MoveProperty"}]}]}]}]}
+        menu = {"concept": "jetbrains.mps.lang.editor.structure.SubstituteMenu", "children": [
+            {"role": "type", "nodes": [{"concept": "jetbrains.mps.lang.editor.structure.MenuTypeDefault"}]}]}
+        check_member = {"concept": "jetbrains.mps.baseLanguage.lightweightdsl.structure.MethodInstance", "references": [
+            {"role": "decl", "target": "90746344-04fd-4286-97d5-b46ae6a81709/r:52a3d974-bd4f-4651-ba6e-a2de5e336d95("
+                                       "jetbrains.mps.lang.migration/jetbrains.mps.lang.migration.methods)/2016543223706277481"}]}
+        events = (
+            # orientation before the first structure write: a whole-project dump and a build-script search
+            write("o1", "mps_mcp_get_project_structure", {})
+            + write("o2", "mps_mcp_search_concepts", {"searchTexts": "BuildProject"})
+            # controls: a rename and a loosening of a fixture role
+            + alter("a1", "RENAME_CONCEPT_PROPERTY", {**loan, "oldName": "memo", "newName": "remark"})
+            + alter("a2", "UPDATE_CONCEPT_CHILD", {**loan, "role": "desk", "targetConcept": "Desk", "multiple": False,
+                                                   "optional": True})
+            + write("o3", "mps_mcp_get_project_structure", {})  # after the first structure write: not a probe
+            # deprecate-and-replace: rename to _old, then a new mandatory role under the old name is not in place
+            + write("d1", "mps_mcp_apply_intention", {"nodeReference": struct + "/1", "intentionId":
+                    "jetbrains.mps.lang.structure.intentions.AddDeprecatedAnnotation_Intention"})
+            + write("d2", "mps_mcp_apply_intention", {"nodeReference": struct + "/2", "intentionId": "x.Other_Intention"})
+            + write("d3", "mps_mcp_update_node", {"operation": "ADD", "kind": "CHILD", "nodeReference": struct + "/3",
+                    "childRole": "smodelAttribute", "childJson": {"concept":
+                    "jetbrains.mps.lang.structure.structure.DeprecatedNodeAnnotation"}})
+            + alter("a3", "RENAME_CONCEPT_CHILD", {**loan, "oldRole": "copies", "newRole": "copies_old"})
+            + alter("a4", "UPDATE_CONCEPT_CHILD", {**loan, "role": "copies", "targetConcept": "Copy", "multiple": True,
+                                                   "optional": False})
+            # tightened in place: a fixture reference made mandatory, and the renamed child made single (default multiple)
+            + alter("a5", "UPDATE_CONCEPT_REFERENCE", {**loan, "role": "borrower", "targetConcept": "Member",
+                                                       "optional": False})
+            + alter("a6", "UPDATE_CONCEPT_CHILD", {**loan, "role": "copies_old", "targetConcept": "Copy"})
+            + alter("a7", "UPDATE_CONCEPT_REFERENCE", {**loan, "role": "desk2", "targetConcept": "Desk", "optional": False},
+                    REJECTED)
+            # deletes: a property, a link, a structure root, a structure child; rejected ones count too
+            + alter("x1", "UPDATE_CONCEPT_PROPERTY", {**loan, "propertyName": "renewals"})
+            + alter("x2", "UPDATE_CONCEPT_REFERENCE", {**loan, "role": "borrower", "targetConcept": ""}, REJECTED)
+            + write("x3", "mps_mcp_update_root_node_from_json", {"operation": "DELETE", "nodeReference": struct + "/9"})
+            + write("x4", "mps_mcp_update_node", {"operation": "SET", "kind": "CHILD", "childNodeRef": struct + "/8"})
+            + write("x5", "mps_mcp_update_node", {"operation": "SET", "kind": "CHILD", "childNodeRef": sandbox + "/8"})
+            # hiding and the deprecated package
+            + write("h1", "mps_mcp_update_node", {"operation": "SET", "kind": "PROPERTY",
+                                                  "properties": [[struct + "/4", "virtualPackage", "deprecated"]]})
+            + write("h2", "mps_mcp_insert_root_node_from_json", {"modelReference": "r:7(mcp.study.loans.editor)", "json": menu})
+            + write("h3", "mps_mcp_insert_root_node_from_json", {"modelReference": "r:7(mcp.study.loans.editor)", "json":
+                    {"concept": "jetbrains.mps.lang.editor.structure.SubstituteMenu_Default"}}, REJECTED)
+            # migrations: a model, a pure script with two moves, a temp-file pure script with three, a class script
+            + write("m1", "mps_mcp_create_model", {"moduleName": "mcp.study.loans", "modelName": "mcp.study.loans.migration"})
+            + write("m2", "mps_mcp_insert_root_node_from_json", {"modelReference": "r:5(mcp.study.loans.migration)",
+                                                                 "json": json.dumps(pure)})
+            + [tool("w1", "Write", {"file_path": "/tmp/replace.json", "content": json.dumps(replace)}), result("w1", "ok")]
+            + write("m3", "mps_mcp_insert_root_node_from_json", {"modelReference": "r:5(mcp.study.loans.migration)",
+                                                                 "json": "/tmp/replace.json"})
+            + write("m4", "mps_mcp_insert_root_node_from_json", {"modelReference": "r:5(mcp.study.loans.migration)", "json":
+                    {"concept": "jetbrains.mps.lang.migration.structure.MigrationScript"}})
+            + write("m5", "mps_mcp_insert_root_node_from_json", {"modelReference": "r:5(mcp.study.loans.migration)",
+                                                                 "json": pure}, REJECTED)
+            + write("c1", "mps_mcp_update_node", {"operation": "SET", "kind": "CHILD", "childNodeRef": "r:5(x.migration)/6",
+                                                  "childJson": check_member})
+            + write("c2", "mps_mcp_parse_java_and_insert", {"parameters": {"code": "problems.add(new MigrateManually(t, n));",
+                                                                           "featureKind": "STATEMENTS"}})
+            + write("c3", "mps_mcp_parse_java_and_insert", {"parameters": json.dumps(
+                {"code": "((jetbrains.mps.smodel.SNode) a).setId(b.getNodeId());", "featureKind": "STATEMENTS"})})
+            + write("v1", "mps_mcp_update_module", {"moduleName": "mcp.study.loans", "operation": "SYNC_VERSION"},
+                    ok({"changed": True, "runtimeStale": True}))
+            + call("v2", "mps_mcp_alter_nodes", "MAKE", {"modules": ["mcp.study.loans"], "rebuild": True})
+            + write("r1", "mps_mcp_run_migrations", {})
+            + write("r2", "mps_mcp_run_migrations", {"operation": "CHECK", "modules": ["s"]})
+            + write("r3", "mps_mcp_run_migrations", {"operation": "APPLY"}, ok({"status": "FINISHED_WITH_ERRORS"}))
+            + write("r4", "mps_mcp_run_migrations", {"operation": "APPLY"}, ok({"status": "NOTHING_TO_DO"}))
+            # console: a writing blueprint, a read-only query, writing console code, a dry run
+            + [tool("w2", "Write", {"file_path": "/tmp/move.json", "content": json.dumps(
+                {"concept": "jetbrains.mps.console.base.structure.BLExpression", "children": [{"role": "expression", "nodes": [
+                    {"concept": "jetbrains.mps.baseLanguage.collections.structure.VisitAllOperation"}]}]})}), result("w2", "ok")]
+            + write("k1", "mps_mcp_insert_console_command_from_json", {"json": "/tmp/move.json"})
+            + write("k2", "mps_mcp_run_console_command", {})
+            + write("k3", "mps_mcp_insert_console_command_from_json", {"json": {
+                "concept": "jetbrains.mps.lang.smodel.query.structure.InstancesExpression"}})
+            + write("k4", "mps_mcp_run_console_command", {})
+            + write("k5", "mps_mcp_parse_java_and_insert", {"parameters": {"code": "for (x : y) { x.covered = null; }",
+                                                                           "insert": {"mode": "console"}}})
+            + write("k6", "mps_mcp_run_console_command", {})
+            + write("k7", "mps_mcp_run_console_command", {"dryRun": True})
+            # sandbox edits, queries and a hunt in the migration language
+            + write("s1", "mps_mcp_update_node", {"operation": "SET", "kind": "PROPERTY",
+                                                  "properties": [[sandbox + "/3", "name", "L-9"]]})
+            + call("s2", "mps_mcp_alter_nodes", "MOVE_CHILD", {"childNodeRef": sandbox + "/4", "position": 0})
+            + write("q1", "mps_mcp_query_nodes", {"operation": "FIND_INSTANCES", "parameters": {"conceptRef": "Loan"}})
+            + write("q2", "mps_mcp_print_node", {"nodeReference":
+                    "r:f69c3fa1-0e30-4980-84e2-190ae44e4c3d(jetbrains.mps.lang.migration.runtime.base)/1"})
+            + write("q3", "mps_mcp_get_project_structure", {"startingPoint": "jetbrains.mps.lang.migration.methods"}))
+        path = self.runs / "S25-opus-1-worker.jsonl"
+        path.write_text("".join(json.dumps(e) + "\n" for e in events))
+        self.assertCounts(families.fam(str(path)), MG_publication_probe=1, MG_old_renames=1, MG_tighten_in_place=2,
+                          MG_deprecate_calls=2, MG_structure_deletes=4, MG_virtual_package_writes=1,
+                          MG_substitute_menu_writes=1, MG_substitute_menu_legacy=1, MG_migration_models=1,
+                          MG_pure_scripts=2, MG_class_scripts=1, MG_move_child=1, MG_move_ref=1, MG_move_prop=2,
+                          MG_move_concept=1, MG_check_method_writes=1, MG_migrate_manually_writes=1, MG_set_id_writes=1,
+                          MG_sync_version=1, MG_runtime_stale_hits=1, MG_run_check=2, MG_run_apply=2,
+                          MG_apply_with_errors=1, MG_console_runs=3, MG_console_write_cmds=2,
+                          MG_sandbox_node_writes=3, MG_find_instances=1, MG_mps_migration_dumps=2)
+
+    def test_t37_tightening_needs_a_fixture_role_of_the_runs_scenario(self) -> None:
+        # S28's fixture role `lead` made mandatory in place counts; the same call in a scenario without FIXTURE_ROLES does not
+        events = write("a1", "mps_mcp_alter_structure", {"operation": "UPDATE_CONCEPT_REFERENCE", "parameters": json.dumps(
+            {"conceptRef": "mcp.study.shifts.structure.Roster", "role": "lead", "targetConcept": "Worker", "optional": False})})
+        for scenario, expected in (("S28", 1), ("S4", 0)):
+            path = self.runs / f"{scenario}-opus-1-worker.jsonl"
+            path.write_text("".join(json.dumps(e) + "\n" for e in events))
+            self.assertCounts(families.fam(str(path)), MG_tighten_in_place=expected)
+
+    def test_t37_review_edge_cases(self) -> None:
+        struct, editor = "r:56db(mcp.study.loans.structure)", "r:7(mcp.study.loans.editor)"
+        default_type = [{"role": "type", "nodes": [{"concept": "jetbrains.mps.lang.editor.structure.MenuTypeDefault"}]}]
+        events = (
+            # probes: a moduleKind dump and readOnly are not probes, a Bash grep for a build script is; a rejected
+            # alter_structure does not end the window, an intention on a structure node does
+            write("p1", "mps_mcp_get_project_structure", {"moduleKind": "Language"})
+            + write("p2", "mps_mcp_print_node", {"nodeReference": NODE, "readOnly": True})
+            + [tool("p3", "Bash", {"command": "grep -rl BuildMps_Language /p"}), result("p3", "")]
+            + write("p4", "mps_mcp_alter_structure", {"operation": "RENAME_CONCEPT_PROPERTY", "parameters": "{}"}, REJECTED)
+            + write("p5", "mps_mcp_get_project_structure", {})
+            + write("p6", "mps_mcp_apply_intention", {"nodeReference": struct + "/1", "intentionId": "a.AddDeprecatedAnnotation_Intention"})
+            + write("p7", "mps_mcp_get_project_structure", {})
+            # menus: short name counts, an accepted legacy menu is legacy only
+            + write("m1", "mps_mcp_insert_root_node_from_json", {"modelReference": editor, "json": json.dumps(
+                {"concept": "SubstituteMenu", "children": default_type})})
+            + write("m2", "mps_mcp_insert_root_node_from_json", {"modelReference": editor, "json": json.dumps(
+                {"concept": "jetbrains.mps.lang.editor.structure.SubstituteMenu_Default", "children": default_type})})
+            # virtual packages: string-form childJson on a structure node and CREATE_CONCEPTS count, an editor root does not
+            + write("v1", "mps_mcp_update_root_node_from_json", {"operation": "UPDATE", "nodeReference": struct + "/4", "json": json.dumps(
+                {"concept": "ConceptDeclaration", "properties": [{"name": "virtualPackage", "value": "deprecated"}]})})
+            + write("v2", "mps_mcp_insert_root_node_from_json", {"modelReference": editor, "json": json.dumps(
+                {"concept": "SubstituteMenu", "properties": [{"name": "virtualPackage", "value": "x"}]})})
+            + write("v3", "mps_mcp_alter_structure", {"operation": "CREATE_CONCEPTS", "parameters": json.dumps(
+                {"structureModelRef": struct, "conceptsJson": [{"name": "T", "virtualPackage": "deprecated"}]})})
+            # scripts: create_root_node by conceptReference, an Enhancement Script is no class script, MoveConceptMember
+            # is no MoveConcept, a dict `parameters` is not counted twice
+            + write("s1", "mps_mcp_create_root_node", {"modelReference": "r:5(x.migration)",
+                    "conceptReference": "c:90746344-04fd-4286-97d5-b46ae6a81709/7431903976166443707"})
+            + write("s2", "mps_mcp_insert_root_node_from_json", {"modelReference": "r:6(x.scripts)", "json": json.dumps(
+                {"concept": "jetbrains.mps.lang.script.structure.MigrationScript"})})
+            + write("s3", "mps_mcp_update_node", {"operation": "ADD", "kind": "CHILD", "nodeReference": "r:5(x.migration)/1",
+                    "childRole": "specialization", "childJson": {"concept": "MoveConceptMember"}})
+            + write("s4", "mps_mcp_update_node", {"operation": "ADD", "kind": "CHILD", "nodeReference": "r:5(x.migration)/1",
+                    "parameters": {"childJson": {"concept": "MoveProperty"}}})
+            # deletes and setId: a dry-run delete and setIdentifier do not count
+            + write("x1", "mps_mcp_update_node", {"operation": "SET", "kind": "CHILD", "childNodeRef": struct + "/8", "dryRun": True})
+            + write("x2", "mps_mcp_parse_java_and_insert", {"parameters": {"code": "n.setIdentifier(i);"}})
+            # console: a rejected insert keeps the writing command, a dry-run insert is ignored, a recall resets it
+            + write("k1", "mps_mcp_insert_console_command_from_json", {"json": {"concept": "VisitAllOperation"}})
+            + write("k2", "mps_mcp_insert_console_command_from_json", {"json": {"concept": "InstancesExpression"}}, REJECTED)
+            + write("k3", "mps_mcp_insert_console_command_from_json", {"json": {"concept": "InstancesExpression"}, "dryRun": True})
+            + write("k4", "mps_mcp_run_console_command", {})
+            + write("k5", "mps_mcp_recall_console_command", {"historyNodeReference": "r:1/2"})
+            + write("k6", "mps_mcp_run_console_command", {})
+            # console Java: a local initializer is not a write, an SNode API call and a member assignment are
+            + write("k7", "mps_mcp_parse_java_and_insert", {"parameters": {"code": "int n = x.size();", "insert": {"mode": "console"}}})
+            + write("k8", "mps_mcp_run_console_command", {})
+            + write("k9", "mps_mcp_parse_java_and_insert", {"parameters": {"code": "s.setProperty(p, null);", "insert": {"mode": "console"}}})
+            + write("ka", "mps_mcp_run_console_command", {})
+            + write("kb", "mps_mcp_parse_java_and_insert", {"parameters": {"code": "it.lead = it.crew.first;", "insert": {"mode": "console"}}})
+            + write("kc", "mps_mcp_run_console_command", {}))
+        self.assertCounts(self.count(events), MG_publication_probe=1, MG_substitute_menu_writes=1,
+                          MG_substitute_menu_legacy=1, MG_virtual_package_writes=2, MG_pure_scripts=1, MG_class_scripts=0,
+                          MG_move_concept=0, MG_move_prop=1, MG_structure_deletes=0, MG_set_id_writes=0,
+                          MG_console_runs=5, MG_console_write_cmds=3, MG_deprecate_calls=1)
+
+    def test_t37_s29_shares_s25_roles_and_snapshotted_blueprints_are_read(self) -> None:
+        events = (write("a1", "mps_mcp_alter_structure", {"operation": "UPDATE_CONCEPT_REFERENCE", "parameters": json.dumps(
+            {"conceptRef": "mcp.study.loans.structure.Loan", "role": "borrower", "targetConcept": "Member", "optional": False})})
+            + write("m1", "mps_mcp_insert_root_node_from_json", {"modelReference": "r:5(x.migration)",
+                                                                 "json": "/gone/tmp/pms.json"}))
+        (self.runs / "S29-opus-1-blueprints").mkdir()
+        (self.runs / "S29-opus-1-blueprints" / "pms.json").write_text(json.dumps(
+            {"concept": "PureMigrationScript", "children": [{"role": "part", "nodes": [{"concept": "MoveReferenceLink"}]}]}))
+        path = self.runs / "S29-opus-1-worker.jsonl"
+        path.write_text("".join(json.dumps(e) + "\n" for e in events))
+        self.assertCounts(families.fam(str(path)), MG_tighten_in_place=1, MG_pure_scripts=1, MG_move_ref=1)
 
     def test_a16_adhoc_python_counts_inline_code_after_switches(self) -> None:
         inline = ["python3 -c 'print(1)'", "python3 -I -c 'import json'", "python3 -I - <<'PY'\nprint(1)\nPY",
@@ -870,5 +1120,41 @@ class StudyTranscriptsA9Test(unittest.TestCase):
         self.assertEqual(expected, {rid: moved[rid] for rid in expected})
 
 
+class StudyTranscriptsS25S29Test(unittest.TestCase):
+    """The MG_* columns on the 2026-10-31 rehearsal (archive/runs/s25-s29), as its evaluators read the runs."""
+    RUNS = STUDY_RUNS / "archive" / "runs" / "s25-s29"
+
+    def setUp(self) -> None:
+        if not self.RUNS.is_dir():
+            self.skipTest(f"{self.RUNS} not present")
+        self.rows = {rid: f for _, rid, f in families.rows([str(self.RUNS)])}
+
+    def test_published_cells_keep_and_replace(self) -> None:
+        f = self.rows["S25-opus-1"]
+        self.assertEqual((2, 0, 0, 1, 1, 1, 0), (f["MG_deprecate_calls"], f["MG_structure_deletes"],
+                         f["MG_tighten_in_place"], f["MG_pure_scripts"], f["MG_move_child"], f["MG_move_ref"],
+                         f["MG_console_runs"]))
+        f = self.rows["S26-opus-1"]
+        self.assertEqual((1, 2, 1, 1, 0), (f["MG_move_concept"], f["MG_move_prop"], f["MG_substitute_menu_writes"],
+                                           f["MG_virtual_package_writes"], f["MG_substitute_menu_legacy"]))
+        f = self.rows["S27-opus-1"]
+        self.assertEqual((1, 0, 1, 1), (f["MG_class_scripts"], f["MG_pure_scripts"], f["MG_check_method_writes"],
+                                        f["MG_apply_with_errors"]))
+
+    def test_local_cell_uses_the_console_and_no_migration(self) -> None:
+        f = self.rows["S28-opus-1"]
+        self.assertEqual((2, 2, 2, 1, 0, 0, 0), (f["MG_console_runs"], f["MG_console_write_cmds"],
+                         f["MG_structure_deletes"], f["MG_tighten_in_place"], f["MG_migration_models"],
+                         f["MG_run_apply"], f["MG_sandbox_node_writes"]))
+
+    def test_unknown_status_cell_takes_the_published_route(self) -> None:
+        f = self.rows["S29-opus-1"]
+        self.assertEqual((1, 0, 1, 1), (f["MG_deprecate_calls"], f["MG_tighten_in_place"], f["MG_move_ref"],
+                                        f["MG_run_apply"]))
+        # its first step was a plain project dump, which is orientation, not a search for a build script
+        self.assertEqual([0] * 5, [self.rows[r]["MG_publication_probe"] for r in sorted(self.rows)])
+
+
 if __name__ == "__main__":
     unittest.main()
+

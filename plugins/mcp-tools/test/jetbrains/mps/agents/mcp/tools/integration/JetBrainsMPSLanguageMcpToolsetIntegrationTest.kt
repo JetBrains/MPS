@@ -76,8 +76,12 @@ class JetBrainsMPSLanguageMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         val concept = payloadArrayFromOkData(response).single().asJsonObject
         assertEquals(
             "shape must carry exactly the projection fields and nothing else",
-            setOf("qualifiedName", "conceptReference", "isAbstract", "isRootable", "properties", "references", "children"),
+            setOf("qualifiedName", "conceptReference", "sourceNode", "isAbstract", "isRootable", "properties", "references", "children"),
             concept.keySet(),
+        )
+        assertTrue(
+            "the concept's sourceNode is the structure-model node ref a rule's applicableConcept takes: $concept",
+            concept.get("sourceNode").asString.startsWith("r:"),
         )
         assertEquals(
             "jetbrains.mps.lang.structure.structure.ConceptDeclaration",
@@ -87,17 +91,18 @@ class JetBrainsMPSLanguageMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         assertTrue("ConceptDeclaration must expose properties in the shape: $concept", properties.isNotEmpty())
         for (property in properties) {
             assertTrue(
-                "a shape property must be {name, type} (+ enumerationValues/enumerationDefault for an enum); got=$property",
-                property.keySet().all {
-                    it == "name" || it == "type" || it == "enumerationValues" || it == "enumerationDefault"
-                },
+                "a shape property must be {name, type, featureId, sourceNode} (+ enumerationValues/enumerationDefault for an enum); got=$property",
+                property.keySet().containsAll(setOf("name", "type", "featureId", "sourceNode")) &&
+                    property.keySet().all {
+                        it in setOf("name", "type", "featureId", "sourceNode", "enumerationValues", "enumerationDefault")
+                    },
             )
         }
         for (block in listOf("references", "children")) {
             for (link in concept.getAsJsonArray(block).map { it.asJsonObject }) {
                 assertEquals(
-                    "a shape $block entry must be {name, targetConcept, cardinality}; got=$link",
-                    setOf("name", "targetConcept", "cardinality"), link.keySet(),
+                    "a shape $block entry must be {name, targetConcept, cardinality, featureId, sourceNode}; got=$link",
+                    setOf("name", "targetConcept", "cardinality", "featureId", "sourceNode"), link.keySet(),
                 )
             }
         }
@@ -125,6 +130,14 @@ class JetBrainsMPSLanguageMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             )
             assertEquals("$block cardinality must be identical at both detail levels", fullCardinalities, shapeCardinalities)
         }
+        // The ids a PROPERTY/REF macro and an smodel access store must not need a second, full call.
+        for (block in listOf("properties", "references", "children")) {
+            val ids = { o: com.google.gson.JsonObject ->
+                o.getAsJsonArray(block).associate { e -> e.asJsonObject.let { it.get("name").asString to (it.get("featureId").asString to it.get("sourceNode").asString) } }
+            }
+            assertEquals("$block featureId/sourceNode must be identical at both detail levels", ids(full), ids(concept))
+        }
+        assertEquals(full.get("sourceNode").asString, concept.get("sourceNode").asString)
     }
 
     @Test
@@ -363,7 +376,12 @@ class JetBrainsMPSLanguageMcpToolsetIntegrationTest : McpIntegrationTestBase() {
                     "full record must carry the documented blocks and the declared interface: $concept",
                     concept.has("sampleNode") && concept.getAsJsonArray("superInterfaces").any { it.asString.contains("INamedConcept") },
                 )
-                assertEquals("sourceNode is the declaration: $concept", true, concept.get("sourceNode").asString.startsWith("r:"))
+            }
+            assertEquals("detail=$detail: sourceNode is the declaration: $concept", true, concept.get("sourceNode").asString.startsWith("r:"))
+            val initial = concept.getAsJsonArray("properties").map { it.asJsonObject }.single { it.get("name").asString == "initial" }
+            for (entry in listOf(initial, child)) {
+                assertTrue("detail=$detail: a declared feature carries its ids: $entry",
+                    entry.get("featureId").asString.isNotBlank() && entry.get("sourceNode").asString.startsWith("r:"))
             }
         }
     }

@@ -48,7 +48,7 @@ In the generated `build.xml` this becomes an Ant property. The user runs `ant -D
 
 ### `BuildVariableMacro` (Var macro)
 
-Holds a computed string. Has one `value` child (a `BuildVariableMacroInit*`).
+Holds a computed string. Has one optional `initialValue` child (a `BuildVariableMacroInit*`).
 
 | Initializer | What it does |
 |---|---|
@@ -62,7 +62,7 @@ Holds a computed string. Has one `value` child (a `BuildVariableMacroInit*`).
   "concept": "jetbrains.mps.build.structure.BuildVariableMacro",
   "properties": [{ "name": "name", "value": "version" }],
   "children": [{
-    "role": "value",
+    "role": "initialValue",
     "nodes": [{
       "concept": "jetbrains.mps.build.structure.BuildVariableMacroInitWithString",
       "children": [{

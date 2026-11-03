@@ -39,7 +39,7 @@ path?" is itself behind the same selector (see *What the platform already has*, 
 
 ## Measured cost
 
-From `study/HOTSPOT_REPORT_round3.md` (round 3 of the MPS agent-workflow study; two measured worker
+From `study/reports/hotspot/round-03.md` (round 3 of the MPS agent-workflow study; two measured worker
 cells, S1 greenfield and S3 bulk, plus an observer session):
 
 | Observation | Source |
@@ -65,7 +65,7 @@ Round 3 captured two independent counts of the same activity:
 
 The two differ by exactly 2 and 1 — the three rejections above. A call rejected before dispatch is
 counted by the client and never seen by the listener, which is the expected signature of a
-pre-dispatch rejection (`HOTSPOT_REPORT_round3.md` §5).
+pre-dispatch rejection (`reports/hotspot/round-03.md` §5).
 
 The refinement that makes this attribution sound, rather than merely arithmetically consistent, is
 the listener's own contract. `McpCallLogListener.kt:30-32` documents it:
@@ -228,7 +228,7 @@ start. MPS has exactly one such tool, and the mitigation below shows that one re
 call is enough to remove the whole cost.
 
 Filing artefacts, if wanted: the two transcripts are `S1-sonnet-1:11-13` and the round-3 observer
-session; the `server_calls`/`mps_calls` cross-check is `HOTSPOT_REPORT_round3.md` §5; the call-log
+session; the `server_calls`/`mps_calls` cross-check is `reports/hotspot/round-03.md` §5; the call-log
 mechanism is `McpCallLogListener` (`-Dmps.mcp.calllog=<file>`, off by default) and is described in
 [`skill-script-automation-study.md`](skill-script-automation-study.md) §4.1.
 
@@ -266,10 +266,10 @@ hedge be deleted.
 
 ## Bookkeeping
 
-- Study defect **D18** (`study/docs-defects.md`) tracks the symptom; this document is the
+- Study defect **D18** (`study/instructions/defects.md`) tracks the symptom; this document is the
   write-up it points at.
 - Round-2 remedy **N3b** first proposed the upstream investigation
-  (`study/HOTSPOT_REPORT_round2.md:225`); this document discharges it.
+  (`study/reports/hotspot/round-02.md:225`); this document discharges it.
 - A round-4 re-measure is the only way to show the remaining cost after M3a, and would also
   quantify what an upstream fix would save: the expected signature is the
   `server_calls`/`mps_calls` gap closing to zero.

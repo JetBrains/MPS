@@ -13,7 +13,8 @@ Exactly one `BuildLayout` node whose `children` are layout entries. Layout entri
 | `BuildLayout_File` (`28jJK3`) | Copies a source file into this location |
 | `BuildLayout_ImportContent` (`3ygNvl`) | Inlines the contents of another layout node referenced by id |
 | `BuildLayout_CopyOfContainer` (`3_I8Xc`) | Includes the *container itself* (folder/jar) from another location |
-| `BuildMpsLayout_ModuleJar` / `Saw0i` | Compiled Java classes of a declared `BuildMps_AbstractModule` or `BuildSource_JavaModule` |
+| `BuildLayout_CompileOutputOf` | Compiled classes of a declared `BuildSource_CompilablePart` — a `BuildSource_JavaModule` or an MPS `BuildMps_Module` (reference `module`) |
+| `BuildMpsLayout_ModuleJars` | The jar(s) of a declared `BuildMps_AbstractModule` (reference `module`) |
 | `BuildMpsLayout_Plugin` | A declared `BuildMps_IdeaPlugin`, see `references/idea-plugins.md` |
 | `BuildLayout_IdeaPlugin` | Standalone IDEA-plugin layout (independent of `BuildMps_IdeaPlugin`) |
 | `BuildLayout_Fileset` (`2HvfSZ`) | Generic file inclusion via a path + selectors |
@@ -60,7 +61,7 @@ Exactly one `BuildLayout` node whose `children` are layout entries. Layout entri
       "children": [
         { "role": "containerName", "nodes": [ /* "mylib.jar" */ ] },
         { "role": "children", "nodes": [{
-          "concept": "jetbrains.mps.build.structure.BuildMpsLayout_ModuleJar",
+          "concept": "jetbrains.mps.build.structure.BuildLayout_CompileOutputOf",
           "references": [{ "role": "module", "target": "module-A" }]
         }]}
       ]

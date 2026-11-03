@@ -6,8 +6,7 @@ Operations come as `*Operation` concepts sitting in the `operation` role of a `D
 |----------------------------------------------------------------------------|---|---|---|
 | `seq.where{it=>P}`                                                         | `WhereOperation` | ✓ | `sequence<T>` |
 | `seq.select{it=>E}`                                                        | `SelectOperation` | ✓ | `sequence<U>` |
-| `seq.selectMany{it=>Es}`                                                   | `SelectManyOperation` | ✓ | `sequence<U>` |
-| `seq.translate{it=>yield..}`                                               | `TranslateOperation` | ✓ | `sequence<U>` (yields) |
+| `seq.selectMany{it=>Es}` (alias of `translate`; closure returns a sequence or `yield`s) | `TranslateOperation` | ✓ | `sequence<U>` |
 | `seq.ofType<C>`                                                            | `OfTypeOperation` | ✓ | `sequence<C>` |
 | `seq.ofConcept<C>`                                                     | `OfConceptOperation` | ✓ | `sequence<C>` |
 | `seq.take(n)` / `.skip(n)` / `.tail(n)` / `.cut(n)` / `.page(a,b)`         | `TakeOperation` etc. | ✓ | `sequence<T>` |

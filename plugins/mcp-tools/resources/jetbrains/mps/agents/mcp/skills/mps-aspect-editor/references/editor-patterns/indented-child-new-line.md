@@ -3,8 +3,10 @@
 ```json
 {
   "concept": "jetbrains.mps.lang.editor.structure.CellModel_RefNode",
+  "references": [
+    { "role": "relationDeclaration", "target": "<child link>" }
+  ],
   "children": [
-    { "role": "relationDeclaration", "target": "<child link>" },
     { "role": "styleItem", "nodes": [
         { "concept": "jetbrains.mps.lang.editor.structure.IndentLayoutOnNewLineStyleClassItem", "properties": [{ "name": "flag", "value": "true" }] },
         { "concept": "jetbrains.mps.lang.editor.structure.IndentLayoutIndentStyleClassItem",   "properties": [{ "name": "flag", "value": "true" }] }

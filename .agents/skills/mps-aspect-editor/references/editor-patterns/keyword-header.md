@@ -5,7 +5,7 @@ ConceptEditorDeclaration
   cellModel: CellModel_Collection
     cellLayout: CellLayout_Indent
     childCellModel: CellModel_Constant  text="keyword"
-      styleItem: [Keyword style class]
+      parentStyleClass → KeyWord   (or styleItem: ApplyStyleClass { target: StyleReference { style → KeyWord } })
     childCellModel: CellModel_Property
       relationDeclaration → name property
 ```

@@ -2,7 +2,7 @@
 
 Status: plan, draft 3 (2026-09-30). Reviewed twice. Each round was "approve with changes" (12 findings, then 9), and every finding is folded in below (see "Review log" at the end). Nothing is implemented.
 
-## The defect (from `study/docs-defects.md`)
+## The defect (from `study/instructions/defects.md`)
 
 A reference whose target is the wrong kind of node (`CellModel_RefNode.relationDeclaration` → a `ConceptDeclaration` instead of a `LinkDeclaration`) passes the dry run and the write with `fixReferences` 0/0/0. It fails only at MAKE ("ConceptDeclaration is not a subconcept of LinkDeclaration"). The filed remedy is **S**: "check a reference target's concept against the link's declared target concept on insert and dry run (the child-side check exists since D51/D52); return the link declaration's node ref from `UPDATE_CONCEPT_CHILD`".
 
@@ -192,7 +192,7 @@ Loop: a scratch suite (a clone of `McpToolsIntegrationTestSuite` with the new cl
 
 ## Coordination
 
-D63 is committed (`e46966c780e9`). When draft 2 was written, the tree held only `study/docs-defects.md` (the D86 rows) and `test/…/NodeFactoryOnBlueprintPathIntegrationTest.kt` modified, the latter by another session. This plan does not touch that test. Re-check `git status` before starting, stage only this change's hunks, and re-diff shared files (`AbstractNodeOps.kt`, the skill files) if another session commits first. The D86 row already points here; on implementation, set its status to fixed and archive it as usual.
+D63 is committed (`e46966c780e9`). When draft 2 was written, the tree held only `study/instructions/defects.md` (the D86 rows) and `test/…/NodeFactoryOnBlueprintPathIntegrationTest.kt` modified, the latter by another session. This plan does not touch that test. Re-check `git status` before starting, stage only this change's hunks, and re-diff shared files (`AbstractNodeOps.kt`, the skill files) if another session commits first. The D86 row already points here; on implementation, set its status to fixed and archive it as usual.
 
 ## Review log
 

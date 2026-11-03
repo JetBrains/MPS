@@ -1,7 +1,7 @@
 # Plan: skill reference navigation (D50)
 
 Status: M-0 implemented (2026-09-25); D-1..D-4 not started. Defect record: D50 in
-`study/docs-defects.md`. Prior work this builds on: D44 (per-section split, archived;
+`study/instructions/defects.md`. Prior work this builds on: D44 (per-section split, archived;
 `docs/d44-split-skill-references-task-list.md`) and the H7 attribution agenda
 (`docs/skill-reading-context-investigation-plan.md`).
 

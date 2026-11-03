@@ -38,8 +38,8 @@ In that single call the tool:
 So right after creation you can start adding rules to the `main` `MappingConfiguration` (see the role table below) — no manual model or descriptor wiring needed.
 
 Notes:
-- A language created with `withGenerator = true` already owns a generator at `<lang>/generator`. Call this tool only to give a generator-less language one, or to add an *additional* generator at a different path.
-- `directory` is optional at the protocol level. An existing **empty** directory at the target (common as project scaffolding) is reused; only a **non-empty** directory or a non-directory file is rejected. (Older guidance that `directory` must always be passed — even as `""` — is obsolete.)
+- A language created with `withGenerator = true` already owns a generator at `<lang>/generator`; that call's answer lists it under `data.generators` with its `templates@generator` model. Call this tool only to give a generator-less language one, or to add an *additional* generator at a different path.
+- `directory` is optional at the protocol level. An existing **empty** directory at the target (common as project scaffolding) is reused; only a **non-empty** directory or a non-directory file is rejected.
 
 ### When a model-to-model generator is not the right tool
 
@@ -80,7 +80,7 @@ The `.mpl` serializes it with the `generate-into` scope, here for an XML-emittin
 </dependency>
 ```
 
-This tells MPS: "the generator of this language produces nodes in this language", so the target's runtime modules reach the compile path of every model written in the source language. One BaseLanguage target also covers what BaseLanguage itself generates into, but a BaseLanguage extension the templates emit directly (`collections`, `closures`) is a separate target. Languages used only in macro queries are not targets. `Extends` is no substitute: it contributes only the extended language's own runtime modules, not what that language generates into. A language that extends its output language may therefore get no warning, but declare the Generation Target anyway.
+This tells MPS: "the generator of this language produces nodes in this language", so the target's runtime modules reach the compile path of every model written in the source language. One BaseLanguage target also covers what BaseLanguage itself generates into, but a BaseLanguage extension the templates emit directly (`collections`, `closures`) is a separate target. Languages used only in macro queries are not targets. `Extends` is no substitute: it contributes only the extended language's own runtime modules, not what that language generates into. A language that both extends and generates into a language X keeps getting the warning below, naming X, even after declaring X — a core quirk: the language's runtime set skips X's targets because X is already counted as extended. Declare X's targets (e.g. `jetbrains.mps.baseLanguage`) as Generation Targets of the language too, and the warning clears.
 
 A missing target does not fail MAKE. The module check (`mps_mcp_check_root_node_problems` on the language) reports a warning **on the generator**: `'<language>' must specify the language '<target>' as a generation target to include its runtime modules into compilation`. Before the language's first MAKE the warning shows even when the target is declared; once the language has been made, a re-check after the ADD should clear it (if not, MAKE the language and re-check).
 
@@ -101,7 +101,7 @@ If you add `jetbrains.mps.devkit.templates`, most generator authoring languages 
 
 **Rule of thumb:** a concept used **in a template body** (output) must be importable by the *model*; a class referenced from a generated Java helper must be reachable via the *module* classpath.
 
-> **Do not add the *source* language as a used-language on the generator's `templates@generator` model.** Source-concept references in macro bodies and `applicableConcept` resolve via the generator's **model dependencies**, not via used-languages. Adding the source language as a used-language causes misleading `Can't find language: <source-lang>` errors as soon as that language becomes unloadable (e.g. during a rebuild or while the language module is being regenerated).
+> **Do not add the *source* language as a used-language on the generator's `templates@generator` model.** Source-concept references in macro bodies and `applicableConcept` resolve via the generator's **model dependencies**, not via used-languages: import the language's structure model with `mps_mcp_model_dependency` (a new generator's template model does not import it). Adding the source language as a used-language causes misleading `Can't find language: <source-lang>` errors as soon as that language becomes unloadable (e.g. during a rebuild or while the language module is being regenerated).
 
 ## MappingConfiguration child roles
 
@@ -113,7 +113,7 @@ The **`MappingConfiguration`** is the generator's top-level root. It hosts the r
 | `reductionMappingRule` | `Reduction_MappingRule` | Replace any occurrence of a source node pattern with a template |
 | `weavingMappingRule` | `Weaving_MappingRule` | Inject generated nodes into an existing target node |
 | `patternReductionRule` | `PatternReduction_MappingRule` | Advanced — match by pattern rather than concept |
-| `createRootRule` | `CreateRootRule` | Produce a brand-new root in the target model |
+| `createRootRule` | `CreateRootRule` | Produce a brand-new root with no input (ref `templateNode` → the root template, optional `conditionFunction`, ref `label`); the template has no `node`, so its loops start from `genContext.inputModel.roots(C)` |
 | `dropRootRule` | `DropRootRule` | Exclude a source root from the output |
 | `dropAttrubuteRule` | `DropAttributeRule` | Remove an attribute in output (note: MPS keeps the historical typo "Attrubute") |
 | `referenceReductionRule` | `ReferenceReductionRule` | Rewrite references without rewriting node |
@@ -136,3 +136,5 @@ This property is typed `Options_DefaultTrue` with enum literals `default_`/`true
 - `true_` (`keepSourceRoot = true`) — the source root **persists**: in addition to the rule's output, the source root is copied into the output and may be matched by other rules.
 
 Subtlety: if the rule body dismisses itself via `DismissTopMappingRuleException`, a consumed root is restored by copying, so dismissal does not leave the output short a root.
+
+An input root that no `Root_MappingRule` consumes (none applies, or `keepSourceRoot`) is copied into the output unless a `DropRootRule` matches it — add one (with the opposite condition) for roots that must produce nothing.

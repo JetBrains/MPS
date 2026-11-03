@@ -24,7 +24,7 @@ Read this when: a single macro must replace the input node, build output imperat
 | `postMapperFunction` (opt) | `MapSrcMacro_PostMapperFunction` | `void` | `node`, `genContext`, `outputNode` | Runs after the sub-tree has been generated; mutates the produced `outputNode` in place. |
 | `mappingLabel` (ref, opt) | — | — | — | Register the output under a `MappingLabelDeclaration`, like a label-writer does for whole rules. |
 
-At least one of the four must be meaningful — otherwise `$MAP_SRC$` is a no-op.
+At least one of the four must be meaningful — otherwise `$MAP_SRC$` is a no-op. When `sourceNodeQuery` returns `null`, the wrapped template node produces nothing — an optional child (`node.footer`) can drive a statement without an `$IF$`.
 
 ## Example 1 — replace the input (sourceNodeQuery only)
 

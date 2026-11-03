@@ -1,6 +1,6 @@
 # How mcp-tools handles built and unbuilt languages (overview)
 
-Companion to `d112-language-readiness-plan.md` (the design) and `d112-review-tour.md` (the diff tour).
+Companion to `d112-review-tour.md` (the diff tour).
 
 ## The problem in one paragraph
 
@@ -109,4 +109,4 @@ classifier.
 
 - `mps-language-analysis/references/language-readiness.md` (skill text an agent reads; propagated to
   `.agents/skills` and `.claude/skills`), `response-envelope.md` for the `LANGUAGE_NOT_BUILT` contract.
-- Study row D112 in `study/docs-defects.md` for the symptom history; re-measure of S8, S1, S2 is outstanding.
+- Study row D112 in `study/instructions/defects.md` for the symptom history; re-measure of S8, S1, S2 is outstanding.

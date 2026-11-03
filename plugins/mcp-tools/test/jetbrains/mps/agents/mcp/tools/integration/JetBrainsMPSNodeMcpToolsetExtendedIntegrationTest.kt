@@ -2546,6 +2546,44 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
     }
 
     @Test
+    fun `check_root_node_problems drops an error that an ancestor SuppressErrorsAnnotation suppresses`() {
+        // E1/E2 editor-dynamics runs: an EditorTestCase `result` with an empty mandatory operand checked
+        // unclean although MPS suppresses it; the checker ignored ISuppressErrors.
+        val host = createInfoHost("Suppressed", "public int n = true;")
+        val before = okEnvelope(runTool(toolset) { it.mps_mcp_check_root_node_problems(host.rootRef) })
+        assertTrue("the type error must be reported without a suppressor: $before", before.get("data").let { !it.isJsonPrimitive })
+
+        okEnvelope(runTool(toolset) {
+            it.mps_mcp_update_node(
+                NodeUpdateOperation.ADD, NodeUpdateKind.CHILD, nodeReference = host.rootRef, childRole = "smodelAttribute",
+                childJson = """{"concept": "jetbrains.mps.lang.core.structure.SuppressErrorsAnnotation"}""",
+            )
+        })
+
+        val after = okEnvelope(runTool(toolset) { it.mps_mcp_check_root_node_problems(host.rootRef) })
+        assertEquals("no problems found", verdictOf(after))
+        val model = okEnvelope(runTool(toolset) { it.mps_mcp_check_root_node_problems(modelRefOf(host.model)) })
+        assertEquals("no problems found", verdictOf(model))
+    }
+
+    @Test
+    fun `check_root_node_problems keeps the errors that a lang test has-error container expects`() {
+        // lang.test's NodeOperationsContainer is an ISuppressErrors; like lang.test's TestsErrorsChecker, the check
+        // ignores it, so an agent can still see that the annotated node has the error its test asserts. With an
+        // attribute on the root, this is also the control that the typesystem checker still reports there.
+        val host = createInfoHost("ExpectedError", "public int n = true;")
+        okEnvelope(runTool(toolset) {
+            it.mps_mcp_update_node(
+                NodeUpdateOperation.ADD, NodeUpdateKind.CHILD, nodeReference = host.rootRef, childRole = "smodelAttribute",
+                childJson = """{"concept": "jetbrains.mps.lang.test.structure.NodeOperationsContainer", "children": [
+                    {"role": "nodeOperations", "nodes": [{"concept": "jetbrains.mps.lang.test.structure.NodeErrorCheckOperation"}]}]}""",
+            )
+        })
+        val after = okEnvelope(runTool(toolset) { it.mps_mcp_check_root_node_problems(host.rootRef) })
+        assertTrue("a has-error container must not hide the error it expects: $after", !after.get("data").isJsonPrimitive)
+    }
+
+    @Test
     fun `check_root_node_problems on an unclean root drops the info-only node from data but keeps the hint even when spilled`() {
         val host = createInfoHost("MixedRoot", "public java.lang.String name; public int n = true;")
 

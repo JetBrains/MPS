@@ -11,7 +11,7 @@ routing in `mps_mcp_module_dependency`, `mps_mcp_generation` PLAN `explicitPlanS
 `mps-aspect-generation-plan` skill (`plugins/mcp-tools/docs/generation-plan-attachment-plan.md`,
 `plugins/mcp-tools/docs/s19-generation-plans-scenario-plan.md`).
 
-Fixture: `recipes-gen.tar.gz` (`../../fixtures/README.md`), the S18 fixture, sha256
+Fixture: `recipes-gen.tar.gz` (`../../instructions/fixtures.md`), the S18 fixture, sha256
 `e9fd62584d0c0358affd82d729662197c1871d6a5a62618d2c421744092a96f3`, top directory `recipes-gen/`.
 Ids pinned from it (re-pin whenever `recipes-misgen` is regenerated): language `mcp.study.recipes`
 `d723428a-5d9b-4750-9dd9-f09f6644bf03`, generator `mcp.study.recipes.generator`

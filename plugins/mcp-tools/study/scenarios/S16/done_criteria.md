@@ -5,7 +5,7 @@ Written 2026-10-23, before the first S16 run, as the cell that measures `mps_mcp
 `PRINT_PROGRAM`: S13's bugs were both readable from the builder text, so the round-40 S13 worker
 fixed them from prints alone (`../../dataflow-exposure-assessment.md`, round 40).
 
-Fixture: `kaja-dataflow-2.tar.gz` (`../../fixtures/README.md`): `kaja-dataflow` with S13's bug A
+Fixture: `kaja-dataflow-2.tar.gz` (`../../instructions/fixtures.md`): `kaja-dataflow` with S13's bug A
 replaced by bug C, built so its `classes_gen` carries bugs B and C. The before state, the fix and the
 after state were checked live on 2026-10-23 (MPS 2026.1, build 261.25134, plugin of `7e141944e64f`),
 with two fix rehearsals, each one `MAKE` of `jetbrains.mps.samples.Kaja`.

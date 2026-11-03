@@ -1,7 +1,7 @@
 ---
 name: mps-aspect-editor-menus-and-keymaps
 description: >-
-  Use when authoring the **non-layout** parts of the MPS editor aspect — what happens when the user types, presses a key, triggers completion, pastes, or invokes a context action. Covers action maps (`CellActionMapDeclaration`), cell keymaps (`CellKeyMapDeclaration`), transformation menus (`TransformationMenu_Default` / `_Named` / `_Contribution`), substitute menus (`SubstituteMenu_Default` / `SubstituteMenu` / contributions), side transforms (LEFT/RIGHT), legacy cell menus, paste wrappers and copy-paste handlers (in the actions language), completion styling, reference presentation, two-step deletion, and the editor selection API. Trigger terms: `actionMap`, `keyMap`, `delete_action_id`, `transformationMenu`, `substituteMenu`, `Ctrl+Space`, `Ctrl+Alt+B`, side transform, paste wrapper, completion styling, `PasteWrappers`, `CopyPasteHandlers`. For the **layout** side (cells, layouts, style sheets) use `mps-aspect-editor` instead.
+  Use when authoring the **non-layout** parts of the MPS editor aspect — what happens when the user types, presses a key, triggers completion, pastes, or invokes a context action. Covers action maps (`CellActionMapDeclaration`), cell keymaps (`CellKeyMapDeclaration`), transformation menus (`TransformationMenu` with a default or named `type`, `TransformationMenuContribution`), substitute menus (`SubstituteMenu` default or named, `SubstituteMenuPart_Action`, contributions), side transforms (LEFT/RIGHT) and when typed text applies an item, which menu a cell consults, operator replacement that keeps operands, legacy cell menus, paste wrappers and copy-paste handlers (in the actions language), completion styling, reference presentation, two-step deletion (`approveDelete`), and the editor selection API. Trigger terms: `actionMap`, `keyMap`, `delete_action_id`, `transformationMenu`, `superconcepts menu`, `substituteMenu`, `Ctrl+Space`, `Ctrl+Alt+B`, side transform, paste wrapper, completion styling, `PasteWrappers`, `CopyPasteHandlers`. For the **layout** side (cells, layouts, style sheets) use `mps-aspect-editor` instead.
 type: reference
 ---
 
@@ -11,80 +11,71 @@ type: reference
 
 Companion names in this skill are lazy dependencies: load only those relevant to the current task. If this skill came from an MCP server, use the host's skill loader to resolve the companion's unique discovered entry URI on the same host-assigned originating server. If the host has no server-backed skill loader, stop and report that limitation; do not silently fall back to a filesystem copy. If this skill came from a filesystem catalog, load the named sibling from that same catalog at `<skills-root>/<skill-name>/SKILL.md`, even if remote skill loaders are also available. Do not invent a tool name or server endpoint.
 
-This skill covers the **non-layout parts** of the MPS editor aspect: everything that controls user interaction (typing, keystrokes, completion, paste, context actions). Most concepts belong to `jetbrains.mps.lang.editor.structure`; paste wrappers / node factories / copy-paste handlers live in `jetbrains.mps.lang.actions.structure`. Roots typically live in `<lang>/languageModels/editor.mps` or `actions.mps`.
-
-**Where these roots go.** Menus / keymaps / action maps live in the **same `editor` aspect model** as the layout cell models — there is no separate aspect ID. Paste wrappers, copy-paste handlers and node factories live in the **`actions` aspect model**. Both aspect IDs (`editor`, `actions`) are case-sensitive and carry no `@` suffix — see [aspect-model-stereotypes.md](references/aspect-model-stereotypes.md).
-
-For the **layout** side (concept editors, cell models, style sheets, editor components) see `mps-mcp-workflow` and `mps-aspect-editor`.
+This skill covers how the editor reacts to typing, keystrokes, completion, paste and context actions. Menus, keymaps and action maps are roots of `jetbrains.mps.lang.editor` in the language's **`editor`** model, next to the concept editors. Paste wrappers, copy-paste handlers and node factories are roots of `jetbrains.mps.lang.actions` in the **`actions`** model. Both aspect ids are case-sensitive, with no `@` suffix: [aspect-model-stereotypes.md](references/aspect-model-stereotypes.md). For cells, layouts and style sheets use `mps-aspect-editor`.
 
 ## Critical Directives
 
-- **Pick the right artefact for the user-visible behaviour.** "Change what `Delete` does" → action map. "Add `Ctrl+Shift+I`" → keymap. "Offer `+` after a number" → side transform in a transformation menu. "Hide / reorder completion" → substitute menu. "Wrap pasted node" → paste wrapper. See `references/landscape.md` for the full mapping.
-- **Author by convention.** Name roots `<Concept>_ActionMap`, `<Concept>_KeyMap`, `<Concept>_TransformationMenu`, `<Concept>_<Position>_SubstituteMenu`, `<Concept>_Factory`, `<Concept>Styling` for automatic discovery. MPS walks the super-concept chain to find them.
-- **Use MPS MCP tools for edits.** `mps_mcp_insert_root_node_from_json`, `mps_mcp_update_node`. Resolve concept names with `mps_mcp_search_concepts` / `mps_mcp_get_concept_details` — never guess concept IDs.
-- **Define a substitute menu before a transformation menu.** The default `BaseConcept_TransformationMenu` already includes the substitute menu; for most "make my concept completable" tasks, only a substitute menu is required.
-- **An empty default substitute menu HIDES the concept from completion.** Either remove it or fill it. See `references/substitute-menus.md` §"Empty default suppresses".
-- **Side-transform items are NOT automatically in `Ctrl+Space`.** Either list `TransformationLocation_Completion` alongside `TransformationLocation_SideTransform`, or add a separate completion section.
-- **Use action maps for `DELETE`/`BACKSPACE` instead of keymaps bound to `VK_DELETE`.** They integrate with two-step deletion and action inheritance.
-- **`TransformationMenu` field name is `conceptDeclaration`, not `applicableConcept`.** Real role names: `sections`, `parts`, `locations`, `textFunction`. Older docs lie.
-- **Contributions must live in a different language from the menu they extend.** `TransformationMenuContribution` / `SubstituteMenu_Contribution` are cross-language only.
-- **Write bodies with `mps-model-manipulation` idioms.** `node.replace with(...)`, `node.parent.<role>.set(...)`, `node.children<X>.add new(...)`. Implicit params: `node`, `editorContext` (+ `model`, `scope`, `operationContext` depending on function kind).
-- After edits run `mps_mcp_check_root_node_problems` and rebuild the language.
-- **Trace missing completion items** with `Ctrl+Alt+B` on the offending item — MPS shows the menu → menu-part → action chain.
+- **Decide whether to write the `EditorTestCase`s first** (`mps-tests`), and print the decision as one line of visible text before your first edit of an editor, actions or test model (right after loading this skill if you already edited other aspects), `Test-first: yes — <reason>` or `Test-first: no — <reason>` (it applies to every behaviour in this skill). It pays off when the behaviour is non-trivial (menus, side transforms, keys, deletion, paste, several interacting items) or only loosely described: a test fixes the description as an exact `before`/`result` tree and caret, and a run that fails before the change, for the reason you expect, is what makes the later green run evidence. Skip it for a trivial change (a label, a style, one obvious item) or when the project setup or the user forbids editor tests; then print the changed roots as PLAIN TEXT, run `mps_mcp_check_root_node_problems`, and say in your report that the behaviour was not exercised in an editor.
+- **Pick the artefact by the behaviour.** Change what `Delete` does → action map. A new shortcut → keymap. Text typed next to a cell → side transform. What Ctrl+Space offers for a slot → substitute menu. A pasted node must change concept → paste wrapper. Table: `references/landscape.md`.
+- **Nothing is found by name.** A `TransformationMenu` / `SubstituteMenu` whose `type` is `MenuTypeDefault` is the default for its `conceptDeclaration`. Named menus, action maps and keymaps act only where a cell references them (`transformationMenu` child, `actionMap` / `keyMap` references) or a menu includes them. The one exception is `everyModel=true` keymaps.
+- **Author menus as `TransformationMenu` / `SubstituteMenu` with a `type` child**: `MenuTypeDefault`, or `MenuTypeNamed` whose `name` property holds the menu name (a root `name` is dropped). `TransformationMenu_Default`/`_Named`, `SubstituteMenu_Default`/`_Named` and `IMenu_Default`/`_Named` are deprecated: never author them.
+- **A default transformation menu replaces the inherited items for each location it has a section for.** Put `superconcepts menu` (`TransformationMenuPart_Super`) once for every location the menu covers, unless you mean to drop the inherited items there. A Completion section without it removes concept replacement on existing nodes. A menu with only side-transform sections keeps completion.
+- **The cell's own node decides.** Side transforms and completion on a cell use the menus of the node owning that cell (its `transformationMenu` first). Attach a menu or map to the cell the caret is on, unless that cell is a child's only visible cell (`references/landscape.md`). The edge cell of a child belongs to the child.
+- **Typing applies an item only on a unique strict match**, i.e. the typed text equals the item's text (or a `can substitute` guard accepts it with `strictly` = true) and nothing else still matches. A prefix applies nothing; the IDE's auto-popup shows the menu, and a test needs `Complete` (`references/side-transforms.md`).
+- **Cells have no `substituteMenu` role.** Reach a named substitute menu through `include substitute menu` in a transformation menu. An empty default substitute menu hides its concept from completion.
+- **Side-transform items are not in Ctrl+Space** unless the section also lists `TransformationLocation_Completion`, or a Completion section includes the menu with `location` set.
+- **Keep data across a replacement with a `NodeFactory`** that reads `sampleNode` (`mps-aspect-actions`). Completion items call it. Hand-written bodies: `new initialized` runs the factory and also pre-fills required children; plain `new` does neither (`references/transformation-menus.md`).
+- **Two-step deletion:** `if (node.approveDelete[in: editorContext, cell: <cellId>]) { return; }` before mutating. The keyword cell needs an `id` (`EditorCellId`). Use action maps, not `VK_DELETE` keymaps, for DELETE / BACKSPACE.
+- **Implicit-parameter concepts differ per function kind** (`node` in a menu ≠ in an action map ≠ in a keymap ≠ in a cell query; paste functions use lang.actions concepts; `pattern` is `QueryFunctionParameter_pattern` in transformation and substitute menus). Take them from the leaf file of the artefact, or from a printed corpus root; write bodies with `mps-model-manipulation` idioms.
+- **Role names:** `conceptDeclaration`, `type`, `sections`, `locations`, `parts`, `textFunction`, `executeFunction`, `canExecuteFunction`. Resolve concepts with `mps_mcp_get_concept_details`, copy shapes from printed corpus roots (`references/real-examples.md`).
+- After edits, run `mps_mcp_check_root_node_problems`, then rebuild the language (`mps_mcp_alter_nodes` MAKE). In a running editor, `Ctrl+Alt+B` on a completion item shows the menu chain that produced it.
 
 ## Common-Path Workflow
 
-For a typical "let the user invoke action X when they do Y" task:
+0. Print the `Test-first:` line of the first Critical Directive.
+1. Pick the artefact and the cell it hangs on (`references/landscape.md`).
+2. Copy the blueprint (`references/json-blueprints.md`), or the shape of a corpus root, and insert it with `mps_mcp_insert_root_node_from_json`.
+3. Wire it: set the cell's `transformationMenu` / `actionMap` / `keyMap`, and give the cells you select or approve an `id`.
+4. Write the bodies; end them with a `select` (`references/selection-and-deletion.md`).
+5. Check, make, and run the tests you decided on (or the check you chose instead); when a test fails, decide whether the editor or the test is wrong before changing either.
 
-1. **Pick the artefact** from the table in `references/landscape.md`.
-2. **Pick the attachment concept.** Roles: `applicableConcept` (action maps, keymaps, copy/paste handlers, paste wrappers source/target); `conceptDeclaration` via `IMenu_Concept` (transformation and substitute menus).
-3. **Name by convention** so MPS discovers the root automatically. Otherwise wire it explicitly from the cell (`actionMap`, `keyMap`, `transformationMenu`, `substituteMenu`, legacy `menu`).
-4. **Draft JSON** using a blueprint from `references/json-blueprints.md`. Use `mps_mcp_insert_root_node_from_json`.
-5. **Write the function body** with smodel + BaseLanguage. For "select the new node afterwards", use the editor selection API (`references/selection-and-deletion.md`).
-6. **Rebuild the language** (`mps_mcp_alter_nodes` MAKE) so the editor sees the new concepts.
-7. **Validate** with `mps_mcp_check_root_node_problems` on every touched root. Common error: unresolved action IDs (`delete_action_id` etc.) or missing imports for shared-concept parameters.
-8. **Test interactively** in a sample model. For side transforms, verify the item also appears in completion (if intended).
-9. **Diagnose missing items** with `Ctrl+Alt+B` on the popup item — that prints the menu chain.
+## Which Menu Fires Where
 
-## Which Menu Fires Where (Quick Reference)
-
-| User action | Menu consulted |
+| User action | What is consulted |
 |---|---|
-| `Ctrl+Space` / typing into a concept-completion cell | Default `SubstituteMenu` for the link's target concept, walking DOWN sub-concepts |
-| Context Assistant pops up | Sections with `TransformationLocation_ContextAssistant` |
-| Context Actions Tool | Sections with `TransformationLocation_ContextActionsTool` |
-| Typing `+` right of a cell | Sections with `TransformationLocation_SideTransform` location, `place.side = RIGHT` |
-| Pressing `Delete` | `CellActionMapDeclaration` item with `actionId = delete_action_id`, else default |
-| Arbitrary keystroke | `CellKeyMapDeclaration` items matching keystroke + caret policy |
-| Copy (Ctrl+C) | `CopyPreProcessor`s for the concept |
-| Paste into incompatible slot | `PasteWrappers`, then `PastePostProcessor`s |
+| Ctrl+Space / typing in an empty slot (`empty_<role>`) | Default substitute menu of the link's target concept (synthesised from sub-concepts if none) |
+| Ctrl+Space / typing on an existing node | The cell's `transformationMenu`, else the node's default transformation menu: Completion sections. Only cells the generator gave completion have it (whole-node selection, child slots, property/reference cells, cells with an attached menu); a plain keyword constant has none (`references/landscape.md`) |
+| Typing at a cell's LEFT/RIGHT edge | Side-transform sections of the same menus |
+| Context Assistant / Context Actions tool | Sections with those locations |
+| Delete / Backspace | Nearest cell up from the caret whose action can execute; DELETE doubles as BACKSPACE |
+| Enter in a list (`Insert`) | Creates the link target's `defaultConcreteConcept`, else the target itself: an abstract target gives a red placeholder. Fix with `defaultConcreteConcept` (`mps-aspect-constraints`) or the list cell's `nodeFactory` (Kaja `CommandList`). Required children of the new node: `references/node-factories-and-triggers.md` in the `mps-aspect-actions` skill root after loading that companion skill from the same origin |
+| Other keystroke | IDE actions first; then keymaps of every cell from the caret up, plus `everyModel` keymaps |
+| Copy / Paste | `CopyPreProcessor` at copy; `PasteWrapper`, insertion, `PastePostProcessor` at paste (processors: exact concept, and a processed node's children are not visited; wrappers: exact `targetConcept`) |
 
 ## Related Skills
 
-- `mps-mcp-workflow` — "MPS Concept Editor Workflow" section: scaffold, componentise, refine. Covers the **layout** side.
-- `mps-aspect-editor` — overall workflow for creating and changing MPS editor definitions; cell models, layout styles, style inheritance.
-- `mps-aspect-actions` — `NodeFactory` initialisation of new nodes (in the actions language, often referenced from menus).
-- `mps-aspect-intentions` — Alt+Enter context actions. Intentions can be surfaced inside a transformation menu via the `intention` adapter.
-- `mps-model-manipulation` — smodel operations used in execute/text/condition bodies; for the edit an execute body performs (`replace with`, `.set(...)`, `add new`) open only `references/property-and-mutation-ops.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin.
-- `mps-baselanguage` — BaseLanguage JSON mechanics.
-- `mps-node-editing`, `mps-mcp-workflow` — concept identification / blueprint hygiene.
+- `mps-aspect-editor` — cells, layouts, style sheets, editor components.
+- `mps-aspect-actions` — `NodeFactory` (`sampleNode`) for nodes created by menus.
+- `mps-aspect-intentions` — Alt+Enter actions, which can appear in a menu through the `intention` adapter.
+- `mps-model-manipulation` — smodel in bodies; for the edit an execute body performs (`replace with`, `.set(...)`, `add new`) open only `references/property-and-mutation-ops.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin.
+- `mps-tests` — `EditorTestCase`; for typing / completion / deletion tests open `references/editor-test-case/menus-deletion-completion.md` in the `mps-tests` skill root after loading that companion skill from the same origin.
+- `mps-node-editing`, `mps-baselanguage` — blueprint mechanics.
 
 ## Reference Index
 
-**Start here — most common case**: if you are not yet sure which artefact to build, read only `references/landscape.md` — its table routes you to the one further file you need (e.g. a keystroke on a cell → `references/keymaps.md`; a completion item → `references/substitute-menus.md`; overriding DELETE/BACKSPACE → `references/action-maps.md`).
+**Start here**: `references/landscape.md` (which artefact, and how a cell finds it), then the one file for that artefact.
 
-- Open `references/landscape.md` when **choosing which artefact to build** — the master table of root concepts, attachment-point roles, file conventions, naming conventions, and the `BaseConcept_TransformationMenu` super-chain rule. Also covers the `TransformationMenu_Default` / `_Named` deprecation note (future merge into `TransformationMenuImpl`).
-- Open `references/action-maps.md` when **overriding standard cell actions** (DELETE, BACKSPACE, SELECT_ALL, LEFT_TRANSFORM, RIGHT_TRANSFORM, …) — `CellActionMapDeclaration` fields, item structure, the `Not_ActionMap` example from Kaja, `BACKSPACE` auto-registration, the keyboard-deletable-annotation pattern (delete a node attribute from its label cell and reselect the host node), importing maps via `CellActionMapImport`/wildcard/by-action-id selectors, import rules (transitive, winner, no cycles, cross-language), `SELECT_ALL` customisation.
-- Open `references/keymaps.md` when **binding arbitrary keystrokes to a cell** — `CellKeyMapDeclaration` fields, `everyModel` flag, `CellKeyMapItem` properties (keystroke, executeFunction, isApplicableFunction, description, caretPolicy, showInPopup, menuAlwaysShown), `CastExpression_KeyMap` template, `modifiers` string syntax (`ctrl alt shift meta`), caret-policy semantics, when to prefer an action map.
-- Open `references/transformation-menus.md` when **adding items to completion / context assistant / context actions tool / side transforms** — section structure with `locations` + `parts`, the four `TransformationLocation_*` types, every menu part concept (`Action`, `Group`, `Super`, `IncludeMenu`, `IncludeSubstituteMenu`, `SubMenu`, `Parameterized`, `WrapSubstituteMenu`, `PropertyMenu`, `ReferenceMenu`, `Placeholder`), adapter parts (`intention`, `refactoring`, `plugin Action`), the `Action` blueprint with `textFunction` / `executeFunction` / `canExecuteFunction` / `features` (description text), parameterised parts with `parameterObject`, groups + variables (with the eager-evaluation gotcha), `TransformationMenuContribution` cross-language extension, cell-level attachment combining legacy `menu` + `transformationMenu`.
-- Open `references/substitute-menus.md` when **controlling what nodes are creatable at an AST position** — default vs named, the five synthesised-default rules (sub-concepts, abstracts filtered, can-be-child, can-be-parent, smart-reference for 1:1), the "empty default suppresses" gotcha, all `SubstituteMenuPart_*` concepts (`AddConcept`, `Concepts`, `Subconcepts`, `Group`, `IncludeMenu`, `Parameterized`, `Action`, `Wrapper`, `ReferenceScope`, `Placeholder`), the `Statement_SubstituteMenu` JSON template, the `Wrapper` example wrapping `Expression` into `ExpressionStatement`.
-- Open `references/side-transforms.md` when **converting `1` typed `+` into `1 + <hole>`** — the right-transform JSON template on `Expression`, LEFT vs RIGHT semantics, the trick to also surface items in `Ctrl+Space` (either combine locations or include the menu from a completion section).
-- Open `references/legacy-cell-menus.md` when **dealing with cells that still have `menu` / `postfixHint` declarations** — property values menu, postfix hints (with the verbatim `splitByCamels` example), primary replace-child / choose-referent, replace-node (custom node concept), generic items, cell menu reference, ref-presentation cell, and the `presentation query in reference constraints` deprecation warning.
-- Open `references/paste-and-copy.md` when **transforming pasted nodes or pre/post-processing copy/paste** — `PasteWrappers` (in actions language) with `sourceConcept`/`targetConcept`/`wrap` function and the `Expression → Statement` example; `CopyPasteHandlers` with `CopyPreProcessor` (mutates `copy`, not `original`) and `PastePostProcessor` (re-resolves references with the `LocalVariableReference` example); triggering order (handlers → wrappers → graft).
-- Open `references/completion-styling.md` when **customising the look or priority of completion items** — `CompletionStyling` selectors (items modifying concept instances vs items creating concept instances), styling attributes (bold/italic/strike/colour/hide/priority), sort order, `ReturnStatementStyling` / `VariableReferencePriority` examples, the global "Use completion styling" toggle.
-- Open `references/reference-presentation.md` when **changing how a reference looks resolved or in completion** — `ref. presentation cell` on `CellModel_RefCell`, `cell menu reference` items, the recommended modern alternative (override the referenced concept's `InlineEditorComponent` or expose a `getPresentation()` behavior method).
-- Open `references/selection-and-deletion.md` when **selecting a node after a mutation or implementing two-step deletion** — the `select` operation syntax (`in:`, `cell:`, `selectionStart`, `selectionEnd`), predefined cell values (`FIRST`, `LAST`, `LAST_EDITABLE`, `MOST_RELEVANT`), the `ApproveDelete_Operation` hook, the "node not already selected / not already approved" conditions, and the rule that custom delete actions must call `node.approveDelete(editorContext)` before mutating.
-- Open `references/json-blueprints.md` when **inserting any of these roots through MCP** — copy-and-edit JSON for action map, keymap, transformation menu (default + side-transform), substitute menu (default + wrapper), paste wrapper, copy-paste handlers, completion styling. Each blueprint has a comment indicating where to inject BaseLanguage statement lists.
-- Open `references/wiring-tables.md` when **understanding the cell-to-aspect wiring** — the cell `menu` / `transformationMenu` / `substituteMenu` / `keyMap` / `actionMap` mapping, when both are combined vs replaced, the name-driven discovery convention.
-- Open `references/real-examples.md` when **studying canonical implementations** — `jetbrains.mps.samples.Kaja` (compact action-map + substitute menu + side-transform + style sheet), `jetbrains.mps.baseLanguage` (editor.mps ≈4 MB; actions.mps with paste wrappers; intentions.mps), with the `mps_mcp_print_node` workflow for cross-checking concept and role names.
-- Open `references/common-failures.md` when **a feature does not work** — concept absent from completion (empty default substitute menu); side transform inserts the character; `Delete` doesn't fire (two-step deletion not approved); keymap item never fires; paste wrapper not triggered; transformation-menu action in completion but not Context Assistant; wrong role name in JSON (`section`/`part`/`location`/`matchingTextFunction`/`applicableConcept`); stale references after refactor (use `FIX_REFERENCES`); contribution defined in same language as the menu.
+- `references/landscape.md` — artefact table, lookup and inheritance rules (including which cells offer node completion at all), cell wiring roles.
+- `references/transformation-menus.md` — root and section shapes, parts, `include menu` (`nodeFunction`, `location`), Action part, groups, contributions, cell attachment.
+- `references/side-transforms.md` — side-transform blueprint, when typing applies an item, child edge cells, all binary operators (`wrap substitute menu`), side transforms in completion.
+- `references/substitute-menus.md` — default vs named, empty default, parts, `SubstituteMenuPart_Action` features, keeping operands on replacement, wrapper.
+- `references/action-maps.md` — action-map index, cell-edge rules.
+- `references/keymaps.md` — `CellKeyMapDeclaration`, `everyModel`, caret policy.
+- `references/selection-and-deletion.md` — `select`, two-step deletion idiom and blueprint.
+- `references/paste-and-copy.md` — order of copy/paste events, lookup rules, wrappers, handlers.
+- `references/legacy-cell-menus.md` — `menuDescriptor` parts on old cells.
+- `references/completion-styling.md` — `CompletionStyling`.
+- `references/reference-presentation.md` — how a reference looks resolved or in completion.
+- `references/json-blueprints.md` — where each blueprint is, insertion workflow.
+- `references/real-examples.md` — BaseLanguage roots to print, how to find menus.
+- `references/common-failures.md` — symptom → cause.

@@ -23,6 +23,7 @@ import org.jetbrains.mps.openapi.model.SModel
 import org.jetbrains.mps.openapi.model.SNode
 import org.jetbrains.mps.openapi.module.SModuleReference
 import org.jetbrains.mps.openapi.module.SModuleId
+import org.jetbrains.mps.openapi.module.SDependencyScope
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -299,6 +300,37 @@ class JetBrainsMPSModelMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         val secondData = parseDataObject(JsonParser.parseString(second).asJsonObject.get("data"))
         assertEquals(0, secondData.get("added").asInt)
         assertEquals(1, secondData.get("alreadyPresent").asInt)
+    }
+
+    @Test
+    fun `add_model_dependency keeps the scope of an existing module dependency`() {
+        // A language importing a structure model of the language it generates into used to see its
+        // Generation Target edge rewritten to Default, which drops the generate-into meaning. Any
+        // declared dependency already makes the model visible, so the edge must stay as it is.
+        val sourceSolution = createSolution("test.dep.scope.src${System.nanoTime()}")
+        val targetSolution = createSolution("test.dep.scope.tgt${System.nanoTime()}")
+        val sourceModel = createModel(sourceSolution, "test.dep.scope.src.model${System.nanoTime()}")
+        val targetModel = createModel(targetSolution, "test.dep.scope.tgt.model${System.nanoTime()}")
+        executeCommand {
+            sourceSolution.moduleDescriptor!!.dependencies.add(
+                jetbrains.mps.project.structure.modules.Dependency(targetSolution.moduleReference, SDependencyScope.DESIGN, false)
+            )
+            sourceSolution.setChanged()
+        }
+
+        val response = runTool(toolset) { it.mps_mcp_model_dependency(modelRefOf(sourceModel), JsonOrText(modelRefOf(targetModel))) }
+        expectOk(response)
+        val warnings = JsonParser.parseString(response).asJsonObject.getAsJsonArray("warnings")?.map { it.asString }.orEmpty()
+        assertTrue("a Design dependency does not load classes, so the answer must say it was kept: $response",
+            warnings.any { it.contains("keeps its Design dependency") })
+
+        readOnRepo {
+            val scopes = sourceSolution.moduleDescriptor!!.dependencies
+                .filter { it.moduleRef.moduleId == targetSolution.moduleReference.moduleId }
+                .map { it.scope }
+            assertEquals("the existing dependency must keep its scope and no second one may be added", listOf(SDependencyScope.DESIGN), scopes)
+            assertTrue((sourceModel as SModelInternal).modelImports.contains(targetModel.reference))
+        }
     }
 
     @Test

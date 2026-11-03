@@ -1,7 +1,7 @@
 # Validation: D56 (`get_concept_details` / `print_node` near-misses)
 
 Status (2026-09-25): options 1 and 2 are done. D56 is closed and archived in
-`study/docs-defects-archive.md`, and the rejection now takes its spellings from
+`study/instructions/defects-archive.md`, and the rejection now takes its spellings from
 `RequiredParameterNearMisses`, adding `concept`, `conceptName` and `conceptNames`. Option 3 (the
 analyzer) and the `search_concepts` note from option 4 are not done. Related archived entries: D27 (the current `get_concept_details`
 rejection wording) and D43 (the shared `RequiredParameterNearMisses` vocabulary).
@@ -128,7 +128,7 @@ calls. It does not compare the `msg` id it already stores on every call record (
   `get_concept_details` retry, `:11`→`:14`, is not recorded at all.
 - Across all rounds, **31 of 107** recorded pairs share one batch [M]. Besides the D56 cases,
   that includes round 10's `search_concepts` `query` pair `S2-sonnet-1:121→122`.
-  `docs-defects.md` ("Not opened from those rounds") reads that pair as "two misses … the model
+  `instructions/defects.md` ("Not opened from those rounds") reads that pair as "two misses … the model
   ignoring a correct message". It was one batch, and `:123` fixed both calls, so that note is
   wrong in the same way.
 
@@ -156,5 +156,5 @@ retry_rate)`), so parallel-batching sonnet runs are over-weighted [I].
    next hotspot report that `retries` is not comparable with earlier rounds.
 4. **Correct the records** once a decision is made: the D56 row (status and the miscounted
    "third instance"), the `search_concepts` `query` note in "Not opened from those rounds", and
-   a pointer from `HOTSPOT_REPORT_round10.md` §3.7 item 1 and `HOTSPOT_REPORT_round11.md` §3.5
+   a pointer from `reports/hotspot/round-10.md` §3.7 item 1 and `reports/hotspot/round-11.md` §3.5
    to this file. The reports are historical, so annotate them rather than rewrite them.

@@ -3,7 +3,7 @@
 ## Inside MPS
 
 - Right-click a `@tests` model or test root → **Run tests**. Results appear in the Run tool window.
-- The default runner spawns a **separate MPS instance** so the test model is loaded against a clean classloader; the run configuration option **"Execute in the same process"** runs in-process (faster but riskier for editor tests).
+- Configs from `mps_mcp_create_run_configuration` (and the gutter) run tests **inside the MPS process** unless a test case sets `canNotRunInProcess` when the configuration is created; then it uses a separate JVM (an older in-process configuration skips that test). In-process, any dialog a test opens appears in the user's MPS and blocks it.
 - For a single `EditorTestCase`/`NodesTestCase` root, right-click the root in the Project view.
 
 ## From the command line / build

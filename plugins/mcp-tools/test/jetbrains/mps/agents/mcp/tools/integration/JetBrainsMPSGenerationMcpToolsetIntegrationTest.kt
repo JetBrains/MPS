@@ -13,6 +13,8 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import jetbrains.mps.generator.CustomGenerationModuleFacet
 import jetbrains.mps.project.Solution
+import jetbrains.mps.project.modules.LanguageProducer
+import jetbrains.mps.smodel.Language
 import jetbrains.mps.smodel.SNodeUtil
 import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory
 import jetbrains.mps.smodel.language.LanguageRegistry
@@ -92,6 +94,26 @@ class JetBrainsMPSGenerationMcpToolsetIntegrationTest : McpIntegrationTestBase()
 
         val byName = expectOk(plan("""{"modelRef":"test.gen.bl"}"""))
         assertEquals("the full name and the modelRef spelling address the same model", modelRefOf(model), byName.get("modelReference").asString)
+    }
+
+    @Test
+    fun `a language made with its generator lists the generator in its runtime`() {
+        // Two study agents saw a fresh language without concepts, made with rebuild=true together with its
+        // generator, whose runtime listed no generator: a plan Transform of the language then applied
+        // nothing (PLAN: NO_GENERATORS) until mps_mcp_reload_all.
+        val name = "test.gen.fresh${System.nanoTime()}"
+        val dir = createDirInProject(name)
+        var created: Language? = null
+        executeCommand { created = LanguageProducer(myProject).withGenerator(true).create(name, dir) }
+        val generator = readOnRepo { checkNotNull(created).generators.single().moduleReference }
+
+        for (attempt in 1..2) {
+            expectOk(runTool(JetBrainsMPSNodeMcpToolset()) {
+                it.mps_mcp_alter_nodes(MPSAlterOperation.MAKE, """{"modules":["$name"],"rebuild":true}""")
+            })
+            val registered = readOnRepo { languageRuntime(name).generators.map { it.moduleReference } }
+            assertTrue("make #$attempt: the runtime of $name must list its generator $generator, got $registered", generator in registered)
+        }
     }
 
     @Test

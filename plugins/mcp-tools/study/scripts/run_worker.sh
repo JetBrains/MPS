@@ -2,7 +2,7 @@
 # Run one headless worker for the skill-script automation study.
 #
 # usage: run_worker.sh <scenario> <model> <run-no> <project-dir>
-#   scenario     S1..S19 or SMOKE (directory under study/scenarios/; SMOKE is the read-only harness check)
+#   scenario     S1..S24 or SMOKE (directory under study/scenarios/; SMOKE is the read-only harness check)
 #   model        worker model id for the observer harness (claude alias or Junie CLI id)
 #   run-no       1, 2, ...
 #   project-dir  absolute path of the scratch MPS project (must be open in MPS)
@@ -104,6 +104,20 @@ resolve_worker_harness() {
 if [ -e "$RUNS/$ID.meta.json" ] || [ -e "$RUNS/$ID-worker.jsonl" ] || [ -e "$RUNS/$ID-worker.native.jsonl" ]; then
   echo "run id already exists: $ID — bump the run number" >&2
   exit 2
+fi
+
+# A scratch path an earlier run used can show that run's models right after the open: the IDE's
+# persisted file cache is keyed by path and outlives an MPS restart. SMOKE reuses the harness
+# project on purpose, and nothing replaces its content, so it is exempt.
+if [ "$SCENARIO" != SMOKE ] && [ "${ALLOW_REUSED_PROJECT:-0}" != 1 ]; then
+  ARCHIVE_RUNS="${ARCHIVE_RUNS:-$(dirname "$RUNS")/archive/runs}"
+  REUSE_RC=0
+  python3 "$STUDY/scripts/project_reuse.py" "$PROJECT" "$RUNS" "$ARCHIVE_RUNS" >/dev/null || REUSE_RC=$?
+  case $REUSE_RC in
+    0) ;;
+    4) echo "project dir already used by an earlier run: $PROJECT — extract into a new directory (project_reuse.py lists the runs)" >&2; exit 2 ;;
+    *) echo "project_reuse.py failed for $PROJECT" >&2; exit 2 ;;
+  esac
 fi
 
 # User-level MPS agents can delegate calls that are missing from the parent transcript. Prove the

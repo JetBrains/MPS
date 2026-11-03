@@ -11,7 +11,8 @@ test. Run it with
 
 - Before launch the run makes the models that hold the test roots — the `@tests` model, nothing
   else. A new or changed `GeneratorTest` needs no MAKE of yours; a changed generator does: MAKE the
-  language and its generator (`mps-aspect-generator`) before running.
+  language and its generator (`mps-aspect-generator`) before running. Like every make, the run's make
+  discards the transient models of an earlier make: read them before you run.
 - The configuration runs in the MPS process (in-process) and resolves the input and expected models
   in the live repository, so a change to them needs no rebuild. An out-of-process run and CI read the
   saved files; the MCP write tools save the model they change.
@@ -63,7 +64,8 @@ property \"modelId\""), not a well-formed id that names no model.
 
 ## Proving a test is not vacuous
 
-A generator test that passes proves nothing until you have seen it fail for the right reason. Once,
+A generator test that passes proves nothing until you have seen it fail for the right reason. A test
+written before the change that failed for that reason has done steps 1–3 already. Otherwise, once,
 after the first green run:
 1. Change one value in the expected model that the generator computes (an `IntegerConstant.value`, a
    `StringLiteral.value`) with `mps_mcp_update_node SET PROPERTY`.
@@ -84,7 +86,7 @@ output, so a test whose expected model has no roots passes whatever the generato
 | differences in properties the user never sees (`resolveInfo`, `nestedName`, `isStatic`) | the expected model was written another way than the template (JSON vs the Java parser), and an options node switched to stored-value comparison | set `propertyUserValue: true` on the options node, or write the expected node the way the template was written |
 | `Excessive node, no counterpart to match to` under `Node: X vs null` (or `null vs X`) | the generator produced more or fewer nodes than expected, or a later generator reduced a construct you expected unreduced (`TransformationMatchManyAssertion` says `Different children count in role: …` instead) | check the step models (`references/generator-test/expected-output.md`); use an explicit plan to stop after your generator |
 | a reference difference on a JDK or runtime class | the expected model points at another stub or model than the output | import the model the template uses; re-parse |
-| `Node: null vs <root>` for every expected root | generation failed, or the plan ran no generator for the input | read the IDE log (above); check the plan |
+| `Node: null vs <root>` for every expected root | generation failed, or the plan ran no generator for the input | read the IDE log (above); check the plan (`mps_mcp_generation` `PLAN`: `coverage: NO_GENERATORS` means no generator is deployed for the input's language; create and MAKE it) |
 | test passes, but a deliberate change to the expected model does not fail it | the assertion compares another expected model, or the input produces nothing and the expected model is empty | check `referenceModel` in PLAIN TEXT; make sure the expected model has roots |
 | `Different external reference of role <role>. One target is null, while other is null` | the two references point at different nodes; the message never names the targets | print both nodes and compare `targetReference` (`references/generator-test/expected-output.md`, References) |
 | make of the test Solution fails, or `source_gen` of the test Solution holds the generated classes | input or expected model is generatable | `mps_mcp_update_model SET_DO_NOT_GENERATE` on both (`references/generator-test/layout.md`), then MAKE with `rebuild: true` |

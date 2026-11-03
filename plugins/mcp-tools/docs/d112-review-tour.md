@@ -152,7 +152,7 @@ Blueprint tree `plugins/mcp-tools/resources/jetbrains/mps/agents/mcp/skills/`, b
   `languageBuilds`), `mps-mcp-workflow/SKILL.md` and `references/mcp-tools-index.md`,
   `mps-dsl-memory/SKILL.md`, `mps-node-editing/references/troubleshooting.md`,
   `mps-aspect-structure-concepts/.../create-concepts.md`.
-- `study/docs-defects.md` D112 row marked fixed; `docs/d112-language-readiness-plan.md` status updated.
+- `study/instructions/defects.md` D112 row marked fixed; `docs/d112-language-readiness-plan.md` status updated.
 
 ## What is deliberately not in this change
 

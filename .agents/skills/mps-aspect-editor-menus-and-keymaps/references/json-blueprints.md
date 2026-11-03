@@ -1,21 +1,20 @@
 # JSON Blueprint Index
 
-Quick links to the canonical JSON blueprints in this skill's reference set. Each blueprint shows the minimum required roles and properties; substitute concrete concept names and inject BaseLanguage statement lists where indicated.
+> A blueprint written as JSON that holds a BaseLanguage body or nests more than ~5 node levels is generated with mps-node-editing's `scripts/blueprint.py`, not typed by hand; load the `mps-node-editing` companion skill from the same origin to run it.
 
-- **Action map** (`Not_ActionMap` example) — see `references/action-maps.md`. Override `delete_action_id` with an execute function.
-- **Action map imports** — wildcard and by-action-id selectors — see `references/action-maps.md`.
-- **Cell keymap** (`CastExpression_KeyMap` example) — see `references/keymaps.md`. Modifiers + keycode + execute function.
-- **Transformation menu — Action part** with `outputConceptReference`, `textFunction`, `executeFunction`, and `features` (description text) — see `references/transformation-menus.md`.
-- **Transformation menu — Parameterized part** with `parameterQuery` + inner `part` — see `references/transformation-menus.md`.
-- **Transformation menu — Side-transform section** (right-transform on `Expression`) — see `references/side-transforms.md`.
-- **Substitute menu — Default** (`Statement_SubstituteMenu` example) with `AddConcept` + `Subconcepts` parts — see `references/substitute-menus.md`.
-- **Substitute menu — Wrapper** (`Expression` → `ExpressionStatement`) — see `references/substitute-menus.md`.
-- **Paste wrapper** (`Expression` → `Statement`) — see `references/paste-and-copy.md`.
-- **Copy-paste handlers** (`LocalVariableReference` pre + post processor) — see `references/paste-and-copy.md`.
+Where each blueprint lives. Every blueprint shows the required roles; inject BaseLanguage statement lists where marked.
 
-## Insertion Workflow
+- **Transformation menu root** (default / named `type`, one section), **Action part**, **Parameterized part** — `references/transformation-menus.md`.
+- **Side-transform section** with `superconcepts menu` — `references/side-transforms.md`.
+- **Substitute menu** (`AddConcept` + `Subconcepts`), empty default, `SubstituteMenuPart_Action` shape — `references/substitute-menus.md`.
+- **Action map** — `references/action-maps/example-delete-not-expression-and-default.md` (`RemoveNot`), `references/action-maps/example-keyboard-deletable-annotation.md`, `references/action-maps/importing-action-maps.md`.
+- **`approveDelete[cell: …]` condition** — `references/selection-and-deletion.md`.
+- **Cell keymap** (`CastExpression_KeyMap`) — `references/keymaps.md`.
+- **Paste wrapper**, **copy-paste handlers** — `references/paste-and-copy.md`.
 
-1. Resolve concept names via `mps_mcp_search_concepts` or `mps_mcp_get_concept_details` — never guess.
-2. Call `mps_mcp_insert_root_node_from_json` with the chosen blueprint.
-3. For references between nodes created in the same batch, use the node's **name** as the target placeholder.
-4. After insertion run `mps_mcp_check_root_node_problems` to surface unresolved references (especially action IDs and shared-concept parameters).
+## Insertion workflow
+
+1. Resolve concept names with `mps_mcp_search_concepts` / `mps_mcp_get_concept_details`. Never guess.
+2. Copy the shape from a printed corpus root when one exists (`references/real-examples.md`).
+3. Insert with `mps_mcp_insert_root_node_from_json`. For references between nodes of the same batch, use the target's name as placeholder.
+4. Run `mps_mcp_check_root_node_problems` (unresolved action ids, cell ids, parameter concepts).

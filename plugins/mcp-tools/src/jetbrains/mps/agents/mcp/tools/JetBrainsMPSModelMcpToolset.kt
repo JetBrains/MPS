@@ -35,7 +35,7 @@ class JetBrainsMPSModelMcpToolset : AbstractNodeOps() {
     @McpTool
     @McpDescription(
         """
-        Adds or deletes one or more imports to an MPS model and ensures the containing module has a `Default` dependency on each target's module. Already-imported targets are skipped when adding. `targetModels` accepts a single name/reference or a JSON array. ADD returns `{ "added": N, "alreadyPresent": M }`; DELETE returns `{ "removed": true|false }` where `removed:false` means the import was not present — a successful idempotent no-op, not a failure. A model never imports itself, so when source and target resolve to the same model the ADD is dropped (no import is written) and DELETE returns `removed:false`.
+        Adds or deletes one or more imports to an MPS model and gives the containing module a `Default` dependency on each target's module when it has none. An existing dependency on that module keeps its scope (any scope, including Extends and Generation Target, already makes the model visible); a Design or Generation Target one adds a warning, as it does not load the module's Java classes. Already-imported targets are skipped when adding. `targetModels` accepts a single name/reference or a JSON array. ADD returns `{ "added": N, "alreadyPresent": M }`; DELETE returns `{ "removed": true|false }` where `removed:false` means the import was not present — a successful idempotent no-op, not a failure. A model never imports itself, so when source and target resolve to the same model the ADD is dropped (no import is written) and DELETE returns `removed:false`.
         `modelReference: "console"` targets the model of the MPS Console's current editable tab, so typed Java inserted with `mps_mcp_parse_java_and_insert` (`insert.mode:"console"`) can resolve MPS classes. Console writes are not saved, return `"console": true` and a lifetime warning (Console > Clear, a plugin reload or project close drops the imports), and DELETE warns when the console still references the model, since the console may then add the import back (execute and paste re-derive imports from the input and history, Clear from the input only).
         Supported operations: ADD or DELETE.
     """
@@ -132,6 +132,7 @@ class JetBrainsMPSModelMcpToolset : AbstractNodeOps() {
         var added = 0
         var alreadyPresent = 0
         var moduleDirty = false
+        val scopeWarnings = mutableListOf<String>()
 
         for (targetModelResolved in resolvedTargets) {
             val targetRef = targetModelResolved.reference
@@ -149,24 +150,24 @@ class JetBrainsMPSModelMcpToolset : AbstractNodeOps() {
             val targetModule = targetModelResolved.module
             if (targetModule != null && targetModule != module && module is AbstractModule) {
                 val targetModuleRef = targetModule.moduleReference
-                // Find the existing dependency on the underlying ModuleDescriptor (the mutable
-                // jetbrains.mps.project.structure.modules.Dependency, not the OpenAPI SDependency
-                // view exposed via declaredDependencies).
-                val existingDep = module.moduleDescriptor
-                    ?.dependencies
-                    ?.firstOrNull { it.moduleRef.moduleId == targetModuleRef.moduleId }
-                if (existingDep == null) {
+                // Any declared dependency makes the target's models visible, whatever its scope
+                // (UsedModulesCollector); the declared view also lists the Extends entries a
+                // language or generator keeps outside the descriptor's dependency list. Like
+                // MPS's own ModelImporter, never rescope an existing dependency: turning a
+                // Generation Target into Default silently drops its generate-into meaning.
+                val existingScopes = module.declaredDependencies
+                    .filter { it.targetModule.moduleId == targetModuleRef.moduleId }
+                    .map { it.scope }
+                if (existingScopes.isEmpty()) {
                     // No prior dependency — addDependency creates one with DEFAULT scope.
                     module.addDependency(targetModuleRef, false)
                     moduleDirty = true
-                } else if (existingDep.scope != SDependencyScope.DEFAULT) {
-                    // A non-Default scope (e.g. Generation Target, Runtime) would not satisfy
-                    // the model-import contract from this tool, which advertises that it adds
-                    // a "Default" dependency. Promote the existing dep to Default so the
-                    // imported model is reachable through normal module classpath resolution.
-                    existingDep.scope = SDependencyScope.DEFAULT
-                    module.setChanged()
-                    moduleDirty = true
+                } else if (existingScopes.all { it == SDependencyScope.DESIGN || it == SDependencyScope.GENERATES_INTO }) {
+                    // Visible, but not a class-loading dependency (CLDependencies).
+                    scopeWarnings += "${module.moduleName} keeps its ${existingScopes.first()} dependency on " +
+                        "${targetModuleRef.moduleName}: the imported model is visible, but Java classes of that module are not " +
+                        "loaded for code of ${module.moduleName}. Only if such code calls them, change the scope with " +
+                        "mps_mcp_module_dependency ADD (it replaces the scope of this one edge)."
                 }
             }
         }
@@ -175,8 +176,7 @@ class JetBrainsMPSModelMcpToolset : AbstractNodeOps() {
         if (added > 0 && !console) {
             model.save()
         }
-        // Only save the module descriptor when a module-level change actually happened
-        // (new module dependency added, or an existing one promoted to DEFAULT scope).
+        // Only save the module descriptor when a new module dependency was added.
         // A pure model-import-only update doesn't touch the module descriptor.
         if (moduleDirty && !console) {
             (module as? AbstractModule)?.save()
@@ -185,7 +185,7 @@ class JetBrainsMPSModelMcpToolset : AbstractNodeOps() {
         return consoleAwareOk(console, jsonObject {
             addProperty("added", added)
             addProperty("alreadyPresent", alreadyPresent)
-        })
+        }, scopeWarnings)
     }
 
     private suspend fun removeModelDependency(modelReference: String, targetModelRef: String

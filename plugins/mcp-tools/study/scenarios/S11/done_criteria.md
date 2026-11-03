@@ -1,6 +1,6 @@
 # S11 done criteria (observer, read-only, projectPath = run project dir)
 
-Fixture: `expressions.tar.gz` (`samples/expressions` with `classes_gen`, see `../../fixtures/README.md`).
+Fixture: `expressions.tar.gz` (`samples/expressions` with `classes_gen`, see `../../instructions/fixtures.md`).
 The worker must not change any model, so every answer below is fixed by the fixture. The answers
 were verified through MPS MCP against `samples/expressions` on 2026-10-07 (MPS 2026.1, build
 261.25134): `IS_SUBTYPE`, `SUPERTYPES`, `GET_TYPE`, `EXPLAIN_TYPE`, `GET_EXPECTED_TYPE` and a
