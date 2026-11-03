@@ -142,12 +142,21 @@ public class TransientModelsModule extends SModuleBase implements TransientSModu
 
   @Override
   public void dispose() {
+    discard();
+    super.dispose();
+  }
+
+  /**
+   * Drop the swap space and all models of this module. Unlike {@link #dispose()}, this does not require the module to be
+   * attached to a repository: {@link TransientModelsProvider} uses it for a module it never published, e.g. when the
+   * generation was cancelled before {@link TransientModelsProvider#publishAll()}.
+   */
+  /*package*/ void discard() {
     if (mySwapSpace != null) {
       mySwapSpace.clear();
       mySwapSpace = null;
     }
     clearAll();
-    super.dispose();
   }
 
   public void clearAll() {
