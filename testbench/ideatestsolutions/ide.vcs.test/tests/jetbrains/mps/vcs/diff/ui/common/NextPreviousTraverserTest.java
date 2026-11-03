@@ -68,6 +68,71 @@ public class NextPreviousTraverserTest {
     }
 
     @Test
+    public void initialNavigationIgnoresCurrentSelection() throws Exception {
+      for (int firstChangeY : new int[]{0, 30}) {
+        withPainter(f -> {
+          RecordingTraverser traverser = onEdt(() -> {
+            EditorComponent editor = f.layout.getLeftComponent();
+            EditorCell_Collection root = new EditorCell_Collection(editor.getEditorContext(), null, new CellLayout_Vertical());
+            EditorCell_Constant selected = new EditorCell_Constant(editor.getEditorContext(), null, "selected");
+            root.addEditorCell(selected);
+            editor.setRootCell(root);
+            root.setY(0);
+            root.setHeight(100);
+            selected.setY(60);
+            editor.changeSelection(selected);
+            f.highlighter.y = firstChangeY;
+            f.painter.relayout();
+            RecordingTraverser result = new RecordingTraverser(Collections.singletonList(f.layout), editor);
+            result.goToFirstChangeLater();
+            return result;
+          });
+          Bounds bounds = traverser.myNavigation.get(10, TimeUnit.SECONDS);
+          assertEquals("Initial navigation skipped changes above the selection", firstChangeY, (int) bounds.start());
+        });
+      }
+    }
+
+    @Test
+    public void initialNavigationScrollsAfterManualScrolling() throws Exception {
+      withPainter(f -> {
+        NextPreviousTraverser traverser = onEdt(() -> {
+          EditorComponent editor = f.layout.getLeftComponent();
+          EditorCell_Collection root = new EditorCell_Collection(editor.getEditorContext(), null, new CellLayout_Vertical());
+          for (int i = 0; i < 100; i++) {
+            root.addEditorCell(new EditorCell_Constant(editor.getEditorContext(), null, "line " + i));
+          }
+          editor.setRootCell(root);
+          editor.relayout();
+          editor.getExternalComponent().setSize(400, 200);
+          editor.getExternalComponent().doLayout();
+          editor.getScrollPane().setSize(400, 200);
+          editor.getScrollPane().doLayout();
+          editor.getViewport().setSize(350, 180);
+          editor.getViewport().setViewSize(new Dimension(400, root.getY() + root.getHeight()));
+          f.highlighter.y = root.getCells()[10].getY();
+          f.painter.relayout();
+          return new NextPreviousTraverser(Collections.singletonList(f.layout), editor);
+        });
+        for (int i = 0; i < 3; i++) {
+          CompletableFuture<Void> navigationCompleted = new CompletableFuture<>();
+          onEdt(() -> {
+            EditorComponent editor = f.layout.getLeftComponent();
+            editor.getViewport().setViewPosition(new Point(0, editor.getRootCell().getHeight() - 200));
+            assertFalse(editor.getVisibleRect().contains(1, f.highlighter.y));
+            traverser.goToFirstChangeLater();
+            ApplicationManager.getApplication().invokeLater(() -> navigationCompleted.complete(null));
+          });
+          navigationCompleted.get(10, TimeUnit.SECONDS);
+          onEdt(() -> {
+            EditorComponent editor = f.layout.getLeftComponent();
+            assertTrue("First change outside " + editor.getVisibleRect(), editor.getVisibleRect().contains(1, f.highlighter.y));
+          });
+        }
+      });
+    }
+
+    @Test
     public void initialNavigationLeavesOtherEditorsPending() throws Exception {
       withPainter(f -> withPainter(other -> {
         RecordingTraverser traverser = onEdt(() -> {

@@ -19919,6 +19919,42 @@
             </node>
           </node>
         </node>
+        <node concept="3cpWs6" id="38_KBkSJFE7" role="3cqZAp">
+          <node concept="1rXfSq" id="38_KBkSJFE8" role="3cqZAk">
+            <ref role="37wK5l" node="38_KBkSJmwW" resolve="getNeighbourGroupBounds" />
+            <node concept="37vLTw" id="38_KBkSJFE9" role="37wK5m">
+              <ref role="3cqZAo" node="42hl10VHb9Z" resolve="currentY" />
+            </node>
+            <node concept="37vLTw" id="38_KBkSJFEa" role="37wK5m">
+              <ref role="3cqZAo" node="42hl10VHb9R" resolve="previous" />
+            </node>
+          </node>
+        </node>
+      </node>
+      <node concept="2pR195" id="42hl10VHb9Q" role="3clF45">
+        <ref role="3uigEE" node="42hl10VH9HW" resolve="Bounds" />
+      </node>
+      <node concept="37vLTG" id="42hl10VHb9R" role="3clF46">
+        <property role="TrG5h" value="previous" />
+        <node concept="10P_77" id="42hl10VHb9S" role="1tU5fm" />
+      </node>
+    </node>
+    <node concept="2tJIrI" id="38_KBkSLZW$" role="jymVt" />
+    <node concept="3clFb_" id="38_KBkSJmwW" role="jymVt">
+      <property role="TrG5h" value="getNeighbourGroupBounds" />
+      <node concept="2pR195" id="38_KBkSJmwZ" role="3clF45">
+        <ref role="3uigEE" node="42hl10VH9HW" resolve="Bounds" />
+      </node>
+      <node concept="3Tm6S6" id="38_KBkSJmx0" role="1B3o_S" />
+      <node concept="37vLTG" id="38_KBkSJmx1" role="3clF46">
+        <property role="TrG5h" value="currentY" />
+        <node concept="10Oyi0" id="38_KBkSJmx2" role="1tU5fm" />
+      </node>
+      <node concept="37vLTG" id="38_KBkSJmx3" role="3clF46">
+        <property role="TrG5h" value="previous" />
+        <node concept="10P_77" id="38_KBkSJmx4" role="1tU5fm" />
+      </node>
+      <node concept="3clFbS" id="38_KBkSJmx5" role="3clF47">
         <node concept="3cpWs8" id="42hl10VHbap" role="3cqZAp">
           <node concept="3cpWsn" id="42hl10VHbaq" role="3cpWs9">
             <property role="TrG5h" value="asLeft" />
@@ -19928,10 +19964,10 @@
             <node concept="1rXfSq" id="4hiugqyyOmx" role="33vP2m">
               <ref role="37wK5l" node="42hl10VHb8z" resolve="findNeighbourGroupAsLeftOrRight" />
               <node concept="37vLTw" id="3GM_nagT$mZ" role="37wK5m">
-                <ref role="3cqZAo" node="42hl10VHb9Z" resolve="currentY" />
+                <ref role="3cqZAo" node="38_KBkSJmx1" resolve="currentY" />
               </node>
               <node concept="37vLTw" id="2BHiRxgm9s1" role="37wK5m">
-                <ref role="3cqZAo" node="42hl10VHb9R" resolve="previous" />
+                <ref role="3cqZAo" node="38_KBkSJmx3" resolve="previous" />
               </node>
               <node concept="3clFbT" id="42hl10VHbav" role="37wK5m">
                 <property role="3clFbU" value="true" />
@@ -19948,10 +19984,10 @@
             <node concept="1rXfSq" id="4hiugqyyU8h" role="33vP2m">
               <ref role="37wK5l" node="42hl10VHb8z" resolve="findNeighbourGroupAsLeftOrRight" />
               <node concept="37vLTw" id="3GM_nagTBgH" role="37wK5m">
-                <ref role="3cqZAo" node="42hl10VHb9Z" resolve="currentY" />
+                <ref role="3cqZAo" node="38_KBkSJmx1" resolve="currentY" />
               </node>
               <node concept="37vLTw" id="2BHiRxgm6Et" role="37wK5m">
-                <ref role="3cqZAo" node="42hl10VHb9R" resolve="previous" />
+                <ref role="3cqZAo" node="38_KBkSJmx3" resolve="previous" />
               </node>
               <node concept="3clFbT" id="42hl10VHbaA" role="37wK5m" />
             </node>
@@ -19997,7 +20033,7 @@
             </node>
             <node concept="3clFbC" id="1vgGWM1n1da" role="3K4Cdx">
               <node concept="37vLTw" id="2BHiRxgm$Sa" role="3uHU7B">
-                <ref role="3cqZAo" node="42hl10VHb9R" resolve="previous" />
+                <ref role="3cqZAo" node="38_KBkSJmx3" resolve="previous" />
               </node>
               <node concept="3eOVzh" id="1vgGWM1nen2" role="3uHU7w">
                 <node concept="2OqwBi" id="1vgGWM1nen3" role="3uHU7B">
@@ -20020,13 +20056,6 @@
             </node>
           </node>
         </node>
-      </node>
-      <node concept="2pR195" id="42hl10VHb9Q" role="3clF45">
-        <ref role="3uigEE" node="42hl10VH9HW" resolve="Bounds" />
-      </node>
-      <node concept="37vLTG" id="42hl10VHb9R" role="3clF46">
-        <property role="TrG5h" value="previous" />
-        <node concept="10P_77" id="42hl10VHb9S" role="1tU5fm" />
       </node>
     </node>
     <node concept="2tJIrI" id="1vgGWM1qdwq" role="jymVt" />
@@ -20145,11 +20174,13 @@
                   <node concept="3cpWs8" id="42hl10VHbc6" role="3cqZAp">
                     <node concept="3cpWsn" id="42hl10VHbc7" role="3cpWs9">
                       <property role="TrG5h" value="firstGroup" />
-                      <node concept="1rXfSq" id="4hiugqyyI7_" role="33vP2m">
-                        <ref role="37wK5l" node="42hl10VHb9P" resolve="getNeighbourGroupBounds" />
-                        <node concept="3clFbT" id="42hl10VHbca" role="37wK5m">
-                          <property role="3clFbU" value="false" />
+                      <node concept="1rXfSq" id="38_KBkSJR_3" role="33vP2m">
+                        <ref role="37wK5l" node="38_KBkSJmwW" resolve="getNeighbourGroupBounds" />
+                        <node concept="10M0yZ" id="38_KBkSJWAx" role="37wK5m">
+                          <ref role="1PxDUh" to="wyt6:~Integer" resolve="Integer" />
+                          <ref role="3cqZAo" to="wyt6:~Integer.MIN_VALUE" resolve="MIN_VALUE" />
                         </node>
+                        <node concept="3clFbT" id="38_KBkSJR_5" role="37wK5m" />
                       </node>
                       <node concept="2pR195" id="42hl10VHbc8" role="1tU5fm">
                         <ref role="3uigEE" node="42hl10VH9HW" resolve="Bounds" />

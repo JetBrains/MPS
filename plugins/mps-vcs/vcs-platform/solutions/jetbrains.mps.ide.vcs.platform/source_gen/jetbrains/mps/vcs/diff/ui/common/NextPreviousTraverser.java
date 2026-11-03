@@ -112,6 +112,10 @@ public class NextPreviousTraverser {
     if (selectedCell != null) {
       currentY = selectedCell.getY();
     }
+    return getNeighbourGroupBounds(currentY, previous);
+  }
+
+  private Bounds getNeighbourGroupBounds(int currentY, boolean previous) {
     Bounds asLeft = findNeighbourGroupAsLeftOrRight(currentY, previous, true);
     Bounds asRight = findNeighbourGroupAsLeftOrRight(currentY, previous, false);
     if (asLeft == null) {
@@ -140,7 +144,7 @@ public class NextPreviousTraverser {
           layout.flushPendingUpdates();
         }
       }
-      Bounds firstGroup = getNeighbourGroupBounds(false);
+      Bounds firstGroup = getNeighbourGroupBounds(Integer.MIN_VALUE, false);
       EditorCell rc = myLastEditor.getRootCell();
       int minY = (firstGroup == null ? rc.getY() + 1 : (int) firstGroup.start());
       int maxY = rc.getY() + rc.getHeight() - 2;
@@ -163,7 +167,7 @@ public class NextPreviousTraverser {
         ((WithCaret) editorCell).setCaretVisible(false);
       }
     } else {
-      String qualifiedName = check_mf966z_a0a0a1a63(check_mf966z_a0a0a0b0kb(myLastEditor.getEditedNode()));
+      String qualifiedName = check_mf966z_a0a0a1a83(check_mf966z_a0a0a0b0mb(myLastEditor.getEditedNode()));
       if (LOG.isWarningLevel()) {
         LOG.warning(String.format("Could not find cell for coordinates (1, %d), editor for concept %s", y, qualifiedName));
       }
@@ -194,13 +198,13 @@ public class NextPreviousTraverser {
     }
     return null;
   }
-  private static String check_mf966z_a0a0a1a63(SConcept checkedDotOperand) {
+  private static String check_mf966z_a0a0a1a83(SConcept checkedDotOperand) {
     if (null != checkedDotOperand) {
       return checkedDotOperand.getQualifiedName();
     }
     return null;
   }
-  private static SConcept check_mf966z_a0a0a0b0kb(SNode checkedDotOperand) {
+  private static SConcept check_mf966z_a0a0a0b0mb(SNode checkedDotOperand) {
     if (null != checkedDotOperand) {
       return checkedDotOperand.getConcept();
     }
