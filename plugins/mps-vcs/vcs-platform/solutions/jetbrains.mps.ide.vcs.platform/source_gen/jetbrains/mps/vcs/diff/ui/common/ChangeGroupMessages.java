@@ -30,7 +30,7 @@ public class ChangeGroupMessages {
     myLeft = left;
     EditorComponent editorComponent = (left ? myLayout.getLeftComponent() : myLayout.getRightComponent());
     myGutter = editorComponent.getMessagesGutter();
-    myUpdateQueue = new MergingUpdateQueue("ChangeGroupMessages", 500, true, editorComponent, null, null, false);
+    myUpdateQueue = new MergingUpdateQueue("ChangeGroupMessages", 0, true, editorComponent, null, null, false);
     myUpdateQueue.setRestartTimerOnAdd(true);
     myLayoutListener = () -> scheduleUpdate();
     myLayout.addInvalidateListener(myLayoutListener);

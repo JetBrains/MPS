@@ -20852,7 +20852,7 @@
                   <property role="Xl_RC" value="ChangeGroupMessages" />
                 </node>
                 <node concept="3cmrfG" id="26fDspGSEy_" role="37wK5m">
-                  <property role="3cmrfH" value="500" />
+                  <property role="3cmrfH" value="0" />
                 </node>
                 <node concept="3clFbT" id="26fDspGSEBP" role="37wK5m">
                   <property role="3clFbU" value="true" />
