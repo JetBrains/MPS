@@ -201,6 +201,17 @@ public abstract class ChangeGroupLayout {
   /*package*/ void flushPendingUpdates() {
     myUpdateQueue.flush();
   }
+  /*package*/ void performAction(FoldingAreaButton button) {
+    // Both painters share this guard until new groups are published.
+    if (myDisposed || !(myUpdateQueue.isEmpty())) {
+      return;
+    }
+    try {
+      button.performAction();
+    } finally {
+      invalidate();
+    }
+  }
   private static List<ModelChange> check_cuq72k_a3a92(ChangeSet checkedDotOperand, ChangeGroupLayout checkedDotThisExpression) {
     if (null != checkedDotOperand) {
       return checkedDotOperand.getModelChanges();

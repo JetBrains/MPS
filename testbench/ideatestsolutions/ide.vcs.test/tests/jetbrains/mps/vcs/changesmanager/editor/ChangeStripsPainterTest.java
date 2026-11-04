@@ -4,6 +4,7 @@
 package jetbrains.mps.vcs.changesmanager.editor;
 
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.util.ui.EmptyIcon;
 import com.intellij.util.ui.update.MergingUpdateQueue;
 import jetbrains.mps.nodeEditor.EditorComponent;
 import jetbrains.mps.nodeEditor.NodeEditorComponent;
@@ -23,6 +24,7 @@ import jetbrains.mps.vcs.diff.ui.common.ButtonsPainter;
 import jetbrains.mps.vcs.diff.ui.common.ChangeEditorMessage;
 import jetbrains.mps.vcs.diff.ui.common.ChangeGroup;
 import jetbrains.mps.vcs.diff.ui.common.ChangeGroupInvalidateListener;
+import jetbrains.mps.vcs.diff.ui.common.ChangeGroupLayout;
 import jetbrains.mps.vcs.diff.ui.common.DiffChangeGroupLayout;
 import jetbrains.mps.vcs.diff.ui.common.DiffEditor;
 import jetbrains.mps.vcs.diff.ui.common.FoldingAreaButton;
@@ -34,6 +36,8 @@ import org.junit.runners.Suite;
 
 import javax.swing.SwingUtilities;
 import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -49,6 +53,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(PlatformTestSuite.class)
@@ -107,6 +112,120 @@ public class ChangeStripsPainterTest {
           myProject.getModelAccess().executeCommand(() -> TemporaryModels.getInstance().dispose(model[0]));
         });
       }
+    }
+
+    @Test
+    public void doubleClickDoesNotRepeatButtonActionAfterGroupUpdate() throws Exception {
+      withPainter(f -> onEdt(() -> {
+        TestButtonsPainter painter = new TestButtonsPainter(f.layout.getLeftComponent(), f.layout, f.highlighter);
+        try {
+          f.painter.relayout();
+          updateQueue(f.layout).flush();
+          painter.draw();
+          Point point = painter.buttonPoint();
+          painter.moveTo(point);
+          assertTrue("Button click was not consumed", painter.click(point, 1).isConsumed());
+          assertEquals(1, painter.myActions);
+          updateQueue(f.layout).flush();
+          for (int clickCount : new int[]{2, 3}) {
+            assertTrue("Multi-click was passed to other painters", painter.click(point, clickCount).isConsumed());
+          }
+          assertEquals("Multi-click repeated an action on updated groups", 1, painter.myActions);
+          painter.click(point, 1);
+          assertEquals("A separate single click was ignored", 2, painter.myActions);
+          Point outside = new Point(point.x + 100, point.y);
+          for (int clickCount : new int[]{1, 2}) {
+            assertFalse("Click outside the button was consumed", painter.click(outside, clickCount).isConsumed());
+          }
+        }
+        finally {
+          painter.dispose();
+        }
+      }));
+    }
+
+    @Test
+    public void clickFindsUpdatedButtonWithoutMouseMovement() throws Exception {
+      withPainter(f -> onEdt(() -> {
+        TestButtonsPainter painter = new TestButtonsPainter(f.layout.getLeftComponent(), f.layout, f.highlighter);
+        try {
+          f.painter.relayout();
+          updateQueue(f.layout).flush();
+          painter.draw();
+          Point oldPoint = painter.buttonPoint();
+          painter.moveTo(oldPoint);
+          assertEquals("Test action", painter.getToolTipText());
+          f.highlighter.y = 60;
+          f.layout.invalidate();
+          painter.click(oldPoint, 1);
+          assertEquals("Click used groups awaiting an update", 0, painter.myActions);
+          updateQueue(f.layout).flush();
+          assertNull("Relayout retained the old hovered button", painter.getToolTipText());
+          painter.click(oldPoint, 1);
+          assertEquals("Click used the old hovered button", 0, painter.myActions);
+          painter.click(painter.buttonPoint(), 1);
+          assertEquals("Click without mouse movement missed the updated button", 1, painter.myActions);
+        }
+        finally {
+          painter.dispose();
+        }
+      }));
+    }
+
+    @Test
+    public void separateClicksWaitForGroupUpdateAcrossPainters() throws Exception {
+      withPainter(f -> onEdt(() -> {
+        TestButtonsPainter first = new TestButtonsPainter(f.layout.getLeftComponent(), f.layout, f.highlighter);
+        TestButtonsPainter second = new TestButtonsPainter(f.layout.getRightComponent(), f.layout, f.highlighter);
+        try {
+          f.painter.relayout();
+          updateQueue(f.layout).flush();
+          first.draw();
+          second.draw();
+          Point point = first.buttonPoint();
+          first.click(point, 1);
+          assertEquals(1, first.myActions);
+          assertFalse("An action without model changes did not request an update", updateQueue(f.layout).isEmpty());
+          first.relayout();
+          first.click(point, 1);
+          second.click(second.buttonPoint(), 1);
+          assertEquals("Relayout allowed the snapshot to be reused", 1, first.myActions);
+          assertEquals("Another painter reused the same snapshot", 0, second.myActions);
+          updateQueue(f.layout).flush();
+          second.click(point, 1);
+          assertEquals("Updated groups remained blocked", 1, second.myActions);
+        }
+        finally {
+          first.dispose();
+          second.dispose();
+        }
+      }));
+    }
+
+    @Test
+    public void failedButtonActionRequestsUpdateAndAllowsLaterClick() throws Exception {
+      withPainter(f -> onEdt(() -> {
+        TestButtonsPainter painter = new TestButtonsPainter(f.layout.getLeftComponent(), f.layout, f.highlighter);
+        try {
+          f.painter.relayout();
+          updateQueue(f.layout).flush();
+          painter.draw();
+          Point point = painter.buttonPoint();
+          IllegalStateException failure = new IllegalStateException("Test action failed");
+          painter.myFailure = failure;
+          assertSame(failure, assertThrows(IllegalStateException.class, () -> painter.click(point, 1)));
+          assertFalse("Failed action did not request an update", updateQueue(f.layout).isEmpty());
+          painter.myFailure = null;
+          painter.click(point, 1);
+          assertEquals(1, painter.myActions);
+          updateQueue(f.layout).flush();
+          painter.click(point, 1);
+          assertEquals("Failed action left buttons blocked", 2, painter.myActions);
+        }
+        finally {
+          painter.dispose();
+        }
+      }));
     }
 
     @Test
@@ -322,8 +441,11 @@ public class ChangeStripsPainterTest {
   private static class TestButtonsPainter extends ButtonsPainter {
     private final RecordingHighlighter myHighlighter;
     private final List<ChangeGroup> myGroups = new ArrayList<>();
+    private FoldingAreaButton myButton;
+    private int myActions;
+    private RuntimeException myFailure;
 
-    TestButtonsPainter(EditorComponent editor, DiffChangeGroupLayout layout, RecordingHighlighter highlighter) {
+    TestButtonsPainter(EditorComponent editor, ChangeGroupLayout layout, RecordingHighlighter highlighter) {
       super(1, editor, layout);
       myHighlighter = highlighter;
     }
@@ -331,13 +453,37 @@ public class ChangeStripsPainterTest {
     @Override
     protected Iterable<FoldingAreaButton> createButtonsForChangeGroup(ChangeGroup changeGroup, int y) {
       myGroups.add(changeGroup);
-      return Collections.emptyList();
+      myButton = new FoldingAreaButton(changeGroup, getX(0), y, "Test action", EmptyIcon.ICON_16) {
+        @Override
+        public void performAction() {
+          myActions++;
+          if (myFailure != null) {
+            throw myFailure;
+          }
+        }
+      };
+      return Collections.singletonList(myButton);
     }
 
     @Override
     public void relayout() {
       super.relayout();
       myGroups.clear();
+    }
+
+    Point buttonPoint() {
+      return new Point(getLeftHighlighter().getFoldingLineX() + myButton.getX() + 1, myButton.getY() + 1);
+    }
+
+    void moveTo(Point point) {
+      mouseMoved(new MouseEvent(getLeftHighlighter(), MouseEvent.MOUSE_MOVED, 0, 0, point.x, point.y, 0, false));
+    }
+
+    MouseEvent click(Point point, int clickCount) {
+      MouseEvent event = new MouseEvent(getLeftHighlighter(), MouseEvent.MOUSE_CLICKED, 0, 0, point.x, point.y, clickCount, false,
+                                        MouseEvent.BUTTON1);
+      mousePressed(event);
+      return event;
     }
 
     void draw() {

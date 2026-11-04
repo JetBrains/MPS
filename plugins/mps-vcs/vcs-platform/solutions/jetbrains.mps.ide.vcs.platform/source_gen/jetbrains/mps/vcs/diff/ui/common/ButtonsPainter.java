@@ -93,8 +93,14 @@ public abstract class ButtonsPainter extends AbstractFoldingAreaPainter {
   @Override
   public void mousePressed(MouseEvent event) {
     if (event.getButton() == MouseEvent.BUTTON1 && event.getID() == MouseEvent.MOUSE_CLICKED) {
-      check_of7u5x_a0a0a81(myCurrentButton);
-      event.consume();
+      myCurrentButton = findButtonUnder(event.getPoint());
+      if (myCurrentButton != null) {
+        event.consume();
+        if (event.getClickCount() > 1) {
+          return;
+        }
+        myChangeGroupLayout.performAction(myCurrentButton);
+      }
     }
   }
   @Override
@@ -113,6 +119,7 @@ public abstract class ButtonsPainter extends AbstractFoldingAreaPainter {
   public void relayout() {
     // FIXME I see no reason to calculate myWidth with constants and not to create buttons here and take their actual size, instead
     myButtons = null;
+    myCurrentButton = null;
   }
 
   protected int getX(int index) {
@@ -127,11 +134,5 @@ public abstract class ButtonsPainter extends AbstractFoldingAreaPainter {
       return checkedDotOperand.getToolTipText();
     }
     return null;
-  }
-  private static void check_of7u5x_a0a0a81(FoldingAreaButton checkedDotOperand) {
-    if (null != checkedDotOperand) {
-      checkedDotOperand.performAction();
-    }
-
   }
 }
