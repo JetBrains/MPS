@@ -6,10 +6,17 @@ package jetbrains.mps.vcs.changesmanager.editor;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.util.ui.update.MergingUpdateQueue;
 import jetbrains.mps.nodeEditor.EditorComponent;
+import jetbrains.mps.nodeEditor.NodeEditorComponent;
 import jetbrains.mps.nodeEditor.updater.UpdaterImpl;
 import jetbrains.mps.openapi.editor.update.UpdaterListener;
 import jetbrains.mps.project.MPSProject;
+import jetbrains.mps.smodel.SNode;
+import jetbrains.mps.smodel.SNodeUtil;
+import jetbrains.mps.smodel.tempmodel.TempModuleOptions;
+import jetbrains.mps.smodel.tempmodel.TemporaryModels;
 import jetbrains.mps.testsuites.PlatformTestSuite;
+import jetbrains.mps.vcs.changesmanager.CurrentDifferenceRegistry;
+import jetbrains.mps.vcs.changesmanager.SimpleCommandQueue;
 import jetbrains.mps.vcs.changesmanager.editor.ChangeGroupTestCase.RecordingHighlighter;
 import jetbrains.mps.vcs.diff.changes.ModelChange;
 import jetbrains.mps.vcs.diff.ui.common.ButtonsPainter;
@@ -19,6 +26,7 @@ import jetbrains.mps.vcs.diff.ui.common.ChangeGroupInvalidateListener;
 import jetbrains.mps.vcs.diff.ui.common.DiffChangeGroupLayout;
 import jetbrains.mps.vcs.diff.ui.common.DiffEditor;
 import jetbrains.mps.vcs.diff.ui.common.FoldingAreaButton;
+import org.jetbrains.mps.openapi.model.SModel;
 import org.junit.AfterClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,10 +40,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
@@ -48,6 +60,55 @@ public class ChangeStripsPainterTest {
   }
 
   public static class Painting extends ChangeGroupTestCase {
+    @Test
+    public void disposalBeforeQueuedPainterCreationDoesNotInstallPainter() throws Exception {
+      SModel[] model = new SModel[1];
+      EditorComponent editor = onEdt(() -> {
+        EditorComponent result = new NodeEditorComponent(myProject.getRepository());
+        myProject.getModelAccess().executeCommand(() -> {
+          model[0] = TemporaryModels.getInstance().createEditable(true, TempModuleOptions.nonReloadableModule(myProject.getRepository()));
+          SNode root = new SNode(SNodeUtil.concept_BaseConcept);
+          model[0].addRootNode(root);
+          result.editNode(root);
+        });
+        return result;
+      });
+      EditorHighlighter[] highlighter = new EditorHighlighter[1];
+      try {
+        SimpleCommandQueue queue = CurrentDifferenceRegistry.getInstance(myProject.getProject()).getCommandQueue();
+        CountDownLatch ready = new CountDownLatch(1);
+        queue.runTask(ready::countDown);
+        assertTrue("Changes command queue did not start", ready.await(10, TimeUnit.SECONDS));
+        CompletableFuture<Void> uiDrained = new CompletableFuture<>();
+        onEdt(() -> {
+          highlighter[0] = new EditorHighlighter(myProject.getProject(), editor);
+          CountDownLatch initialized = new CountDownLatch(1);
+          queue.runTask(initialized::countDown);
+          assertTrue("Highlighter initialization did not finish", initialized.await(10, TimeUnit.SECONDS));
+          Field listener = EditorHighlighter.class.getDeclaredField("myListener");
+          listener.setAccessible(true);
+          assertNotNull("Highlighter skipped painter initialization", listener.get(highlighter[0]));
+          assertNull(highlighter[0].getStripsPainter());
+          highlighter[0].dispose();
+          editor.dispose();
+          ApplicationManager.getApplication().invokeLater(() -> uiDrained.complete(null));
+        });
+        uiDrained.get(10, TimeUnit.SECONDS);
+        onEdt(() -> assertNull("Disposed highlighter installed a painter", highlighter[0].getStripsPainter()));
+      }
+      finally {
+        onEdt(() -> {
+          if (highlighter[0] != null && (!editor.isDisposed() || highlighter[0].getStripsPainter() != null)) {
+            highlighter[0].dispose();
+          }
+          if (!editor.isDisposed()) {
+            editor.dispose();
+          }
+          myProject.getModelAccess().executeCommand(() -> TemporaryModels.getInstance().dispose(model[0]));
+        });
+      }
+    }
+
     @Test
     public void invalidationKeepsPaintingAndBackgroundReadersOnPublishedGroups() throws Exception {
       withPainter(f -> onEdt(() -> {

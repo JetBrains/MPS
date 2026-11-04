@@ -75,6 +75,9 @@ public class EditorHighlighter implements EditorMessageOwner {
             }
             getHighlightManager().repaintAndRebuildEditorMessages();
             ThreadUtils.runInUIThreadNoWait(() -> {
+              if (myDisposed) {
+                return;
+              }
               myStripsPainter = new ChangeStripsPainter(EditorHighlighter.this);
               myEditorComponent.getLeftEditorHighlighter().addFoldingAreaPainter(myStripsPainter);
               // .relayout() is called as a part of .addFoldingAreaPainter() method execution
