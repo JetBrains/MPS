@@ -7,10 +7,12 @@ import jetbrains.mps.generator.runtime.MapConfigBase;
 import jetbrains.mps.generator.runtime.TemplateMappingConfiguration;
 import java.util.Collection;
 import jetbrains.mps.generator.runtime.TemplateReductionRule;
+import jetbrains.mps.generator.runtime.LabelDeclaration;
 import org.jetbrains.annotations.NotNull;
 import jetbrains.mps.generator.runtime.TemplateModel;
 import jetbrains.mps.smodel.SNodePointer;
 import jetbrains.mps.generator.runtime.TemplateUtil;
+import java.util.Arrays;
 import jetbrains.mps.generator.runtime.ReductionRuleBase;
 import org.jetbrains.mps.openapi.model.SNode;
 import jetbrains.mps.generator.runtime.TemplateContext;
@@ -23,13 +25,20 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
 @Generated
 public class Mapping_main extends MapConfigBase implements TemplateMappingConfiguration {
   private final Collection<TemplateReductionRule> rules;
+  private final Collection<LabelDeclaration> myPrivateLabels;
   public Mapping_main(@NotNull TemplateModel model) {
     super(new SNodePointer("r:00000000-0000-4000-0000-011c8959034c(jetbrains.mps.lang.quotation.generator.baseLanguage.template.main@generator)", "1196351887556"), "main", model, true, new MO());
     rules = TemplateUtil.<TemplateReductionRule>asCollection(new ReductionRule0(), new ReductionRule1());
+    myPrivateLabels = Arrays.asList(this.label("nodeVariableQ", true));
   }
   @Override
   public Collection<TemplateReductionRule> getReductionRules() {
     return rules;
+  }
+  @NotNull
+  @Override
+  public Collection<LabelDeclaration> getLabels() {
+    return myPrivateLabels;
   }
   /*package*/ final class ReductionRule0 extends ReductionRuleBase {
     public ReductionRule0() {

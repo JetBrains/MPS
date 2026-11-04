@@ -2122,55 +2122,61 @@
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c8959034c(jetbrains.mps.lang.quotation.generator.baseLanguage.template.main@generator)/1196351887556">
     <file name="Mapping_main.java">
-      <node id="1196351887556" at="25,0,26,0" concept="5" trace="rules" />
-      <node id="1196351887556" at="26,53,27,195" concept="15" />
-      <node id="1196351887556" at="27,195,28,105" concept="4" />
-      <node id="1196351887556" at="31,64,32,17" concept="10" />
-      <node id="1196351887579" at="35,29,36,196" concept="15" />
-      <node id="1196351887579" at="39,103,40,80" concept="9" />
-      <node id="1196351887579" at="40,80,41,275" concept="9" />
-      <node id="1196351887579" at="41,275,42,20" concept="10" />
-      <node id="1006429225401295240" at="46,29,47,204" concept="15" />
-      <node id="1006429225401295240" at="50,103,51,80" concept="9" />
-      <node id="1006429225401295240" at="51,80,52,271" concept="9" />
-      <node id="1006429225401295240" at="52,271,53,20" concept="10" />
-      <node id="1196351887556" at="64,0,65,0" concept="13" trace="Quotation$Vl" />
-      <node id="1196351887556" at="65,0,66,0" concept="13" trace="NodeBuilder$GJ" />
-      <node id="1196351887579" at="35,0,38,0" concept="2" trace="ReductionRule0#()V" />
-      <node id="1006429225401295240" at="46,0,49,0" concept="2" trace="ReductionRule1#()V" />
-      <node id="1196351887556" at="26,0,30,0" concept="2" trace="Mapping_main#(Ljetbrains/mps/generator/runtime/TemplateModel;)V" />
-      <node id="1196351887556" at="30,0,34,0" concept="8" trace="getReductionRules#()Ljava/util/Collection;" />
-      <node id="1196351887579" at="38,0,44,0" concept="8" trace="apply#(Ljetbrains/mps/generator/runtime/TemplateContext;)Ljava/util/Collection;" />
-      <node id="1006429225401295240" at="49,0,55,0" concept="8" trace="apply#(Ljetbrains/mps/generator/runtime/TemplateContext;)Ljava/util/Collection;" />
-      <scope id="1196351887556" at="31,64,32,17" />
-      <scope id="1196351887579" at="35,29,36,196" />
-      <scope id="1006429225401295240" at="46,29,47,204" />
-      <scope id="1196351887556" at="26,53,28,105" />
-      <scope id="1196351887579" at="35,0,38,0" />
-      <scope id="1196351887579" at="39,103,42,20">
+      <node id="1196351887556" at="27,0,28,0" concept="5" trace="rules" />
+      <node id="1196351887556" at="28,0,29,0" concept="5" trace="myPrivateLabels" />
+      <node id="1196351887556" at="29,53,30,195" concept="15" />
+      <node id="1196351887556" at="30,195,31,105" concept="4" />
+      <node id="1196351887556" at="31,105,32,71" concept="4" />
+      <node id="1196351887556" at="35,64,36,17" concept="10" />
+      <node id="1196351887556" at="40,51,41,27" concept="10" />
+      <node id="1196351887579" at="44,29,45,196" concept="15" />
+      <node id="1196351887579" at="48,103,49,80" concept="9" />
+      <node id="1196351887579" at="49,80,50,275" concept="9" />
+      <node id="1196351887579" at="50,275,51,20" concept="10" />
+      <node id="1006429225401295240" at="55,29,56,204" concept="15" />
+      <node id="1006429225401295240" at="59,103,60,80" concept="9" />
+      <node id="1006429225401295240" at="60,80,61,271" concept="9" />
+      <node id="1006429225401295240" at="61,271,62,20" concept="10" />
+      <node id="1196351887556" at="73,0,74,0" concept="13" trace="Quotation$Vl" />
+      <node id="1196351887556" at="74,0,75,0" concept="13" trace="NodeBuilder$GJ" />
+      <node id="1196351887579" at="44,0,47,0" concept="2" trace="ReductionRule0#()V" />
+      <node id="1006429225401295240" at="55,0,58,0" concept="2" trace="ReductionRule1#()V" />
+      <node id="1196351887556" at="34,0,38,0" concept="8" trace="getReductionRules#()Ljava/util/Collection;" />
+      <node id="1196351887556" at="29,0,34,0" concept="2" trace="Mapping_main#(Ljetbrains/mps/generator/runtime/TemplateModel;)V" />
+      <node id="1196351887556" at="38,0,43,0" concept="8" trace="getLabels#()Ljava/util/Collection;" />
+      <node id="1196351887579" at="47,0,53,0" concept="8" trace="apply#(Ljetbrains/mps/generator/runtime/TemplateContext;)Ljava/util/Collection;" />
+      <node id="1006429225401295240" at="58,0,64,0" concept="8" trace="apply#(Ljetbrains/mps/generator/runtime/TemplateContext;)Ljava/util/Collection;" />
+      <scope id="1196351887556" at="35,64,36,17" />
+      <scope id="1196351887556" at="40,51,41,27" />
+      <scope id="1196351887579" at="44,29,45,196" />
+      <scope id="1006429225401295240" at="55,29,56,204" />
+      <scope id="1196351887556" at="29,53,32,71" />
+      <scope id="1196351887579" at="44,0,47,0" />
+      <scope id="1196351887579" at="48,103,51,20">
         <var name="environment" id="1196351887579" />
         <var name="tlist1" id="1196351887579" />
       </scope>
-      <scope id="1006429225401295240" at="46,0,49,0" />
-      <scope id="1006429225401295240" at="50,103,53,20">
+      <scope id="1006429225401295240" at="55,0,58,0" />
+      <scope id="1006429225401295240" at="59,103,62,20">
         <var name="environment" id="1006429225401295240" />
         <var name="tlist1" id="1006429225401295240" />
       </scope>
-      <scope id="1196351887556" at="26,0,30,0">
+      <scope id="1196351887556" at="34,0,38,0" />
+      <scope id="1196351887556" at="29,0,34,0">
         <var name="model" id="1196351887556" />
       </scope>
-      <scope id="1196351887556" at="30,0,34,0" />
-      <scope id="1196351887579" at="38,0,44,0">
+      <scope id="1196351887556" at="38,0,43,0" />
+      <scope id="1196351887579" at="47,0,53,0">
         <var name="context" id="1196351887579" />
       </scope>
-      <scope id="1006429225401295240" at="49,0,55,0">
+      <scope id="1006429225401295240" at="58,0,64,0">
         <var name="context" id="1006429225401295240" />
       </scope>
-      <unit id="1196351887556" at="63,0,67,0" name="jetbrains.mps.lang.quotation.generator.baseLanguage.template.main.Mapping_main$CONCEPTS" />
-      <unit id="1196351887556" at="57,0,62,0" name="jetbrains.mps.lang.quotation.generator.baseLanguage.template.main.Mapping_main$MO" />
-      <unit id="1196351887579" at="34,0,45,0" name="jetbrains.mps.lang.quotation.generator.baseLanguage.template.main.Mapping_main$ReductionRule0" />
-      <unit id="1006429225401295240" at="45,0,56,0" name="jetbrains.mps.lang.quotation.generator.baseLanguage.template.main.Mapping_main$ReductionRule1" />
-      <unit id="1196351887556" at="23,0,68,0" name="jetbrains.mps.lang.quotation.generator.baseLanguage.template.main.Mapping_main" />
+      <unit id="1196351887556" at="72,0,76,0" name="jetbrains.mps.lang.quotation.generator.baseLanguage.template.main.Mapping_main$CONCEPTS" />
+      <unit id="1196351887556" at="66,0,71,0" name="jetbrains.mps.lang.quotation.generator.baseLanguage.template.main.Mapping_main$MO" />
+      <unit id="1196351887579" at="43,0,54,0" name="jetbrains.mps.lang.quotation.generator.baseLanguage.template.main.Mapping_main$ReductionRule0" />
+      <unit id="1006429225401295240" at="54,0,65,0" name="jetbrains.mps.lang.quotation.generator.baseLanguage.template.main.Mapping_main$ReductionRule1" />
+      <unit id="1196351887556" at="25,0,77,0" name="jetbrains.mps.lang.quotation.generator.baseLanguage.template.main.Mapping_main" />
     </file>
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c8959034c(jetbrains.mps.lang.quotation.generator.baseLanguage.template.main@generator)/2249837730598998073">
