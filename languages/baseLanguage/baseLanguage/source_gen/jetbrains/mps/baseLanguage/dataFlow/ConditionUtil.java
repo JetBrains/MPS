@@ -5,18 +5,21 @@ package jetbrains.mps.baseLanguage.dataFlow;
 import org.jetbrains.mps.openapi.model.SNode;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SNodeOperations;
 import jetbrains.mps.baseLanguage.behavior.Expression__BehaviorDescriptor;
+import org.jetbrains.mps.openapi.language.SAbstractConcept;
+import jetbrains.mps.baseLanguage.behavior.IStatementListContainer__BehaviorDescriptor;
+import jetbrains.mps.lang.dataFlow.framework.instructions.Instruction;
+import jetbrains.mps.lang.dataFlow.DataFlow;
+import jetbrains.mps.lang.dataFlow.framework.instructions.WriteInstruction;
+import java.util.Objects;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SLinkOperations;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SPropertyOperations;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SConceptOperations;
 import jetbrains.mps.typechecking.TypecheckingFacade;
 import jetbrains.mps.lang.dataFlow.framework.Program;
-import jetbrains.mps.lang.dataFlow.DataFlow;
 import java.util.List;
-import jetbrains.mps.lang.dataFlow.framework.instructions.Instruction;
-import jetbrains.mps.lang.dataFlow.framework.instructions.WriteInstruction;
-import java.util.Objects;
 import org.jetbrains.mps.openapi.language.SConcept;
 import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
+import org.jetbrains.mps.openapi.language.SInterfaceConcept;
 import org.jetbrains.mps.openapi.language.SReferenceLink;
 import org.jetbrains.mps.openapi.language.SContainmentLink;
 import org.jetbrains.mps.openapi.language.SProperty;
@@ -36,6 +39,24 @@ public class ConditionUtil {
     } else {
       return null;
     }
+  }
+  /**
+   * Whether a closure in code writes the variable.
+   */
+  private static boolean isWrittenInClosure(SNode variable, SNode code) {
+    // A closure literal only emits reads of the variables it captures and its body is analysed as a separate program,
+    // so writes performed by a closure never show up in the program of the enclosing code.
+    for (SNode closure : SNodeOperations.getNodeDescendants(code, CONCEPTS.IStatementListContainer$xz, false, new SAbstractConcept[]{})) {
+      if (!((boolean) IStatementListContainer__BehaviorDescriptor.isClosure_id2P5W1FWMZPJ.invoke(closure))) {
+        continue;
+      }
+      for (Instruction instruction : DataFlow.buildProgram(IStatementListContainer__BehaviorDescriptor.getStatementList_id28aPEVv_31A.invoke(closure)).getInstructions()) {
+        if (instruction instanceof WriteInstruction && Objects.equals(((WriteInstruction) instruction).getVariable(), variable)) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   /**
@@ -62,7 +83,7 @@ public class ConditionUtil {
               count += 1;
             }
           }
-          if (count == 1) {
+          if (count == 1 && !(isWrittenInClosure(variableDeclaration, code))) {
             return (Boolean) Expression__BehaviorDescriptor.getCompileTimeConstantValue_idi1LP2xI.invoke(SLinkOperations.getTarget(variableDeclaration, LINKS.initializer$2twD), SNodeOperations.getModel(expr).getModule());
           }
         }
@@ -73,6 +94,7 @@ public class ConditionUtil {
 
   private static final class CONCEPTS {
     /*package*/ static final SConcept Expression$mB = MetaAdapterFactory.getConcept(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0xf8c37f506fL, "jetbrains.mps.baseLanguage.structure.Expression");
+    /*package*/ static final SInterfaceConcept IStatementListContainer$xz = MetaAdapterFactory.getInterfaceConcept(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0x11750ef8265L, "jetbrains.mps.baseLanguage.structure.IStatementListContainer");
     /*package*/ static final SConcept VariableReference$TC = MetaAdapterFactory.getConcept(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0xf8c77f1e98L, "jetbrains.mps.baseLanguage.structure.VariableReference");
     /*package*/ static final SConcept StatementList$m_ = MetaAdapterFactory.getConcept(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0xf8cc56b200L, "jetbrains.mps.baseLanguage.structure.StatementList");
     /*package*/ static final SConcept BooleanType$_u = MetaAdapterFactory.getConcept(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0xf940d6513eL, "jetbrains.mps.baseLanguage.structure.BooleanType");

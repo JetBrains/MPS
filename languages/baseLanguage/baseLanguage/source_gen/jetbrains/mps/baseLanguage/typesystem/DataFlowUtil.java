@@ -22,6 +22,8 @@ import java.util.HashSet;
 import jetbrains.mps.baseLanguage.behavior.ILocalDeclaration__BehaviorDescriptor;
 import jetbrains.mps.baseLanguage.behavior.ILocalReference__BehaviorDescriptor;
 import jetbrains.mps.lang.core.behavior.BaseConcept__BehaviorDescriptor;
+import jetbrains.mps.lang.dataFlow.framework.instructions.ReadInstruction;
+import jetbrains.mps.baseLanguage.behavior.IStatementListContainer__BehaviorDescriptor;
 import jetbrains.mps.errors.BaseQuickFixProvider;
 import jetbrains.mps.baseLanguage.behavior.IVariableAssignment__BehaviorDescriptor;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SPropertyOperations;
@@ -176,6 +178,44 @@ public class DataFlowUtil {
         }
       }
     }
+    checkUninitializedCapturedReads(typeCheckingContext, program);
+  }
+  @CheckingMethod
+  private static void checkUninitializedCapturedReads(final TypeCheckingContext typeCheckingContext, Program program) {
+    // A closure literal emits a read of every variable it captures, so an uninitialized read at a closure means that the
+    // closure may run before the variable is assigned (MPS-18591). Only the program that declares the variable checks the
+    // read: the program of an enclosing closure body never writes a variable captured from further out.
+    for (ReadInstruction read : program.getUninitializedReads()) {
+      SNode closure = SNodeOperations.as((SNode) read.getSource(), CONCEPTS.IStatementListContainer$xz);
+      SNode variable = SNodeOperations.as((SNode) read.getVariable(), CONCEPTS.LocalVariableDeclaration$41);
+      if (closure == null || !((boolean) IStatementListContainer__BehaviorDescriptor.isClosure_id2P5W1FWMZPJ.invoke(closure)) || variable == null || !(program.contains(variable))) {
+        continue;
+      }
+      checkUninitializedReadsInClosure(typeCheckingContext, closure, variable);
+    }
+  }
+  @CheckingMethod
+  private static void checkUninitializedReadsInClosure(final TypeCheckingContext typeCheckingContext, SNode closure, SNode variable) {
+    // The closure body is a separate program that never writes a captured variable on entry, so its uninitialized reads
+    // of the variable are the reads that may run before the variable is assigned. A read at a nested closure stands for
+    // the reads inside that closure, which are checked the same way.
+    for (ReadInstruction read : DataFlow.buildProgram(IStatementListContainer__BehaviorDescriptor.getStatementList_id28aPEVv_31A.invoke(closure)).getUninitializedReads()) {
+      if (read.getVariable() != variable) {
+        continue;
+      }
+      SNode source = (SNode) read.getSource();
+      SNode nested = SNodeOperations.as(source, CONCEPTS.IStatementListContainer$xz);
+      if (nested != null && (boolean) IStatementListContainer__BehaviorDescriptor.isClosure_id2P5W1FWMZPJ.invoke(nested)) {
+        checkUninitializedReadsInClosure(typeCheckingContext, nested, variable);
+      } else {
+        if (SNodeOperations.isInstanceOf(source, CONCEPTS.ILocalReference$Us) || SNodeOperations.isInstanceOf(source, CONCEPTS.BaseAssignmentExpression$PA)) {
+          {
+            final MessageTarget errorTarget = new NodeMessageTarget();
+            IErrorReporter _reporter_2309309498 = typeCheckingContext.reportTypeError(source, "Variable '" + BaseConcept__BehaviorDescriptor.getPresentation_idhEwIMiw.invoke(variable) + "' might not have been initialized", "r:00000000-0000-4000-0000-011c895902c5(jetbrains.mps.baseLanguage.typesystem)", "8239293325675750550", null, errorTarget);
+          }
+        }
+      }
+    }
   }
 
   @CheckingMethod
@@ -304,8 +344,9 @@ public class DataFlowUtil {
     /*package*/ static final SInterfaceConcept ILocalReference$Us = MetaAdapterFactory.getInterfaceConcept(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0x2d45f01afccba89dL, "jetbrains.mps.baseLanguage.structure.ILocalReference");
     /*package*/ static final SConcept BaseAssignmentExpression$PA = MetaAdapterFactory.getConcept(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0x11b0d00332cL, "jetbrains.mps.baseLanguage.structure.BaseAssignmentExpression");
     /*package*/ static final SInterfaceConcept IControlFlowInterrupter$Ra = MetaAdapterFactory.getInterfaceConcept(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0x7c8556154508e980L, "jetbrains.mps.baseLanguage.structure.IControlFlowInterrupter");
-    /*package*/ static final SConcept VariableReference$TC = MetaAdapterFactory.getConcept(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0xf8c77f1e98L, "jetbrains.mps.baseLanguage.structure.VariableReference");
+    /*package*/ static final SInterfaceConcept IStatementListContainer$xz = MetaAdapterFactory.getInterfaceConcept(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0x11750ef8265L, "jetbrains.mps.baseLanguage.structure.IStatementListContainer");
     /*package*/ static final SConcept LocalVariableDeclaration$41 = MetaAdapterFactory.getConcept(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0xf8cc67c7efL, "jetbrains.mps.baseLanguage.structure.LocalVariableDeclaration");
+    /*package*/ static final SConcept VariableReference$TC = MetaAdapterFactory.getConcept(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0xf8c77f1e98L, "jetbrains.mps.baseLanguage.structure.VariableReference");
     /*package*/ static final SConcept ParameterDeclaration$RG = MetaAdapterFactory.getConcept(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0xf8c77f1e94L, "jetbrains.mps.baseLanguage.structure.ParameterDeclaration");
     /*package*/ static final SInterfaceConcept IVariableAssignment$mo = MetaAdapterFactory.getInterfaceConcept(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0x11cfb3b82a4L, "jetbrains.mps.baseLanguage.structure.IVariableAssignment");
     /*package*/ static final SInterfaceConcept IVariableDeclaration$Zo = MetaAdapterFactory.getInterfaceConcept(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0x4b64b50fb2fc7720L, "jetbrains.mps.baseLanguage.structure.IVariableDeclaration");
