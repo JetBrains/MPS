@@ -24,11 +24,11 @@ import jetbrains.mps.baseLanguage.behavior.ILocalReference__BehaviorDescriptor;
 import jetbrains.mps.lang.core.behavior.BaseConcept__BehaviorDescriptor;
 import jetbrains.mps.lang.dataFlow.framework.instructions.ReadInstruction;
 import jetbrains.mps.baseLanguage.behavior.IStatementListContainer__BehaviorDescriptor;
+import jetbrains.mps.lang.smodel.generator.smodelAdapter.SPropertyOperations;
+import org.jetbrains.mps.openapi.language.SAbstractConcept;
 import jetbrains.mps.errors.BaseQuickFixProvider;
 import jetbrains.mps.baseLanguage.behavior.IVariableAssignment__BehaviorDescriptor;
-import jetbrains.mps.lang.smodel.generator.smodelAdapter.SPropertyOperations;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.mps.openapi.language.SAbstractConcept;
 import jetbrains.mps.internal.collections.runtime.SetSequence;
 import org.jetbrains.mps.openapi.language.SConcept;
 import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
@@ -191,6 +191,10 @@ public class DataFlowUtil {
       if (closure == null || !((boolean) IStatementListContainer__BehaviorDescriptor.isClosure_id2P5W1FWMZPJ.invoke(closure)) || variable == null || !(program.contains(variable))) {
         continue;
       }
+      // The closures generator wraps this variable in a holder that starts at null or 0, so the generated Java compiles.
+      if (isWrappedByClosuresGenerator(variable)) {
+        continue;
+      }
       checkUninitializedReadsInClosure(typeCheckingContext, closure, variable);
     }
   }
@@ -216,6 +220,30 @@ public class DataFlowUtil {
         }
       }
     }
+  }
+  private static boolean isWrappedByClosuresGenerator(SNode variable) {
+    // Mirrors WrappersUtils.collectVariableDeclarationsToWrap of the closures generator (jetbrains.mps.baseLanguage.closures);
+    // keep both in sync. baseLanguage cannot depend on the closures language, so the rule is repeated here. A captured
+    // local that is not final and is assigned, incremented or decremented anywhere in its declaring scope (inside closures
+    // too) is generated as a Wrappers._T/_int holder, which starts at null or 0, so the generated Java always compiles.
+    // The scope is the nearest StatementList ancestor, which for a local always comes before the BaseMethodDeclaration the
+    // generator also accepts.
+    if (SPropertyOperations.getBoolean(variable, PROPS.isFinal$gvTP)) {
+      return false;
+    }
+    for (SNode reference : SNodeOperations.getNodeDescendants(SNodeOperations.getNodeAncestor(variable, CONCEPTS.StatementList$m_, false, false), CONCEPTS.VariableReference$TC, false, new SAbstractConcept[]{})) {
+      if (SLinkOperations.getTarget(reference, LINKS.variableDeclaration$N1XG) != variable) {
+        continue;
+      }
+      SNode parent = SNodeOperations.getParent(reference);
+      if (SNodeOperations.isInstanceOf(parent, CONCEPTS.BaseAssignmentExpression$PA) && SLinkOperations.getTarget(SNodeOperations.as(parent, CONCEPTS.BaseAssignmentExpression$PA), LINKS.lValue$splI) == reference) {
+        return true;
+      }
+      if (SNodeOperations.isInstanceOf(parent, CONCEPTS.PostfixIncrementExpression$wn) || SNodeOperations.isInstanceOf(parent, CONCEPTS.PrefixIncrementExpression$xI) || SNodeOperations.isInstanceOf(parent, CONCEPTS.PostfixDecrementExpression$GY) || SNodeOperations.isInstanceOf(parent, CONCEPTS.PrefixDecrementExpression$En)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   @CheckingMethod
@@ -347,6 +375,10 @@ public class DataFlowUtil {
     /*package*/ static final SInterfaceConcept IStatementListContainer$xz = MetaAdapterFactory.getInterfaceConcept(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0x11750ef8265L, "jetbrains.mps.baseLanguage.structure.IStatementListContainer");
     /*package*/ static final SConcept LocalVariableDeclaration$41 = MetaAdapterFactory.getConcept(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0xf8cc67c7efL, "jetbrains.mps.baseLanguage.structure.LocalVariableDeclaration");
     /*package*/ static final SConcept VariableReference$TC = MetaAdapterFactory.getConcept(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0xf8c77f1e98L, "jetbrains.mps.baseLanguage.structure.VariableReference");
+    /*package*/ static final SConcept PostfixIncrementExpression$wn = MetaAdapterFactory.getConcept(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0x11adecdb4f0L, "jetbrains.mps.baseLanguage.structure.PostfixIncrementExpression");
+    /*package*/ static final SConcept PrefixIncrementExpression$xI = MetaAdapterFactory.getConcept(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0x120a46df580L, "jetbrains.mps.baseLanguage.structure.PrefixIncrementExpression");
+    /*package*/ static final SConcept PostfixDecrementExpression$GY = MetaAdapterFactory.getConcept(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0x11aded05fe6L, "jetbrains.mps.baseLanguage.structure.PostfixDecrementExpression");
+    /*package*/ static final SConcept PrefixDecrementExpression$En = MetaAdapterFactory.getConcept(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0x120a472f0e8L, "jetbrains.mps.baseLanguage.structure.PrefixDecrementExpression");
     /*package*/ static final SConcept ParameterDeclaration$RG = MetaAdapterFactory.getConcept(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0xf8c77f1e94L, "jetbrains.mps.baseLanguage.structure.ParameterDeclaration");
     /*package*/ static final SInterfaceConcept IVariableAssignment$mo = MetaAdapterFactory.getInterfaceConcept(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0x11cfb3b82a4L, "jetbrains.mps.baseLanguage.structure.IVariableAssignment");
     /*package*/ static final SInterfaceConcept IVariableDeclaration$Zo = MetaAdapterFactory.getInterfaceConcept(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0x4b64b50fb2fc7720L, "jetbrains.mps.baseLanguage.structure.IVariableDeclaration");
@@ -363,6 +395,7 @@ public class DataFlowUtil {
   }
 
   private static final class PROPS {
+    /*package*/ static final SProperty isFinal$gvTP = MetaAdapterFactory.getProperty(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0xf8c37a7f6eL, 0x111f9e9f00cL, "isFinal");
     /*package*/ static final SProperty name$MnvL = MetaAdapterFactory.getProperty(0xceab519525ea4f22L, 0x9b92103b95ca8c0cL, 0x110396eaaa4L, 0x110396ec041L, "name");
   }
 }
