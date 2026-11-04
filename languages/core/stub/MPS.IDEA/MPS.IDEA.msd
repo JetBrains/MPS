@@ -264,7 +264,6 @@
         <sourceRoot location="jps-model.jar" />
         <sourceRoot location="lib.jar" />
         <sourceRoot location="maven-resolver-provider.jar" />
-        <sourceRoot location="mps-resources.zip" />
         <sourceRoot location="trove.jar" />
         <sourceRoot location="util_rt.jar" />
       <!-- intentionally no stats.jar as we don't have any direct dependencies -->

@@ -259,7 +259,6 @@
       <root url="jar://$PROJECT_DIR$/lib/jps-model.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/lib.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/maven-resolver-provider.jar!/" />
-      <root url="jar://$PROJECT_DIR$/lib/mps-resources.zip!/" />
       <root url="jar://$PROJECT_DIR$/lib/platform-loader.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/trove.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/util_rt.jar!/" />
