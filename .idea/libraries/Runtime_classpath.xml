@@ -183,7 +183,6 @@
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.debugger.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.diagnostic.freezeAnalyzer.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.diagnostic.freezes.jar!/" />
-      <root url="jar://$PROJECT_DIR$/lib/intellij.platform.diagnostic.telemetry.agent.extension.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.diff.impl.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.diff.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.duplicates.analysis.jar!/" />

@@ -202,7 +202,6 @@
         "intellij.platform.debugger.jar",
         "intellij.platform.diagnostic.freezeAnalyzer.jar",
         "intellij.platform.diagnostic.freezes.jar",
-        "intellij.platform.diagnostic.telemetry.agent.extension.jar",
         "intellij.platform.diff.impl.jar",
         "intellij.platform.diff.jar",
         "intellij.platform.duplicates.analysis.jar",

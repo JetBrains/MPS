@@ -320,7 +320,6 @@ ECHO|SET /P=""%IDE_HOME:\=/%/lib/intellij.platform.debugger.impl.ui.jar";" >> "%
 ECHO|SET /P=""%IDE_HOME:\=/%/lib/intellij.platform.debugger.jar";" >> "%ARG_FILE%"
 ECHO|SET /P=""%IDE_HOME:\=/%/lib/intellij.platform.diagnostic.freezeAnalyzer.jar";" >> "%ARG_FILE%"
 ECHO|SET /P=""%IDE_HOME:\=/%/lib/intellij.platform.diagnostic.freezes.jar";" >> "%ARG_FILE%"
-ECHO|SET /P=""%IDE_HOME:\=/%/lib/intellij.platform.diagnostic.telemetry.agent.extension.jar";" >> "%ARG_FILE%"
 ECHO|SET /P=""%IDE_HOME:\=/%/lib/intellij.platform.diff.impl.jar";" >> "%ARG_FILE%"
 ECHO|SET /P=""%IDE_HOME:\=/%/lib/intellij.platform.diff.jar";" >> "%ARG_FILE%"
 ECHO|SET /P=""%IDE_HOME:\=/%/lib/intellij.platform.duplicates.analysis.jar";" >> "%ARG_FILE%"

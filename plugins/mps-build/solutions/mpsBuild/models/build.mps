@@ -50025,9 +50025,6 @@
     <node concept="26EafG" id="KnVildsK7R" role="26Ea7d">
       <property role="26EafJ" value="lib/intellij.platform.diagnostic.freezes.jar" />
     </node>
-    <node concept="26EafG" id="KnVildsK8t" role="26Ea7d">
-      <property role="26EafJ" value="lib/intellij.platform.diagnostic.telemetry.agent.extension.jar" />
-    </node>
     <node concept="26EafG" id="KnVildsK93" role="26Ea7d">
       <property role="26EafJ" value="lib/intellij.platform.diff.impl.jar" />
     </node>
