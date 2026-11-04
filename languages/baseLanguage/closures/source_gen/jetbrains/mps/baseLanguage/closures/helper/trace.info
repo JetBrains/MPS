@@ -1337,168 +1337,94 @@
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c89590339(jetbrains.mps.baseLanguage.closures.helper)/1207078435086">
     <file name="WrappersUtils.java">
-      <node id="6289591591668563665" at="31,79,32,74" concept="11" />
-      <node id="6289591591668563282" at="32,74,33,182" concept="11" />
-      <node id="6289591591668589975" at="34,31,35,110" concept="11" />
-      <node id="6289591591668590031" at="36,105,37,116" concept="5" />
-      <node id="6289591591668590112" at="39,53,40,71" concept="11" />
-      <node id="6289591591668590349" at="43,119,44,125" concept="5" />
-      <node id="6289591591668563672" at="49,5,50,21" concept="12" />
-      <node id="6289591591668589568" at="52,72,53,84" concept="11" />
-      <node id="6289591591668589517" at="53,84,54,62" concept="11" />
-      <node id="6289591591668589662" at="56,43,57,53" concept="11" />
-      <node id="6289591591668589704" at="57,53,58,45" concept="11" />
-      <node id="5415035327163506311" at="59,62,60,50" concept="5" />
-      <node id="6289591591668589888" at="62,51,63,55" concept="11" />
-      <node id="6289591591668589895" at="63,55,64,45" concept="11" />
-      <node id="6289591591668589903" at="64,45,65,111" concept="11" />
-      <node id="5415035327163506612" at="65,111,66,17" concept="5" />
-      <node id="6289591591668589929" at="66,17,67,53" concept="5" />
-      <node id="6289591591668589970" at="69,5,70,18" concept="12" />
-      <node id="1207130155281" at="72,78,73,71" concept="11" />
-      <node id="6206193564521359038" at="75,81,76,17" concept="4" />
-      <node id="6206193564521362001" at="77,7,78,79" concept="11" />
-      <node id="1207130155314" at="79,375,80,85" concept="11" />
-      <node id="1207130155331" at="82,123,83,57" concept="5" />
-      <node id="6206193564521414287" at="87,5,88,93" concept="13" />
-      <node id="6206193564521421931" at="88,93,89,113" concept="13" />
-      <node id="1207143472897" at="91,88,92,27" concept="11" />
-      <node id="1207144509279" at="92,27,93,171" concept="11" />
-      <node id="6206193564521388627" at="95,83,96,19" concept="4" />
-      <node id="6206193564521390627" at="97,9,98,81" concept="11" />
-      <node id="1207144694028" at="100,265,101,32" concept="4" />
-      <node id="1226351069701" at="102,280,103,32" concept="4" />
-      <node id="5415035327164076869" at="104,278,105,32" concept="4" />
-      <node id="1237140443216" at="106,280,107,32" concept="4" />
-      <node id="5415035327164076888" at="108,278,109,32" concept="4" />
-      <node id="7376433222636453483" at="112,7,113,72" concept="13" />
-      <node id="1207144725057" at="113,72,114,18" concept="5" />
-      <node id="1207130155369" at="115,5,116,18" concept="12" />
-      <node id="1207078435086" at="120,0,121,0" concept="15" trace="StatementList$m_" />
-      <node id="1207078435086" at="121,0,122,0" concept="15" trace="BaseMethodDeclaration$kD" />
-      <node id="1207078435086" at="122,0,123,0" concept="15" trace="VariableDeclaration$Y0" />
-      <node id="1207078435086" at="123,0,124,0" concept="15" trace="VariableReference$TC" />
-      <node id="1207078435086" at="124,0,125,0" concept="15" trace="ClosureLiteral$rp" />
-      <node id="1207078435086" at="125,0,126,0" concept="15" trace="ParameterDeclaration$RG" />
-      <node id="1207078435086" at="126,0,127,0" concept="15" trace="LocalVariableDeclaration$41" />
-      <node id="1207078435086" at="127,0,128,0" concept="15" trace="BaseAssignmentExpression$PA" />
-      <node id="1207078435086" at="128,0,129,0" concept="15" trace="PostfixIncrementExpression$wn" />
-      <node id="1207078435086" at="129,0,130,0" concept="15" trace="PrefixIncrementExpression$xI" />
-      <node id="1207078435086" at="130,0,131,0" concept="15" trace="PostfixDecrementExpression$GY" />
-      <node id="1207078435086" at="131,0,132,0" concept="15" trace="PrefixDecrementExpression$En" />
-      <node id="1207078435086" at="135,0,136,0" concept="15" trace="body$Ujx2" />
-      <node id="1207078435086" at="136,0,137,0" concept="15" trace="variableDeclaration$N1XG" />
-      <node id="1207078435086" at="137,0,138,0" concept="15" trace="lValue$splI" />
-      <node id="1207078435086" at="138,0,139,0" concept="15" trace="expression$uRUg" />
-      <node id="1207078435086" at="142,0,143,0" concept="15" trace="isFinal$gvTP" />
-      <node id="6289591591668590015" at="35,110,38,7" concept="8" />
-      <node id="6289591591668590300" at="42,31,45,13" concept="9" />
-      <node id="5415035327163506173" at="58,45,61,9" concept="9" />
-      <node id="6206193564521313017" at="74,107,77,7" concept="9" />
-      <node id="1207130448150" at="81,103,84,11" concept="9" />
-      <node id="6206193564521382284" at="94,104,97,9" concept="9" />
-      <node id="6289591591668590151" at="41,107,46,11" concept="9" />
-      <node id="1207130155321" at="80,85,85,9" concept="9" />
-      <node id="6289591591668590122" at="40,71,47,9" concept="8" />
-      <node id="1207130155312" at="78,79,86,7" concept="9" />
-      <node id="6289591591668590099" at="38,7,48,7" concept="9" />
-      <node id="1207144762933" at="99,358,110,11" concept="9" />
-      <node id="6289591591668589549" at="55,51,68,7" concept="9" />
-      <node id="1207144558987" at="98,81,111,9" concept="9" />
-      <node id="1207130155310" at="73,71,87,5" concept="8" />
-      <node id="6289591591668589527" at="54,62,69,5" concept="8" />
-      <node id="6289591591668563655" at="33,182,49,5" concept="9" />
-      <node id="1207144545863" at="93,171,112,7" concept="8" />
-      <node id="6289591591668585099" at="52,0,72,0" concept="16" trace="collectVariableUsages#(Lorg/jetbrains/mps/openapi/model/SNode;)Ljava/util/Map;" />
-      <node id="6289591591668531649" at="31,0,52,0" concept="16" trace="collectVariableDeclarationsToWrap2#(Lorg/jetbrains/mps/openapi/model/SNode;)Ljava/util/List;" />
-      <node id="1207143418304" at="89,113,115,5" concept="7" />
-      <node id="1207078442157" at="72,0,118,0" concept="16" trace="collectVariableDeclarationsToWrap#(Lorg/jetbrains/mps/openapi/model/SNode;)Ljava/util/List;" />
-      <scope id="6289591591668590018" at="36,105,37,116" />
-      <scope id="6289591591668590301" at="43,119,44,125" />
-      <scope id="5415035327163506174" at="59,62,60,50" />
-      <scope id="6206193564521313020" at="75,81,76,17" />
-      <scope id="1207130448151" at="82,123,83,57" />
-      <scope id="6206193564521382287" at="95,83,96,19" />
-      <scope id="1207144762934" at="100,265,101,32" />
-      <scope id="1226350804602" at="102,280,103,32" />
-      <scope id="5415035327164076868" at="104,278,105,32" />
-      <scope id="1237140443215" at="106,280,107,32" />
-      <scope id="5415035327164076887" at="108,278,109,32" />
-      <scope id="6289591591668590015" at="35,110,38,7">
-        <var name="m" id="6289591591668590016" />
-      </scope>
-      <scope id="6289591591668590153" at="42,31,45,13" />
-      <scope id="1207130155328" at="81,103,84,11" />
-      <scope id="6289591591668590125" at="41,107,46,11" />
-      <scope id="6289591591668589550" at="56,43,61,9">
-        <var name="ri" id="6289591591668589663" />
-        <var name="var" id="6289591591668589705" />
-      </scope>
-      <scope id="6289591591668589560" at="62,51,67,53">
-        <var name="var" id="6289591591668589896" />
-        <var name="wi" id="6289591591668589889" />
-        <var name="writes" id="6289591591668589904" />
-      </scope>
-      <scope id="1207130155313" at="79,375,85,9">
+      <node id="3670789381090928015" at="20,45,21,118" concept="13" />
+      <node id="3670789381090928034" at="21,118,22,122" concept="13" />
+      <node id="3670789381090928054" at="22,122,23,103" concept="13" />
+      <node id="3670789381090696004" at="24,212,25,19" concept="12" />
+      <node id="1207144509279" at="26,5,27,169" concept="11" />
+      <node id="6206193564521388627" at="29,81,30,17" concept="4" />
+      <node id="6206193564521390627" at="31,7,32,79" concept="11" />
+      <node id="3670789381090815502" at="34,263,35,22" concept="12" />
+      <node id="3670789381090824605" at="36,278,37,22" concept="12" />
+      <node id="3670789381090834082" at="38,276,39,22" concept="12" />
+      <node id="3670789381090843408" at="40,278,41,22" concept="12" />
+      <node id="3670789381090852838" at="42,276,43,22" concept="12" />
+      <node id="3670789381090696006" at="46,5,47,17" concept="12" />
+      <node id="1207130155281" at="49,78,50,71" concept="11" />
+      <node id="6206193564521359038" at="52,81,53,17" concept="4" />
+      <node id="6206193564521362001" at="54,7,55,79" concept="11" />
+      <node id="1207130155314" at="56,103,57,85" concept="11" />
+      <node id="1207130155331" at="59,79,60,57" concept="5" />
+      <node id="1207130155369" at="64,5,65,18" concept="12" />
+      <node id="1207078435086" at="69,0,70,0" concept="15" trace="LocalVariableDeclaration$41" />
+      <node id="1207078435086" at="70,0,71,0" concept="15" trace="ParameterDeclaration$RG" />
+      <node id="1207078435086" at="71,0,72,0" concept="15" trace="StatementList$m_" />
+      <node id="1207078435086" at="72,0,73,0" concept="15" trace="BaseMethodDeclaration$kD" />
+      <node id="1207078435086" at="73,0,74,0" concept="15" trace="VariableReference$TC" />
+      <node id="1207078435086" at="74,0,75,0" concept="15" trace="BaseAssignmentExpression$PA" />
+      <node id="1207078435086" at="75,0,76,0" concept="15" trace="PostfixIncrementExpression$wn" />
+      <node id="1207078435086" at="76,0,77,0" concept="15" trace="PrefixIncrementExpression$xI" />
+      <node id="1207078435086" at="77,0,78,0" concept="15" trace="PostfixDecrementExpression$GY" />
+      <node id="1207078435086" at="78,0,79,0" concept="15" trace="PrefixDecrementExpression$En" />
+      <node id="1207078435086" at="79,0,80,0" concept="15" trace="ClosureLiteral$rp" />
+      <node id="1207078435086" at="83,0,84,0" concept="15" trace="isFinal$gvTP" />
+      <node id="1207078435086" at="87,0,88,0" concept="15" trace="lValue$splI" />
+      <node id="1207078435086" at="88,0,89,0" concept="15" trace="expression$uRUg" />
+      <node id="1207078435086" at="89,0,90,0" concept="15" trace="variableDeclaration$N1XG" />
+      <node id="3670789381090696000" at="23,103,26,5" concept="9" />
+      <node id="6206193564521382284" at="28,102,31,7" concept="9" />
+      <node id="6206193564521313017" at="51,107,54,7" concept="9" />
+      <node id="1207130448150" at="58,103,61,11" concept="9" />
+      <node id="1207130155321" at="57,85,62,9" concept="9" />
+      <node id="1207130155312" at="55,79,63,7" concept="9" />
+      <node id="1207144762933" at="33,84,44,9" concept="9" />
+      <node id="1207144558987" at="32,79,45,7" concept="9" />
+      <node id="1207130155310" at="50,71,64,5" concept="8" />
+      <node id="1207078442157" at="49,0,67,0" concept="16" trace="collectVariableDeclarationsToWrap#(Lorg/jetbrains/mps/openapi/model/SNode;)Ljava/util/List;" />
+      <node id="1207144545863" at="27,169,46,5" concept="8" />
+      <node id="3670789381090695996" at="20,0,49,0" concept="16" trace="isWrapped#(Lorg/jetbrains/mps/openapi/model/SNode;)Z" />
+      <scope id="3670789381090696003" at="24,212,25,19" />
+      <scope id="6206193564521382287" at="29,81,30,17" />
+      <scope id="1207144762934" at="34,263,35,22" />
+      <scope id="1226350804602" at="36,278,37,22" />
+      <scope id="5415035327164076868" at="38,276,39,22" />
+      <scope id="1237140443215" at="40,278,41,22" />
+      <scope id="5415035327164076887" at="42,276,43,22" />
+      <scope id="6206193564521313020" at="52,81,53,17" />
+      <scope id="1207130448151" at="59,79,60,57" />
+      <scope id="1207130155328" at="58,103,61,11" />
+      <scope id="1207130155313" at="56,103,62,9">
         <var name="vd" id="1207130155315" />
       </scope>
-      <scope id="6289591591668590122" at="40,71,47,9">
-        <var name="m" id="6289591591668590123" />
-      </scope>
-      <scope id="6289591591668590100" at="39,53,47,9">
-        <var name="wrpMap" id="6289591591668590113" />
-      </scope>
-      <scope id="1207144558988" at="99,358,110,11" />
-      <scope id="1207130155311" at="74,107,86,7">
+      <scope id="1207144558988" at="33,84,44,9" />
+      <scope id="1207130155311" at="51,107,63,7">
         <var name="varRef" id="6206193564521362004" />
       </scope>
-      <scope id="6289591591668589528" at="55,51,68,7" />
-      <scope id="6289591591668563656" at="34,31,48,7">
-        <var name="clsMap" id="6289591591668589976" />
-      </scope>
-      <scope id="1207130155310" at="73,71,87,5">
+      <scope id="1207130155310" at="50,71,64,5">
         <var name="desc" id="1207130155364" />
       </scope>
-      <scope id="6289591591668589527" at="54,62,69,5">
-        <var name="ins" id="6289591591668589531" />
-      </scope>
-      <scope id="1207144545864" at="94,104,111,9">
-        <var name="varRef" id="6206193564521390628" />
-      </scope>
-      <scope id="6289591591668585102" at="52,72,70,18">
-        <var name="prg" id="6289591591668589518" />
-        <var name="resMap" id="6289591591668589569" />
-      </scope>
-      <scope id="6289591591668531652" at="31,79,50,21">
-        <var name="resVdecls" id="6289591591668563666" />
-        <var name="wrpPrgNode" id="6289591591668563283" />
-      </scope>
-      <scope id="1207144545863" at="93,171,112,7">
-        <var name="desc" id="1207144545867" />
-      </scope>
-      <scope id="6289591591668585099" at="52,0,72,0">
-        <var name="start" id="6289591591668585117" />
-      </scope>
-      <scope id="6289591591668531649" at="31,0,52,0">
-        <var name="closure" id="6289591591668563291" />
-      </scope>
-      <scope id="1207143418305" at="91,88,114,18">
-        <var name="sl" id="1207144509280" />
-        <var name="vd" id="1207143472898" />
-      </scope>
-      <scope id="1207143418304" at="89,113,115,5">
-        <var name="it" id="1207143418307" />
-      </scope>
-      <scope id="1207078442160" at="72,78,116,18">
+      <scope id="1207078442160" at="49,78,65,18">
         <var name="vdecls" id="1207130155282" />
       </scope>
-      <scope id="1207078442157" at="72,0,118,0">
+      <scope id="1207144545864" at="28,102,45,7">
+        <var name="varRef" id="6206193564521390628" />
+      </scope>
+      <scope id="1207078442157" at="49,0,67,0">
         <var name="closure" id="1207078468785" />
       </scope>
-      <unit id="1207078435086" at="141,0,144,0" name="jetbrains.mps.baseLanguage.closures.helper.WrappersUtils$PROPS" />
-      <unit id="1207078435086" at="134,0,140,0" name="jetbrains.mps.baseLanguage.closures.helper.WrappersUtils$LINKS" />
-      <unit id="1207078435086" at="119,0,133,0" name="jetbrains.mps.baseLanguage.closures.helper.WrappersUtils$CONCEPTS" />
-      <unit id="1207078435086" at="30,0,145,0" name="jetbrains.mps.baseLanguage.closures.helper.WrappersUtils" />
+      <scope id="1207144545863" at="27,169,46,5">
+        <var name="desc" id="1207144545867" />
+      </scope>
+      <scope id="3670789381090695999" at="20,45,47,17">
+        <var name="sl" id="1207144509280" />
+      </scope>
+      <scope id="3670789381090695996" at="20,0,49,0">
+        <var name="vd" id="3670789381090695997" />
+      </scope>
+      <unit id="1207078435086" at="82,0,85,0" name="jetbrains.mps.baseLanguage.closures.helper.WrappersUtils$PROPS" />
+      <unit id="1207078435086" at="86,0,91,0" name="jetbrains.mps.baseLanguage.closures.helper.WrappersUtils$LINKS" />
+      <unit id="1207078435086" at="68,0,81,0" name="jetbrains.mps.baseLanguage.closures.helper.WrappersUtils$CONCEPTS" />
+      <unit id="1207078435086" at="19,0,92,0" name="jetbrains.mps.baseLanguage.closures.helper.WrappersUtils" />
     </file>
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c89590339(jetbrains.mps.baseLanguage.closures.helper)/1240908386453">

@@ -48,6 +48,10 @@ public class TypesystemDescriptor extends BaseHelginsDescriptor {
       this.myNonTypesystemRules.add(nonTypesystemRule);
     }
     {
+      NonTypesystemRule_Runtime nonTypesystemRule = new check_ClosureLiteral_UninitializedCapture_NonTypesystemRule();
+      this.myNonTypesystemRules.add(nonTypesystemRule);
+    }
+    {
       NonTypesystemRule_Runtime nonTypesystemRule = new check_ClosureLiteral_clashingName_NonTypesystemRule();
       this.myNonTypesystemRules.add(nonTypesystemRule);
     }

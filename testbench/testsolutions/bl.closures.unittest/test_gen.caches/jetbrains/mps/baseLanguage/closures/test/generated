@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<product version="3" modelHash="-4wwusrhtw8o734myevqirxq8icrtc7q">
-  <files names="ClosureDataFlow_Test.java:ClosureLiteralDataFlow_Test.java" />
+<product version="3" modelHash="-3mp59zyoloz1yk0466fnl4hgmvsrrqp">
+  <files names="ClosureDataFlow_Test.java:ClosureLiteralDataFlow_Test.java:UninitializedCapturedVariable_Test.java" />
 </product>
 
