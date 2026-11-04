@@ -37,6 +37,7 @@ import org.jetbrains.mps.openapi.module.SRepositoryListener;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -98,14 +99,16 @@ public class ClassesGenPolicy extends BaseDirectoryIndexExcludePolicy {
       .expireWith(disposable)
       .submit(AppExecutorUtil.getAppExecutorService())
       .onSuccess(result -> {
-        myExcludeRootsCache.set(result);
-        ApplicationManager.getApplication().invokeLaterOnWriteThread(() ->
-          ApplicationManager.getApplication().runWriteAction(() ->
-            ProjectRootManagerEx.getInstanceEx(getProject()).makeRootsChange(() -> {}, RESCAN_DEPENDENCIES_IF_NEEDED) // or should it be TOTAL_RESCAN? not sure
-          ),
-          ModalityState.defaultModalityState(),
-          getProject().getDisposed()
-        );
+        if (!Objects.equals(result, myExcludeRootsCache.get())) {
+          myExcludeRootsCache.set(result);
+          ApplicationManager.getApplication().invokeLaterOnWriteThread(() ->
+            ApplicationManager.getApplication().runWriteAction(() ->
+              ProjectRootManagerEx.getInstanceEx(getProject()).makeRootsChange(() -> {}, RESCAN_DEPENDENCIES_IF_NEEDED) // or should it be TOTAL_RESCAN? not sure
+            ),
+            ModalityState.defaultModalityState(),
+            getProject().getDisposed()
+          );
+        }
       });
   }
 
