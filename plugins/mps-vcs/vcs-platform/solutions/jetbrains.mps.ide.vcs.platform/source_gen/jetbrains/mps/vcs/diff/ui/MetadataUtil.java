@@ -5,7 +5,6 @@ package jetbrains.mps.vcs.diff.ui;
 import jetbrains.mps.annotations.GeneratedClass;
 import org.jetbrains.mps.openapi.model.SModel;
 import jetbrains.mps.vcs.diff.merge.MergeTemporaryModel;
-import jetbrains.mps.vcs.diff.ui.common.DiffModelUtil;
 import org.jetbrains.mps.openapi.model.SNodeId;
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade;
 import jetbrains.mps.smodel.ModelImports;
@@ -46,10 +45,6 @@ public class MetadataUtil {
     util.addUsedLanguages();
     util.createModelRoot(origin);
     mm.setChanged(false);
-  }
-
-  public static void dispose(SModel model) {
-    DiffModelUtil.unregisterModel(model);
   }
 
   public static SNodeId getMetadataRootId() {

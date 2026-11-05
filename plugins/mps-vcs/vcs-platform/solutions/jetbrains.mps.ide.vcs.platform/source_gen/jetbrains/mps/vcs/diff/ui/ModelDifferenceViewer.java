@@ -52,9 +52,9 @@ import jetbrains.mps.vcs.diff.ui.common.DiffModelUtil;
 import jetbrains.mps.internal.collections.runtime.Sequence;
 import org.jetbrains.mps.openapi.module.ModelAccess;
 import com.intellij.openapi.application.ApplicationManager;
+import jetbrains.mps.smodel.ModelWriteRunnable;
 import com.intellij.openapi.application.ModalityState;
 import jetbrains.mps.internal.collections.runtime.NotNullWhereFilter;
-import jetbrains.mps.lang.smodel.generator.smodelAdapter.SModelOperations;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.actionSystem.ActionManager;
@@ -252,20 +252,16 @@ public class ModelDifferenceViewer implements DataProvider {
     }
   }
 
-  private void executeSafeInWriteAction(final Runnable r) {
+  private void executeSafeInWriteAction(Runnable r) {
     ModelAccess modelAccess = myProject.getModelAccess();
     if (modelAccess.canWrite()) {
       r.run();
     } else if (modelAccess.canRead()) {
       // invoke later to prevent IllegalModelAccessException
-      ApplicationManager.getApplication().invokeLater(() -> executeInWriteAction(r), ModalityState.nonModal());
+      ApplicationManager.getApplication().invokeLater(new ModelWriteRunnable(modelAccess, r), ModalityState.nonModal());
     } else {
-      executeInWriteAction(r);
+      new ModelWriteRunnable(modelAccess, r).run();
     }
-  }
-
-  private void executeInWriteAction(final Runnable r) {
-    myProject.getRepository().getModelAccess().runWriteAction(() -> r.run());
   }
 
   private void unregisterModels() {
@@ -321,7 +317,7 @@ public class ModelDifferenceViewer implements DataProvider {
     myRootId = rootId;
     myProject.getRepository().getModelAccess().runReadAction(() -> {
       boolean isMetadataView = rootId == null;
-      SNodeId nodeId = (isMetadataView ? ListSequence.fromList(SModelOperations.roots(ListSequence.fromList(myMetadataChangeSets).getElement(0).getOldModel(), null)).first().getNodeId() : rootId);
+      SNodeId nodeId = (isMetadataView ? MetadataUtil.getMetadataRootId() : rootId);
       if (myRootDifferencePane == null) {
         myRootDifferencePane = (isThreePanelDiff() ? new ThreeSideRootDifferencePane(myProject, nodeId, isMetadataView, myModels, myMetadataModelsCompat, myChangeSets, myMetadataChangeSets, myDiffRequest, myDiffViewer) : new TwoSideRootDifferencePane(myProject, nodeId, isMetadataView, myModels, myMetadataModelsCompat, myChangeSets, myMetadataChangeSets, myDiffRequest, myDiffViewer));
         attachRootDifferencePane(myRootDifferencePane);
@@ -490,10 +486,10 @@ public class ModelDifferenceViewer implements DataProvider {
     }
     private void rehighlight() {
       ApplicationManager.getApplication().invokeLater(() -> syncMetadataChanges());
-      check_b117w_a1a4hd(myRootDifferencePane);
+      check_b117w_a1a4fd(myRootDifferencePane);
     }
   }
-  private static void check_b117w_a1a4hd(RootDifferencePane checkedDotOperand) {
+  private static void check_b117w_a1a4fd(RootDifferencePane checkedDotOperand) {
     if (null != checkedDotOperand) {
       checkedDotOperand.rehighlightInReadAction(true);
     }
