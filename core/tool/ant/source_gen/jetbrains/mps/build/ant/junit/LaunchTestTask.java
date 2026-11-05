@@ -125,6 +125,10 @@ public class LaunchTestTask extends MpsLoadTask {
     }
     cp.add(launcherSupport);
 
+    // HOTFIX for MPS-40412
+    // see also MPS-40432
+    cp.removeIf((file) -> file.getName().contains("intellij.platform.builtInServer.impl.jar"));
+
     return cp;
   }
 

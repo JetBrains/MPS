@@ -7,6 +7,7 @@
     <use id="83888646-71ce-4f1c-9c53-c54016f6ad4f" name="jetbrains.mps.baseLanguage.collections" version="2" />
     <use id="c7fb639f-be78-4307-89b0-b5959c3fa8c8" name="jetbrains.mps.lang.text" version="0" />
     <use id="ceab5195-25ea-4f22-9b92-103b95ca8c0c" name="jetbrains.mps.lang.core" version="2" />
+    <use id="fd392034-7849-419d-9071-12563d152375" name="jetbrains.mps.baseLanguage.closures" version="0" />
   </languages>
   <imports>
     <import index="644x" ref="r:7b2ffdb7-2bfc-4488-8c0c-ee8fe93fe3c1(jetbrains.mps.build.ant)" />
@@ -231,6 +232,13 @@
       <concept id="1170345865475" name="jetbrains.mps.baseLanguage.structure.AnonymousClass" flags="ig" index="1Y3b0j">
         <reference id="1170346070688" name="classifier" index="1Y3XeK" />
       </concept>
+    </language>
+    <language id="fd392034-7849-419d-9071-12563d152375" name="jetbrains.mps.baseLanguage.closures">
+      <concept id="1199569711397" name="jetbrains.mps.baseLanguage.closures.structure.ClosureLiteral" flags="nn" index="1bVj0M">
+        <child id="1199569906740" name="parameter" index="1bW2Oz" />
+        <child id="1199569916463" name="body" index="1bW5cS" />
+      </concept>
+      <concept id="8992394414545679616" name="jetbrains.mps.baseLanguage.closures.structure.ClosureVarType" flags="ig" index="3VYd8j" />
     </language>
     <language id="f2801650-65d5-424e-bb1b-463a8781b786" name="jetbrains.mps.baseLanguage.javadoc">
       <concept id="6971016359099800069" name="jetbrains.mps.baseLanguage.javadoc.structure.IHoldSingleCommentLine" flags="ngI" index="2JaDLO">
@@ -1130,6 +1138,69 @@
           </node>
         </node>
         <node concept="3clFbH" id="5gsHVKA4ZYh" role="3cqZAp" />
+        <node concept="3SKdUt" id="6FGmTJs3VmZ" role="3cqZAp">
+          <node concept="1PaTwC" id="6FGmTJs3Vn0" role="1aUNEU">
+            <node concept="3oM_SD" id="6FGmTJs3XtY" role="1PaTwD">
+              <property role="3oM_SC" value="HOTFIX" />
+            </node>
+            <node concept="3oM_SD" id="6FGmTJs3XtZ" role="1PaTwD">
+              <property role="3oM_SC" value="for" />
+            </node>
+            <node concept="3oM_SD" id="6FGmTJs3Xu0" role="1PaTwD">
+              <property role="3oM_SC" value="MPS-40412" />
+            </node>
+          </node>
+        </node>
+        <node concept="3SKdUt" id="6FGmTJs3ZpU" role="3cqZAp">
+          <node concept="1PaTwC" id="6FGmTJs3ZpV" role="1aUNEU">
+            <node concept="3oM_SD" id="6FGmTJs41x7" role="1PaTwD">
+              <property role="3oM_SC" value="see" />
+            </node>
+            <node concept="3oM_SD" id="6FGmTJs41x8" role="1PaTwD">
+              <property role="3oM_SC" value="also" />
+            </node>
+            <node concept="3oM_SD" id="6FGmTJs41x9" role="1PaTwD">
+              <property role="3oM_SC" value="MPS-40432" />
+            </node>
+          </node>
+        </node>
+        <node concept="3clFbF" id="6FGmTJs3G4a" role="3cqZAp">
+          <node concept="2OqwBi" id="6FGmTJs3Ltv" role="3clFbG">
+            <node concept="37vLTw" id="6FGmTJs3HVi" role="2Oq$k0">
+              <ref role="3cqZAo" node="5gsHVK$Y3fQ" resolve="cp" />
+            </node>
+            <node concept="liA8E" id="6FGmTJs3Ltw" role="2OqNvi">
+              <ref role="37wK5l" to="33ny:~Collection.removeIf(java.util.function.Predicate)" resolve="removeIf" />
+              <node concept="1bVj0M" id="6FGmTJs3Ltx" role="37wK5m">
+                <node concept="37vLTG" id="6FGmTJs3Lty" role="1bW2Oz">
+                  <property role="TrG5h" value="file" />
+                  <node concept="3VYd8j" id="6FGmTJs3Ltz" role="1tU5fm" />
+                </node>
+                <node concept="3clFbS" id="6FGmTJs3Lt$" role="1bW5cS">
+                  <node concept="3clFbF" id="6FGmTJs3Lt_" role="3cqZAp">
+                    <node concept="2OqwBi" id="6FGmTJs3PBp" role="3clFbG">
+                      <node concept="2OqwBi" id="6FGmTJs3NGL" role="2Oq$k0">
+                        <node concept="37vLTw" id="6FGmTJs3LtC" role="2Oq$k0">
+                          <ref role="3cqZAo" node="6FGmTJs3Lty" resolve="file" />
+                        </node>
+                        <node concept="liA8E" id="6FGmTJs3NGM" role="2OqNvi">
+                          <ref role="37wK5l" to="guwi:~File.getName()" resolve="getName" />
+                        </node>
+                      </node>
+                      <node concept="liA8E" id="6FGmTJs3PBq" role="2OqNvi">
+                        <ref role="37wK5l" to="wyt6:~String.contains(java.lang.CharSequence)" resolve="contains" />
+                        <node concept="Xl_RD" id="6FGmTJs3PBr" role="37wK5m">
+                          <property role="Xl_RC" value="intellij.platform.builtInServer.impl.jar" />
+                        </node>
+                      </node>
+                    </node>
+                  </node>
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
+        <node concept="3clFbH" id="6FGmTJs3Dvo" role="3cqZAp" />
         <node concept="3clFbF" id="5gsHVK$Yfqv" role="3cqZAp">
           <node concept="37vLTw" id="5gsHVK$Yfqt" role="3clFbG">
             <ref role="3cqZAo" node="5gsHVK$Y3fQ" resolve="cp" />
