@@ -7,14 +7,14 @@ import jetbrains.mps.lang.typesystem.runtime.NonTypesystemRule_Runtime;
 import org.jetbrains.mps.openapi.model.SNode;
 import jetbrains.mps.typesystem.inference.TypeCheckingContext;
 import jetbrains.mps.lang.typesystem.runtime.IsApplicableStatus;
-import org.jetbrains.mps.openapi.module.SModule;
+import org.jetbrains.mps.openapi.model.SModel;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SNodeOperations;
+import jetbrains.mps.extapi.model.TransientSModel;
 import jetbrains.mps.project.SModuleOperations;
 import jetbrains.mps.errors.messageTargets.MessageTarget;
 import jetbrains.mps.errors.messageTargets.NodeMessageTarget;
 import jetbrains.mps.errors.IErrorReporter;
 import org.jetbrains.mps.openapi.language.SAbstractConcept;
-import org.jetbrains.mps.openapi.model.SModel;
 import org.jetbrains.mps.openapi.language.SInterfaceConcept;
 import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
 
@@ -22,8 +22,11 @@ public class check_TestIsCompiledAndLoadedByMPS_NonTypesystemRule extends Abstra
   public check_TestIsCompiledAndLoadedByMPS_NonTypesystemRule() {
   }
   public void applyRule(final SNode testCase, final TypeCheckingContext typeCheckingContext, IsApplicableStatus status) {
-    SModule module = check_5ghzfe_a0a0b(SNodeOperations.getModel(testCase));
-    if (!(SModuleOperations.isCompileInMps(module))) {
+    SModel tcm = SNodeOperations.getModel(testCase);
+    if (tcm == null || tcm instanceof TransientSModel) {
+      return;
+    }
+    if (!(SModuleOperations.isCompileInMps(tcm.getModule()))) {
       {
         final MessageTarget errorTarget = new NodeMessageTarget();
         IErrorReporter _reporter_2309309498 = typeCheckingContext.reportTypeError(testCase, "Tests must be created in modules compiled by MPS", "r:2b2539c5-00c8-487d-9567-ecc2b9274c7b(jetbrains.mps.baseLanguage.unitTest.typesystem)", "8797237962361641928", null, errorTarget);
@@ -38,12 +41,6 @@ public class check_TestIsCompiledAndLoadedByMPS_NonTypesystemRule extends Abstra
   }
   public boolean overrides() {
     return false;
-  }
-  private static SModule check_5ghzfe_a0a0b(SModel checkedDotOperand) {
-    if (null != checkedDotOperand) {
-      return checkedDotOperand.getModule();
-    }
-    return null;
   }
 
   private static final class CONCEPTS {
