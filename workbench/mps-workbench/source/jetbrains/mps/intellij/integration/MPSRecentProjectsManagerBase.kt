@@ -33,13 +33,11 @@ class MPSRecentProjectsManagerBase(coroutineScope: CoroutineScope) : RecentProje
                 return null
             }
 
-            val localOptions = options.copy(runConfigurators = false)
-
             val trusted = OpenMPSProjectTrustProjectHelper.checkTrustSuspend(projectFile)
 
             return if (trusted) {
                 withContext(Dispatchers.EDT) {
-                    super.openProject(projectFile, localOptions)
+                    super.openProject(projectFile, options)
                 }
             } else {
                 LOG.info("Project is not trusted -> return null")
