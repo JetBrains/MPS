@@ -5,16 +5,23 @@ package jetbrains.mps.vcs.changesmanager.editor;
 import jetbrains.mps.annotations.GeneratedClass;
 import javax.swing.JPanel;
 import jetbrains.mps.vcs.diff.ui.common.ChangeGroup;
-import jetbrains.mps.nodeEditor.EditorComponent;
 import javax.swing.JLayeredPane;
 import com.intellij.openapi.actionSystem.ActionToolbar;
+import jetbrains.mps.smodel.RepositoryFacade;
+import jetbrains.mps.nodefs.FileSystemRepoBridge;
 import java.awt.BorderLayout;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.ui.ColoredSideBorder;
 import java.awt.Color;
 import jetbrains.mps.vcs.diff.changes.ChangeType;
+import jetbrains.mps.vcs.diff.merge.ModelLot;
+import org.jetbrains.mps.openapi.module.SRepository;
+import jetbrains.mps.vcs.diff.merge.MergeTemporaryModel;
+import org.jetbrains.mps.openapi.model.SModel;
+import jetbrains.mps.internal.collections.runtime.ListSequence;
 import javax.swing.SwingUtilities;
+import jetbrains.mps.nodeEditor.EditorComponent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.FocusAdapter;
@@ -22,19 +29,19 @@ import java.awt.event.FocusEvent;
 
 @GeneratedClass(nodeId = "2881457021876857496", model = "r:06e50ed3-c893-4772-ba4a-878fc9de01d0(jetbrains.mps.vcs.changesmanager.editor)")
 /*package*/ class PopupPanel extends JPanel {
-  private ChangeStripsPainter myPainter;
-  private ChangeGroup myChangeGroup;
-  private MyMouseListener myMouseListener = new MyMouseListener();
-  private MyFocusListener myFocusListener = new MyFocusListener();
-  private EditorComponent myEditor;
+  private final ChangeStripsPainter myPainter;
+  private final ChangeGroup myChangeGroup;
+  private final MyMouseListener myMouseListener = new MyMouseListener();
+  private final MyFocusListener myFocusListener = new MyFocusListener();
   private JLayeredPane myLayeredPane;
   private BaseVersionEditorComponent myBaseEditor;
-  private ActionToolbar myToolbar;
+  private final ActionToolbar myToolbar;
+  private RepositoryFacade myTempRepo;
+  private FileSystemRepoBridge myTempRepoFiles;
 
   public PopupPanel(ChangeStripsPainter painter, ChangeGroup group) {
     myChangeGroup = group;
     myPainter = painter;
-    myEditor = myPainter.getEditorComponent();
     setLayout(new BorderLayout());
     setOpaque(false);
 
@@ -47,7 +54,20 @@ import java.awt.event.FocusEvent;
     myToolbar.getComponent().setBorder(new ColoredSideBorder(Color.BLACK, Color.BLACK, (myChangeGroup.getChangeType() != ChangeType.ADD ? null : Color.BLACK), Color.BLACK, 1));
 
     if (myChangeGroup.getChangeType() != ChangeType.ADD) {
-      myBaseEditor = new BaseVersionEditorComponent(myEditor.getEditorContext().getRepository(), myChangeGroup);
+      // FIXME seems the proper place for this code is ChangeStripsPainter, to keep single copy of old model. Could use it then in ChangesStripActionHelper w/o need to copy again for copyOldNodes()
+      myTempRepo = RepositoryFacade.createPlainRegistrationRepo();
+      myTempRepoFiles = new FileSystemRepoBridge(myTempRepo.get());
+      // we dispose whole repo at once, hence do not track ModelLot instance
+      final ModelLot ml = new ModelLot(myTempRepo);
+      // XXX in fact, likely shall use that of a model from changeGroup - after all, it is the model we access, not the one in the editor
+      //    however, code in ChangesStringActionHelper.copyOldNodes suggests the oldModel is detached.
+      SRepository srcRepo = myPainter.getEditorComponent().getEditorContext().getRepository();
+      MergeTemporaryModel roCopy = srcRepo.getModelAccess().computeReadAction(() -> {
+        SModel original = ListSequence.fromList(myChangeGroup.getChanges()).first().getChangeSet().getOldModel();
+        return ml.addCloneOf(original, original.getName().getStereotype(), true);
+      });
+      ml.registerModels();
+      myBaseEditor = new BaseVersionEditorComponent(roCopy, myChangeGroup);
       // Do not extend this editor with extensions: the project is tricky to get from this point,
       // and this editor doesn't seem to be that important to extend.
       add(myBaseEditor.getScrollPane(), BorderLayout.CENTER);
@@ -59,13 +79,13 @@ import java.awt.event.FocusEvent;
   }
 
   public void show(int x, int y) {
-    myLayeredPane = myEditor.getRootPane().getLayeredPane();
-    setLocation(SwingUtilities.convertPoint(myEditor, x, y, myLayeredPane));
+    myLayeredPane = myPainter.getEditorComponent().getRootPane().getLayeredPane();
+    setLocation(SwingUtilities.convertPoint(myPainter.getEditorComponent(), x, y, myLayeredPane));
     setVisible(true);
     myLayeredPane.add(this, JLayeredPane.POPUP_LAYER);
 
     myPainter.setGroupHighlighted(myChangeGroup, true);
-    myToolbar.updateActionsImmediately();
+    myToolbar.updateActionsAsync();
     setSize(getPreferredSize());
     int overflow = ((int) getBounds().getMaxX()) - myLayeredPane.getWidth();
     if (overflow > 0) {
@@ -79,13 +99,15 @@ import java.awt.event.FocusEvent;
   }
 
   private void addListeners() {
-    myEditor.addMouseListener(myMouseListener);
-    myEditor.addFocusListener(myFocusListener);
+    EditorComponent ec = myPainter.getEditorComponent();
+    ec.addMouseListener(myMouseListener);
+    ec.addFocusListener(myFocusListener);
   }
 
   private void removeListeners() {
-    myEditor.removeFocusListener(myFocusListener);
-    myEditor.removeMouseListener(myMouseListener);
+    EditorComponent ec = myPainter.getEditorComponent();
+    ec.removeFocusListener(myFocusListener);
+    ec.removeMouseListener(myMouseListener);
   }
 
   /*package*/ void dispose() {
@@ -105,6 +127,12 @@ import java.awt.event.FocusEvent;
       myBaseEditor = null;
     }
     myLayeredPane = null;
+    if (myTempRepo != null) {
+      myTempRepoFiles.close();
+      myTempRepo.dispose();
+      myTempRepo = null;
+      myTempRepoFiles = null;
+    }
   }
   private class MyMouseListener extends MouseAdapter {
     public MyMouseListener() {

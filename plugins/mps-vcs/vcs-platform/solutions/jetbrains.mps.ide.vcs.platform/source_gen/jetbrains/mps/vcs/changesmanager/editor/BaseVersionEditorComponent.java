@@ -6,15 +6,12 @@ import jetbrains.mps.annotations.GeneratedClass;
 import jetbrains.mps.nodeEditor.EditorComponent;
 import jetbrains.mps.openapi.editor.message.EditorMessageOwner;
 import org.jetbrains.mps.openapi.model.SModel;
-import org.jetbrains.mps.openapi.module.SRepository;
+import org.jetbrains.annotations.NotNull;
 import jetbrains.mps.vcs.diff.ui.common.ChangeGroup;
 import org.jetbrains.mps.openapi.module.ModelAccess;
-import jetbrains.mps.vcs.diff.merge.MergeTemporaryModel;
-import jetbrains.mps.internal.collections.runtime.ListSequence;
-import jetbrains.mps.vcs.diff.ui.common.DiffModelUtil;
-import jetbrains.mps.baseLanguage.closures.runtime.Wrappers;
 import jetbrains.mps.vcs.diff.ui.common.Bounds;
 import org.jetbrains.mps.openapi.model.SNode;
+import jetbrains.mps.internal.collections.runtime.ListSequence;
 import jetbrains.mps.nodeEditor.EditorSettings;
 import jetbrains.mps.vcs.diff.ui.common.ChangeEditorMessage;
 import jetbrains.mps.vcs.diff.ui.common.ChangeEditorMessageFactory;
@@ -24,40 +21,38 @@ import jetbrains.mps.openapi.editor.cells.CellTraversalUtil;
 import java.awt.Rectangle;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.JScrollPane;
+import com.intellij.ui.components.JBScrollPane;
 import javax.swing.BorderFactory;
-import java.awt.Color;
+import com.intellij.ui.JBColor;
 import jetbrains.mps.nodeEditor.cells.EditorCell_Constant;
 
 @GeneratedClass(nodeId = "4477049948824855836", model = "r:06e50ed3-c893-4772-ba4a-878fc9de01d0(jetbrains.mps.vcs.changesmanager.editor)")
 public class BaseVersionEditorComponent extends EditorComponent implements EditorMessageOwner {
-  private SModel myBaseModel;
+  private final SModel myBaseModel;
 
-  public BaseVersionEditorComponent(SRepository repository, final ChangeGroup changeGroup) {
-    super(repository);
-    final ModelAccess modelAccess = repository.getModelAccess();
-    modelAccess.runWriteAction(() -> {
-      myBaseModel = MergeTemporaryModel.readonlyCloneOf(ListSequence.fromList(changeGroup.getChanges()).first().getChangeSet().getOldModel());
-      DiffModelUtil.renameModelAndRegister(myBaseModel, null);
-    });
-    final Wrappers._T<Bounds> verticalBounds = new Wrappers._T<Bounds>();
-    modelAccess.runReadAction(() -> {
-      SNode baseRooot = myBaseModel.getNode(ListSequence.fromList(changeGroup.getChanges()).first().getRootId());
-      editNode(baseRooot);
+  public BaseVersionEditorComponent(@NotNull SModel baseModel, @NotNull final ChangeGroup changeGroup) {
+    super(baseModel.getRepository());
+    myBaseModel = baseModel;
+    final ModelAccess modelAccess = baseModel.getRepository().getModelAccess();
+    // model read here is not that much for changeGroup, but for baseModel (indeed, it's from a repo w/o strict control now, yet doesn't hurt to follow the general model access rules)
+    Bounds verticalBounds = modelAccess.computeReadAction(() -> {
+      SNode baseRoot = myBaseModel.getNode(ListSequence.fromList(changeGroup.getChanges()).first().getRootId());
+      editNode(baseRoot);
 
       setBackground(EditorSettings.getInstance().getCaretRowColor());
 
       Iterable<ChangeEditorMessage> messages = ListSequence.fromList(changeGroup.getChanges()).translate((ch) -> ChangeEditorMessageFactory.createMessages(myBaseModel, true, ch, BaseVersionEditorComponent.this, null));
-      verticalBounds.value = Sequence.fromIterable(messages).select((m) -> m.getBounds(BaseVersionEditorComponent.this)).reduceLeft((a, b) -> a.merge(b));
+      return Sequence.fromIterable(messages).select((m) -> m.getBounds(BaseVersionEditorComponent.this)).reduceLeft((a, b) -> a.merge(b));
     });
     int rightMost = 0;
     for (EditorCell leafCell = CellTraversalUtil.getFirstLeaf(getRootCell()); leafCell != null; leafCell = CellTraversalUtil.getNextLeaf(leafCell)) {
-      if (verticalBounds.value.contains(leafCell.getY()) || verticalBounds.value.contains(leafCell.getBottom()) || verticalBounds.value.contains(leafCell.getY() + leafCell.getHeight() / 2)) {
+      if (verticalBounds.contains(leafCell.getY()) || verticalBounds.contains(leafCell.getBottom()) || verticalBounds.contains(leafCell.getY() + leafCell.getHeight() / 2)) {
         if (leafCell.getRight() > rightMost) {
           rightMost = leafCell.getRight();
         }
       }
     }
-    Rectangle viewRect = new Rectangle(0, (int) verticalBounds.value.start(), rightMost, verticalBounds.value.length());
+    Rectangle viewRect = new Rectangle(0, (int) verticalBounds.start(), rightMost, verticalBounds.length());
     viewRect.y -= 1;
     viewRect.width += 5;
     viewRect.height += 4;
@@ -74,19 +69,14 @@ public class BaseVersionEditorComponent extends EditorComponent implements Edito
 
   @Override
   protected JScrollPane createScrollPane() {
-    JScrollPane sp = new JScrollPane(this, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-    sp.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+    // FIXME fix superclass to respect what we have here for scrollbar policy, instead of ugly re-set in cons, above!
+    JScrollPane sp = new JBScrollPane(this, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+    sp.setBorder(BorderFactory.createLineBorder(JBColor.BLACK));
     return sp;
   }
 
   @Override
   public EditorCell createEmptyCell() {
     return new EditorCell_Constant(getEditorContext(), getEditedNode(), "");
-  }
-
-  @Override
-  public void dispose() {
-    getRepository().getModelAccess().runWriteAction(() -> DiffModelUtil.unregisterModel(myBaseModel));
-    super.dispose();
   }
 }

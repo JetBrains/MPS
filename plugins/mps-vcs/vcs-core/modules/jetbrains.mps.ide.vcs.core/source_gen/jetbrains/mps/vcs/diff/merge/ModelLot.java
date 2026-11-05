@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import jetbrains.mps.smodel.tempmodel.TempModuleOptions;
 import org.jetbrains.mps.openapi.module.SModule;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.mps.openapi.model.SModelReference;
 import java.util.function.BiFunction;
 import org.jetbrains.mps.openapi.model.SModelName;
@@ -37,13 +38,14 @@ public final class ModelLot {
     myRepo = repo;
   }
 
-  public MergeTemporaryModel addCloneOf(SModel original, String stereotype, final boolean readOnly) {
-    // FIXME this seems to be flawed - doesn't _clone_ model, creates an empty one
-    return deriveModel(original, stereotype, (SModelReference mp, SModel o) -> new MergeTemporaryModel(mp, readOnly));
+  public MergeTemporaryModel addCloneOf(@NotNull SModel original, @Nullable String stereotype, final boolean readOnly) {
+    return deriveModel(original, stereotype, (SModelReference mp, SModel o) -> MergeTemporaryModel.cloneDataInto(new MergeTemporaryModel(mp, readOnly), o));
   }
 
-  public <T extends SModel> T deriveModel(SModel original, String stereotype, BiFunction<SModelReference, SModel, T> factory) {
+  public <T extends SModel> T deriveModel(@NotNull SModel original, @Nullable String stereotype, @NotNull BiFunction<SModelReference, SModel, T> factory) {
     initTempModule();
+
+    // XXX not quite nice to remove stereotype, if there's any, when called has no idea and passes null. OTOH, if necessary, can pass original.getName().getStereotype() to keep one?
     SModelName newName = original.getName().withStereotype(stereotype);
     SModelReference mp = PersistenceFacade.getInstance().createModelReference(myModule.getModuleReference(), new SModelId.IntegerSModelId(myModelCounter++), newName);
     T model = factory.apply(mp, original);

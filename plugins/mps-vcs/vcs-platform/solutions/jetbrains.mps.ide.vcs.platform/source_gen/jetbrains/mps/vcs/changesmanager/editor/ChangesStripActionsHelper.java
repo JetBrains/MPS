@@ -115,6 +115,7 @@ public final class ChangesStripActionsHelper {
 
     final SModel oldModel = ListSequence.fromList(changeGroup.getChanges()).first().getChangeSet().getOldModel();
     // do we need??? there were no de-registration
+    // FIXME (a) not sure node paste comment is still relevant; (b) if it is, let getPainter():ChangeStripsPainter hold model clone in a temp module
     if (oldModel.getModule() == null) {
       // without model registration reference resolving doesn't work during paste: should be fixed
       DiffModelUtil.renameModelAndRegister(oldModel, "old");
@@ -169,7 +170,7 @@ public final class ChangesStripActionsHelper {
     }
 
     CopyPasteUtil.copyNodesToClipboard(nodesToCopy);
-    check_ikrecr_a32a91(getPainter(), this);
+    check_ikrecr_a42a91(getPainter(), this);
   }
   private static ChangeGroup check_ikrecr_a0a5(ChangeStripsPainter checkedDotOperand, EditorContext myEditorContext, Boolean next, ChangesStripActionsHelper checkedDotThisExpression) {
     if (null != checkedDotOperand) {
@@ -225,7 +226,7 @@ public final class ChangesStripActionsHelper {
     }
     return null;
   }
-  private static void check_ikrecr_a32a91(ChangeStripsPainter checkedDotOperand, ChangesStripActionsHelper checkedDotThisExpression) {
+  private static void check_ikrecr_a42a91(ChangeStripsPainter checkedDotOperand, ChangesStripActionsHelper checkedDotThisExpression) {
     if (null != checkedDotOperand) {
       checkedDotOperand.showPopupForGroup(null);
     }

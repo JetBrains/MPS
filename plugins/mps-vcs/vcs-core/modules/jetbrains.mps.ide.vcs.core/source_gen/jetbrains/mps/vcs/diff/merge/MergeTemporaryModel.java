@@ -45,7 +45,7 @@ public final class MergeTemporaryModel extends EditableModelDescriptor implement
     return cloneDataInto(new MergeTemporaryModel(model.getReference(), true), model);
   }
 
-  private static MergeTemporaryModel cloneDataInto(MergeTemporaryModel rv, SModel origin) {
+  /*package*/ static MergeTemporaryModel cloneDataInto(MergeTemporaryModel rv, SModel origin) {
     // TODO generalize merge for any SModel
     jetbrains.mps.smodel.SModel resModel = CopyUtil.copyModel(((SModelBase) origin).getSModel());
     rv.replace(new ModelLoadResult<jetbrains.mps.smodel.SModel>(resModel, ModelLoadingState.FULLY_LOADED));
