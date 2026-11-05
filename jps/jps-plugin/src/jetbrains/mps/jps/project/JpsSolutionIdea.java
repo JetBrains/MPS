@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2024 JetBrains s.r.o.
+ * Copyright 2003-2026 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,15 +27,14 @@ import jetbrains.mps.persistence.FilePerRootDataSource;
 import jetbrains.mps.project.AbstractModule;
 import jetbrains.mps.project.ModuleId;
 import jetbrains.mps.project.Solution;
-import jetbrains.mps.project.facets.JavaModuleFacet;
 import jetbrains.mps.project.structure.model.ModelRootDescriptor;
 import jetbrains.mps.project.structure.modules.ModuleDescriptor;
 import jetbrains.mps.project.structure.modules.SolutionDescriptor;
-import jetbrains.mps.util.MacroHelper;
 import jetbrains.mps.util.MacroHelper.MacroNoHelper;
-import org.apache.log4j.LogManager;
+import jetbrains.mps.vfs.IFile;
+import jetbrains.mps.vfs.VFSManager;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.jps.ProjectPaths;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.jps.incremental.CompileContext;
 import org.jetbrains.jps.model.java.JpsJavaSdkType;
 import org.jetbrains.jps.model.library.JpsLibrary;
@@ -48,15 +47,12 @@ import org.jetbrains.jps.service.JpsServiceManager;
 import org.jetbrains.mps.openapi.model.SModel;
 import org.jetbrains.mps.openapi.module.SDependency;
 import org.jetbrains.mps.openapi.module.SDependencyScope;
-import org.jetbrains.mps.openapi.module.SModuleFacet;
 import org.jetbrains.mps.openapi.persistence.DataSource;
-import org.jetbrains.mps.openapi.persistence.Memento;
 import org.jetbrains.mps.openapi.persistence.ModelRoot;
 import org.jetbrains.mps.openapi.persistence.ModelRootFactory;
 import org.jetbrains.mps.openapi.persistence.ModulePersistenceContext;
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -72,15 +68,29 @@ import java.util.concurrent.atomic.AtomicReference;
 public class JpsSolutionIdea extends Solution {
   private final static Logger LOG = Logger.getLogger(AbstractModule.class);
 
-  private JpsModule myModule;
+  private final JpsModule myModule;
   private Set<ModelRoot> myContributedModelRoots;
-  private CompileContext myCompileContext;
-  private AtomicReference<Map<String, SModel>> myPathToModel = new AtomicReference<Map<String, SModel>>();
+  private final CompileContext myCompileContext;
+  private final AtomicReference<Map<String, SModel>> myPathToModel = new AtomicReference<Map<String, SModel>>();
+  private final IFile myOutputRoot;
 
-  public JpsSolutionIdea(@NotNull JpsModule module, SolutionDescriptor descriptor, CompileContext compileCtx) {
+  // FIXME JpsMPSProject argument is a hack, pretty much as JpsSolutionIdea itself, get rid of this code
+  public JpsSolutionIdea(@NotNull JpsModule module, SolutionDescriptor descriptor, CompileContext compileCtx, JpsMPSProject project) {
     super(descriptor, null);
     myModule = module;
     myCompileContext = compileCtx;
+    // logic in AM doesn't work for output root as it needs FS to resolve sd.outputRoot string, and if module doesn't have descriptor file,
+    // there's nothing to take FileSystem from.
+    if (descriptor != null && descriptor.getOutputRoot() != null) {
+      myOutputRoot = project.getComponent(VFSManager.class).getFileSystem(VFSManager.FILE_FS).getFile(descriptor.getOutputRoot());
+    } else {
+      myOutputRoot = null;
+    }
+  }
+
+  @Override
+  public @Nullable IFile getOutputPath() {
+    return myOutputRoot;
   }
 
   public SModel getModelByPath(String path) {
