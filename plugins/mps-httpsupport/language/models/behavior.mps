@@ -13,14 +13,9 @@
     <import index="ndib" ref="r:3c30b5c5-2f86-4daf-bab8-b406cfefcb4f(jetbrains.mps.ide.httpsupport.structure)" />
     <import index="tpcu" ref="r:00000000-0000-4000-0000-011c89590282(jetbrains.mps.lang.core.behavior)" />
     <import index="o8zo" ref="r:314576fc-3aee-4386-a0a5-a38348ac317d(jetbrains.mps.scope)" />
-    <import index="tpck" ref="r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)" />
-    <import index="mhbf" ref="8865b7a8-5271-43d3-884c-6fd1d9cfdd34/java:org.jetbrains.mps.openapi.model(MPS.OpenAPI/)" />
-    <import index="lui2" ref="8865b7a8-5271-43d3-884c-6fd1d9cfdd34/java:org.jetbrains.mps.openapi.module(MPS.OpenAPI/)" />
-    <import index="z1c3" ref="6ed54515-acc8-4d1e-a16c-9fd6cfe951ea/java:jetbrains.mps.project(MPS.Core/)" />
-    <import index="fnmy" ref="r:89c0fb70-0977-4113-a076-5906f9d8630f(jetbrains.mps.baseLanguage.scopes)" />
     <import index="e5vs" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:org.jetbrains.ide(MPS.IDEA/)" />
-    <import index="4h87" ref="r:05ff02e5-9836-4ae9-a454-eab43fa58c8f(jetbrains.mps.ide.httpsupport.manager.plugin)" />
     <import index="tpeu" ref="r:00000000-0000-4000-0000-011c895902fa(jetbrains.mps.lang.smodel.behavior)" />
+    <import index="bipv" ref="r:4f311e3a-83a9-4138-8c56-4228082416a9(jetbrains.mps.ide.httpsupport.manager)" />
     <import index="wyt6" ref="6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:java.lang(JDK/)" implicit="true" />
     <import index="c17a" ref="8865b7a8-5271-43d3-884c-6fd1d9cfdd34/java:org.jetbrains.mps.openapi.language(MPS.OpenAPI/)" implicit="true" />
   </imports>
@@ -1190,9 +1185,9 @@
       <node concept="3Tm1VV" id="6WBmrsjArnV" role="1B3o_S" />
       <node concept="3clFbS" id="6WBmrsjArnY" role="3clF47">
         <node concept="3clFbF" id="6WBmrsjArod" role="3cqZAp">
-          <node concept="2YIFZM" id="6WBmrsjAroN" role="3clFbG">
-            <ref role="37wK5l" to="4h87:3Apdfsuj$9" resolve="getCurrentPort" />
-            <ref role="1Pybhc" to="4h87:G$0uqqC2Yz" resolve="MPSIntegrationPortManager" />
+          <node concept="2YIFZM" id="37EBbA_IMWg" role="3clFbG">
+            <ref role="37wK5l" to="bipv:3Apdfsuj$9" resolve="getCurrentPort" />
+            <ref role="1Pybhc" to="bipv:37EBbA_IMIi" resolve="MPSIntegrationPort" />
           </node>
         </node>
       </node>
@@ -1238,9 +1233,9 @@
       <node concept="3Tm1VV" id="3PMO5H7Xp2u" role="1B3o_S" />
       <node concept="3clFbS" id="3PMO5H7Xp2x" role="3clF47">
         <node concept="3clFbF" id="3PMO5H7Xp2K" role="3cqZAp">
-          <node concept="2YIFZM" id="7prAfZaZ_$y" role="3clFbG">
-            <ref role="37wK5l" to="4h87:3BwRxVwW$fn" resolve="getCurrentPort" />
-            <ref role="1Pybhc" to="4h87:3PMO5H7WIrG" resolve="MPSInternalPortManager" />
+          <node concept="2YIFZM" id="37EBbA_INC3" role="3clFbG">
+            <ref role="37wK5l" to="bipv:3BwRxVwW$fn" resolve="getCurrentPort" />
+            <ref role="1Pybhc" to="bipv:37EBbA_INx3" resolve="MPSInternalPort" />
           </node>
         </node>
       </node>

@@ -1,0 +1,15 @@
+<idea-plugin package="jetbrains.mps.ide.httpsupport.manager.impl">
+  <dependencies>
+    <module name="intellij.platform.builtInServer"/>
+    <module name="intellij.platform.builtInServer.impl"/>
+  </dependencies>
+  <extensions defaultExtensionNs="com.intellij">
+    <httpRequestHandler implementation="jetbrains.mps.ide.httpsupport.manager.impl.MPSRequestManager"/>
+    <registryKey key="ide.httpsupport.internalPort" defaultValue="63320" description="Port for MPS internal requests (i.e. opening node)"/>
+    <registryKey key="ide.httpsupport.specifyProjectInNodeURL" defaultValue="false" description="Specify project name in node URL"/>
+  </extensions>
+  <extensions defaultExtensionNs="org.jetbrains">
+    <customPortServerManager implementation="jetbrains.mps.ide.httpsupport.manager.impl.MPSInternalPortManager"/>
+    <customPortServerManager implementation="jetbrains.mps.ide.httpsupport.manager.impl.MPSIntegrationPortManager"/>
+  </extensions>
+</idea-plugin>

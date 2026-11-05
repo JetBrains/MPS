@@ -13,6 +13,7 @@
     <module name="jetbrains.mps.ide.customization"/> <!-- MPS-40020: ExternalProductResourceUrls override -->
     <module name="jetbrains.mps.platform.ide.impl"/>
     <module name="jetbrains.mps.platform.lang.impl"/>
+    <module name="jetbrains.mps.platform.httpsupport"/>
   </content>
   @@MODULE_DESCRIPTORS@@
 

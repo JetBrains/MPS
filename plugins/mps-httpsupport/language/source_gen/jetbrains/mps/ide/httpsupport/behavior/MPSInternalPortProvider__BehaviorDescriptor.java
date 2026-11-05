@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Arrays;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.mps.openapi.model.SNode;
-import jetbrains.mps.ide.httpsupport.manager.plugin.MPSInternalPortManager;
+import jetbrains.mps.ide.httpsupport.manager.MPSInternalPort;
 import org.jetbrains.annotations.Nullable;
 import jetbrains.mps.core.aspects.behaviour.api.BHMethodNotFoundException;
 
@@ -25,7 +25,7 @@ public final class MPSInternalPortProvider__BehaviorDescriptor extends BaseBHDes
 
 
   /*package*/ static int getPort_id6WBmrsjA4L4(@NotNull SNode __thisNode__) {
-    return MPSInternalPortManager.getCurrentPort();
+    return MPSInternalPort.getCurrentPort();
   }
 
   /*package*/ MPSInternalPortProvider__BehaviorDescriptor() {

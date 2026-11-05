@@ -15,6 +15,7 @@
     <import index="dush" ref="8865b7a8-5271-43d3-884c-6fd1d9cfdd34/java:org.jetbrains.mps.openapi.persistence(MPS.OpenAPI/)" />
     <import index="3a50" ref="742f6602-5a2f-4313-aa6e-ae1cd4ffdc61/java:jetbrains.mps.ide(MPS.Platform/)" />
     <import index="9xw8" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:io.netty.handler.codec.http(MPS.IDEA/)" />
+    <import index="bipv" ref="r:4f311e3a-83a9-4138-8c56-4228082416a9(jetbrains.mps.ide.httpsupport.manager)" />
     <import index="wyt6" ref="6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:java.lang(JDK/)" implicit="true" />
     <import index="wyuk" ref="6ed54515-acc8-4d1e-a16c-9fd6cfe951ea/java:jetbrains.mps.components(MPS.Core/)" implicit="true" />
   </imports>
@@ -837,9 +838,9 @@
                 <ref role="37wK5l" to="9xw8:~QueryStringEncoder.&lt;init&gt;(java.lang.String)" resolve="QueryStringEncoder" />
                 <node concept="3cpWs3" id="6frl3mWbpGn" role="37wK5m">
                   <node concept="3cpWs3" id="1_yOWEXevB1" role="3uHU7B">
-                    <node concept="2YIFZM" id="7prAfZaZD$4" role="3uHU7w">
-                      <ref role="37wK5l" to="4h87:3BwRxVwW$fn" resolve="getCurrentPort" />
-                      <ref role="1Pybhc" to="4h87:3PMO5H7WIrG" resolve="MPSInternalPortManager" />
+                    <node concept="2YIFZM" id="37EBbA_INC4" role="3uHU7w">
+                      <ref role="37wK5l" to="bipv:3BwRxVwW$fn" resolve="getCurrentPort" />
+                      <ref role="1Pybhc" to="bipv:37EBbA_INx3" resolve="MPSInternalPort" />
                     </node>
                     <node concept="Xl_RD" id="32YxhLfg7Xx" role="3uHU7B">
                       <property role="Xl_RC" value="http://127.0.0.1:" />

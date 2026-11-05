@@ -29,6 +29,7 @@
     <import index="iil0" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:io.netty.buffer(MPS.IDEA/)" />
     <import index="9xw8" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:io.netty.handler.codec.http(MPS.IDEA/)" />
     <import index="ap92" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:io.netty.util(MPS.IDEA/)" />
+    <import index="bipv" ref="r:4f311e3a-83a9-4138-8c56-4228082416a9(jetbrains.mps.ide.httpsupport.manager)" />
     <import index="zfj2" ref="r:ebfb0797-fa90-42cb-9f6b-3e661ce06d64(jetbrains.mps.ide.httpsupport.behavior)" implicit="true" />
     <import index="tpcu" ref="r:00000000-0000-4000-0000-011c89590282(jetbrains.mps.lang.core.behavior)" implicit="true" />
     <import index="guwi" ref="6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:java.io(JDK/)" implicit="true" />
@@ -4842,9 +4843,9 @@
       <property role="36QftV" value="true" />
       <ref role="30HIoZ" to="ndib:6WBmrsjAqQr" resolve="MPSIntegrationPortProvider" />
       <node concept="gft3U" id="6WBmrsjC12Z" role="1lVwrX">
-        <node concept="2YIFZM" id="6WBmrsjC16t" role="gfFT$">
-          <ref role="37wK5l" to="4h87:3Apdfsuj$9" resolve="getCurrentPort" />
-          <ref role="1Pybhc" to="4h87:G$0uqqC2Yz" resolve="MPSIntegrationPortManager" />
+        <node concept="2YIFZM" id="37EBbA_IMWh" role="gfFT$">
+          <ref role="37wK5l" to="bipv:3Apdfsuj$9" resolve="getCurrentPort" />
+          <ref role="1Pybhc" to="bipv:37EBbA_IMIi" resolve="MPSIntegrationPort" />
         </node>
       </node>
     </node>
@@ -4852,9 +4853,9 @@
       <property role="36QftV" value="true" />
       <ref role="30HIoZ" to="ndib:3PMO5H7Xp0_" resolve="MPSInternalPortProvider" />
       <node concept="gft3U" id="3PMO5H7XVQX" role="1lVwrX">
-        <node concept="2YIFZM" id="7prAfZaZAoL" role="gfFT$">
-          <ref role="37wK5l" to="4h87:3BwRxVwW$fn" resolve="getCurrentPort" />
-          <ref role="1Pybhc" to="4h87:3PMO5H7WIrG" resolve="MPSInternalPortManager" />
+        <node concept="2YIFZM" id="37EBbA_INC5" role="gfFT$">
+          <ref role="37wK5l" to="bipv:3BwRxVwW$fn" resolve="getCurrentPort" />
+          <ref role="1Pybhc" to="bipv:37EBbA_INx3" resolve="MPSInternalPort" />
         </node>
       </node>
     </node>
