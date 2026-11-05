@@ -709,6 +709,7 @@
   <target name="java.compile.mps-workbench" depends="fetchDependencies">
     <mkdir dir="${mps_home}/workbench/mps-workbench/source" />
     <mkdir dir="${mps_home}/workbench/mps-workbench/jetbrains.mps.ide/source_gen" />
+    <mkdir dir="${mps_home}/plugins/mps-httpsupport/source_gen" />
     <mkdir dir="${build.tmp}/java/out/mps-workbench" />
     <javac2 destdir="${build.tmp}/java/out/mps-workbench" fork="false" encoding="utf8" includeantruntime="false" debug="true" source="21" target="21">
       <withKotlin moduleName="mps-workbench">        
@@ -719,6 +720,7 @@
       <src>
         <path location="${mps_home}/workbench/mps-workbench/source" />
         <path location="${mps_home}/workbench/mps-workbench/jetbrains.mps.ide/source_gen" />
+        <path location="${mps_home}/plugins/mps-httpsupport/source_gen" />
       </src>
       <classpath>
         <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-generator.jar" />
@@ -823,6 +825,10 @@
         <exclude name="**/MPSPlugin.template.xml" />
       </fileset>
       <fileset dir="${mps_home}/workbench/mps-workbench/jetbrains.mps.ide/source_gen" includes="**/*.properties, **/*.xml, **/*.html, **/*.png, **/*.svg, **/*.txt, **/*.ico, **/*.zip, **/*.info, **/*.json">
+        <exclude name="idea/MPSApplicationInfo.xml" />
+        <exclude name="**/MPSPlugin.template.xml" />
+      </fileset>
+      <fileset dir="${mps_home}/plugins/mps-httpsupport/source_gen" includes="**/*.properties, **/*.xml, **/*.html, **/*.png, **/*.svg, **/*.txt, **/*.ico, **/*.zip, **/*.info, **/*.json">
         <exclude name="idea/MPSApplicationInfo.xml" />
         <exclude name="**/MPSPlugin.template.xml" />
       </fileset>

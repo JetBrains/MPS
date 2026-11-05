@@ -61,10 +61,6 @@
     <jar destfile="${build.layout}/mps-httpsupport/lib/mps-httpsupport.jar" duplicate="preserve">
       <zipfileset file="${plugin_home}/META-INF/plugin.xml" prefix="META-INF" />
     </jar>
-    <mkdir dir="${build.layout}/mps-httpsupport/lib" />
-    <jar destfile="${build.layout}/mps-httpsupport/lib/httpsupport.jar" duplicate="preserve">
-      <fileset dir="${build.tmp}/java/out/http-support" />
-    </jar>
     <mkdir dir="${build.layout}/mps-httpsupport/languages" />
     <mkdir dir="${build.tmp}/default/jetbrains.mps.ide.httpsupport.jar" />
     <mkdir dir="${build.tmp}/default/jetbrains.mps.ide.httpsupport.jar/META-INF" />
@@ -256,17 +252,20 @@
           <module ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5(MPS.IDEA)" kind="cl" />
           <module ref="b00f36f0-49b7-456c-8405-740447ebb192(MPS.IDEA.Modules)" kind="cl" />
           <module ref="6c563085-e123-4aaf-be88-fb88e02f8282(io.netty)" kind="cl" />
+          <module ref="019b622b-0aef-4dd3-86d0-4eef01f3f6bb(jetbrains.mps.ide)" kind="cl" />
           <module ref="817e4e70-961e-4a95-98a1-15e9f32231f1(jetbrains.mps.ide.httpsupport)" kind="cl" />
         </dependencies>
         <uses>
           <language id="l:f3061a53-9226-4cc5-a443-f952ceaf5816:jetbrains.mps.baseLanguage" />
+          <language id="l:fd392034-7849-419d-9071-12563d152375:jetbrains.mps.baseLanguage.closures" />
           <language id="l:83888646-71ce-4f1c-9c53-c54016f6ad4f:jetbrains.mps.baseLanguage.collections" />
           <language id="l:f2801650-65d5-424e-bb1b-463a8781b786:jetbrains.mps.baseLanguage.javadoc" />
           <language id="l:760a0a8c-eabb-4521-8bfd-65db761a9ba3:jetbrains.mps.baseLanguage.logging" />
           <language id="l:515552c7-fcc0-4ab4-9789-2f3c49344e85:jetbrains.mps.baseLanguage.varVariable" />
+          <language id="l:ceab5195-25ea-4f22-9b92-103b95ca8c0c:jetbrains.mps.lang.core" />
           <language id="l:c0080a47-7e37-4558-bee9-9ae18e690549:jetbrains.mps.lang.extension" />
+          <language id="l:c7fb639f-be78-4307-89b0-b5959c3fa8c8:jetbrains.mps.lang.text" />
         </uses>
-        <library jar="../lib/httpsupport.jar" />
         <sources jar="jetbrains.mps.ide.httpsupport.manager-src.jar" descriptor="jetbrains.mps.ide.httpsupport.manager.msd" />
       </module>
     </echoxml>
@@ -421,7 +420,7 @@
     <delete dir="${build.layout}" />
   </target>
   
-  <target name="compileJava" depends="java.compile.http-support, java.compile.jetbrains.mps.ide.httpsupport, java.compile.jetbrains.mps.ide.httpsupport#4517832885627178591, java.compile.jetbrains.mps.ide.httpsupport.nodeaccess, java.compile.jetbrains.mps.ide.httpsupport.runtime" />
+  <target name="compileJava" depends="java.compile.jetbrains.mps.ide.httpsupport, java.compile.jetbrains.mps.ide.httpsupport#4517832885627178591, java.compile.jetbrains.mps.ide.httpsupport.nodeaccess, java.compile.jetbrains.mps.ide.httpsupport.runtime" />
   
   <target name="processResources" />
   
@@ -478,113 +477,7 @@
     </ant>
   </target>
   
-  <target name="java.compile.http-support" depends="fetchDependencies">
-    <mkdir dir="${plugin_home}/source_gen" />
-    <mkdir dir="${build.tmp}/java/out/http-support" />
-    <javac2 destdir="${build.tmp}/java/out/http-support" fork="false" encoding="utf8" includeantruntime="false" debug="true" source="21" target="21">
-      <withKotlin moduleName="http-support">        
-        <compilerarg value="-jvm-target=21" />
-      </withKotlin>
-      <skip pattern="kotlin/Metadata" />
-      <compilerarg value="-Xlint:none" />
-      <src>
-        <path location="${plugin_home}/source_gen" />
-      </src>
-      <classpath>
-        <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-generator.jar" />
-        <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-annotations.jar" />
-        <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-openapi.jar" />
-        <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-core.jar" />
-        <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-closures.jar" />
-        <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-collections.jar" />
-        <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-tuples.jar" />
-        <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-references.jar" />
-        <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-behavior-api.jar" />
-        <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-behavior-runtime.jar" />
-        <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-context.jar" />
-        <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-constraints-runtime.jar" />
-        <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-platform.jar" />
-        <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-environment.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
-        <fileset file="${artifacts.IDEA}/lib/app-backend.jar" />
-        <fileset file="${artifacts.IDEA}/lib/lib.jar" />
-        <fileset file="${artifacts.IDEA}/lib/util.jar" />
-        <fileset file="${artifacts.IDEA}/lib/util_rt.jar" />
-        <fileset file="${artifacts.IDEA}/lib/util-8.jar" />
-        <fileset file="${artifacts.IDEA}/lib/forms_rt.jar" />
-        <fileset file="${artifacts.IDEA}/lib/jps-model.jar" />
-        <fileset file="${artifacts.IDEA}/lib/platform-loader.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.asm.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.fastutil.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.gson.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.http.client.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.collections.immutable.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.coroutines.core.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.miglayout.swing.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.netty.buffer.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.netty.codec.http.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.analysis.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.analysis.impl.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.bootstrap.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.builtInServer.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.builtInServer.impl.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.concurrency.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.impl.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.core.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.core.impl.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.core.ui.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.credentialStore.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.debugger.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.diff.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.diff.impl.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.editor.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.editor.ex.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.editor.ui.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.execution.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.execution.impl.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.feedback.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.icons.api.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.bootstrap.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.core.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.core.impl.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.impl.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.util.netty.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.indexing.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.indexing.impl.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.lang.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.lang.core.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.lang.impl.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.locking.impl.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.lvcs.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.projectFrame.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.projectModel.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.projectModel.impl.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.refactoring.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.serviceContainer.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.statistics.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.usageView.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ui.tree.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.undo.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ex.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.text.matching.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ui.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vfs.impl.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
-        <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
-        <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
-        <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
-        <path refid="path.jdk.classpath" />
-      </classpath>
-    </javac2>
-    <copy todir="${build.tmp}/java/out/http-support">
-      <fileset dir="${plugin_home}/source_gen" includes="**/*.properties, **/*.xml, **/*.html, **/*.png, **/*.svg, **/*.txt, **/*.ico, **/*.zip, **/*.info" />
-    </copy>
-  </target>
-  
-  <target name="java.compile.jetbrains.mps.ide.httpsupport" depends="java.compile.http-support, fetchDependencies">
+  <target name="java.compile.jetbrains.mps.ide.httpsupport" depends="fetchDependencies">
     <mkdir dir="${plugin_home}/language/source_gen" />
     <mkdir dir="${build.tmp}/java/out/jetbrains.mps.ide.httpsupport" />
     <javac2 destdir="${build.tmp}/java/out/jetbrains.mps.ide.httpsupport" fork="false" encoding="utf8" includeantruntime="false" debug="true" source="21" target="21">
@@ -604,7 +497,6 @@
         <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-problem.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-feedback-api.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-core.jar" />
-        <pathelement path="${build.tmp}/java/out/http-support" />
         <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-platform.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-messages-api.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-messages-for-rules.jar" />
@@ -621,6 +513,8 @@
         <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-generator.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-environment.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-project-check.jar" />
+        <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-icons.jar" />
+        <fileset file="${artifacts.mpsWorkbench}/lib/mps-workbench.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <fileset file="${artifacts.IDEA}/lib/app-backend.jar" />
         <fileset file="${artifacts.IDEA}/lib/lib.jar" />
@@ -918,7 +812,7 @@
     </copy>
   </target>
   
-  <target name="java.compile.jetbrains.mps.ide.httpsupport#4517832885627178591" depends="java.compile.http-support, java.compile.jetbrains.mps.ide.httpsupport, fetchDependencies">
+  <target name="java.compile.jetbrains.mps.ide.httpsupport#4517832885627178591" depends="java.compile.jetbrains.mps.ide.httpsupport, fetchDependencies">
     <mkdir dir="${plugin_home}/language/generator/source_gen" />
     <mkdir dir="${build.tmp}/java/out/jetbrains.mps.ide.httpsupport#4517832885627178591" />
     <javac2 destdir="${build.tmp}/java/out/jetbrains.mps.ide.httpsupport#4517832885627178591" fork="false" encoding="utf8" includeantruntime="false" debug="true" source="21" target="21">
@@ -938,7 +832,6 @@
         <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-problem.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-feedback-api.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-core.jar" />
-        <pathelement path="${build.tmp}/java/out/http-support" />
         <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-platform.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-messages-api.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-messages-for-rules.jar" />
@@ -955,6 +848,8 @@
         <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-generator.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-environment.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-project-check.jar" />
+        <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-icons.jar" />
+        <fileset file="${artifacts.mpsWorkbench}/lib/mps-workbench.jar" />
         <pathelement path="${build.tmp}/java/out/jetbrains.mps.ide.httpsupport" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <fileset file="${artifacts.IDEA}/lib/app-backend.jar" />
@@ -1248,7 +1143,7 @@
     </copy>
   </target>
   
-  <target name="java.compile.jetbrains.mps.ide.httpsupport.nodeaccess" depends="java.compile.http-support, java.compile.jetbrains.mps.ide.httpsupport.runtime, fetchDependencies">
+  <target name="java.compile.jetbrains.mps.ide.httpsupport.nodeaccess" depends="java.compile.jetbrains.mps.ide.httpsupport.runtime, fetchDependencies">
     <mkdir dir="${plugin_home}/solutions/nodeaccess/source_gen" />
     <mkdir dir="${build.tmp}/java/out/jetbrains.mps.ide.httpsupport.nodeaccess" />
     <javac2 destdir="${build.tmp}/java/out/jetbrains.mps.ide.httpsupport.nodeaccess" fork="false" encoding="utf8" includeantruntime="false" debug="true" source="21" target="21">
@@ -1262,7 +1157,6 @@
       </src>
       <classpath>
         <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-core.jar" />
-        <pathelement path="${build.tmp}/java/out/http-support" />
         <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-platform.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-annotations.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-closures.jar" />
@@ -1281,9 +1175,9 @@
         <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-generator.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-environment.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-project-check.jar" />
-        <pathelement path="${build.tmp}/java/out/jetbrains.mps.ide.httpsupport.runtime" />
         <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-icons.jar" />
         <fileset file="${artifacts.mpsWorkbench}/lib/mps-workbench.jar" />
+        <pathelement path="${build.tmp}/java/out/jetbrains.mps.ide.httpsupport.runtime" />
         <fileset file="${artifacts.IDEA}/lib/app-backend.jar" />
         <fileset file="${artifacts.IDEA}/lib/lib.jar" />
         <fileset file="${artifacts.IDEA}/lib/util.jar" />
@@ -1564,7 +1458,7 @@
     </copy>
   </target>
   
-  <target name="java.compile.jetbrains.mps.ide.httpsupport.runtime" depends="java.compile.http-support, fetchDependencies">
+  <target name="java.compile.jetbrains.mps.ide.httpsupport.runtime" depends="fetchDependencies">
     <mkdir dir="${plugin_home}/solutions/runtime/source_gen" />
     <mkdir dir="${build.tmp}/java/out/jetbrains.mps.ide.httpsupport.runtime" />
     <javac2 destdir="${build.tmp}/java/out/jetbrains.mps.ide.httpsupport.runtime" fork="false" encoding="utf8" includeantruntime="false" debug="true" source="21" target="21">
@@ -1578,7 +1472,6 @@
       </src>
       <classpath>
         <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-core.jar" />
-        <pathelement path="${build.tmp}/java/out/http-support" />
         <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-platform.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-annotations.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-closures.jar" />
@@ -1597,6 +1490,8 @@
         <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-generator.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-environment.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-project-check.jar" />
+        <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-icons.jar" />
+        <fileset file="${artifacts.mpsWorkbench}/lib/mps-workbench.jar" />
         <fileset file="${artifacts.IDEA}/lib/app-backend.jar" />
         <fileset file="${artifacts.IDEA}/lib/lib.jar" />
         <fileset file="${artifacts.IDEA}/lib/util.jar" />

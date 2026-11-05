@@ -12426,6 +12426,11 @@
             <ref role="3bR37D" to="ffeo:uqqfP8JWSl" resolve="MPS.IDEA.Modules" />
           </node>
         </node>
+        <node concept="1SiIV0" id="1RsW6dgUzzA" role="3bR37C">
+          <node concept="3bR9La" id="1RsW6dgUzzB" role="1SiIV1">
+            <ref role="3bR37D" to="ffeo:2eDSGe9d1qi" resolve="jetbrains.mps.ide" />
+          </node>
+        </node>
       </node>
     </node>
     <node concept="55IIr" id="5leSqRbdC$J" role="auvoZ">
