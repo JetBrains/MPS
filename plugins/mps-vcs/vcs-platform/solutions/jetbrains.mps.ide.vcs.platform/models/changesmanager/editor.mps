@@ -8305,6 +8305,7 @@
   </node>
   <node concept="312cEu" id="3SxFjl1oIks">
     <property role="TrG5h" value="BaseVersionEditorComponent" />
+    <property role="1EXbeo" value="true" />
     <node concept="3Tm1VV" id="3SxFjl1oIkt" role="1B3o_S" />
     <node concept="3uibUv" id="3SxFjl1oOM4" role="1zkMxy">
       <ref role="3uigEE" to="exr9:~EditorComponent" resolve="EditorComponent" />
@@ -8877,95 +8878,6 @@
           </node>
         </node>
         <node concept="3clFbH" id="1gM_IjhvHsD" role="3cqZAp" />
-        <node concept="3clFbF" id="2YSDt1ND1si" role="3cqZAp">
-          <node concept="2OqwBi" id="2YSDt1ND3sI" role="3clFbG">
-            <node concept="1rXfSq" id="2YSDt1ND1sg" role="2Oq$k0">
-              <ref role="37wK5l" to="exr9:~EditorComponent.getScrollPane()" resolve="getScrollPane" />
-            </node>
-            <node concept="liA8E" id="2YSDt1ND5Zi" role="2OqNvi">
-              <ref role="37wK5l" to="dxuu:~JScrollPane.setVerticalScrollBarPolicy(int)" resolve="setVerticalScrollBarPolicy" />
-              <node concept="10M0yZ" id="2YSDt1NDgkA" role="37wK5m">
-                <ref role="3cqZAo" to="dxuu:~ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER" resolve="VERTICAL_SCROLLBAR_NEVER" />
-                <ref role="1PxDUh" to="dxuu:~ScrollPaneConstants" resolve="ScrollPaneConstants" />
-              </node>
-            </node>
-          </node>
-        </node>
-        <node concept="3clFbF" id="2YSDt1NDhWU" role="3cqZAp">
-          <node concept="2OqwBi" id="2YSDt1NDhWV" role="3clFbG">
-            <node concept="1rXfSq" id="2YSDt1NDhWW" role="2Oq$k0">
-              <ref role="37wK5l" to="exr9:~EditorComponent.getScrollPane()" resolve="getScrollPane" />
-            </node>
-            <node concept="liA8E" id="2YSDt1NDhWX" role="2OqNvi">
-              <ref role="37wK5l" to="dxuu:~JScrollPane.setHorizontalScrollBarPolicy(int)" resolve="setHorizontalScrollBarPolicy" />
-              <node concept="10M0yZ" id="2YSDt1NDkWN" role="37wK5m">
-                <ref role="3cqZAo" to="dxuu:~ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER" resolve="HORIZONTAL_SCROLLBAR_NEVER" />
-                <ref role="1PxDUh" to="dxuu:~ScrollPaneConstants" resolve="ScrollPaneConstants" />
-              </node>
-            </node>
-          </node>
-        </node>
-        <node concept="3SKdUt" id="2YSDt1NDV6t" role="3cqZAp">
-          <node concept="1PaTwC" id="2YSDt1NDV6u" role="1aUNEU">
-            <node concept="3oM_SD" id="2YSDt1NDY3k" role="1PaTwD">
-              <property role="3oM_SC" value="init" />
-            </node>
-            <node concept="3oM_SD" id="2YSDt1NDY3m" role="1PaTwD">
-              <property role="3oM_SC" value="just" />
-            </node>
-            <node concept="3oM_SD" id="2YSDt1NDY3J" role="1PaTwD">
-              <property role="3oM_SC" value="like" />
-            </node>
-            <node concept="3oM_SD" id="2YSDt1NDY3t" role="1PaTwD">
-              <property role="3oM_SC" value="base" />
-            </node>
-            <node concept="3oM_SD" id="2YSDt1NDY3y" role="1PaTwD">
-              <property role="3oM_SC" value="JScrollPane" />
-            </node>
-            <node concept="3oM_SD" id="2YSDt1NDY3P" role="1PaTwD">
-              <property role="3oM_SC" value="constructor" />
-            </node>
-            <node concept="3oM_SD" id="2YSDt1NDY3W" role="1PaTwD">
-              <property role="3oM_SC" value="does" />
-            </node>
-          </node>
-        </node>
-        <node concept="3clFbF" id="2YSDt1NDsqV" role="3cqZAp">
-          <node concept="2OqwBi" id="2YSDt1NDtzF" role="3clFbG">
-            <node concept="1rXfSq" id="2YSDt1NDsqT" role="2Oq$k0">
-              <ref role="37wK5l" to="exr9:~EditorComponent.getScrollPane()" resolve="getScrollPane" />
-            </node>
-            <node concept="liA8E" id="2YSDt1NDx2f" role="2OqNvi">
-              <ref role="37wK5l" to="dxuu:~JScrollPane.setVerticalScrollBar(javax.swing.JScrollBar)" resolve="setVerticalScrollBar" />
-              <node concept="2OqwBi" id="2YSDt1NDEYA" role="37wK5m">
-                <node concept="1rXfSq" id="2YSDt1NDBdY" role="2Oq$k0">
-                  <ref role="37wK5l" to="exr9:~EditorComponent.getScrollPane()" resolve="getScrollPane" />
-                </node>
-                <node concept="liA8E" id="2YSDt1NDIyH" role="2OqNvi">
-                  <ref role="37wK5l" to="dxuu:~JScrollPane.createVerticalScrollBar()" resolve="createVerticalScrollBar" />
-                </node>
-              </node>
-            </node>
-          </node>
-        </node>
-        <node concept="3clFbF" id="2YSDt1NDKrj" role="3cqZAp">
-          <node concept="2OqwBi" id="2YSDt1NDKrk" role="3clFbG">
-            <node concept="1rXfSq" id="2YSDt1NDKrl" role="2Oq$k0">
-              <ref role="37wK5l" to="exr9:~EditorComponent.getScrollPane()" resolve="getScrollPane" />
-            </node>
-            <node concept="liA8E" id="2YSDt1NDKrm" role="2OqNvi">
-              <ref role="37wK5l" to="dxuu:~JScrollPane.setHorizontalScrollBar(javax.swing.JScrollBar)" resolve="setHorizontalScrollBar" />
-              <node concept="2OqwBi" id="2YSDt1NDKrn" role="37wK5m">
-                <node concept="1rXfSq" id="2YSDt1NDKro" role="2Oq$k0">
-                  <ref role="37wK5l" to="exr9:~EditorComponent.getScrollPane()" resolve="getScrollPane" />
-                </node>
-                <node concept="liA8E" id="2YSDt1NDKrp" role="2OqNvi">
-                  <ref role="37wK5l" to="dxuu:~JScrollPane.createHorizontalScrollBar()" resolve="createHorizontalScrollBar" />
-                </node>
-              </node>
-            </node>
-          </node>
-        </node>
         <node concept="3clFbF" id="2Xanblty7qg" role="3cqZAp">
           <node concept="2OqwBi" id="2Xanblty7qi" role="3clFbG">
             <node concept="liA8E" id="2Xanblty7qm" role="2OqNvi">
@@ -9035,67 +8947,6 @@
         <ref role="3uigEE" to="dxuu:~JScrollPane" resolve="JScrollPane" />
       </node>
       <node concept="3clFbS" id="7uQHEcHeHhv" role="3clF47">
-        <node concept="3SKdUt" id="3CHeQ8cCl$d" role="3cqZAp">
-          <node concept="1PaTwC" id="3CHeQ8cCl$e" role="1aUNEU">
-            <node concept="3oM_SD" id="3CHeQ8cCnlQ" role="1PaTwD">
-              <property role="3oM_SC" value="FIXME" />
-            </node>
-            <node concept="3oM_SD" id="3CHeQ8cCnm7" role="1PaTwD">
-              <property role="3oM_SC" value="fix" />
-            </node>
-            <node concept="3oM_SD" id="3CHeQ8cCnno" role="1PaTwD">
-              <property role="3oM_SC" value="superclass" />
-            </node>
-            <node concept="3oM_SD" id="3CHeQ8cCnoC" role="1PaTwD">
-              <property role="3oM_SC" value="to" />
-            </node>
-            <node concept="3oM_SD" id="3CHeQ8cCnoT" role="1PaTwD">
-              <property role="3oM_SC" value="respect" />
-            </node>
-            <node concept="3oM_SD" id="3CHeQ8cCnpT" role="1PaTwD">
-              <property role="3oM_SC" value="what" />
-            </node>
-            <node concept="3oM_SD" id="3CHeQ8cCnqT" role="1PaTwD">
-              <property role="3oM_SC" value="we" />
-            </node>
-            <node concept="3oM_SD" id="3CHeQ8cCnra" role="1PaTwD">
-              <property role="3oM_SC" value="have" />
-            </node>
-            <node concept="3oM_SD" id="3CHeQ8cCnsa" role="1PaTwD">
-              <property role="3oM_SC" value="here" />
-            </node>
-            <node concept="3oM_SD" id="3CHeQ8cCnsr" role="1PaTwD">
-              <property role="3oM_SC" value="for" />
-            </node>
-            <node concept="3oM_SD" id="3CHeQ8cCntr" role="1PaTwD">
-              <property role="3oM_SC" value="scrollbar" />
-            </node>
-            <node concept="3oM_SD" id="3CHeQ8cCnuF" role="1PaTwD">
-              <property role="3oM_SC" value="policy," />
-            </node>
-            <node concept="3oM_SD" id="3CHeQ8cCnwb" role="1PaTwD">
-              <property role="3oM_SC" value="instead" />
-            </node>
-            <node concept="3oM_SD" id="3CHeQ8cCnyq" role="1PaTwD">
-              <property role="3oM_SC" value="of" />
-            </node>
-            <node concept="3oM_SD" id="3CHeQ8cCnyr" role="1PaTwD">
-              <property role="3oM_SC" value="ugly" />
-            </node>
-            <node concept="3oM_SD" id="3CHeQ8cCnDT" role="1PaTwD">
-              <property role="3oM_SC" value="re-set" />
-            </node>
-            <node concept="3oM_SD" id="3CHeQ8cCn$b" role="1PaTwD">
-              <property role="3oM_SC" value="in" />
-            </node>
-            <node concept="3oM_SD" id="3CHeQ8cCn_r" role="1PaTwD">
-              <property role="3oM_SC" value="cons," />
-            </node>
-            <node concept="3oM_SD" id="3CHeQ8cCn_G" role="1PaTwD">
-              <property role="3oM_SC" value="above!" />
-            </node>
-          </node>
-        </node>
         <node concept="3cpWs8" id="7uQHEcHeZ1L" role="3cqZAp">
           <node concept="3cpWsn" id="7uQHEcHeZ1M" role="3cpWs9">
             <property role="TrG5h" value="sp" />

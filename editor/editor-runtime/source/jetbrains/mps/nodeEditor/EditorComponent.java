@@ -129,7 +129,6 @@ import jetbrains.mps.util.Reference;
 import jetbrains.mps.workbench.ActionPlace;
 import jetbrains.mps.workbench.action.ActionUtils;
 import jetbrains.mps.workbench.action.BaseAction;
-import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.mps.annotations.Internal;
@@ -150,6 +149,7 @@ import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 import javax.swing.KeyStroke;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.Scrollable;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -612,15 +612,10 @@ public abstract class EditorComponent extends JComponent implements Scrollable, 
   // - let HeadlessEditorComponent extend AbstractEditorComponent
   // - make this method again a part of constructor for this class
   private void createUI(EditorConfiguration editorConfiguration) {
-    MyScrollBar verticalScrollBar = new MyScrollBar(Adjustable.VERTICAL);
-
     myScrollPane = createScrollPane();
     if (editorConfiguration.rightToLeft) {
       myScrollPane.putClientProperty(JBScrollPane.Flip.class, Flip.HORIZONTAL);
     }
-    myScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-    myScrollPane.setVerticalScrollBar(verticalScrollBar);
-    myScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     myScrollPane.setViewportView(this);
     myScrollPane.getViewport().addChangeListener(new ChangeListener() {
 
@@ -655,15 +650,18 @@ public abstract class EditorComponent extends JComponent implements Scrollable, 
     myContainer.addMainView(myScrollPane);
 
     myMessagesGutter = new MessagesGutter(this, editorConfiguration.rightToLeft);
-    if (editorConfiguration.showErrorsGutter) {
-      verticalScrollBar.setPersistentUI(myMessagesGutter);
-    } else {
-      verticalScrollBar.setPersistentUI(new ButtonlessScrollBarUI() {
-        @Override
-        public boolean alwaysShowTrack() {
-          return true;
-        }
-      });
+    if (myScrollPane.getVerticalScrollBarPolicy() != ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER && myScrollPane.getVerticalScrollBar() instanceof MyScrollBar msb) {
+      // subclasses may override policy or use another impl for the vertical bar
+      if (editorConfiguration.showErrorsGutter) {
+        msb.setPersistentUI(myMessagesGutter);
+      } else {
+        msb.setPersistentUI(new ButtonlessScrollBarUI() {
+          @Override
+          public boolean alwaysShowTrack() {
+            return true;
+          }
+        });
+      }
     }
     myLeftHighlighter = new LeftEditorHighlighter(this, editorConfiguration.rightToLeft);
     if (editorConfiguration.showLeftHighlighter) {
@@ -728,7 +726,12 @@ public abstract class EditorComponent extends JComponent implements Scrollable, 
 
 
   protected JScrollPane createScrollPane() {
-    return new FontSizeChangingScrollPane();
+    FontSizeChangingScrollPane sp = new FontSizeChangingScrollPane();
+    MyScrollBar verticalScrollBar = new MyScrollBar(Adjustable.VERTICAL);
+    sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+    sp.setVerticalScrollBar(verticalScrollBar);
+    sp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    return sp;
   }
 
   public PlatformEditorEmulation getPlatformEditorEmulation() {

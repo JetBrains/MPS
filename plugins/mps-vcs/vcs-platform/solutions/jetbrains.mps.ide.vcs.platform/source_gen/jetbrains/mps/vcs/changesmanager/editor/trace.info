@@ -480,71 +480,65 @@
   </root>
   <root nodeRef="r:06e50ed3-c893-4772-ba4a-878fc9de01d0(jetbrains.mps.vcs.changesmanager.editor)/4477049948824855836">
     <file name="BaseVersionEditorComponent.java">
-      <node id="4094963192772816122" at="31,0,32,0" concept="6" trace="myBaseModel" />
-      <node id="4477049948824882325" at="33,104,34,37" concept="17" />
-      <node id="4192072120456113289" at="34,37,35,28" concept="5" />
-      <node id="2314086701969702452" at="35,28,36,79" concept="11" />
-      <node id="4192072120456354409" at="36,79,37,183" concept="13" />
-      <node id="4477049948824882349" at="38,65,39,112" concept="11" />
-      <node id="4477049948824882381" at="39,112,40,25" concept="5" />
-      <node id="8064780802314627211" at="40,25,41,0" concept="14" />
-      <node id="8064780802314657931" at="41,0,42,69" concept="5" />
-      <node id="1455391539105552170" at="42,69,43,0" concept="14" />
-      <node id="3407638002087242015" at="43,0,44,218" concept="11" />
-      <node id="4192072120456283253" at="44,218,45,138" concept="12" />
-      <node id="5636214660746192540" at="46,7,47,22" concept="11" />
-      <node id="5636214660746323895" at="50,46,51,42" concept="5" />
-      <node id="3407638002087261790" at="54,5,55,108" concept="11" />
-      <node id="8064780802314657979" at="55,108,56,20" concept="5" />
-      <node id="8064780802314657992" at="56,20,57,24" concept="5" />
-      <node id="8064780802314658010" at="57,24,58,25" concept="5" />
-      <node id="1455391539105552169" at="58,25,59,0" concept="14" />
-      <node id="3438680630209287954" at="59,0,60,93" concept="5" />
-      <node id="3438680630209355578" at="60,93,61,97" concept="5" />
-      <node id="3438680630209524125" at="61,97,62,55" concept="13" />
-      <node id="3438680630209398459" at="62,55,63,84" concept="5" />
-      <node id="3438680630209480403" at="63,84,64,88" concept="5" />
-      <node id="3407638002087261840" at="64,88,65,57" concept="5" />
-      <node id="3407638002087261854" at="65,57,66,74" concept="5" />
-      <node id="4192072120456534285" at="71,44,72,117" concept="13" />
-      <node id="8626282948229591153" at="72,117,73,122" concept="11" />
-      <node id="8626282948229518434" at="73,122,74,64" concept="5" />
-      <node id="8626282948229738985" at="74,64,75,14" concept="12" />
-      <node id="4652592318748338330" at="79,39,80,76" concept="12" />
-      <node id="5636214660746265657" at="49,173,52,9" concept="9" />
-      <node id="4797632853758763275" at="78,0,82,0" concept="10" trace="createEmptyCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="6786798249452836519" at="48,149,53,7" concept="9" />
-      <node id="6786798249452830906" at="47,22,54,5" concept="7" />
-      <node id="8626282948229518427" at="70,0,77,0" concept="10" trace="createScrollPane#()Ljavax/swing/JScrollPane;" />
-      <node id="3407638002087261679" at="37,183,46,7" concept="11" />
-      <node id="4477049948824882320" at="33,0,68,0" concept="3" trace="BaseVersionEditorComponent#(Lorg/jetbrains/mps/openapi/model/SModel;Ljetbrains/mps/vcs/diff/ui/common/ChangeGroup;)V" />
-      <scope id="5636214660746265659" at="50,46,51,42" />
-      <scope id="4797632853758763279" at="79,39,80,76" />
-      <scope id="6786798249452836520" at="49,173,52,9" />
-      <scope id="8626282948229518431" at="71,44,75,14">
+      <node id="4094963192772816122" at="30,0,31,0" concept="6" trace="myBaseModel" />
+      <node id="4477049948824882325" at="32,104,33,37" concept="17" />
+      <node id="4192072120456113289" at="33,37,34,28" concept="5" />
+      <node id="2314086701969702452" at="34,28,35,79" concept="11" />
+      <node id="4192072120456354409" at="35,79,36,183" concept="13" />
+      <node id="4477049948824882349" at="37,65,38,112" concept="11" />
+      <node id="4477049948824882381" at="38,112,39,25" concept="5" />
+      <node id="8064780802314627211" at="39,25,40,0" concept="14" />
+      <node id="8064780802314657931" at="40,0,41,69" concept="5" />
+      <node id="1455391539105552170" at="41,69,42,0" concept="14" />
+      <node id="3407638002087242015" at="42,0,43,218" concept="11" />
+      <node id="4192072120456283253" at="43,218,44,138" concept="12" />
+      <node id="5636214660746192540" at="45,7,46,22" concept="11" />
+      <node id="5636214660746323895" at="49,46,50,42" concept="5" />
+      <node id="3407638002087261790" at="53,5,54,108" concept="11" />
+      <node id="8064780802314657979" at="54,108,55,20" concept="5" />
+      <node id="8064780802314657992" at="55,20,56,24" concept="5" />
+      <node id="8064780802314658010" at="56,24,57,25" concept="5" />
+      <node id="1455391539105552169" at="57,25,58,0" concept="14" />
+      <node id="3407638002087261840" at="58,0,59,57" concept="5" />
+      <node id="3407638002087261854" at="59,57,60,74" concept="5" />
+      <node id="8626282948229591153" at="65,44,66,122" concept="11" />
+      <node id="8626282948229518434" at="66,122,67,64" concept="5" />
+      <node id="8626282948229738985" at="67,64,68,14" concept="12" />
+      <node id="4652592318748338330" at="72,39,73,76" concept="12" />
+      <node id="5636214660746265657" at="48,173,51,9" concept="9" />
+      <node id="4797632853758763275" at="71,0,75,0" concept="10" trace="createEmptyCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
+      <node id="6786798249452836519" at="47,149,52,7" concept="9" />
+      <node id="8626282948229518427" at="64,0,70,0" concept="10" trace="createScrollPane#()Ljavax/swing/JScrollPane;" />
+      <node id="6786798249452830906" at="46,22,53,5" concept="7" />
+      <node id="3407638002087261679" at="36,183,45,7" concept="11" />
+      <node id="4477049948824882320" at="32,0,62,0" concept="3" trace="BaseVersionEditorComponent#(Lorg/jetbrains/mps/openapi/model/SModel;Ljetbrains/mps/vcs/diff/ui/common/ChangeGroup;)V" />
+      <scope id="5636214660746265659" at="49,46,50,42" />
+      <scope id="4797632853758763279" at="72,39,73,76" />
+      <scope id="6786798249452836520" at="48,173,51,9" />
+      <scope id="8626282948229518431" at="65,44,68,14">
         <var name="sp" id="8626282948229591154" />
       </scope>
-      <scope id="4797632853758763275" at="78,0,82,0" />
-      <scope id="6786798249452830907" at="48,149,53,7" />
-      <scope id="2447707787974154891" at="38,65,45,138">
+      <scope id="4797632853758763275" at="71,0,75,0" />
+      <scope id="6786798249452830907" at="47,149,52,7" />
+      <scope id="8626282948229518427" at="64,0,70,0" />
+      <scope id="2447707787974154891" at="37,65,44,138">
         <var name="baseRoot" id="4477049948824882350" />
         <var name="messages" id="3407638002087242016" />
       </scope>
-      <scope id="6786798249452830906" at="47,22,54,5">
+      <scope id="6786798249452830906" at="46,22,53,5">
         <var name="leafCell" id="6786798249452830911" />
       </scope>
-      <scope id="8626282948229518427" at="70,0,77,0" />
-      <scope id="4477049948824882324" at="33,104,66,74">
+      <scope id="4477049948824882324" at="32,104,60,74">
         <var name="modelAccess" id="2314086701969702453" />
         <var name="rightMost" id="5636214660746192543" />
         <var name="verticalBounds" id="3407638002087261680" />
         <var name="viewRect" id="3407638002087261791" />
       </scope>
-      <scope id="4477049948824882320" at="33,0,68,0">
+      <scope id="4477049948824882320" at="32,0,62,0">
         <var name="baseModel" id="4477049948824882326" />
         <var name="changeGroup" id="4477049948824882333" />
       </scope>
-      <unit id="4477049948824855836" at="29,0,83,0" name="jetbrains.mps.vcs.changesmanager.editor.BaseVersionEditorComponent" />
+      <unit id="4477049948824855836" at="28,0,76,0" name="jetbrains.mps.vcs.changesmanager.editor.BaseVersionEditorComponent" />
     </file>
   </root>
   <root nodeRef="r:06e50ed3-c893-4772-ba4a-878fc9de01d0(jetbrains.mps.vcs.changesmanager.editor)/6402272430682173534">

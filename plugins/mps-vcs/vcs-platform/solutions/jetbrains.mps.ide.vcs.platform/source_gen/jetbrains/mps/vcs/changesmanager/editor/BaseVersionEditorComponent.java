@@ -19,7 +19,6 @@ import jetbrains.mps.internal.collections.runtime.Sequence;
 import jetbrains.mps.openapi.editor.cells.EditorCell;
 import jetbrains.mps.openapi.editor.cells.CellTraversalUtil;
 import java.awt.Rectangle;
-import javax.swing.ScrollPaneConstants;
 import javax.swing.JScrollPane;
 import com.intellij.ui.components.JBScrollPane;
 import javax.swing.BorderFactory;
@@ -27,7 +26,7 @@ import com.intellij.ui.JBColor;
 import jetbrains.mps.nodeEditor.cells.EditorCell_Constant;
 
 @GeneratedClass(nodeId = "4477049948824855836", model = "r:06e50ed3-c893-4772-ba4a-878fc9de01d0(jetbrains.mps.vcs.changesmanager.editor)")
-public class BaseVersionEditorComponent extends EditorComponent implements EditorMessageOwner {
+public final class BaseVersionEditorComponent extends EditorComponent implements EditorMessageOwner {
   private final SModel myBaseModel;
 
   public BaseVersionEditorComponent(@NotNull SModel baseModel, @NotNull final ChangeGroup changeGroup) {
@@ -57,11 +56,6 @@ public class BaseVersionEditorComponent extends EditorComponent implements Edito
     viewRect.width += 5;
     viewRect.height += 4;
 
-    getScrollPane().setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
-    getScrollPane().setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-    // init just like base JScrollPane constructor does
-    getScrollPane().setVerticalScrollBar(getScrollPane().createVerticalScrollBar());
-    getScrollPane().setHorizontalScrollBar(getScrollPane().createHorizontalScrollBar());
     getScrollPane().setPreferredSize(viewRect.getSize());
     getScrollPane().getViewport().setViewPosition(viewRect.getLocation());
   }
@@ -69,7 +63,6 @@ public class BaseVersionEditorComponent extends EditorComponent implements Edito
 
   @Override
   protected JScrollPane createScrollPane() {
-    // FIXME fix superclass to respect what we have here for scrollbar policy, instead of ugly re-set in cons, above!
     JScrollPane sp = new JBScrollPane(this, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     sp.setBorder(BorderFactory.createLineBorder(JBColor.BLACK));
     return sp;
