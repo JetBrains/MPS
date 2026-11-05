@@ -296,12 +296,16 @@ public class ModelDifferenceViewer implements DataProvider {
       return;
     }
 
+    discardDiffPane();
+    myRootId = null;
+    syncMetadataChanges();
+  }
+
+  private void discardDiffPane() {
     myRootDifferencePane.unregisterShortcuts(myComponent);
     myPanel.setSecondComponent(myNoRootPanel);
     myRootDifferencePane.dispose();
     myRootDifferencePane = null;
-    myRootId = null;
-    syncMetadataChanges();
   }
 
   private void changeCurrentRoot(@Nullable final SNodeId rootId) {
@@ -310,6 +314,10 @@ public class ModelDifferenceViewer implements DataProvider {
     }
     syncMetadataChanges();
 
+    if (myRootDifferencePane != null && (myRootId != null && rootId == null || myRootId == null && rootId != null)) {
+      // see MergeModelsPanel, where this code originates from. In fact, myRootDifferencePane may tell the state
+      discardDiffPane();
+    }
     myRootId = rootId;
     myProject.getRepository().getModelAccess().runReadAction(() -> {
       boolean isMetadataView = rootId == null;
@@ -482,10 +490,10 @@ public class ModelDifferenceViewer implements DataProvider {
     }
     private void rehighlight() {
       ApplicationManager.getApplication().invokeLater(() -> syncMetadataChanges());
-      check_b117w_a1a4fd(myRootDifferencePane);
+      check_b117w_a1a4hd(myRootDifferencePane);
     }
   }
-  private static void check_b117w_a1a4fd(RootDifferencePane checkedDotOperand) {
+  private static void check_b117w_a1a4hd(RootDifferencePane checkedDotOperand) {
     if (null != checkedDotOperand) {
       checkedDotOperand.rehighlightInReadAction(true);
     }
