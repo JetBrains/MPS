@@ -34,7 +34,6 @@ import java.util.Map;
 public class FoldingButtonsPainter extends AbstractFoldingAreaPainter {
   private final List<FoldingButton> myFoldingButtons = new ArrayList<>();
   private FoldingButton myButtonUnderMouse;
-  private boolean myNeedsRelayout = false;
 
   FoldingButtonsPainter(LeftEditorHighlighter leftHighlighter) {
     super(leftHighlighter);
@@ -48,12 +47,11 @@ public class FoldingButtonsPainter extends AbstractFoldingAreaPainter {
       assert foldable.getEditorComponent() == editorComponent : "cell must be from my editor";
       myFoldingButtons.add(new FoldingButton(foldable));
     }
-    myNeedsRelayout = true;
   }
 
   @Override
   public void relayout() {
-    myNeedsRelayout = true;
+    doRelayout();
   }
 
   private void doRelayout() {
@@ -105,10 +103,6 @@ public class FoldingButtonsPainter extends AbstractFoldingAreaPainter {
 
   @Override
   public void paintInLocalCoordinates(Graphics g) {
-    if (myNeedsRelayout) {
-      myNeedsRelayout = false;
-      doRelayout();
-    }
     Rectangle clipBounds = g.getClipBounds();
 
     if (myButtonUnderMouse != null) {
