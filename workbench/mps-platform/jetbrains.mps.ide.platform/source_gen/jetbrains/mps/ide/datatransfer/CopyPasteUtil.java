@@ -262,6 +262,7 @@ public final class CopyPasteUtil {
   }
 
   /**
+   * XXX FWIW, as of 2026.3, there's single use of the method in this class, no uses in mps-extensions nor mbeddr
    * 
    * @deprecated use {@link jetbrains.mps.ide.datatransfer.CopyPasteUtil#putToClipboard(Iterable<SNode>, Map<SNode, Set<SNode>>, String, boolean)} instead
    */

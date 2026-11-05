@@ -29,12 +29,10 @@ import org.jetbrains.mps.openapi.persistence.PersistenceFacade;
 @GeneratedClass(nodeId = "4652592318748339723", model = "r:07568eb8-30c0-4bb3-9dcb-50ee4b8de59a(jetbrains.mps.vcs.diff.ui.common)")
 public class DiffModelUtil {
   private static Map<SModel, TempModuleOptions> myRegisteredModels = MapSequence.fromMap(new HashMap<SModel, TempModuleOptions>());
-  public static void renameModelAndRegister(SModel model, String version) {
+
+  public static void renameModelAndRegister(SModel model, String version, boolean fixReferences) {
     // takes a model, changes its reference if version is specified, and registers a model with a newly created
     // module which is registered with a global repository.
-    renameModelAndRegister(model, version, false);
-  }
-  public static void renameModelAndRegister(SModel model, String version, boolean fixReferences) {
     renameModelAndRegister(model, version, fixReferences, false);
   }
   public static void renameModelAndRegister(SModel model, String version, boolean fixReferences, boolean addLanguages) {

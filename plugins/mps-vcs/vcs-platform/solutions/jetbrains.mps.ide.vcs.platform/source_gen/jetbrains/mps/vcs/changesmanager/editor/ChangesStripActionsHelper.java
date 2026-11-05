@@ -19,16 +19,17 @@ import jetbrains.mps.internal.collections.runtime.Sequence;
 import jetbrains.mps.vcs.diff.changes.NodeGroupChange;
 import jetbrains.mps.vcs.diff.ui.common.Bounds;
 import jetbrains.mps.vcs.diff.changes.ChangeType;
-import jetbrains.mps.vcs.diff.ui.common.DiffModelUtil;
 import org.jetbrains.mps.openapi.model.SNode;
 import jetbrains.mps.vcs.diff.changes.NodeChange;
 import jetbrains.mps.vcs.diff.changes.NodeIdChange;
 import java.util.Collections;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SNodeOperations;
 import jetbrains.mps.baseLanguage.closures.runtime.Wrappers;
+import java.util.ArrayList;
 import org.jetbrains.mps.openapi.language.SContainmentLink;
 import java.util.Objects;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.AttributeOperations;
+import java.util.stream.Collectors;
 import jetbrains.mps.ide.datatransfer.CopyPasteUtil;
 
 @GeneratedClass(nodeId = "2052504288806109972", model = "r:06e50ed3-c893-4772-ba4a-878fc9de01d0(jetbrains.mps.vcs.changesmanager.editor)")
@@ -114,12 +115,9 @@ public final class ChangesStripActionsHelper {
     assert changeGroup != null;
 
     final SModel oldModel = ListSequence.fromList(changeGroup.getChanges()).first().getChangeSet().getOldModel();
-    // do we need??? there were no de-registration
-    // FIXME (a) not sure node paste comment is still relevant; (b) if it is, let getPainter():ChangeStripsPainter hold model clone in a temp module
-    if (oldModel.getModule() == null) {
-      // without model registration reference resolving doesn't work during paste: should be fixed
-      DiffModelUtil.renameModelAndRegister(oldModel, "old");
-    }
+    // FTR, here used to me renameModelAndRegister(oldModel, "old"), with a comment that paste doesn't work for unregistered models.
+    //     I don't think this is the case any more, but even if it is, let getPainter():ChangeStripsPainter hold model clone in a temp module
+    //     and use it here (as well as in every PopupPanel/BaseVersionEditorComponent
 
     // compute paths to root
     Iterable<SNode> baseNodes = ListSequence.fromList(changeGroup.getChanges()).translate((ch) -> {
@@ -154,7 +152,8 @@ public final class ChangesStripActionsHelper {
 
     // by default, copy common ancestor
     SNode commonNode = ListSequence.fromList(commonPath.value).last();
-    List<SNode> nodesToCopy = Sequence.fromIterable(Sequence.<SNode>singleton(commonNode)).toList();
+    List<SNode> nodesToCopy = ListSequence.fromList(new ArrayList<>());
+    ListSequence.fromList(nodesToCopy).addElement(commonNode);
 
     if (ListSequence.fromList(paths).all((p) -> ListSequence.fromList(p).count() > ListSequence.fromList(commonPath.value).count())) {
       Iterable<SNode> children = ListSequence.fromList(paths).select((p) -> ListSequence.fromList(p).getElement(ListSequence.fromList(commonPath.value).count()));
@@ -165,12 +164,15 @@ public final class ChangesStripActionsHelper {
         int min = Sequence.fromIterable(indices).reduceLeft((a, b) -> Math.min(a, b));
         int max = Sequence.fromIterable(indices).reduceLeft((a, b) -> Math.max(a, b));
         ListSequence.fromList(nodesToCopy).clear();
+        // XXX I wonder if this attribute magic has something along the lines of 2nd arg to putToClipboard()?
         ListSequence.fromList(nodesToCopy).addSequence(Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(commonNode, commonRole)).page(min, max + 1));
       }
     }
 
-    CopyPasteUtil.copyNodesToClipboard(nodesToCopy);
-    check_ikrecr_a42a91(getPainter(), this);
+    // used to be text built by CopyPasteUtil.putToClipboard(), debug text with newline separators. However, as I stick to mere name here, and it's not of any importance, comma seems fine.
+    String text = ListSequence.fromList(nodesToCopy).select((it) -> SNodeOperations.present(it)).toStream(false).collect(Collectors.joining(","));
+    CopyPasteUtil.putToClipboard(nodesToCopy, null, text, false);
+    check_ikrecr_a72a91(getPainter(), this);
   }
   private static ChangeGroup check_ikrecr_a0a5(ChangeStripsPainter checkedDotOperand, EditorContext myEditorContext, Boolean next, ChangesStripActionsHelper checkedDotThisExpression) {
     if (null != checkedDotOperand) {
@@ -226,7 +228,7 @@ public final class ChangesStripActionsHelper {
     }
     return null;
   }
-  private static void check_ikrecr_a42a91(ChangeStripsPainter checkedDotOperand, ChangesStripActionsHelper checkedDotThisExpression) {
+  private static void check_ikrecr_a72a91(ChangeStripsPainter checkedDotOperand, ChangesStripActionsHelper checkedDotThisExpression) {
     if (null != checkedDotOperand) {
       checkedDotOperand.showPopupForGroup(null);
     }
