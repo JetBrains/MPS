@@ -92354,7 +92354,7 @@
         <node concept="3cpWsn" id="2h7qzqOysdp" role="3cpWs9">
           <property role="TrG5h" value="editor" />
           <node concept="3uibUv" id="2h7qzqOysdr" role="1tU5fm">
-            <ref role="3uigEE" to="cj4x:~EditorComponent" resolve="jetbrains.mps.openapi.editor.EditorComponent" />
+            <ref role="3uigEE" to="cj4x:~EditorComponent" resolve="EditorComponent" />
           </node>
           <node concept="369mXd" id="2h7qzqOysuh" role="33vP2m" />
         </node>
@@ -92421,7 +92421,7 @@
         <node concept="3cpWsn" id="2h7qzqOysdt" role="3cpWs9">
           <property role="TrG5h" value="other" />
           <node concept="3uibUv" id="2h7qzqOysdv" role="1tU5fm">
-            <ref role="3uigEE" to="mhbf:~SNode" resolve="org.jetbrains.mps.openapi.model.SNode" />
+            <ref role="3uigEE" to="mhbf:~SNode" resolve="SNode" />
           </node>
           <node concept="2YIFZM" id="2h7qzqOyseu" role="33vP2m">
             <ref role="1Pybhc" node="2h7qzqOxumU" resolve="EditorCommandUndoHelper" />
@@ -92574,7 +92574,7 @@
         <node concept="3cpWsn" id="2h7qzqOywRT" role="3cpWs9">
           <property role="TrG5h" value="editor" />
           <node concept="3uibUv" id="2h7qzqOywRV" role="1tU5fm">
-            <ref role="3uigEE" to="cj4x:~EditorComponent" resolve="jetbrains.mps.openapi.editor.EditorComponent" />
+            <ref role="3uigEE" to="cj4x:~EditorComponent" resolve="EditorComponent" />
           </node>
           <node concept="369mXd" id="2h7qzqOyxJL" role="33vP2m" />
         </node>
@@ -92620,7 +92620,7 @@
         <node concept="3cpWsn" id="2h7qzqOywRX" role="3cpWs9">
           <property role="TrG5h" value="created" />
           <node concept="3uibUv" id="2h7qzqOywRZ" role="1tU5fm">
-            <ref role="3uigEE" to="mhbf:~SNode" resolve="org.jetbrains.mps.openapi.model.SNode" />
+            <ref role="3uigEE" to="mhbf:~SNode" resolve="SNode" />
           </node>
           <node concept="2YIFZM" id="2h7qzqOywSY" role="33vP2m">
             <ref role="1Pybhc" node="2h7qzqOxumU" resolve="EditorCommandUndoHelper" />
@@ -92653,7 +92653,7 @@
             <node concept="3cpWsn" id="2h7qzqOywS4" role="3cpWs9">
               <property role="TrG5h" value="file" />
               <node concept="3uibUv" id="2h7qzqOywS6" role="1tU5fm">
-                <ref role="3uigEE" to="kip1:~MPSNodeVirtualFile" resolve="jetbrains.mps.nodefs.MPSNodeVirtualFile" />
+                <ref role="3uigEE" to="kip1:~MPSNodeVirtualFile" resolve="MPSNodeVirtualFile" />
               </node>
               <node concept="2YIFZM" id="2h7qzqOywT3" role="33vP2m">
                 <ref role="1Pybhc" node="2h7qzqOxumU" resolve="EditorCommandUndoHelper" />
@@ -92777,7 +92777,7 @@
         <node concept="3cpWsn" id="2h7qzqOyxiE" role="3cpWs9">
           <property role="TrG5h" value="editor" />
           <node concept="3uibUv" id="2h7qzqOyxiG" role="1tU5fm">
-            <ref role="3uigEE" to="cj4x:~EditorComponent" resolve="jetbrains.mps.openapi.editor.EditorComponent" />
+            <ref role="3uigEE" to="cj4x:~EditorComponent" resolve="EditorComponent" />
           </node>
           <node concept="369mXd" id="2h7qzqOyxJM" role="33vP2m" />
         </node>
@@ -92786,7 +92786,7 @@
         <node concept="3cpWsn" id="2h7qzqOyxiI" role="3cpWs9">
           <property role="TrG5h" value="other" />
           <node concept="3uibUv" id="2h7qzqOyxiK" role="1tU5fm">
-            <ref role="3uigEE" to="mhbf:~SNode" resolve="org.jetbrains.mps.openapi.model.SNode" />
+            <ref role="3uigEE" to="mhbf:~SNode" resolve="SNode" />
           </node>
           <node concept="2YIFZM" id="2h7qzqOyxjE" role="33vP2m">
             <ref role="1Pybhc" node="2h7qzqOxumU" resolve="EditorCommandUndoHelper" />
@@ -92819,7 +92819,7 @@
             <node concept="3cpWsn" id="2h7qzqOyxiP" role="3cpWs9">
               <property role="TrG5h" value="file" />
               <node concept="3uibUv" id="2h7qzqOyxiR" role="1tU5fm">
-                <ref role="3uigEE" to="kip1:~MPSNodeVirtualFile" resolve="jetbrains.mps.nodefs.MPSNodeVirtualFile" />
+                <ref role="3uigEE" to="kip1:~MPSNodeVirtualFile" resolve="MPSNodeVirtualFile" />
               </node>
               <node concept="2YIFZM" id="2h7qzqOyxjJ" role="33vP2m">
                 <ref role="1Pybhc" node="2h7qzqOxumU" resolve="EditorCommandUndoHelper" />
