@@ -46,8 +46,6 @@ import com.intellij.openapi.actionSystem.ActionGroup;
 import org.jetbrains.annotations.Nullable;
 import jetbrains.mps.vcs.diff.ui.common.Bounds;
 import com.intellij.openapi.application.ApplicationManager;
-import org.jetbrains.mps.openapi.module.ModelAccess;
-import jetbrains.mps.ide.project.ProjectHelper;
 import jetbrains.mps.vcs.diff.ChangeSet;
 import java.util.Iterator;
 import jetbrains.mps.vcs.diff.ui.common.DiffChangeGroupLayout;
@@ -322,24 +320,7 @@ public abstract class RootDifferencePaneBase implements RootDifferencePane, Prop
 
   @Override
   public void rehighlightInReadAction(final boolean rebuildChangeSet) {
-    ModelAccess modelAccess = ProjectHelper.getModelAccess(myMpsProject.getProject());
-    if (modelAccess != null) {
-      modelAccess.runReadInEDT(() -> {
-        if (rebuildChangeSet) {
-          rehighlightWithRebuild();
-        } else {
-          rehighlightWithNoRebuild();
-        }
-      });
-    }
-  }
-
-  private void rehighlightWithRebuild() {
-    rehighlight(true);
-  }
-
-  private void rehighlightWithNoRebuild() {
-    rehighlight(false);
+    myMpsProject.getModelAccess().runReadInEDT(() -> rehighlight(rebuildChangeSet));
   }
 
   protected abstract ChangeSet getChangeSet(DiffEditor leftEditor, DiffEditor rightEditor);

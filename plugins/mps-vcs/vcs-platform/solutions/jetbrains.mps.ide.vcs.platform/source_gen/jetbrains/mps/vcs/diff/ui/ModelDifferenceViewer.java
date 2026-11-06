@@ -90,6 +90,7 @@ public class ModelDifferenceViewer implements UiDataProvider {
   private final Collection<SModel> myRegisteredModels = CollectionSequence.fromCollection(new ArrayList<>());
   private final List<SModel> myLiveModels = ListSequence.fromList(new ArrayList<>());
   private final MyChangeListener myLiveModelListener;
+  private volatile boolean myDisposed;
 
   public ModelDifferenceViewer(@NotNull MPSProject mpsProject, @NotNull ContentDiffRequest request, @NotNull FrameDiffTool.DiffViewer diffViewer, @NotNull final List<SModel> models, boolean showTree, final boolean perRootPersistence) {
     myDiffRequest = request;
@@ -222,6 +223,7 @@ public class ModelDifferenceViewer implements UiDataProvider {
   }
 
   public void dispose() {
+    myDisposed = true;
     myLiveModelListener.inactive();
     myProject.getModelAccess().removeWriteActionListener(myLiveModelListener);
     ListSequence.fromList(myLiveModels).visitAll((it) -> it.removeModelListener(myLiveModelListener));
@@ -277,8 +279,14 @@ public class ModelDifferenceViewer implements UiDataProvider {
   }
 
   private void syncMetadataChanges() {
-    if (myEditable) {
+    if (!(myEditable) || myDisposed) {
+      return;
+    }
+    try {
+      myLiveModelListener.inactive();
       myProject.getModelAccess().executeCommand(() -> MetadataUtil.applyMetadataChanges(ListSequence.fromList(myModels).getElement(1), ListSequence.fromList(myMetadataModelsCompat).getElement(1)));
+    } finally {
+      myLiveModelListener.active();
     }
   }
 
@@ -490,13 +498,20 @@ public class ModelDifferenceViewer implements UiDataProvider {
   }
 
   private void rehighlight() {
-    ApplicationManager.getApplication().invokeLater(() -> syncMetadataChanges());
-    check_b117w_a1a27(myRootDifferencePane);
-  }
-  private static void check_b117w_a1a27(RootDifferencePane checkedDotOperand) {
-    if (null != checkedDotOperand) {
-      checkedDotOperand.rehighlightInReadAction(true);
-    }
-
+    ApplicationManager.getApplication().invokeLater(() -> {
+      if (myDisposed) {
+        return;
+      }
+      syncMetadataChanges();
+      myProject.getModelAccess().runReadAction(() -> {
+        final RootDifferencePane rp = myRootDifferencePane;
+        if (rp != null) {
+          rp.rehighlight(true);
+        } else {
+          // FIXME myTree reset selection, but it's still better than no reaction to external changes at all
+          //  uncomment when later is truly later, to avoid deadlock (command from inside this read)
+        }
+      });
+    });
   }
 }

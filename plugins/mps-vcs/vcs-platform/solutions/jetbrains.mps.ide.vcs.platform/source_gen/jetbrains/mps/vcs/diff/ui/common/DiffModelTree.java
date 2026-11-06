@@ -165,6 +165,7 @@ public abstract class DiffModelTree extends SimpleTree implements DataProvider {
   }
 
   public void rebuildLater() {
+    //  FIXME how come _later_ is _now_!?!?
     rebuildNow();
   }
 
