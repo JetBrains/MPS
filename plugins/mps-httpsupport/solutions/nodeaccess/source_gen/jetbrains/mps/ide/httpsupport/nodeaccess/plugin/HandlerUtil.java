@@ -87,7 +87,7 @@ public class HandlerUtil {
   }
   private static boolean ownsModel(final Project p, final SModelId modelId) {
     return p.getModelAccess().computeReadAction(() -> {
-      for (SModule module : p.getProjectModules()) {
+      for (SModule module : p.getProjectModulesWithGenerators()) {
         if (module.getModel(modelId) != null) {
           return true;
         }

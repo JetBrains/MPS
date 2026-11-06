@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<product version="3" modelHash="-4r53bbcwjsan26b11hoze5iw75b55zl">
+<product version="3" modelHash="75fnemwmqssopr8x1c21ahlwldymwf0">
   <files names="ExtensionDescriptor.java:FileOpener_Extension.java:FileOpener_RequestHandler.java:HandlerUtil.java:NodeAsUriActions_ActionGroup.java:NodeOpener_Extension.java:NodeOpener_RequestHandler.java:NodeReferenceURL_Action.java:Nodeaccess_ApplicationPlugin.java" />
 </product>
 

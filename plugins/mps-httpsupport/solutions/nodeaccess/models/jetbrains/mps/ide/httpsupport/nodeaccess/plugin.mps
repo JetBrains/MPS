@@ -1384,7 +1384,7 @@
                         <ref role="3cqZAo" node="38IyatNEfku" resolve="p" />
                       </node>
                       <node concept="liA8E" id="38IyatNEfkU" role="2OqNvi">
-                        <ref role="37wK5l" to="jtsr:~Project.getProjectModules()" resolve="getProjectModules" />
+                        <ref role="37wK5l" to="z1c3:~Project.getProjectModulesWithGenerators()" resolve="getProjectModulesWithGenerators" />
                       </node>
                     </node>
                     <node concept="3cpWsn" id="38IyatNEfkV" role="1Duv9x">
