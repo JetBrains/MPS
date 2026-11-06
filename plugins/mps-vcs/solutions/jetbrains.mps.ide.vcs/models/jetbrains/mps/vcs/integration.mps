@@ -43,11 +43,8 @@
     <import index="1038" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs.changes(jetbrains.mps.vcs.idea.stubs/)" />
     <import index="2eq1" ref="r:383be79d-d39d-4dc4-9df3-57e57bcac2b5(jetbrains.mps.ide.platform.watching)" />
     <import index="cyi8" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs.changes.ui(MPS.IDEA.Modules/)" />
-    <import index="lzb3" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.ui(MPS.IDEA.Modules/)" />
     <import index="1039" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs.changes(MPS.IDEA.Modules/)" />
     <import index="j86q" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs.impl(MPS.IDEA.Modules/)" />
-    <import index="jlfg" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vfs(MPS.IDEA.Modules/)" implicit="true" />
-    <import index="jlcw" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs(MPS.IDEA.Modules/)" implicit="true" />
   </imports>
   <registry>
     <language id="f3061a53-9226-4cc5-a443-f952ceaf5816" name="jetbrains.mps.baseLanguage">
@@ -659,7 +656,7 @@
                                               </node>
                                             </node>
                                             <node concept="liA8E" id="33vUo2uvKdC" role="2OqNvi">
-                                              <ref role="37wK5l" to="jlfg:~VirtualFile.getName()" resolve="getName" />
+                                              <ref role="37wK5l" to="jlff:~VirtualFile.getName()" resolve="getName" />
                                             </node>
                                           </node>
                                         </node>
@@ -762,7 +759,7 @@
                   </node>
                 </node>
                 <node concept="liA8E" id="7WyXo5rEH4B" role="2OqNvi">
-                  <ref role="37wK5l" to="jlcw:~FilePath.getIOFile()" resolve="getIOFile" />
+                  <ref role="37wK5l" to="jlcu:~FilePath.getIOFile()" resolve="getIOFile" />
                 </node>
               </node>
               <node concept="2OqwBi" id="7WyXo5rEH4C" role="37wK5m">
@@ -775,7 +772,7 @@
                   </node>
                 </node>
                 <node concept="liA8E" id="7WyXo5rEH4G" role="2OqNvi">
-                  <ref role="37wK5l" to="jlcw:~FilePath.getIOFile()" resolve="getIOFile" />
+                  <ref role="37wK5l" to="jlcu:~FilePath.getIOFile()" resolve="getIOFile" />
                 </node>
               </node>
             </node>
@@ -2276,7 +2273,7 @@
               <ref role="3cqZAo" node="7pVeK7_3Bws" resolve="renderer" />
             </node>
             <node concept="liA8E" id="7pVeK7_3GYY" role="2OqNvi">
-              <ref role="37wK5l" to="lzb3:~SimpleColoredComponent.append(java.lang.String,com.intellij.ui.SimpleTextAttributes)" resolve="append" />
+              <ref role="37wK5l" to="lzb2:~SimpleColoredComponent.append(java.lang.String,com.intellij.ui.SimpleTextAttributes)" resolve="append" />
               <node concept="1rXfSq" id="74zdNd$bqkw" role="37wK5m">
                 <ref role="37wK5l" node="7pVeK7_3V4w" resolve="getTextPresentation" />
               </node>
