@@ -1789,16 +1789,6 @@
                       </node>
                     </node>
                   </node>
-                  <node concept="2pNNFK" id="k06EmAfhsj" role="3o6s8t">
-                    <property role="qg3DV" value="true" />
-                    <property role="2pNNFO" value="arg" />
-                    <node concept="2pNUuL" id="k06EmAfhsk" role="2pNNFR">
-                      <property role="2pNUuO" value="value" />
-                      <node concept="2pMdtt" id="k06EmAfhsl" role="2pMdts">
-                        <property role="2pMdty" value="-Didea.split.test.logs=true" />
-                      </node>
-                    </node>
-                  </node>
                   <node concept="2pNNFK" id="6OON6YVXP4c" role="3o6s8t">
                     <property role="qg3DV" value="true" />
                     <property role="2pNNFO" value="arg" />
