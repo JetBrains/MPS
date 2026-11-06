@@ -118,7 +118,7 @@
       <concept id="6057319140845467763" name="jetbrains.mps.build.structure.BuildSource_JavaLibrary" flags="ng" index="PiPfp">
         <child id="6057319140845478673" name="elements" index="PiKyV" />
       </concept>
-      <concept id="8618885170173601777" name="jetbrains.mps.build.structure.BuildCompositePath" flags="ng" index="2Ry0Ak">
+      <concept id="8618885170173601777" name="jetbrains.mps.build.structure.BuildCompositePath" flags="nn" index="2Ry0Ak">
         <property id="8618885170173601779" name="head" index="2Ry0Am" />
         <child id="8618885170173601778" name="tail" index="2Ry0An" />
       </concept>
@@ -491,7 +491,7 @@
         <child id="322010710375956261" name="path" index="3LF7KH" />
       </concept>
       <concept id="3335207478148059730" name="jetbrains.mps.build.mps.structure.BuildMpsLayout_ModuleJarContent" flags="ng" index="3PtdJl" />
-      <concept id="7259033139236285166" name="jetbrains.mps.build.mps.structure.BuildMps_ExtractedModuleDependency" flags="ng" index="1SiIV0">
+      <concept id="7259033139236285166" name="jetbrains.mps.build.mps.structure.BuildMps_ExtractedModuleDependency" flags="nn" index="1SiIV0">
         <child id="7259033139236285167" name="dependency" index="1SiIV1" />
       </concept>
       <concept id="4157435862321765764" name="jetbrains.mps.build.mps.structure.BuildMps_BrandingVersion" flags="ng" index="3ZAF1B">
@@ -59587,6 +59587,23 @@
                 <property role="2Ry0Am" value="plugins" />
                 <node concept="2Ry0Ak" id="6EyFT7bdZIQ" role="2Ry0An">
                   <property role="2Ry0Am" value="platform-bookmarks-plugin" />
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
+        <node concept="398223" id="6pfZ3rVtXK3" role="39821P">
+          <node concept="3_J27D" id="6pfZ3rVtXK4" role="Nbhlr">
+            <node concept="3Mxwew" id="6pfZ3rVtXK5" role="3MwsjC">
+              <property role="3MwjfP" value="platform-navbar-plugin" />
+            </node>
+          </node>
+          <node concept="2HvfSZ" id="6pfZ3rVtXK6" role="39821P">
+            <node concept="55IIr" id="6pfZ3rVtXK7" role="2HvfZ0">
+              <node concept="2Ry0Ak" id="6pfZ3rVtXK8" role="iGT6I">
+                <property role="2Ry0Am" value="plugins" />
+                <node concept="2Ry0Ak" id="6pfZ3rVtXK9" role="2Ry0An">
+                  <property role="2Ry0Am" value="platform-navbar-plugin" />
                 </node>
               </node>
             </node>

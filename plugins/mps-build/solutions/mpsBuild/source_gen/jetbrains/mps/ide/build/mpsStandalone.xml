@@ -108,6 +108,10 @@
     <copy todir="${build.layout}/plugins/platform-bookmarks-plugin">
       <fileset dir="${basedir}/plugins/platform-bookmarks-plugin" />
     </copy>
+    <mkdir dir="${build.layout}/plugins/platform-navbar-plugin" />
+    <copy todir="${build.layout}/plugins/platform-navbar-plugin">
+      <fileset dir="${basedir}/plugins/platform-navbar-plugin" />
+    </copy>
     <mkdir dir="${build.layout}/plugins/platform-structureView-plugin" />
     <copy todir="${build.layout}/plugins/platform-structureView-plugin">
       <fileset dir="${basedir}/plugins/platform-structureView-plugin" />
