@@ -10,7 +10,6 @@ import jetbrains.mps.lang.test.runtime.TestParametersCacheBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeAll;
 import org.jetbrains.ide.BuiltInServerManager;
-import org.jetbrains.builtInWebServer.BuiltInServerOptions;
 import jetbrains.mps.lang.test.runtime.BaseTestBody;
 import jetbrains.mps.lang.test.runtime.TransformationTest;
 import jetbrains.mps.ide.httpsupport.tests.plugin.PingStorage;
@@ -92,7 +91,7 @@ public class TestRHBehavior_Test extends BaseTransformationTest {
     // Without this option DefaultWebServerPathHandler.process() will process all unhandled requests
     // resulting in UNAUTHORIZED (401) HTTP status code. This test was originally written with the 
     // assumption that HTTP 404 status (not found) will be returned in this case. 
-    BuiltInServerOptions.getInstance().allowUnsignedRequests = true;
+    // see #testRequestResponse below
   }
 
   /*package*/ static class TestBody extends BaseTestBody {
@@ -216,6 +215,10 @@ public class TestRHBehavior_Test extends BaseTransformationTest {
         URL obj = new URL(requestUrl);
         HttpURLConnection con = as_17tcaj_a0a1a0a02u(obj.openConnection(), HttpURLConnection.class);
         con.setRequestMethod(method);
+        // workaround for MPS-40412
+        // supplies the authentication-token header, removing the need for allowUnsignedRequests. 
+        // changes the requests to authenticated ones
+        BuiltInServerManager.getInstance().configureRequestToWebServer(con);
         con.connect();
 
         Assert.assertEquals(Integer.valueOf(exectedRetCode), Integer.valueOf(con.getResponseCode()));

@@ -6,6 +6,8 @@
     <use id="f61473f9-130f-42f6-b98d-6c438812c2f6" name="jetbrains.mps.baseLanguage.unitTest" version="-1" />
     <use id="f3061a53-9226-4cc5-a443-f952ceaf5816" name="jetbrains.mps.baseLanguage" version="12" />
     <use id="817e4e70-961e-4a95-98a1-15e9f32231f1" name="jetbrains.mps.ide.httpsupport" version="-1" />
+    <use id="443f4c36-fcf5-4eb6-9500-8d06ed259e3e" name="jetbrains.mps.baseLanguage.classifiers" version="0" />
+    <use id="c7fb639f-be78-4307-89b0-b5959c3fa8c8" name="jetbrains.mps.lang.text" version="0" />
   </languages>
   <imports>
     <import index="mhbf" ref="8865b7a8-5271-43d3-884c-6fd1d9cfdd34/java:org.jetbrains.mps.openapi.model(MPS.OpenAPI/)" />
@@ -192,6 +194,13 @@
       </concept>
       <concept id="1169194658468" name="jetbrains.mps.lang.core.structure.INamedConcept" flags="ngI" index="TrEIO">
         <property id="1169194664001" name="name" index="TrG5h" />
+      </concept>
+      <concept id="709746936026466394" name="jetbrains.mps.lang.core.structure.ChildAttribute" flags="ng" index="3VBwX9">
+        <property id="709746936026609031" name="linkId" index="3V$3ak" />
+        <property id="709746936026609029" name="role_DebugInfo" index="3V$3am" />
+      </concept>
+      <concept id="4452961908202556907" name="jetbrains.mps.lang.core.structure.BaseCommentAttribute" flags="ng" index="1X3_iC">
+        <child id="3078666699043039389" name="commentedNode" index="8Wnug" />
       </concept>
     </language>
     <language id="c7fb639f-be78-4307-89b0-b5959c3fa8c8" name="jetbrains.mps.lang.text">
@@ -534,6 +543,89 @@
                   <ref role="37wK5l" to="zf81:~HttpURLConnection.setRequestMethod(java.lang.String)" resolve="setRequestMethod" />
                   <node concept="37vLTw" id="30pFmTipoZ8" role="37wK5m">
                     <ref role="3cqZAo" node="30pFmTipnaD" resolve="method" />
+                  </node>
+                </node>
+              </node>
+            </node>
+            <node concept="3SKdUt" id="6FGmTJrToVF" role="3cqZAp">
+              <node concept="1PaTwC" id="6FGmTJrToVG" role="1aUNEU">
+                <node concept="3oM_SD" id="6FGmTJrToVH" role="1PaTwD">
+                  <property role="3oM_SC" value="workaround" />
+                </node>
+                <node concept="3oM_SD" id="6FGmTJrTphu" role="1PaTwD">
+                  <property role="3oM_SC" value="for" />
+                </node>
+                <node concept="3oM_SD" id="6FGmTJrTpkD" role="1PaTwD">
+                  <property role="3oM_SC" value="MPS-40412" />
+                </node>
+              </node>
+            </node>
+            <node concept="3SKdUt" id="6FGmTJrTmlG" role="3cqZAp">
+              <node concept="1PaTwC" id="6FGmTJrTmlH" role="1aUNEU">
+                <node concept="3oM_SD" id="6FGmTJrTmYv" role="1PaTwD">
+                  <property role="3oM_SC" value="supplies" />
+                </node>
+                <node concept="3oM_SD" id="6FGmTJrTmYw" role="1PaTwD">
+                  <property role="3oM_SC" value="the" />
+                </node>
+                <node concept="3oM_SD" id="6FGmTJrTmYx" role="1PaTwD">
+                  <property role="3oM_SC" value="authentication-token" />
+                </node>
+                <node concept="3oM_SD" id="6FGmTJrTmYy" role="1PaTwD">
+                  <property role="3oM_SC" value="header," />
+                </node>
+                <node concept="3oM_SD" id="6FGmTJrTmYz" role="1PaTwD">
+                  <property role="3oM_SC" value="removing" />
+                </node>
+                <node concept="3oM_SD" id="6FGmTJrTmY$" role="1PaTwD">
+                  <property role="3oM_SC" value="the" />
+                </node>
+                <node concept="3oM_SD" id="6FGmTJrTmY_" role="1PaTwD">
+                  <property role="3oM_SC" value="need" />
+                </node>
+                <node concept="3oM_SD" id="6FGmTJrTmYA" role="1PaTwD">
+                  <property role="3oM_SC" value="for" />
+                </node>
+                <node concept="3oM_SD" id="6FGmTJrTmYB" role="1PaTwD">
+                  <property role="3oM_SC" value="allowUnsignedRequests." />
+                </node>
+                <node concept="3oM_SD" id="6FGmTJrTmYC" role="1PaTwD">
+                  <property role="3oM_SC" value="" />
+                </node>
+              </node>
+            </node>
+            <node concept="3SKdUt" id="6FGmTJrTn4R" role="3cqZAp">
+              <node concept="1PaTwC" id="6FGmTJrTn4r" role="1aUNEU">
+                <node concept="3oM_SD" id="6FGmTJrTmYN" role="1PaTwD">
+                  <property role="3oM_SC" value="changes" />
+                </node>
+                <node concept="3oM_SD" id="6FGmTJrTmYO" role="1PaTwD">
+                  <property role="3oM_SC" value="the" />
+                </node>
+                <node concept="3oM_SD" id="6FGmTJrTmYP" role="1PaTwD">
+                  <property role="3oM_SC" value="requests" />
+                </node>
+                <node concept="3oM_SD" id="6FGmTJrTmYQ" role="1PaTwD">
+                  <property role="3oM_SC" value="to" />
+                </node>
+                <node concept="3oM_SD" id="6FGmTJrTmYR" role="1PaTwD">
+                  <property role="3oM_SC" value="authenticated" />
+                </node>
+                <node concept="3oM_SD" id="6FGmTJrTmYS" role="1PaTwD">
+                  <property role="3oM_SC" value="ones" />
+                </node>
+              </node>
+            </node>
+            <node concept="3clFbF" id="6FGmTJrThc1" role="3cqZAp">
+              <node concept="2OqwBi" id="6FGmTJrTkd2" role="3clFbG">
+                <node concept="2YIFZM" id="6FGmTJrTjkR" role="2Oq$k0">
+                  <ref role="1Pybhc" to="e5vs:~BuiltInServerManager" resolve="BuiltInServerManager" />
+                  <ref role="37wK5l" to="e5vs:~BuiltInServerManager.getInstance()" resolve="getInstance" />
+                </node>
+                <node concept="liA8E" id="6FGmTJrTkd3" role="2OqNvi">
+                  <ref role="37wK5l" to="e5vs:~BuiltInServerManager.configureRequestToWebServer(java.net.URLConnection)" resolve="configureRequestToWebServer" />
+                  <node concept="37vLTw" id="6FGmTJrTkd4" role="37wK5m">
+                    <ref role="3cqZAo" node="30pFmTipmwL" resolve="con" />
                   </node>
                 </node>
               </node>
@@ -1574,18 +1666,35 @@
             </node>
           </node>
         </node>
-        <node concept="3clFbF" id="7XG5B_GRZC4" role="3cqZAp">
-          <node concept="37vLTI" id="7XG5B_GS0Cx" role="3clFbG">
-            <node concept="3clFbT" id="7XG5B_GS0F7" role="37vLTx">
-              <property role="3clFbU" value="true" />
+        <node concept="3SKdUt" id="6FGmTJrTo0F" role="3cqZAp">
+          <node concept="1PaTwC" id="6FGmTJrTo0G" role="1aUNEU">
+            <node concept="3oM_SD" id="6FGmTJrTo0H" role="1PaTwD">
+              <property role="3oM_SC" value="see" />
             </node>
-            <node concept="2OqwBi" id="7XG5B_GRZUd" role="37vLTJ">
-              <node concept="2YIFZM" id="7XG5B_GRZHJ" role="2Oq$k0">
-                <ref role="37wK5l" to="l13r:~BuiltInServerOptions.getInstance()" resolve="getInstance" />
-                <ref role="1Pybhc" to="l13r:~BuiltInServerOptions" resolve="BuiltInServerOptions" />
+            <node concept="3oM_SD" id="6FGmTJrTo1N" role="1PaTwD">
+              <property role="3oM_SC" value="#testRequestResponse" />
+            </node>
+            <node concept="3oM_SD" id="6FGmTJrTo5p" role="1PaTwD">
+              <property role="3oM_SC" value="below" />
+            </node>
+          </node>
+        </node>
+        <node concept="1X3_iC" id="6FGmTJrTnMe" role="lGtFl">
+          <property role="3V$3am" value="statement" />
+          <property role="3V$3ak" value="f3061a53-9226-4cc5-a443-f952ceaf5816/1068580123136/1068581517665" />
+          <node concept="3clFbF" id="7XG5B_GRZC4" role="8Wnug">
+            <node concept="37vLTI" id="7XG5B_GS0Cx" role="3clFbG">
+              <node concept="3clFbT" id="7XG5B_GS0F7" role="37vLTx">
+                <property role="3clFbU" value="true" />
               </node>
-              <node concept="2OwXpG" id="7XG5B_GS0fV" role="2OqNvi">
-                <ref role="2Oxat5" to="l13r:~BuiltInServerOptions.allowUnsignedRequests" resolve="allowUnsignedRequests" />
+              <node concept="2OqwBi" id="7XG5B_GRZUd" role="37vLTJ">
+                <node concept="2YIFZM" id="7XG5B_GRZHJ" role="2Oq$k0">
+                  <ref role="37wK5l" to="l13r:~BuiltInServerOptions.getInstance()" resolve="getInstance" />
+                  <ref role="1Pybhc" to="l13r:~BuiltInServerOptions" resolve="BuiltInServerOptions" />
+                </node>
+                <node concept="2OwXpG" id="7XG5B_GS0fV" role="2OqNvi">
+                  <ref role="2Oxat5" to="l13r:~BuiltInServerOptions.allowUnsignedRequests" resolve="allowUnsignedRequests" />
+                </node>
               </node>
             </node>
           </node>
