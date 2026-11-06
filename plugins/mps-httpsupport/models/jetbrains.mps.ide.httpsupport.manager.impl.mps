@@ -20,18 +20,17 @@
     <import index="e5vs" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:org.jetbrains.ide(MPS.IDEA.Modules/)" />
     <import index="iwnc" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:org.jetbrains.io(MPS.IDEA.Modules/)" />
     <import index="rfhd" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.util.registry(MPS.IDEA/)" />
-    <import index="rfhe" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.util.registry(MPS.IDEA.Modules/)" />
     <import index="mhfm" ref="3f233e7f-b8a6-46d2-a57f-795d56775243/java:org.jetbrains.annotations(Annotations/)" />
-    <import index="bd8o" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.application(MPS.IDEA.Modules/)" />
     <import index="33ny" ref="6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:java.util(JDK/)" />
     <import index="zn9m" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.util(MPS.IDEA/)" />
-    <import index="9xw8" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:io.netty.handler.codec.http(MPS.IDEA.Modules/)" />
+    <import index="9xw8" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:io.netty.handler.codec.http(MPS.IDEA/)" />
     <import index="je40" ref="r:120d1a1b-e2af-479c-bc61-72f0ecc88047(jetbrains.mps.ide.httpsupport.plugin)" />
     <import index="t6h5" ref="6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:java.lang.reflect(JDK/)" />
     <import index="4h87" ref="r:05ff02e5-9836-4ae9-a454-eab43fa58c8f(jetbrains.mps.ide.httpsupport.manager.plugin)" />
-    <import index="lqgf" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:io.netty.channel(MPS.IDEA.Modules/)" />
-    <import index="fnpx" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.notification(MPS.IDEA.Modules/)" />
+    <import index="lqgf" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:io.netty.channel(MPS.IDEA/)" />
+    <import index="fnpx" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.notification(MPS.IDEA/)" />
     <import index="bipv" ref="r:4f311e3a-83a9-4138-8c56-4228082416a9(jetbrains.mps.ide.httpsupport.manager)" />
+    <import index="e5vt" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:org.jetbrains.ide(MPS.IDEA/)" />
   </imports>
   <registry>
     <language id="f3061a53-9226-4cc5-a443-f952ceaf5816" name="jetbrains.mps.baseLanguage">
@@ -600,11 +599,11 @@
             </node>
             <node concept="2OqwBi" id="15Pz4SXRxYW" role="33vP2m">
               <node concept="2YIFZM" id="15Pz4SXRyyQ" role="2Oq$k0">
-                <ref role="37wK5l" to="rfhe:~RegistryManager.getInstance()" resolve="getInstance" />
-                <ref role="1Pybhc" to="rfhe:~RegistryManager" resolve="RegistryManager" />
+                <ref role="37wK5l" to="rfhd:~RegistryManager.getInstance()" resolve="getInstance" />
+                <ref role="1Pybhc" to="rfhd:~RegistryManager" resolve="RegistryManager" />
               </node>
               <node concept="liA8E" id="15Pz4SXRyIh" role="2OqNvi">
-                <ref role="37wK5l" to="rfhe:~RegistryManager.get(java.lang.String)" resolve="get" />
+                <ref role="37wK5l" to="rfhd:~RegistryManager.get(java.lang.String)" resolve="get" />
                 <node concept="10M0yZ" id="37EBbA_IOOV" role="37wK5m">
                   <ref role="3cqZAo" to="bipv:3BwRxVwWbFj" resolve="PORT_KEY" />
                   <ref role="1PxDUh" to="bipv:37EBbA_INx3" resolve="MPSInternalPort" />
@@ -657,11 +656,11 @@
               </node>
               <node concept="2OqwBi" id="3BwRxVwWC$c" role="37wK5m">
                 <node concept="2YIFZM" id="3BwRxVwWCua" role="2Oq$k0">
-                  <ref role="37wK5l" to="e5vs:~BuiltInServerManager.getInstance()" resolve="getInstance" />
-                  <ref role="1Pybhc" to="e5vs:~BuiltInServerManager" resolve="BuiltInServerManager" />
+                  <ref role="37wK5l" to="e5vt:~BuiltInServerManager.getInstance()" resolve="getInstance" />
+                  <ref role="1Pybhc" to="e5vt:~BuiltInServerManager" resolve="BuiltInServerManager" />
                 </node>
                 <node concept="liA8E" id="3BwRxVwWCFs" role="2OqNvi">
-                  <ref role="37wK5l" to="e5vs:~BuiltInServerManager.getServerDisposable()" resolve="getServerDisposable" />
+                  <ref role="37wK5l" to="e5vt:~BuiltInServerManager.getServerDisposable()" resolve="getServerDisposable" />
                 </node>
               </node>
             </node>
@@ -682,11 +681,11 @@
         <node concept="3clFbF" id="15Pz4SXRL0e" role="3cqZAp">
           <node concept="2OqwBi" id="15Pz4SXRJef" role="3clFbG">
             <node concept="2YIFZM" id="15Pz4SXRISH" role="2Oq$k0">
-              <ref role="1Pybhc" to="rfhe:~RegistryManager" resolve="RegistryManager" />
-              <ref role="37wK5l" to="rfhe:~RegistryManager.getInstance()" resolve="getInstance" />
+              <ref role="1Pybhc" to="rfhd:~RegistryManager" resolve="RegistryManager" />
+              <ref role="37wK5l" to="rfhd:~RegistryManager.getInstance()" resolve="getInstance" />
             </node>
             <node concept="liA8E" id="15Pz4SXRJ_6" role="2OqNvi">
-              <ref role="37wK5l" to="rfhe:~RegistryManager.intValue(java.lang.String)" resolve="intValue" />
+              <ref role="37wK5l" to="rfhd:~RegistryManager.intValue(java.lang.String)" resolve="intValue" />
               <node concept="10M0yZ" id="37EBbA_IOOW" role="37wK5m">
                 <ref role="3cqZAo" to="bipv:3BwRxVwWbFj" resolve="PORT_KEY" />
                 <ref role="1PxDUh" to="bipv:37EBbA_INx3" resolve="MPSInternalPort" />
@@ -771,9 +770,9 @@
               <ref role="3uigEE" node="3PMO5H7WIrG" resolve="MPSInternalPortManager" />
             </node>
             <node concept="2OqwBi" id="15Pz4SXRNDO" role="33vP2m">
-              <node concept="10M0yZ" id="7YrvjqwafI$" role="2Oq$k0">
-                <ref role="1PxDUh" to="e5vs:~CustomPortServerManager" resolve="CustomPortServerManager" />
-                <ref role="3cqZAo" to="e5vs:~CustomPortServerManager.EP_NAME" resolve="EP_NAME" />
+              <node concept="10M0yZ" id="3h$ZS5uUV4t" role="2Oq$k0">
+                <ref role="3cqZAo" to="e5vt:~CustomPortServerManager.EP_NAME" resolve="EP_NAME" />
+                <ref role="1PxDUh" to="e5vt:~CustomPortServerManager" resolve="CustomPortServerManager" />
               </node>
               <node concept="liA8E" id="15Pz4SXRNDQ" role="2OqNvi">
                 <ref role="37wK5l" to="9ti4:~ExtensionPointName.findExtension(java.lang.Class)" resolve="findExtension" />
@@ -1218,8 +1217,8 @@
         <node concept="3clFbF" id="7Zu713p22lM" role="3cqZAp">
           <node concept="1Wc70l" id="7Zu713oZnsD" role="3clFbG">
             <node concept="2YIFZM" id="7Zu713oZrP_" role="3uHU7w">
-              <ref role="1Pybhc" to="e5vs:~HttpRequestHandler" resolve="HttpRequestHandler" />
-              <ref role="37wK5l" to="e5vs:~HttpRequestHandler.checkPrefix(java.lang.String,java.lang.String)" resolve="checkPrefix" />
+              <ref role="1Pybhc" to="e5vt:~HttpRequestHandler" resolve="HttpRequestHandler" />
+              <ref role="37wK5l" to="e5vt:~HttpRequestHandler.checkPrefix(java.lang.String,java.lang.String)" resolve="checkPrefix" />
               <node concept="2OqwBi" id="7Zu713oZvpi" role="37wK5m">
                 <node concept="37vLTw" id="7Zu713oZu3b" role="2Oq$k0">
                   <ref role="3cqZAo" node="7Zu713p20u3" resolve="request" />
