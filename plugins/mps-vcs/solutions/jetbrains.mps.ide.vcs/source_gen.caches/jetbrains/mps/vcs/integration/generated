@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<product version="3" modelHash="-fcd19xzmtyzjq2a0cnzan307vzc5ou">
+<product version="3" modelHash="aqwujukr0v269rqnvq65zb7w8kovp6s">
   <files names="ExtensionChangesBrowserNode.java:ExtensionChangesGroupingPolicy.java:GeneratedFileConflictResolving.java:ModuleVcsPathPresenter.java:NonMPSProjectCheckoutListener.java:ProjectCheckoutListener.java:ProjectDirMPSCheckoutListener.java:VcsReloadPostponer.java" />
 </product>
 

@@ -70,7 +70,6 @@
     <import index="ov6m" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.ui.messages(MPS.IDEA/)" />
     <import index="yt4g" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.diff(jetbrains.mps.vcs.idea.stubs/)" />
     <import index="rfhd" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.util.registry(MPS.IDEA/)" />
-    <import index="ok9a" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.diff(MPS.IDEA.Modules/)" />
     <import index="jlcv" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs(jetbrains.mps.vcs.idea.stubs/)" />
     <import index="jlcw" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs(MPS.IDEA.Modules/)" />
     <import index="hlwo" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs.merge(jetbrains.mps.vcs.idea.stubs/)" />
@@ -1971,7 +1970,7 @@
                             </node>
                           </node>
                           <node concept="liA8E" id="68MS4n2IfbQ" role="2OqNvi">
-                            <ref role="37wK5l" to="jlcw:~FilePath.getVirtualFile()" resolve="getVirtualFile" />
+                            <ref role="37wK5l" to="jlcu:~FilePath.getVirtualFile()" resolve="getVirtualFile" />
                           </node>
                         </node>
                       </node>
@@ -2026,7 +2025,7 @@
                             </node>
                           </node>
                           <node concept="liA8E" id="68MS4n2Ifcd" role="2OqNvi">
-                            <ref role="37wK5l" to="jlcw:~FilePath.getVirtualFile()" resolve="getVirtualFile" />
+                            <ref role="37wK5l" to="jlcu:~FilePath.getVirtualFile()" resolve="getVirtualFile" />
                           </node>
                         </node>
                       </node>
