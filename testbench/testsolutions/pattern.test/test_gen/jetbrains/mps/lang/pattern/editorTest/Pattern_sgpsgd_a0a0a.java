@@ -4,12 +4,14 @@ package jetbrains.mps.lang.pattern.editorTest;
 
 import jetbrains.mps.lang.pattern.GeneratedMatcher;
 import org.jetbrains.mps.openapi.model.SNode;
+import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
 
 /*package*/ class Pattern_sgpsgd_a0a0a extends GeneratedMatcher {
   public Pattern_sgpsgd_a0a0a(SNode patternNode) {
     super(patternNode, false);
 
 
+    myTopMatcher.propertyValue(MetaAdapterFactory.getProperty(0xceab519525ea4f22L, 0x9b92103b95ca8c0cL, 0x110396eaaa4L, 0x110396ec041L, "name"), "");
   }
 
 }
