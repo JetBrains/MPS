@@ -2,7 +2,12 @@
   <dependencies>
     <module name="intellij.platform.ide.impl"/>
   </dependencies>
+
   <extensions defaultExtensionNs="com.intellij">
+    <applicationService serviceInterface="com.intellij.openapi.project.ProjectManager"
+                        serviceImplementation="jetbrains.mps.intellij.integration.MPSProjectManager"
+                        testServiceImplementation="com.intellij.project.TestProjectManager"
+                        overrides="true"/>
     <!-- requested by FileBasedIndexImpl, so, to make start-up more flat, also preload -->
     <applicationService serviceInterface="com.intellij.openapi.fileEditor.FileDocumentManager" overrides="true" preload="true"
                         serviceImplementation="jetbrains.mps.ide.editor.MPSFileDocumentManagerImpl"/>

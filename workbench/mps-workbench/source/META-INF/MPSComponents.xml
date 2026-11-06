@@ -9,10 +9,6 @@
   <xi:include href="/META-INF/MPSUI.xml"/>
   
   <extensions defaultExtensionNs="com.intellij">
-    <applicationService serviceInterface="com.intellij.openapi.project.ProjectManager"
-                        serviceImplementation="jetbrains.mps.intellij.integration.MPSProjectManager"
-                        testServiceImplementation="com.intellij.project.TestProjectManager"
-                        overrides="true"/>
     <appStarter id="mps-inspect" implementation="jetbrains.mps.tool.environment.MPSHeadlessPlatformStarter"/>
 
     <projectConfigurable parentId="build"   displayName="Project Settings" instance="jetbrains.mps.workbench.dialogs.project.properties.project.ProjectPropertiesPrefsPage"
