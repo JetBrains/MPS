@@ -2877,7 +2877,7 @@
               <property role="TrG5h" value="ignored" />
               <node concept="nSUau" id="1M217LyLn$C" role="1tU5fm">
                 <node concept="3uibUv" id="1M217LyLn$B" role="nSUat">
-                  <ref role="3uigEE" to="frkw:~AbsentInformationException" resolve="com.sun.jdi.AbsentInformationException" />
+                  <ref role="3uigEE" to="frkw:~AbsentInformationException" resolve="AbsentInformationException" />
                 </node>
               </node>
             </node>

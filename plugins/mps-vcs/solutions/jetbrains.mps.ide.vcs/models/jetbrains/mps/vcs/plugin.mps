@@ -2436,7 +2436,7 @@
     <property role="1rBW0U" value="true" />
     <node concept="1GtWCo" id="6S5fI02CGB8" role="3Uehp1">
       <node concept="10M0yZ" id="2hX4PxwM2MW" role="1GtWoa">
-        <ref role="1PxDUh" to="l7us:~MPSIcons$Actions" resolve="Actions" />
+        <ref role="1PxDUh" to="l7us:~MPSIcons$Actions" resolve="MPSIcons.Actions" />
         <ref role="3cqZAo" to="l7us:~MPSIcons$Actions.AddToVCS" resolve="AddToVCS" />
       </node>
     </node>
@@ -2704,7 +2704,7 @@
         <node concept="3clFbF" id="7HIuVrrXGE7" role="3cqZAp">
           <node concept="2ShNRf" id="7HIuVrrXGE9" role="3clFbG">
             <node concept="1pGfFk" id="7HIuVrrXGEa" role="2ShVmc">
-              <ref role="37wK5l" to="zbx9:78RbNhWi9Rf" />
+              <ref role="37wK5l" to="zbx9:78RbNhWi9Rf" resolve="VcsActionsUtil" />
               <node concept="2OqwBi" id="7HIuVrrXGEb" role="37wK5m">
                 <node concept="2WthIp" id="7HIuVrrXGEc" role="2Oq$k0" />
                 <node concept="1DTwFV" id="7HIuVrrXGEd" role="2OqNvi">
@@ -2940,7 +2940,7 @@
     <node concept="1GtWCo" id="6S5fI02CGB9" role="3Uehp1">
       <node concept="10M0yZ" id="6XsdSphTPkx" role="1GtWoa">
         <ref role="3cqZAo" to="z2i8:~AllIcons$Actions.Diff" resolve="Diff" />
-        <ref role="1PxDUh" to="z2i8:~AllIcons$Actions" resolve="Actions" />
+        <ref role="1PxDUh" to="z2i8:~AllIcons$Actions" resolve="AllIcons.Actions" />
       </node>
     </node>
   </node>

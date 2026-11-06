@@ -509,7 +509,7 @@
   <node concept="21GTPz" id="Z3rhdFZr6m">
     <property role="TrG5h" value="StructureIds" />
     <node concept="3ZhVFo" id="Z3rhdFZr6n" role="21GTLz">
-      <ref role="1JFXUq" to="tpce:h0PkWnZ" />
+      <ref role="1JFXUq" to="tpce:h0PkWnZ" resolve="AbstractConceptDeclaration" />
       <node concept="1JFUiI" id="Z3rhdFZr6o" role="3xT8ml">
         <node concept="3clFbS" id="Z3rhdFZr6p" role="2VODD2">
           <node concept="3clFbF" id="Z3rhdFZQAQ" role="3cqZAp">

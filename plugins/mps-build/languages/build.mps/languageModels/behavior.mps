@@ -12091,7 +12091,7 @@
               <node concept="2OqwBi" id="4SVbBfB_DiI" role="2Oq$k0">
                 <node concept="13iPFW" id="4SVbBfB_DiL" role="2Oq$k0" />
                 <node concept="3TrEf2" id="4SVbBfB_DiM" role="2OqNvi">
-                  <ref role="3Tt5mk" to="kdzh:FnaIS$F0fx" />
+                  <ref role="3Tt5mk" to="kdzh:FnaIS$F0fx" resolve="name" />
                 </node>
               </node>
               <node concept="3zqWPK" id="4SVbBfB_DiN" role="2OqNvi">

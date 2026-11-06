@@ -13942,7 +13942,7 @@
                               </node>
                             </node>
                             <node concept="3TrEf2" id="4SVbBfB_Xvw" role="2OqNvi">
-                              <ref role="3Tt5mk" to="kdzh:FnaIS$F2cd" />
+                              <ref role="3Tt5mk" to="kdzh:FnaIS$F2cd" resolve="company" />
                             </node>
                           </node>
                           <node concept="3zqWPK" id="4SVbBfB_Xvx" role="2OqNvi">
@@ -14026,7 +14026,7 @@
                         </node>
                       </node>
                       <node concept="3TrEf2" id="4SVbBfBA5Ot" role="2OqNvi">
-                        <ref role="3Tt5mk" to="kdzh:FnaIS$F2cd" />
+                        <ref role="3Tt5mk" to="kdzh:FnaIS$F2cd" resolve="company" />
                       </node>
                     </node>
                     <node concept="3x8VRR" id="4SVbBfBA5Ou" role="2OqNvi" />
@@ -14047,7 +14047,7 @@
                               </node>
                             </node>
                             <node concept="3TrEf2" id="4SVbBfBA5X3" role="2OqNvi">
-                              <ref role="3Tt5mk" to="kdzh:FnaIS$F2cd" />
+                              <ref role="3Tt5mk" to="kdzh:FnaIS$F2cd" resolve="company" />
                             </node>
                           </node>
                           <node concept="3zqWPK" id="4SVbBfBA5X4" role="2OqNvi">

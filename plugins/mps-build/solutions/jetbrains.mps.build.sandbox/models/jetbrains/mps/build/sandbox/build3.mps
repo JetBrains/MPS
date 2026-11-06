@@ -844,7 +844,7 @@
             </node>
           </node>
           <node concept="15jnD9" id="6c6sXSd33wl" role="39821P">
-            <ref role="15jnDb" node="6c6sXSd33w4" />
+            <ref role="15jnDb" node="6c6sXSd33w4" resolve="tarbzSource.tar.bz2" />
             <node concept="3LWZYx" id="6c6sXSd33wm" role="15jnD8">
               <property role="3LWZYw" value="lib/**" />
             </node>
@@ -999,7 +999,7 @@
           </node>
         </node>
         <node concept="15jnD9" id="4Ol7luCBw6O" role="39821P">
-          <ref role="15jnDb" node="4Ol7luCv5hi" />
+          <ref role="15jnDb" node="4Ol7luCv5hi" resolve="targzInZip.tar.gz" />
           <node concept="3LWZYx" id="4Ol7luCBw6P" role="15jnD8">
             <property role="3LWZYw" value="lib/**" />
           </node>

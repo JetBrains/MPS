@@ -343,7 +343,7 @@
             </node>
           </node>
           <node concept="2YIFZM" id="1IkLLL1qAj4" role="33vP2m">
-            <ref role="37wK5l" to="5jto:4YAHLK6gIZ7" />
+            <ref role="37wK5l" to="5jto:4YAHLK6gIZ7" resolve="checkMigrationsVersions" />
             <ref role="1Pybhc" to="5jto:3WpkgLwxyX3" resolve="MigrationsCheckUtil" />
             <node concept="2OqwBi" id="1IkLLL1qAj5" role="37wK5m">
               <node concept="2JrnkZ" id="1IkLLL1qAj6" role="2Oq$k0">

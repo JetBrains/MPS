@@ -381,7 +381,7 @@
     </node>
     <node concept="3lhOvk" id="jNaJppejw5" role="3lj3bC">
       <ref role="30HIoZ" to="s7om:3nFPImNgRk8" resolve="MpsStartupScript" />
-      <ref role="3lhOvi" node="jNaJppejvY" />
+      <ref role="3lhOvi" node="jNaJppejvY" resolve="product-info-linux-aarch64.json" />
     </node>
   </node>
   <node concept="2pMbU2" id="7Muxx6JToTa">

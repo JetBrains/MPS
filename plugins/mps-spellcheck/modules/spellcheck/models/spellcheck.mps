@@ -5181,7 +5181,7 @@
           <node concept="3cpWsn" id="7dOUAS9ef5d" role="3cpWs9">
             <property role="TrG5h" value="detected" />
             <node concept="3uibUv" id="7dOUAS9ef5f" role="1tU5fm">
-              <ref role="3uigEE" to="neu9:~Language" resolve="ai.grazie.nlp.langs.Language" />
+              <ref role="3uigEE" to="neu9:~Language" resolve="Language" />
             </node>
             <node concept="2OqwBi" id="7dOUAS9egOk" role="33vP2m">
               <node concept="2OqwBi" id="7dOUAS9egFO" role="2Oq$k0">

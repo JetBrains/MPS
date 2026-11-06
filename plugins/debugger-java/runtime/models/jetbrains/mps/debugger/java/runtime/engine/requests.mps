@@ -517,7 +517,7 @@
                     <ref role="3cqZAo" node="5ABJGODLc33" resolve="LOG" />
                   </node>
                   <node concept="liA8E" id="4RIgh0Jxtez" role="2OqNvi">
-                    <ref role="37wK5l" to="wwqx:~Logger.debug(java.lang.String,java.lang.Throwable)" />
+                    <ref role="37wK5l" to="wwqx:~Logger.debug(java.lang.String,java.lang.Throwable)" resolve="debug" />
                     <node concept="Xl_RD" id="4RIgh0JxZau" role="37wK5m">
                       <property role="Xl_RC" value="no source information for the current location" />
                     </node>
@@ -915,7 +915,7 @@
                         <ref role="3cqZAo" node="5ABJGODLc33" resolve="LOG" />
                       </node>
                       <node concept="liA8E" id="4RIgh0Jy7co" role="2OqNvi">
-                        <ref role="37wK5l" to="wwqx:~Logger.debug(java.lang.String,java.lang.Throwable)" />
+                        <ref role="37wK5l" to="wwqx:~Logger.debug(java.lang.String,java.lang.Throwable)" resolve="debug" />
                         <node concept="Xl_RD" id="4RIgh0JyC3P" role="37wK5m">
                           <property role="Xl_RC" value="no source information for the current location" />
                         </node>

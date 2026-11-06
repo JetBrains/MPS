@@ -1925,8 +1925,8 @@
               </node>
             </node>
             <node concept="10M0yZ" id="6LlKjXrMeP6" role="2Oq$k0">
-              <ref role="1PxDUh" to="9mrl:~DefaultDebugExecutor" />
-              <ref role="3cqZAo" to="9mrl:~DefaultDebugExecutor.EXECUTOR_ID" />
+              <ref role="1PxDUh" to="9mrl:~DefaultDebugExecutor" resolve="DefaultDebugExecutor" />
+              <ref role="3cqZAo" to="9mrl:~DefaultDebugExecutor.EXECUTOR_ID" resolve="EXECUTOR_ID" />
             </node>
           </node>
         </node>

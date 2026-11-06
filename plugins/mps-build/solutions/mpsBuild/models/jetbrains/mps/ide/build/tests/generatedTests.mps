@@ -1140,13 +1140,13 @@
           <ref role="24YFd5" to="ffeo:5ziJCXbfbGU" resolve="intellij.structureView.plugin" />
         </node>
         <node concept="24YFd4" id="5whBXIHTx7z" role="24YFd7">
-          <ref role="24YFd5" to="ffeo:5whBXIGTrNc" />
+          <ref role="24YFd5" to="ffeo:5whBXIGTrNc" resolve="com.intellij.xml" />
         </node>
         <node concept="24YFd4" id="5whBXIIleBZ" role="24YFd7">
-          <ref role="24YFd5" to="ffeo:5whBXIIlesf" />
+          <ref role="24YFd5" to="ffeo:5whBXIIlesf" resolve="com.intellij.modules.pty4j" />
         </node>
         <node concept="24YFd4" id="5whBXIIleBY" role="24YFd7">
-          <ref role="24YFd5" to="ffeo:5whBXIIles8" />
+          <ref role="24YFd5" to="ffeo:5whBXIIles8" resolve="com.intellij.modules.jna" />
         </node>
       </node>
     </node>

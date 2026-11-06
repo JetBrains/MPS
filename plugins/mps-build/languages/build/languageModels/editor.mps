@@ -11077,7 +11077,7 @@
         <ref role="1k5W1q" node="hwW5xkg" resolve="keyword" />
       </node>
       <node concept="3F0A7n" id="4Ol7luCyQsA" role="3EZMnx">
-        <ref role="1NtTu8" to="3ior:4Ol7luCv7F1" />
+        <ref role="1NtTu8" to="3ior:4Ol7luCv7F1" resolve="compression" />
       </node>
       <node concept="3F2HdR" id="7ndPoqgMcxH" role="3EZMnx">
         <ref role="1NtTu8" to="3ior:7ndPoqgM6ZI" resolve="selectors" />

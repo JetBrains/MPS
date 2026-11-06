@@ -185,8 +185,8 @@
                 <node concept="liA8E" id="3WEbiHBEXJL" role="2OqNvi">
                   <ref role="37wK5l" to="wyt6:~String.equals(java.lang.Object)" resolve="equals" />
                   <node concept="10M0yZ" id="3WEbiHBEXJM" role="37wK5m">
-                    <ref role="1PxDUh" to="9mrl:~DefaultDebugExecutor" />
-                    <ref role="3cqZAo" to="9mrl:~DefaultDebugExecutor.EXECUTOR_ID" />
+                    <ref role="1PxDUh" to="9mrl:~DefaultDebugExecutor" resolve="DefaultDebugExecutor" />
+                    <ref role="3cqZAo" to="9mrl:~DefaultDebugExecutor.EXECUTOR_ID" resolve="EXECUTOR_ID" />
                   </node>
                 </node>
                 <node concept="37vLTw" id="3WEbiHBEXJN" role="2Oq$k0">
@@ -208,8 +208,8 @@
               <node concept="liA8E" id="3WEbiHBEXJE" role="2OqNvi">
                 <ref role="37wK5l" to="eibu:3oW7HLfqDgN" resolve="canExecute" />
                 <node concept="10M0yZ" id="3WEbiHBEXJF" role="37wK5m">
-                  <ref role="1PxDUh" to="9mrl:~DefaultDebugExecutor" />
-                  <ref role="3cqZAo" to="9mrl:~DefaultDebugExecutor.EXECUTOR_ID" />
+                  <ref role="1PxDUh" to="9mrl:~DefaultDebugExecutor" resolve="DefaultDebugExecutor" />
+                  <ref role="3cqZAo" to="9mrl:~DefaultDebugExecutor.EXECUTOR_ID" resolve="EXECUTOR_ID" />
                 </node>
               </node>
               <node concept="1eOMI4" id="3WEbiHBEXJG" role="2Oq$k0">
