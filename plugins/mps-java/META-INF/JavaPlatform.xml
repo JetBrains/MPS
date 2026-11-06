@@ -8,6 +8,7 @@
   <extensions defaultExtensionNs="jetbrains.mps">
     <editor.highlighter.contributor implementation="jetbrains.mps.java.platform.highlighters.JavaHighlighters" />
     <project.lifecycleListener listenerClass="jetbrains.mps.java.platform.index.ClassifierSuccessorsFinder$Plug" priority="100"/>
+    <nodeStructureViewProvider implementation="jetbrains.mps.java.platform.actions.MemberContainerStructureViewProvider"/>
   </extensions>
 
   <extensions defaultExtensionNs="com.intellij">
