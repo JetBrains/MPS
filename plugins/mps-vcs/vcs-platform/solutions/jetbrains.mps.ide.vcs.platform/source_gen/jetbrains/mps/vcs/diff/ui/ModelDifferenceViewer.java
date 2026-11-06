@@ -508,10 +508,9 @@ public class ModelDifferenceViewer implements UiDataProvider {
         if (rp != null) {
           rp.rehighlight(true);
         } else {
-          // FIXME myTree reset selection, but it's still better than no reaction to external changes at all
-          //  uncomment when later is truly later, to avoid deadlock (command from inside this read)
+          rebuildChangeSets();
         }
       });
-    });
+    }, ModalityState.stateForComponent(myComponent));
   }
 }

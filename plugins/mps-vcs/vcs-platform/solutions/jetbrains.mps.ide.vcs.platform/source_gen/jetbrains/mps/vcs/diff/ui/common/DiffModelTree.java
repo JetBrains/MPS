@@ -28,6 +28,8 @@ import java.util.Collections;
 import org.jetbrains.annotations.Nullable;
 import javax.swing.tree.TreePath;
 import java.util.Objects;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ModalityState;
 import javax.swing.tree.DefaultTreeModel;
 import com.intellij.util.ui.tree.TreeUtil;
 import org.jetbrains.annotations.NotNull;
@@ -48,6 +50,9 @@ public abstract class DiffModelTree extends SimpleTree implements DataProvider {
   private List<RootTreeNode> myRootNodes;
   private final SRepository myRepo;
   private String myModelName;
+  private boolean myRebuildQueued;
+  private boolean myDisposed;
+  private RootTreeNode myLastSelected;
 
   public DiffModelTree(SRepository repo) {
     // FIXME This code deserves a refactoring much like MergeModelsPanel, as there's unlikely need for repository lock when we diff detached models.
@@ -71,8 +76,10 @@ public abstract class DiffModelTree extends SimpleTree implements DataProvider {
       public void valueChanged(TreeSelectionEvent e) {
         RootTreeNode[] node = getSelectedNodes(RootTreeNode.class, null);
         if (node == null || node.length != 1) {
+          myLastSelected = null;
           onUnselect();
         } else {
+          myLastSelected = node[0];
           onSelectRoot(node[0].getRootId());
         }
         myRepo.getModelAccess().runReadAction(() -> updateRootsPresentation());
@@ -100,6 +107,7 @@ public abstract class DiffModelTree extends SimpleTree implements DataProvider {
   }
 
   public void dispose() {
+    myDisposed = true;
     // Workaround for MPS-31166 and similar issues where tree cell is about to be repainted but the model is already disposed
     setCellRenderer(null);
   }
@@ -150,9 +158,10 @@ public abstract class DiffModelTree extends SimpleTree implements DataProvider {
     // todo: find path by rootId
     TreePath path = null;
     for (int i = 0; i < getRowCount(); ++i) {
-      RootTreeNode node = as_5x0uld_a0a0a4a02(getPathForRow(i).getLastPathComponent(), RootTreeNode.class);
+      TreePath pathForRow = getPathForRow(i);
+      RootTreeNode node = as_5x0uld_a0a1a4a32(pathForRow.getLastPathComponent(), RootTreeNode.class);
       if (node != null && Objects.equals(node.getRootId(), rootId)) {
-        path = getPathForRow(i);
+        path = pathForRow;
         break;
       }
     }
@@ -165,18 +174,39 @@ public abstract class DiffModelTree extends SimpleTree implements DataProvider {
   }
 
   public void rebuildLater() {
-    //  FIXME how come _later_ is _now_!?!?
-    rebuildNow();
+    if (myRebuildQueued) {
+      return;
+    }
+    myRebuildQueued = true;
+    ApplicationManager.getApplication().invokeLater(() -> {
+      myRebuildQueued = false;
+      if (!(myDisposed)) {
+        rebuildNow();
+      }
+    }, ModalityState.stateForComponent(this));
+    // modality state has to reflect this very component to get executed w/o delays - not top or any other queue.
   }
 
   public void rebuildNow() {
+    final RootTreeNode lastSelected = myLastSelected;
+    final boolean firstBuild = myRootNodes == null;
+
+    myLastSelected = null;
     TreeNode root = myRepo.getModelAccess().computeReadAction(() -> rebuild());
     setModel(new DefaultTreeModel(root));
     setRootVisible(true);
     TreeUtil.expandAll(this);
-    if (!(ListSequence.fromList(myRootNodes).isEmpty())) {
-      setSelected(ListSequence.fromList(myRootNodes).getElement(0).getRootId());
+
+    RootTreeNode toSelect = null;
+    if (firstBuild) {
+      toSelect = ListSequence.fromList(myRootNodes).first();
+    } else if (lastSelected != null) {
+      toSelect = findRootNode(lastSelected.getRootId());
+    }
+    if (toSelect != null) {
+      setSelected(toSelect.getRootId());
     } else {
+      // model node: no roots, model node was selected, or selected root vanished
       setSelectionRow(0);
     }
   }
@@ -208,7 +238,7 @@ public abstract class DiffModelTree extends SimpleTree implements DataProvider {
     return ListSequence.fromList(myRootNodes).getElement(index).myRootId;
   }
   public String getNameForRoot(@Nullable SNodeId nodeId) {
-    return check_5x0uld_a0a63(findRootNode(nodeId), this);
+    return check_5x0uld_a0a93(findRootNode(nodeId), this);
   }
   @Nullable
   @Override
@@ -335,7 +365,7 @@ public abstract class DiffModelTree extends SimpleTree implements DataProvider {
       return myTextStyle;
     }
   }
-  private static String check_5x0uld_a0a63(RootTreeNode checkedDotOperand, DiffModelTree checkedDotThisExpression) {
+  private static String check_5x0uld_a0a93(RootTreeNode checkedDotOperand, DiffModelTree checkedDotThisExpression) {
     if (null != checkedDotOperand) {
       return checkedDotOperand.getText();
     }
@@ -344,7 +374,7 @@ public abstract class DiffModelTree extends SimpleTree implements DataProvider {
   private static boolean isNotEmptyString(String str) {
     return str != null && str.length() > 0;
   }
-  private static <T> T as_5x0uld_a0a0a4a02(Object o, Class<T> type) {
+  private static <T> T as_5x0uld_a0a1a4a32(Object o, Class<T> type) {
     return (type.isInstance(o) ? (T) o : null);
   }
 
