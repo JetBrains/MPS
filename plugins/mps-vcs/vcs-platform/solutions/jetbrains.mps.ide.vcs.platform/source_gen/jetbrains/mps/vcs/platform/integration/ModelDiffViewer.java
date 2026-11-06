@@ -55,7 +55,7 @@ public class ModelDiffViewer implements FrameDiffTool.DiffViewer {
   private ModelDifferenceViewer myViewer;
 
   public ModelDiffViewer(@NotNull DiffContext context, @NotNull ContentDiffRequest request) {
-    final MPSProject mpsProject = ProjectHelper.fromIdeaProject(context.getProject());
+    final MPSProject mpsProject = ProjectHelper.fromIdeaProjectOrFail(context.getProject());
 
     List<DiffContent> contents = request.getContents();
     final FileType type = (ListSequence.fromList(contents).getElement(0).getContentType() != null ? ListSequence.fromList(contents).getElement(0).getContentType() : ListSequence.fromList(contents).getElement(1).getContentType());
@@ -73,11 +73,15 @@ public class ModelDiffViewer implements FrameDiffTool.DiffViewer {
     }
 
     boolean showTree = DIFF_SHOW_TREE.get(request, !(perRootPersistence));
-    myViewer = new ModelDifferenceViewer(context, request, this, models, showTree, perRootPersistence);
+    myViewer = new ModelDifferenceViewer(mpsProject, request, this, models, showTree, perRootPersistence);
     myViewer.showDiff(showTree, rootId, request.getUserData(DIFF_NAVIGATE_TO));
   }
 
   public static boolean canShow(@NotNull DiffContext context, @NotNull DiffRequest request) {
+    if (ProjectHelper.fromIdeaProject(context.getProject()) == null) {
+      return false;
+    }
+
     if (!(request instanceof ContentDiffRequest)) {
       return false;
     }

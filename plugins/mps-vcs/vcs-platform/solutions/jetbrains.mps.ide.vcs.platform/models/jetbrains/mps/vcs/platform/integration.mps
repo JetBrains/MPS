@@ -5293,17 +5293,18 @@
         <node concept="3cpWs8" id="6y_kxB1ZrlZ" role="3cqZAp">
           <node concept="3cpWsn" id="6y_kxB1Zrm0" role="3cpWs9">
             <property role="TrG5h" value="mpsProject" />
+            <property role="3TUv4t" value="true" />
             <node concept="3uibUv" id="6y_kxB1ZrlU" role="1tU5fm">
               <ref role="3uigEE" to="z1c4:~MPSProject" resolve="MPSProject" />
             </node>
-            <node concept="2YIFZM" id="5Lno_XHoJP0" role="33vP2m">
-              <ref role="37wK5l" to="alof:~ProjectHelper.fromIdeaProject(com.intellij.openapi.project.Project)" resolve="fromIdeaProject" />
+            <node concept="2YIFZM" id="7_5A8UXZLde" role="33vP2m">
+              <ref role="37wK5l" to="alof:~ProjectHelper.fromIdeaProjectOrFail(com.intellij.openapi.project.Project)" resolve="fromIdeaProjectOrFail" />
               <ref role="1Pybhc" to="alof:~ProjectHelper" resolve="ProjectHelper" />
-              <node concept="2OqwBi" id="6y_kxB1Zrm4" role="37wK5m">
-                <node concept="37vLTw" id="6y_kxB1Zrm5" role="2Oq$k0">
+              <node concept="2OqwBi" id="7_5A8UXZLdf" role="37wK5m">
+                <node concept="37vLTw" id="7_5A8UXZLdg" role="2Oq$k0">
                   <ref role="3cqZAo" node="5zPLqcHM9vx" resolve="context" />
                 </node>
-                <node concept="liA8E" id="6y_kxB1Zrm6" role="2OqNvi">
+                <node concept="liA8E" id="7_5A8UXZLdh" role="2OqNvi">
                   <ref role="37wK5l" to="yt4f:~DiffContext.getProject()" resolve="getProject" />
                 </node>
               </node>
@@ -5683,7 +5684,7 @@
               <node concept="1pGfFk" id="5zPLqcHMa$q" role="2ShVmc">
                 <ref role="37wK5l" to="p37l:5zPLqcHJBaa" resolve="ModelDifferenceViewer" />
                 <node concept="37vLTw" id="17s8F1401JA" role="37wK5m">
-                  <ref role="3cqZAo" node="5zPLqcHM9vx" resolve="context" />
+                  <ref role="3cqZAo" node="6y_kxB1Zrm0" resolve="mpsProject" />
                 </node>
                 <node concept="37vLTw" id="17s8F1407rA" role="37wK5m">
                   <ref role="3cqZAo" node="5zPLqcHM9y1" resolve="request" />
@@ -5741,6 +5742,29 @@
       <property role="od$2w" value="false" />
       <property role="2aFKle" value="false" />
       <node concept="3clFbS" id="5zPLqcHMjKi" role="3clF47">
+        <node concept="3clFbJ" id="7_5A8UXZ$SE" role="3cqZAp">
+          <node concept="3clFbS" id="7_5A8UXZ$SG" role="3clFbx">
+            <node concept="3cpWs6" id="7_5A8UXZGVp" role="3cqZAp">
+              <node concept="3clFbT" id="7_5A8UXZHDh" role="3cqZAk" />
+            </node>
+          </node>
+          <node concept="3clFbC" id="7_5A8UXZCVz" role="3clFbw">
+            <node concept="10Nm6u" id="7_5A8UXZETW" role="3uHU7w" />
+            <node concept="2YIFZM" id="7_5A8UXZBeo" role="3uHU7B">
+              <ref role="37wK5l" to="alof:~ProjectHelper.fromIdeaProject(com.intellij.openapi.project.Project)" resolve="fromIdeaProject" />
+              <ref role="1Pybhc" to="alof:~ProjectHelper" resolve="ProjectHelper" />
+              <node concept="2OqwBi" id="7_5A8UXZBep" role="37wK5m">
+                <node concept="37vLTw" id="7_5A8UXZBeq" role="2Oq$k0">
+                  <ref role="3cqZAo" node="5zPLqcHMjKc" resolve="context" />
+                </node>
+                <node concept="liA8E" id="7_5A8UXZBer" role="2OqNvi">
+                  <ref role="37wK5l" to="yt4f:~DiffContext.getProject()" resolve="getProject" />
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
+        <node concept="3clFbH" id="7_5A8UXZw3u" role="3cqZAp" />
         <node concept="3clFbJ" id="5zPLqcHMFJc" role="3cqZAp">
           <node concept="3fqX7Q" id="5zPLqcHMFJd" role="3clFbw">
             <node concept="1eOMI4" id="5zPLqcHMFJh" role="3fr31v">
