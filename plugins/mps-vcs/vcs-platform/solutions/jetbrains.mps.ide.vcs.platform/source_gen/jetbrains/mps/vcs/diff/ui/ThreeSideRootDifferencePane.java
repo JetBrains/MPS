@@ -12,18 +12,18 @@ import jetbrains.mps.vcs.diff.ModelChangeSet;
 import org.jetbrains.annotations.NotNull;
 import com.intellij.diff.requests.ContentDiffRequest;
 import com.intellij.diff.FrameDiffTool;
+import com.intellij.ui.JBSplitter;
+import jetbrains.mps.internal.collections.runtime.ListSequence;
+import com.intellij.diff.tools.util.side.ThreesideContentPanel;
+import com.intellij.diff.util.DiffUtil;
+import com.intellij.diff.util.Side;
 import jetbrains.mps.vcs.diff.ui.common.ChangeEditorMessage;
 import jetbrains.mps.vcs.diff.changes.ModelChange;
-import jetbrains.mps.internal.collections.runtime.ListSequence;
 import jetbrains.mps.internal.collections.runtime.MapSequence;
 import jetbrains.mps.vcs.diff.ChangeSet;
 import jetbrains.mps.vcs.diff.ui.common.DiffSettingsUtil;
 import jetbrains.mps.vcs.diff.merge.MovesAwareMergeConflictsBuilder;
 import jetbrains.mps.vcs.diff.merge.MergeConflictsBuilder;
-import javax.swing.JPanel;
-import com.intellij.ui.JBSplitter;
-import com.intellij.diff.tools.util.side.ThreesideContentPanel;
-import com.intellij.diff.util.Side;
 import jetbrains.mps.vcs.diff.ui.common.DiffEditor;
 import jetbrains.mps.vcs.diff.ChangeSetBuilder;
 import jetbrains.mps.internal.collections.runtime.Sequence;
@@ -36,10 +36,17 @@ import jetbrains.mps.vcs.diff.ui.common.DiffChangeGroupLayout;
 
 
   /*package*/ ThreeSideRootDifferencePane(MPSProject mpsProject, SNodeId rootId, boolean isMetadataView, List<SModel> models, List<SModel> metadataModels, List<ModelChangeSet> changeSets, List<ModelChangeSet> metadataChangeSets, @NotNull ContentDiffRequest request, @NotNull FrameDiffTool.DiffViewer diffViewer) {
-    super(mpsProject, rootId, isMetadataView, models, metadataModels, changeSets, metadataChangeSets, request, diffViewer);
+    super(mpsProject, rootId, isMetadataView, models, metadataModels, changeSets, metadataChangeSets, request.getContentTitles());
     if (getMyChangeSet() != null && getRepoChangeSet() != null) {
       myConflictsBuilder = createConflictsBuilder(getMyChangeSet(), getRepoChangeSet());
     }
+
+    List<JBSplitter> splitters = ListSequence.fromList(getEditors()).select((it) -> it.getSplitter()).toList();
+    ThreesideContentPanel panel = new ThreesideContentPanel(splitters);
+    panel.setTitles(DiffUtil.createSyncHeightComponents(DiffUtil.createSimpleTitles(diffViewer, request)));
+    panel.setPainter(createDividerPainter(getMyEditor(), getBaseEditor()), Side.LEFT);
+    panel.setPainter(createDividerPainter(getBaseEditor(), getRepoEditor()), Side.RIGHT);
+    installMainPanel(panel);
   }
 
   @Override
@@ -49,16 +56,6 @@ import jetbrains.mps.vcs.diff.ui.common.DiffChangeGroupLayout;
 
   private static ChangeConflictsBuilder createConflictsBuilder(@NotNull ChangeSet myChangeSet, @NotNull ChangeSet repoChangeSet) {
     return (DiffSettingsUtil.getTrackMovedNodesDiffOption() ? MovesAwareMergeConflictsBuilder.createOppositeConflictsBuilder(myChangeSet.getOppositeChangeSet(), repoChangeSet.getOppositeChangeSet()) : MergeConflictsBuilder.createOppositeConflictsBuilder(myChangeSet.getOppositeChangeSet(), repoChangeSet.getOppositeChangeSet()));
-  }
-
-  @Override
-  protected JPanel createPanel() {
-    List<JBSplitter> splitters = ListSequence.fromList(getEditors()).select((it) -> it.getSplitter()).toList();
-    ThreesideContentPanel panel = new ThreesideContentPanel(splitters);
-    panel.setTitles(getTitles());
-    panel.setPainter(createDividerPainter(getMyEditor(), getBaseEditor()), Side.LEFT);
-    panel.setPainter(createDividerPainter(getBaseEditor(), getRepoEditor()), Side.RIGHT);
-    return panel;
   }
 
   private DiffEditor getMyEditor() {

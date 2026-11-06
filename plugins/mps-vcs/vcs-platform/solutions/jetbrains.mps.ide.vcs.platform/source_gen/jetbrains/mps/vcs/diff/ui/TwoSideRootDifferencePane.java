@@ -11,12 +11,12 @@ import jetbrains.mps.vcs.diff.ModelChangeSet;
 import org.jetbrains.annotations.NotNull;
 import com.intellij.diff.requests.ContentDiffRequest;
 import com.intellij.diff.FrameDiffTool;
+import com.intellij.ui.JBSplitter;
+import jetbrains.mps.internal.collections.runtime.ListSequence;
+import com.intellij.diff.tools.util.side.TwosideContentPanel;
+import com.intellij.diff.util.DiffUtil;
 import jetbrains.mps.vcs.diff.ChangeSet;
 import jetbrains.mps.vcs.diff.ui.common.DiffEditor;
-import jetbrains.mps.internal.collections.runtime.ListSequence;
-import javax.swing.JPanel;
-import com.intellij.ui.JBSplitter;
-import com.intellij.diff.tools.util.side.TwosideContentPanel;
 import jetbrains.mps.vcs.diff.ui.common.DiffChangeGroupLayout;
 import jetbrains.mps.vcs.diff.ChangeSetBuilder;
 import jetbrains.mps.vcs.diff.ui.common.DiffSettingsUtil;
@@ -26,7 +26,13 @@ import jetbrains.mps.vcs.diff.changes.ModelChange;
 /*package*/ final class TwoSideRootDifferencePane extends RootDifferencePaneBase {
 
   /*package*/ TwoSideRootDifferencePane(MPSProject project, SNodeId rootId, boolean isMetadataView, List<SModel> models, List<SModel> metadataModels, List<ModelChangeSet> changeSets, List<ModelChangeSet> metadataChangeSets, @NotNull ContentDiffRequest request, @NotNull FrameDiffTool.DiffViewer diffViewer) {
-    super(project, rootId, isMetadataView, models, metadataModels, changeSets, metadataChangeSets, request, diffViewer);
+    super(project, rootId, isMetadataView, models, metadataModels, changeSets, metadataChangeSets, request.getContentTitles());
+
+    List<JBSplitter> splitters = ListSequence.fromList(getEditors()).select((it) -> it.getSplitter()).toList();
+    TwosideContentPanel panel = new TwosideContentPanel(splitters);
+    panel.setTitles(DiffUtil.createSyncHeightComponents(DiffUtil.createSimpleTitles(diffViewer, request)));
+    panel.setPainter(createDividerPainter(getOldEditor(), getNewEditor()));
+    installMainPanel(panel);
   }
 
   @Override
@@ -37,15 +43,6 @@ import jetbrains.mps.vcs.diff.changes.ModelChange;
 
   private ModelChangeSet getChangeSet() {
     return ListSequence.fromList(getChangeSets()).getElement(0);
-  }
-
-  @Override
-  protected JPanel createPanel() {
-    List<JBSplitter> splitters = ListSequence.fromList(getEditors()).select((it) -> it.getSplitter()).toList();
-    TwosideContentPanel panel = new TwosideContentPanel(splitters);
-    panel.setTitles(getTitles());
-    panel.setPainter(createDividerPainter(getOldEditor(), getNewEditor()));
-    return panel;
   }
 
   private DiffEditor getOldEditor() {
