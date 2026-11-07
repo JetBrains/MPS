@@ -42,8 +42,8 @@
     <import index="5zyv" ref="6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:java.util.concurrent(JDK/)" />
     <import index="tpek" ref="r:00000000-0000-4000-0000-011c895902c0(jetbrains.mps.baseLanguage.behavior)" />
     <import index="lui2" ref="8865b7a8-5271-43d3-884c-6fd1d9cfdd34/java:org.jetbrains.mps.openapi.module(MPS.OpenAPI/)" />
-    <import index="dd86" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:org.jetbrains.org.objectweb.asm.tree(MPS.IDEA.Modules/)" />
-    <import index="k8ye" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:org.jetbrains.org.objectweb.asm(MPS.IDEA.Modules/)" />
+    <import index="dd86" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:org.jetbrains.org.objectweb.asm.tree(MPS.IDEA/)" />
+    <import index="k8ye" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:org.jetbrains.org.objectweb.asm(MPS.IDEA/)" />
     <import index="vdrq" ref="r:85354f47-14fd-40e6-a7cc-2d1aa842c4cd(jetbrains.mps.lang.text.behavior)" />
   </imports>
   <registry>
