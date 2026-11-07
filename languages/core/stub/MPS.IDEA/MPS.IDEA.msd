@@ -268,6 +268,7 @@
         <sourceRoot location="util_rt.jar" />
       <!-- intentionally no stats.jar as we don't have any direct dependencies -->
       <PackageScope>
+        <include prefix="com.github."/>
         <include prefix="com.intellij."/>
         <include prefix="com.jetbrains."/>
         <include prefix="org.intellij."/>
