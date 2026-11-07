@@ -680,6 +680,7 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.storage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.productMode.jar" />
+        <fileset file="${artifacts.IDEA}/lib/idea_rt.jar" />
         <fileset dir="${artifacts.mps}/plugins/mps-junit5/lib" includes="junit-platform-reporting-6.1.3.jar" />
         <fileset dir="${artifacts.mps}/plugins/mps-junit5/lib" includes="junit-jupiter-params-6.1.3.jar" />
         <path refid="path.jdk.classpath" />
@@ -1013,6 +1014,7 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.productMode.jar" />
+        <fileset file="${artifacts.IDEA}/lib/idea_rt.jar" />
         <path refid="path.jdk.classpath" />
       </classpath>
     </javac2>
@@ -1450,6 +1452,7 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.productMode.jar" />
+        <fileset file="${artifacts.IDEA}/lib/idea_rt.jar" />
         <path refid="path.jdk.classpath" />
       </classpath>
     </javac2>

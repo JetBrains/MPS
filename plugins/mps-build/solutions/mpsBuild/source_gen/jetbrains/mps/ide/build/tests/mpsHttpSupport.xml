@@ -535,6 +535,7 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.storage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.productMode.jar" />
+        <fileset file="${artifacts.IDEA}/lib/idea_rt.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jackson.databind.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jackson.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jackson.jr.objects.jar" />
