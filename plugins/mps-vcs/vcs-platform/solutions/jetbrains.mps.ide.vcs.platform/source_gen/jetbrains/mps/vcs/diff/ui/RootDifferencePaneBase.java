@@ -11,13 +11,13 @@ import jetbrains.mps.vcs.diff.ui.common.ChangeGroupLayout;
 import jetbrains.mps.vcs.diff.ui.common.DiffEditorsGroup;
 import javax.swing.JPanel;
 import com.intellij.ide.util.PropertiesComponent;
-import jetbrains.mps.vcs.diff.ModelChangeSet;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import jetbrains.mps.vcs.diff.ui.common.NextPreviousTraverser;
 import jetbrains.mps.vcs.diff.ui.common.TripleChangeGroupLayout;
 import jetbrains.mps.vcs.diff.ui.common.ChangeGroupMessages;
 import jetbrains.mps.internal.collections.runtime.ListSequence;
 import java.util.ArrayList;
+import jetbrains.mps.vcs.diff.ModelChangeSet;
 import java.beans.PropertyChangeEvent;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.ui.JBSplitter;
@@ -28,6 +28,7 @@ import com.intellij.ui.JBColor;
 import com.intellij.ui.IslandsState;
 import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.util.ui.UIUtil;
+import jetbrains.mps.vcs.diff.changes.ModelChange;
 import com.intellij.openapi.actionSystem.ToggleAction;
 import com.intellij.openapi.project.DumbAware;
 import jetbrains.mps.ide.icons.IdeIcons;
@@ -36,8 +37,6 @@ import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.diff.DiffBundle;
 import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.actionSystem.AnAction;
-import jetbrains.mps.vcs.diff.changes.ModelChange;
-import jetbrains.mps.internal.collections.runtime.NotNullWhereFilter;
 import java.awt.Graphics;
 import javax.swing.JComponent;
 import com.intellij.openapi.actionSystem.ActionGroup;
@@ -47,6 +46,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import jetbrains.mps.vcs.diff.ChangeSet;
 import java.util.Iterator;
 import jetbrains.mps.vcs.diff.ui.common.DiffChangeGroupLayout;
+import jetbrains.mps.internal.collections.runtime.NotNullWhereFilter;
 import jetbrains.mps.internal.collections.runtime.Sequence;
 import java.util.Collections;
 import jetbrains.mps.vcs.diff.changes.NodeIdChange;
@@ -74,8 +74,6 @@ public abstract class RootDifferencePaneBase implements RootDifferencePane, Prop
   private JPanel myPanel;
   private boolean isInspectorShown = PropertiesComponent.getInstance().getBoolean(PARAM_SHOW_INSPECTOR, INSPECTOR_SHOWN_BY_DEFAULT);
 
-  private final List<ModelChangeSet> myChangeSets;
-  private final List<ModelChangeSet> myMetadataChangeSets;
   protected boolean myIsMetadataView;
   private DefaultActionGroup myActionGroup;
   private NextPreviousTraverser myTraverser;
@@ -86,18 +84,18 @@ public abstract class RootDifferencePaneBase implements RootDifferencePane, Prop
   protected boolean myDisposed = false;
   private final List<ChangeGroupMessages> myGutterMessagesRebuilders = ListSequence.fromList(new ArrayList<ChangeGroupMessages>());
 
-
   public RootDifferencePaneBase(MPSProject project, SNodeId rootId, boolean isMetadataView, List<ModelSide> models, List<ModelChangeSet> changeSets, List<ModelChangeSet> metadataChangeSets) {
     myIsMetadataView = isMetadataView;
     myRootId = rootId;
     myMpsProject = project;
     assert ListSequence.fromList(models).count() > 1;
-    myChangeSets = changeSets;
-    myMetadataChangeSets = metadataChangeSets;
+    // DiffEditor combines node editor + inspector; but ChangeGroupLayouts are tracked independently for the node and its inspector,
+    // which makes this code confusing - 2 or 3 editors in a group; a group of "main" changes, a group of "inspector" changes 
+    // PLUS two "triple" layouts, that hold these groups of main and inspector changes
     myDiffEditorsGroup = createEditorsGroup(isMetadataView, models);
-    myMainChangeGroupLayouts = createChangeGroupLayouts(false);
+    myMainChangeGroupLayouts = createChangeGroupLayouts(myDiffEditorsGroup.getEditors(), (isMetadataView ? metadataChangeSets : changeSets), false);
     myMainLayout = createTripleLayout(myMainChangeGroupLayouts, false);
-    myInspectorChangeGroupLayouts = createChangeGroupLayouts(true);
+    myInspectorChangeGroupLayouts = createChangeGroupLayouts(myDiffEditorsGroup.getEditors(), (isMetadataView ? metadataChangeSets : changeSets), true);
     myInspectorLayout = createTripleLayout(myInspectorChangeGroupLayouts, true);
     // FIXME yet another idea what does 'editable' model mean
     final boolean isEditable = ListSequence.fromList(models).getElement(1).notReadOnly();
@@ -150,6 +148,8 @@ public abstract class RootDifferencePaneBase implements RootDifferencePane, Prop
     return actionGroup;
   }
 
+  protected abstract Iterable<ModelChange> changesForCurrentRoot();
+
   private class ShowInspectorAction extends ToggleAction implements DumbAware {
     private ShowInspectorAction() {
       super("Show Inspector", "Show Inspector Windows", IdeIcons.INSPECTOR_ICON);
@@ -197,17 +197,13 @@ public abstract class RootDifferencePaneBase implements RootDifferencePane, Prop
     return new RevertRootsAction("") {
       @Override
       protected Iterable<ModelChange> getChanges() {
-        return ListSequence.fromList(getChangeSets()).where(new NotNullWhereFilter()).translate((it) -> it.getChangesForRoot(getRootId()));
+        return changesForCurrentRoot();
       }
       @Override
       protected void after() {
         rehighlight(true);
       }
     };
-  }
-
-  protected List<ModelChangeSet> getChangeSets() {
-    return (myIsMetadataView ? myMetadataChangeSets : myChangeSets);
   }
 
   private class MyDividerPainter implements DiffSplitter.Painter {
@@ -308,11 +304,9 @@ public abstract class RootDifferencePaneBase implements RootDifferencePane, Prop
 
   protected abstract ChangeSet getChangeSet(DiffEditor leftEditor, DiffEditor rightEditor);
 
-  private List<ChangeGroupLayout> createChangeGroupLayouts(boolean inspector) {
+  private List<ChangeGroupLayout> createChangeGroupLayouts(final List<DiffEditor> editors, List<ModelChangeSet> changeSets, boolean inspector) {
     List<ChangeGroupLayout> layouts = ListSequence.fromList(new ArrayList<ChangeGroupLayout>());
     DiffEditor leftEditor = null;
-    final List<DiffEditor> editors = getEditors();
-    List<ModelChangeSet> changeSets = getChangeSets();
     assert ListSequence.fromList(editors).count() == ListSequence.fromList(changeSets).count() + 1;
     Iterator<ModelChangeSet> changeSetsIt = ListSequence.fromList(changeSets).iterator();
     for (DiffEditor editor : ListSequence.fromList(editors)) {

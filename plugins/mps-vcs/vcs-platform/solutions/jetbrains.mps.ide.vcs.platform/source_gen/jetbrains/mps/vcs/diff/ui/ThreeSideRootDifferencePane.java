@@ -4,10 +4,10 @@ package jetbrains.mps.vcs.diff.ui;
 
 import jetbrains.mps.annotations.GeneratedClass;
 import jetbrains.mps.vcs.diff.merge.ChangeConflictsBuilder;
+import jetbrains.mps.vcs.diff.ModelChangeSet;
 import jetbrains.mps.project.MPSProject;
 import org.jetbrains.mps.openapi.model.SNodeId;
 import java.util.List;
-import jetbrains.mps.vcs.diff.ModelChangeSet;
 import org.jetbrains.annotations.NotNull;
 import com.intellij.diff.requests.ContentDiffRequest;
 import com.intellij.diff.FrameDiffTool;
@@ -23,6 +23,9 @@ import jetbrains.mps.vcs.diff.ChangeSet;
 import jetbrains.mps.vcs.diff.ui.common.DiffSettingsUtil;
 import jetbrains.mps.vcs.diff.merge.MovesAwareMergeConflictsBuilder;
 import jetbrains.mps.vcs.diff.merge.MergeConflictsBuilder;
+import jetbrains.mps.internal.collections.runtime.LinkedListSequence;
+import java.util.LinkedList;
+import jetbrains.mps.internal.collections.runtime.NotNullWhereFilter;
 import jetbrains.mps.vcs.diff.ui.common.DiffEditor;
 import jetbrains.mps.vcs.diff.ChangeSetBuilder;
 import org.jetbrains.mps.openapi.model.SModel;
@@ -36,6 +39,10 @@ import jetbrains.mps.vcs.diff.ui.common.DiffChangeGroupLayout;
   private final ModelSide myLeft;
   private final ModelSide myCentral;
   private final ModelSide myRight;
+  private final ModelChangeSet myLeftChange1;
+  private final ModelChangeSet myLeftChange2;
+  private final ModelChangeSet myRightChange1;
+  private final ModelChangeSet myRightChange2;
 
 
   /*package*/ ThreeSideRootDifferencePane(MPSProject mpsProject, SNodeId rootId, boolean isMetadataView, List<ModelSide> models, List<ModelChangeSet> changeSets, List<ModelChangeSet> metadataChangeSets, @NotNull ContentDiffRequest request, @NotNull FrameDiffTool.DiffViewer diffViewer) {
@@ -43,6 +50,11 @@ import jetbrains.mps.vcs.diff.ui.common.DiffChangeGroupLayout;
     myLeft = ListSequence.fromList(models).getElement(0);
     myCentral = ListSequence.fromList(models).getElement(1);
     myRight = ListSequence.fromList(models).getElement(2);
+    myLeftChange1 = ListSequence.fromList(changeSets).getElement(0);
+    myLeftChange2 = ListSequence.fromList(metadataChangeSets).getElement(0);
+    myRightChange1 = ListSequence.fromList(changeSets).getElement(1);
+    myRightChange2 = ListSequence.fromList(metadataChangeSets).getElement(1);
+
     if (getMyChangeSet() != null && getRepoChangeSet() != null) {
       myConflictsBuilder = createConflictsBuilder(getMyChangeSet(), getRepoChangeSet());
     }
@@ -64,6 +76,11 @@ import jetbrains.mps.vcs.diff.ui.common.DiffChangeGroupLayout;
     return (DiffSettingsUtil.getTrackMovedNodesDiffOption() ? MovesAwareMergeConflictsBuilder.createOppositeConflictsBuilder(myChangeSet.getOppositeChangeSet(), repoChangeSet.getOppositeChangeSet()) : MergeConflictsBuilder.createOppositeConflictsBuilder(myChangeSet.getOppositeChangeSet(), repoChangeSet.getOppositeChangeSet()));
   }
 
+
+  @Override
+  protected Iterable<ModelChange> changesForCurrentRoot() {
+    return LinkedListSequence.fromLinkedListNew(LinkedListSequence.fromListAndArray(new LinkedList<>(), getMyChangeSet(), getRepoChangeSet())).where(new NotNullWhereFilter()).translate((it) -> it.getChangesForRoot(getRootId()));
+  }
   private DiffEditor getMyEditor() {
     return ListSequence.fromList(getEditors()).getElement(0);
   }
@@ -112,10 +129,10 @@ import jetbrains.mps.vcs.diff.ui.common.DiffChangeGroupLayout;
   }
 
   private ModelChangeSet getMyChangeSet() {
-    return ListSequence.fromList(getChangeSets()).getElement(0);
+    return (myIsMetadataView ? myLeftChange2 : myLeftChange1);
   }
   private ModelChangeSet getRepoChangeSet() {
-    return ListSequence.fromList(getChangeSets()).getElement(1);
+    return (myIsMetadataView ? myRightChange2 : myRightChange1);
   }
 
   private SModel getMyModel() {
