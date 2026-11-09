@@ -7,7 +7,6 @@ import jetbrains.mps.vcs.diff.merge.ChangeConflictsBuilder;
 import jetbrains.mps.project.MPSProject;
 import org.jetbrains.mps.openapi.model.SNodeId;
 import java.util.List;
-import org.jetbrains.mps.openapi.model.SModel;
 import jetbrains.mps.vcs.diff.ModelChangeSet;
 import org.jetbrains.annotations.NotNull;
 import com.intellij.diff.requests.ContentDiffRequest;
@@ -26,6 +25,7 @@ import jetbrains.mps.vcs.diff.merge.MovesAwareMergeConflictsBuilder;
 import jetbrains.mps.vcs.diff.merge.MergeConflictsBuilder;
 import jetbrains.mps.vcs.diff.ui.common.DiffEditor;
 import jetbrains.mps.vcs.diff.ChangeSetBuilder;
+import org.jetbrains.mps.openapi.model.SModel;
 import jetbrains.mps.internal.collections.runtime.Sequence;
 import jetbrains.mps.vcs.diff.ui.common.DiffChangeGroupLayout;
 
@@ -35,8 +35,8 @@ import jetbrains.mps.vcs.diff.ui.common.DiffChangeGroupLayout;
   private ChangeConflictsBuilder myConflictsBuilder;
 
 
-  /*package*/ ThreeSideRootDifferencePane(MPSProject mpsProject, SNodeId rootId, boolean isMetadataView, List<SModel> models, List<SModel> metadataModels, List<ModelChangeSet> changeSets, List<ModelChangeSet> metadataChangeSets, @NotNull ContentDiffRequest request, @NotNull FrameDiffTool.DiffViewer diffViewer) {
-    super(mpsProject, rootId, isMetadataView, models, metadataModels, changeSets, metadataChangeSets, request.getContentTitles());
+  /*package*/ ThreeSideRootDifferencePane(MPSProject mpsProject, SNodeId rootId, boolean isMetadataView, List<ModelSide> models, List<ModelChangeSet> changeSets, List<ModelChangeSet> metadataChangeSets, @NotNull ContentDiffRequest request, @NotNull FrameDiffTool.DiffViewer diffViewer) {
+    super(mpsProject, rootId, isMetadataView, models, changeSets, metadataChangeSets);
     if (getMyChangeSet() != null && getRepoChangeSet() != null) {
       myConflictsBuilder = createConflictsBuilder(getMyChangeSet(), getRepoChangeSet());
     }

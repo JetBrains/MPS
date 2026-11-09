@@ -6,7 +6,6 @@ import jetbrains.mps.annotations.GeneratedClass;
 import jetbrains.mps.project.MPSProject;
 import org.jetbrains.mps.openapi.model.SNodeId;
 import java.util.List;
-import org.jetbrains.mps.openapi.model.SModel;
 import jetbrains.mps.vcs.diff.ModelChangeSet;
 import org.jetbrains.annotations.NotNull;
 import com.intellij.diff.requests.ContentDiffRequest;
@@ -17,6 +16,7 @@ import com.intellij.diff.tools.util.side.TwosideContentPanel;
 import com.intellij.diff.util.DiffUtil;
 import jetbrains.mps.vcs.diff.ChangeSet;
 import jetbrains.mps.vcs.diff.ui.common.DiffEditor;
+import org.jetbrains.mps.openapi.model.SModel;
 import jetbrains.mps.vcs.diff.ui.common.DiffChangeGroupLayout;
 import jetbrains.mps.vcs.diff.ChangeSetBuilder;
 import jetbrains.mps.vcs.diff.ui.common.DiffSettingsUtil;
@@ -25,8 +25,8 @@ import jetbrains.mps.vcs.diff.changes.ModelChange;
 @GeneratedClass(nodeId = "5939348756325699563", model = "r:df1b052a-af27-4b87-80fc-1492fa2192be(jetbrains.mps.vcs.diff.ui)")
 /*package*/ final class TwoSideRootDifferencePane extends RootDifferencePaneBase {
 
-  /*package*/ TwoSideRootDifferencePane(MPSProject project, SNodeId rootId, boolean isMetadataView, List<SModel> models, List<SModel> metadataModels, List<ModelChangeSet> changeSets, List<ModelChangeSet> metadataChangeSets, @NotNull ContentDiffRequest request, @NotNull FrameDiffTool.DiffViewer diffViewer) {
-    super(project, rootId, isMetadataView, models, metadataModels, changeSets, metadataChangeSets, request.getContentTitles());
+  /*package*/ TwoSideRootDifferencePane(MPSProject project, SNodeId rootId, boolean isMetadataView, List<ModelSide> models, List<ModelChangeSet> changeSets, List<ModelChangeSet> metadataChangeSets, @NotNull ContentDiffRequest request, @NotNull FrameDiffTool.DiffViewer diffViewer) {
+    super(project, rootId, isMetadataView, models, changeSets, metadataChangeSets);
 
     List<JBSplitter> splitters = ListSequence.fromList(getEditors()).select((it) -> it.getSplitter()).toList();
     TwosideContentPanel panel = new TwosideContentPanel(splitters);

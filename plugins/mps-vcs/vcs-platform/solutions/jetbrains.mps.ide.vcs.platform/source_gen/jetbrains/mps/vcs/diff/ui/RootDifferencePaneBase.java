@@ -12,14 +12,13 @@ import jetbrains.mps.vcs.diff.ui.common.DiffEditorsGroup;
 import javax.swing.JPanel;
 import com.intellij.ide.util.PropertiesComponent;
 import jetbrains.mps.vcs.diff.ModelChangeSet;
-import org.jetbrains.mps.openapi.model.SModel;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import jetbrains.mps.vcs.diff.ui.common.NextPreviousTraverser;
 import jetbrains.mps.vcs.diff.ui.common.TripleChangeGroupLayout;
 import jetbrains.mps.vcs.diff.ui.common.ChangeGroupMessages;
 import jetbrains.mps.internal.collections.runtime.ListSequence;
 import java.util.ArrayList;
-import jetbrains.mps.smodel.SModelOperations;
+import org.jetbrains.mps.openapi.model.SModel;
 import java.beans.PropertyChangeEvent;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.ui.JBSplitter;
@@ -77,8 +76,7 @@ public abstract class RootDifferencePaneBase implements RootDifferencePane, Prop
 
   private final List<ModelChangeSet> myChangeSets;
   private final List<ModelChangeSet> myMetadataChangeSets;
-  private final List<SModel> myModels;
-  private final List<SModel> myMetaModels;
+  private final List<ModelSide> myModels;
   private boolean myIsMetadataView;
   private DefaultActionGroup myActionGroup;
   private NextPreviousTraverser myTraverser;
@@ -90,22 +88,21 @@ public abstract class RootDifferencePaneBase implements RootDifferencePane, Prop
   private final List<ChangeGroupMessages> myGutterMessagesRebuilders = ListSequence.fromList(new ArrayList<ChangeGroupMessages>());
 
 
-  public RootDifferencePaneBase(MPSProject project, SNodeId rootId, boolean isMetadataView, List<SModel> models, List<SModel> metadataModels, List<ModelChangeSet> changeSets, List<ModelChangeSet> metadataChangeSets, List<String> contentTitles) {
+  public RootDifferencePaneBase(MPSProject project, SNodeId rootId, boolean isMetadataView, List<ModelSide> models, List<ModelChangeSet> changeSets, List<ModelChangeSet> metadataChangeSets) {
     myIsMetadataView = isMetadataView;
     myRootId = rootId;
     myMpsProject = project;
-    assert ListSequence.fromList(models).count() == ListSequence.fromList(contentTitles).count();
     assert ListSequence.fromList(models).count() > 1;
     myModels = models;
-    myMetaModels = metadataModels;
     myChangeSets = changeSets;
     myMetadataChangeSets = metadataChangeSets;
-    myDiffEditorsGroup = createEditorsGroup((isMetadataView ? metadataModels : models), contentTitles);
+    myDiffEditorsGroup = createEditorsGroup(isMetadataView, models);
     myMainChangeGroupLayouts = createChangeGroupLayouts(false);
     myMainLayout = createTripleLayout(false);
     myInspectorChangeGroupLayouts = createChangeGroupLayouts(true);
     myInspectorLayout = createTripleLayout(true);
-    boolean isEditable = ListSequence.fromList(models).getElement(1) != null && !(SModelOperations.isReadOnly(ListSequence.fromList(models).getElement(1)));
+    // FIXME yet another idea what does 'editable' model mean
+    final boolean isEditable = ListSequence.fromList(models).getElement(1).notReadOnly();
     if (isEditable) {
       addButtons();
     }
@@ -115,7 +112,7 @@ public abstract class RootDifferencePaneBase implements RootDifferencePane, Prop
   }
 
   protected List<SModel> getModels() {
-    return (myIsMetadataView ? myMetaModels : myModels);
+    return (myIsMetadataView ? ListSequence.fromList(myModels).select((this0) -> this0.metadata()).toList() : ListSequence.fromList(myModels).select((this0) -> this0.model()).toList());
   }
 
   @Override
@@ -428,13 +425,15 @@ public abstract class RootDifferencePaneBase implements RootDifferencePane, Prop
     ListSequence.fromList(getEditors()).visitAll((it) -> it.repaintAndRebuildEditorMessages());
   }
 
-  private DiffEditorsGroup createEditorsGroup(List<SModel> models, List<String> titles) {
+  private DiffEditorsGroup createEditorsGroup(boolean isMetadataView, List<ModelSide> models) {
+    // FIXME bad code. depends on fields already set in cons; calls other methods for still not completely initialized object; pass this elsewhere
+    //      and creates a group once despite myIsMetadataView could change in setRootId()
     DiffEditorsGroup group = new DiffEditorsGroup(myIsEditorsSyncEnabled);
-    assert ListSequence.fromList(models).count() == ListSequence.fromList(titles).count();
     for (int index = 0; index < ListSequence.fromList(models).count(); index++) {
+      SModel m = (isMetadataView ? ListSequence.fromList(models).getElement(index).metadata() : ListSequence.fromList(models).getElement(index).model());
       // the first editor (index==0) should have left scrollbar and gutter
       // it is only possible to edit second model (index==1) if it is not read only itself
-      DiffEditor editor = new DiffEditor(getMpsProject(), ListSequence.fromList(models).getElement(index), myRootId, ListSequence.fromList(titles).getElement(index), index == 0, index != 1, isInspectorShown());
+      DiffEditor editor = new DiffEditor(getMpsProject(), m, myRootId, ListSequence.fromList(models).getElement(index).contentTitle(), index == 0, index != 1, isInspectorShown());
       editor.getSplitter().setSplitterProportionKey(PARAM_INSPECTOR_SPLITTER_POSITION);
       editor.getSplitter().addPropertyChangeListener(Splitter.PROP_PROPORTION, this);
       group.add(editor);
