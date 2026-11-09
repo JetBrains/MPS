@@ -11,9 +11,9 @@
     <import index="33ny" ref="6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:java.util(JDK/)" />
     <import index="emwx" ref="6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:javax.lang.model(JDK/)" />
     <import index="1ltj" ref="r:aa7e8178-3b66-4295-bcce-165c85d78006(jetbrains.mps.baseLanguage.javastub)" />
-    <import index="dd86" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:org.jetbrains.org.objectweb.asm.tree(MPS.IDEA.Modules/)" />
-    <import index="k8ye" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:org.jetbrains.org.objectweb.asm(MPS.IDEA.Modules/)" />
-    <import index="tuzk" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:org.jetbrains.org.objectweb.asm.signature(MPS.IDEA.Modules/)" />
+    <import index="dd86" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:org.jetbrains.org.objectweb.asm.tree(MPS.IDEA/)" />
+    <import index="k8ye" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:org.jetbrains.org.objectweb.asm(MPS.IDEA/)" />
+    <import index="tuzk" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:org.jetbrains.org.objectweb.asm.signature(MPS.IDEA/)" />
     <import index="mhfm" ref="3f233e7f-b8a6-46d2-a57f-795d56775243/java:org.jetbrains.annotations(Annotations/)" />
     <import index="82uw" ref="6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:java.util.function(JDK/)" />
     <import index="1ctc" ref="6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:java.util.stream(JDK/)" />

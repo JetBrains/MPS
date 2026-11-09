@@ -948,6 +948,51 @@
       <unit id="2872212824181502686" at="30,0,104,0" name="jetbrains.mps.java.platform.actions.PasteAsJavaStatements_Action" />
     </file>
   </root>
+  <root nodeRef="r:c6bc30d1-d0d1-44c6-ba7e-90e78619615e(jetbrains.mps.java.platform.actions)/2982261856284359647">
+    <file name="MemberContainerStructureViewProvider.java">
+      <node id="2982261856284359749" at="26,115,27,86" concept="12" />
+      <node id="2982261856284359665" at="27,86,28,67" concept="10" />
+      <node id="2982261856284359675" at="29,29,30,18" concept="11" />
+      <node id="2982261856284359678" at="31,5,32,37" concept="10" />
+      <node id="2982261856284359692" at="33,111,34,40" concept="4" />
+      <node id="2982261856284359759" at="36,28,37,47" concept="12" />
+      <node id="2982261856284359703" at="37,47,38,18" concept="11" />
+      <node id="2982261856284359769" at="39,5,40,84" concept="12" />
+      <node id="2982261856284359706" at="40,84,41,113" concept="10" />
+      <node id="2982261856284359722" at="45,83,46,21" concept="11" />
+      <node id="2982261856284359729" at="49,40,50,21" concept="11" />
+      <node id="2982261856284359650" at="22,0,24,0" concept="2" trace="MemberContainerStructureViewProvider#()V" />
+      <node id="2982261856284359669" at="28,67,31,5" concept="8" />
+      <node id="2982261856284359696" at="32,37,35,5" concept="18" />
+      <node id="2982261856284359697" at="35,5,39,5" concept="8" />
+      <node id="2982261856284359726" at="48,0,52,0" concept="9" trace="isRootNodeShown#()Z" />
+      <node id="2982261856284359715" at="43,0,48,0" concept="9" trace="createStructureViewModel#(Lcom/intellij/openapi/editor/Editor;)Lcom/intellij/ide/structureView/StructureViewModel;" />
+      <node id="2982261856284359711" at="41,113,52,6" concept="11" />
+      <node id="2982261856284359654" at="24,0,54,0" concept="9" trace="getStructureViewBuilder#(Ljetbrains/mps/nodefs/MPSNodeVirtualFile;Lcom/intellij/openapi/project/Project;)Lcom/intellij/ide/structureView/StructureViewBuilder;" />
+      <scope id="2982261856284359652" at="22,49,22,49" />
+      <scope id="2982261856284359674" at="29,29,30,18" />
+      <scope id="2982261856284359691" at="33,111,34,40" />
+      <scope id="2982261856284359721" at="45,83,46,21" />
+      <scope id="2982261856284359728" at="49,40,50,21" />
+      <scope id="2982261856284359650" at="22,0,24,0" />
+      <scope id="2982261856284359702" at="36,28,38,18" />
+      <scope id="2982261856284359726" at="48,0,52,0" />
+      <scope id="2982261856284359715" at="43,0,48,0">
+        <var name="editor" id="2982261856284359718" />
+      </scope>
+      <scope id="2982261856284359663" at="26,115,52,6">
+        <var name="container" id="2982261856284359677" />
+        <var name="model" id="2982261856284359705" />
+        <var name="mpsProject" id="2982261856284359664" />
+      </scope>
+      <scope id="2982261856284359654" at="24,0,54,0">
+        <var name="file" id="2982261856284359657" />
+        <var name="project" id="2982261856284359660" />
+      </scope>
+      <unit id="2982261856284359714" at="42,15,52,5" name="jetbrains.mps.java.platform.actions.MemberContainerStructureViewProvider$1" />
+      <unit id="2982261856284359647" at="20,0,55,0" name="jetbrains.mps.java.platform.actions.MemberContainerStructureViewProvider" />
+    </file>
+  </root>
   <root nodeRef="r:c6bc30d1-d0d1-44c6-ba7e-90e78619615e(jetbrains.mps.java.platform.actions)/4193578441192301505">
     <file name="JavaPlatformActions.xml">
       <unit id="4193578441192301505" at="1,0,93,14" name="jetbrains.mps.java.platform.actions.JavaPlatformActions" />

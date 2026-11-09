@@ -636,6 +636,7 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.productMode.jar" />
+        <fileset file="${artifacts.IDEA}/lib/idea_rt.jar" />
         <fileset dir="${artifacts.mps}/plugins/jetpad/lib" includes="base-1.0.0-jvm6.jar" />
         <fileset dir="${artifacts.mps}/plugins/jetpad/lib" includes="base-projectional-1.0.0-jvm6.jar" />
         <fileset dir="${artifacts.mps}/plugins/jetpad/lib" includes="cell-1.0.0-jvm6.jar" />
@@ -980,6 +981,7 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.storage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.productMode.jar" />
+        <fileset file="${artifacts.IDEA}/lib/idea_rt.jar" />
         <fileset dir="${artifacts.mps}/plugins/jetpad/lib" includes="base-1.0.0-jvm6.jar" />
         <fileset dir="${artifacts.mps}/plugins/jetpad/lib" includes="base-projectional-1.0.0-jvm6.jar" />
         <fileset dir="${artifacts.mps}/plugins/jetpad/lib" includes="cell-1.0.0-jvm6.jar" />
@@ -1324,6 +1326,7 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.productMode.jar" />
+        <fileset file="${artifacts.IDEA}/lib/idea_rt.jar" />
         <fileset dir="${artifacts.mps}/plugins/jetpad/lib" includes="base-1.0.0-jvm6.jar" />
         <fileset dir="${artifacts.mps}/plugins/jetpad/lib" includes="base-projectional-1.0.0-jvm6.jar" />
         <fileset dir="${artifacts.mps}/plugins/jetpad/lib" includes="cell-1.0.0-jvm6.jar" />
