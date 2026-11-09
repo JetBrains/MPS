@@ -43,8 +43,8 @@ import com.intellij.openapi.actionSystem.ActionGroup;
 import org.jetbrains.annotations.Nullable;
 import jetbrains.mps.vcs.diff.ui.common.Bounds;
 import com.intellij.openapi.application.ApplicationManager;
-import jetbrains.mps.vcs.diff.ChangeSet;
 import java.util.Iterator;
+import jetbrains.mps.vcs.diff.ChangeSet;
 import jetbrains.mps.vcs.diff.ui.common.DiffChangeGroupLayout;
 import jetbrains.mps.internal.collections.runtime.NotNullWhereFilter;
 import jetbrains.mps.internal.collections.runtime.Sequence;
@@ -74,7 +74,6 @@ public abstract class RootDifferencePaneBase implements RootDifferencePane, Prop
   private JPanel myPanel;
   private boolean isInspectorShown = PropertiesComponent.getInstance().getBoolean(PARAM_SHOW_INSPECTOR, INSPECTOR_SHOWN_BY_DEFAULT);
 
-  protected boolean myIsMetadataView;
   private DefaultActionGroup myActionGroup;
   private NextPreviousTraverser myTraverser;
 
@@ -85,7 +84,6 @@ public abstract class RootDifferencePaneBase implements RootDifferencePane, Prop
   private final List<ChangeGroupMessages> myGutterMessagesRebuilders = ListSequence.fromList(new ArrayList<ChangeGroupMessages>());
 
   public RootDifferencePaneBase(MPSProject project, SNodeId rootId, boolean isMetadataView, List<ModelSide> models, List<ModelChangeSet> changeSets, List<ModelChangeSet> metadataChangeSets) {
-    myIsMetadataView = isMetadataView;
     myRootId = rootId;
     myMpsProject = project;
     assert ListSequence.fromList(models).count() > 1;
@@ -259,15 +257,10 @@ public abstract class RootDifferencePaneBase implements RootDifferencePane, Prop
   public abstract void editRootId(SNodeId rootId);
 
   @Override
-  public void setRootId(SNodeId rootId, boolean isMetadataView) {
-    boolean rebuild = myIsMetadataView != isMetadataView;
-    myIsMetadataView = isMetadataView;
+  public void setRootId(@NotNull SNodeId rootId) {
     myRootId = rootId;
-    if (rebuild) {
-      updateLayouts();
-    }
     editRootId(rootId);
-    rehighlight(rebuild);
+    rehighlight(false);
     myTraverser.goToFirstChangeLater();
   }
 
@@ -301,8 +294,6 @@ public abstract class RootDifferencePaneBase implements RootDifferencePane, Prop
   public void rehighlightInReadAction(final boolean rebuildChangeSet) {
     myMpsProject.getModelAccess().runReadInEDT(() -> rehighlight(rebuildChangeSet));
   }
-
-  protected abstract ChangeSet getChangeSet(DiffEditor leftEditor, DiffEditor rightEditor);
 
   private List<ChangeGroupLayout> createChangeGroupLayouts(final List<DiffEditor> editors, List<ModelChangeSet> changeSets, boolean inspector) {
     List<ChangeGroupLayout> layouts = ListSequence.fromList(new ArrayList<ChangeGroupLayout>());
@@ -431,9 +422,5 @@ public abstract class RootDifferencePaneBase implements RootDifferencePane, Prop
 
   protected List<DiffEditor> getEditors() {
     return myDiffEditorsGroup.getEditors();
-  }
-
-  protected void updateLayouts() {
-    ListSequence.fromList(myMainChangeGroupLayouts).concat(ListSequence.fromList(myInspectorChangeGroupLayouts)).where(new NotNullWhereFilter()).select((it) -> (DiffChangeGroupLayout) it).visitAll((it) -> it.setChangeSet(getChangeSet(it.getDiffEditor(true), it.getDiffEditor(false))));
   }
 }

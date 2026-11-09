@@ -15,7 +15,6 @@ import com.intellij.ui.JBSplitter;
 import com.intellij.diff.tools.util.side.TwosideContentPanel;
 import com.intellij.diff.util.DiffUtil;
 import jetbrains.mps.vcs.diff.changes.ModelChange;
-import jetbrains.mps.vcs.diff.ChangeSet;
 import jetbrains.mps.vcs.diff.ui.common.DiffEditor;
 import org.jetbrains.mps.openapi.model.SModel;
 import jetbrains.mps.vcs.diff.ui.common.DiffChangeGroupLayout;
@@ -28,10 +27,11 @@ import jetbrains.mps.vcs.diff.ui.common.DiffSettingsUtil;
   private final ModelSide myRight;
   private final ModelChangeSet myChange1;
   private final ModelChangeSet myChange2;
+  private final boolean myIsMetadataView;
 
   /*package*/ TwoSideRootDifferencePane(MPSProject project, SNodeId rootId, boolean isMetadataView, List<ModelSide> models, List<ModelChangeSet> changeSets, List<ModelChangeSet> metadataChangeSets, @NotNull ContentDiffRequest request, @NotNull FrameDiffTool.DiffViewer diffViewer) {
     super(project, rootId, isMetadataView, models, changeSets, metadataChangeSets);
-
+    myIsMetadataView = isMetadataView;
     myLeft = ListSequence.fromList(models).getElement(0);
     myRight = ListSequence.fromList(models).getElement(1);
     myChange1 = ListSequence.fromList(changeSets).getElement(0);
@@ -49,12 +49,6 @@ import jetbrains.mps.vcs.diff.ui.common.DiffSettingsUtil;
   protected Iterable<ModelChange> changesForCurrentRoot() {
     ModelChangeSet cs = getChangeSet();
     return (cs == null ? null : cs.getChangesForRoot(getRootId()));
-  }
-
-  @Override
-  protected ChangeSet getChangeSet(DiffEditor leftEditor, DiffEditor rightEditor) {
-    assert leftEditor == getOldEditor() && rightEditor == getNewEditor();
-    return getChangeSet();
   }
 
   private ModelChangeSet getChangeSet() {

@@ -43,10 +43,11 @@ import jetbrains.mps.vcs.diff.ui.common.DiffChangeGroupLayout;
   private final ModelChangeSet myLeftChange2;
   private final ModelChangeSet myRightChange1;
   private final ModelChangeSet myRightChange2;
-
+  private final boolean myIsMetadataView;
 
   /*package*/ ThreeSideRootDifferencePane(MPSProject mpsProject, SNodeId rootId, boolean isMetadataView, List<ModelSide> models, List<ModelChangeSet> changeSets, List<ModelChangeSet> metadataChangeSets, @NotNull ContentDiffRequest request, @NotNull FrameDiffTool.DiffViewer diffViewer) {
     super(mpsProject, rootId, isMetadataView, models, changeSets, metadataChangeSets);
+    myIsMetadataView = isMetadataView;
     myLeft = ListSequence.fromList(models).getElement(0);
     myCentral = ListSequence.fromList(models).getElement(1);
     myRight = ListSequence.fromList(models).getElement(2);
@@ -163,17 +164,6 @@ import jetbrains.mps.vcs.diff.ui.common.DiffChangeGroupLayout;
       getRepoEditor().highlightChanges(getRepoModel(), repoChanges, true, getConflictChecker());
     }
     invalidateLayouts();
-  }
-
-  @Override
-  protected ChangeSet getChangeSet(DiffEditor leftEditor, DiffEditor rightEditor) {
-    if (leftEditor == getMyEditor() && rightEditor == getBaseEditor()) {
-      return getMyChangeSet();
-    }
-    if (leftEditor == getBaseEditor() && rightEditor == getRepoEditor()) {
-      return getRepoChangeSet();
-    }
-    return null;
   }
 
   @Override

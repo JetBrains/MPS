@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import jetbrains.mps.vcs.diff.ui.common.Bounds;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import javax.swing.JPanel;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.mps.openapi.model.SNodeId;
 
 @GeneratedClass(nodeId = "8548584436416293798", model = "r:df1b052a-af27-4b87-80fc-1492fa2192be(jetbrains.mps.vcs.diff.ui)")
@@ -18,5 +19,5 @@ public interface RootDifferencePane extends IHighlighter {
   void navigateInitial(@Nullable Bounds firstChange);
   ActionGroup getActions();
   JPanel getPanel();
-  void setRootId(SNodeId nodeId, boolean isMetadataView);
+  void setRootId(@NotNull SNodeId nodeId);
 }

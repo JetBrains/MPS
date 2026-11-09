@@ -5,6 +5,7 @@ package jetbrains.mps.vcs.diff.ui;
 import jetbrains.mps.annotations.GeneratedClass;
 import org.jetbrains.mps.openapi.model.SModel;
 import jetbrains.mps.vcs.diff.merge.MergeTemporaryModel;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.mps.openapi.model.SNodeId;
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade;
 import jetbrains.mps.smodel.ModelImports;
@@ -47,6 +48,7 @@ public class MetadataUtil {
     mm.setChanged(false);
   }
 
+  @NotNull
   public static SNodeId getMetadataRootId() {
     return PersistenceFacade.getInstance().createNodeId("~root");
   }

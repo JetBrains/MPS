@@ -78,12 +78,20 @@ public class ModelDifferenceViewer implements UiDataProvider {
 
   private List<ModelChangeSet> myChangeSets;
   private List<ModelChangeSet> myMetadataChangeSets;
+  /**
+   * the only reason not to take this value from myRootDifferencePane is the difference null vs "~root" for metadata models.
+   * To remove, check getCurrentRoot() usages + uiDataSnapshot, if clients trean null as "metadata" root or rather as no value
+   */
   private SNodeId myRootId;
 
   private ModelDifferenceTree myTree = null;
   private JPanel myComponent = new JPanel(new BorderLayout());
   private JBSplitter myPanel = new JBSplitter(true, 0.25f);
   private RootDifferencePane myRootDifferencePane = null;
+  /**
+   * tracks what we've built myRootDifferencePane for - changed model itself or its "metadata". For former, no need to rebuild the pane when switching between roots
+   */
+  private boolean myIsMetadataView;
   private final JComponent myNoRootPanel = new JLabel("Select root to show", SwingConstants.CENTER);
 
   private final Collection<SModel> myRegisteredModels = CollectionSequence.fromCollection(new ArrayList<>());
@@ -307,20 +315,24 @@ public class ModelDifferenceViewer implements UiDataProvider {
     }
     syncMetadataChanges();
 
-    if (myRootDifferencePane != null && (myRootId != null && rootId == null || myRootId == null && rootId != null)) {
-      // see MergeModelsPanel, where this code originates from. In fact, myRootDifferencePane may tell the state
+    final boolean metadataViewRequested = rootId == null;
+
+    if (myRootDifferencePane != null && myIsMetadataView != metadataViewRequested) {
+      // see MergeModelsPanel, where this code originates from. Unlike merge origin, we keep myIsMetadataView state here
+      // indeed, could have kept isMetadataView as attribute of the diff pane, but I hope to make pane unaware of this 
+      // distinction (i.e. no knowledge of "metadata" whatsoever)
       discardDiffPane();
     }
     myRootId = rootId;
     myProject.getRepository().getModelAccess().runReadAction(() -> {
-      boolean isMetadataView = rootId == null;
-      SNodeId nodeId = (isMetadataView ? MetadataUtil.getMetadataRootId() : rootId);
+      SNodeId nodeId = (metadataViewRequested ? MetadataUtil.getMetadataRootId() : rootId);
       if (myRootDifferencePane == null) {
-        myRootDifferencePane = (isThreePanelDiff() ? new ThreeSideRootDifferencePane(myProject, nodeId, isMetadataView, myDiffSides, myChangeSets, myMetadataChangeSets, myDiffRequest, myDiffViewer) : new TwoSideRootDifferencePane(myProject, nodeId, isMetadataView, myDiffSides, myChangeSets, myMetadataChangeSets, myDiffRequest, myDiffViewer));
+        myRootDifferencePane = (isThreePanelDiff() ? new ThreeSideRootDifferencePane(myProject, nodeId, metadataViewRequested, myDiffSides, myChangeSets, myMetadataChangeSets, myDiffRequest, myDiffViewer) : new TwoSideRootDifferencePane(myProject, nodeId, metadataViewRequested, myDiffSides, myChangeSets, myMetadataChangeSets, myDiffRequest, myDiffViewer));
         attachRootDifferencePane(myRootDifferencePane);
         myRootDifferencePane.navigateInitial(null);
+        myIsMetadataView = metadataViewRequested;
       } else {
-        myRootDifferencePane.setRootId(nodeId, isMetadataView);
+        myRootDifferencePane.setRootId(nodeId);
       }
     });
   }
