@@ -2312,6 +2312,110 @@
     </node>
     <node concept="2tJIrI" id="3YQ3dO9l$od" role="jymVt" />
     <node concept="3Tm1VV" id="6rx4kZDk5Bs" role="1B3o_S" />
+    <node concept="3clFb_" id="6WlsyVHWjUM" role="jymVt">
+      <property role="TrG5h" value="openProject" />
+      <node concept="2AHcQZ" id="6WlsyVHWjUN" role="2AJF6D">
+        <ref role="2AI5Lk" to="wyt6:~Override" resolve="Override" />
+      </node>
+      <node concept="37vLTG" id="6WlsyVHWjUO" role="3clF46">
+        <property role="TrG5h" value="projectFile" />
+        <node concept="3uibUv" id="6WlsyVHWjUP" role="1tU5fm">
+          <ref role="3uigEE" to="guwi:~File" resolve="File" />
+        </node>
+        <node concept="2AHcQZ" id="6WlsyVHWjUQ" role="2AJF6D">
+          <ref role="2AI5Lk" to="mhfm:~NotNull" resolve="NotNull" />
+        </node>
+      </node>
+      <node concept="3uibUv" id="6WlsyVHWjUR" role="3clF45">
+        <ref role="3uigEE" to="z1c3:~Project" resolve="Project" />
+      </node>
+      <node concept="3Tm1VV" id="6WlsyVHWjUS" role="1B3o_S" />
+      <node concept="2AHcQZ" id="6WlsyVHWjVn" role="2AJF6D">
+        <ref role="2AI5Lk" to="mhfm:~NotNull" resolve="NotNull" />
+      </node>
+      <node concept="3clFbS" id="6WlsyVHWjVo" role="3clF47">
+        <node concept="3cpWs8" id="6WlsyVHW$HC" role="3cqZAp">
+          <node concept="3cpWsn" id="6WlsyVHW$HD" role="3cpWs9">
+            <property role="TrG5h" value="openedProject" />
+            <node concept="3uibUv" id="6WlsyVHWzgU" role="1tU5fm">
+              <ref role="3uigEE" to="z1c3:~Project" resolve="Project" />
+            </node>
+            <node concept="3nyPlj" id="6WlsyVHW$HE" role="33vP2m">
+              <ref role="37wK5l" to="79ha:6rx4kZDk5DH" resolve="openProject" />
+              <node concept="37vLTw" id="6WlsyVHW$HF" role="37wK5m">
+                <ref role="3cqZAo" node="6WlsyVHWjUO" resolve="projectFile" />
+              </node>
+            </node>
+          </node>
+        </node>
+        <node concept="3cpWs8" id="6WlsyVHWSKe" role="3cqZAp">
+          <node concept="3cpWsn" id="6WlsyVHWSKh" role="3cpWs9">
+            <property role="TrG5h" value="testMode" />
+            <node concept="10P_77" id="6WlsyVHWSKi" role="1tU5fm" />
+            <node concept="2YIFZM" id="6WlsyVHWSKj" role="33vP2m">
+              <ref role="37wK5l" to="fyhk:~RuntimeFlags.isTestMode()" resolve="isTestMode" />
+              <ref role="1Pybhc" to="fyhk:~RuntimeFlags" resolve="RuntimeFlags" />
+            </node>
+          </node>
+        </node>
+        <node concept="3clFbJ" id="6UGjuqTXlGS" role="3cqZAp">
+          <node concept="3clFbS" id="6UGjuqTXlGU" role="3clFbx">
+            <node concept="3clFbF" id="3oBsYseZD0" role="3cqZAp">
+              <node concept="1rXfSq" id="3oBsYseZCY" role="3clFbG">
+                <ref role="37wK5l" node="3eUNqOk4GBH" resolve="flushAllEvents" />
+              </node>
+            </node>
+            <node concept="3clFbJ" id="6WlsyVHY88a" role="3cqZAp">
+              <node concept="3clFbS" id="6WlsyVHY889" role="3clFbx">
+                <node concept="3clFbF" id="6WlsyVHY888" role="3cqZAp">
+                  <node concept="2OqwBi" id="6WlsyVHY886" role="3clFbG">
+                    <node concept="10M0yZ" id="6WlsyVHWD0k" role="2Oq$k0">
+                      <ref role="1PxDUh" to="anz7:~IndexingTestUtil" resolve="IndexingTestUtil" />
+                      <ref role="3cqZAo" to="anz7:~IndexingTestUtil.Companion" resolve="Companion" />
+                    </node>
+                    <node concept="liA8E" id="6WlsyVHY884" role="2OqNvi">
+                      <ref role="37wK5l" to="anz7:~IndexingTestUtil$Companion.waitUntilIndexesAreReady(com.intellij.openapi.project.Project)" resolve="waitUntilIndexesAreReady" />
+                      <node concept="2OqwBi" id="6WlsyVHZ$6T" role="37wK5m">
+                        <node concept="1eOMI4" id="6WlsyVHZtBE" role="2Oq$k0">
+                          <node concept="10QFUN" id="6WlsyVHZtBD" role="1eOMHV">
+                            <node concept="37vLTw" id="6WlsyVHZtBC" role="10QFUP">
+                              <ref role="3cqZAo" node="6WlsyVHW$HD" resolve="openedProject" />
+                            </node>
+                            <node concept="3uibUv" id="6WlsyVHZtB_" role="10QFUM">
+                              <ref role="3uigEE" to="z1c4:~MPSProject" resolve="MPSProject" />
+                            </node>
+                          </node>
+                        </node>
+                        <node concept="liA8E" id="6WlsyVHZBEL" role="2OqNvi">
+                          <ref role="37wK5l" to="z1c4:~MPSProject.getProject()" resolve="getProject" />
+                        </node>
+                      </node>
+                    </node>
+                  </node>
+                </node>
+              </node>
+              <node concept="2ZW3vV" id="6WlsyVHZkrm" role="3clFbw">
+                <node concept="3uibUv" id="6WlsyVHZoAD" role="2ZW6by">
+                  <ref role="3uigEE" to="z1c4:~MPSProject" resolve="MPSProject" />
+                </node>
+                <node concept="37vLTw" id="6WlsyVHZflh" role="2ZW6bz">
+                  <ref role="3cqZAo" node="6WlsyVHW$HD" resolve="openedProject" />
+                </node>
+              </node>
+            </node>
+          </node>
+          <node concept="37vLTw" id="6UGjuqTXAjv" role="3clFbw">
+            <ref role="3cqZAo" node="6WlsyVHWSKh" resolve="testMode" />
+          </node>
+        </node>
+        <node concept="3clFbF" id="6WlsyVHWjVr" role="3cqZAp">
+          <node concept="37vLTw" id="6WlsyVHW$HG" role="3clFbG">
+            <ref role="3cqZAo" node="6WlsyVHW$HD" resolve="openedProject" />
+          </node>
+        </node>
+      </node>
+    </node>
+    <node concept="2tJIrI" id="6WlsyVHWsvB" role="jymVt" />
     <node concept="3clFb_" id="6rx4kZDk5DH" role="jymVt">
       <property role="1EzhhJ" value="false" />
       <property role="TrG5h" value="doOpenProject" />
@@ -2531,15 +2635,15 @@
             <ref role="3cqZAo" node="3qbI1lNp2CW" resolve="testMode" />
           </node>
         </node>
-        <node concept="3cpWs8" id="3qbI1lNoBDW" role="3cqZAp">
-          <node concept="3cpWsn" id="3qbI1lNoBDX" role="3cpWs9">
+        <node concept="3cpWs8" id="6WlsyVHYb$d" role="3cqZAp">
+          <node concept="3cpWsn" id="6WlsyVHYb$e" role="3cpWs9">
             <property role="TrG5h" value="openedProject" />
-            <node concept="3uibUv" id="3qbI1lNpiXD" role="1tU5fm">
+            <node concept="3uibUv" id="6WlsyVHYaho" role="1tU5fm">
               <ref role="3uigEE" to="z1c4:~MPSProject" resolve="MPSProject" />
             </node>
-            <node concept="1rXfSq" id="3qbI1lNoBDY" role="33vP2m">
+            <node concept="1rXfSq" id="6WlsyVHYb$f" role="33vP2m">
               <ref role="37wK5l" node="2mki3EciMiE" resolve="openProjectInIdeaEnvironment" />
-              <node concept="37vLTw" id="3qbI1lNoBDZ" role="37wK5m">
+              <node concept="37vLTw" id="6WlsyVHYb$g" role="37wK5m">
                 <ref role="3cqZAo" node="6rx4kZDk5DI" resolve="projectFile" />
               </node>
             </node>
@@ -2551,35 +2655,11 @@
               <node concept="2YIFZM" id="3qbI1lNp2uw" role="3clFbG">
                 <ref role="37wK5l" to="zn9m:~Disposer.register(com.intellij.openapi.Disposable,com.intellij.openapi.Disposable)" resolve="register" />
                 <ref role="1Pybhc" to="zn9m:~Disposer" resolve="Disposer" />
-                <node concept="2OqwBi" id="4sfB6SDPu8G" role="37wK5m">
-                  <node concept="37vLTw" id="3qbI1lNp2xP" role="2Oq$k0">
-                    <ref role="3cqZAo" node="3qbI1lNoBDX" resolve="openedProject" />
-                  </node>
-                  <node concept="liA8E" id="4sfB6SDPuqQ" role="2OqNvi">
-                    <ref role="37wK5l" to="z1c4:~MPSProject.getProject()" resolve="getProject" />
-                  </node>
+                <node concept="37vLTw" id="3qbI1lNp2xP" role="37wK5m">
+                  <ref role="3cqZAo" node="6WlsyVHYb$e" resolve="openedProject" />
                 </node>
                 <node concept="37vLTw" id="3qbI1lNpfdp" role="37wK5m">
                   <ref role="3cqZAo" node="3qbI1lNoEgH" resolve="disposable0" />
-                </node>
-              </node>
-            </node>
-            <node concept="3clFbF" id="2dqaY0Ct9V4" role="3cqZAp">
-              <node concept="2OqwBi" id="2dqaY0CtpqC" role="3clFbG">
-                <node concept="10M0yZ" id="7ITB3PTC3Mk" role="2Oq$k0">
-                  <ref role="3cqZAo" to="anz7:~IndexingTestUtil.Companion" resolve="Companion" />
-                  <ref role="1PxDUh" to="anz7:~IndexingTestUtil" resolve="IndexingTestUtil" />
-                </node>
-                <node concept="liA8E" id="2dqaY0Ctv8c" role="2OqNvi">
-                  <ref role="37wK5l" to="anz7:~IndexingTestUtil$Companion.waitUntilIndexesAreReady(com.intellij.openapi.project.Project)" resolve="waitUntilIndexesAreReady" />
-                  <node concept="2OqwBi" id="2dqaY0CtAXz" role="37wK5m">
-                    <node concept="37vLTw" id="2dqaY0CtAX$" role="2Oq$k0">
-                      <ref role="3cqZAo" node="3qbI1lNoBDX" resolve="openedProject" />
-                    </node>
-                    <node concept="liA8E" id="2dqaY0CtAX_" role="2OqNvi">
-                      <ref role="37wK5l" to="z1c4:~MPSProject.getProject()" resolve="getProject" />
-                    </node>
-                  </node>
                 </node>
               </node>
             </node>
@@ -2589,8 +2669,8 @@
           </node>
         </node>
         <node concept="3cpWs6" id="5lulEoOe9fD" role="3cqZAp">
-          <node concept="37vLTw" id="3qbI1lNoBE0" role="3cqZAk">
-            <ref role="3cqZAo" node="3qbI1lNoBDX" resolve="openedProject" />
+          <node concept="37vLTw" id="6WlsyVHYb$h" role="3cqZAk">
+            <ref role="3cqZAo" node="6WlsyVHYb$e" resolve="openedProject" />
           </node>
         </node>
       </node>
@@ -2637,7 +2717,7 @@
             <property role="TrG5h" value="dummyProject" />
             <property role="3TUv4t" value="false" />
             <node concept="1rXfSq" id="2BGPXkEwrlb" role="33vP2m">
-              <ref role="37wK5l" to="79ha:6rx4kZDk5DH" resolve="openProject" />
+              <ref role="37wK5l" node="6WlsyVHWjUM" resolve="openProject" />
               <node concept="37vLTw" id="2BGPXkEwrG7" role="37wK5m">
                 <ref role="3cqZAo" node="1OyTUm35Wcx" resolve="dummyProjectFile" />
               </node>

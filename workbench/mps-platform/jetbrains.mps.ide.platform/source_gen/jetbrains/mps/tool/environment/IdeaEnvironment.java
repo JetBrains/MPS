@@ -20,12 +20,12 @@ import jetbrains.mps.util.FileUtil;
 import com.intellij.testFramework.TestApplicationManager;
 import jetbrains.mps.project.Project;
 import jetbrains.mps.RuntimeFlags;
+import jetbrains.mps.project.MPSProject;
+import com.intellij.testFramework.IndexingTestUtil;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.vfs.newvfs.impl.VfsRootAccess;
 import com.intellij.openapi.vfs.VfsUtil;
-import jetbrains.mps.project.MPSProject;
 import com.intellij.openapi.util.Disposer;
-import com.intellij.testFramework.IndexingTestUtil;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.fileEditor.ex.FileEditorManagerEx;
 import com.intellij.openapi.project.ex.ProjectManagerEx;
@@ -212,6 +212,20 @@ public final class IdeaEnvironment extends EnvironmentBase {
 
   @Override
   @NotNull
+  public Project openProject(@NotNull File projectFile) {
+    Project openedProject = super.openProject(projectFile);
+    boolean testMode = RuntimeFlags.isTestMode();
+    if (testMode) {
+      flushAllEvents();
+      if (openedProject instanceof MPSProject) {
+        IndexingTestUtil.Companion.waitUntilIndexesAreReady(((MPSProject) openedProject).getProject());
+      }
+    }
+    return openedProject;
+  }
+
+  @Override
+  @NotNull
   public Project doOpenProject(@NotNull File projectFile) {
     boolean testMode = RuntimeFlags.isTestMode();
     Disposable disposable0 = null;
@@ -231,8 +245,7 @@ public final class IdeaEnvironment extends EnvironmentBase {
     }
     MPSProject openedProject = openProjectInIdeaEnvironment(projectFile);
     if (testMode) {
-      Disposer.register(openedProject.getProject(), disposable0);
-      IndexingTestUtil.Companion.waitUntilIndexesAreReady(openedProject.getProject());
+      Disposer.register(openedProject, disposable0);
     }
     return openedProject;
   }
