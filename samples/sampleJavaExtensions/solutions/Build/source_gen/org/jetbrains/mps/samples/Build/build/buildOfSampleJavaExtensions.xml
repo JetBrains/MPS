@@ -1119,6 +1119,7 @@
         <fileset file="${artifacts.mps}/lib/intellij.libraries.junit6.vintage.jar" />
         <fileset file="${artifacts.mps}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.mps}/lib/intellij.platform.productMode.jar" />
+        <fileset file="${artifacts.mps}/lib/idea_rt.jar" />
       </classpath>
     </javac>
     <copy todir="${build.tmp}/java/out/org.jetbrains.mps.samples.Constants">
@@ -1555,6 +1556,7 @@
         <fileset file="${artifacts.mps}/lib/intellij.libraries.junit6.vintage.jar" />
         <fileset file="${artifacts.mps}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.mps}/lib/intellij.platform.productMode.jar" />
+        <fileset file="${artifacts.mps}/lib/idea_rt.jar" />
       </classpath>
     </javac>
     <copy todir="${build.tmp}/java/out/org.jetbrains.mps.samples.ParallelFor">
@@ -1986,6 +1988,7 @@
         <fileset file="${artifacts.mps}/lib/intellij.libraries.junit6.vintage.jar" />
         <fileset file="${artifacts.mps}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.mps}/lib/intellij.platform.productMode.jar" />
+        <fileset file="${artifacts.mps}/lib/idea_rt.jar" />
       </classpath>
     </javac>
     <copy todir="${build.tmp}/java/out/org.jetbrains.mps.samples.IfAndUnless">
@@ -2419,6 +2422,7 @@
         <fileset file="${artifacts.mps}/lib/intellij.libraries.junit6.vintage.jar" />
         <fileset file="${artifacts.mps}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.mps}/lib/intellij.platform.productMode.jar" />
+        <fileset file="${artifacts.mps}/lib/idea_rt.jar" />
       </classpath>
     </javac>
     <copy todir="${build.tmp}/java/out/org.jetbrains.mps.samples.Money">
