@@ -574,30 +574,39 @@
       </build>
     </channel>
     <channel id="MPS261EAP" name="MPS 2026.1" status="eap"
-             url="https://www.jetbrains.com/mps/download"
+             url="https://www.jetbrains.com/mps/download/previous.html"
              feedback="http://youtrack.jetbrains.net/issues/MPS"
              majorVersion="2026" minorVersoin="1">
       <build number="261.27258.1085" version="2026.1.2">
         <message>JetBrains MPS 2026.1.2 is now available.</message>
-        <button name="Download" url="https://www.jetbrains.com/mps/download" download="true"/>
+        <button name="Download" url="https://www.jetbrains.com/mps/download/previous.html" download="true"/>
       </build>
     </channel>
     <channel id="MPS261" name="MPS 2026.1" status="release"
-             url="https://www.jetbrains.com/mps/download"
+             url="https://www.jetbrains.com/mps/download/previous.html"
              feedback="http://youtrack.jetbrains.net/issues/MPS"
              majorVersion="2026" minorVersoin="1">
       <build number="261.27258.1085" version="2026.1.2">
         <message>JetBrains MPS 2026.1.2 is now available.</message>
-        <button name="Download" url="https://www.jetbrains.com/mps/download" download="true"/>
+        <button name="Download" url="https://www.jetbrains.com/mps/download/previous.html" download="true"/>
       </build>
     </channel>
     <channel id="MPS262EAP" name="MPS 2026.2" status="eap"
-             url="https://www.jetbrains.com/mps/nextversion"
+             url="https://www.jetbrains.com/mps/download"
              feedback="http://youtrack.jetbrains.net/issues/MPS"
              majorVersion="2026" minorVersoin="2">
-      <build number="262.11879.672" version="2026.2 RC2">
-        <message>JetBrains MPS 2026.2 RC2 is now available.</message>
-        <button name="Download" url="https://www.jetbrains.com/mps/nextversion" download="true"/>
+      <build number="262.11879.701" version="2026.2">
+        <message>JetBrains MPS 2026.2 is now available.</message>
+        <button name="Download" url="https://www.jetbrains.com/mps/download" download="true"/>
+      </build>
+    </channel>
+    <channel id="MPS262" name="MPS 2026.2" status="release"
+             url="https://www.jetbrains.com/mps/download"
+             feedback="http://youtrack.jetbrains.net/issues/MPS"
+             majorVersion="2026" minorVersoin="2">
+      <build number="262.11879.701" version="2026.2">
+        <message>JetBrains MPS 2026.2 is now available.</message>
+        <button name="Download" url="https://www.jetbrains.com/mps/download" download="true"/>
       </build>
     </channel>
   </product>
