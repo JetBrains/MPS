@@ -15,6 +15,7 @@ Core concepts under `jetbrains.mps.lang.editor`:
 | `CellModel_RefCell` | `1088013125922` | Displays a referenced node's property; requires an `InlineEditorComponent`. |
 | `CellModel_Component` | `1078939183254` | Reuses an `EditorComponentDeclaration`; set `editorComponent` reference. See `references/editor-components.md`. |
 | `InlineEditorComponent` | `1088185857835` | Layout for `CellModel_RefCell`. |
+| `CellModel_NextEditor` | `8383079901754291618` | `next applicable editor`: renders the node with the editor that would apply if the current one did not exist; used by hinted decorator editors. See `references/editor-hints/choosing.md`. |
 
 ## Technical Rules
 

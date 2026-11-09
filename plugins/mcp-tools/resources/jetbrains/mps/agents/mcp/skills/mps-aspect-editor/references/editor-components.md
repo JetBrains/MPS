@@ -17,7 +17,7 @@ A component bound (via `conceptDeclaration`) to a concept `C` can be reused from
 
 **Cell ids change.** A cell moved into a component gets a prefixed generated id (`NameCell` → `NC_property_name`), which breaks tests and selections that name the old id; give the cell an explicit `id` to keep it.
 
-**Overriding an inherited component.** To change what an inherited component shows for a sub-concept, possibly from an extending language, declare a component for that sub-concept with `overridenEditorComponent` (sic) → `EditorComponentDeclarationReference{editorComponent}` naming the original. Every `CellModel_Component` that uses the original then renders the override on nodes of the sub-concept. BL `ClassifierMembersAdvanced_Component` (concept `ClassConcept`) overrides `ClassifierMembers_Component`.
+**Overriding an inherited component.** To change what an inherited component shows for a sub-concept, possibly from an extending language, declare a component for that sub-concept with `overridenEditorComponent` (sic) → `EditorComponentDeclarationReference{editorComponent}` naming the original. Every `CellModel_Component` that uses the original then renders the override on nodes of the sub-concept. BL `ClassifierMembersAdvanced_Component` (concept `ClassConcept`) overrides `ClassifierMembers_Component`. An override can also carry editor hints, so it applies only while they are active: `references/editor-hints/declaring.md`.
 
 ## Manual Path (JSON blueprints)
 
