@@ -8,27 +8,27 @@
   <concept fqn="c:f3061a53-9226-4cc5-a443-f952ceaf5816/1070475587102:jetbrains.mps.baseLanguage.structure.SuperConstructorInvocation" />
   <root nodeRef="r:809bd876-c877-4bf5-8f9e-fbd73017df4f(jetbrains.mps.lang.pattern.editorTest@tests)/7233072556140472566">
     <file name="Pattern_sgpsgd_a0a0a.java">
-      <node id="7233072556140486271" at="10,50,11,30" concept="5" />
-      <node id="7233072556140486271" at="11,30,12,0" concept="3" />
-      <node id="7233072556140486271" at="12,0,13,0" concept="3" />
-      <node id="7233072556140486320" at="13,0,14,149" concept="1" />
-      <node id="7233072556140486271" at="10,0,16,0" concept="0" trace="Pattern_sgpsgd_a0a0a#(Lorg/jetbrains/mps/openapi/model/SNode;)V" />
-      <scope id="7233072556140486271" at="10,50,14,149" />
-      <scope id="7233072556140486271" at="10,0,16,0">
-        <var name="patternNode" id="7233072556140486271" />
-      </scope>
-      <unit id="7233072556140486271" at="9,0,18,0" name="jetbrains.mps.lang.pattern.editorTest.Pattern_sgpsgd_a0a0a" />
-    </file>
-    <file name="Pattern_sgpsgd_a0a0a_0.java">
-      <node id="7233072556140479883" at="9,52,10,30" concept="5" />
+      <node id="7233072556140479883" at="9,50,10,30" concept="5" />
       <node id="7233072556140479883" at="10,30,11,0" concept="3" />
       <node id="7233072556140479883" at="11,0,12,0" concept="3" />
-      <node id="7233072556140479883" at="9,0,14,0" concept="0" trace="Pattern_sgpsgd_a0a0a_0#(Lorg/jetbrains/mps/openapi/model/SNode;)V" />
-      <scope id="7233072556140479883" at="9,52,12,0" />
+      <node id="7233072556140479883" at="9,0,14,0" concept="0" trace="Pattern_sgpsgd_a0a0a#(Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <scope id="7233072556140479883" at="9,50,12,0" />
       <scope id="7233072556140479883" at="9,0,14,0">
         <var name="patternNode" id="7233072556140479883" />
       </scope>
-      <unit id="7233072556140479883" at="8,0,16,0" name="jetbrains.mps.lang.pattern.editorTest.Pattern_sgpsgd_a0a0a_0" />
+      <unit id="7233072556140479883" at="8,0,16,0" name="jetbrains.mps.lang.pattern.editorTest.Pattern_sgpsgd_a0a0a" />
+    </file>
+    <file name="Pattern_sgpsgd_a0a0a_0.java">
+      <node id="7233072556140486271" at="10,52,11,30" concept="5" />
+      <node id="7233072556140486271" at="11,30,12,0" concept="3" />
+      <node id="7233072556140486271" at="12,0,13,0" concept="3" />
+      <node id="7233072556140486320" at="13,0,14,149" concept="1" />
+      <node id="7233072556140486271" at="10,0,16,0" concept="0" trace="Pattern_sgpsgd_a0a0a_0#(Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <scope id="7233072556140486271" at="10,52,14,149" />
+      <scope id="7233072556140486271" at="10,0,16,0">
+        <var name="patternNode" id="7233072556140486271" />
+      </scope>
+      <unit id="7233072556140486271" at="9,0,18,0" name="jetbrains.mps.lang.pattern.editorTest.Pattern_sgpsgd_a0a0a_0" />
     </file>
     <file name="Test_CreatePropertyPatternIntention_Test.java">
       <node id="7233072556140472566" at="20,53,21,60" concept="5" />
