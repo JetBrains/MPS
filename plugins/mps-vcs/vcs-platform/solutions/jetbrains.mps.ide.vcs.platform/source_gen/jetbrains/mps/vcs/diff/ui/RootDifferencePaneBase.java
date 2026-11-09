@@ -18,7 +18,6 @@ import jetbrains.mps.vcs.diff.ui.common.TripleChangeGroupLayout;
 import jetbrains.mps.vcs.diff.ui.common.ChangeGroupMessages;
 import jetbrains.mps.internal.collections.runtime.ListSequence;
 import java.util.ArrayList;
-import org.jetbrains.mps.openapi.model.SModel;
 import java.beans.PropertyChangeEvent;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.ui.JBSplitter;
@@ -54,6 +53,7 @@ import jetbrains.mps.vcs.diff.changes.NodeIdChange;
 import jetbrains.mps.vcs.diff.ui.common.DiffSettingsUtil;
 import jetbrains.mps.vcs.diff.changes.SetReferenceChange;
 import jetbrains.mps.vcs.diff.changes.NodeGroupMoveChange;
+import org.jetbrains.mps.openapi.model.SModel;
 import jetbrains.mps.vcs.diff.ui.common.ChangeEditorMessage;
 
 @GeneratedClass(nodeId = "8817948936268058313", model = "r:df1b052a-af27-4b87-80fc-1492fa2192be(jetbrains.mps.vcs.diff.ui)")
@@ -65,23 +65,22 @@ public abstract class RootDifferencePaneBase implements RootDifferencePane, Prop
   private final MPSProject myMpsProject;
   private SNodeId myRootId;
 
-  private List<ChangeGroupLayout> myMainChangeGroupLayouts;
-  private List<ChangeGroupLayout> myInspectorChangeGroupLayouts;
+  private final List<ChangeGroupLayout> myMainChangeGroupLayouts;
+  private final List<ChangeGroupLayout> myInspectorChangeGroupLayouts;
 
   private boolean myIsEditorsSyncEnabled = isEditorsScrollingSyncOptionEnabled();
-  private DiffEditorsGroup myDiffEditorsGroup;
+  private final DiffEditorsGroup myDiffEditorsGroup;
 
   private JPanel myPanel;
   private boolean isInspectorShown = PropertiesComponent.getInstance().getBoolean(PARAM_SHOW_INSPECTOR, INSPECTOR_SHOWN_BY_DEFAULT);
 
   private final List<ModelChangeSet> myChangeSets;
   private final List<ModelChangeSet> myMetadataChangeSets;
-  private final List<ModelSide> myModels;
-  private boolean myIsMetadataView;
+  protected boolean myIsMetadataView;
   private DefaultActionGroup myActionGroup;
   private NextPreviousTraverser myTraverser;
 
-  private DiffEditorSettingsAction mySettingsAction;
+  private final DiffEditorSettingsAction mySettingsAction;
   private TripleChangeGroupLayout myMainLayout;
   private TripleChangeGroupLayout myInspectorLayout;
   protected boolean myDisposed = false;
@@ -93,14 +92,13 @@ public abstract class RootDifferencePaneBase implements RootDifferencePane, Prop
     myRootId = rootId;
     myMpsProject = project;
     assert ListSequence.fromList(models).count() > 1;
-    myModels = models;
     myChangeSets = changeSets;
     myMetadataChangeSets = metadataChangeSets;
     myDiffEditorsGroup = createEditorsGroup(isMetadataView, models);
     myMainChangeGroupLayouts = createChangeGroupLayouts(false);
-    myMainLayout = createTripleLayout(false);
+    myMainLayout = createTripleLayout(myMainChangeGroupLayouts, false);
     myInspectorChangeGroupLayouts = createChangeGroupLayouts(true);
-    myInspectorLayout = createTripleLayout(true);
+    myInspectorLayout = createTripleLayout(myInspectorChangeGroupLayouts, true);
     // FIXME yet another idea what does 'editable' model mean
     final boolean isEditable = ListSequence.fromList(models).getElement(1).notReadOnly();
     if (isEditable) {
@@ -109,10 +107,6 @@ public abstract class RootDifferencePaneBase implements RootDifferencePane, Prop
     myTraverser = new NextPreviousTraverser(myMainChangeGroupLayouts, ListSequence.fromList(getEditors()).getElement(1).getMainEditor());
     mySettingsAction = new DiffEditorSettingsAction(this);
     myActionGroup = createActionGroup(isEditable);
-  }
-
-  protected List<SModel> getModels() {
-    return (myIsMetadataView ? ListSequence.fromList(myModels).select((this0) -> this0.metadata()).toList() : ListSequence.fromList(myModels).select((this0) -> this0.model()).toList());
   }
 
   @Override
@@ -216,10 +210,6 @@ public abstract class RootDifferencePaneBase implements RootDifferencePane, Prop
     return (myIsMetadataView ? myMetadataChangeSets : myChangeSets);
   }
 
-  private TripleChangeGroupLayout getTripleLayout(boolean inspector) {
-    return (inspector ? myInspectorLayout : myMainLayout);
-  }
-
   private class MyDividerPainter implements DiffSplitter.Painter {
 
     private final DiffEditor myLeftEditor;
@@ -232,14 +222,10 @@ public abstract class RootDifferencePaneBase implements RootDifferencePane, Prop
 
     @Override
     public void paint(@NotNull Graphics g, @NotNull JComponent divider) {
-      paintDividerPart(g, divider, false);
+      myMainLayout.paintPolygons(g, divider, myLeftEditor, myRightEditor);
       if (isInspectorShown()) {
-        paintDividerPart(g, divider, true);
+        myInspectorLayout.paintPolygons(g, divider, myLeftEditor, myRightEditor);
       }
-    }
-
-    private void paintDividerPart(@NotNull Graphics g, @NotNull JComponent divider, boolean inspector) {
-      getTripleLayout(inspector).paintPolygons(g, divider, myLeftEditor, myRightEditor);
     }
   }
 
@@ -325,11 +311,11 @@ public abstract class RootDifferencePaneBase implements RootDifferencePane, Prop
   private List<ChangeGroupLayout> createChangeGroupLayouts(boolean inspector) {
     List<ChangeGroupLayout> layouts = ListSequence.fromList(new ArrayList<ChangeGroupLayout>());
     DiffEditor leftEditor = null;
-    List<DiffEditor> editors = getEditors();
+    final List<DiffEditor> editors = getEditors();
     List<ModelChangeSet> changeSets = getChangeSets();
     assert ListSequence.fromList(editors).count() == ListSequence.fromList(changeSets).count() + 1;
     Iterator<ModelChangeSet> changeSetsIt = ListSequence.fromList(changeSets).iterator();
-    for (DiffEditor editor : ListSequence.fromList(getEditors())) {
+    for (DiffEditor editor : ListSequence.fromList(editors)) {
       if (leftEditor != null) {
         assert changeSetsIt.hasNext();
         ChangeSet changeSet = changeSetsIt.next();
@@ -351,19 +337,15 @@ public abstract class RootDifferencePaneBase implements RootDifferencePane, Prop
     return layouts;
   }
 
-  private TripleChangeGroupLayout createTripleLayout(boolean inspector) {
-    DiffChangeGroupLayout leftLayout = (DiffChangeGroupLayout) ListSequence.fromList(getLayouts(inspector)).getElement(0);
-    DiffChangeGroupLayout rightLayout = (ListSequence.fromList(getLayouts(inspector)).count() > 1 ? (DiffChangeGroupLayout) ListSequence.fromList(getLayouts(inspector)).getElement(1) : null);
+  private static TripleChangeGroupLayout createTripleLayout(@NotNull List<ChangeGroupLayout> layouts, boolean inspector) {
+    DiffChangeGroupLayout leftLayout = (DiffChangeGroupLayout) ListSequence.fromList(layouts).getElement(0);
+    DiffChangeGroupLayout rightLayout = (ListSequence.fromList(layouts).count() > 1 ? (DiffChangeGroupLayout) ListSequence.fromList(layouts).getElement(1) : null);
     return new TripleChangeGroupLayout(leftLayout, rightLayout, inspector);
   }
 
-  protected List<ChangeGroupLayout> getLayouts(boolean inspector) {
-    return (inspector ? myInspectorChangeGroupLayouts : myMainChangeGroupLayouts);
-  }
-
   private void addButtons() {
-    ListSequence.fromList(getLayouts(false)).where(new NotNullWhereFilter()).visitAll((final ChangeGroupLayout layout) -> ListSequence.fromList(getEditors()).visitAll((editor) -> DiffButtonsPainter.addTo(RootDifferencePaneBase.this, editor, layout, false)));
-    ListSequence.fromList(getLayouts(true)).where(new NotNullWhereFilter()).visitAll((final ChangeGroupLayout layout) -> ListSequence.fromList(getEditors()).visitAll((editor) -> DiffButtonsPainter.addTo(RootDifferencePaneBase.this, editor, layout, true)));
+    ListSequence.fromList(myMainChangeGroupLayouts).where(new NotNullWhereFilter()).visitAll((final ChangeGroupLayout layout) -> ListSequence.fromList(getEditors()).visitAll((editor) -> DiffButtonsPainter.addTo(RootDifferencePaneBase.this, editor, layout, false)));
+    ListSequence.fromList(myInspectorChangeGroupLayouts).where(new NotNullWhereFilter()).visitAll((final ChangeGroupLayout layout) -> ListSequence.fromList(getEditors()).visitAll((editor) -> DiffButtonsPainter.addTo(RootDifferencePaneBase.this, editor, layout, true)));
   }
 
   protected abstract DiffChangeGroupLayout.SplitterRepainter getSplitterRepainter(DiffEditor leftEditor, DiffEditor rightEditor);
@@ -418,7 +400,7 @@ public abstract class RootDifferencePaneBase implements RootDifferencePane, Prop
   }
 
   protected void invalidateLayouts() {
-    ListSequence.fromList(getLayouts(false)).concat(ListSequence.fromList(getLayouts(true))).where(new NotNullWhereFilter()).visitAll((b) -> b.invalidate());
+    ListSequence.fromList(myMainChangeGroupLayouts).concat(ListSequence.fromList(myInspectorChangeGroupLayouts)).where(new NotNullWhereFilter()).visitAll((b) -> b.invalidate());
   }
 
   public void repaintAndRebuildEditorMessages() {
@@ -458,6 +440,6 @@ public abstract class RootDifferencePaneBase implements RootDifferencePane, Prop
   }
 
   protected void updateLayouts() {
-    ListSequence.fromList(getLayouts(false)).concat(ListSequence.fromList(getLayouts(true))).where(new NotNullWhereFilter()).select((it) -> (DiffChangeGroupLayout) it).visitAll((it) -> it.setChangeSet(getChangeSet(it.getDiffEditor(true), it.getDiffEditor(false))));
+    ListSequence.fromList(myMainChangeGroupLayouts).concat(ListSequence.fromList(myInspectorChangeGroupLayouts)).where(new NotNullWhereFilter()).select((it) -> (DiffChangeGroupLayout) it).visitAll((it) -> it.setChangeSet(getChangeSet(it.getDiffEditor(true), it.getDiffEditor(false))));
   }
 }

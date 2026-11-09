@@ -10,8 +10,8 @@ import jetbrains.mps.vcs.diff.ModelChangeSet;
 import org.jetbrains.annotations.NotNull;
 import com.intellij.diff.requests.ContentDiffRequest;
 import com.intellij.diff.FrameDiffTool;
-import com.intellij.ui.JBSplitter;
 import jetbrains.mps.internal.collections.runtime.ListSequence;
+import com.intellij.ui.JBSplitter;
 import com.intellij.diff.tools.util.side.TwosideContentPanel;
 import com.intellij.diff.util.DiffUtil;
 import jetbrains.mps.vcs.diff.ChangeSet;
@@ -24,9 +24,14 @@ import jetbrains.mps.vcs.diff.changes.ModelChange;
 
 @GeneratedClass(nodeId = "5939348756325699563", model = "r:df1b052a-af27-4b87-80fc-1492fa2192be(jetbrains.mps.vcs.diff.ui)")
 /*package*/ final class TwoSideRootDifferencePane extends RootDifferencePaneBase {
+  private final ModelSide myLeft;
+  private final ModelSide myRight;
 
   /*package*/ TwoSideRootDifferencePane(MPSProject project, SNodeId rootId, boolean isMetadataView, List<ModelSide> models, List<ModelChangeSet> changeSets, List<ModelChangeSet> metadataChangeSets, @NotNull ContentDiffRequest request, @NotNull FrameDiffTool.DiffViewer diffViewer) {
     super(project, rootId, isMetadataView, models, changeSets, metadataChangeSets);
+
+    myLeft = ListSequence.fromList(models).getElement(0);
+    myRight = ListSequence.fromList(models).getElement(1);
 
     List<JBSplitter> splitters = ListSequence.fromList(getEditors()).select((it) -> it.getSplitter()).toList();
     TwosideContentPanel panel = new TwosideContentPanel(splitters);
@@ -54,11 +59,11 @@ import jetbrains.mps.vcs.diff.changes.ModelChange;
   }
 
   private SModel getOldModel() {
-    return ListSequence.fromList(getModels()).getElement(0);
+    return (myIsMetadataView ? myLeft.metadata() : myLeft.model());
   }
 
   private SModel getNewModel() {
-    return ListSequence.fromList(getModels()).getElement(1);
+    return (myIsMetadataView ? myRight.metadata() : myRight.model());
   }
 
   @Override
