@@ -1,4 +1,4 @@
-# Coverage matrix — editor cells S30–S35 (revision 3, reviewed 2026-11-01)
+# Coverage matrix — editor cells S30–S35 and S38a/S38b (revision 4 + hints sub-matrix, 2026-11-09)
 
 Revision 4 (2026-11-01, after rehearsal 1 of S30 and S32 and a pre-rehearsal audit of S31, S33–S35): an F idiom is
 forced by the prompt's visible behaviour; where another correct mechanism meets the prompt, the row is F\*.
@@ -42,17 +42,44 @@ prefix tests): [`editor-shared-criteria.md`](editor-shared-criteria.md).
 | Tests: `runWithTwoStepDeletion` true / false; `nodeRangeSelectionStart/End` | | | F false | | F range (R6) | | | F both | |
 | Tests: red run before the fix; shipped tests kept green; Same-root paste; Deprecated anywhere → FAIL | | | | F | F shipped | F shipped | F shipped | F red | F |
 
+## Editor hints sub-matrix (S38a, S38b; legend as above, k = prompt knowledge only)
+
+| Topic (concept / role / behaviour) | S38a Compact | S38b Review |
+|---|---|---|
+| `ConceptEditorContextHints`; `presentation`; `showInUI` true / false | F / F | F / X |
+| Hint string vs `concept editor hint/x/` in code | r | r |
+| Hinted `ConceptEditorDeclaration` + `inspectedCellModel` | F | F |
+| Hinted `EditorComponentDeclaration` override with `conceptDeclaration` (Δ1) | | F |
+| Editors from an extending language; default-editor rule (checker → Clean); IDE offer rule (sandbox uses the extension) | | F; r; F |
+| Fallback to the default editor | F | F |
+| Super-concept hinted editor beats sub-concept defaults | | F (`Member`) |
+| Sub-concept opt-out; `removeHints`; next-editor landing rule | | F |
+| `CellModel_NextEditor` decorator; next editor in an inspected layout | | F; F |
+| Cell-tree inheritance (flag → members; Inspector hint → nested reference; nested parentheses) | F | F |
+| Inspector under hints (book-driven; pushed) | F | F (walk 7) |
+| Fixed `addHints` (`ExplicitHintsSpecification`) / computed (`QueryHintsSpecification`) | F / F | X / X |
+| Several hints on one editor (AND); most hints wins; cross-concept tie (nearest); same-concept tie (class name, logged) | | F; F; F; F |
+| Hint of another language referenced through a model import | | F |
+| Per-editor push in tests (`setInitialEditorHints`, no dialog); asserting the rendering editor (labels, `findNodeCell`; caret ids shared, Δ2) | F | F |
+| Project-wide setting; an editor's own choice wins | k | k |
+| Explicit node hints from an intention via the `Updater`; toggle without `clearExplicitHints` (survival test) | F | |
+| Tests: red run first; shipped tests kept; `invoke intention` on the caret node | F; F; F | F; F; |
+
 ## Out of scope or recorded only, with the reason
 
 - `CellModel_Alternation` (indistinguishable from two conditions, undocumented); `CopyPreProcessor`
   (every visible effect is a post-processor's too; recorded); `CellLayout_Horizontal/_Vertical/_Flow/
-  _Table/_VerticalGrid/_Superscript`, braces, folding, editor hints (not observable headless);
-  `CellModel_JComponent/_Image/_Error/_Block/_Indent/_NextEditor/_Custom/_TransactionalProperty/_URL`
+  _Table/_VerticalGrid/_Superscript`, braces, folding (not observable headless);
+  `CellModel_JComponent/_Image/_Error/_Block/_Indent/_Custom/_TransactionalProperty/_URL`
   (niche); `CellModel_AttributedNodeCell` (needs an attributes cell); `TransformationLocation_ContextActionsTool`;
   `TransformationMenuPart_SubMenu/_PropertyMenu/_ReferenceMenu`, menu adapters, `SubstituteMenuPart_Group/
   _Concepts/_Parameterized/_Wrapper`, `_DefaultWithFunction` (variants; `_SubMenu`/`_Wrapper` X in Kaja);
   `CompletionStyling`; other legacy parts; reference-presentation cells; `left_/right_transform_action_id`,
-  `localize_action_id`, `CellActionMapImport`, `FocusPolicy`, `Padding*`, `showInPopup`, `invoke intention`: recorded.
+  `localize_action_id`, `CellActionMapImport`, `FocusPolicy`, `Padding*`, `showInPopup`: recorded (`invoke intention`: S38a).
+  Editor hints: see the sub-matrix below; recorded only there: a hinted override narrowed to a sub-concept, the hinted
+  non-override pitfall ("editor component not found"), the IDE offer scope beyond the used languages (extended / employed),
+  duplicate hint sets, an intention on a non-caret node, the project-wide Settings page (knowledge only, observer decision
+  O2: a leaked hint reddens shipped tests).
 - The production path "type a prefix, the menu pops up, Enter" (B2): completion never auto-pops in tests,
   so the cells test a prefix through `Complete`.
 
@@ -65,13 +92,15 @@ prefix tests): [`editor-shared-criteria.md`](editor-shared-criteria.md).
 | S34 | `alerts2-broken` | recipe in [`../../fixtures/inputs/s34/FIXTURE.md`](../../fixtures/inputs/s34/FIXTURE.md) |
 | S32 | `recipes-editor` | recipe in [`../../fixtures/inputs/s32/FIXTURE.md`](../../fixtures/inputs/s32/FIXTURE.md) |
 | S35 | `kaja-editor` | recipe in [`../../fixtures/inputs/s35/FIXTURE.md`](../../fixtures/inputs/s35/FIXTURE.md) |
+| S38a | `alerts2` | recipe in [`../../fixtures/inputs/s31/FIXTURE.md`](../../fixtures/inputs/s31/FIXTURE.md) |
+| S38b | `alerts2-compact` | recipe in [`../../fixtures/inputs/s38b/FIXTURE.md`](../../fixtures/inputs/s38b/FIXTURE.md) (H1-opus-2 scratch, audited) |
 
 Every recipe runs through MPS MCP only, is logged to `fixtures/inputs/s3x/FIXTURE.log`, pins ids in
 `FIXTURE.md`, excludes the doc surface and `.mps/workspace.xml`, includes `classes_gen`, records the
-sha256 in `../../fixtures/pins.md`. Isolation: `alerts2*` share the `mcp.study.alerts` ids (restart
-between S31/S33/S34, one copy open); `recipes-editor` joins `recipes*`; `kaja-editor` shares the Kaja ids
+sha256 in `../../fixtures/pins.md`. Isolation: `alerts2*` (now also `alerts2-compact`) share the `mcp.study.alerts` ids
+(restart between S31/S33/S34/S38a/S38b, one copy open, never next to the live H1-opus-2 scratch); `recipes-editor` joins `recipes*`; `kaja-editor` shares the Kaja ids
 of `kaja-dataflow*` (restart before and after S35). Sizes (opus min, E1 = 21): S30 45–60, S31 40–55,
-S32 30–40, S33 35–45, S34 30–40, S35 30–45.
+S32 30–40, S33 35–45, S34 30–40, S35 30–45, S38a 140–180, S38b 130–160.
 
 Chords: `Ctrl+Alt+Shift+K/G/Y` (S31/S33/S34), `modifiers` exactly `ctrl+alt+shift`. Rechecked 2026-11-01
 over `lib/app.jar!keymaps/$default.xml`, every action XML in `lib/*.jar` and `plugins/*/lib/*.jar`
@@ -86,7 +115,8 @@ spelled `ctrl alt shift d` in `intellij.grid.impl.xml` and `MPSPlugin.xml`). Fre
 - Planned `families.py` additions — **not yet implemented in `scripts/families.py`**: rehearsals count them by hand
   (observer-counted); implementing them is a follow-up, not a gate. `ED_deprecated_menu_writes`, `ED_menu_prints_before_write`, `ED_cell_id_writes`,
   `ED_default_reinclude_writes`, `ET_two_step_true_writes`, `ET_chooser_asserts`, `ET_assistant_asserts`,
-  `ET_cross_model_paste` (must be 0). Extractors must count across the whole `@tests` model, helper class roots
+  `ET_cross_model_paste` (must be 0), `EH_hinted_editor_writes`, `EH_push_in_tests` (≥ 1), `EH_dialog_actions` (must be 0),
+  `EH_clear_explicit_hints` (must be 0, S38a), `EH_remove_hints_writes` (≥ 1, S38b). Extractors must count across the whole `@tests` model, helper class roots
   included (S35-opus-1 kept every assert in a helper root). Existing columns: `ET_*`, `D_skill_reads`, `X_outside_project`, `G_errors`.
 - **R2** UI effects: structural gates + text tests. **R3** `ModelAccess` commits per keystroke (walk).
   **R6** node range never driven through MCP. **R7** `everyModel` node vs ancestor (both accepted); chords
@@ -98,10 +128,15 @@ spelled `ctrl alt shift d` in `intellij.grid.impl.xml` and `MPSPlugin.xml`). Fre
   wording. **R18** a post-processor stops recursion into its subtree (document in `paste-and-copy.md`).
 - **GP rows to document before freezing** (else they score doc gaps): `CellModel_ModelAccess`,
   `MatchingLabelStyleClassItem`, `separatorText`, query-driven styling, `overridenEditorComponent`,
-  postfix hints, the used-language rule for contributions, Enter in the factory trigger table.
+  postfix hints, the used-language rule for contributions, Enter in the factory trigger table. None new for S38a/S38b:
+  every forced hint topic is documented in `editor-hints/*.md` and `hinted-editors.md` since 2026-11-09; the
+  project-setting test recipe stays undocumented on purpose (O2).
 
 ## Observer walk before freezing
 
 S30 3a/3b/3d; S31 items 1, 4 (live chord), 5, 7; S32 items 2–4; S33 item 3 + `$Undo`, item 4 live chord and
 `everyModel` from a channel; S34 each defect reddens exactly its test, D-E checker-silent, G-on's approved
-cell differs between D-F and the fix; S35 items 1–3 and the alias-cell LEFT hint.
+cell differs between D-F and the fix; S35 items 1–3 and the alias-cell LEFT hint; S38a 3 (second hint reaches a nested reference in the Inspector), 5 (survival test,
+list_node_intentions); S38b 7 (caret in the main editor, push both hints, rebuild, read getInspector(); on a stale Inspector
+fix hinted-editors.md and keep the assertion), 6 (the same-concept tie without the two-hint Threshold editor; idea.log line),
+3+6 (landing without removeHints), exact label joins.

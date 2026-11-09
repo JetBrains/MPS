@@ -63,4 +63,5 @@ Other reports:
 - [`observations.md`](observations.md) — running notebook, not a round file
 - [`assessments/dataflow-exposure.md`](assessments/dataflow-exposure.md)
 - [`assessments/editor-dynamics.md`](assessments/editor-dynamics.md) — editor-dynamics probe E1–E4, skill correction, S30–S35 origin, opus and sonnet rehearsal, test-first rule (2026-11-01)
+- [`assessments/editor-hints.md`](assessments/editor-hints.md) — editor-hints probe H1–H3, the new hints references, S38a/S38b origin, walks and opus rehearsal (2026-11-09)
 - [`audits/2026-10-23-consistency.md`](audits/2026-10-23-consistency.md)
