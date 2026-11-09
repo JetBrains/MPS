@@ -17,15 +17,14 @@ import jetbrains.mps.vcs.diff.ui.common.TripleChangeGroupLayout;
 import jetbrains.mps.vcs.diff.ui.common.ChangeGroupMessages;
 import jetbrains.mps.internal.collections.runtime.ListSequence;
 import java.util.ArrayList;
-import jetbrains.mps.baseLanguage.tuples.runtime.Tuples;
-import org.jetbrains.mps.openapi.model.SModel;
+import jetbrains.mps.vcs.diff.ui.common.DiffEditor;
 import jetbrains.mps.vcs.diff.ModelChangeSet;
+import com.intellij.openapi.ui.Splitter;
+import org.jetbrains.mps.openapi.model.SModel;
 import jetbrains.mps.smodel.SModelOperations;
 import java.beans.PropertyChangeEvent;
-import com.intellij.openapi.ui.Splitter;
 import com.intellij.ui.JBSplitter;
 import com.intellij.diff.tools.util.DiffSplitter;
-import jetbrains.mps.vcs.diff.ui.common.DiffEditor;
 import org.jetbrains.annotations.NotNull;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.IslandsState;
@@ -85,20 +84,29 @@ public abstract class RootDifferencePaneBase implements RootDifferencePane, Prop
   protected boolean myDisposed = false;
   private final List<ChangeGroupMessages> myGutterMessagesRebuilders = ListSequence.fromList(new ArrayList<ChangeGroupMessages>());
 
-  public RootDifferencePaneBase(MPSProject project, SNodeId rootId, List<Tuples._2<SModel, String>> models, List<ModelChangeSet> changeSets) {
-    myRootId = rootId;
+  public RootDifferencePaneBase(MPSProject project, List<DiffEditor> editors, List<ModelChangeSet> changeSets) {
     myMpsProject = project;
-    assert ListSequence.fromList(models).count() > 1;
+    assert ListSequence.fromList(editors).count() > 1;
     // DiffEditor combines node editor + inspector; but ChangeGroupLayouts are tracked independently for the node and its inspector,
     // which makes this code confusing - 2 or 3 editors in a group; a group of "main" changes, a group of "inspector" changes 
     // PLUS two "triple" layouts, that hold these groups of main and inspector changes
-    myDiffEditorsGroup = createEditorsGroup(models);
+
+    myDiffEditorsGroup = new DiffEditorsGroup(myIsEditorsSyncEnabled);
+    for (DiffEditor editor : ListSequence.fromList(editors)) {
+      // XXX perhaps, these could be part of DiffEditorGroup.add()?
+      editor.showInspector(isInspectorShown());
+      editor.getSplitter().setSplitterProportionKey(PARAM_INSPECTOR_SPLITTER_POSITION);
+      // XXX indeed not very nice to put this as listener
+      editor.getSplitter().addPropertyChangeListener(Splitter.PROP_PROPORTION, this);
+      myDiffEditorsGroup.add(editor);
+    }
+
     myMainChangeGroupLayouts = createChangeGroupLayouts(myDiffEditorsGroup.getEditors(), changeSets, false);
     myMainLayout = createTripleLayout(myMainChangeGroupLayouts, false);
     myInspectorChangeGroupLayouts = createChangeGroupLayouts(myDiffEditorsGroup.getEditors(), changeSets, true);
     myInspectorLayout = createTripleLayout(myInspectorChangeGroupLayouts, true);
     // FIXME yet another idea what does 'editable' model mean. Now, back inlined ModelSide.notReadOnly()
-    SModel mm = ListSequence.fromList(models).getElement(1)._0();
+    SModel mm = ListSequence.fromList(editors).getElement(1).getModel();
     final boolean isEditable = mm != null && !(SModelOperations.isReadOnly(mm));
     if (isEditable) {
       addButtons();
@@ -342,7 +350,7 @@ public abstract class RootDifferencePaneBase implements RootDifferencePane, Prop
     if (changeSet == null) {
       return Sequence.fromIterable(Collections.<ModelChange>emptyList());
     }
-    return Sequence.fromIterable(changeSet.getChangesForNode(myRootId)).where((change) -> changeIsVisible(change));
+    return Sequence.fromIterable(changeSet.getChangesForNode(getRootId())).where((change) -> changeIsVisible(change));
   }
 
   protected boolean changeIsVisible(ModelChange change) {
@@ -395,27 +403,11 @@ public abstract class RootDifferencePaneBase implements RootDifferencePane, Prop
     ListSequence.fromList(getEditors()).visitAll((it) -> it.repaintAndRebuildEditorMessages());
   }
 
-  private DiffEditorsGroup createEditorsGroup(List<Tuples._2<SModel, String>> models) {
-    // FIXME bad code. depends on fields already set in cons; calls other methods for still not completely initialized object; pass this elsewhere
-    //      and creates a group once despite myIsMetadataView could change in setRootId()
-    DiffEditorsGroup group = new DiffEditorsGroup(myIsEditorsSyncEnabled);
-    for (int index = 0; index < ListSequence.fromList(models).count(); index++) {
-      Tuples._2<SModel, String> pair = ListSequence.fromList(models).getElement(index);
-      // the first editor (index==0) should have left scrollbar and gutter
-      // it is only possible to edit second model (index==1) if it is not read only itself
-      DiffEditor editor = new DiffEditor(getMpsProject(), pair._0(), myRootId, pair._1(), index == 0, index != 1, isInspectorShown());
-      editor.getSplitter().setSplitterProportionKey(PARAM_INSPECTOR_SPLITTER_POSITION);
-      editor.getSplitter().addPropertyChangeListener(Splitter.PROP_PROPORTION, this);
-      group.add(editor);
-    }
-    return group;
-  }
-
   protected MPSProject getMpsProject() {
     return myMpsProject;
   }
 
-  protected boolean isInspectorShown() {
+  protected final boolean isInspectorShown() {
     return isInspectorShown;
   }
 

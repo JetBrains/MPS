@@ -4,12 +4,10 @@ package jetbrains.mps.vcs.diff.ui;
 
 import jetbrains.mps.annotations.GeneratedClass;
 import jetbrains.mps.vcs.diff.merge.ChangeConflictsBuilder;
-import org.jetbrains.mps.openapi.model.SModel;
+import jetbrains.mps.vcs.diff.ui.common.DiffEditor;
 import jetbrains.mps.vcs.diff.ModelChangeSet;
 import jetbrains.mps.project.MPSProject;
-import org.jetbrains.mps.openapi.model.SNodeId;
 import java.util.List;
-import jetbrains.mps.baseLanguage.tuples.runtime.Tuples;
 import org.jetbrains.annotations.NotNull;
 import com.intellij.diff.requests.ContentDiffRequest;
 import com.intellij.diff.FrameDiffTool;
@@ -28,8 +26,9 @@ import jetbrains.mps.vcs.diff.merge.MergeConflictsBuilder;
 import jetbrains.mps.internal.collections.runtime.LinkedListSequence;
 import java.util.LinkedList;
 import jetbrains.mps.internal.collections.runtime.NotNullWhereFilter;
-import jetbrains.mps.vcs.diff.ui.common.DiffEditor;
+import org.jetbrains.mps.openapi.model.SNodeId;
 import jetbrains.mps.vcs.diff.ChangeSetBuilder;
+import org.jetbrains.mps.openapi.model.SModel;
 import jetbrains.mps.internal.collections.runtime.Sequence;
 import jetbrains.mps.vcs.diff.ui.common.DiffChangeGroupLayout;
 
@@ -37,17 +36,17 @@ import jetbrains.mps.vcs.diff.ui.common.DiffChangeGroupLayout;
 /*package*/ final class ThreeSideRootDifferencePane extends RootDifferencePaneBase {
 
   private ChangeConflictsBuilder myConflictsBuilder;
-  private final SModel myLeft;
-  private final SModel myCentral;
-  private final SModel myRight;
+  private final DiffEditor myLeft;
+  private final DiffEditor myCentral;
+  private final DiffEditor myRight;
   private final ModelChangeSet myLeftChange;
   private final ModelChangeSet myRightChange;
 
-  /*package*/ ThreeSideRootDifferencePane(MPSProject mpsProject, SNodeId rootId, List<Tuples._2<SModel, String>> models, List<ModelChangeSet> changeSets, @NotNull ContentDiffRequest request, @NotNull FrameDiffTool.DiffViewer diffViewer) {
-    super(mpsProject, rootId, models, changeSets);
-    myLeft = ListSequence.fromList(models).getElement(0)._0();
-    myCentral = ListSequence.fromList(models).getElement(1)._0();
-    myRight = ListSequence.fromList(models).getElement(2)._0();
+  /*package*/ ThreeSideRootDifferencePane(MPSProject mpsProject, List<DiffEditor> editors, List<ModelChangeSet> changeSets, @NotNull ContentDiffRequest request, @NotNull FrameDiffTool.DiffViewer diffViewer) {
+    super(mpsProject, editors, changeSets);
+    myLeft = ListSequence.fromList(editors).getElement(0);
+    myCentral = ListSequence.fromList(editors).getElement(1);
+    myRight = ListSequence.fromList(editors).getElement(2);
     myLeftChange = ListSequence.fromList(changeSets).getElement(0);
     myRightChange = ListSequence.fromList(changeSets).getElement(1);
 
@@ -78,22 +77,22 @@ import jetbrains.mps.vcs.diff.ui.common.DiffChangeGroupLayout;
     return LinkedListSequence.fromLinkedListNew(LinkedListSequence.fromListAndArray(new LinkedList<>(), getMyChangeSet(), getRepoChangeSet())).where(new NotNullWhereFilter()).translate((it) -> it.getChangesForRoot(getRootId()));
   }
   private DiffEditor getMyEditor() {
-    return ListSequence.fromList(getEditors()).getElement(0);
+    return myLeft;
   }
 
   private DiffEditor getBaseEditor() {
-    return ListSequence.fromList(getEditors()).getElement(1);
+    return myCentral;
   }
 
   private DiffEditor getRepoEditor() {
-    return ListSequence.fromList(getEditors()).getElement(2);
+    return myRight;
   }
 
   @Override
   public void editRootId(SNodeId rootId) {
-    getMyEditor().editRoot(rootId, getMyModel());
-    getBaseEditor().editRoot(rootId, getBaseModel());
-    getRepoEditor().editRoot(rootId, getRepoModel());
+    getMyEditor().editRoot(rootId);
+    getBaseEditor().editRoot(rootId);
+    getRepoEditor().editRoot(rootId);
   }
 
   @Override
@@ -118,7 +117,7 @@ import jetbrains.mps.vcs.diff.ui.common.DiffChangeGroupLayout;
     ListSequence.fromList(getEditors()).visitAll((it) -> it.unhighlightAllChanges());
 
     if (getBaseEditor().getEditedNode() == null) {
-      getBaseEditor().editRoot(getRootId(), getBaseModel());
+      getBaseEditor().editRoot(getRootId());
     }
     getBaseEditor().getMainEditor().rebuildEditorContent();
     highlightAllChanges();
@@ -132,15 +131,15 @@ import jetbrains.mps.vcs.diff.ui.common.DiffChangeGroupLayout;
   }
 
   private SModel getMyModel() {
-    return myLeft;
+    return myLeft.getModel();
   }
 
   private SModel getBaseModel() {
-    return myCentral;
+    return myCentral.getModel();
   }
 
   private SModel getRepoModel() {
-    return myRight;
+    return myRight.getModel();
   }
 
   @Override

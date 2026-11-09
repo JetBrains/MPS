@@ -12,18 +12,18 @@ import java.util.List;
 import jetbrains.mps.internal.collections.runtime.MapSequence;
 import java.util.HashMap;
 import jetbrains.mps.project.MPSProject;
+import org.jetbrains.mps.openapi.model.SModel;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.mps.openapi.model.SModel;
 import org.jetbrains.mps.openapi.model.SNodeId;
 import org.jetbrains.mps.openapi.module.SRepository;
 import jetbrains.mps.internal.collections.runtime.Sequence;
 import jetbrains.mps.openapi.editor.extensions.EditorExtensionUtil;
-import org.jetbrains.mps.openapi.model.SNode;
 import java.awt.Dimension;
 import com.intellij.openapi.editor.colors.EditorColorsManager;
 import javax.swing.JPanel;
+import org.jetbrains.mps.openapi.model.SNode;
 import org.jetbrains.annotations.NotNull;
 import jetbrains.mps.nodeEditor.inspector.InspectorEditorComponent;
 import jetbrains.mps.nodeEditor.EditorComponent;
@@ -59,13 +59,21 @@ public class DiffEditor implements EditorMessageOwner {
   private final Map<ModelChange, List<ChangeEditorMessage>> myChangeToMessages = MapSequence.fromMap(new HashMap<ModelChange, List<ChangeEditorMessage>>());
   private final MPSProject myMpsProject;
   private final boolean myRightToLeft;
+  private SModel myModel;
   private final JLabel myFailedToLoadModelPanel = new JLabel("Failed to load model", SwingConstants.CENTER);
 
 
-  public DiffEditor(final MPSProject project, @Nullable SModel model, @Nullable SNodeId nodeId, String contentTitle, boolean rightToLeft, boolean readOnly, boolean isInspectorShown) {
+  public DiffEditor(MPSProject project, @Nullable SModel model, @Nullable SNodeId nodeId, String contentTitle, boolean rightToLeft, boolean readOnly, boolean isInspectorShown) {
+    this(project, model, contentTitle, rightToLeft, readOnly);
+    showInspector(isInspectorShown);
+    editRoot(nodeId);
+  }
+
+  public DiffEditor(final MPSProject project, @Nullable SModel model, String contentTitle, boolean rightToLeft, boolean readOnly) {
     myMpsProject = project;
     myRightToLeft = rightToLeft;
-    myIsInspectorShown = isInspectorShown;
+    // XXX to become final
+    myModel = model;
     // FIXME provisional fix for MPS-38868, with metamodel change nodes residing in own repo, can't rely on project repo
     //      however, would like to get back here and ensure repository is more explicit
     final SRepository repo4EC;
@@ -84,10 +92,6 @@ public class DiffEditor implements EditorMessageOwner {
     myInspectorComponent = new MyInspectorEditorComponent(repo4EC, rightToLeft, readOnly);
     Sequence.fromIterable(getEditorComponents()).visitAll((ec) -> EditorExtensionUtil.extendUsingProject(ec, project));
 
-    if (model != null) {
-      SNode node = (model == null || nodeId == null ? null : model.getNode(nodeId));
-      myMainEditorComponent.editNode(node);
-    }
     myInspectorComponent.getExternalComponent().setPreferredSize(new Dimension());
     Sequence.fromIterable(getEditorComponents()).visitAll((ec) -> ec.getLeftEditorHighlighter().setDefaultPaintersEnabled(false));
 
@@ -96,9 +100,6 @@ public class DiffEditor implements EditorMessageOwner {
     myFailedToLoadModelPanel.setBackground(EditorColorsManager.getInstance().getSchemeForCurrentUITheme().getDefaultBackground());
     myFailedToLoadModelPanel.setOpaque(true);
     myPanel.setFirstComponent((model != null ? getTopComponent() : myFailedToLoadModelPanel));
-    if (isInspectorShown) {
-      myPanel.setSecondComponent(getBottomComponent());
-    }
   }
 
   /*package*/ boolean isRightToLeft() {
@@ -109,11 +110,19 @@ public class DiffEditor implements EditorMessageOwner {
     return myPanel;
   }
 
-  public JBSplitter getSplitter() {
-    return (JBSplitter) getPanel();
+  /**
+   * model this editor has been associated with
+   */
+  @Nullable
+  public SModel getModel() {
+    return myModel;
   }
 
-  public void showInspector(boolean show) {
+  public JBSplitter getSplitter() {
+    return myPanel;
+  }
+
+  public final void showInspector(boolean show) {
     if (myIsInspectorShown == show) {
       return;
     }
@@ -129,7 +138,25 @@ public class DiffEditor implements EditorMessageOwner {
     return getMainEditor().getEditedNode();
   }
 
+  public final void editRoot(@Nullable SNodeId rootId) {
+    SNode root;
+    if (rootId == null || myModel == null) {
+      root = null;
+    } else {
+      root = myModel.getNode(rootId);
+    }
+    getMainEditor().editNode(root);
+  }
+
+  /**
+   * editRoot/editNode?! Do I care to keep both and to path model, too?!
+   * few uses in MergeRootsPane, delete.
+   * 
+   * @deprecated model is passed once, when editor is created
+   */
+  @Deprecated
   public void editRoot(@Nullable SNodeId rootId, @Nullable SModel model) {
+    myModel = model;
     if (model == null) {
       myPanel.setFirstComponent(myFailedToLoadModelPanel);
       return;
@@ -139,7 +166,12 @@ public class DiffEditor implements EditorMessageOwner {
     getMainEditor().editNode(root);
   }
 
+  /**
+   * this one even worse, with AE
+   */
+  @Deprecated
   public void editNode(@NotNull SNodeId nodeId, @NotNull SModel model) {
+    myModel = model;
     SNode node = model.getNode(nodeId);
     assert node != null;
     getMainEditor().editNode(node);
@@ -238,7 +270,7 @@ public class DiffEditor implements EditorMessageOwner {
     return (inspector ? myInspectorComponent.getScrollPane() : myMainEditorComponent.getScrollPane());
   }
 
-  public final class MyInspectorEditorComponent extends InspectorEditorComponent {
+  public static final class MyInspectorEditorComponent extends InspectorEditorComponent {
 
     public MyInspectorEditorComponent(@NotNull SRepository repository, boolean rightToLeft, boolean readOnly) {
       super(repository, new EditorConfigurationBuilder().rightToLeft(rightToLeft).showSelectionLine(false).readOnly(readOnly).showLightBulb(false).build());
@@ -262,8 +294,8 @@ public class DiffEditor implements EditorMessageOwner {
     }
   }
 
-  public final class MainEditorComponent extends EditorComponent {
-    private DiffFileEditor myDiffFileEditor;
+  public static final class MainEditorComponent extends EditorComponent {
+    private final DiffFileEditor myDiffFileEditor;
     private CommandContextWithVF myCommandContext;
 
     public MainEditorComponent(SRepository repository, boolean rightToLeft, boolean readOnly) {

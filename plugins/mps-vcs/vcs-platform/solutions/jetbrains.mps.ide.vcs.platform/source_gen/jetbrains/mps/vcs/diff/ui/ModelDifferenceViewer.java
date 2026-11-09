@@ -48,8 +48,7 @@ import jetbrains.mps.smodel.ModelWriteRunnable;
 import com.intellij.openapi.application.ModalityState;
 import jetbrains.mps.internal.collections.runtime.NotNullWhereFilter;
 import jetbrains.mps.vcs.diff.ChangeSetBuilder;
-import jetbrains.mps.baseLanguage.tuples.runtime.Tuples;
-import jetbrains.mps.baseLanguage.tuples.runtime.MultiTuple;
+import jetbrains.mps.vcs.diff.ui.common.DiffEditor;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.actionSystem.ActionManager;
@@ -329,12 +328,21 @@ public class ModelDifferenceViewer implements UiDataProvider {
     myProject.getRepository().getModelAccess().runReadAction(() -> {
       SNodeId nodeId = (metadataViewRequested ? MetadataUtil.getMetadataRootId() : rootId);
       if (myRootDifferencePane == null) {
-        final List<Tuples._2<SModel, String>> models = (metadataViewRequested ? ListSequence.fromList(myDiffSides).select((it) -> MultiTuple.<SModel,String>from(it.metadata(), it.contentTitle())).toList() : ListSequence.fromList(myDiffSides).select((it) -> MultiTuple.<SModel,String>from(it.model(), it.contentTitle())).toList());
         final List<ModelChangeSet> cs = (metadataViewRequested ? myMetadataChangeSets : myChangeSets);
-        myRootDifferencePane = (isThreePanelDiff() ? new ThreeSideRootDifferencePane(myProject, nodeId, models, cs, myDiffRequest, myDiffViewer) : new TwoSideRootDifferencePane(myProject, nodeId, models, cs, myDiffRequest, myDiffViewer));
+        List<DiffEditor> editors = ListSequence.fromList(new ArrayList<>());
+        for (int index = 0; index < ListSequence.fromList(myDiffSides).count(); index++) {
+          ModelSide side = ListSequence.fromList(myDiffSides).getElement(index);
+          // the first editor (index==0) should have left scrollbar and gutter
+          // it is only possible to edit second model (index==1) if it is not read only itself
+          DiffEditor editor = new DiffEditor(myProject, (metadataViewRequested ? side.metadata() : side.model()), side.contentTitle(), index == 0, index != 1);
+          ListSequence.fromList(editors).addElement(editor);
+        }
+        myRootDifferencePane = (isThreePanelDiff() ? new ThreeSideRootDifferencePane(myProject, editors, cs, myDiffRequest, myDiffViewer) : new TwoSideRootDifferencePane(myProject, editors, cs, myDiffRequest, myDiffViewer));
+        // root id selection used to be part of pane cons, hence I do it here, before navigateInitial, although would be nice to share this code with else branch
+        myRootDifferencePane.setRootId(nodeId);
         attachRootDifferencePane(myRootDifferencePane);
-        myRootDifferencePane.navigateInitial(null);
         myIsMetadataView = metadataViewRequested;
+        myRootDifferencePane.navigateInitial(null);
       } else {
         myRootDifferencePane.setRootId(nodeId);
       }
