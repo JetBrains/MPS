@@ -4,10 +4,12 @@ package jetbrains.mps.vcs.diff.ui;
 
 import jetbrains.mps.annotations.GeneratedClass;
 import jetbrains.mps.vcs.diff.merge.ChangeConflictsBuilder;
+import org.jetbrains.mps.openapi.model.SModel;
 import jetbrains.mps.vcs.diff.ModelChangeSet;
 import jetbrains.mps.project.MPSProject;
 import org.jetbrains.mps.openapi.model.SNodeId;
 import java.util.List;
+import jetbrains.mps.baseLanguage.tuples.runtime.Tuples;
 import org.jetbrains.annotations.NotNull;
 import com.intellij.diff.requests.ContentDiffRequest;
 import com.intellij.diff.FrameDiffTool;
@@ -28,7 +30,6 @@ import java.util.LinkedList;
 import jetbrains.mps.internal.collections.runtime.NotNullWhereFilter;
 import jetbrains.mps.vcs.diff.ui.common.DiffEditor;
 import jetbrains.mps.vcs.diff.ChangeSetBuilder;
-import org.jetbrains.mps.openapi.model.SModel;
 import jetbrains.mps.internal.collections.runtime.Sequence;
 import jetbrains.mps.vcs.diff.ui.common.DiffChangeGroupLayout;
 
@@ -36,25 +37,19 @@ import jetbrains.mps.vcs.diff.ui.common.DiffChangeGroupLayout;
 /*package*/ final class ThreeSideRootDifferencePane extends RootDifferencePaneBase {
 
   private ChangeConflictsBuilder myConflictsBuilder;
-  private final ModelSide myLeft;
-  private final ModelSide myCentral;
-  private final ModelSide myRight;
-  private final ModelChangeSet myLeftChange1;
-  private final ModelChangeSet myLeftChange2;
-  private final ModelChangeSet myRightChange1;
-  private final ModelChangeSet myRightChange2;
-  private final boolean myIsMetadataView;
+  private final SModel myLeft;
+  private final SModel myCentral;
+  private final SModel myRight;
+  private final ModelChangeSet myLeftChange;
+  private final ModelChangeSet myRightChange;
 
-  /*package*/ ThreeSideRootDifferencePane(MPSProject mpsProject, SNodeId rootId, boolean isMetadataView, List<ModelSide> models, List<ModelChangeSet> changeSets, List<ModelChangeSet> metadataChangeSets, @NotNull ContentDiffRequest request, @NotNull FrameDiffTool.DiffViewer diffViewer) {
-    super(mpsProject, rootId, isMetadataView, models, changeSets, metadataChangeSets);
-    myIsMetadataView = isMetadataView;
-    myLeft = ListSequence.fromList(models).getElement(0);
-    myCentral = ListSequence.fromList(models).getElement(1);
-    myRight = ListSequence.fromList(models).getElement(2);
-    myLeftChange1 = ListSequence.fromList(changeSets).getElement(0);
-    myLeftChange2 = ListSequence.fromList(metadataChangeSets).getElement(0);
-    myRightChange1 = ListSequence.fromList(changeSets).getElement(1);
-    myRightChange2 = ListSequence.fromList(metadataChangeSets).getElement(1);
+  /*package*/ ThreeSideRootDifferencePane(MPSProject mpsProject, SNodeId rootId, List<Tuples._2<SModel, String>> models, List<ModelChangeSet> changeSets, @NotNull ContentDiffRequest request, @NotNull FrameDiffTool.DiffViewer diffViewer) {
+    super(mpsProject, rootId, models, changeSets);
+    myLeft = ListSequence.fromList(models).getElement(0)._0();
+    myCentral = ListSequence.fromList(models).getElement(1)._0();
+    myRight = ListSequence.fromList(models).getElement(2)._0();
+    myLeftChange = ListSequence.fromList(changeSets).getElement(0);
+    myRightChange = ListSequence.fromList(changeSets).getElement(1);
 
     if (getMyChangeSet() != null && getRepoChangeSet() != null) {
       myConflictsBuilder = createConflictsBuilder(getMyChangeSet(), getRepoChangeSet());
@@ -130,22 +125,22 @@ import jetbrains.mps.vcs.diff.ui.common.DiffChangeGroupLayout;
   }
 
   private ModelChangeSet getMyChangeSet() {
-    return (myIsMetadataView ? myLeftChange2 : myLeftChange1);
+    return myLeftChange;
   }
   private ModelChangeSet getRepoChangeSet() {
-    return (myIsMetadataView ? myRightChange2 : myRightChange1);
+    return myRightChange;
   }
 
   private SModel getMyModel() {
-    return (myIsMetadataView ? myLeft.metadata() : myLeft.model());
+    return myLeft;
   }
 
   private SModel getBaseModel() {
-    return (myIsMetadataView ? myCentral.metadata() : myCentral.model());
+    return myCentral;
   }
 
   private SModel getRepoModel() {
-    return (myIsMetadataView ? myRight.metadata() : myRight.model());
+    return myRight;
   }
 
   @Override

@@ -48,6 +48,8 @@ import jetbrains.mps.smodel.ModelWriteRunnable;
 import com.intellij.openapi.application.ModalityState;
 import jetbrains.mps.internal.collections.runtime.NotNullWhereFilter;
 import jetbrains.mps.vcs.diff.ChangeSetBuilder;
+import jetbrains.mps.baseLanguage.tuples.runtime.Tuples;
+import jetbrains.mps.baseLanguage.tuples.runtime.MultiTuple;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.actionSystem.ActionManager;
@@ -327,7 +329,9 @@ public class ModelDifferenceViewer implements UiDataProvider {
     myProject.getRepository().getModelAccess().runReadAction(() -> {
       SNodeId nodeId = (metadataViewRequested ? MetadataUtil.getMetadataRootId() : rootId);
       if (myRootDifferencePane == null) {
-        myRootDifferencePane = (isThreePanelDiff() ? new ThreeSideRootDifferencePane(myProject, nodeId, metadataViewRequested, myDiffSides, myChangeSets, myMetadataChangeSets, myDiffRequest, myDiffViewer) : new TwoSideRootDifferencePane(myProject, nodeId, metadataViewRequested, myDiffSides, myChangeSets, myMetadataChangeSets, myDiffRequest, myDiffViewer));
+        final List<Tuples._2<SModel, String>> models = (metadataViewRequested ? ListSequence.fromList(myDiffSides).select((it) -> MultiTuple.<SModel,String>from(it.metadata(), it.contentTitle())).toList() : ListSequence.fromList(myDiffSides).select((it) -> MultiTuple.<SModel,String>from(it.model(), it.contentTitle())).toList());
+        final List<ModelChangeSet> cs = (metadataViewRequested ? myMetadataChangeSets : myChangeSets);
+        myRootDifferencePane = (isThreePanelDiff() ? new ThreeSideRootDifferencePane(myProject, nodeId, models, cs, myDiffRequest, myDiffViewer) : new TwoSideRootDifferencePane(myProject, nodeId, models, cs, myDiffRequest, myDiffViewer));
         attachRootDifferencePane(myRootDifferencePane);
         myRootDifferencePane.navigateInitial(null);
         myIsMetadataView = metadataViewRequested;
