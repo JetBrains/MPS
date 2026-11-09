@@ -118,7 +118,7 @@
       <concept id="6057319140845467763" name="jetbrains.mps.build.structure.BuildSource_JavaLibrary" flags="ng" index="PiPfp">
         <child id="6057319140845478673" name="elements" index="PiKyV" />
       </concept>
-      <concept id="8618885170173601777" name="jetbrains.mps.build.structure.BuildCompositePath" flags="nn" index="2Ry0Ak">
+      <concept id="8618885170173601777" name="jetbrains.mps.build.structure.BuildCompositePath" flags="ng" index="2Ry0Ak">
         <property id="8618885170173601779" name="head" index="2Ry0Am" />
         <child id="8618885170173601778" name="tail" index="2Ry0An" />
       </concept>
@@ -491,7 +491,7 @@
         <child id="322010710375956261" name="path" index="3LF7KH" />
       </concept>
       <concept id="3335207478148059730" name="jetbrains.mps.build.mps.structure.BuildMpsLayout_ModuleJarContent" flags="ng" index="3PtdJl" />
-      <concept id="7259033139236285166" name="jetbrains.mps.build.mps.structure.BuildMps_ExtractedModuleDependency" flags="nn" index="1SiIV0">
+      <concept id="7259033139236285166" name="jetbrains.mps.build.mps.structure.BuildMps_ExtractedModuleDependency" flags="ng" index="1SiIV0">
         <child id="7259033139236285167" name="dependency" index="1SiIV1" />
       </concept>
       <concept id="4157435862321765764" name="jetbrains.mps.build.mps.structure.BuildMps_BrandingVersion" flags="ng" index="3ZAF1B">
@@ -56748,6 +56748,23 @@
             </node>
           </node>
         </node>
+        <node concept="398223" id="6pfZ3rVtXK3" role="39821P">
+          <node concept="3_J27D" id="6pfZ3rVtXK4" role="Nbhlr">
+            <node concept="3Mxwew" id="6pfZ3rVtXK5" role="3MwsjC">
+              <property role="3MwjfP" value="platform-navbar-plugin" />
+            </node>
+          </node>
+          <node concept="2HvfSZ" id="6pfZ3rVtXK6" role="39821P">
+            <node concept="55IIr" id="6pfZ3rVtXK7" role="2HvfZ0">
+              <node concept="2Ry0Ak" id="6pfZ3rVtXK8" role="iGT6I">
+                <property role="2Ry0Am" value="plugins" />
+                <node concept="2Ry0Ak" id="6pfZ3rVtXK9" role="2Ry0An">
+                  <property role="2Ry0Am" value="platform-navbar-plugin" />
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
         <node concept="m$_wl" id="5ziJCXcgBVW" role="39821P">
           <ref role="m_rDy" node="5ziJCXbfbGU" resolve="intellij.structureView.plugin" />
           <node concept="pUk6x" id="5ziJCXcgBYg" role="pUk7w" />
@@ -58969,10 +58986,10 @@
       <node concept="1E1JtA" id="1ULLXZL0gZG" role="2G$12L">
         <property role="TrG5h" value="org.junit.junit5" />
         <property role="3LESm3" value="63b449db-0918-4a4a-a891-2c430ab133e4" />
+        <property role="BnDLt" value="true" />
         <property role="aoJFB" value="77WRb6jODAF/none" />
         <property role="ZpmtF" value="true" />
         <property role="3vZFNd" value="3kCd1ud3JDD/compile_ext" />
-        <property role="BnDLt" value="true" />
         <node concept="398BVA" id="1ULLXZL0gZH" role="3LF7KH">
           <ref role="398BVh" node="ymnOULASEN" resolve="mps_home" />
           <node concept="2Ry0Ak" id="1ULLXZL0gZI" role="iGT6I">
@@ -60831,8 +60848,8 @@
         </node>
       </node>
       <node concept="1tmT9g" id="D3r752eOkm" role="39821P">
-        <property role="AB_bT" value="1HQQX4XU8$A/gzip" />
         <property role="TrG5h" value="jbr-linux-x64.tar.gz" />
+        <property role="AB_bT" value="1HQQX4XU8$A/gzip" />
         <node concept="3_J27D" id="D3r752eOkn" role="Nbhlr">
           <node concept="3Mxwew" id="D3r752eOko" role="3MwsjC">
             <property role="3MwjfP" value="jbr-linux-x64.tar.gz" />
@@ -60864,8 +60881,8 @@
         </node>
       </node>
       <node concept="1tmT9g" id="jNaJppejvS" role="39821P">
-        <property role="AB_bT" value="1HQQX4XU8$A/gzip" />
         <property role="TrG5h" value="jbr-linux-x64.tar.gz" />
+        <property role="AB_bT" value="1HQQX4XU8$A/gzip" />
         <node concept="3_J27D" id="jNaJppejvT" role="Nbhlr">
           <node concept="3Mxwew" id="jNaJppejvU" role="3MwsjC">
             <property role="3MwjfP" value="jbr-linux-aarch64.tar.gz" />
