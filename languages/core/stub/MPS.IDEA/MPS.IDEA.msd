@@ -271,6 +271,7 @@
         <include prefix="com.github."/>
         <include prefix="com.intellij."/>
         <include prefix="com.jetbrains."/>
+        <include prefix="org.jsoup."/>
         <include prefix="org.intellij."/>
         <include prefix="org.jetbrains."/>
         <include prefix="io.netty."/> <!-- although there's io.netty import, keep until migration is in place -->
