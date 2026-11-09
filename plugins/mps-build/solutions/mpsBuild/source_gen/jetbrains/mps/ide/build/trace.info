@@ -7,7 +7,7 @@
   </root>
   <root nodeRef="r:874d959d-e3b4-4d04-b931-ca849af130dd(jetbrains.mps.ide.build)/1392391688312941958">
     <file name="mpsStandalone.xml">
-      <unit id="1392391688312941958" at="1,0,173,10" name="jetbrains.mps.ide.build.mpsStandalone" />
+      <unit id="1392391688312941958" at="1,0,177,10" name="jetbrains.mps.ide.build.mpsStandalone" />
     </file>
   </root>
   <root nodeRef="r:874d959d-e3b4-4d04-b931-ca849af130dd(jetbrains.mps.ide.build)/1432730276628307864">

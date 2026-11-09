@@ -100,6 +100,10 @@
     <copy todir="${build.layout}/plugins/grazie">
       <fileset dir="${basedir}/plugins/grazie" />
     </copy>
+    <mkdir dir="${build.layout}/plugins/yaml" />
+    <copy todir="${build.layout}/plugins/yaml">
+      <fileset dir="${basedir}/plugins/yaml" />
+    </copy>
     <mkdir dir="${build.layout}/plugins/platform-bookmarks-plugin" />
     <copy todir="${build.layout}/plugins/platform-bookmarks-plugin">
       <fileset dir="${basedir}/plugins/platform-bookmarks-plugin" />
