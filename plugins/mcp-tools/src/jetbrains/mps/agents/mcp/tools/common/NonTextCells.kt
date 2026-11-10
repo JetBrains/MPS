@@ -85,8 +85,8 @@ internal object NonTextCells {
     }
 
     /**
-     * `{count, cells}` for the envelope details, listing at most [MAX_LISTED] cells; a cell the grid text shows carries
-     * `shownAs` (its rule glyph or `⟦n⟧` placeholder).
+     * `{count, cells}` for the envelope details, listing at most [MAX_LISTED] cells; a cell the grid text or HTML page shows
+     * carries `shownAs` (its rule glyph, `⟦n⟧` placeholder or `image`).
      */
     fun details(omitted: List<Omitted>, shownAs: Map<EditorCell, String> = emptyMap()): Map<String, Any?> =
         linkedMapOf("count" to omitted.size, "cells" to omitted.take(MAX_LISTED).map { it.toDetails(shownAs[it.cell]) })
@@ -97,15 +97,16 @@ internal object NonTextCells {
             "as rules or fraction bars, images or widgets; details.omittedCells gives each one's node, neighbouring text and " +
             "IMAGE bounds; format IMAGE draws them"
 
-    /** The envelope warning for [shown] cells the grid text draws as a rule or shows as a placeholder; not empty. */
+    /** The envelope warning for [shown] cells the grid text or the HTML page draws as a rule, placeholder or image; not empty. */
     fun shownWarning(shown: List<Omitted>, shownAs: Map<EditorCell, String>): String {
         val forms = shown.mapNotNull { shownAs[it.cell] }
         val kinds = listOfNotNull(
             "${CellGridTextRenderer.RULE} for a horizontal rule".takeIf { forms.any { it == CellGridTextRenderer.RULE.toString() } },
             "${CellGridTextRenderer.VERTICAL_RULE} for a vertical rule".takeIf { forms.any { it == CellGridTextRenderer.VERTICAL_RULE.toString() } },
             "⟦n⟧ for the n-th entry of details.omittedCells.cells".takeIf { forms.any { it.startsWith("⟦") } },
+            "a cut-out of editor.png (class im, data-o=n for the n-th entry of details.omittedCells.cells)".takeIf { forms.any { it == "image" } },
         )
-        return "${shown.size} cell(s) without text (${classSummary(shown)}) are drawn in this text as ${kinds.joinToString(", ")}; " +
+        return "${shown.size} cell(s) without text (${classSummary(shown)}) are drawn in this printout as ${kinds.joinToString(", ")}; " +
             "details.omittedCells gives each one's node, neighbouring text, IMAGE bounds and shownAs; format IMAGE draws them"
     }
 

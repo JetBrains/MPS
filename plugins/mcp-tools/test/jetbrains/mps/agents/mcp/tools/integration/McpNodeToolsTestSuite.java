@@ -44,6 +44,7 @@ import org.junit.runners.Suite;
     PrintNodeEditorHintsIntegrationTest.class,
     PrintNodeImageIntegrationTest.class,
     PrintNodeGridTextIntegrationTest.class,
+    PrintNodeHtmlIntegrationTest.class,
     CellGridTextRendererTest.class,
     AbstractOpsPropertyProblemsTest.class,
     AbstractOpsAutoApplyQuickFixesTest.class,

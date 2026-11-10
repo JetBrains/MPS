@@ -140,9 +140,11 @@ class PrintNodeEditorHintsIntegrationTest : McpIntegrationTestBase() {
     fun `HTML carries the hints block and honours a hint`() {
         val ref = createConceptRoot("HintsHtml")
         val envelope = print(ref, format = "HTML")
-        assertTrue(envelope.toString(), okText(envelope).startsWith("<"))
+        val page = java.io.File(okText(envelope)).readText()
+        assertTrue(envelope.toString(), page.startsWith("<!DOCTYPE html>"))
         assertEquals("projectSettings", hintsBlock(envelope).get("source").asString)
-        assertNotEquals(okText(envelope), okText(print(ref, format = "HTML", editorHints = "comment")))
+        val hinted = java.io.File(okText(print(ref, format = "HTML", editorHints = "comment"))).readText()
+        assertNotEquals(page, hinted)
     }
 
     @Test
