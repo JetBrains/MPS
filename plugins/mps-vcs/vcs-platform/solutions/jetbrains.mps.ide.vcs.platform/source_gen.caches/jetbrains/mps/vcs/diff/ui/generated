@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<product version="3" modelHash="-7dn1wb1cayogl14zilg1fh8txgod3n6">
+<product version="3" modelHash="-3rxzwwrait2wnfm1rflxu9bd45y7nzf">
   <files names="DiffButtonsPainter.java:DiffEditorSettingsAction.java:IHighlighter.java:MetadataUtil.java:ModelDifferenceViewer.java:ModelSide.java:RevertRootsAction.java:RevisionsExtractor.java:RootDifferencePane.java:RootDifferencePaneBase.java:RootFileHistoryExtractor.java:RootHistoryDialog.java:RootModelHistoryExtractor.java:StructDiffButtonsPainter.java:StructDifferenceDialog.java:StructDifferencePane.java:ThreeSideRootDifferencePane.java:TwoSideRootDifferencePane.java" />
 </product>
 

@@ -18,17 +18,16 @@ import com.intellij.ui.JBSplitter;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
-import java.util.Collection;
-import org.jetbrains.mps.openapi.model.SModel;
-import jetbrains.mps.internal.collections.runtime.CollectionSequence;
-import java.util.ArrayList;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.mps.openapi.model.SModel;
 import jetbrains.mps.smodel.RepositoryFacade;
 import java.util.function.BiFunction;
 import org.jetbrains.mps.openapi.model.SModelReference;
 import jetbrains.mps.vcs.diff.merge.MergeTemporaryModel;
 import jetbrains.mps.internal.collections.runtime.ListSequence;
+import java.util.ArrayList;
 import jetbrains.mps.vcs.diff.ui.common.DiffModelUtil;
+import jetbrains.mps.smodel.ModelDependencyUpdate;
 import jetbrains.mps.vcs.diff.ui.common.DiffSettingsUtil;
 import jetbrains.mps.util.Pair;
 import javax.swing.JScrollPane;
@@ -73,7 +72,7 @@ public class ModelDifferenceViewer implements UiDataProvider {
   private final ContentDiffRequest myDiffRequest;
   private final FrameDiffTool.DiffViewer myDiffViewer;
   private final MPSProject myProject;
-  private final ModelLot myMetadataModels;
+  private final ModelLot myManagedModels;
   private final List<ModelSide> myDiffSides;
   private final FileSystemRepoBridge myCustomRepoFiles;
 
@@ -95,23 +94,28 @@ public class ModelDifferenceViewer implements UiDataProvider {
   private boolean myIsMetadataView;
   private final JComponent myNoRootPanel = new JLabel("Select root to show", SwingConstants.CENTER);
 
-  private final Collection<SModel> myRegisteredModels = CollectionSequence.fromCollection(new ArrayList<>());
   private final MyChangeListener myLiveModelListener;
   private volatile boolean myDisposed;
 
-  public ModelDifferenceViewer(@NotNull MPSProject mpsProject, @NotNull final ContentDiffRequest request, @NotNull FrameDiffTool.DiffViewer diffViewer, @NotNull final List<SModel> models, boolean showTree, final boolean perRootPersistence) {
+  public ModelDifferenceViewer(@NotNull final MPSProject mpsProject, @NotNull final ContentDiffRequest request, @NotNull FrameDiffTool.DiffViewer diffViewer, @NotNull final List<SModel> models, boolean showTree, final boolean perRootPersistence) {
     myDiffRequest = request;
     myDiffViewer = diffViewer;
     myProject = mpsProject;
 
-    RepositoryFacade repo = RepositoryFacade.createPlainRegistrationRepo();
+    // use of project repo as delegate hopefully gives us resolution of external reference target.
+    // Besides, DiffModelUtil.renameModel(..., true) redirects local (same-model) references to missing nodes
+    // to a model with original ref (done for per-root persistence models, where single root is read. In a hope
+    // there's full model elsewhere and we can access it through original model ref)
+    RepositoryFacade repo = RepositoryFacade.createPlainRegistrationRepo(myProject.getRepository());
     myCustomRepoFiles = new FileSystemRepoBridge(repo.get());
-    myMetadataModels = new ModelLot(repo);
+    myManagedModels = new ModelLot(repo);
     final BiFunction<SModelReference, SModel, MergeTemporaryModel> mmFactory = (mp, m) -> {
       MergeTemporaryModel mm = new MergeTemporaryModel(mp, !(isModelEditable(m)));
       MetadataUtil.populate(mm, m);
       return mm;
     };
+
+    final List<SModel> needUpdate = ListSequence.fromList(new ArrayList<>());
 
     myDiffSides = ListSequence.fromList(new ArrayList<>());
     // register models in repository and create changeset
@@ -129,17 +133,31 @@ public class ModelDifferenceViewer implements UiDataProvider {
         }
         // XXX no reason for custom stereotype, need another round of refactoring 
         String version = "diff_meta_model_" + ix;
-        MergeTemporaryModel derivedMetadata = myMetadataModels.deriveModel(m, version, mmFactory);
+        MergeTemporaryModel derivedMetadata = myManagedModels.deriveModel(m, version, mmFactory);
         ListSequence.fromList(myDiffSides).addElement(new ModelSide(m, derivedMetadata, isModelEditable(m), title));
         // 
         if (m.getRepository() == null) {
           // fix references and add languages to unregistered model for per-root persistence
-          DiffModelUtil.renameModelAndRegister(m, "diff_model_" + ix, perRootPersistence, perRootPersistence);
-          CollectionSequence.fromCollection(myRegisteredModels).addElement(m);
+          // in fact, renameModel could be only for fixReferences==true; but for now I decided to keep diff_model_ in the name
+          DiffModelUtil.renameModel(m, "diff_model_" + ix, perRootPersistence);
+          myManagedModels.track(m);
+          // models with metadata are created with everything necessary, it's only these models we need to update languages and deps
+          ListSequence.fromList(needUpdate).addElement(m);
         }
         ix++;
       }
-      myMetadataModels.registerModels();
+      myManagedModels.registerModels();
+      // now that models are registered, add languages and deps. Not sure this ordering is important, it's the way it was with DiffModelUtil.renameModelAndRegister()
+      // although probably the reason was access to module deps
+      for (SModel m : ListSequence.fromList(needUpdate)) {
+        ModelDependencyUpdate mdu = new ModelDependencyUpdate(m);
+        // this logic comes from DiffModelUtil.renameModelAndRegister()
+        if (perRootPersistence) {
+          mdu.updateUsedLanguages();
+        }
+        // use project repo for deps, in our own custom repo there are no such modules
+        mdu.updateModuleDependencies(mpsProject.getRepository());
+      }
     });
     final boolean isEditable = ListSequence.fromList(myDiffSides).getElement(1).isLive();
 
@@ -269,8 +287,7 @@ public class ModelDifferenceViewer implements UiDataProvider {
   }
 
   private void unregisterModels() {
-    CollectionSequence.fromCollection(myRegisteredModels).visitAll((it) -> DiffModelUtil.unregisterModel(it));
-    myMetadataModels.discard();
+    myManagedModels.discard();
   }
 
   /*package*/ void rebuildChangeSets() {

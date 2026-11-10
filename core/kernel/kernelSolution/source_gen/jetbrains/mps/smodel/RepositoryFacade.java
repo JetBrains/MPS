@@ -6,6 +6,11 @@ import jetbrains.mps.annotations.GeneratedClass;
 import jetbrains.mps.extapi.module.SRepositoryExt;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.mps.openapi.module.SModule;
+import org.jetbrains.mps.openapi.module.SRepository;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.mps.openapi.module.SModuleId;
+import org.jetbrains.mps.openapi.model.SModel;
+import org.jetbrains.mps.openapi.model.SModelId;
 import jetbrains.mps.internal.collections.runtime.SetSequence;
 
 /**
@@ -34,31 +39,73 @@ public abstract class RepositoryFacade {
   public static RepositoryFacade createPlainRegistrationRepo() {
     final Repo repo = new Repo(new ModelAccessNoLimit());
     repo.init();
-    // We have to dispose modules as their models/datasources attach e.g. file listeners that get notified long time after generation of a build project is over.
-    final MPSModuleOwner owner = new MPSModuleOwner() {
-      @Override
-      public boolean isHidden() {
-        return true;
-      }
-    };
-    return new RepositoryFacade() {
-      @Override
-      public SRepositoryExt get() {
-        return repo;
-      }
+    return new Impl(repo);
+  }
 
-
+  /**
+   * same as createPlainRegistrationRepo but with extra SRepository to delegate reference resolution (model/module lookup) to
+   */
+  public static RepositoryFacade createPlainRegistrationRepo(@NotNull final SRepository delegate) {
+    // Reference target resolve logic first find model, then takes node from the model.
+    // Here we follow smodel.SModelReference.resolve() logic (find module, then model for non-unique model ref, or simply model for the unique one).
+    // perhaps, worth adding resolve() method to SRepository or its extension to let repo control the resolution process (after all, SModelReference.resolve is something one can't override).
+    final Repo repo = new Repo(new ModelAccessNoLimit()) {
+      @Nullable
       @Override
-      public void registerModule(@NotNull SModule module) {
-        repo.registerModule(module, owner);
-      }
-
-      @Override
-      public void dispose() {
-        for (SModule m : SetSequence.fromSet(repo.getModules(owner))) {
-          repo.unregisterModule(m, owner);
+      public SModule getModule(@NotNull SModuleId mid) {
+        SModule owned = super.getModule(mid);
+        if (owned != null) {
+          return owned;
         }
+        return delegate.getModule(mid);
+      }
+
+      @Nullable
+      @Override
+      public SModel getModel(@NotNull SModelId modelId) {
+        SModel m = super.getModel(modelId);
+        if (m != null) {
+          return m;
+        }
+        return delegate.getModel(modelId);
       }
     };
+    repo.init();
+    return new Impl(repo);
+  }
+
+  private static class Impl extends RepositoryFacade {
+    private final Repo myRepo;
+    private final MPSModuleOwner myOwner;
+
+    /*package*/ Impl(Repo repo) {
+      super();
+      myRepo = repo;
+      // We have to dispose modules as their models/datasources attach e.g. file listeners that get notified long time after generation of a build project is over.
+      myOwner = new MPSModuleOwner() {
+        @Override
+        public boolean isHidden() {
+          return true;
+        }
+      };
+    }
+
+    @Override
+    public SRepositoryExt get() {
+      return myRepo;
+    }
+
+    @Override
+    public void registerModule(@NotNull SModule module) {
+      myRepo.registerModule(module, myOwner);
+    }
+
+    @Override
+    public void dispose() {
+      for (SModule m : SetSequence.fromSet(myRepo.getModules(myOwner))) {
+        myRepo.unregisterModule(m, myOwner);
+      }
+    }
+
   }
 }

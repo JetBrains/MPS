@@ -64,10 +64,16 @@ public class DiffModelUtil {
   public static void renameModel(SModel model, String version) {
     renameModel(model, version, false);
   }
-  private static void renameModel(SModel model, String version, boolean fixReferences) {
+
+  /**
+   * XXX public provisionally, don't introduce new uses!
+   */
+  @Deprecated
+  public static void renameModel(SModel model, String version, boolean fixReferences) {
+
     SModelReference modelRef = SModelOperations.getPointer(model);
     SModelReference newModelRef = genDiffSModelRef(modelRef, version);
-    as_5x16vn_a0a2a7(model, SModelBase.class).changeModelReference(newModelRef);
+    as_5x16vn_a0a3a8(model, SModelBase.class).changeModelReference(newModelRef);
     if (fixReferences) {
       resetMissedReferences(model, modelRef, newModelRef);
     }
@@ -88,7 +94,7 @@ public class DiffModelUtil {
   public static void restoreModelName(SModel model) {
     SModelReference modelRef = SModelOperations.getPointer(model);
     assert modelRef.getModelId() instanceof SModelId.ForeignSModelId;
-    as_5x16vn_a0a2a9(model, SModelBase.class).changeModelReference(getOriginalSModelRef(modelRef));
+    as_5x16vn_a0a2a01(model, SModelBase.class).changeModelReference(getOriginalSModelRef(modelRef));
   }
 
   public static void fixModelReferences(SModel model, SModelReference modelRef) {
@@ -108,19 +114,19 @@ public class DiffModelUtil {
     return PersistenceFacade.getInstance().createModelReference(ref.getModuleReference(), newId, newName);
   }
   private static SModelReference getOriginalSModelRef(SModelReference ref) {
-    String id = as_5x16vn_a0a0a0o(ref.getModelId(), SModelId.ForeignSModelId.class).getId();
+    String id = as_5x16vn_a0a0a0p(ref.getModelId(), SModelId.ForeignSModelId.class).getId();
     String name = ref.getModelName();
     org.jetbrains.mps.openapi.model.SModelId oldId = SModelId.fromString(id.substring(id.indexOf("#") + 1));
     String oldName = name.substring(0, name.lastIndexOf("@"));
     return PersistenceFacade.getInstance().createModelReference(ref.getModuleReference(), oldId, oldName);
   }
-  private static <T> T as_5x16vn_a0a2a7(Object o, Class<T> type) {
+  private static <T> T as_5x16vn_a0a3a8(Object o, Class<T> type) {
     return (type.isInstance(o) ? (T) o : null);
   }
-  private static <T> T as_5x16vn_a0a2a9(Object o, Class<T> type) {
+  private static <T> T as_5x16vn_a0a2a01(Object o, Class<T> type) {
     return (type.isInstance(o) ? (T) o : null);
   }
-  private static <T> T as_5x16vn_a0a0a0o(Object o, Class<T> type) {
+  private static <T> T as_5x16vn_a0a0a0p(Object o, Class<T> type) {
     return (type.isInstance(o) ? (T) o : null);
   }
 }
