@@ -15,6 +15,7 @@ import jetbrains.mps.editor.runtime.HeadlessEditorComponent
 import jetbrains.mps.nodeEditor.EditorCell_WithComponent
 import jetbrains.mps.nodeEditor.EditorComponent
 import jetbrains.mps.nodeEditor.cells.EditorCell_ContextAssistantComponent
+import jetbrains.mps.nodeEditor.cells.EditorCell_Label
 import jetbrains.mps.nodeEditor.hintsSettings.ConceptEditorHintSettingsComponent
 import jetbrains.mps.openapi.editor.cells.EditorCell
 import jetbrains.mps.errors.MessageStatus
@@ -862,9 +863,15 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                                 // Paint first: painting moves some cells (a fraction bar takes its parent's width).
                                 val painted = EditorImageRenderer.paint(component, paintableComponentCells(component))
                                 val afterPaint = NonTextCells.collect(component.rootCell)
-                                val page = EditorHtmlRenderer.render(component.rootCell, node, afterPaint, component.background)
+                                val page = EditorHtmlRenderer.render(component.rootCell, node, afterPaint, component.background, component.foreground)
                                 details["image"] = painted.details
                                 reportNonTextCells(afterPaint, page.shownAs, details, warnings)
+                                if (page.missing.isNotEmpty()) {
+                                    val texts = page.missing.take(5).joinToString(", ") { (it as? EditorCell_Label)?.renderedText?.let { t -> "'$t'" } ?: it.javaClass.simpleName }
+                                    logger.warn("HTML page of $nodeReference misses ${page.missing.size} cell(s): $texts")
+                                    warnings += "${page.missing.size} cell(s) of the projection are missing from the page ($texts); " +
+                                        "read editor.png or PLAIN TEXT for them"
+                                }
                                 return@withHeadlessEditor HtmlBundle(page.html, painted.image, details, warnings + painted.warnings)
                             }
                             Projection.TEXT -> renderPlainText(component, omitted, shownAs, details, warnings)
@@ -898,24 +905,25 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
 
     /** `index.html` and `editor.png` in a fresh temp directory; `data` is the page's path. */
     private fun writeHtmlBundle(bundle: HtmlBundle): String {
+        var dir: File? = null
         return try {
-            val dir = Files.createTempDirectory("mps-node-html-").toFile()
+            dir = Files.createTempDirectory("mps-node-html-").toFile()
+            // Registered before the files: deleteOnExit runs in reverse order, so the files go first, then the directory.
             dir.deleteOnExit()
-            val page = File(dir, EditorHtmlRenderer.PAGE)
-            val image = File(dir, EditorHtmlRenderer.IMAGE)
+            val page = File(dir, EditorHtmlRenderer.PAGE).also { it.deleteOnExit() }
+            val image = File(dir, EditorHtmlRenderer.IMAGE).also { it.deleteOnExit() }
             page.writeText(bundle.html, Charsets.UTF_8)
-            ImageIO.write(bundle.image, "png", image)
-            // Deleted on exit in the reverse order: the files, then the directory.
-            page.deleteOnExit()
-            image.deleteOnExit()
+            if (!ImageIO.write(bundle.image, "png", image)) throw IOException("no PNG writer")
             val details = linkedMapOf<String, Any?>()
             details["html"] = linkedMapOf(
-                "directory" to dir.absolutePath, "files" to listOf(EditorHtmlRenderer.PAGE, EditorHtmlRenderer.IMAGE), "bytes" to page.length(),
+                "directory" to dir.absolutePath,
+                "files" to linkedMapOf(EditorHtmlRenderer.PAGE to page.length(), EditorHtmlRenderer.IMAGE to image.length()),
             )
             details.putAll(bundle.details)
             okJson(JsonPrimitive(page.absolutePath), warnings = bundle.warnings, details = details)
         } catch (e: IOException) {
             logger.warn("Failed to save the HTML bundle to a temporary directory", e)
+            dir?.deleteRecursively()
             errJson("Failed to save the HTML page to a temporary directory: ${e.message}")
         }
     }
@@ -1564,7 +1572,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         `nodeReference` must be a node reference (`r:<uuid>(model)/<node-id>`). A model reference or qualified model name is rejected with INVALID_REQUEST that names the model and a retry line for `mps_mcp_get_project_structure` (`startingPoint`, `includeNodes=true`); `mps_mcp_check_root_node_problems` accepts those model forms in `nodeReference`.
         A node of a transient model a make kept (references from `mps_mcp_generation` TRANSIENT_MODELS, `i:` model ids) prints like any other; `mps_mcp_generation` TRACE tells which input node and rule produced it.
         `PLAIN TEXT` returns the editor-projected text of the node, inline or as a temp-file path under the same `maxInlineBytes` rule; a two-dimensional projection (table, fraction, matrix) is drawn as a character grid.
-        `HTML` writes a standalone page `index.html` and the painted editor `editor.png` into a fresh temp directory and returns the page's path as `data` (`details.html` lists the directory and files; `maxInlineBytes` does not apply): the projection's text in reading order, every node's part tagged with its node id, concept and role, tables, fractions and brackets as CSS boxes, cells without text as cut-outs of the image.
+        `HTML` writes a standalone page `index.html` and the painted editor `editor.png` into a fresh temp directory and returns the page's path as `data` (`details.html` gives the directory and each file's size; `maxInlineBytes` does not apply): the projection's text in reading order, every node's part tagged with its node id, concept and role, tables, fractions and brackets as CSS boxes, cells without text as cut-outs of the image.
         `IMAGE` paints the editor projection to a PNG temp file whose path is `data` (size in `details.image`), which shows diagrams, tables and other graphical cells exactly as drawn.
         `editorHints` selects an alternative projection (editor hints) for HTML, PLAIN TEXT and IMAGE; `details.editorHints` reports the hints applied and those `available` for the node's model. See `mps-mcp-workflow/references/analysis-tools/print-node-output.md`.
         If the goal is to duplicate this node rather than merely inspect it, prefer `mps_mcp_alter_nodes` `COPY_NODE` over printing it deep and re-inserting the JSON — it's fewer calls and produces a structurally guaranteed-valid clone.

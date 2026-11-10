@@ -190,7 +190,7 @@ Send the array (as a string) as `json`, same other args as 07.03.
 ```
 - Validation: `ok==true`; `data` is the path of `index.html`, a standalone page (`<!DOCTYPE html>`,
   `<meta name="mps-node">` naming `{{OTHER_ROOT_REF}}`) in a fresh temp directory that also holds
-  `editor.png`; `details.html` lists `directory`, `files` and `bytes`, `details.image` the image size.
+  `editor.png`; `details.html` gives `directory` and `files` (name to size), `details.image` the image size.
   Exercises `format:"HTML"`. (`format:"JSON"` was exercised in 07.06/07.07.) The envelope carries
   `details.editorHints` (`source`, `applied`, compact `available`).
 

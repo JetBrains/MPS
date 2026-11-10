@@ -55,16 +55,19 @@ internal object NonTextCells {
         }
     }
 
-    /** Whether [cell] is a visible leaf with no textual form. */
+    /**
+     * Whether [cell] is a visible leaf with no textual form. A Swing collection (a diagram) counts as one such leaf: its
+     * component is what the editor shows.
+     */
     fun isNonTextLeaf(cell: EditorCell): Boolean =
-        cell !is EditorCell_Collection && cell !is EditorCell_Label && cell !is EditorCell_Empty &&
+        (cell !is EditorCell_Collection || cell is EditorCell_WithComponent) && cell !is EditorCell_Label && cell !is EditorCell_Empty &&
             cell !is EditorCell_ContextAssistantComponent && cell.width > 0 && cell.height > 0 && (cell.width > 2 || cell.height > 2)
 
     /** The non-text leaves under [root], in editor (depth-first) order. */
     fun collect(root: EditorCell, imageMargin: Int = EditorImageRenderer.MARGIN): List<Omitted> {
         val leaves = mutableListOf<EditorCell>()
         fun walk(cell: EditorCell) {
-            if (cell is EditorCell_Collection) cell.forEach(::walk) else leaves += cell
+            if (cell is EditorCell_Collection && !isNonTextLeaf(cell)) cell.forEach(::walk) else leaves += cell
         }
         walk(root)
         val result = mutableListOf<Omitted>()

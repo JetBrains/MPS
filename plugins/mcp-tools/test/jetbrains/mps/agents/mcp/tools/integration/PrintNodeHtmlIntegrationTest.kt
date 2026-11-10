@@ -8,6 +8,7 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
 import jetbrains.mps.editor.runtime.style.CellAlign
 import jetbrains.mps.editor.runtime.style.StyleAttributes
+import jetbrains.mps.editor.runtime.style.TableComponent
 import jetbrains.mps.nodeEditor.EditorComponent
 import jetbrains.mps.nodeEditor.cellLayout.CellLayout_Horizontal
 import jetbrains.mps.nodeEditor.cellLayout.CellLayout_Vertical
@@ -83,7 +84,8 @@ class PrintNodeHtmlIntegrationTest : McpIntegrationTestBase() {
         assertEquals(EditorHtmlRenderer.PAGE, page.name)
         val html = envelope.getAsJsonObject("details").getAsJsonObject("html")
         assertEquals(page.parentFile.absolutePath, html.get("directory").asString)
-        assertEquals(listOf("index.html", "editor.png"), html.getAsJsonArray("files").map { it.asString })
+        assertEquals(setOf("index.html", "editor.png"), html.getAsJsonObject("files").keySet())
+        assertEquals(page.length(), html.getAsJsonObject("files").get("index.html").asLong)
         val image = ImageIO.read(File(page.parentFile, EditorHtmlRenderer.IMAGE))
         assertEquals(envelope.toString(), envelope.getAsJsonObject("details").getAsJsonObject("image").get("width").asInt, image.width)
 
@@ -92,6 +94,9 @@ class PrintNodeHtmlIntegrationTest : McpIntegrationTestBase() {
         assertTrue(text, text.contains("<meta name=\"mps-node\" content=\"$ref\">"))
         val rootId = ref.substringAfterLast('/')
         assertTrue(text, text.contains("data-n=\"$rootId\" data-c=\"ConceptDeclaration\""))
+        // A reference into another model names it once in the head and then by its alias.
+        assertTrue(text, text.contains("<meta name=\"mps-model-m1\" content=\"r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)\">"))
+        assertTrue(text, text.contains("data-t=\"m1/1133920641626\">BaseConcept</span>"))
         assertTrue(text, !text.contains("&nbsp;"))
         assertBalanced(text)
         val shown = preText(text)
@@ -120,7 +125,7 @@ class PrintNodeHtmlIntegrationTest : McpIntegrationTestBase() {
                 addEditorCell(EditorCell_Constant(ctx, root.sNode, "two"))
             }
             val line = EditorCell_Collection(ctx, root.sNode, CellLayout_Horizontal()).apply {
-                addEditorCell(EditorCell_Constant(ctx, root.sNode, "x ="))
+                addEditorCell(EditorCell_Constant(ctx, root.sNode, "x <&\"="))
                 addEditorCell(stack)
                 addEditorCell(EditorCell_Image.createImageCell(ctx, root.sNode, BufferedImage(16, 16, BufferedImage.TYPE_INT_RGB)))
             }
@@ -132,11 +137,67 @@ class PrintNodeHtmlIntegrationTest : McpIntegrationTestBase() {
             val page = EditorHtmlRenderer.render(root, node, omitted, component.background)
             val html = page.html
             assertBalanced(html)
-            assertTrue(html, Regex("""<span class="v ac(?: at| ab)?"><span class="vi">(?:<span class="s\d+">)?one(?:</span>)?</span><span class="hr" data-o="1"></span><span class="vi">(?:<span class="s\d+">)?two(?:</span>)?</span></span>""").containsMatchIn(html))
+            assertEquals(emptyList<EditorCell>(), page.missing)
+            assertTrue(html, html.contains("x &lt;&amp;&quot;="))
+            assertTrue(html, Regex("""<span class="v ac(?: at| ab)?"><span class="vi">(?:<span class="s\d+">)?one(?:</span>)?</span>\n<span class="hr" data-o="1"></span>\n<span class="vi">(?:<span class="s\d+">)?two(?:</span>)?</span></span>""").containsMatchIn(html))
             assertTrue(html, Regex("""<span class="im" data-o="2" title="⟦2⟧ ConceptDeclaration" style="width:16px;height:16px;background-position:-\d+px -\d+px"></span>""").containsMatchIn(html))
             assertEquals(mapOf(omitted[0].cell to "─", omitted[1].cell to "image"), page.shownAs)
-            val shownLine = preText(html).lines().first { it.contains("x =") }
-            assertTrue(shownLine, shownLine.trimEnd().endsWith("x = onetwo"))
+            val shown = preText(html)
+            assertTrue(shown, shown.contains("x <&\"= one\n\ntwo"))
+        }
+    }
+
+    @Test
+    fun `a table of rows keeps a cell in its column when the cells before it are blank`() {
+        val ref = createConceptRoot("HtmlGrid")
+        inEditor(ref) { component, node ->
+            val root = component.rootCell as EditorCell_Collection
+            val ctx = component.editorContext
+            fun row(vararg texts: String) = EditorCell_Collection(ctx, root.sNode, CellLayout_Horizontal()).apply {
+                for (t in texts) addEditorCell(EditorCell_Constant(ctx, root.sNode, t).apply { setDefaultText(" ") })
+            }
+            val table = EditorCell_Collection(ctx, root.sNode, CellLayout_Vertical()).apply {
+                setGridLayout(true)
+                style.set(StyleAttributes.TABLE_COMPONENT, TableComponent.VERTICAL_COLLECTION)
+                addEditorCell(row("head1", "head2", "head3"))
+                addEditorCell(row("x", "", "y"))
+            }
+            root.addEditorCell(table)
+            root.requestRelayout()
+            component.relayout()
+
+            val html = EditorHtmlRenderer.render(root, node, NonTextCells.collect(root), component.background).html
+            assertBalanced(html)
+            val grid = html.substringAfter("<span class=\"t rows n3")
+            val lines = Regex("""<span class="tl">(.*?)</span></span>(?=<span class="tl">|</span>)""").findAll(grid).map { it.groupValues[1] }.toList()
+            assertEquals(html, 2, lines.size)
+            val cells = lines[1].split("<span class=\"tc\">").drop(1).map { it.replace(Regex("<[^>]+>"), "").trim() }
+            assertEquals(html, listOf("x", "", "y"), cells)
+        }
+    }
+
+    @Test
+    fun `two stacks side by side become two columns rather than lines of one flow`() {
+        val ref = createConceptRoot("HtmlColumns")
+        inEditor(ref) { component, node ->
+            val root = component.rootCell as EditorCell_Collection
+            val ctx = component.editorContext
+            fun stack(vararg texts: String) = EditorCell_Collection(ctx, root.sNode, CellLayout_Vertical()).apply {
+                for (t in texts) addEditorCell(EditorCell_Constant(ctx, root.sNode, t))
+            }
+            root.addEditorCell(EditorCell_Collection(ctx, root.sNode, CellLayout_Horizontal()).apply {
+                addEditorCell(stack("a1", "a2"))
+                addEditorCell(stack("b1", "b2"))
+            })
+            root.requestRelayout()
+            component.relayout()
+
+            val page = EditorHtmlRenderer.render(root, node, NonTextCells.collect(root), component.background)
+            assertEquals(emptyList<EditorCell>(), page.missing)
+            val added = page.html.substringAfterLast("references:")
+            assertEquals(page.html, 2, Regex("""<span class="v[ "]""").findAll(added).count())
+            val shown = preText(page.html)
+            assertTrue(shown, shown.contains("a1\na2") && shown.contains("b1\nb2"))
         }
     }
 }

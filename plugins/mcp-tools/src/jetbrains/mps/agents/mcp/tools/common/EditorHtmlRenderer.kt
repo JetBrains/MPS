@@ -8,6 +8,7 @@ import jetbrains.mps.nodeEditor.cellLayout.CellLayout_Superscript
 import jetbrains.mps.nodeEditor.cellLayout.CellLayout_Table
 import jetbrains.mps.nodeEditor.cellLayout.CellLayout_Vertical
 import jetbrains.mps.nodeEditor.cellLayout.PunctuationUtil
+import jetbrains.mps.editor.runtime.EditorCell_Empty
 import jetbrains.mps.nodeEditor.cells.APICellAdapter
 import jetbrains.mps.nodeEditor.cells.EditorCell_Basic
 import jetbrains.mps.nodeEditor.cells.EditorCell_Label
@@ -36,18 +37,21 @@ internal object EditorHtmlRenderer {
     const val PAGE = "index.html"
     const val IMAGE = "editor.png"
 
-    /** [shownAs] is how each cell without text appears: `─`, `│` or `image`. */
-    class Page(val html: String, val shownAs: Map<EditorCell, String>)
+    /**
+     * [shownAs] is how each cell without text appears: `─`, `│` or `image`. [missing] are the shown leaves (labels with
+     * text, cells without text) the page does not contain, which should never happen.
+     */
+    class Page(val html: String, val shownAs: Map<EditorCell, String>, val missing: List<EditorCell>)
 
     private const val TOLERANCE = 2
     private const val NEIGHBOUR_GAP_CHARS = 1.5
 
-    fun render(root: EditorCell, node: SNode, omitted: List<NonTextCells.Omitted>, background: Color?): Page {
+    fun render(root: EditorCell, node: SNode, omitted: List<NonTextCells.Omitted>, background: Color?, foreground: Color? = null): Page {
         val metrics = EditorSettings.getInstance().defaultEditorFontMetrics
         val writer = Writer(root, node, omitted, metrics.getWidth(" "), metrics.height)
         writer.emit(root, Flow(root.x), null)
         writer.closeAll()
-        return Page(writer.page(background), writer.shownAs)
+        return Page(writer.page(background, foreground), writer.shownAs, writer.missing())
     }
 
     private class Flow(val left: Int) {
@@ -60,7 +64,7 @@ internal object EditorHtmlRenderer {
         var written = false
     }
 
-    private enum class Kind { FLOW, BOX, BLOCK, TABLE, SUPERSCRIPT }
+    private enum class Kind { FLOW, BOX, BLOCK, TABLE, GRID, SUPERSCRIPT }
 
     private class Writer(
         val root: EditorCell,
@@ -81,10 +85,15 @@ internal object EditorHtmlRenderer {
         /** Leaves that show something, in editor order, and the range of them under each collection. */
         private val leaves = ArrayList<EditorCell>()
         private val ranges = HashMap<EditorCell, IntRange>()
+        private val emitted = HashSet<EditorCell>()
+        private val modelAliases = LinkedHashMap<String, String>()
+
+        fun missing(): List<EditorCell> = leaves.filter { it !in emitted }
 
         init {
             fun walk(cell: EditorCell) {
-                if (cell is EditorCell_Collection) {
+                // A Swing collection (a diagram) is one cut-out of the image, whatever cells it holds.
+                if (cell is EditorCell_Collection && cell !in omittedByCell) {
                     val first = leaves.size
                     cell.forEach(::walk)
                     if (leaves.size > first) ranges[cell] = first until leaves.size
@@ -103,6 +112,7 @@ internal object EditorHtmlRenderer {
         fun emit(cell: EditorCell, flow: Flow, parentNode: SNode?) {
             val attrs = nodeAttributes(cell, parentNode)
             when {
+                cell in omittedByCell -> item(cell, flow) { nonText(cell, attrs, inColumn = false) }
                 cell is EditorCell_Collection -> when (kindOf(cell)) {
                     Kind.FLOW -> {
                         val tag = if (attrs.isEmpty()) null else OpenTag("<span$attrs>").also { pending += it }
@@ -118,6 +128,7 @@ internal object EditorHtmlRenderer {
                     }
                     Kind.BLOCK -> item(cell, flow) { block(cell, attrs) }
                     Kind.TABLE -> item(cell, flow) { table(cell, attrs) }
+                    Kind.GRID -> item(cell, flow) { gridTable(cell, attrs) }
                     Kind.SUPERSCRIPT -> {
                         val tag = OpenTag("<span class=\"ss${brackets(cell)}\"$attrs>").also { pending += it }
                         for (child in cell) {
@@ -131,7 +142,6 @@ internal object EditorHtmlRenderer {
                     }
                 }
                 cell is EditorCell_Label -> if (cell.renderedText.isNotBlank()) item(cell, flow) { label(cell, attrs) }
-                cell in omittedByCell -> item(cell, flow) { nonText(cell, attrs, inColumn = false) }
             }
         }
 
@@ -140,6 +150,7 @@ internal object EditorHtmlRenderer {
             return when {
                 ranges[cell] == null -> Kind.FLOW
                 layout is CellLayout_Table -> Kind.TABLE
+                layout is CellLayout_Vertical && cell.style.get(StyleAttributes.TABLE_COMPONENT) == TableComponent.VERTICAL_COLLECTION -> Kind.GRID
                 layout is CellLayout_Superscript -> Kind.SUPERSCRIPT
                 layout is CellLayout_Vertical && cell.count { ranges[it] != null || isShown(it) } >= 2 && besideOtherText(cell) -> Kind.BLOCK
                 cell.style.get(StyleAttributes.DRAW_BRACKETS) == true -> Kind.BOX
@@ -172,6 +183,8 @@ internal object EditorHtmlRenderer {
                     val leaf = leaves[i]
                     val box = tallBox(leaf)
                     if (box == null) return leaf.takeIf { beside(it, step < 0) }
+                    // Another multi-row box right beside this one (two columns side by side) is its line too.
+                    if (overlapsVertically(box, cell) && if (step < 0) box.x + box.width <= cell.x + TOLERANCE else box.x >= cell.x + cell.width - TOLERANCE) return box
                     val boxRange = ranges.getValue(box)
                     i = if (step < 0) boxRange.first - 1 else boxRange.last + 1
                 }
@@ -179,6 +192,8 @@ internal object EditorHtmlRenderer {
             }
             return scan(range.first - 1, -1) ?: scan(range.last + 1, 1)
         }
+
+        private fun overlapsVertically(a: EditorCell, b: EditorCell) = a.y < b.y + b.height && b.y < a.y + a.height
 
         /**
          * How a box sits in its line, read from the text beside it: level with the box's first row (` at`), its last row
@@ -198,7 +213,7 @@ internal object EditorHtmlRenderer {
             if (cell is EditorCell_Collection && ranges[cell] == null) return
             item(cell, flow, glue = true) {
                 out.append("<$tag>")
-                emit(cell, Flow(cell.x), parentNode)
+                emit(cell, Flow(textLeft(cell)), parentNode)
                 closeAll()
                 out.append("</$tag>")
             }
@@ -211,17 +226,23 @@ internal object EditorHtmlRenderer {
                 else -> ""
             }
             out.append("<span class=\"v$align${alignment(cell)}${brackets(cell)}\"$attrs>")
+            // Whitespace between flex items is not rendered: a newline between rows keeps the source readable in order.
+            var firstRow = true
             for (child in cell) {
                 val entry = omittedByCell[child]
-                if (entry != null && isRule(child)) {
-                    out.append("<span class=\"hr\" data-o=\"${entry.first}\"></span>")
+                val rule = entry != null && isRule(child)
+                if (!rule && child is EditorCell_Collection && ranges[child] == null) continue
+                if (!rule && child !is EditorCell_Collection && !isShown(child)) continue
+                if (!firstRow) out.append('\n')
+                firstRow = false
+                if (rule) {
+                    out.append("<span class=\"hr\" data-o=\"${entry!!.first}\"></span>")
                     shownAs[child] = CellGridTextRenderer.RULE.toString()
+                    emitted += child
                     continue
                 }
-                if (child is EditorCell_Collection && ranges[child] == null) continue
-                if (child !is EditorCell_Collection && !isShown(child)) continue
                 out.append("<span class=\"vi\">")
-                emit(child, Flow(child.x), cell.sNode)
+                emit(child, Flow(textLeft(child)), cell.sNode)
                 closeAll()
                 out.append("</span>")
             }
@@ -248,20 +269,83 @@ internal object EditorHtmlRenderer {
             val size = max(1, cellsOf.values.maxOfOrNull { it.size } ?: 1)
             tableSizes += size
             out.append("<span class=\"t ${if (columns) "cols" else "rows"} n$size${alignment(cell)}${brackets(cell)}\"$attrs>")
-            for (child in children) {
+            for ((i, child) in children.withIndex()) {
+                if (i > 0) out.append('\n')
                 val line = lineOf[child]
                 val bracketed = brackets(child).ifEmpty { line?.let(::brackets).orEmpty() }
                 out.append("<span class=\"tl$bracketed\"${nodeAttributes(child, cell.sNode)}>")
+                if (line != null && ranges[line] != ranges[child]) {
+                    // The line has company inside its child (a label before or after the row): keep all of it, in one cell.
+                    out.append("<span class=\"tc\" style=\"grid-${if (columns) "row" else "column"}:1/-1\">")
+                    emit(child, Flow(textLeft(child)), child.sNode)
+                    closeAll()
+                    out.append("</span></span>")
+                    continue
+                }
                 val lineNode = (line ?: child).sNode
-                for (c in cellsOf.getValue(child)) {
+                for ((k, c) in cellsOf.getValue(child).withIndex()) {
+                    if (k > 0) out.append(' ')
                     out.append("<span class=\"tc\">")
-                    emit(c, Flow(c.x), lineNode)
+                    emit(c, Flow(textLeft(c)), lineNode)
                     closeAll()
                     out.append("</span>")
                 }
                 out.append("</span>")
             }
             out.append("</span>")
+        }
+
+        /**
+         * A vertical collection styled as a table column (`EditorCell_Table` of the editor-tables runtime): its children are
+         * rows whose cells share columns by position, blank cells included. Columns come from the cells' x positions, so a
+         * cell keeps its column when the cells before it are blank; `EditorCell_Table` paints grid lines, kept as borders.
+         */
+        private fun gridTable(cell: EditorCell_Collection, attrs: String) {
+            val rows = cell.filter { it.width > 0 && it.height > 0 }
+            val cellsOf = rows.associateWith { row ->
+                if (row is EditorCell_Collection) row.filter { it.width > 0 && it.height > 0 && it !is EditorCell_Empty } else listOf(row)
+            }
+            val starts = mutableListOf<Int>()
+            for (x in cellsOf.values.flatten().map { it.x }.sorted()) {
+                if (starts.isEmpty() || x - starts.last() > TOLERANCE) starts += x
+            }
+            val size = max(1, starts.size)
+            tableSizes += size
+            val lined = generateSequence<Class<*>>(cell.javaClass) { it.superclass }.any { it.simpleName == "EditorCell_Table" }
+            out.append("<span class=\"t rows n$size${if (lined) " grid" else ""}${alignment(cell)}${brackets(cell)}\"$attrs>")
+            for ((r, row) in rows.withIndex()) {
+                if (r > 0) out.append('\n')
+                out.append("<span class=\"tl\"${if (row === cell) "" else nodeAttributes(row, cell.sNode)}>")
+                val slots = arrayOfNulls<EditorCell>(size)
+                for (c in cellsOf.getValue(row)) {
+                    val column = starts.indices.minByOrNull { abs(starts[it] - c.x) } ?: 0
+                    if (slots[column] == null) slots[column] = c
+                }
+                // A row of one wide cell (the empty-table placeholder) spans the table.
+                val single = cellsOf.getValue(row).size == 1 && slots.count { it != null } == 1
+                for ((i, c) in slots.withIndex()) {
+                    if (single && c == null) continue
+                    if (i > 0 && !single) out.append(' ')
+                    out.append(if (single) "<span class=\"tc\" style=\"grid-column:1/-1\">" else "<span class=\"tc\">")
+                    if (c != null) {
+                        emit(c, Flow(textLeft(c)), row.sNode)
+                        closeAll()
+                    }
+                    out.append("</span>")
+                    if (single) break
+                }
+                out.append("</span>")
+            }
+            out.append("</span>")
+        }
+
+        /** Where the text of a box starts: the text edge of its first label, so a box's own inset is no indentation. */
+        private fun textLeft(cell: EditorCell): Int {
+            val first = if (cell is EditorCell_Collection) ranges[cell]?.let { leaves[it.first] } else cell
+            return when {
+                first is EditorCell_Label && first.x >= cell.x -> first.x + first.leftInset
+                else -> cell.x
+            }
         }
 
         private fun hasContent(cell: EditorCell) = (cell is EditorCell_Collection && ranges[cell] != null) || isShown(cell)
@@ -274,6 +358,7 @@ internal object EditorHtmlRenderer {
         }
 
         private fun label(cell: EditorCell_Label, attrs: String) {
+            emitted += cell
             val text = escape(cell.renderedText)
             val classes = listOfNotNull(styleClass(cell), if (cell.style.get(StyleAttributes.DRAW_BRACKETS) == true) "ib br" else null)
             val target = APICellAdapter.getSNodeWRTReference(cell)?.takeIf { it != cell.sNode }?.let { " data-t=\"${escape(nodeKey(it))}\"" } ?: ""
@@ -286,6 +371,7 @@ internal object EditorHtmlRenderer {
         }
 
         private fun nonText(cell: EditorCell, attrs: String, inColumn: Boolean) {
+            emitted += cell
             val (index, omitted) = omittedByCell.getValue(cell)
             when {
                 isRule(cell) && !inColumn -> {
@@ -295,7 +381,7 @@ internal object EditorHtmlRenderer {
                     shownAs[cell] = CellGridTextRenderer.RULE.toString()
                 }
                 cell.width <= 3 && cell.height >= lineHeight * 3 / 4 -> {
-                    out.append("<span class=\"vr\" data-o=\"$index\"$attrs></span>")
+                    out.append("<span class=\"vr\" data-o=\"$index\"$attrs style=\"height:${cell.height}px\"></span>")
                     shownAs[cell] = CellGridTextRenderer.VERTICAL_RULE.toString()
                 }
                 else -> {
@@ -319,7 +405,10 @@ internal object EditorHtmlRenderer {
          */
         private fun item(cell: EditorCell, flow: Flow, glue: Boolean = false, body: () -> Unit) {
             val x = if (cell is EditorCell_Label) cell.x + cell.leftInset else cell.x
-            val right = if (cell is EditorCell_Label) cell.x + cell.width - cell.rightInset else cell.x + cell.width
+            // A label's text may be narrower than its cell (a grid or table stretches it): the gap after it starts at the text.
+            val right = if (cell is EditorCell_Label) {
+                x + minOf(cell.width - cell.leftInset - cell.rightInset, cell.renderedText.length * charWidth)
+            } else cell.x + cell.width
             val bottom = cell.y + cell.height
             when {
                 !flow.started -> {
@@ -381,10 +470,17 @@ internal object EditorHtmlRenderer {
             return " data-n=\"${escape(nodeKey(node))}\" data-c=\"${escape(node.concept.name)}\"" + (role?.let { " data-r=\"${escape(it)}\"" } ?: "")
         }
 
-        /** The node id within the page's model, or the full node reference (which contains a `/`) for another model. */
-        private fun nodeKey(target: SNode): String =
-            if (target.model != null && target.model == model) target.nodeId.toString()
-            else PersistenceFacade.getInstance().asString(target.reference)
+        /**
+         * The node id within the page's model; for another model `mN/<node id>`, `mN` being declared once by
+         * `<meta name="mps-model-mN">` (the full node reference is that model reference, `/`, the id).
+         */
+        private fun nodeKey(target: SNode): String {
+            val targetModel = target.model
+            if (targetModel != null && targetModel == model) return target.nodeId.toString()
+            val modelRef = target.reference.modelReference ?: return PersistenceFacade.getInstance().asString(target.reference)
+            val alias = modelAliases.getOrPut(PersistenceFacade.getInstance().asString(modelRef)) { "m${modelAliases.size + 1}" }
+            return "$alias/${target.nodeId}"
+        }
 
         private fun brackets(cell: EditorCell) = if (cell.style.get(StyleAttributes.DRAW_BRACKETS) == true) " br" else ""
 
@@ -408,7 +504,7 @@ internal object EditorHtmlRenderer {
 
         // ---- page -------------------------------------------------------------------------------------------------------
 
-        fun page(background: Color?): String {
+        fun page(background: Color?, foreground: Color?): String {
             val ref = PersistenceFacade.getInstance().asString(node.reference)
             val modelRef = model?.let { PersistenceFacade.getInstance().asString(it.reference) }
             val title = (node.presentation ?: node.concept.name)
@@ -418,23 +514,24 @@ internal object EditorHtmlRenderer {
                 append("<meta name=\"generator\" content=\"MPS mps_mcp_print_node\">\n")
                 append("<meta name=\"mps-node\" content=\"").append(escape(ref)).append("\">\n")
                 if (modelRef != null) append("<meta name=\"mps-model\" content=\"").append(escape(modelRef)).append("\">\n")
+                for ((ref, alias) in modelAliases) append("<meta name=\"mps-model-$alias\" content=\"").append(escape(ref)).append("\">\n")
                 append(READING_GUIDE)
-                append("<style>\n").append(css(background)).append("</style>\n</head>\n<body>\n<pre class=\"mps\">")
+                append("<style>\n").append(css(background, foreground)).append("</style>\n</head>\n<body>\n<pre class=\"mps\">")
                 append(out)
                 append("</pre>\n<p class=\"note\"><a href=\"$IMAGE\">$IMAGE</a> is this editor painted as an image.</p>\n</body>\n</html>\n")
             }
         }
 
-        private fun css(background: Color?): String = buildString {
+        private fun css(background: Color?, foreground: Color?): String = buildString {
             val bg = background?.let(::hex) ?: "#ffffff"
-            append("body{margin:16px;background:$bg;color:#080808}\n")
+            append("body{margin:16px;background:$bg;color:${foreground?.let(::hex) ?: "#080808"}}\n")
             append("pre.mps{font:13px/1.5 \"JetBrains Mono\",Menlo,Consolas,monospace;margin:0}\n")
             append(".note{font:12px sans-serif;color:#666}\n")
             append(".v{display:inline-flex;flex-direction:column;vertical-align:middle;align-items:flex-start}\n")
             append(".v.ac{align-items:center}.v.ar{align-items:flex-end}\n")
             append(".v.at,.t.at,.ib.at{vertical-align:top}.v.ab,.t.ab,.ib.ab{vertical-align:bottom}\n")
             append(".hr{align-self:stretch;border-top:1px solid currentColor;margin:1px 0}\n")
-            append(".vr{display:inline-block;border-left:1px solid currentColor;height:1.2em;vertical-align:middle}\n")
+            append(".vr{display:inline-block;border-left:1px solid currentColor;vertical-align:middle}\n")
             append(".ib{display:inline-block;vertical-align:middle}\n")
             append(".br{position:relative;padding:0 .5em}\n")
             append(".br::before,.br::after{content:\"\";position:absolute;top:1px;bottom:1px;width:.3em;border:1.5px solid currentColor}\n")
@@ -443,6 +540,8 @@ internal object EditorHtmlRenderer {
             append(".t>.tl{display:grid;align-items:center;justify-items:center;gap:0 1ch}\n")
             append(".t.rows>.tl{grid-column:1/-1;grid-template-columns:subgrid}\n")
             append(".t.cols{grid-auto-flow:column}.t.cols>.tl{grid-row:1/-1;grid-template-rows:subgrid}\n")
+            append(".t.grid,.t.grid>.tl{gap:0;justify-items:stretch}.t.grid{border-left:1px solid #c8c8c8;border-top:1px solid #c8c8c8}\n")
+            append(".t.grid .tc{border-right:1px solid #c8c8c8;border-bottom:1px solid #c8c8c8;padding:0 .3em;min-height:1.4em}\n")
             for (n in tableSizes) append(".t.rows.n$n{grid-template-columns:repeat($n,auto)}.t.cols.n$n{grid-template-rows:repeat($n,auto)}\n")
             append(".im{display:inline-block;vertical-align:middle;background:url($IMAGE) no-repeat}\n")
             append("sup,sub{font-size:100%;line-height:0}\n")
@@ -454,10 +553,10 @@ internal object EditorHtmlRenderer {
     private val READING_GUIDE = """
         |<!--
         |  The editor projection of the node named by mps-node. The text of the pre element reads like the editor: line breaks and
-        |  indentation follow it. data-n on a span: the projection of a node starts here; its node id in mps-model (a value
-        |  with a "/" is a full node reference), data-c its concept, data-r its role in the parent node. data-t: the target of
+        |  indentation follow it; inside boxes, rows are on lines of their own. data-n on a span: the projection of a node
+        |  starts here; its node id in mps-model (mN/<id>: in the model of meta mps-model-mN), data-c its concept, data-r its role in the parent node. data-t: the target of
         |  a reference. Classes: v cells stacked vertically (a fraction, the bounds of a big operator); t a table of lines tl
-        |  (rows, or columns with "cols") and cells tc; br brackets drawn around the box; hr, hrt a horizontal rule (a
+        |  (rows, or columns with "cols") and cells tc, "grid" with the editor's grid lines; br brackets drawn around the box; hr, hrt a horizontal rule (a
         |  fraction bar); vr a vertical rule; im a cell without text shown as a cut-out of editor.png; data-o its 1-based
         |  entry in details.omittedCells.cells; sup/sub superscript and subscript; sN text styles; ss a superscript layout; at/ab a box level with
         |  its line at its first/last row (else its middle).
@@ -472,7 +571,8 @@ internal object EditorHtmlRenderer {
             '<' -> append("&lt;")
             '>' -> append("&gt;")
             '"' -> append("&quot;")
-            else -> append(c)
+            '\n', '\t' -> append(c)
+            else -> if (c < ' ' || c == '\u007f') append('\uFFFD') else append(c)
         }
     }
 }
