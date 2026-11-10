@@ -2716,10 +2716,18 @@ abstract class AbstractOps : McpToolset {
      * (a missing session would otherwise NPE inside `IntentionsManager.computeWithSession`) and
      * fails as a clean [McpUserException] instead. For intention listing/apply, pass the containing
      * root so ancestor intentions and full-root typechecking are available.
+     *
+     * Non-null [editorHints] replace the project's hint settings for this editor (an empty array: no hints).
      */
-    protected fun <T> withHeadlessEditor(repo: SRepository, node: SNode, block: (EditorContext) -> T): T {
+    protected fun <T> withHeadlessEditor(
+        repo: SRepository,
+        node: SNode,
+        editorHints: Array<String>? = null,
+        block: (EditorContext) -> T,
+    ): T {
         val component = HeadlessEditorComponent(repo)
         try {
+            if (editorHints != null) component.updater.setInitialEditorHints(editorHints)
             component.editNode(node)
             if (component.typecheckingSession == null) {
                 throw McpUserException(

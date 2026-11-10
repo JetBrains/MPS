@@ -12,6 +12,10 @@ import com.intellij.mcpserver.annotations.McpTool
 import jetbrains.mps.agents.mcp.tools.languages.StructureDeclarations
 import jetbrains.mps.agents.mcp.tools.logging.McpCallOutcomes
 import jetbrains.mps.editor.runtime.HeadlessEditorComponent
+import jetbrains.mps.nodeEditor.EditorCell_WithComponent
+import jetbrains.mps.nodeEditor.EditorComponent
+import jetbrains.mps.nodeEditor.cells.EditorCell_ContextAssistantComponent
+import jetbrains.mps.nodeEditor.hintsSettings.ConceptEditorHintSettingsComponent
 import jetbrains.mps.errors.MessageStatus
 import jetbrains.mps.errors.item.ModelReportItem
 import jetbrains.mps.errors.item.NodeReportItem
@@ -35,10 +39,19 @@ import org.jetbrains.mps.openapi.model.SNode
 import org.jetbrains.mps.openapi.module.SModule
 import org.jetbrains.mps.openapi.module.SRepository
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
+import java.awt.image.BufferedImage
+import java.io.File
+import java.io.IOException
 import java.util.concurrent.TimeUnit
+import javax.imageio.ImageIO
 
 /** See [JetBrainsMPSNodeMcpToolset.moduleCheckBudgetMs]. */
 private const val MODULE_CHECK_BUDGET_MS: Long = 20_000
+
+// Diagram cells (matched by name: mcp-tools does not depend on the diagram runtime), and the preferred size in both
+// dimensions from which any other Swing cell counts as graphical rather than as a button or icon.
+private val GRAPHICAL_CELL_CLASSES = setOf("DiagramCell", "AbstractJetpadCell")
+private const val GRAPHICAL_CELL_MIN_SIZE = 64
 
 // lang.core markers whose subtrees the typesystem checkers (TypeSystemUtil.shouldApplyTypeSystemRules) and
 // the constraints, reference-scope and target-concept checkers (AbstractNodeCheckerInEditor.SKIP_CONSTRAINTS_CONDITION)
@@ -793,29 +806,178 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         }
     }
 
+    private enum class Projection(val label: String) { TEXT("text"), HTML("HTML"), IMAGE("an image") }
+
+    /** An image painted on the EDT, encoded and written to a file after the read action. */
+    private class PaintedImage(val image: BufferedImage, val details: Map<String, Any?>, val warnings: List<String>)
+
     suspend private fun showNodeAppearance(
         nodeReference: String,
-        asHtml: Boolean = false,
-        maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
+        projection: Projection,
+        maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES,
+        editorHints: List<String>? = null,
     ): String {
-        return withMpsProject("Getting MPS node ${if (asHtml) "HTML" else "text"} representation") { mpsProject ->
-            executeShortReadOnEdt(mpsProject) {
+        return withMpsProject("Getting MPS node ${projection.label} representation") { mpsProject ->
+            val result: Any = executeShortReadOnEdt(mpsProject) {
                 val repo = mpsProject.repository
                 val sNodeRef = resolveNodeReferencePreferringProject(mpsProject, nodeReference)
                 val node = sNodeRef?.resolve(repo)
                     ?: return@executeShortReadOnEdt unresolvedPrintNode(mpsProject, nodeReference, parsedAsNode = sNodeRef != null)
 
-                withHeadlessEditor(repo, node) { ctx ->
-                    val component = ctx.editorComponent as HeadlessEditorComponent
-                    val text = if (asHtml) {
-                        component.rootCell.renderHtml().htmlText
-                    } else {
-                        component.rootCell.renderText().getText()
+                val catalog = EditorHintCatalog.forNode(node, repo)
+                val warnings = mutableListOf<String>()
+                val hintsBlock = linkedMapOf<String, Any?>()
+                val applied = if (editorHints == null) {
+                    hintsBlock["source"] = "projectSettings"
+                    hintsBlock["applied"] = projectEditorHints(mpsProject)
+                    null
+                } else {
+                    resolveRequestedEditorHints(editorHints, catalog, repo, warnings).also {
+                        hintsBlock["source"] = "request"
+                        hintsBlock["applied"] = it
                     }
-                    finalizeResult(JsonPrimitive(text).toString(), maxInlineBytes)
+                }
+                if (editorHints == null) {
+                    val (shown, hidden) = catalog.compactListing()
+                    hintsBlock["available"] = shown
+                    if (hidden > 0) hintsBlock["hiddenCount"] = hidden
+                } else {
+                    hintsBlock["available"] = catalog.fullListing()
+                }
+                if (catalog.unloadedLanguages.isNotEmpty()) hintsBlock["unloadedLanguages"] = catalog.unloadedLanguages
+
+                withHeadlessEditor(repo, node, applied?.toTypedArray()) { ctx ->
+                    val component = ctx.editorComponent as HeadlessEditorComponent
+                    val details = linkedMapOf<String, Any?>("editorHints" to hintsBlock)
+                    val text = try {
+                        when (projection) {
+                            Projection.HTML -> component.rootCell.renderHtml().htmlText
+                            Projection.TEXT -> renderPlainText(component, details, warnings)
+                            Projection.IMAGE -> {
+                                val painted = EditorImageRenderer.paint(component, paintableComponentCells(component))
+                                details["image"] = painted.details
+                                return@withHeadlessEditor PaintedImage(painted.image, details, warnings + painted.warnings)
+                            }
+                        }
+                    } catch (e: RuntimeException) {
+                        rethrowIfCancellation(e)
+                        logger.warn("Rendering ${projection.label} of $nodeReference failed", e)
+                        return@withHeadlessEditor errJson(
+                            "The editor of this node cannot be rendered as ${projection.label} ($e). " +
+                                "Retry with format ${if (projection == Projection.TEXT) "JSON" else "\"PLAIN TEXT\""}.",
+                            McpErrorCode.INTERNAL_ERROR,
+                        )
+                    }
+                    graphicalCellsWarning(component)?.let(warnings::add)
+                    finalizeResult(JsonPrimitive(text).toString(), maxInlineBytes, details, warnings)
                 }
             }
+            if (result is PaintedImage) writePngResult(result) else result as String
         }
+    }
+
+    private fun writePngResult(painted: PaintedImage): String {
+        return try {
+            val file = File.createTempFile("mps-node-", ".png")
+            file.deleteOnExit()
+            ImageIO.write(painted.image, "png", file)
+            okJson(JsonPrimitive(file.absolutePath), warnings = painted.warnings, details = painted.details)
+        } catch (e: IOException) {
+            logger.warn("Failed to save the node image to a temporary file", e)
+            errJson("Failed to save the image to a temporary file: ${e.message}")
+        }
+    }
+
+    /**
+     * `renderText()` of the root cell, unless the projection contains a table: then the label geometry is laid out as a
+     * character grid ([CellGridTextRenderer]), which keeps the columns `renderText()` collapses.
+     */
+    private fun renderPlainText(component: EditorComponent, details: MutableMap<String, Any?>, warnings: MutableList<String>): String {
+        val root = component.rootCell
+        if (!CellGridText.containsTable(root)) return root.renderText().getText()
+        val grid = try {
+            CellGridText.render(root)
+        } catch (e: RuntimeException) {
+            rethrowIfCancellation(e)
+            logger.warn("Grid text rendering failed", e)
+            null
+        }
+        if (grid == null) {
+            warnings += "The projection contains a table, but its grid text could not be built; fell back to the plain text " +
+                "rendering, which may collapse table columns (use format IMAGE)"
+            return root.renderText().getText()
+        }
+        details["textRenderer"] = "grid"
+        warnings += "Rendered as a character grid from the cell geometry because the projection contains a table " +
+            "(a collection with table-component VERTICAL_COLLECTION)" +
+            if (grid.omittedCells > 0) "; ${grid.omittedCells} non-text cell(s) omitted" else ""
+        return grid.text
+    }
+
+    private fun paintableComponentCells(component: EditorComponent): List<EditorCell_WithComponent> =
+        component.cellTracker.componentCells.filter { it !is EditorCell_ContextAssistantComponent }
+
+    /** The hints the project-wide setting enables, which a headless editor applies when given none. */
+    private fun projectEditorHints(mpsProject: MPSProject): List<String> =
+        ConceptEditorHintSettingsComponent.getInstance(mpsProject.project)?.state?.enabledHints.orEmpty().sorted()
+
+    /**
+     * The FQ names of [values] (FQ names or short ids), looked up in [catalog] and, for a value it does not know, in every
+     * deployed language (with a warning). An unknown or ambiguous value fails the call with the node's catalog.
+     */
+    private fun resolveRequestedEditorHints(
+        values: List<String>,
+        catalog: EditorHintCatalog,
+        repo: SRepository,
+        warnings: MutableList<String>,
+    ): List<String> {
+        var global: EditorHintCatalog? = null
+        val resolved = linkedSetOf<String>()
+        val problems = mutableListOf<String>()
+        for (value in values.map { it.trim() }.filter { it.isNotEmpty() }) {
+            var match = catalog.find(value)
+            var outside = false
+            if (match is EditorHintCatalog.Match.Missing) {
+                val all = global ?: EditorHintCatalog.global(repo).also { global = it }
+                match = all.find(value)
+                outside = true
+            }
+            when (match) {
+                is EditorHintCatalog.Match.Found -> {
+                    resolved += match.entry.fqName
+                    if (outside) warnings += "Editor hint '${match.entry.fqName}' is declared by ${match.entry.language}, " +
+                        "which this node's model does not use; applied anyway"
+                }
+                is EditorHintCatalog.Match.Ambiguous ->
+                    problems += "'$value' is ambiguous (${match.candidates.joinToString(", ")}); pass the FQ name"
+                EditorHintCatalog.Match.Missing ->
+                    problems += "'$value' is not declared by any loaded language"
+            }
+        }
+        if (problems.isNotEmpty()) {
+            throw McpUserException(
+                McpErrorCode.INVALID_REQUEST,
+                "Unknown editorHints: ${problems.joinToString("; ")}. details.editorHints.available lists the hints of this node's model.",
+                mapOf("editorHints" to mapOf("available" to catalog.fullListing())),
+            )
+        }
+        return resolved.toList()
+    }
+
+    /**
+     * A warning naming the Swing or diagram cells of [component] that neither text nor HTML can show; the context-assistant
+     * cell and small widgets (buttons, icons) are not counted.
+     */
+    private fun graphicalCellsWarning(component: EditorComponent): String? {
+        val classes = paintableComponentCells(component).filter(::isGraphicalCell).map { it.javaClass.simpleName }
+        if (classes.isEmpty()) return null
+        return "${classes.size} graphical cell(s) (${classes.distinct().sorted().joinToString(", ")}) have no textual form; use format IMAGE"
+    }
+
+    private fun isGraphicalCell(cell: EditorCell_WithComponent): Boolean {
+        if (generateSequence<Class<*>>(cell.javaClass) { it.superclass }.any { it.simpleName in GRAPHICAL_CELL_CLASSES }) return true
+        val size = cell.component?.preferredSize ?: return false
+        return size.width >= GRAPHICAL_CELL_MIN_SIZE && size.height >= GRAPHICAL_CELL_MIN_SIZE
     }
 
     /**
@@ -1331,14 +1493,17 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         `nodeReference` must be a node reference (`r:<uuid>(model)/<node-id>`). A model reference or qualified model name is rejected with INVALID_REQUEST that names the model and a retry line for `mps_mcp_get_project_structure` (`startingPoint`, `includeNodes=true`); `mps_mcp_check_root_node_problems` accepts those model forms in `nodeReference`.
         A node of a transient model a make kept (references from `mps_mcp_generation` TRANSIENT_MODELS, `i:` model ids) prints like any other; `mps_mcp_generation` TRACE tells which input node and rule produced it.
         Alternatively, if HTML or PLAIN TEXT format is required, it returns the editor-projected representation of the specified node as a string, inline or as a temp-file path under the same `maxInlineBytes` rule.
+        `IMAGE` paints the editor projection to a PNG temp file whose path is `data` (size in `details.image`), the only format that shows diagrams, tables and other graphical cells as drawn.
+        `editorHints` selects an alternative projection (editor hints) for HTML, PLAIN TEXT and IMAGE; `details.editorHints` reports the hints applied and those `available` for the node's model. See `mps-mcp-workflow/references/analysis-tools/print-node-output.md`.
         If the goal is to duplicate this node rather than merely inspect it, prefer `mps_mcp_alter_nodes` `COPY_NODE` over printing it deep and re-inserting the JSON — it's fewer calls and produces a structurally guaranteed-valid clone.
     """
     )
     suspend fun mps_mcp_print_node(
         @McpDescription("Required. Persistent form of SNodeReference (r:<uuid>(model)/<node-id>). A model reference or qualified model name is rejected with a retry line pointing at mps_mcp_get_project_structure.") nodeReference: String = "",
-        @McpDescription("One of exactly three literals: JSON (default), HTML, PLAIN TEXT.") format: String = "JSON",
+        @McpDescription("One of exactly four literals: JSON (default), HTML, PLAIN TEXT, IMAGE.") format: String = "JSON",
         @McpDescription("Whether to perform a deep (true) or shallow (false) printout. Only relevant for JSON format. Defaults to false.") deep: Boolean = false,
-        @McpDescription("Inline the printout in `data` when it is at most this many characters; larger printouts are saved to a temp file whose path is returned instead (default 20000).") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
+        @McpDescription("Inline the printout in `data` when it is at most this many characters; larger printouts are saved to a temp file whose path is returned instead (default 20000).") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES,
+        @McpDescription("HTML, PLAIN TEXT and IMAGE only: an editor hint FQ name or short id, or a JSON array of them (a real array or the array written as a string). Omit to use the project's hint settings; [] for no hints.") editorHints: JsonOrText? = null,
     ): String {
         rejectMissingParameters(
             "mps_mcp_print_node",
@@ -1350,11 +1515,18 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
             ),
         )?.let { return it }
         val normalizedFormat = format.uppercase().trim()
-        if (normalizedFormat == "HTML") return showNodeAppearance(nodeReference, asHtml = true, maxInlineBytes = maxInlineBytes)
-        if (normalizedFormat == "PLAIN TEXT") return showNodeAppearance(nodeReference, asHtml = false, maxInlineBytes = maxInlineBytes)
+        val hints = parseNullableStringOrJsonArray(editorHints)
+        val projection = when (normalizedFormat) {
+            "HTML" -> Projection.HTML
+            "PLAIN TEXT" -> Projection.TEXT
+            "IMAGE" -> Projection.IMAGE
+            else -> null
+        }
+        if (projection != null) return showNodeAppearance(nodeReference, projection, maxInlineBytes = maxInlineBytes, editorHints = hints)
         if (normalizedFormat != "JSON") return McpCallOutcomes.record(
-            errJson("Invalid format '$format'. Allowed values: JSON, HTML, PLAIN TEXT", McpErrorCode.INVALID_REQUEST)
+            errJson("Invalid format '$format'. Allowed values: JSON, HTML, PLAIN TEXT, IMAGE", McpErrorCode.INVALID_REQUEST)
         )
+        val hintsWarnings = if (hints == null) emptyList() else listOf("editorHints applies to the HTML, PLAIN TEXT and IMAGE formats only; ignored for JSON")
         return withMpsProject(if (deep) "Deep printing MPS node" else "Shallow printing MPS node") { mpsProject ->
             executeShortReadOnEdt(mpsProject) {
                 val repo = mpsProject.repository
@@ -1363,7 +1535,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                     ?: return@executeShortReadOnEdt unresolvedPrintNode(mpsProject, nodeReference, parsedAsNode = sNodeRef != null)
                 val unloadedConcepts = linkedSetOf<SAbstractConcept>()
                 val json = nodeHierarchyToJson(node, deep, mpsProject, unloadedConcepts = unloadedConcepts)
-                finalizeResult(json, maxInlineBytes, warnings = unloadedConceptsWarnings(unloadedConcepts))
+                finalizeResult(json, maxInlineBytes, warnings = hintsWarnings + unloadedConceptsWarnings(unloadedConcepts))
             }
         }
     }
