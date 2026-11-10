@@ -16,6 +16,7 @@ import jetbrains.mps.nodeEditor.EditorCell_WithComponent
 import jetbrains.mps.nodeEditor.EditorComponent
 import jetbrains.mps.nodeEditor.cells.EditorCell_ContextAssistantComponent
 import jetbrains.mps.nodeEditor.hintsSettings.ConceptEditorHintSettingsComponent
+import jetbrains.mps.openapi.editor.cells.EditorCell
 import jetbrains.mps.errors.MessageStatus
 import jetbrains.mps.errors.item.ModelReportItem
 import jetbrains.mps.errors.item.NodeReportItem
@@ -849,10 +850,12 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                 withHeadlessEditor(repo, node, applied?.toTypedArray()) { ctx ->
                     val component = ctx.editorComponent as HeadlessEditorComponent
                     val details = linkedMapOf<String, Any?>("editorHints" to hintsBlock)
+                    val omitted = if (projection == Projection.IMAGE) emptyList() else NonTextCells.collect(component.rootCell)
+                    val shownAs = LinkedHashMap<EditorCell, String>()
                     val text = try {
                         when (projection) {
                             Projection.HTML -> component.rootCell.renderHtml().htmlText
-                            Projection.TEXT -> renderPlainText(component, details, warnings)
+                            Projection.TEXT -> renderPlainText(component, omitted, shownAs, details, warnings)
                             Projection.IMAGE -> {
                                 val painted = EditorImageRenderer.paint(component, paintableComponentCells(component))
                                 details["image"] = painted.details
@@ -869,7 +872,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                         )
                     }
                     graphicalCellsWarning(component)?.let(warnings::add)
-                    reportNonTextCells(component, details, warnings)
+                    reportNonTextCells(omitted, shownAs, details, warnings)
                     finalizeResult(JsonPrimitive(text).toString(), maxInlineBytes, details, warnings)
                 }
             }
@@ -890,28 +893,37 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
     }
 
     /**
-     * `renderText()` of the root cell, unless the projection contains a table: then the label geometry is laid out as a
-     * character grid ([CellGridTextRenderer]), which keeps the columns `renderText()` collapses.
+     * `renderText()` of the root cell, unless the projection is two-dimensional (a table, a superscript layout, a cell
+     * without text): then the cell geometry is laid out as a character grid ([CellGridText]), which keeps the columns and
+     * rows `renderText()` collapses and draws brackets, rules and `⟦n⟧` placeholders. [shownAs] receives how each of the
+     * [omitted] cells appears in the grid.
      */
-    private fun renderPlainText(component: EditorComponent, details: MutableMap<String, Any?>, warnings: MutableList<String>): String {
+    private fun renderPlainText(
+        component: EditorComponent,
+        omitted: List<NonTextCells.Omitted>,
+        shownAs: MutableMap<EditorCell, String>,
+        details: MutableMap<String, Any?>,
+        warnings: MutableList<String>,
+    ): String {
         val root = component.rootCell
-        if (!CellGridText.containsTable(root)) return root.renderText().getText()
+        val reason = CellGridText.gridReason(root, omitted) ?: return root.renderText().getText()
         val grid = try {
-            CellGridText.render(root)
+            CellGridText.render(root, omitted)
         } catch (e: RuntimeException) {
             rethrowIfCancellation(e)
             logger.warn("Grid text rendering failed", e)
             null
         }
         if (grid == null) {
-            warnings += "The projection contains a table, but its grid text could not be built; fell back to the plain text " +
-                "rendering, which may collapse table columns (use format IMAGE)"
+            warnings += "Because $reason, the text should be a character grid, but it could not be built; fell back to the plain " +
+                "text rendering, which may collapse table columns and stacked cells (use format IMAGE)"
             return root.renderText().getText()
         }
         details["textRenderer"] = "grid"
-        warnings += "Rendered as a character grid from the cell geometry because the projection contains a table " +
-            "(a collection with table-component VERTICAL_COLLECTION)"
-        return grid
+        shownAs += grid.shownAs
+        warnings += "Rendered as a character grid from the cell geometry because $reason" +
+            if (grid.brackets > 0) "; ⎡⎢⎣ ⎤⎥⎦ (⁅ ⁆ on one row) are brackets the editor draws around ${grid.brackets} box(es)" else ""
+        return grid.text
     }
 
     /**
@@ -919,11 +931,17 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
      * (a fraction bar, an image, a Swing component), so a reader does not take the text for the whole projection. The
      * large graphical Swing cells [graphicalCellsWarning] already names are listed but not counted again in the warning.
      */
-    private fun reportNonTextCells(component: EditorComponent, details: MutableMap<String, Any?>, warnings: MutableList<String>) {
-        val omitted = NonTextCells.collect(component.rootCell)
+    private fun reportNonTextCells(
+        omitted: List<NonTextCells.Omitted>,
+        shownAs: Map<EditorCell, String>,
+        details: MutableMap<String, Any?>,
+        warnings: MutableList<String>,
+    ) {
         if (omitted.isEmpty()) return
-        details["omittedCells"] = NonTextCells.details(omitted)
-        val unwarned = omitted.filterNot { val cell = it.cell; cell is EditorCell_WithComponent && isGraphicalCell(cell) }
+        details["omittedCells"] = NonTextCells.details(omitted, shownAs)
+        val (shown, missing) = omitted.partition { it.cell in shownAs }
+        if (shown.isNotEmpty()) warnings += NonTextCells.shownWarning(shown, shownAs)
+        val unwarned = missing.filterNot { val cell = it.cell; cell is EditorCell_WithComponent && isGraphicalCell(cell) }
         if (unwarned.isNotEmpty()) warnings += NonTextCells.warning(unwarned)
     }
 

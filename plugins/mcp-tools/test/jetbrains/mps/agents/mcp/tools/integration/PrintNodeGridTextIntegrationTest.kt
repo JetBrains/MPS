@@ -64,7 +64,7 @@ class PrintNodeGridTextIntegrationTest : McpIntegrationTestBase() {
     @Test
     fun `a ConceptDeclaration editor has no table and keeps the plain text renderer`() {
         val ref = createConceptRoot("GridNone")
-        assertFalse(inEditor(ref) { CellGridText.containsTable(it) })
+        assertNull(inEditor(ref) { CellGridText.gridReason(it, NonTextCells.collect(it)) })
         val envelope = JsonParser.parseString(runTool(JetBrainsMPSNodeMcpToolset()) {
             it.mps_mcp_print_node(ref, format = "PLAIN TEXT")
         }).asJsonObject
@@ -78,10 +78,13 @@ class PrintNodeGridTextIntegrationTest : McpIntegrationTestBase() {
         val ref = createConceptRoot("GridTable")
         inEditor(ref) { root ->
             root.style.set(StyleAttributes.TABLE_COMPONENT, TableComponent.VERTICAL_COLLECTION)
-            assertTrue(CellGridText.containsTable(root))
-            val text = CellGridText.render(root)
-            assertNotNull("invariant failed on a real editor tree", text)
-            text!!
+            assertEquals("the projection contains a table", CellGridText.gridReason(root, emptyList()))
+            root.style.set(StyleAttributes.TABLE_COMPONENT, TableComponent.HORIZONTAL_COLLECTION)
+            assertNull("HORIZONTAL_COLLECTION is every cell's default, not a table", CellGridText.gridReason(root, emptyList()))
+            root.style.set(StyleAttributes.TABLE_COMPONENT, TableComponent.VERTICAL_COLLECTION)
+            val rendering = CellGridText.render(root, emptyList())
+            assertNotNull("invariant failed on a real editor tree", rendering)
+            val text = rendering!!.text
             assertTrue(text, text.lines().first().trimStart().startsWith("concept GridTable"))
             assertTrue(text, text.lines().size > 3)
             for (label in labelTexts(root)) assertTrue("'$label' missing from:\n$text", text.contains(label))
@@ -136,8 +139,17 @@ class PrintNodeGridTextIntegrationTest : McpIntegrationTestBase() {
             assertTrue(warning, warning.contains("EditorCell_Image"))
             assertEquals(2, NonTextCells.details(omitted)["count"])
 
-            val text = CellGridText.render(root)
-            assertNotNull("the grid invariant holds next to cells without text", text)
+            assertEquals("the projection contains cells without text", CellGridText.gridReason(root, omitted))
+            val rendering = CellGridText.render(root, omitted)
+            assertNotNull("the grid invariant holds next to cells without text", rendering)
+            val text = rendering!!.text
+            assertEquals(mapOf(omitted[0].cell to "─", omitted[1].cell to "⟦2⟧"), rendering.shownAs)
+            assertTrue(text, text.contains("─"))
+            assertTrue(text, text.contains("⟦2⟧"))
+            for (label in labelTexts(root)) assertTrue("'$label' missing from:\n$text", text.contains(label))
+            val shownWarning = NonTextCells.shownWarning(omitted, rendering.shownAs)
+            assertTrue(shownWarning, shownWarning.contains("─ for a horizontal rule") && shownWarning.contains("⟦n⟧ for the n-th entry"))
+            assertEquals("⟦2⟧", (NonTextCells.details(omitted, rendering.shownAs)["cells"] as List<*>).filterIsInstance<Map<*, *>>()[1]["shownAs"])
         }
     }
 }

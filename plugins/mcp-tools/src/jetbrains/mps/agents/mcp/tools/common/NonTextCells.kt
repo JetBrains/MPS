@@ -12,12 +12,12 @@ import org.jetbrains.mps.openapi.persistence.PersistenceFacade
 /**
  * The visible leaf cells of an editor that have no textual form, so neither `renderText()`, the grid text nor
  * `renderHtml()` shows them: cells that only paint (a fraction bar, a vertical rule), images, and Swing component cells.
- * Labels (even blank ones), empty cells, the context assistant and zero-sized cells are not counted.
+ * Labels (even blank ones), empty cells, the context assistant and cells of at most 2×2 pixels are not counted.
  */
 internal object NonTextCells {
 
     /** How many cells [Omitted.toDetails] lists; the count covers all of them. */
-    const val MAX_LISTED = 20
+    const val MAX_LISTED = 50
 
     private const val MAX_NEIGHBOUR_CHARS = 40
 
@@ -39,7 +39,7 @@ internal object NonTextCells {
         val width: Int,
         val height: Int,
     ) {
-        fun toDetails(): Map<String, Any?> {
+        fun toDetails(shownAs: String? = null): Map<String, Any?> {
             val node = cell.sNode
             return linkedMapOf(
                 "kind" to kind.label,
@@ -50,6 +50,7 @@ internal object NonTextCells {
                 "textBefore" to textBefore,
                 "textAfter" to textAfter,
                 "bounds" to linkedMapOf("x" to x, "y" to y, "width" to width, "height" to height),
+                "shownAs" to shownAs,
             ).filterValues { it != null }
         }
     }
@@ -57,7 +58,7 @@ internal object NonTextCells {
     /** Whether [cell] is a visible leaf with no textual form. */
     fun isNonTextLeaf(cell: EditorCell): Boolean =
         cell !is EditorCell_Collection && cell !is EditorCell_Label && cell !is EditorCell_Empty &&
-            cell !is EditorCell_ContextAssistantComponent && cell.width > 0 && cell.height > 0
+            cell !is EditorCell_ContextAssistantComponent && cell.width > 0 && cell.height > 0 && (cell.width > 2 || cell.height > 2)
 
     /** The non-text leaves under [root], in editor (depth-first) order. */
     fun collect(root: EditorCell, imageMargin: Int = EditorImageRenderer.MARGIN): List<Omitted> {
@@ -83,15 +84,30 @@ internal object NonTextCells {
         return result
     }
 
-    /** `{count, cells}` for the envelope details, listing at most [MAX_LISTED] cells. */
-    fun details(omitted: List<Omitted>): Map<String, Any?> =
-        linkedMapOf("count" to omitted.size, "cells" to omitted.take(MAX_LISTED).map { it.toDetails() })
+    /**
+     * `{count, cells}` for the envelope details, listing at most [MAX_LISTED] cells; a cell the grid text shows carries
+     * `shownAs` (its rule glyph or `⟦n⟧` placeholder).
+     */
+    fun details(omitted: List<Omitted>, shownAs: Map<EditorCell, String> = emptyMap()): Map<String, Any?> =
+        linkedMapOf("count" to omitted.size, "cells" to omitted.take(MAX_LISTED).map { it.toDetails(shownAs[it.cell]) })
 
-    /** The envelope warning naming [omitted], which must not be empty. */
+    /** The envelope warning naming [omitted] the printout leaves out, which must not be empty. */
     fun warning(omitted: List<Omitted>): String =
         "${omitted.size} cell(s) without text (${classSummary(omitted)}) are missing from this printout: drawn shapes such " +
             "as rules or fraction bars, images or widgets; details.omittedCells gives each one's node, neighbouring text and " +
             "IMAGE bounds; format IMAGE draws them"
+
+    /** The envelope warning for [shown] cells the grid text draws as a rule or shows as a placeholder; not empty. */
+    fun shownWarning(shown: List<Omitted>, shownAs: Map<EditorCell, String>): String {
+        val forms = shown.mapNotNull { shownAs[it.cell] }
+        val kinds = listOfNotNull(
+            "${CellGridTextRenderer.RULE} for a horizontal rule".takeIf { forms.any { it == CellGridTextRenderer.RULE.toString() } },
+            "${CellGridTextRenderer.VERTICAL_RULE} for a vertical rule".takeIf { forms.any { it == CellGridTextRenderer.VERTICAL_RULE.toString() } },
+            "⟦n⟧ for the n-th entry of details.omittedCells.cells".takeIf { forms.any { it.startsWith("⟦") } },
+        )
+        return "${shown.size} cell(s) without text (${classSummary(shown)}) are drawn in this text as ${kinds.joinToString(", ")}; " +
+            "details.omittedCells gives each one's node, neighbouring text, IMAGE bounds and shownAs; format IMAGE draws them"
+    }
 
     /** `HLineCellProvider$1 ×4, EditorCell_Image` style summary of the cell classes. */
     fun classSummary(omitted: List<Omitted>): String =
