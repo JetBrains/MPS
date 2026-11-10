@@ -8156,6 +8156,36 @@
         </node>
       </node>
     </node>
+    <node concept="2tJIrI" id="5YLCPOo9Gkd" role="jymVt" />
+    <node concept="2YIFZL" id="5YLCPOo9Iun" role="jymVt">
+      <property role="TrG5h" value="wrap" />
+      <node concept="3clFbS" id="5YLCPOo9Iuq" role="3clF47">
+        <node concept="3cpWs6" id="5YLCPOo9Kn4" role="3cqZAp">
+          <node concept="2ShNRf" id="5YLCPOo9KCf" role="3cqZAk">
+            <node concept="1pGfFk" id="5YLCPOo9MJD" role="2ShVmc">
+              <property role="373rjd" value="true" />
+              <ref role="37wK5l" node="5YLCPOnNLKJ" resolve="RepositoryFacade.Impl" />
+              <node concept="37vLTw" id="5YLCPOo9N2K" role="37wK5m">
+                <ref role="3cqZAo" node="5YLCPOo9JtP" resolve="repository" />
+              </node>
+            </node>
+          </node>
+        </node>
+      </node>
+      <node concept="3Tm1VV" id="5YLCPOo9HkV" role="1B3o_S" />
+      <node concept="3uibUv" id="5YLCPOo9Ilq" role="3clF45">
+        <ref role="3uigEE" node="5F0lsbynlOq" resolve="RepositoryFacade" />
+      </node>
+      <node concept="37vLTG" id="5YLCPOo9JtP" role="3clF46">
+        <property role="TrG5h" value="repository" />
+        <node concept="3uibUv" id="5YLCPOo9JtO" role="1tU5fm">
+          <ref role="3uigEE" to="31cb:~SRepositoryExt" resolve="SRepositoryExt" />
+        </node>
+        <node concept="2AHcQZ" id="5YLCPOo9JWq" role="2AJF6D">
+          <ref role="2AI5Lk" to="mhfm:~NotNull" resolve="NotNull" />
+        </node>
+      </node>
+    </node>
     <node concept="2tJIrI" id="5YLCPOnNI6l" role="jymVt" />
     <node concept="312cEu" id="5YLCPOnNJLW" role="jymVt">
       <property role="TrG5h" value="Impl" />
@@ -8164,7 +8194,7 @@
         <property role="3TUv4t" value="true" />
         <node concept="3Tm6S6" id="5YLCPOnNMhX" role="1B3o_S" />
         <node concept="3uibUv" id="5YLCPOnNMhZ" role="1tU5fm">
-          <ref role="3uigEE" node="1Unlav_2McA" resolve="Repo" />
+          <ref role="3uigEE" to="31cb:~SRepositoryExt" resolve="SRepositoryExt" />
         </node>
       </node>
       <node concept="312cEg" id="5YLCPOnNREk" role="jymVt">
@@ -8308,7 +8338,7 @@
         <node concept="37vLTG" id="5YLCPOnNM6I" role="3clF46">
           <property role="TrG5h" value="repo" />
           <node concept="3uibUv" id="5YLCPOnNM6H" role="1tU5fm">
-            <ref role="3uigEE" node="1Unlav_2McA" resolve="Repo" />
+            <ref role="3uigEE" to="31cb:~SRepositoryExt" resolve="SRepositoryExt" />
           </node>
         </node>
       </node>
@@ -8351,7 +8381,7 @@
                 <ref role="3cqZAo" node="5YLCPOnNMhW" resolve="myRepo" />
               </node>
               <node concept="liA8E" id="5F0lsbypc9D" role="2OqNvi">
-                <ref role="37wK5l" node="1Unlav_3lej" resolve="registerModule" />
+                <ref role="37wK5l" to="31cb:~SRepositoryExt.registerModule(org.jetbrains.mps.openapi.module.SModule,jetbrains.mps.smodel.MPSModuleOwner)" resolve="registerModule" />
                 <node concept="37vLTw" id="5F0lsbypcnp" role="37wK5m">
                   <ref role="3cqZAo" node="5F0lsbypa7Z" resolve="module" />
                 </node>
@@ -8383,7 +8413,7 @@
                     <ref role="3cqZAo" node="5YLCPOnNMhW" resolve="myRepo" />
                   </node>
                   <node concept="liA8E" id="2tbYNsGizhp" role="2OqNvi">
-                    <ref role="37wK5l" node="1Unlav_3lez" resolve="unregisterModule" />
+                    <ref role="37wK5l" to="31cb:~SRepositoryExt.unregisterModule(org.jetbrains.mps.openapi.module.SModule,jetbrains.mps.smodel.MPSModuleOwner)" resolve="unregisterModule" />
                     <node concept="2GrUjf" id="2tbYNsGiBpK" role="37wK5m">
                       <ref role="2Gs0qQ" node="30bJSo_qzcQ" resolve="m" />
                     </node>
@@ -8399,7 +8429,7 @@
                 <ref role="3cqZAo" node="5YLCPOnNMhW" resolve="myRepo" />
               </node>
               <node concept="liA8E" id="1yt7HPh0ZEp" role="2OqNvi">
-                <ref role="37wK5l" node="5Noy1Gc8LbI" resolve="getModules" />
+                <ref role="37wK5l" to="31cb:~SRepositoryExt.getModules(jetbrains.mps.smodel.MPSModuleOwner)" resolve="getModules" />
                 <node concept="37vLTw" id="1yt7HPh105v" role="37wK5m">
                   <ref role="3cqZAo" node="5YLCPOnNREk" resolve="myOwner" />
                 </node>

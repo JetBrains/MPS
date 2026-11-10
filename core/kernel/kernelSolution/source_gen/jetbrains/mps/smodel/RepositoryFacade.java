@@ -74,11 +74,15 @@ public abstract class RepositoryFacade {
     return new Impl(repo);
   }
 
+  public static RepositoryFacade wrap(@NotNull SRepositoryExt repository) {
+    return new Impl(repository);
+  }
+
   private static class Impl extends RepositoryFacade {
-    private final Repo myRepo;
+    private final SRepositoryExt myRepo;
     private final MPSModuleOwner myOwner;
 
-    /*package*/ Impl(Repo repo) {
+    /*package*/ Impl(SRepositoryExt repo) {
       super();
       myRepo = repo;
       // We have to dispose modules as their models/datasources attach e.g. file listeners that get notified long time after generation of a build project is over.

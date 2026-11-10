@@ -21,6 +21,9 @@ import jetbrains.mps.vcs.history.CommitsGraphNode;
 import org.jetbrains.annotations.Nullable;
 import java.awt.Color;
 import com.intellij.openapi.editor.colors.EditorColorsScheme;
+import jetbrains.mps.vcs.diff.merge.ModelLot;
+import jetbrains.mps.smodel.RepositoryFacade;
+import jetbrains.mps.extapi.module.SRepositoryExt;
 import jetbrains.mps.internal.collections.runtime.Sequence;
 import jetbrains.mps.internal.collections.runtime.MapSequence;
 import jetbrains.mps.internal.collections.runtime.CollectionSequence;
@@ -48,6 +51,7 @@ import org.jetbrains.mps.openapi.model.SModel;
 import git4idea.GitVcs;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Disposer;
+import jetbrains.mps.smodel.ModelWriteRunnable;
 import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.vcs.actions.AnnotationsSettings;
 import java.util.Arrays;
@@ -66,6 +70,7 @@ import jetbrains.mps.vcs.platform.integration.ModelDiffViewer;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.diff.DiffManager;
 import jetbrains.mps.vcs.diff.ui.common.DiffModelUtil;
+import jetbrains.mps.smodel.ModelDependencyUpdate;
 import jetbrains.mps.openapi.navigation.EditorNavigator;
 import jetbrains.mps.vcspersistence.ModelSack;
 import java.io.IOException;
@@ -93,7 +98,7 @@ public final class EditorAnnotation implements EditorMessageOwner, AnnotationOpt
   private final VcsFileRevision myRevision;
   private List<Color> currentPalette = null;
   private EditorColorsScheme currentColorsScheme;
-
+  private final ModelLot myRevisionModels;
 
 
   /*package*/ EditorAnnotation(EditorComponent editorComponent, VirtualFile file, AbstractVcs vcs, MPSProject mpsProject, RootAnnotation rootAnnotation, List<VcsFileRevision> revisions, @Nullable VcsFileRevision revision) {
@@ -107,6 +112,12 @@ public final class EditorAnnotation implements EditorMessageOwner, AnnotationOpt
     myRootAnnotation.addUpdateListener(this);
     myUpdateQueue = new MergingUpdateQueue(getClass().getSimpleName(), 300, true, null, null, null, false);
     AnnotationOptions.getInstance().addUpdateListener(this);
+    // XXX there was no discard/dispose code for revision models, e.g. no DiffModelUtil.unregisterModel, now we discard temp models
+    // FWIW, using repo from EditorContext to match getModelAccess() impl here. However, not nice as EditorNavigator would resort to project's repo and no idea if repo from EC is indeed SRepoExt
+    // Note, we don't use throw-away repo here as we use EditorNavigator to open an editor, which 
+    //    (a) ATM doesn't support repo other than project's;
+    //    (b) creates editor instance that doesn't take custom repo (MPSFileNodeEditor)
+    myRevisionModels = new ModelLot(RepositoryFacade.wrap((SRepositoryExt) editorComponent.getEditorContext().getRepository()));
   }
 
   @Override
@@ -435,6 +446,11 @@ public final class EditorAnnotation implements EditorMessageOwner, AnnotationOpt
     myUpdateQueue.cancelAllUpdates();
     Disposer.dispose(myUpdateQueue);
     unhighlightCells();
+    // dispose comes with model read; as long as we use project (not a private) repo for revision models, have to be careful not to grab write from read
+    ApplicationManager.getApplication().executeOnPooledThread(new ModelWriteRunnable(getModelAccess(), () -> {
+      myRevisionModels.unregisterModels();
+      myRevisionModels.discard();
+    }));
   }
 
   public void unhighlightCells() {
@@ -594,6 +610,7 @@ public final class EditorAnnotation implements EditorMessageOwner, AnnotationOpt
           });
 
           SimpleDiffRequest rq;
+          // FIXME now that we have revisions models registered in a repo, why can't we  use these models for diff?
           rq = new SimpleDiffRequest(rootName.value, node.createContents(getProject(), myVcs, myFile), node.createTitles());
           ModelDiffViewer.DIFF_SHOW_ROOTID.set(rq, rootId.value);
           ModelDiffViewer.DIFF_SHOW_TREE.set(rq, false);
@@ -620,6 +637,7 @@ public final class EditorAnnotation implements EditorMessageOwner, AnnotationOpt
   }
 
   public void annotateRevision(final VcsFileRevision revision) {
+    // FIXME nothing here requires EDT, just move to a background thread!
     ApplicationManager.getApplication().invokeLater(() -> {
       final SModel commitModel = loadRevisionModel(revision);
       if (commitModel == null) {
@@ -630,8 +648,16 @@ public final class EditorAnnotation implements EditorMessageOwner, AnnotationOpt
         return;
       }
 
-      final String shortCommit = revision.getRevisionNumber().asString().substring(0, 8);
-      getModelAccess().runWriteAction(() -> DiffModelUtil.renameModelAndRegister(commitModel, shortCommit, true));
+      String shortCommit = revision.getRevisionNumber().asString().substring(0, 8);
+      DiffModelUtil.renameModel(commitModel, shortCommit, true);
+      myRevisionModels.track(commitModel);
+      getModelAccess().runWriteAction(() -> {
+        myRevisionModels.registerModels();
+        ModelDependencyUpdate update = new ModelDependencyUpdate(commitModel);
+        // XXX DiffModelUtil.renameModelAndRegister() call here didn't pass addLanguages == true, yet I don't see a reason why not to?
+        update.updateUsedLanguages();
+        update.updateModuleDependencies(commitModel.getRepository());
+      });
 
       new EditorNavigator(myMpsProject).shallFocus(true).onceEditorReady((n, newEditor) -> {
         EditorComponent newEditorComponent = (EditorComponent) newEditor.getCurrentEditorComponent();

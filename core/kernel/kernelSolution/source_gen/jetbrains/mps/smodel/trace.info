@@ -816,29 +816,31 @@
       <node id="6895472124707848149" at="69,9,70,42" concept="10" />
       <node id="6895472124707736427" at="72,6,73,16" concept="4" />
       <node id="6895472124707736431" at="73,16,74,26" concept="10" />
-      <node id="6895472124707677308" at="78,0,79,0" concept="5" trace="myRepo" />
-      <node id="6895472124707699348" at="79,0,80,0" concept="5" trace="myOwner" />
-      <node id="6895472124707766940" at="81,33,82,14" concept="15" />
-      <node id="6895472124707677312" at="82,14,83,20" concept="4" />
-      <node id="3462071321438927053" at="83,20,84,163" concept="11" />
-      <node id="2831633005117687482" at="87,35,88,22" concept="10" />
-      <node id="6539320954451823829" at="94,33,95,20" concept="10" />
-      <node id="6539320954452227533" at="99,57,100,45" concept="4" />
-      <node id="2831633005117286507" at="105,73,106,44" concept="4" />
+      <node id="6895472124713436612" at="77,75,78,32" concept="10" />
+      <node id="6895472124707677308" at="82,0,83,0" concept="5" trace="myRepo" />
+      <node id="6895472124707699348" at="83,0,84,0" concept="5" trace="myOwner" />
+      <node id="6895472124707766940" at="85,43,86,14" concept="15" />
+      <node id="6895472124707677312" at="86,14,87,20" concept="4" />
+      <node id="3462071321438927053" at="87,20,88,163" concept="11" />
+      <node id="2831633005117687482" at="91,35,92,22" concept="10" />
+      <node id="6539320954451823829" at="98,33,99,20" concept="10" />
+      <node id="6539320954452227533" at="103,57,104,45" concept="4" />
+      <node id="2831633005117286507" at="109,73,110,44" concept="4" />
       <node id="6539320954451826857" at="23,0,25,0" concept="2" trace="RepositoryFacade#()V" />
       <node id="6539320954451748134" at="33,0,35,0" concept="8" trace="dispose#()V" />
       <node id="6895472124707783752" at="56,45,59,9" concept="7" />
       <node id="6895472124707828401" at="66,43,69,9" concept="7" />
-      <node id="3462071321438597940" at="104,27,107,7" concept="6" />
-      <node id="2831633005117687478" at="86,0,90,0" concept="8" trace="isHidden#()Z" />
-      <node id="6539320954451822981" at="93,0,97,0" concept="8" trace="get#()Ljetbrains/mps/extapi/module/SRepositoryExt;" />
-      <node id="6539320954452222459" at="98,0,102,0" concept="8" trace="registerModule#(Lorg/jetbrains/mps/openapi/module/SModule;)V" />
+      <node id="6895472124713428887" at="77,0,80,0" concept="14" trace="wrap#(Ljetbrains/mps/extapi/module/SRepositoryExt;)Ljetbrains/mps/smodel/RepositoryFacade;" />
+      <node id="3462071321438597940" at="108,27,111,7" concept="6" />
+      <node id="2831633005117687478" at="90,0,94,0" concept="8" trace="isHidden#()Z" />
+      <node id="6539320954451822981" at="97,0,101,0" concept="8" trace="get#()Ljetbrains/mps/extapi/module/SRepositoryExt;" />
+      <node id="6539320954452222459" at="102,0,106,0" concept="8" trace="registerModule#(Lorg/jetbrains/mps/openapi/module/SModule;)V" />
       <node id="6539320954451746224" at="39,0,44,0" concept="14" trace="createPlainRegistrationRepo#()Ljetbrains/mps/smodel/RepositoryFacade;" />
-      <node id="6895472124707698009" at="84,163,90,8" concept="4" />
-      <node id="6539320954451824377" at="103,0,109,0" concept="8" trace="dispose#()V" />
+      <node id="6895472124707698009" at="88,163,94,8" concept="4" />
+      <node id="6539320954451824377" at="107,0,113,0" concept="8" trace="dispose#()V" />
       <node id="6895472124707748928" at="53,0,62,0" concept="8" trace="getModule#(Lorg/jetbrains/mps/openapi/module/SModuleId;)Lorg/jetbrains/mps/openapi/module/SModule;" />
       <node id="6895472124707768637" at="63,0,72,0" concept="8" trace="getModel#(Lorg/jetbrains/mps/openapi/model/SModelId;)Lorg/jetbrains/mps/openapi/model/SModel;" />
-      <node id="6895472124707675183" at="81,0,92,0" concept="2" trace="Impl#(Ljetbrains/mps/smodel/Repo;)V" />
+      <node id="6895472124707675183" at="85,0,96,0" concept="2" trace="Impl#(Ljetbrains/mps/extapi/module/SRepositoryExt;)V" />
       <node id="6895472124707736420" at="51,190,72,6" concept="9" />
       <node id="6895472124707736418" at="48,0,76,0" concept="14" trace="createPlainRegistrationRepo#(Lorg/jetbrains/mps/openapi/module/SRepository;)Ljetbrains/mps/smodel/RepositoryFacade;" />
       <scope id="6539320954451826863" at="23,34,23,34" />
@@ -849,22 +851,26 @@
       </scope>
       <scope id="6895472124707783754" at="57,28,58,23" />
       <scope id="6895472124707828403" at="67,24,68,19" />
-      <scope id="2831633005117687481" at="87,35,88,22" />
-      <scope id="6539320954451822985" at="94,33,95,20" />
-      <scope id="6539320954452222467" at="99,57,100,45" />
-      <scope id="3462071321438597946" at="105,73,106,44" />
+      <scope id="6895472124713428890" at="77,75,78,32" />
+      <scope id="2831633005117687481" at="91,35,92,22" />
+      <scope id="6539320954451822985" at="98,33,99,20" />
+      <scope id="6539320954452222467" at="103,57,104,45" />
+      <scope id="3462071321438597946" at="109,73,110,44" />
       <scope id="6539320954451826857" at="23,0,25,0" />
       <scope id="6539320954451748134" at="33,0,35,0" />
       <scope id="6539320954451746195" at="39,64,42,26">
         <var name="repo" id="6539320954451822230" />
       </scope>
-      <scope id="3462071321438597940" at="104,27,107,7">
+      <scope id="6895472124713428887" at="77,0,80,0">
+        <var name="repository" id="6895472124713432949" />
+      </scope>
+      <scope id="3462071321438597940" at="108,27,111,7">
         <var name="m" id="3462071321438597942" />
       </scope>
-      <scope id="6539320954451824381" at="104,27,107,7" />
-      <scope id="2831633005117687478" at="86,0,90,0" />
-      <scope id="6539320954451822981" at="93,0,97,0" />
-      <scope id="6539320954452222459" at="98,0,102,0">
+      <scope id="6539320954451824381" at="108,27,111,7" />
+      <scope id="2831633005117687478" at="90,0,94,0" />
+      <scope id="6539320954451822981" at="97,0,101,0" />
+      <scope id="6539320954452222459" at="102,0,106,0">
         <var name="module" id="6539320954452222463" />
       </scope>
       <scope id="6539320954451746224" at="39,0,44,0" />
@@ -874,15 +880,15 @@
       <scope id="6895472124707768648" at="65,57,70,42">
         <var name="m" id="6895472124707821909" />
       </scope>
-      <scope id="6539320954451824377" at="103,0,109,0" />
+      <scope id="6539320954451824377" at="107,0,113,0" />
       <scope id="6895472124707748928" at="53,0,62,0">
         <var name="mid" id="6895472124707748932" />
       </scope>
       <scope id="6895472124707768637" at="63,0,72,0">
         <var name="modelId" id="6895472124707768642" />
       </scope>
-      <scope id="6895472124707675187" at="81,33,90,8" />
-      <scope id="6895472124707675183" at="81,0,92,0">
+      <scope id="6895472124707675187" at="85,43,94,8" />
+      <scope id="6895472124707675183" at="85,0,96,0">
         <var name="repo" id="6895472124707676590" />
       </scope>
       <scope id="6895472124707736419" at="48,99,74,26">
@@ -891,10 +897,10 @@
       <scope id="6895472124707736418" at="48,0,76,0">
         <var name="delegate" id="6895472124707744475" />
       </scope>
-      <unit id="2831633005117687476" at="85,20,90,7" name="jetbrains.mps.smodel.RepositoryFacade$Impl$1" />
+      <unit id="2831633005117687476" at="89,20,94,7" name="jetbrains.mps.smodel.RepositoryFacade$Impl$1" />
       <unit id="6895472124707748028" at="52,26,72,5" name="jetbrains.mps.smodel.RepositoryFacade$1" />
-      <unit id="6895472124707667068" at="77,0,111,0" name="jetbrains.mps.smodel.RepositoryFacade$Impl" />
-      <unit id="6539320954451746074" at="20,0,112,0" name="jetbrains.mps.smodel.RepositoryFacade" />
+      <unit id="6895472124707667068" at="81,0,115,0" name="jetbrains.mps.smodel.RepositoryFacade$Impl" />
+      <unit id="6539320954451746074" at="20,0,116,0" name="jetbrains.mps.smodel.RepositoryFacade" />
     </file>
   </root>
   <root nodeRef="r:5ff047e0-2953-4750-806a-bdc16824aa89(jetbrains.mps.smodel)/7408719695775110713">

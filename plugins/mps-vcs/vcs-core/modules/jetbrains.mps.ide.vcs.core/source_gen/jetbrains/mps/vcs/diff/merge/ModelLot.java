@@ -61,6 +61,8 @@ public final class ModelLot {
   }
 
   public void registerModels() {
+    initTempModule();
+
     if (myModels2Register.isEmpty()) {
       return;
     }
