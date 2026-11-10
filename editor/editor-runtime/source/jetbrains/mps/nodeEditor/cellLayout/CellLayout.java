@@ -15,6 +15,8 @@
  */
 package jetbrains.mps.nodeEditor.cellLayout;
 
+import com.intellij.openapi.util.text.Strings;
+import jetbrains.mps.editor.runtime.HtmlTextBuilderImpl;
 import jetbrains.mps.openapi.editor.HtmlTextBuilder;
 import jetbrains.mps.openapi.editor.TextBuilder;
 import jetbrains.mps.openapi.editor.cells.EditorCell;
@@ -30,8 +32,16 @@ public interface CellLayout extends jetbrains.mps.openapi.editor.cells.CellLayou
 
   TextBuilder doLayoutText(Iterable<EditorCell> editorCells);
 
+  /**
+   * Default for layouts without an HTML form: the {@link #doLayoutText(Iterable) text layout}, escaped, one line per row
+   * (without the padding {@link TextBuilder} adds to the right of shorter lines).
+   */
   default HtmlTextBuilder doLayoutHtml(Iterable<EditorCell> editorCells) {
-    throw new UnsupportedOperationException("not implemented");
+    HtmlTextBuilder result = new HtmlTextBuilderImpl();
+    for (CharSequence line : doLayoutText(editorCells).getLines()) {
+      result.appendToTheBottom(new HtmlTextBuilderImpl(Strings.escapeXmlEntities(line.toString().stripTrailing()).replace(" ", "&nbsp;")));
+    }
+    return result;
   }
 
   int getAscent(EditorCell_Collection editorCells);
