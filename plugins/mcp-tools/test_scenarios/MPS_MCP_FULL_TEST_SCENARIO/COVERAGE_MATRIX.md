@@ -35,7 +35,7 @@ scenario (see the notes below the table).
 | 18 | `update_root_node_from_json` | Full-root rewrite/delete | ✅ | — | `operation`=UPDATE/DELETE; `dryRun` | 07.36–07.38 | R+S |
 | 19 | `query_nodes` | Node queries/navigation/types | ✅ | ✅ | ops FIND_INSTANCES/FIND_USAGES/GET_PARENT/GET_ROOT/GET_MODEL_FOR_NODE/NODE_INDEX/SIBLINGS/GET_CHILD_ROLE/GET_TYPE/GET_EXPECTED_TYPE; `scope`=editable/all/models/modules/roots; `sampleOnly`,`propertyFilter`,`exact`; GET_TYPE / GET_EXPECTED_TYPE `data:null` answers; GET_TYPE / GET_EXPECTED_TYPE `details.scope` and `maxRootNodes` fallback; invalid op | 08.01–08.15, 10.15–10.16 | R+S |
 | 20 | `alter_nodes` | Structural moves + make + fix | ✅ | — | ops MOVE_CHILD/MOVE_NODE_TO_PARENT/MAKE/FIX_REFERENCES; MAKE forms modules+rebuild/models/wholeProject | 06.13, 06.24, 06.25, 07.32–07.34 | R+S |
-| 21 | `print_node` | Print node | ✅ | — | `format`=JSON/HTML/PLAIN TEXT; `deep`=true/false | 07.06–07.09, 10.14 | F |
+| 21 | `print_node` | Print node | ✅ | — | `format`=JSON/HTML/PLAIN TEXT/IMAGE; `editorHints`; `deep`=true/false | 07.06–07.09a, 10.14 | F |
 | 22 | `insert_root_node_from_json` | Bulk root insert | ✅ | — | single + array; `dryRun` | 07.03–07.05 | R+S |
 | 23 | `update_node` | Unified node mutation | ✅ | ✅ | ADD/CHILD (incl. an attribute into `smodelAttribute`), SET/CHILD(+null delete), SET/PROPERTY(+null delete), SET/REFERENCE(+null delete), `dryRun`; invalid ADD/PROPERTY, ADD/REFERENCE, op DELETE | 07.10, 07.17–07.28, 10.24.s4–s6 | R+S |
 | 24 | `check_root_node_problems` | Validate node/model | ✅ | — | clean + problem; `onlyNodesWithProblems`=true/false; problem `rules` (`typeof_VariableDeclaration`, `ruleReference`/`statement` resolved); `details.uncheckedSubtrees` with problems (no warning) and on a clean verdict (with warning) | 07.21, 07.29–07.31, 10.11, 10.24.s2, 10.24.s4–s6 | R+F |
@@ -123,7 +123,7 @@ the scenario, and part 14 must still snapshot the project. Opening and closing p
 - **`alter_nodes.operation`**: MOVE_CHILD ✔(07.32), MOVE_NODE_TO_PARENT ✔(07.33), MAKE ✔(06.13/06.24/06.25), FIX_REFERENCES ✔(07.34)
 - **`alter_nodes MAKE` targets**: modules+rebuild ✔(06.13), models ✔(06.24), wholeProject ✔(06.25)
 - **`update_node.operation × kind`**: ADD/CHILD ✔(07.10), SET/CHILD ✔(07.24), SET/CHILD null-delete ✔(07.25), SET/PROPERTY ✔(07.18), SET/PROPERTY null-delete ✔(07.23), SET/REFERENCE ✔(07.19), SET/REFERENCE null-delete ✔(07.22); invalid ADD/PROPERTY ✔(07.26), ADD/REFERENCE ✔(07.27), op DELETE ✔(07.28)
-- **`print_node.format`**: JSON ✔(07.06), HTML ✔(07.09), PLAIN TEXT ✔(07.08); **`deep`**: true ✔(07.06), false ✔(07.07)
+- **`print_node.format`**: JSON ✔(07.06), HTML ✔(07.09), PLAIN TEXT ✔(07.08), IMAGE ✔(07.09a); **`print_node.editorHints`**: `[]` ✔(07.09a), unknown value ✔(07.09a), ignored for JSON ✔(07.09a); **`deep`**: true ✔(07.06), false ✔(07.07)
 - **`check_root_node_problems.onlyNodesWithProblems`**: true ✔(07.29), false ✔(07.30)
 - **`check_root_node_problems` report fields**: problem `rules` ✔(10.24.s2), `details.uncheckedSubtrees` with problems ✔(10.24.s4) and on a clean verdict + `warnings` ✔(10.24.s5), clean verdict without unchecked subtrees ✔(10.24.s6)
 - **`search_root_node_by_name.scope`**: editable ✔(08.16), all ✔(08.17), models ✔(08.18), modules ✔(08.19)

@@ -1,6 +1,6 @@
 ## `mps_mcp_print_node` — Output Format
 
-`format` accepts exactly three literals — `JSON` (default), `HTML`, `PLAIN TEXT`. The value is upper-cased before matching, but the spelling matters: `PLAIN TEXT` contains a **space** (`PLAIN_TEXT`, `TEXT` and `text` all fail with `Invalid format 'text'. Allowed values: JSON, HTML, PLAIN TEXT`).
+`format` accepts exactly four literals — `JSON` (default), `HTML`, `PLAIN TEXT`, `IMAGE`. The value is upper-cased before matching, but the spelling matters: `PLAIN TEXT` contains a **space** (`PLAIN_TEXT`, `TEXT` and `text` all fail with `Invalid format 'text'. Allowed values: JSON, HTML, PLAIN TEXT, IMAGE`).
 
 `nodeReference` must be a **node** reference (`r:<uuid>(name)/<node-id>`). A model reference (`r:<uuid>(name)`) or qualified model name is rejected with INVALID_REQUEST that names the model and a retry line for `mps_mcp_get_project_structure` (`startingPoint`, `includeNodes=true`). `mps_mcp_check_root_node_problems` accepts those model forms in `nodeReference`.
 
@@ -12,6 +12,36 @@
 **Verifying a whole root costs one call.** Pass `deep=true` for machine-readable JSON of the root and every descendant, or `format: "PLAIN TEXT"` for the editor projection when you only need to read it (~10× cheaper than walking the tree). The default is **shallow**, and a shallow printout gives a child as `{name, reference}` only — nothing about its properties is in the answer, which is what turns a naive verification loop into one call per child.
 
 **`PLAIN TEXT` renders an empty collection as an editor placeholder.** An empty `0..n` role prints as its placeholder cell, e.g. `see also: << ... >>`, which reads like a one-element list; it means the role is **empty**. Never count elements from the projection — take counts from the JSON form.
+
+### Editor projections: `editorHints`, `IMAGE`, grid text
+
+`HTML`, `PLAIN TEXT` and `IMAGE` render the node's editor. Which alternative editor (editor hint) is used is chosen with `editorHints`:
+
+- Omitted: the project's hint settings (Settings, "Editor hints"). `[]`: no hints. Otherwise a hint FQ name (`my.lang.editor.Views.tabular`), a short id (`tabular`), or an array of them, given as a real JSON array or as a string (`"[\"tabular\"]"`).
+- Resolution: the node's model catalog first (hints of the languages the model uses, extended and aggregated ones), then the global catalog of every deployed language; a global-only hint is applied with a warning. An unknown or ambiguous value fails with INVALID_REQUEST (`'x' is ambiguous (<fq1>, <fq2>); pass the FQ name`), and `details.editorHints.available` of the error lists the model's hints.
+- `reflective` (`jetbrains.mps.lang.core.editor.reflective`) is a runtime hint, not declared by a language: it prints the raw structural view (concept, properties, references, children) of a node whose own editor hides them.
+- Ignored with a warning for `JSON`. Hints pushed in an open IDE editor tab are not seen; only the project settings and this parameter count.
+
+`details.editorHints` is in every projection envelope:
+
+```
+{"ok":true,"data":"...","details":{"editorHints":{
+  "source":"projectSettings",                       // or "request"
+  "applied":[],                                      // FQ names in effect
+  "available":["my.lang.editor.Views.tabular", ...], // compact: FQ names only (source=projectSettings)
+  "hiddenCount":3,                                   // hints with showInUI=false, not listed in compact form
+  "unloadedLanguages":["my.lang"]}}}                 // only when a used language has no runtime
+```
+
+When `editorHints` is passed, `available` is the full form instead: `{fqName, id, presentation, language, showInUI}` per hint, including the hidden ones and the `reflective` entry. Entries of `jetbrains.mps.lang.core` are not alternative notations of your language: `include_deprecated_elements` and `ShowSuppressedErrors` are display toggles, `comment` prints a node the way it looks when commented out; the alternatives are the entries of the node's own languages. A language without runtime cannot contribute: build it (see `unloadedLanguages`).
+
+**`IMAGE`** paints the projection to a PNG. `data` is the absolute path of a temp `.png` (never inline; `maxInlineBytes` does not apply); open it with a file-read tool that shows images. `details.image` is `{width, height, mediaType, scale}`. It uses the IDE colour scheme. Above 16 Mpx the image is clipped to its top-left part (`details.image.clipped: true` plus a warning): print a sub-node instead. The envelope still carries `details.editorHints`.
+
+**Graphical cells.** `PLAIN TEXT` and `HTML` cannot show diagrams or other Swing cells; the envelope warns `N graphical cell(s) (<ClassNames>) have no textual form; use format IMAGE`. A render failure is INTERNAL_ERROR with a retry hint for another format.
+
+**Tables in `PLAIN TEXT`.** When the projection contains a table (a collection with table-component style), the text is rebuilt as a character grid from the cell geometry so columns stay aligned: `details.textRenderer: "grid"` plus a warning (which also counts omitted non-text cells). It is automatic, there is no parameter. If the grid cannot be built the plain rendering is returned with a warning (columns may collapse; use `IMAGE`).
+
+**Which one.** Discover projections with an ordinary `PLAIN TEXT` print and read `details.editorHints.available`; print again with `editorHints=[...]`. Use `IMAGE` for diagrams, tables and other graphical notations. `JSON` is the only form that mutation tools consume.
 
 The saved file contains the full MCP response envelope; its `data` field contains the node JSON object shown below. **JSON mutation tools accept either that full envelope file or a file containing only the raw `data` object** — load the `mps-node-editing` companion skill from the same origin, then see its File-Path Semantics section and `references/json-format.md` in the `mps-node-editing` skill root.
 

@@ -142,7 +142,7 @@ Goal: factor the properties of `AbstractCommand` into a component and reuse it i
 ## Validation
 
 - `mps_mcp_check_root_node_problems` on the component and each edited editor — expect no problems.
-- `mps_mcp_print_node` (HTML or PLAIN TEXT) on a sample `Step` / `LeftTurn` node to confirm the component's cells render in both editors.
+- `mps_mcp_print_node` (HTML, PLAIN TEXT or IMAGE) on a sample `Step` / `LeftTurn` node to confirm the component's cells render in both editors.
 
 ## Related
 

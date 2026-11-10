@@ -3,7 +3,7 @@
 > **Captured-value contract** — _Inputs:_ `{{SERVER_PREFIX}}`, `{{PROJECT_DIR}}`. _Produces (cross-part):_ `{{GEARBOX_REF}}`, `{{GBX_PARKED_REF}}`, `{{GBX_DRIVING_REF}}`, `{{GBX_TRANS_REF}}`. _(Also creates many intra-part refs — `{{OTHER_ROOT_REF}}`, `{{GBX_GO_REF}}`, etc. — used only inside this part.)_
 
 Tools: `mps_mcp_create_root_node`, `mps_mcp_insert_root_node_from_json` (single + array +
-`dryRun`), `mps_mcp_print_node` (formats `JSON`/`HTML`/`PLAIN TEXT`, `deep` true/false),
+`dryRun`), `mps_mcp_print_node` (formats `JSON`/`HTML`/`PLAIN TEXT`/`IMAGE`, `editorHints`, `deep` true/false),
 `mps_mcp_update_node` (ops×kinds: ADD/CHILD, SET/CHILD, SET/PROPERTY, SET/REFERENCE, plus
 deletes via `null`, plus invalid combos), `mps_mcp_check_root_node_problems`
 (`onlyNodesWithProblems` true/false; clean + problem), `mps_mcp_update_root_node_from_json`
@@ -190,7 +190,23 @@ Send the array (as a string) as `json`, same other args as 07.03.
 ```
 - Validation: `ok==true`; `data` is an HTML rendering as a string, or a temp-file path whose
   envelope's `data` holds it. Exercises `format:"HTML"`. (`format:"JSON"` was exercised in
-  07.06/07.07.)
+  07.06/07.07.) The envelope carries `details.editorHints` (`source`, `applied`, compact `available`).
+
+---
+
+### Step 07.09a — `print_node` `format:"IMAGE"` and `editorHints` `[READ-FILE]`
+
+```json
+{
+  "tool": "mps_mcp_print_node",
+  "arguments": { "projectPath": "{{PROJECT_DIR}}", "nodeReference": "{{OTHER_ROOT_REF}}", "format": "IMAGE", "editorHints": [] }
+}
+```
+- Validation: `ok==true`; `data` is the path of a `.png` file that exists; `details.image` has
+  `width`, `height`, `mediaType:"image/png"`; `details.editorHints.source=="request"` with
+  `applied==[]` and full-form `available` entries. Repeat with `format:"PLAIN TEXT"` and
+  `editorHints:["noSuchHint"]` → `ok==false`, `code==INVALID_REQUEST`; with `format:"JSON"` and
+  `editorHints:[]` → `ok==true` plus a warning that `editorHints` is ignored.
 
 ---
 

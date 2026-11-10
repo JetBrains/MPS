@@ -1,5 +1,7 @@
 ## Switching hints on
 
+To only *view* a node under a hint, without any of the setups below, call `mps_mcp_print_node(editorHints=["<hint FQ name or id>"])` with `format` `PLAIN TEXT`, `HTML` or `IMAGE`; `details.editorHints.available` lists the hints to try (`mps-mcp-workflow/references/analysis-tools/print-node-output.md`).
+
 A node's active hints are the union of what the sources below add along the cell path from the editor's root, minus what
 a cell removes. They reach the node's whole subtree (`references/editor-hints/choosing.md`).
 
