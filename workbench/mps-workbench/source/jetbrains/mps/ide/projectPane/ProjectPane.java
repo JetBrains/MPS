@@ -262,7 +262,7 @@ public class ProjectPane extends BaseLogicalViewProjectPane {
 
   protected void refresh(MissionControlRefreshRequest refreshRequest) {
     ApplicationManager.getApplication().executeOnPooledThread(() -> {
-      for (var messagesUpdate : new MessagesUpdate[] {MessagesUpdate.APPEARED, MessagesUpdate.DISAPPEARED}) {
+      for (var messagesUpdate : new MessagesUpdate[] {MessagesUpdate.APPEARED, MessagesUpdate.CHANGED, MessagesUpdate.DISAPPEARED}) {
         for (SObject toUpdate : refreshRequest.getToUpdatePresentation(messagesUpdate)) {
           if (!toUpdate.ifHasSModel((Consumer<SModel>) model -> forEachFile(model, f -> fireMessageUpdate(messagesUpdate, f)))) {
             toUpdate.ifHasSModule((Consumer<SModule>) module -> forEachFile(module, f -> fireMessageUpdate(messagesUpdate, f)));
@@ -280,7 +280,8 @@ public class ProjectPane extends BaseLogicalViewProjectPane {
     VirtualFile virtualFile = fileSystem.asVirtualFile(iFile);
     if (virtualFile != null) {
       ApplicationManager.getApplication().runReadAction(() -> {
-        if (messagesUpdate == MessagesUpdate.APPEARED) {
+        // Project View does not handle ProblemListener.problemsChanged().
+        if (messagesUpdate == MessagesUpdate.APPEARED || messagesUpdate == MessagesUpdate.CHANGED) {
           problemListener.problemsAppeared(virtualFile);
         } else if (messagesUpdate == MessagesUpdate.DISAPPEARED) {
           problemListener.problemsDisappeared(virtualFile);
