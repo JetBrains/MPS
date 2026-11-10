@@ -1,11 +1,9 @@
 package jetbrains.mps.agents.mcp.tools.common
 
-import jetbrains.mps.editor.runtime.EditorCell_Empty
 import jetbrains.mps.editor.runtime.style.StyleAttributes
 import jetbrains.mps.editor.runtime.style.TableComponent
 import jetbrains.mps.nodeEditor.EditorSettings
 import jetbrains.mps.nodeEditor.cellLayout.PunctuationUtil
-import jetbrains.mps.nodeEditor.cells.EditorCell_ContextAssistantComponent
 import jetbrains.mps.nodeEditor.cells.EditorCell_Label
 import jetbrains.mps.openapi.editor.cells.EditorCell
 import jetbrains.mps.openapi.editor.cells.EditorCell_Collection
@@ -91,38 +89,28 @@ internal object CellGridTextRenderer {
 /** Reads the cell tree for [CellGridTextRenderer]: when to use it, and its labels. */
 internal object CellGridText {
 
-    class Grid(val text: String, val omittedCells: Int)
-
     /** Whether a visible collection is a table (`EditorCell_Table`, `CellLayout_Table` users); grid layout alone is not. */
     fun containsTable(root: EditorCell): Boolean =
         visibleCells(root).any { it is EditorCell_Collection && it.style.get(StyleAttributes.TABLE_COMPONENT) == TableComponent.VERTICAL_COLLECTION }
 
     /**
      * The grid text of the labels under [root] (folded collections contribute their placeholder), or null when the
-     * renderer's invariant fails. A label's gap flag is the one `CellLayout_Horizontal.doLayoutText` uses. Other visible
-     * leaf cells are counted as omitted.
+     * renderer's invariant fails. A label's gap flag is the one `CellLayout_Horizontal.doLayoutText` uses. Cells without
+     * text are left out; [NonTextCells] reports them.
      */
-    fun render(root: EditorCell): Grid? {
+    fun render(root: EditorCell): String? {
         val labels = mutableListOf<CellGridTextRenderer.Label>()
-        var omitted = 0
         for (cell in visibleCells(root)) {
-            when {
-                cell is EditorCell_Collection -> {}
-                cell is EditorCell_Label -> {
-                    val text = cell.renderedText
-                    if (text.isNotBlank()) {
-                        val x = cell.x + cell.leftInset
-                        val width = (cell.width - cell.leftInset - cell.rightInset).coerceAtLeast(0)
-                        labels += CellGridTextRenderer.Label(text, x, cell.y, width, cell.height, PunctuationUtil.hasLeftGap(cell))
-                    }
-                }
-                cell is EditorCell_Empty || cell is EditorCell_ContextAssistantComponent -> {}
-                cell.width > 0 && cell.height > 0 -> omitted++
+            if (cell !is EditorCell_Label) continue
+            val text = cell.renderedText
+            if (text.isNotBlank()) {
+                val x = cell.x + cell.leftInset
+                val width = (cell.width - cell.leftInset - cell.rightInset).coerceAtLeast(0)
+                labels += CellGridTextRenderer.Label(text, x, cell.y, width, cell.height, PunctuationUtil.hasLeftGap(cell))
             }
         }
         val metrics = EditorSettings.getInstance().defaultEditorFontMetrics
-        val text = CellGridTextRenderer.render(labels, metrics.getWidth(" "), metrics.height) ?: return null
-        return Grid(text, omitted)
+        return CellGridTextRenderer.render(labels, metrics.getWidth(" "), metrics.height)
     }
 
     private fun visibleCells(root: EditorCell): Sequence<EditorCell> = sequence {

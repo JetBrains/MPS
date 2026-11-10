@@ -22,7 +22,8 @@ internal object EditorImageRenderer {
     private val LOG = Logger.getInstance(EditorImageRenderer::class.java)
 
     const val MAX_PIXELS: Long = 16_000_000
-    private const val MARGIN = 4
+    /** Blank border around the painted root cell, in pixels. */
+    const val MARGIN = 4
     private const val MIN_LAYOUT_ROUNDS = 2
     private const val MAX_LAYOUT_ROUNDS = 4
     private const val LAYOUT_EDITOR_SIZE = 3000

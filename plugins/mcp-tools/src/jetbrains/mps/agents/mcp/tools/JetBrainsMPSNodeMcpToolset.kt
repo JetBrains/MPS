@@ -869,6 +869,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                         )
                     }
                     graphicalCellsWarning(component)?.let(warnings::add)
+                    reportNonTextCells(component, details, warnings)
                     finalizeResult(JsonPrimitive(text).toString(), maxInlineBytes, details, warnings)
                 }
             }
@@ -909,9 +910,21 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         }
         details["textRenderer"] = "grid"
         warnings += "Rendered as a character grid from the cell geometry because the projection contains a table " +
-            "(a collection with table-component VERTICAL_COLLECTION)" +
-            if (grid.omittedCells > 0) "; ${grid.omittedCells} non-text cell(s) omitted" else ""
-        return grid.text
+            "(a collection with table-component VERTICAL_COLLECTION)"
+        return grid
+    }
+
+    /**
+     * `details.omittedCells` and a warning for the cells the text or HTML leaves out because they have no textual form
+     * (a fraction bar, an image, a Swing component), so a reader does not take the text for the whole projection. The
+     * large graphical Swing cells [graphicalCellsWarning] already names are listed but not counted again in the warning.
+     */
+    private fun reportNonTextCells(component: EditorComponent, details: MutableMap<String, Any?>, warnings: MutableList<String>) {
+        val omitted = NonTextCells.collect(component.rootCell)
+        if (omitted.isEmpty()) return
+        details["omittedCells"] = NonTextCells.details(omitted)
+        val unwarned = omitted.filterNot { val cell = it.cell; cell is EditorCell_WithComponent && isGraphicalCell(cell) }
+        if (unwarned.isNotEmpty()) warnings += NonTextCells.warning(unwarned)
     }
 
     private fun paintableComponentCells(component: EditorComponent): List<EditorCell_WithComponent> =
