@@ -33,6 +33,31 @@ For colors not in this set, use the `query` function variant of the color style 
 
 **A style that depends on the node** (highlight an overdue entry, mark a draft) keeps the enum literal, which follows the theme: put the items in a `StyleClass` of the language's `StyleSheet` and apply it to the cell with an `ApplyStyleClassCondition` style item (alias `apply-if`). It has a `target` child `StyleReference` (reference `style`) and a `query` child `QueryFunction_Boolean` whose `body` returns the condition, e.g. `node.overdue` as an `ExpressionStatement` holding a `DotExpression` of `ConceptFunctionParameter_node` and `SPropertyAccess` (smodel). A background paints the cells of the collection it is on, so on the editor's top cell it covers the node's whole projection. A `QueryFunction_Color` returning a `java.awt.Color` works too, but has one colour for every theme.
 
+## Which value wins: inheritance, order, dominance
+
+Every style value carries a **priority** (0 unless a dominating class set it), and a cell shows the value of the
+highest priority it has, its own or inherited:
+
+- **Inheritance.** Colours (`text-foreground-color`, `background-color`, `text-background-color`) and the font
+  (`font-style`, `font-size`, `font-family`) pass from a cell to the cells inside it, including the cells that the
+  editors of child nodes draw. Underline, strike-out, punctuation, `editable` and the layout items do not inherit.
+- **Own beats inherited at equal priority.** A child cell that sets its own colour, directly or through a style class
+  (a keyword cell with `apply KeyWord`), keeps it against a colour from an ancestor. So a colour on a node's top cell
+  does *not* recolour the keywords inside it.
+- **Order.** Within one cell or one style class, a later item replaces an earlier one with the same attribute; an
+  `ApplyStyleClass` counts at its position (`apply Emphasis` then `text-foreground-color: red` is red, the reverse
+  order is `Emphasis`'s colour).
+- **Dominance.** `style Faded dominates over KeyWord { ... }` (a `DominatesRecord` in the class's `dominates` child,
+  listing classes in `dominatesStyleClassList`, a `StyleClassReferenceList` of `StyleClassReference` `element`s with
+  reference `styleClass`; intention "Add Dominance") gives `Faded`'s items priority 1 + the highest priority of the
+  listed classes. A higher priority wins over any lower one, wherever it comes from: the cell's own items, an applied
+  class, the order. The list only computes the number: a class that dominates over anything beats every priority-0
+  value, listed or not. Generated code shows it as `style.set(<attribute>, <priority>, <value>)`. A dominance cycle is
+  a checker error.
+- **The pattern:** to restyle a node's whole projection, keywords of child editors included, apply a dominating class
+  to its top cell, typically with `ApplyStyleClassCondition`. It changes only the attributes that class sets and that
+  inherit; a bold keyword stays bold under a dominating colour.
+
 ## Font style — `_FontStyle_Enum`
 
 Used by `FontStyleStyleClassItem.style`. Default literal: `PLAIN`.

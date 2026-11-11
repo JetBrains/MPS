@@ -56,6 +56,12 @@ When explaining why a cell looks the way it does, the definition can be silent:
   of a binary operator) is a property cell with its own style: bold, no colour.
 - **Style classes** come from a `StyleSheet` root of this or an extended language (`parentStyleClass` on the cell, or
   an `ApplyStyleClass` / `ApplyStyleClassCondition` style item).
+- **An ancestor cell** can set the colour or font of a cell drawn by another editor: these attributes inherit, and a
+  class that `dominates over` others wins even against the cell's own class. When a word's look matches none of its
+  own cell's items, walk up to the cells of the enclosing nodes' editors (*Which value wins* in
+  `references/stylesheet-values.md`).
+- **Compare hex values with the rendered class, not with a colour table**: a literal's colour comes from
+  `MPSColors` and differs from the plain Java colour of the same name (`red` is `#b20000`).
 
 ## Diagnosing a reported visual defect
 
