@@ -1,0 +1,6 @@
+triage editor for concept ThresholdRef
+  node cell layout:
+     [- ( % threshold % -> { name } ) ( % threshold % -> [- ( % value % ) -] ) -]
+
+  inspected cell layout:
+    <choose cell model>

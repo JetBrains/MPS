@@ -14,6 +14,7 @@ Files live in `~/MPSProjects/mcp-study/fixtures/`, not in git. An empty project 
 | `alerts2-compact` | `69849f69cd2027b047f0296b5859b1962a47d78563a8e0c0484723dcc424ccdb` | 2026-11-09 (S38b; the audited H1-opus-2 scratch) |
 | `alerts3` | `54fbd2302d3648e2f9c595aa19e16c523370b3b0c7b8bf574e75b98653a88895` | 2026-11-11 (S39a; `alerts2-compact` + book `Night`, recipe `inputs/s39/FIXTURE.md`) |
 | `alerts3-broken` | `812229f04228498d65e8426e9b25206cb77b6bf4acd7cbbc8615ea86a773f1af` | 2026-11-11 (S39b; `alerts3` + reference Triage view + seeds D-A…D-F, `inputs/s39/FIXTURE.md`) |
+| `alerts3-hard` | `62df2d48a48057e8214f43986119dc69c0fed614fcf25b45555a50834b438f8a` | 2026-11-11 (S39b rev. 2; `alerts3` + reference Triage view + seeds H1–H5, D-C, D-D, D-F, `inputs/s39/FIXTURE.md` Step 4) |
 | `fleet` | `2c813cea120ec6afb6bd4cfb0a266586a89b59217b90b7096f6b593c1d8f8ba7` | 2026-10-31 |
 | `flows-gen` | `af093a666e49b573bbacf1155ea94080349c2f957c9a6eabb5115739995ed8cc` | 2026-10-30 |
 | `kaja-dataflow` | `e8ee8fc579774969e883d18326243075a1fa16666409e3804dac446899406aec` | file date not separately documented |

@@ -1,20 +1,20 @@
 #!/usr/bin/env python3
 """Flatten the text styles of an `mps_mcp_print_node` HTML print into runs, one output line per editor line.
 
-Observer aid for S39a criteria 3-6 and S39b criteria 3, 4, 6, 7 (fixture `alerts3*`). Reads the `index.html`
+Observer aid for S39a criteria 3, 4, 6, 6a and S39b criteria 3, 5, 6, 8 (fixture `alerts3*`, rev. 4). Reads the `index.html`
 of an HTML print (or the directory that holds it) and prints, for every line of the projection,
 
     <line no>: <token> → <colour>, <weight>, <slant>[, bg <colour>][, ref] | <token> → ...
 
-A token is a whitespace-free piece of text with one style. `colour` is the hex of the innermost `sN` class that sets a
+A token is a whitespace-free piece of text of one cell (a span boundary always splits, so `(90)` drawn by three
+cells reads `(`, `90`, `)` even when they share a style). `colour` is the hex of the innermost `sN` class that sets a
 colour, else `default`; weight is `bold` or `plain`; slant `italic` or `upright`. `ref` marks the text of a reference
-cell (a `data-t` span). Known renderer defect (2026-11-11): a reference cell inside a dominated or inherited-colour
-block carries no `sN` class, so it reads `default` here although `editor.png` paints it gray. Take reference-cell
-colours from the png until that is fixed.
+cell (a `data-t` span; its class, inherited colour included, is read like any other span's).
 
 usage: html_runs.py <index.html | print directory> [--grep TEXT] [--node ID]
   --grep TEXT  print only lines that contain TEXT
   --node ID    print only the text inside the span with data-n="ID" (e.g. one alert)
+  --merge      rev. 1 behaviour: abutting cells of one style form one token (the shipped `prints/*/*.runs`)
 Stdlib only; read-only.
 """
 from __future__ import annotations
@@ -49,9 +49,9 @@ def parse_classes(css: str) -> dict:
 
 
 class Walker(html.parser.HTMLParser):
-    def __init__(self, classes, node=None):
+    def __init__(self, classes, node=None, merge=False):
         super().__init__(convert_charrefs=True)
-        self.classes, self.node = classes, node
+        self.classes, self.node, self.merge = classes, node, merge
         self.stack = []          # per open element: (style dict, is_ref, is_node_match)
         self.in_pre = False
         self.chars = []          # (char, style tuple)
@@ -67,6 +67,8 @@ class Walker(html.parser.HTMLParser):
         for c in (a.get("class") or "").split():
             st.update(self.classes.get(c, {}))
         self.stack.append((tag, st, "data-t" in a, self.node is not None and a.get("data-n") == self.node))
+        if not self.merge:
+            self.chars.append(("\x00", None))
 
     def handle_endtag(self, tag):
         if tag == "pre" and self.in_pre:
@@ -74,6 +76,8 @@ class Walker(html.parser.HTMLParser):
             return
         if self.in_pre and self.stack:
             self.stack.pop()
+            if not self.merge:
+                self.chars.append(("\x00", None))
 
     def handle_data(self, data):
         if not self.in_pre:
@@ -100,7 +104,7 @@ def runs(chars):
     for ch, key in chars:
         if ch == "\n":
             flush(); lines.append(cur); cur = []
-        elif ch.isspace():
+        elif ch == "\x00" or ch.isspace():
             flush()
         else:
             if tok and key != tkey:
@@ -125,11 +129,12 @@ def main(argv=None):
     ap.add_argument("path")
     ap.add_argument("--grep")
     ap.add_argument("--node")
+    ap.add_argument("--merge", action="store_true")
     a = ap.parse_args(argv)
     path = os.path.join(a.path, "index.html") if os.path.isdir(a.path) else a.path
     text = open(path, encoding="utf-8").read()
     css = "\n".join(re.findall(r"<style>(.*?)</style>", text, re.S))
-    w = Walker(parse_classes(css), a.node)
+    w = Walker(parse_classes(css), a.node, a.merge)
     w.feed(text)
     for i, line in enumerate(runs(w.chars), 1):
         if not line:

@@ -1,0 +1,11 @@
+1: alert → #000080, bold, upright | book → #000080, bold, upright | Night → default, plain, upright
+2: # → default, bold, upright | paging → default, plain, upright | rules → default, plain, upright | for → default, plain, upright | the → default, plain, upright | night → default, plain, upright | shift → default, plain, upright
+3: channel → #000080, bold, upright | pager → default, plain, upright | -> → default, bold, upright | pager://night → default, plain, upright
+4: channel → #000080, bold, upright | mail → default, plain, upright | -> → default, bold, upright | night@example.com → default, plain, upright
+5: channel → #000080, bold, upright | chat → default, plain, upright | -> → default, bold, upright | chat://night → default, plain, upright
+6: cpuLimit → default, plain, upright | = → default, bold, upright | 90 → default, plain, upright
+7: diskFloor → default, plain, upright | = → default, bold, upright | 10 → default, plain, upright
+9: alert → #000080, bold, upright | HighCpu → default, plain, upright | [ → default, bold, upright | high → default, plain, upright | ] → default, bold, upright
+10: alert → #000080, bold, upright | LowDisk → default, plain, upright | [ → default, bold, upright | low → default, plain, upright | ] → default, bold, upright
+11: muted → #000080, bold, upright | alert → #000080, bold, upright | Heartbeat → default, plain, upright | [ → default, bold, upright | high → default, plain, upright | ] → default, bold, upright
+12: muted → #000080, bold, upright | alert → #000080, bold, upright | Backlog → default, plain, upright | [ → default, bold, upright | low → default, plain, upright | ] → default, bold, upright

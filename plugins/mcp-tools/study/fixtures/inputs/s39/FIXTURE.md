@@ -14,6 +14,7 @@ the reference Triage view (Step 2, the reference walk of S39a; kept as answer ke
 |---|---|---|---|
 | `~/MPSProjects/mcp-study/fixtures/alerts3.tar.gz` | `54fbd2302d3648e2f9c595aa19e16c523370b3b0c7b8bf574e75b98653a88895` | 351 | `alerts3/` |
 | `~/MPSProjects/mcp-study/fixtures/alerts3-broken.tar.gz` | `812229f04228498d65e8426e9b25206cb77b6bf4acd7cbbc8615ea86a773f1af` | 383 | `alerts3-broken/` |
+| `~/MPSProjects/mcp-study/fixtures/alerts3-hard.tar.gz` (Step 4) | `62df2d48a48057e8214f43986119dc69c0fed614fcf25b45555a50834b438f8a` | 391 | `alerts3-hard/` |
 
 Both with `classes_gen`, `source_gen`, `test_gen`; `tar -tzf … | grep -E '(^|/)(\.claude|\.agents|AGENTS\.md|CLAUDE\.md|workspace\.xml|REPORT\.md)'`
 prints nothing for either. Tar command: `tar -czf <name>.tar.gz "${TAR_EXCLUDES[@]}" --exclude=REPORT.md -C ~/MPSProjects/mcp-study/build <name>`.
@@ -158,6 +159,118 @@ Q2 (HTML class of the shipped print, colours confirmed in `editor.png`):
 
 D-E does not change the last two: without dominance an inherited colour still reaches cells that set none.
 
+## Step 4 — `alerts3-hard` (S39b rev. 2; design `~/MPSProjects/mcp-study/adhoc-image/S39-harden.md`)
+
+Probes P1–P7 first, on the scratch `build/s39h-probe` (a copy of `alerts3-triage`): results with hex values in
+`~/MPSProjects/mcp-study/adhoc-image/S39-harden-probes.md`. P1–P4 and P7 hold; P5 contradicted the design's expression (`!node.muted || …` changes nothing on any book); the
+coordinator corrected it to `node.muted || node.notify.isNotEmpty`, added afterwards as the eighth seed. A fresh copy of the closed `build/alerts3-triage` (its `workspace.xml` removed),
+opened alone; one node edit per seed component (log lines tagged `# H1` … `# D-F` under the header "S39 hardening
+build"), MAKE `rebuild: true` of `mcp.study.alerts`. Prints in [`prints/alerts3-hard/`](prints/alerts3-hard/).
+
+| Seed | Edit (ids in the editor model) | Symptom on `Night`, all seeds in place (observed) |
+|---|---|---|
+| H1 | SET REFERENCE `Dimmed`'s StyleClassReference …054080 → `Remark` …054799; ADD `dominates` on `Keyword` 6330044388206401792: DominatesRecord **8393655821656577850** → StyleClassReference …577852 → `Level` …053795 | HTML triage, `Heartbeat`/`Backlog`: `muted alert when over min notify` `#000080` bold; names, numbers, `chat mail pager` `#808080` plain; `[high]`/`[low]` `#808080` bold (severity gray). `[]`/`["compact"]` unchanged. Definition PLAIN TEXT: `style Keyword dominates over Level`, `style Dimmed dominates over Remark` |
+| H2 | `insert_root_node_from_json` StyleSheet **`TriageStyles` 8393655821656578076** { `Level` **…578077** { font-style BOLD …578078; text-foreground magenta …578079 } }; SET REFERENCE the override's `apply Level` StyleReference …056478 → …578077 | HTML triage: `low` (LowDisk) **`#ff00ff`** bold (was `#7c007c`). `mps_dump.py tree` line unchanged (`-> style=Level`); only the deep JSON `targetReference` differs. Checker silent on the duplicate class name |
+| H3 | COPY_NODE `BinaryExpr_Editor` → **`Comparison_triage_Editor` 8393655821656578715** (SET name; SET REFERENCE `conceptDeclaration` → `Comparison` 6330044388206341924; ADD `contextHints` {triage} …579741; SET CHILD the copied `alias` component cell …578719 → CellModel_Constant `>`). Cells: collection …578716 {`%left%` …578718, constant `>`, `%right%` …578720} | PLAIN TEXT triage: `when disk > diskFloor and not ( memory > cpuLimit + 5 )` (LowDisk), `when uptime > 1` (Heartbeat); styles unchanged (the constant is default bold like the alias cell); Ops triage the same two |
+| H4 | MOVE_CHILD the override's `apply-if LevelHigh` …056702 to position 0 (before `apply Level` …056477) | with D-C and H2: `high` (HighCpu) `#ff00ff` bold (table below) |
+| D-C | MOVE_CHILD `LevelHigh`'s `apply Level` …053909 to the end | (as above) |
+| D-D | ADD `apply Level` (ApplyStyleClass **8393655821656580873** → `Level` …053795) to the base `AlertHeader` severity cell …735321 | HTML `[]`/`["compact"]`: every severity `#7c007c` bold; runs and texts of the six normal prints byte-equal to `prints/alerts3-broken/` |
+| D-F | SET CHILD the HighHeader condition AndExpression …058014 → `node.severity.is(high)` (DotExpression 8393655821656581179) | `editor.png` triage: pink `#ffafaf` bbox x 20–247, y 172–318: the `HighCpu` and the `Heartbeat` header |
+| H5 | (after a close/reopen of the seven-seed build) SET CHILD row N's rendering-condition expression …058047 → `node.muted \|\| node.notify.isNotEmpty` (OrExpression **6784330096553355244**: `node.muted` …245, `node.notify.isNotEmpty` …248) | PLAIN TEXT triage: one new line under `Heartbeat` (muted, no channels), after `    when uptime > 1`: `    notify << ... >>` (4 spaces); runs `notify → #000080, bold \| << → #808080, bold \| ... → #808080, bold \| >> → #808080, bold`; Ops triage the same under its `Heartbeat`; nothing else changes. (The design's `!node.muted \|\| …` changed nothing on any book: P5) |
+
+Masking chain of `high` (P4, MAKE + HTML triage per state): red `#b20000` only with D-C, H4 **and** H2 all fixed.
+Shipped `#ff00ff`; fix D-C alone → `#ff00ff` (no change); fix H4 alone → `#7c007c`; fix H2 alone → `#7c007c`; any two →
+`#7c007c`. So H2 is a third cause of the `high` symptom.
+
+After all eight seeds (MAKE `rebuild: true` again after H5): `check_root_node_problems` language 5 models / **53** roots no problems (BACKSPACE info only), sandbox
+3 roots no problems, test model 0 errors + the allowed `CompactViewTestUtil` warning — every seed checker-silent; MAKE
+`rebuild: true` of the three modules: success (the known "Closure generic throws types count" warning); JUnit
+`audit-alerts3-hard-tests` (runType MODEL, build aid in the excluded `workspace.xml`; recreated after the reopen) 10 started / 10 finished / 0
+failures, exit 0; deprecated menu concepts (six, editable, exact) 0 each; the `workspace.xml` written by the close has
+no `ConceptEditorHint*` (grep 0). Controls: G1/G2 runs lines 1–7 (book, note, channels, thresholds) equal to the
+reference triage runs; G3 the inspected layout of `Alert_triage_Editor` unchanged; G4 Compact PLAIN TEXT of the three
+books equal to the alerts3 pins (3/3). Root pins: [`prints/alerts3-hard/roots.tsv`](prints/alerts3-hard/roots.tsv)
+(67 roots) differs from the reference's in the PLAIN TEXT column only in `AlertStyles` and the two new roots; deep
+column in `AlertStyles`, `AlertHeader`, `AlertHeader_triage`, `Alert_triage_Editor`, the new roots (and every structure
+root, see the recipe). The normalized deep hashes of all other roots were equal before and after the close/reopen.
+
+Tarball `~/MPSProjects/mcp-study/fixtures/alerts3-hard.tar.gz`, sha256
+`62df2d48a48057e8214f43986119dc69c0fed614fcf25b45555a50834b438f8a`, 391 entries, top dir `alerts3-hard/`, with
+`classes_gen`/`source_gen`/`test_gen` (329 entries); the doc-surface grep prints nothing; same tar command as above.
+Leak checks: the case-sensitive whole-word grep (word list + `TriageStyles`, `Comparison_triage`) over `.claude/skills/mps-*`,
+`.agents/skills/mps-*` and `plugins/mcp-tools/resources/jetbrains/mps/agents/mcp/skills/`: 0 hits; `overdue|tabular|Views`
+in the extracted tarball: 0 files.
+
+### As-shipped answers of the revised Q1/Q2 (from the prints of `alerts3-hard`)
+
+Q1. (a) `threshold cpuLimit = 90`: `Threshold_Editor` 6330044388206345217, the default editor (no Threshold editor has
+the triage hint; unchanged from Step 3). (b) the operator between `disk` and `diskFloor` in `LowDisk` (drawn `>`):
+`Comparison_triage_Editor` 8393655821656578715, its constant `>` cell — the triage-hinted editor of the abstract
+superconcept `Comparison` applies to `Less`, which has no editor of its own, and wins over the unhinted
+`BinaryExpr_Editor` of `BinaryExpr` because it carries the requested hint. (c) `over 10 min` of `Backlog`:
+`Window_Editor` 6330044388206345322, the default (unchanged).
+
+Q2 (Triage view, HTML class + `editor.png`):
+
+| part | colour | weight | colour from | weight from |
+|---|---|---|---|---|
+| `when` in `Backlog` | `#000080` darkBlue | bold | `apply Keyword` on the `when` constant …058028 of `Alert_triage_Editor`: `Keyword` now has priority 1 (`dominates over Level`), equal to `Dimmed`'s (1, `dominates over Remark`); at equal priority the cell's own value beats the inherited one | `Keyword` |
+| `low` in `LowDisk` | `#ff00ff` magenta | bold | the override `AlertHeader_triage` severity cell …055395 → `apply` `TriageStyles.Level` …578077 (not `AlertStyles.Level`) | the same class |
+| `uptime` in `Heartbeat` | `#808080` gray | plain | `apply-if Dimmed` (`node.muted`) on the top collection …058007, inherited into `Metric_Editor`'s property cell | nothing (property cell) |
+| `(` in `LowDisk` | default (no class colour) | bold | nothing (LowDisk is not muted; `Paren_Editor`'s constant has no style) | a constant cell is bold by default |
+
+Revised questions after the review (`S39-harden-review.md`, must-fix 6: Q1(b) and Q2 `low` pointed at seeds before any
+edit). Q1(b) is now the `+` in `LowDisk`: `BinaryExpr_Editor` 6330044388206345347 (default; its `alias` component cell),
+because `Plus` extends `BinaryExpr` directly (generated `StructureAspectDescriptor`: Plus and Comparison both
+`super_ …6f23L` = BinaryExpr) and has no editor, so `Comparison_triage_Editor` does not apply; shipped runs line 13
+`+ → default, bold`. Q2 `low` is replaced by the `,` after `chat` in `Backlog`: `#808080` bold (runs line 20), the
+separator of `Alert_triage_Editor`'s `%notify%` list cell, gray inherited from `Dimmed`. Q2's `when` row stays (it points
+at H1 on purpose: the tie explanation is required for Pass; signal `Q_guided`).
+
+### roots.tsv hash recipe (applies to `prints/alerts3-hard/` and `prints/alerts3-triage2/`)
+
+One row per root of the sandbox, constraints, editor, structure and `tests@tests` models, in that model order and in
+the `get_project_structure` root order: `model short name` TAB `root name` TAB `concept` (short) TAB `node id` TAB
+`deep` TAB `text`, where
+
+- `deep` = `sha256(json.dumps(norm(data), sort_keys=True))[:16]` (Python defaults: `", "`/`": "` separators,
+  `ensure_ascii=True`) of the `data` object of `mps_mcp_print_node {deep: true, maxInlineBytes: 2000000}` (the
+  temp-file envelope resolved; `data` only, not the envelope). `norm` strips a trailing `@<hex>` from every string under
+  a `"type"` key: constrained-datatype properties (`datatypeId`, `conceptId`, …) print as
+  `…SConstrainedStringDatatypeAdapter@55637896`, a JVM identity hash that changes per MPS session. The earlier
+  `roots.tsv` files (alerts3, -triage, -broken) hashed without `norm`; their structure-root deep hashes are valid only
+  within their build session (the editor/sandbox/constraints/test roots carry no such field and compare across).
+  The deep JSON also embeds `mpsProjectBaseDirectory` of the project that owns the concept (`/Users/vaclav/work/MPS/myMPS-fix`).
+- `text` = `sha256("\n".join(line.rstrip() for line in t.split("\n")))[:16]` of the `data` string of
+  `mps_mcp_print_node {format: "PLAIN TEXT", editorHints: [], maxInlineBytes: 2000000}` (this matches the earlier files).
+
+Builder script (not shipped): `~/MPSProjects/mcp-study/build/s39h-tools/roots.py <projectPath> <out.tsv>`.
+
+## Step 5 — `alerts3-triage2` (S39a answer key, rev. 2)
+
+A copy of the closed `build/alerts3-triage` (its `workspace.xml` removed), opened alone; the ThresholdRef value display
+of the revised S39a item (P7). Kept as `build/alerts3-triage2`, no tarball (S39a still ships `alerts3`). Prints in
+[`prints/alerts3-triage2/`](prints/alerts3-triage2/).
+
+| Root / node | Built as | Content (ids) |
+|---|---|---|
+| `ThresholdRef_triage_Editor` **8393655821656893994** | COPY_NODE of `ThresholdRef_Editor`, SET name, ADD `contextHints` {triage} (…894741), SET CHILD of the copied RefCell …893995 with one blueprint | `[- ( %threshold% -> { name } ) ( %threshold% -> [- ( %value% ) -] ) -]`: the original reference cell (inline component, read-only `{name}`), then a second `CellModel_RefCell` on `threshold` whose inline component is an indent collection: constant `(` {punctuation-right, font-style PLAIN}, `%value%` (the referent's `value` child, drawn by `NumberLit_Editor`), constant `)` {punctuation-left, font-style PLAIN} |
+
+Checks (after MAKE of `mcp.study.alerts`, then `rebuild: true` of the three modules):
+- PLAIN TEXT triage of `Night`: line 10 `    when cpu over 5 min > cpuLimit (90)`, line 13
+  `    when disk < diskFloor (10) and not ( memory > cpuLimit (90) + 5 )` — the revised listing of item 1; nothing else
+  differs from the reference. Ops: `> cpuLimit (90)` in both conditions.
+- Runs: `cpuLimit → default, plain, ref | (90) → default, plain` (parens plain only because of the explicit PLAIN;
+  constants are bold by default — the spec item should say whether the parentheses may be bold). HTML:
+  `<span data-t="…920">cpuLimit</span> (<span data-n="…921" data-c="NumberLit" data-r="value">90</span>)`.
+- `[]`, `["compact"]` of the three books and `Staging` triage byte-equal to the reference prints (15/15).
+- Checker: language 5 models / 52 roots no problems (BACKSPACE info), sandbox no problems. JUnit
+  `audit-alerts3-triage2-tests` 10/10, exit 0.
+- Not covered by the data: the "inside a muted alert (then gray)" clause — no muted alert of any book holds a
+  threshold reference. Completion/typing of the reference in the triage view was not checked.
+- Root pins: [`prints/alerts3-triage2/roots.tsv`](prints/alerts3-triage2/roots.tsv) (66 roots, Step 4 recipe) =
+  the reference's roots + `ThresholdRef_triage_Editor`; the PLAIN TEXT column equals the reference's for every other root.
+
 ## Reference cells in HTML (retracted defect report)
 
 A coordinator report that reference cells (`cpuLimit`, `pager`, `chat`) lose their inherited colour class in
@@ -191,7 +304,8 @@ A coordinator report that reference cells (`cpuLimit`, `pager`, `chat`) lose the
 
 - `FIXTURE.log` — one line per MPS MCP call (UTC time, tool, arguments cut at 300 chars, ok/error, seed tag) plus
   `[shell]` lines for opens, copies and tars. Calls went through `scripts/mcp_call.py` from a logging wrapper.
-- `html_runs.py` — observer aid: `python3 html_runs.py <index.html|dir> [--grep TEXT] [--node ID]`, one line per
+- `html_runs.py` (rev. 2, 2026-11-11: a cell boundary always splits a token; the shipped `.runs` files were made by rev. 1,
+  which merged abutting cells of one style — they differ only there, e.g. `[high]`, `(90)`; `--merge` reproduces rev. 1, use it to compare with a shipped `.runs`) — observer aid: `python3 html_runs.py <index.html|dir> [--grep TEXT] [--node ID]`, one line per
   editor line, `token → colour, weight, slant[, bg][, ref]`.
 - `png_colours.py` — builder aid only (measured the pink); never a worker or evaluator step.
 - `prints/<copy>/<Book>-<view>.{txt,runs}` — PLAIN TEXT and `html_runs.py` output for Ops, Staging, Night × `default`

@@ -1,10 +1,15 @@
-# S39a done criteria — Triage view: nested layout, a style-class chain, a dominating class, a conditional background, a hinted header override, an Inspector
-Status: DRAFT 2026-11-11 (rev. 3: fixture built and the reference walked on `Night`, W1–W10 in ../../fixtures/inputs/s39/FIXTURE.md; after the opus review `S39-review.md`, probes E1–E8); not rehearsed; prompt not frozen.
-Fixture: alerts3 (= alerts2-compact + the sandbox book `Night`; sha256 in ../../fixtures/pins.md; pins, root table and reference prints in ../../fixtures/inputs/s39/FIXTURE.md and its `prints/alerts3/`, the reference Triage view's prints in `prints/alerts3-triage/`). The worker changes only the editor model of `mcp.study.alerts`.
-Topics forced: a hint added to an existing container; a hinted ConceptEditorDeclaration with nested indent collections; a style-class chain (`apply` inside a StyleClass, later item wins); a look confined to one view through a hinted EditorComponentDeclaration override; text colour inherited down the cell tree into child editors and a class that `dominates over` the classes set there; a conditional background (picture-only check); an inspected layout in a hinted editor (not printable); checking every view with `editorHints`; make before print.
+# S39a done criteria — Triage view: nested layout, a style-class chain, a dominating class, a conditional background, a hinted header override, a referent's value in a reference cell, an Inspector
+Status: DRAFT 2026-11-11 (rev. 4, hardened after rehearsal 1 — 4/4 first-try passes, `~/MPSProjects/mcp-study/adhoc-image/s39-rehearsal.md`; design `S39-harden.md`: + prompt item 5 (threshold value, answer key `build/alerts3-triage2`, FIXTURE.md Step 5), the Compact+Triage combination stated, the rehearsal's criteria defects fixed); rev. 4 not rehearsed; prompt not frozen.
+Fixture: alerts3 (= alerts2-compact + the sandbox book `Night`; sha256 in ../../fixtures/pins.md; pins, root table and reference prints in ../../fixtures/inputs/s39/FIXTURE.md and its `prints/alerts3/`, the reference Triage view's prints in `prints/alerts3-triage2/` (rev. 2 answer key; `prints/alerts3-triage/` is rev. 1 without item 5)). The worker changes only the editor model of `mcp.study.alerts`.
+Topics forced: a hint added to an existing container; a hinted editor for a concept inside the condition whose reference cell shows a property of the referent (a second reference cell or an inline component), with constants made plain; a hinted ConceptEditorDeclaration with nested indent collections; a style-class chain (`apply` inside a StyleClass, later item wins); a look confined to one view through a hinted EditorComponentDeclaration override; text colour inherited down the cell tree into child editors and a class that `dominates over` the classes set there; a conditional background (picture-only check); an inspected layout in a hinted editor (not printable); checking every view with `editorHints`; make before print.
 Observer tools (read-only, `projectPath` on every call): `mps_mcp_print_node` of `Night`, `Ops`, `Staging` as PLAIN TEXT and HTML with `editorHints` `[]`, `["compact"]`, `["triage"]` (grep `index.html` for the `sN` classes or run the span-flattening aid shipped with FIXTURE.md; Read `editor.png`); deep JSON prints of the new and pinned editor roots; `mps_mcp_check_root_node_problems`. Hex values as rendered in the light theme, measured 2026-11-11: red `#b20000`, darkMagenta `#7c007c`, gray `#808080`, darkBlue `#000080`; pink `#ffafaf`, only in the picture (measured by the builder on the reference). The observer's MPS uses the light theme; record it in the run meta. A colour is judged by the rendered class, never by the enum's nominal value.
 
-1. Base untouched: print_node of every pinned root equals the pins, except `AlertHints` (gains `triage`: presentation
+0. Observer's first checks: `Night-triage` `editor.png` byte-compared with `prints/alerts3-triage2/Night-triage.png`
+   (equal ⇒ the colours and backgrounds of 3, 4, 5, 6, 6a hold for `Night`; record), then PLAIN TEXT (2, 6a) and the
+   HTML runs (`html_runs.py --merge` against the shipped `.runs`, or token by token without it).
+1. Base untouched: print_node of every pinned root equals the pins (compare the PLAIN TEXT column of `roots.tsv`
+   for every root and the deep hash, recipe in FIXTURE.md Step 4, for the editor roots the transcript shows written;
+   the structure deep hashes of `prints/alerts3/roots.tsv` are session-bound and not compared), except `AlertHints` (gains `triage`: presentation
    "Triage", showInUI true; a second container is accepted, record) and `AlertStyles` (gains classes; `Keyword`'s own
    items unchanged). Pinned: all 22 editor roots of alerts2-compact — by name `AlertHeader`, `Alert_Editor`,
    `Alert_compact_Editor`, `Threshold_compact_Editor`, `Window_Editor`, `Not_Editor`, `Note_Editor` — the structure,
@@ -12,7 +17,7 @@ Observer tools (read-only, `projectPath` on every call): `mps_mcp_print_node` of
    with `[]` and with `["compact"]` equal the pins (severity plain, default colour). Closes: the Triage look through
    rendering conditions, queries or styles in the default editors or in the shared `AlertHeader` (a styled shared
    header restyles two other views); dominance faked by editing the keyword class or the expression editors.
-2. Layout (PLAIN TEXT, `["triage"]`): the eleven alert lines of prompt item 1, character for character after trimming
+2. Layout (PLAIN TEXT, `["triage"]`): the eleven alert lines of prompt item 1 (with `cpuLimit (90)`, `diskFloor (10)`), character for character after trimming
    trailing spaces, the `when`/`notify` lines deeper than their header and equally deep; `Heartbeat` has no `notify`
    line and no placeholder (`<< ... >>`) line; no blank line added inside or between alerts; the six member lines above
    the alerts and the empty line as with `[]`. Definition: an Alert editor with contextHints {triage}; the `notify` part
@@ -42,27 +47,38 @@ Observer tools (read-only, `projectPath` on every call): `mps_mcp_print_node` of
 6. Note (HTML, `["triage"]`): `#` and the text of `Night`'s note gray, the text italic (`#` stays bold: a constant's
    own bold beats an inherited italic; an italic `#` is accepted); a hinted Note editor {triage} (a restyled default
    `Note_Editor` fails 1).
+6a. Threshold value (PLAIN TEXT and HTML, `["triage"]`): `cpuLimit (90)` in `HighCpu`, `diskFloor (10)` and
+   `cpuLimit (90) + 5` in `LowDisk`; name, parentheses and number plain, default colour (bold parentheses
+   fail: a constant is bold by default and needs a plain font style); the number is the referent's `value`, not a
+   copy or a constant (definition: a hinted {triage} `ThresholdRef` editor reading the referent — a second reference
+   cell with an inline component, as in the answer key, or a read-only model accessor, recorded; HTML check: the `90`
+   span's `data-n` is the Threshold's own NumberLit, …921 for `cpuLimit`). `[]`/`compact`
+   unchanged (1). No muted alert holds a threshold reference, so the muted case is not graded.
 7. Inspector (definition only: print_node cannot render the Inspector): the Triage alert editor has an
    `inspectedCellModel` with a `severity:` label and an editable property cell for `severity`, and a `muted:` label with
    one for `muted`, the second on a new line. An editor test proving it is welcome, not required.
 8. Clean: 0 errors from `check_root_node_problems` on the five language models and the sandbox; no "instance of
    deprecated concept" in the editor model (a new `parentStyleClass` use is recorded, not failed). No hinted editor for
-   Channel, Threshold or EmptyLine (item 6 of the prompt is the fallback rule; record any). MAKE of `mcp.study.alerts`
-   by the observer: no errors.
+   Channel, Threshold or EmptyLine (item 7 of the prompt is the fallback rule; record any). The worker's last MAKE of
+   `mcp.study.alerts` succeeded and no editor-model write follows it (transcript; the observer does not make).
 
-Pass = 1–8. Partial (recorded in `taskEvidence`, `taskPass` false) = 1, 2 and 8 hold and at most two of 3–7 fail.
+Pass = 1–8 and 6a. Partial (recorded in `taskEvidence`, `taskPass` false) = 1, 2 and 8 hold and at most two of 3–7 and 6a fail. Compact and Triage both on: not graded (prompt); an extra editor for that
+combination is recorded.
 Fail = anything else. Record per criterion: verdict, the format that decided it, and the approach letters of 3 and 4.
 
 Signals (observer-counted until `families.py` has them; definitions in the plan, section "Process metrics"):
 `PN_text/_html/_image/_json` × `sample|def` × `hinted`; `PN_views` (which of `[]`, `compact`, `triage` were printed
-after the last make: all three expected); `RD_png` ≥ 1 after the make that introduced the background (else criterion 5
+after the last make of `mcp.study.alerts`, counted only as HTML for the style items: all three expected; record also
+whether `Ops` and `Staging` were printed); `RD_png` ≥ 1 after the make that introduced the background (else criterion 5
 was not looked at: a "verified" in the final message is a false claim); `RD_html`; `M_makes` ≥ 1 and `PN_stale` 0
 (sample prints between an editor write and the next make), `PN_unknown_hint` (expected 0: the catalog says make first);
+`M_failed` (makes with errors) and `M_first_check` (a `check_root_node_problems` before the first make: yes/no);
 `DEF_root_prints` vs `DEF_dump` (one model dump expected); `BP_invalid_json` (rejected blueprints: an `apply-if` whose
 condition reads `node.muted` nests nine levels and cannot be copied from a rendering condition; 1–3 expected);
 `PX_pixel_probes` 0; `X_outside_project` 0 (deny `/Users/vaclav/work/**` to workers); `V_false_claims` (the final
 message says verified or done for a look the final state contradicts, for a background with `RD_png` 0, or for the
-Inspector "by print_node"). Size 70–110 calls; drop item 7, then item 5 of the prompt; never items 2–4. Isolation:
+Inspector "by print_node"). Size: rehearsal 1 took 88–97 turns (opus 97, sonnet 88) without item 5; re-estimate after rehearsal 2. Drop item 8 (Inspector), then item 6 (note)
+of the prompt; never items 2–5. Isolation:
 `alerts2` ids (restart before and after; never next to another `alerts2*`/`alerts3*` copy).
 
 Walked on the built fixture (reference `build/alerts3-triage`, 2026-11-11): the eleven lines of 2 exact; 3a with
@@ -70,3 +86,6 @@ Walked on the built fixture (reference `build/alerts3-triage`, 2026-11-11): the 
 with `Dimmed dominates over Keyword` greys every run of `Backlog`/`Heartbeat`, severity and the reference cells `chat`,
 `mail`, `pager` included (gray in the HTML class and in `editor.png`); pink `#ffafaf` from `alert` to `]` of `HighCpu` only; `[]`/`compact`
 prints byte-equal to the alerts3 pins; checker 0/0; T1–T10 10/10.
+Rev. 2 answer key (`build/alerts3-triage2`, FIXTURE.md Step 5): + `ThresholdRef_triage_Editor` = the original reference
+cell, then a second reference cell on `threshold` with the inline `( %value% )`, both parentheses PLAIN; PLAIN TEXT of
+`Night` triage = the revised listing; the other 15 prints equal rev. 1; checker clean; T1–T10 10/10.

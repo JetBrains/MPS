@@ -1,0 +1,8 @@
+
+stylesheet TriageStyles {
+  style Level {
+    font-style : bold
+    text-foreground-color : light: magenta       | dark: ce soir (#FF00FF / #9776A9)
+  }
+
+}

@@ -12,17 +12,18 @@ skills.
 Task: a second optional view, "Triage", offered in the IDE next to "Compact". With Triage off,
 every node looks and edits exactly as today, in the normal view and in the Compact view. The
 sandbox, the language's structure and the tests do not change. The book `Night` is the sample
-to check against; items 1-6 say how its members look in the Triage view.
+to check against; items 1-7 say how its members look in the Triage view. With Compact and Triage
+both switched on, either look is accepted.
 
 1. An alert is a block: its header line as today, then, indented under it, a line
    `when <condition>` and a line `notify <channels>`. An alert without channels has no
    `notify` line. `Night` reads:
 
        alert HighCpu [high]
-         when cpu over 5 min > cpuLimit
+         when cpu over 5 min > cpuLimit (90)
          notify pager, mail
        alert LowDisk [low]
-         when disk < diskFloor and not ( memory > cpuLimit + 5 )
+         when disk < diskFloor (10) and not ( memory > cpuLimit (90) + 5 )
          notify mail
        muted alert Heartbeat [high]
          when uptime < 1
@@ -39,11 +40,14 @@ to check against; items 1-6 say how its members look in the Triage view.
    Bold stays bold.
 4. The header line of an alert that is `high` and not muted has a `pink` background, from its
    first word to the closing `]`. Nothing else in the view has a background.
-5. A note is `gray`, and its text is italic.
-6. Channels, thresholds, empty lines and the book's first line look as in the normal view.
-7. With the caret on an alert in the Triage view, the Inspector shows two editable lines,
+5. In a condition, a threshold reference shows the threshold's value in parentheses after its
+   name, `cpuLimit (90)`; the value and the parentheses are not bold and in the default
+   colour.
+6. A note is `gray`, and its text is italic.
+7. Channels, thresholds, empty lines and the book's first line look as in the normal view.
+8. With the caret on an alert in the Triage view, the Inspector shows two editable lines,
    `severity: <value>` and `muted: <true/false>`.
-8. Rebuild the language. Done when: `Night` looks as described in the Triage view; `Ops`,
+9. Rebuild the language. Done when: `Night` looks as described in the Triage view; `Ops`,
    `Staging` and `Night` look as today with no view switched on and in the Compact view; the
    language makes without errors; and `mps_mcp_check_root_node_problems` reports no errors on
    the language and the sandbox.

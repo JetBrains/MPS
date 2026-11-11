@@ -12,7 +12,8 @@ This is the specification; `Night` is the sample:
 
   a. An alert is a block: its header line `[muted] alert <name> [<severity>]`, then, indented
      under it, a line `when <condition>` and after it a line `notify <channels>`. An alert
-     has the `notify` line exactly when it has at least one channel.
+     has the `notify` line exactly when it has at least one channel. The condition reads as
+     in the normal view.
   b. The severity value (not the brackets) is bold `darkMagenta`; the value `high` is bold
      `red` instead. Only in the Triage view: in the normal and the Compact view the severity
      is plain, in the default colour.
@@ -33,19 +34,22 @@ Task: find every deviation from the specification and fix it in the language. Th
 language's structure and the tests are correct and must not change.
 
 1. Before you change anything, answer two questions about the project as it is now, in
-   `REPORT.md` in the current folder (sections `## Q1`, `## Q2`):
+   `REPORT.md` in the current folder (sections `## Q1`, `## Q2`), and write that file before
+   your first change to the language:
    Q1. In the Triage view of `Night`, which editor definition draws (a) the line
-       `threshold cpuLimit = 90`, (b) the `[low]` of the alert `LowDisk`, (c) the `over 10 min`
-       of the alert `Backlog` — and why that definition and not another one?
-   Q2. In the Triage view today, what colour and weight do these parts have: `not` in
-       `LowDisk`, the `(` after it, `uptime` in `Heartbeat`, and `chat` in `Backlog`? For each,
-       name the definition (editor, cell, style class) that gives it its colour and the one
-       that gives it its weight.
+       `threshold cpuLimit = 90`, (b) the `+` in the alert `LowDisk`, (c) the `over 10 min` of the alert `Backlog` — and why that definition and
+       not another one?
+   Q2. In the Triage view today, what colour and weight do these parts have: `when` in
+       `Backlog`, the `,` after `chat` in `Backlog`, `uptime` in `Heartbeat`, and the `(`
+       in `LowDisk`? For each, name the definition (editor, cell, style class) that gives it
+       its colour and the one that gives it its weight, and say why that value wins over the
+       others that apply to the same cell. Do not change the Q1 and Q2 sections afterwards.
 2. Find the deviations and fix each one where it is caused. Keep everything that already
    matches the specification as it is.
 3. Add a section `## Defects` to `REPORT.md`: for each deviation one short paragraph with the
-   view and the node of `Night` that shows it, the definition that caused it (editor root or
-   style class, and the cell or item), and what you changed.
+   view and the node of `Night` that shows it, the definitions that caused it (editor root or
+   style class, and the cell or item; a deviation can have more than one cause), and what you
+   changed.
 4. Rebuild the language. Done when: `Night` matches the specification in the Triage view;
    `Ops`, `Staging` and `Night` match item h in the normal and the Compact view; the language
    makes without errors; `mps_mcp_check_root_node_problems` reports no errors on the language
