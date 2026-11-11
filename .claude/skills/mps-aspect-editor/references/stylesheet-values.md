@@ -31,6 +31,8 @@ Default literal: `none`. Two-tone notes (`light / dark`) describe how the color 
 
 For colors not in this set, use the `query` function variant of the color style item (a `QueryFunction_Color` body returning a `java.awt.Color`) instead of trying to invent a new enum literal.
 
+**A style that depends on the node** (highlight an overdue entry, mark a draft) keeps the enum literal, which follows the theme: put the items in a `StyleClass` of the language's `StyleSheet` and apply it to the cell with an `ApplyStyleClassCondition` style item (alias `apply-if`). It has a `target` child `StyleReference` (reference `style`) and a `query` child `QueryFunction_Boolean` whose `body` returns the condition, e.g. `node.overdue` as an `ExpressionStatement` holding a `DotExpression` of `ConceptFunctionParameter_node` and `SPropertyAccess` (smodel). A background paints the cells of the collection it is on, so on the editor's top cell it covers the node's whole projection. A `QueryFunction_Color` returning a `java.awt.Color` works too, but has one colour for every theme.
+
 ## Font style — `_FontStyle_Enum`
 
 Used by `FontStyleStyleClassItem.style`. Default literal: `PLAIN`.
