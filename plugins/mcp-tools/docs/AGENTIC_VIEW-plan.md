@@ -36,7 +36,7 @@ These are fixed unless a check in P0 or P3 overturns one. Each overturn is recor
 | D1 | Format literal `AGENTIC VIEW`. `AGENTIC_VIEW` is accepted too. Other literals keep their current matching. |
 | D2 | Always the whole subtree. `deep` is ignored for this format. |
 | D3 | One new tool parameter: `nodeDepth: Int = -1`, with the meaning it has in `get_project_structure` (`-1` all, `0` the node alone, `n` levels). Used by this format only. No other new parameter in v1: every parameter costs schema tokens in every session. |
-| D4 | Over `maxInlineBytes` the output is cut by depth, not sent to a file (P1.4). A file is the last resort and is raw `.txt`. |
+| D4 | Over `maxInlineBytes` the output is cut by depth, not sent to a file (P1.4). A file is the last resort and is raw `.txt`. (Overturned 2026-11-11 by follow-up G3, see §9.) |
 | D5 | Rendered from the model, in a new `common/AgenticViewRenderer.kt`. No editor is built. |
 | D6 | Unset features are printed for every node. Deprecated features are printed only when set; a `# deprecated` header line names them once per concept of the printout, so that a reader can tell "declared, deprecated, unset" from "no such feature" (P0 probe, item B6). |
 | D7 | No notation snippet (handoff §5 #15) and no cardinality or type legend (#16) in v1. |
@@ -53,7 +53,7 @@ These are fixed unless a check in P0 or P3 overturns one. Each overturn is recor
 # models m1=<model reference> m2=<model reference> !foreign
 # concepts <language>: Name Name … | <language>: Name …
 # deprecated, printed only when set: <Concept>: <feature> <booleanProperty>=false … | <Concept>: …
-# cut at depth 3 of 9: 41 of 88 nodes printed; print a "(+N)" node by its id to continue
+# cut: 41 of 88 nodes printed (the whole printout is 13300 chars); print the "(+N)" nodes you need by their ids
 <node line>
   <node line>
 ```
@@ -61,7 +61,7 @@ These are fixed unless a check in P0 or P3 overturns one. Each overturn is recor
 Node line, in this order; every part but the concept and the id is optional:
 
 ```
-<indent><role>[<index>]: <Concept> #<id> <name> <prop>=<value>… -> <ref>=<target>@<mN>#<id>… <flags> (+N)
+<indent><role>[<index>]: <Concept> #<id> <name>[*] <prop>=<value>… -> <ref>=<target>@<mN>#<id>… <flags> [= "<code text>"] (+N)
 <indent>  empty: properties <p> <p>; references <r> <r>; children <c> <c>
 ```
 
@@ -72,13 +72,15 @@ Node line, in this order; every part but the concept and the id is optional:
 | `[index]` | Present when the role is multi-valued (`0..n`, `1..n`), even for a single child. Zero-based. |
 | Concept | Short name. Its language is in the `# concepts` header. If two languages in the printout have the same short name, both are printed as `<language>.<Name>`. |
 | `#id` | See D11. |
-| name | The `name` property when set. It is not repeated among the properties. No presentation fallback. |
+| name | The `name` property when it reads as a value, with `*` when it is not stored (a constraints getter: `IfStatement_Editor*`, `"my name"*`). It is not repeated among the properties. No presentation fallback. A `name` the concept does not declare is a property with `!undeclared`. |
 | `prop=value` | Stored properties, then unset ones that read as a value, marked `*` (D12). Declared order within each group. |
 | `-> ref=target` | `target` is the target's name, else its presentation. `@mN` is omitted for the printed node's own model. A reference without a resolvable target prints `?` as the target and the flag after the token: `-> ref=?@mN#id !unresolved`, or `-> ref=? !unresolved` when no target reference is stored. |
 | attributes | Children in `smodelAttribute` come first under their node, in stored order, with `@attr:` in place of the role and no index. A property attribute prints `@prop(<property>):`, a reference attribute `@ref(<role>):`, a child attribute `@child(<role>):` (Q5). |
 | `empty:` line | Unset properties with an empty display value, unset references, empty child roles. A group without entries is left out; the line is absent when all three are. A required reference or child role (`1`, `1..n`) carries `!required`. |
 | flags | `!undeclared` after a stored feature the concept does not declare. `!conceptNotLoaded` on a node. `!deprecated` after a set deprecated feature. `!foreign` after a model of another open project. |
-| `(+N)` | The node has N descendants that are not printed (depth cut). |
+| `(+N)` | The node has N descendants that are not printed (`nodeDepth`, or the cut). |
+| `= "<code text>"` | Only with `codeAsText`: the node is an outermost BaseLanguage `Statement` or `Expression` (the printed node, or its parent is neither; a `StatementList` is neither), printed with its text in the node's headless editor (project hint settings), whitespace runs collapsed to one space, as a JSON string. Its subtree is not printed: its child lines are the attributes of its subtree in document order, those of an inner node labelled `@…(x) on #<id>:` with the annotated node's id; `(+N)` counts the other inner nodes. Its `empty:` line has no children group (the text shows the empty roles). It counts as one printed node for `nodeDepth` and the cut; `details.agenticView.collapsed` counts the printed code lines. Code without a cell in that editor (also under a folded cell) is printed as usual, with one warning. If the editor cannot be built or rendered, all code is printed as node lines, with one warning and `collapsed: 0`. |
+| `# cut` | Above `maxInlineBytes` (also on top of a `nodeDepth` printout; `nodeDepth` itself is a uniform bound, not this cut), nodes are expanded breadth-first, level by level and in document order within a level; an expansion prints all children of the node, attributes included; it stops at the first expansion that does not fit. The node alone is the floor. |
 | duplicate names | Two printed features of one node with the same name get `@<OwnerConcept>`: `isDeprecated@Classifier`. |
 
 **Quoting.** A name, a reference target, an enum literal or a raw undeclared value is printed bare when it is a
@@ -99,6 +101,7 @@ never appears on the `empty:` line.
 | node `reference`, `concept` | `#id` (+ model of the printout), Concept |
 | child role and position in `nodes` | `role[index]`; for `smodelAttribute`, the order of the `@…:` lines |
 | property entry of a stored property | `prop=value` with the same display value; the `name` property ↔ the name part |
+| `name` entry of an unstored property (a constraints getter) | the name part with `*` |
 | property entry of an unset property (`isDefault:true`, or a constraints-getter value) | `prop=value*` |
 | — (omitted: a stored boolean `false`) | `prop=false` |
 | property entry of an unset BaseConcept property (`shortDescription` or `alias` from a getter) | not printed |
@@ -106,6 +109,7 @@ never appears on the `empty:` line.
 | `declared:false`, `conceptLoaded:false` | `!undeclared`, `!conceptNotLoaded` |
 | empty role of cardinality `1` / `1..n` | on the `empty:` line with `!required` |
 | — (omitted: unset boolean) | `prop=false*` |
+| the subtree of an outermost statement or expression (`codeAsText`) | the node line with `= "<text>"`: the node is present, its subtree skipped except for its attributes; printed plus `(+N)` nodes equal the subtree |
 | — (omitted: other unset property with an empty display value, unset reference, empty optional role) | on the `empty:` line, unless deprecated |
 | `type`, `cardinality`, `doc`, `deprecated`, `typeReference`, `conceptReference` | not printed (`!deprecated` on a set deprecated feature only) |
 
@@ -504,3 +508,6 @@ Fill in during the work: the answers to Q1–Q10, any overturned decision of §1
 | 2026-11-11 | Q10, routing probe | Deviation from P5.4: the workers ran in a scratch directory holding a copy of the skill catalog and the installed-guide template as `CLAUDE.md`, not in a study project, because another session was using the same MPS for a study. 6 of 6 runs chose the expected first print: `AGENTIC VIEW` for T-read and T-edit, `PLAIN TEXT` for T-code. No run printed JSON. All answers and both edits are correct and check clean. The opus T-code run chose `PLAIN TEXT` from the tool description alone, without loading a skill. |
 | 2026-11-11 | Final gate | `McpToolsIntegrationTestSuite` umbrella on the final tree: 1522 tests, 0 failed. Parity on the 7 roots holds on the final build; no ERROR or SEVERE in the IDE log of the MPS session that served the probe. |
 | 2026-11-11 | P0 sizes | Prototype, chars: Maze 3.2k, dectab 1.7k, CommentLine_Behavior 4.2k, Kaja editor 10.0k, template 6.4k, concept 2.0k, BL editor 13.2k. That is 0.5–0.6× reflective for the wide roots and about 1× for the small ones; 0.12–0.23× compact JSON. Tokens: about 0.42 per char, 17.2k for all 7 roots. |
+| 2026-11-11 | Follow-up G3: computed name, budget-filling cut | A `name` read from a constraints getter is printed in the name position with `*` (`IfStatement_Editor*`), no longer as `name="…"*` among the properties. The uniform depth cut (D4, P1.4) is replaced: above `maxInlineBytes` nodes are expanded breadth-first, each expansion printing all children, until the next one does not fit; the node alone is the floor before the `.txt` file. Candidate sizes are kept exact from per-line escaped lengths and the header parts, in the one walk. The header is `# cut: P of T nodes printed (…)`; `details.agenticView.cutDepth` became `cut: true`. Reason: an 88-node root at a 3000-char limit fell to depth 1 with 2 nodes. |
+| 2026-11-11 | Follow-up G5: whole models | `mps_mcp_print_node` stays one node (its model rejection is unchanged). A model or module is read with the new tool `mps_mcp_get_compact_project_structure`: one AGENTIC VIEW section per model (own header, aliases and legends), a `# module <name> \| <N> models` line before the sections of a module, the G3 cut applied breadth-first across all roots of all sections, the root lines as the floor before the `.txt` file. `startingPoint` resolves as in `mps_mcp_get_project_structure` with library and foreign models included, as `print_node` prints any node. `mps_dump.py tree` marks `isDefault` properties with `*` and targets in another model with `@<model name>`. |
+| 2026-11-11 | Follow-up G6: code as text | `mps_mcp_print_node` AGENTIC VIEW takes `codeAsText` (default false): an outermost BaseLanguage statement or expression is one line with ` = "<editor text>"`, its inner nodes counted in `(+N)`, the attributes of its subtree listed under it (`on #<id>` for an inner node's), `details.agenticView.collapsed` counting such lines. The texts come from one headless editor of the printed node, the cell of each node rendered as for `PLAIN TEXT`; without the flag no editor is built. The printed node itself is collapsed when it is code (its parent is outside the printout). The routing is unchanged: reading code stays `PLAIN TEXT`; the flag is for roots that mix structure and code. `mps_mcp_get_compact_project_structure` has no such parameter. |
