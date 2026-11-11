@@ -1,6 +1,6 @@
 # S39 fixtures: `alerts3` (S39a) and `alerts3-broken` (S39b)
 
-**Status: built 2026-11-11 (opus builder, one session, MPS 261.25134 from sources, light theme), not rehearsed.** Recipe
+**Status: built 2026-11-11 (opus builder, one session, MPS 261.25134 from sources, light theme); `alerts3` and `alerts3-hard` are the frozen fixtures of S39a/S39b (rehearsal 2, 2026-11-11); `alerts3-broken` is retired (rev. 3 of S39b).** Recipe
 draft: `~/MPSProjects/mcp-study/adhoc-image/S39-fixture.md` (rev. 2 + coordinator corrections of 2026-11-11). Every MPS MCP
 call is one line in [`FIXTURE.log`](FIXTURE.log). Observer aid: [`html_runs.py`](html_runs.py). sha256 of both tarballs:
 [`../../pins.md`](../../pins.md). Same `mcp.study.alerts` ids as every `alerts2*` fixture: never open two of the family
@@ -202,6 +202,9 @@ Leak checks: the case-sensitive whole-word grep (word list + `TriageStyles`, `Co
 in the extracted tarball: 0 files.
 
 ### As-shipped answers of the revised Q1/Q2 (from the prints of `alerts3-hard`)
+
+Q1(b) and the Q2 `low` row below answer the first-draft questions; the frozen prompt asks the `+` and the `,` instead —
+see "Revised questions after the review" after the table.
 
 Q1. (a) `threshold cpuLimit = 90`: `Threshold_Editor` 6330044388206345217, the default editor (no Threshold editor has
 the triage hint; unchanged from Step 3). (b) the operator between `disk` and `diskFloor` in `LowDisk` (drawn `>`):

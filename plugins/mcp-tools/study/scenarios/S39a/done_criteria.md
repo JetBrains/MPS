@@ -1,12 +1,15 @@
 # S39a done criteria — Triage view: nested layout, a style-class chain, a dominating class, a conditional background, a hinted header override, a referent's value in a reference cell, an Inspector
-Status: DRAFT 2026-11-11 (rev. 4, hardened after rehearsal 1 — 4/4 first-try passes, `~/MPSProjects/mcp-study/adhoc-image/s39-rehearsal.md`; design `S39-harden.md`: + prompt item 5 (threshold value, answer key `build/alerts3-triage2`, FIXTURE.md Step 5), the Compact+Triage combination stated, the rehearsal's criteria defects fixed); rev. 4 not rehearsed; prompt not frozen.
+Status: DRAFT 2026-11-11 (rev. 4, hardened after rehearsal 1 — 4/4 first-try passes, `~/MPSProjects/mcp-study/adhoc-image/s39-rehearsal.md`; design `S39-harden.md`: + prompt item 5 (threshold value, answer key `build/alerts3-triage2`, FIXTURE.md Step 5), the Compact+Triage combination stated, the rehearsal's criteria defects fixed); rev. 5 after rehearsal 2 (4/4 Pass, opus `high` and sonnet `medium`; evaluations in `s39-runs/`, summary ../../reports/assessments/editor-checking.md): criteria defects fixed, prompt unchanged. **Frozen 2026-11-11** as a regression and cost cell for the editor skills; it does not discriminate opus from sonnet (every look or seed can be read off the definitions).
 Fixture: alerts3 (= alerts2-compact + the sandbox book `Night`; sha256 in ../../fixtures/pins.md; pins, root table and reference prints in ../../fixtures/inputs/s39/FIXTURE.md and its `prints/alerts3/`, the reference Triage view's prints in `prints/alerts3-triage2/` (rev. 2 answer key; `prints/alerts3-triage/` is rev. 1 without item 5)). The worker changes only the editor model of `mcp.study.alerts`.
-Topics forced: a hint added to an existing container; a hinted editor for a concept inside the condition whose reference cell shows a property of the referent (a second reference cell or an inline component), with constants made plain; a hinted ConceptEditorDeclaration with nested indent collections; a style-class chain (`apply` inside a StyleClass, later item wins); a look confined to one view through a hinted EditorComponentDeclaration override; text colour inherited down the cell tree into child editors and a class that `dominates over` the classes set there; a conditional background (picture-only check); an inspected layout in a hinted editor (not printable); checking every view with `editorHints`; make before print.
+Topics forced (graded): a hint added to an existing container; a hinted editor for a concept inside the condition whose reference cell shows a property of the referent (a second reference cell or an inline component), with constants made plain; a hinted ConceptEditorDeclaration with nested indent collections; severity classes (a chain with `apply` inside a StyleClass, where the later item wins, or independent classes — recorded, not graded); a look confined to one view through a hinted EditorComponentDeclaration override; text colour inherited down the cell tree into child editors and a class that `dominates over` the classes set there; a conditional background (picture-only check); an inspected layout in a hinted editor (not printable); checking every view with `editorHints`; make before print.
 Observer tools (read-only, `projectPath` on every call): `mps_mcp_print_node` of `Night`, `Ops`, `Staging` as PLAIN TEXT and HTML with `editorHints` `[]`, `["compact"]`, `["triage"]` (grep `index.html` for the `sN` classes or run the span-flattening aid shipped with FIXTURE.md; Read `editor.png`); deep JSON prints of the new and pinned editor roots; `mps_mcp_check_root_node_problems`. Hex values as rendered in the light theme, measured 2026-11-11: red `#b20000`, darkMagenta `#7c007c`, gray `#808080`, darkBlue `#000080`; pink `#ffafaf`, only in the picture (measured by the builder on the reference). The observer's MPS uses the light theme; record it in the run meta. A colour is judged by the rendered class, never by the enum's nominal value.
 
-0. Observer's first checks: `Night-triage` `editor.png` byte-compared with `prints/alerts3-triage2/Night-triage.png`
-   (equal ⇒ the colours and backgrounds of 3, 4, 5, 6, 6a hold for `Night`; record), then PLAIN TEXT (2, 6a) and the
-   HTML runs (`html_runs.py --merge` against the shipped `.runs`, or token by token without it).
+0. Observer's first checks (a shortcut, not a criterion): `Night-triage` `editor.png` byte-compared with
+   `prints/alerts3-triage2/Night-triage.png` — valid only on the observer's MPS build, fonts and light theme; equal ⇒ the
+   colours and backgrounds of 3, 4, 5, 6, 6a hold for `Night` (record); unequal is no verdict (another valid cell
+   structure, e.g. `(90)` as one accessor cell, shifts the picture by a few pixels): decide by the HTML runs and a look
+   at the png. Then PLAIN TEXT (2, 6a) and the HTML runs (`html_runs.py --merge` against the shipped `.runs`, or token
+   by token without it).
 1. Base untouched: print_node of every pinned root equals the pins (compare the PLAIN TEXT column of `roots.tsv`
    for every root and the deep hash, recipe in FIXTURE.md Step 4, for the editor roots the transcript shows written;
    the structure deep hashes of `prints/alerts3/roots.tsv` are session-bound and not compared), except `AlertHints` (gains `triage`: presentation
@@ -51,8 +54,10 @@ Observer tools (read-only, `projectPath` on every call): `mps_mcp_print_node` of
    `cpuLimit (90) + 5` in `LowDisk`; name, parentheses and number plain, default colour (bold parentheses
    fail: a constant is bold by default and needs a plain font style); the number is the referent's `value`, not a
    copy or a constant (definition: a hinted {triage} `ThresholdRef` editor reading the referent — a second reference
-   cell with an inline component, as in the answer key, or a read-only model accessor, recorded; HTML check: the `90`
-   span's `data-n` is the Threshold's own NumberLit, …921 for `cpuLimit`). `[]`/`compact`
+   cell with an inline component, as in the answer key, or a read-only model accessor, recorded; on the key's route the `90`
+   span's `data-n` is the Threshold's own NumberLit, …921 for `cpuLimit`; on the accessor route `(90)` is text of
+   the ThresholdRef span, so check the definition reads the referent's `value`; a fallback text for an unresolved
+   reference, e.g. `?`, is allowed). `[]`/`compact`
    unchanged (1). No muted alert holds a threshold reference, so the muted case is not graded.
 7. Inspector (definition only: print_node cannot render the Inspector): the Triage alert editor has an
    `inspectedCellModel` with a `severity:` label and an editable property cell for `severity`, and a `muted:` label with
@@ -67,17 +72,18 @@ combination is recorded.
 Fail = anything else. Record per criterion: verdict, the format that decided it, and the approach letters of 3 and 4.
 
 Signals (observer-counted until `families.py` has them; definitions in the plan, section "Process metrics"):
-`PN_text/_html/_image/_json` × `sample|def` × `hinted`; `PN_views` (which of `[]`, `compact`, `triage` were printed
-after the last make of `mcp.study.alerts`, counted only as HTML for the style items: all three expected; record also
-whether `Ops` and `Staging` were printed); `RD_png` ≥ 1 after the make that introduced the background (else criterion 5
+`PN_text/_html/_image/_json` × `sample|def` × `hinted`; `PN_views` (recorded, gates nothing: which of `[]`, `compact`, `triage` were
+printed after the last make of `mcp.study.alerts`, counted only as HTML for the style items: all three expected;
+record also whether `Ops` and `Staging` were printed); `RD_png` ≥ 1 after the make that introduced the background (else criterion 5
 was not looked at: a "verified" in the final message is a false claim); `RD_html`; `M_makes` ≥ 1 and `PN_stale` 0
 (sample prints between an editor write and the next make), `PN_unknown_hint` (expected 0: the catalog says make first);
 `M_failed` (makes with errors) and `M_first_check` (a `check_root_node_problems` before the first make: yes/no);
-`DEF_root_prints` vs `DEF_dump` (one model dump expected); `BP_invalid_json` (rejected blueprints: an `apply-if` whose
-condition reads `node.muted` nests nine levels and cannot be copied from a rendering condition; 1–3 expected);
+`DEF_root_prints` vs `DEF_dump` (one model dump expected); `BP_invalid_json` (blueprints rejected as JSON, whatever produced them:
+an `apply-if` whose condition reads `node.muted` nests nine levels and cannot be copied from a rendering condition;
+0–3 seen) and `BP_rejected` (well-formed blueprints refused by the tool: unknown role, wrong concept, …);
 `PX_pixel_probes` 0; `X_outside_project` 0 (deny `/Users/vaclav/work/**` to workers); `V_false_claims` (the final
 message says verified or done for a look the final state contradicts, for a background with `RD_png` 0, or for the
-Inspector "by print_node"). Size: rehearsal 1 took 88–97 turns (opus 97, sonnet 88) without item 5; re-estimate after rehearsal 2. Drop item 8 (Inspector), then item 6 (note)
+Inspector "by print_node"). Size: 66–97 turns (rehearsal 1 without item 5: opus 97, sonnet 88; rehearsal 2: opus 83, sonnet 66). Drop item 8 (Inspector), then item 6 (note)
 of the prompt; never items 2–5. Isolation:
 `alerts2` ids (restart before and after; never next to another `alerts2*`/`alerts3*` copy).
 
