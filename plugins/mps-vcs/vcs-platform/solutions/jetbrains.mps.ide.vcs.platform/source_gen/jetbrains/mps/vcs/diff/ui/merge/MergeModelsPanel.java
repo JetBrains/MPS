@@ -18,8 +18,6 @@ import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import java.util.List;
 import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.ActionToolbar;
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import jetbrains.mps.vcs.diff.ui.common.GoToNeighbourRootActions;
 import com.intellij.diff.DiffEditorTitleCustomizer;
 import jetbrains.mps.nodefs.FileSystemRepoBridge;
@@ -38,6 +36,8 @@ import org.jetbrains.mps.openapi.model.SModelReference;
 import jetbrains.mps.vcs.diff.merge.MergeTemporaryModel;
 import jetbrains.mps.vcs.diff.ui.MetadataUtil;
 import jetbrains.mps.vcs.diff.ui.common.DiffModelUtil;
+import jetbrains.mps.extapi.module.SRepositoryExt;
+import jetbrains.mps.smodel.ModelDependencyUpdate;
 import java.util.ArrayList;
 import com.intellij.openapi.actionSystem.Separator;
 import com.intellij.openapi.ui.Messages;
@@ -51,6 +51,8 @@ import jetbrains.mps.vcs.diff.changes.MetadataChange;
 import jetbrains.mps.smodel.ModelAccessHelper;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SModelOperations;
 import org.jetbrains.annotations.NotNull;
+import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionPlaces;
 import jetbrains.mps.vcs.diff.changes.ModelChange;
@@ -73,6 +75,7 @@ public class MergeModelsPanel extends JPanel {
   private final SRepository myProjectRepository;
   private MergeSession myMergeSession;
   private final ModelLot myMetadataModels;
+  private final ModelLot myMergeModels;
   private MergeSession myMetadataMergeSession;
   private MergeSession.MergeSessionFullState myInitialState;
   private MergeSession.MergeSessionFullState myMetadataInitialState;
@@ -85,9 +88,7 @@ public class MergeModelsPanel extends JPanel {
   private MergeRootsPane myMergeRootsPane = null;
   private final JComponent myNoRootPanel = new JLabel("Select root to merge", SwingConstants.CENTER);
   private List<AnAction> myToolbarActions;
-  private ActionToolbar myToolbar;
 
-  private DefaultActionGroup myActionGroup;
   private GoToNeighbourRootActions myGoToNeighbourRootActions;
 
   private final List<String> myContentTitles;
@@ -99,7 +100,7 @@ public class MergeModelsPanel extends JPanel {
   private final FileSystemRepoBridge myCustomRepoFiles;
 
 
-  public MergeModelsPanel(Project project, final SModel baseModel, final SModel mineModel, final SModel repoModel, TextMergeRequest request, boolean doNotShowMetadata, final boolean fixReferences) {
+  public MergeModelsPanel(Project project, SModel baseModel, SModel mineModel, SModel repoModel, TextMergeRequest request, boolean doNotShowMetadata, final boolean fixReferences) {
     super(new BorderLayout());
     myProject = project;
     myContentTitles = (List<String>) MergeUtil.notNullizeContentTitles(request.getContentTitles());
@@ -112,7 +113,7 @@ public class MergeModelsPanel extends JPanel {
     // requires model lock.
     myProjectRepository = ProjectHelper.getProjectRepository(project);
     assert myProjectRepository != null;
-    myMergeSession = myProjectRepository.getModelAccess().computeReadAction(() -> MergeSession.createMergeSession(baseModel, mineModel, repoModel, DiffSettingsUtil.getTrackMovedNodesMergeOption()));
+    myMergeSession = MergeSession.createMergeSession(baseModel, mineModel, repoModel, DiffSettingsUtil.getTrackMovedNodesMergeOption());
 
     // XXX once we use distinct repo for both MergeSessions, shall use this repo for all read/write operations
     RepositoryFacade repo = RepositoryFacade.createPlainRegistrationRepo();
@@ -146,18 +147,29 @@ public class MergeModelsPanel extends JPanel {
         myMetadataInitialState = myMetadataMergeSession.getCurrentFullState();
       });
     }
+    // safe bet for now - use same project repo as before, just attach the merge models to a temp module managed by ModelLot, rather than statics of DiffModelUtil
+    myMergeModels = new ModelLot(RepositoryFacade.wrap((SRepositoryExt) myProjectRepository));
     myProjectRepository.getModelAccess().runWriteAction(() -> {
-      DiffModelUtil.renameModelAndRegister(myMergeSession.getBaseModel(), "base", fixReferences);
-      DiffModelUtil.renameModelAndRegister(myMergeSession.getMyModel(), "mine", fixReferences);
-      DiffModelUtil.renameModelAndRegister(myMergeSession.getRepositoryModel(), "repo", fixReferences);
-      DiffModelUtil.renameModelAndRegister(myMergeSession.getResultModel(), "result", fixReferences);
+      DiffModelUtil.renameModel(myMergeSession.getBaseModel(), "base", fixReferences);
+      DiffModelUtil.renameModel(myMergeSession.getMyModel(), "mine", fixReferences);
+      DiffModelUtil.renameModel(myMergeSession.getRepositoryModel(), "repo", fixReferences);
+      DiffModelUtil.renameModel(myMergeSession.getResultModel(), "result", fixReferences);
+      List<SModel> mergeModels = List.of(myMergeSession.getBaseModel(), myMergeSession.getMyModel(), myMergeSession.getRepositoryModel(), myMergeSession.getResultModel());
+      for (SModel mm : mergeModels) {
+        myMergeModels.track(mm);
+      }
+      myMergeModels.registerModels();
+      for (SModel mm : mergeModels) {
+        // code originally from DiffModelUtil.renameModelAndRegister()
+        new ModelDependencyUpdate(mm).updateModuleDependencies(myProjectRepository);
+      }
+
       myInitialState = myMergeSession.getCurrentFullState();
     });
 
     myMergeSession.installResultModelListener();
 
     myToolbarActions = ListSequence.fromListAndArray(new ArrayList<AnAction>(), new ResetState(this), new MergeNonConflictingRoots(this), Separator.getInstance(), AcceptYoursTheirs.yoursInstance(this), AcceptYoursTheirs.theirsInstance(this));
-    myActionGroup = new DefaultActionGroup(myToolbarActions);
 
     init();
   }
@@ -224,13 +236,13 @@ public class MergeModelsPanel extends JPanel {
 
     this.add(myPanel, BorderLayout.CENTER);
 
-    final Dimension size = DimensionService.getInstance().getSize(getDimensionServiceKey());
+    final Dimension size = DimensionService.getInstance().getSize(getDimensionServiceKey(), myProject);
     if (size == null) {
       this.setPreferredSize(new Dimension(500, 450));
     }
   }
 
-  public String getDimensionServiceKey() {
+  public final String getDimensionServiceKey() {
     return getClass().getName();
   }
 
@@ -281,10 +293,7 @@ public class MergeModelsPanel extends JPanel {
   private void unregisterModels() {
     myProjectRepository.getModelAccess().runWriteAction(() -> {
       myMetadataModels.discard();
-      DiffModelUtil.unregisterModel(myMergeSession.getResultModel());
-      DiffModelUtil.unregisterModel(myMergeSession.getRepositoryModel());
-      DiffModelUtil.unregisterModel(myMergeSession.getMyModel());
-      DiffModelUtil.unregisterModel(myMergeSession.getBaseModel());
+      myMergeModels.discard();
     });
   }
 

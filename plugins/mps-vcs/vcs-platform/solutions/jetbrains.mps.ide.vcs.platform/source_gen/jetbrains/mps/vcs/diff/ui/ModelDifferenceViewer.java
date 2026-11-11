@@ -139,6 +139,7 @@ public class ModelDifferenceViewer implements UiDataProvider {
         if (m.getRepository() == null) {
           // fix references and add languages to unregistered model for per-root persistence
           // in fact, renameModel could be only for fixReferences==true; but for now I decided to keep diff_model_ in the name
+          // FIXME if we keep this "version", at least remove "diff_" prefix, DiffModelUtil.genDiffSModelRef() adds one anyway
           DiffModelUtil.renameModel(m, "diff_model_" + ix, perRootPersistence);
           myManagedModels.track(m);
           // models with metadata are created with everything necessary, it's only these models we need to update languages and deps
