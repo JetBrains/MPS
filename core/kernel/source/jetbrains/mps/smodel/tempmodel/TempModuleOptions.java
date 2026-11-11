@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2025 JetBrains s.r.o.
+ * Copyright 2003-2026 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,15 @@ public abstract class TempModuleOptions {
     return new ExistingModuleOptions(m);
   }
 
+  /**
+   * @deprecated use alternatives that take {@code SRepository}.
+   *             Version = 0 as we are going to drop this methods as soon as known uses in MPS-Extensions and mbeddr tests are gone.
+   */
+  @Deprecated(forRemoval = true, since = "0")
   public static TempModuleOptions forDefaultModule() {
+    // there are few uses in MPS-extensions tests as well as in 2 mbeddr modules:
+    //  - com.mbeddr.mpsutil.ecore.testing.runtime
+    //  - com.mbeddr.mpsutil.editingGuide.execution
     return new NewModuleOptions(MPSModuleRepository.getInstance());
   }
 
@@ -46,15 +54,6 @@ public abstract class TempModuleOptions {
   public static TempModuleOptions nonReloadableModule(@NotNull SRepository repository) {
     assert repository instanceof SRepositoryExt : "Only SRepositoryExt is supported";
     return new NonReloadableNewModuleOptions((SRepositoryExt) repository);
-  }
-
-  /**
-   * @deprecated Use {@link #nonReloadableModule(SRepository)} instead. This method was intended for internal use and no external uses are expected.
-   *             Remove once 2025.1 is out.
-   */
-  @Deprecated(since = "2025.1", forRemoval = true)
-  public static TempModuleOptions nonReloadableModule() {
-    return nonReloadableModule(MPSModuleRepository.getInstance());
   }
 
   /**
