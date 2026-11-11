@@ -273,7 +273,7 @@ class JetBrainsMPSProjectMcpToolset(
                     "flags by passing a startingPoint."
         ) startingPoint: String? = null,
         @McpDescription("Optional filter by module kind (Solution, Language, DevKit, Generator, or transient with includeStubModules). Only used if startingPoint is null.") moduleKind: String? = null,
-        @McpDescription("Projection of every node record: \"full\" (default) for the complete records, or \"names\" for name/concept/reference only — no docs (so no concept deprecation), no properties, references or child roles. Use \"names\" with includeRootNodes to list a model's roots and their ids cheaply.") nodeDetail: String = NODE_DETAIL_FULL,
+        @McpDescription("Projection of every node record: \"full\" (default) for the complete records, or \"names\" for name/concept/reference only — no docs (so no concept deprecation), no properties, references or child roles. Use \"names\" with includeRootNodes to list a model's roots and their ids cheaply as JSON (to read a model's roots as text, use mps_mcp_get_compact_project_structure with nodeDepth=0).") nodeDetail: String = NODE_DETAIL_FULL,
         @McpDescription("With includeNodes, how many levels to inline below each root: -1 (default) for the whole tree, 0 for the root record alone, n for n levels. At the cut-off a role lists its children as {name, reference} and is marked childrenTruncated.") nodeDepth: Int = -1,
         @McpDescription("Inline the dump in `data` when it is at most this many characters; larger dumps are saved to a temp file whose path is returned instead (default 20000).") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
     ): String {
@@ -373,7 +373,7 @@ class JetBrainsMPSProjectMcpToolset(
     """
     )
     suspend fun mps_mcp_get_compact_project_structure(
-        @McpDescription("Required. A model reference or qualified model name, a module reference or name, or a root-node reference, resolved as by mps_mcp_get_project_structure (node, then model, then module); models and modules of libraries and other open projects included.") startingPoint: String = "",
+        @McpDescription("Required. A model reference or qualified model name, a module reference or name, or a node reference, resolved as by mps_mcp_get_project_structure (node, then model, then module); models and modules of libraries and other open projects, and transient models/modules/nodes (by reference), included.") startingPoint: String = "",
         @McpDescription("How many levels to print below each root: -1 (default) for the whole tree, 0 for the root lines only, n for n levels.") nodeDepth: Int = -1,
         @McpDescription("Inline the printout in `data` when it is at most this many characters (default 20000); a larger printout is cut instead of written to a file, unless even the root lines do not fit.") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES,
     ): String {
@@ -382,7 +382,7 @@ class JetBrainsMPSProjectMcpToolset(
             RequiredParameter(
                 "startingPoint",
                 startingPoint,
-                "a model reference or qualified model name, a module reference or name, or a root-node reference",
+                "a model reference or qualified model name, a module reference or name, or a node reference",
             ),
         )?.let { return it }
         return withMpsProject("Reading MPS project structure as AGENTIC VIEW") { mpsProject ->

@@ -2,7 +2,7 @@
 
 `format` accepts exactly five literals — `JSON` (default), `HTML`, `PLAIN TEXT`, `IMAGE`, `AGENTIC VIEW`. The value is upper-cased before matching, but the spelling matters: `PLAIN TEXT` contains a **space** (`PLAIN_TEXT`, `TEXT` and `text` all fail with `Invalid format 'text'. Allowed values: JSON, HTML, PLAIN TEXT, IMAGE, AGENTIC VIEW`).
 
-`nodeReference` must be a **node** reference (`r:<uuid>(name)/<node-id>`). A model reference (`r:<uuid>(name)`) or qualified model name is rejected with INVALID_REQUEST that names the model and a retry line for `mps_mcp_get_project_structure` (`startingPoint`, `includeNodes=true`). `mps_mcp_check_root_node_problems` accepts those model forms in `nodeReference`.
+`nodeReference` must be a **node** reference (`r:<uuid>(name)/<node-id>`). A model reference (`r:<uuid>(name)`) or qualified model name is rejected with INVALID_REQUEST that names the model and a retry line for `mps_mcp_get_compact_project_structure` (`startingPoint`; or `mps_mcp_get_project_structure` with `includeNodes=true` for JSON). `mps_mcp_check_root_node_problems` accepts those model forms in `nodeReference`.
 
 `data` is inline when the printout is at most `maxInlineBytes` characters (default 20000) and the absolute path of a temp file above that; the file holds the same `{ok, data}` envelope (`AGENTIC VIEW` is cut to fit instead; its rare file is raw text). Pass a small `maxInlineBytes` to force the file form, or a large one to keep a big dump inline. For `JSON`, the shape depends on `deep`:
 

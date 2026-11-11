@@ -5,15 +5,12 @@ editor definition is not checked by reading it: render a node that uses it.
 
 ## The loop
 
-1. **Read the definitions once.** Dump the whole editor model in one call and project it, instead of printing editor
-   roots one by one (that took 15–20 calls on a small language):
-   `mps_mcp_get_project_structure(startingPoint=<editor model>, includeNodes=true, maxInlineBytes=1)`, then
-   `python3 scripts/mps_dump.py tree <file> --depth 4` (in the `mps-mcp-workflow` skill root after loading that
-   companion skill from the same origin). Each line is a cell or style item with its role, text and references:
-   `childCellModel: CellModel_Constant 123 text=(` / `styleItem: PunctuationRightStyleClassItem 124 flag=true` /
-   `styleItem: ApplyStyleClass 125` / `target: StyleReference 126 -> style=KeyWord`. A line ending in
-   `(+N children)` was cut at the depth (cells in a nested collection need more): re-run with the root's name after
-   the file and no `--depth`. Output beyond 200 lines is in the `file` named by the summary line.
+1. **Read the definitions once.** Read the whole editor model in one call instead of printing editor roots one by one
+   (that took 15–20 calls on a small language): `mps_mcp_get_compact_project_structure(startingPoint=<editor model>)`
+   (optionally `nodeDepth=4` on a large model). Each line is a cell or style item in `AGENTIC VIEW` notation with its
+   role, node id, properties, reference targets and unset features; above `maxInlineBytes` the printout is cut
+   breadth-first across all roots, and a node ending in `(+N)` has unprinted descendants you can expand with
+   `mps_mcp_print_node(nodeReference=<model>/<id>, format="AGENTIC VIEW")`.
    Printing an editor root as `PLAIN TEXT` shows its cells but **not** its style items (MPS shows those in the
    Inspector), so never judge styling from the projection of the definition. One editor root with its style items, ids and
    reference targets: `mps_mcp_print_node` `format: "AGENTIC VIEW"`.
@@ -67,6 +64,6 @@ When explaining why a cell looks the way it does, the definition can be silent:
 ## Diagnosing a reported visual defect
 
 Print the reported view as `HTML` and look at `editor.png` to see the symptom, read the editor that produces it (the
-hinted editor of that concept, else the default one) in the projected tree, and find the style item, rendering
+hinted editor of that concept, else the default one) in `AGENTIC VIEW`, and find the style item, rendering
 condition or layout item that explains it. Fix it in that editor only, make, and print the reported view and the
 default view again.

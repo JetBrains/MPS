@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 """Project an MPS MCP result file down to the few lines needed for the next decision.
 
-Library + CLI over the JSON envelopes written by the read-only analysis tools:
+Library + CLI over the JSON envelopes written by the read-only analysis tools (not `AGENTIC VIEW`
+text; to simply read a model/module or list its roots use `mps_mcp_get_compact_project_structure`,
+and for one node use `mps_mcp_print_node` `format="AGENTIC VIEW"`):
 
-  mps_mcp_get_project_structure   project / module / model dumps, any nodeDetail / nodeDepth
-  mps_mcp_print_node              deep=true (descendants inlined) and deep=false (child refs)
+  mps_mcp_get_project_structure   project / module / model JSON dumps, any nodeDetail / nodeDepth
+  mps_mcp_print_node              format="JSON", deep=true (descendants inlined) and deep=false (child refs)
   mps_mcp_get_concept_details     concept / language details, used for the concept shape
 
 Those tools answer with `{"ok":true,"data":"<path>"}`; pass that path to this script instead

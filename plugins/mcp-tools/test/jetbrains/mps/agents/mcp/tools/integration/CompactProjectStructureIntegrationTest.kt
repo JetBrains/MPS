@@ -164,13 +164,17 @@ class CompactProjectStructureIntegrationTest : AgenticViewIntegrationTestBase() 
     }
 
     @Test
-    fun `a root reference prints as print_node does and an unknown starting point fails as in get_project_structure`() {
+    fun `a node reference prints as print_node does and an unknown starting point fails as in get_project_structure`() {
         val model = twoRootModel()
         val ref = rootRefs(model).first()
         val envelope = compact(ref)
         assertEquals(text(ref), okText(envelope))
         assertEquals(1, agenticDetails(envelope).get("models").asInt)
         assertEquals(1, agenticDetails(envelope).get("roots").asInt)
+        val nonRootRef = readOnRepo {
+            PersistenceFacade.getInstance().asString(model.rootNodes.first().children.first().reference)
+        }
+        assertEquals("a non-root node reference prints as print_node does", text(nonRootRef), okText(compact(nonRootRef)))
 
         val unknown = "no.such.model${System.nanoTime()}"
         val expected = JsonParser.parseString(runTool(projectToolset) { it.mps_mcp_get_project_structure(startingPoint = unknown) }).asJsonObject
@@ -180,5 +184,7 @@ class CompactProjectStructureIntegrationTest : AgenticViewIntegrationTestBase() 
         val missing = compact("")
         assertFalse(missing.get("ok").asBoolean)
         assertTrue(missing.toString(), missing.get("error").asString.startsWith("startingPoint is required."))
+        assertTrue(missing.toString(), missing.get("error").asString.contains("node reference"))
+        assertFalse(missing.toString(), missing.get("error").asString.contains("root-node reference"))
     }
 }

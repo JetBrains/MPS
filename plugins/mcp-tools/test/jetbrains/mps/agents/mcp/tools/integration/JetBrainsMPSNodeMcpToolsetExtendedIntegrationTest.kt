@@ -3022,9 +3022,10 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
         assertEquals("INVALID_REQUEST", envelope.get("code").asString)
         val error = expectErr(response)
         assertTrue("must say it is a model: $error", error.contains("is a model"))
-        assertTrue("must name get_project_structure: $error", error.contains("mps_mcp_get_project_structure"))
+        assertTrue("must name get_compact_project_structure: $error", error.contains("mps_mcp_get_compact_project_structure"))
+        assertTrue("must name get_project_structure for JSON: $error", error.contains("mps_mcp_get_project_structure"))
         assertTrue("must name includeNodes: $error", error.contains("includeNodes"))
-        assertTrue("must offer a retry line: $error", error.contains("Retry with"))
+        assertTrue("must offer a retry line: $error", error.contains("Retry with mps_mcp_get_compact_project_structure"))
         assertTrue("must name startingPoint: $error", error.contains("startingPoint"))
     }
 
@@ -3035,7 +3036,8 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
         val error = expectErr(response)
         assertEquals("INVALID_REQUEST", JsonParser.parseString(response).asJsonObject.get("code").asString)
         assertTrue("must say it is a model: $error", error.contains("is a model"))
-        assertTrue("must name get_project_structure: $error", error.contains("mps_mcp_get_project_structure"))
+        assertTrue("must name get_compact_project_structure: $error", error.contains("mps_mcp_get_compact_project_structure"))
+        assertTrue("must name get_project_structure for JSON: $error", error.contains("mps_mcp_get_project_structure"))
     }
 
     // ── helpers ──────────────────────────────────────────────────────────────────────────

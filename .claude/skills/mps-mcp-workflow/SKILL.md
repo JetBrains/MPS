@@ -126,7 +126,7 @@ Open `references/reference-formats.md` for the reference-format protocol: node r
 
 Open `references/bulk-creation.md` for bulk inserts: roots from a table (CSV or JSON rows) through `mps-node-editing`'s `scripts/table_to_bulk_insert.py`, name-based references inside one batch, and the print-then-add-children staged construction workflow used when subtrees exceed the JSON size limit.
 
-Open `references/analysis-tools.md` for the inventory of analysis operations: `mps_mcp_query_types`, `mps_mcp_query_nodes` `GET_TYPE` / `GET_EXPECTED_TYPE`, `mps_mcp_query_dataflow`, `mps_mcp_print_node`, and `mps_mcp_check_root_node_problems` with its `rules`, `uncheckedSubtrees`, `quickFixes` / `autoApplyQuickFixes`, plus `mps_mcp_list_node_intentions` / `mps_mcp_apply_intention` and `mps_mcp_alter_nodes FIX_REFERENCES`.
+Open `references/analysis-tools.md` for the inventory of analysis operations: `mps_mcp_query_types`, `mps_mcp_query_nodes` `GET_TYPE` / `GET_EXPECTED_TYPE`, `mps_mcp_query_dataflow`, `mps_mcp_print_node`, `mps_mcp_get_compact_project_structure`, and `mps_mcp_check_root_node_problems` with its `rules`, `uncheckedSubtrees`, `quickFixes` / `autoApplyQuickFixes`, plus `mps_mcp_list_node_intentions` / `mps_mcp_apply_intention` and `mps_mcp_alter_nodes FIX_REFERENCES`.
 
 Open `references/editor-workflow.md` for the MPS Concept Editor workflow (scaffold → componentize → refine → validate) and the editor procedural guidelines.
 
@@ -144,15 +144,19 @@ Open `references/mcp-tools-index.md` for the complete inventory of MPS MCP tools
 
 ## Scripts
 
-`scripts/mps_dump.py` — projects an MPS MCP result file (`mps_mcp_get_project_structure`,
-`mps_mcp_print_node`, `mps_mcp_get_concept_details`) down to the lines you need, instead of
-reading the whole 10–40 KB file: `roots`, `models`, `node`, `tree`, `shape`, `count`. It is also the library the
-other skills' scripts import (`load`, `roots`, `props`, `refs`, `children`, `find`, `shape`);
-`props` marks enum properties that sit at their enumeration's default value (the printer flags
-them with `isDefault`; an older dump that omits them is filled from the concept details'
-`enumerationDefault`). Lower `maxInlineBytes` only to get a file for this script: for any other
-result a smaller value moves the answer into a file you must then read, so keep the default and
-narrow the call (`references/analysis-tools/overview.md`).
+`scripts/mps_dump.py` — projects an MPS MCP **JSON** result file (`mps_mcp_get_project_structure`,
+`mps_mcp_print_node` `JSON`, `mps_mcp_get_concept_details`) down to the lines you need, instead of
+reading the whole 10–40 KB file: `roots`, `models`, `node`, `tree`, `shape`, `count`. To simply
+read a model or module (or list its roots), call `mps_mcp_get_compact_project_structure` (`nodeDepth: 0`
+for roots, `nodeDepth: n` for depth-bounded trees), and for one node call `mps_mcp_print_node`
+`format: "AGENTIC VIEW"` — neither writes a JSON dump or needs this script; reach for `mps_dump.py`
+when you need `models`, `count`, `shape`, `--concept` filtering, or Python library helpers (`load`,
+`roots`, `props`, `refs`, `children`, `find`, `shape`, imported by other skills' scripts such as
+`table_to_bulk_insert.py --verify`). `props` marks enum properties that sit at their enumeration's
+default value (the printer flags them with `isDefault`; an older dump that omits them is filled
+from the concept details' `enumerationDefault`). Lower `maxInlineBytes` only to get a JSON file for
+this script: for any other result a smaller value moves the answer into a file you must then read,
+so keep the default and narrow the call (`references/analysis-tools/overview.md`).
 
 ```
 python3 scripts/mps_dump.py roots /var/folders/.../mps-node-123.json --concept Course
@@ -178,8 +182,9 @@ depends on. Bundled dumps to try it on, and to read when you need a shape remind
 always written to a file under the system temp directory and named in that summary.
 
 No `python3` (typically Windows): ask the server for the reduction instead —
-`mps_mcp_get_project_structure` with `nodeDetail: "names"` returns exactly the `name` /
-`concept` / `reference` of each root, small enough to read inline with no file at all. An enum
+`mps_mcp_get_compact_project_structure` (`nodeDepth: 0` for root lines, `nodeDepth: n` for trees) reads a
+model or module inline as text, and `mps_mcp_get_project_structure` with `nodeDetail: "names"` returns
+the `name` / `concept` / `reference` of each root as inline JSON with no file at all. An enum
 property holding its enumeration's default is printed with that literal and `"isDefault": true`
 (`mps_mcp_get_concept_details` names it in `enumerationDefault`); in a dump taken before that,
 the property is absent or printed as `""` — either way it is the default, not missing data.

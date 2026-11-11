@@ -1490,7 +1490,8 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
             return errJson(
                 "'$nodeReference' is a model ($name), not a node. " +
                     "mps_mcp_print_node requires a node reference (r:<uuid>(model)/<node-id>). " +
-                    "Retry with mps_mcp_get_project_structure, startingPoint set to '$modelRef', includeNodes=true. " +
+                    "Retry with mps_mcp_get_compact_project_structure, startingPoint set to '$modelRef' " +
+                    "(or mps_mcp_get_project_structure with includeNodes=true for JSON). " +
                     "mps_mcp_check_root_node_problems accepts this value in nodeReference as a model-scope check.",
                 McpErrorCode.INVALID_REQUEST,
             )
@@ -1574,19 +1575,19 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         """
         Prints the specified node in one of five formats. Pick the format by task (see `mps-mcp-workflow/references/analysis-tools/print-node-agentic-view.md`):
         `JSON` (default) is the node record that mutation tools consume: the result (inline `data` or the saved envelope) is accepted by every node-mutation tool (`mps_mcp_update_node`, `mps_mcp_update_root_node_from_json`, etc.); print it only for the subtree such a tool will take. `deep=true` inlines all descendants; `deep=false` (default) lists direct children's refs only. `data` is inline when the printout is <= `maxInlineBytes` (default 20000), otherwise a temp-file path. Schema: `mps-mcp-workflow/references/analysis-tools/print-node-output.md`; blueprint shape: `mps-node-editing/references/json-format.md`.
-        `AGENTIC VIEW` is for reading a node: structure, node ids, reference targets (name, model alias, id) and unset features, one line per node for the whole subtree. It is read-only text that no tool takes as input; `nodeDepth` bounds it, and above `maxInlineBytes` it is cut (level by level, as many nodes as fit) instead of written to a file, unless even the node alone does not fit (then `data` is the path of a raw `.txt` file); print a `(+N)` node by its reference `<model>/<id>` to continue. `codeAsText=true` prints each outermost BaseLanguage statement or expression as one line with its editor text, for roots that mix structure and code.
+        `AGENTIC VIEW` is for reading a node: structure, node ids, reference targets (name, model alias, id) and unset features, one line per node for the whole subtree. It is read-only text that no tool takes as input; `nodeDepth` bounds it, and above `maxInlineBytes` it is cut (level by level, as many nodes as fit) instead of written to a file, unless even the node alone does not fit (then `data` is the path of a raw `.txt` file); print a `(+N)` node by its reference `<model>/<id>` to continue. `codeAsText=true` prints each outermost BaseLanguage statement or expression as one line with its editor text, for roots that mix structure and code. For a whole model or module, use `mps_mcp_get_compact_project_structure`.
         `PLAIN TEXT` is for reading code or a notation as the editor shows it: the editor-projected text, inline or as a temp-file path under the `maxInlineBytes` rule; a two-dimensional projection (table, fraction, matrix) is drawn as a character grid.
         `HTML` is for an editor's text styles and for mapping text to nodes: it writes a standalone page `index.html` and the painted editor `editor.png` into a fresh temp directory and returns the page's path as `data` (`details.html` gives the directory and each file's size; `maxInlineBytes` does not apply): the projection's text in reading order, every node's part tagged with its node id, concept and role, tables, fractions and brackets as CSS boxes, cells without text as cut-outs of the image.
         `IMAGE` is for diagrams, tables and other graphical cells: it paints the editor projection to a PNG temp file whose path is `data` (size in `details.image`), exactly as drawn.
         `editorHints` selects an alternative projection (editor hints) for HTML, PLAIN TEXT and IMAGE; `details.editorHints` reports the hints applied and those `available` for the node's model.
         A stored property, child role or reference that the node's concept does not declare is printed with `declared:false` (`!undeclared` in AGENTIC VIEW); a node whose concept is not loaded (its language is not loaded or no longer declares it) prints `conceptLoaded:false` with only such entries (types and docs only for features of loaded languages), and the envelope `warnings` say so — build the language or use `PLAIN TEXT`, never read that printout as an empty node.
-        `nodeReference` must be a node reference (`r:<uuid>(model)/<node-id>`). A model reference or qualified model name is rejected with INVALID_REQUEST that names the model and a retry line for `mps_mcp_get_project_structure` (`startingPoint`, `includeNodes=true`); `mps_mcp_check_root_node_problems` accepts those model forms in `nodeReference`.
+        `nodeReference` must be a node reference (`r:<uuid>(model)/<node-id>`). A model reference or qualified model name is rejected with INVALID_REQUEST that names the model and a retry line for `mps_mcp_get_compact_project_structure` (`startingPoint`; or `mps_mcp_get_project_structure` with `includeNodes=true` for JSON); `mps_mcp_check_root_node_problems` accepts those model forms in `nodeReference`.
         A node of a transient model a make kept (references from `mps_mcp_generation` TRANSIENT_MODELS, `i:` model ids) prints like any other; `mps_mcp_generation` TRACE tells which input node and rule produced it.
         If the goal is to duplicate this node rather than merely inspect it, prefer `mps_mcp_alter_nodes` `COPY_NODE` over printing it deep and re-inserting the JSON — it's fewer calls and produces a structurally guaranteed-valid clone.
     """
     )
     suspend fun mps_mcp_print_node(
-        @McpDescription("Required. Persistent form of SNodeReference (r:<uuid>(model)/<node-id>). A model reference or qualified model name is rejected with a retry line pointing at mps_mcp_get_project_structure.") nodeReference: String = "",
+        @McpDescription("Required. Persistent form of SNodeReference (r:<uuid>(model)/<node-id>). A model reference or qualified model name is rejected with a retry line pointing at mps_mcp_get_compact_project_structure.") nodeReference: String = "",
         @McpDescription("One of exactly five literals: JSON (default), AGENTIC VIEW, PLAIN TEXT, HTML, IMAGE.") format: String = "JSON",
         @McpDescription("JSON only: a deep (true) or shallow (false) printout. Defaults to false; AGENTIC VIEW always prints the whole subtree (bound it with nodeDepth).") deep: Boolean = false,
         @McpDescription("Inline the printout in `data` when it is at most this many characters; larger printouts are saved to a temp file whose path is returned instead (default 20000). AGENTIC VIEW: the limit cuts the printout instead of writing a file, unless even the node alone does not fit.") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES,
@@ -1600,7 +1601,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                 "nodeReference",
                 nodeReference,
                 "the node's persistent reference, `r:<uuid>(model)/<node-id>` (a model is not accepted here; " +
-                    "list a model's nodes with mps_mcp_get_project_structure instead)",
+                    "read a model with mps_mcp_get_compact_project_structure instead)",
             ),
         )?.let { return it }
         val normalizedFormat = format.uppercase().trim()

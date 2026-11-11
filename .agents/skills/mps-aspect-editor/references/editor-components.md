@@ -56,7 +56,7 @@ Notes:
 
 ### 2. Reuse the component from a concept editor
 
-Add a `CellModel_Component` (pointing `editorComponent` at your component) into the target editor. **How** depends on the editor's existing top cell — print the editor with `mps_mcp_print_node(deep=true)` first to see what its `cellModel` actually is.
+Add a `CellModel_Component` (pointing `editorComponent` at your component) into the target editor. **How** depends on the editor's existing top cell — inspect the editor model with `mps_mcp_get_compact_project_structure(startingPoint="<lang>.editor")` (for several editors at once) or one editor with `mps_mcp_print_node(format="AGENTIC VIEW")` first to see what its `cellModel` actually is, and print `JSON` (`deep=true`) only in **Case B** when copying the original top cell into the wrapper blueprint.
 
 The `CellModel_Component` to insert is the same in both cases:
 
@@ -136,7 +136,7 @@ Goal: factor the properties of `AbstractCommand` into a component and reuse it i
 
 1. **Setup** — ensure `AbstractCommand` has one or two properties (e.g. `label`, `comment`), then rebuild the language so the scaffolder/runtime sees them.
 2. **Create the component** `AbstractCommand_PropertiesComponent` — either insert the `EditorComponentDeclaration` blueprint above, or `mps_mcp_scaffold_editor(conceptRef="AbstractCommand", type="component", includeProperties="[\"label\",\"comment\"]", modelReference="jetbrains.mps.samples.Kaja.editor")`.
-3. **Embed it** in `Step_Editor` and `LeftTurn_Editor`. Print each editor first: in the Kaja sample each one's `cellModel` is a single bare `CellModel_Component` that references the built-in `alias` component (i.e. **Case B** above) — so wrap that cell in a new `CellModel_Collection` containing the original cell plus a `CellModel_Component` that references `AbstractCommand_PropertiesComponent`. (Alternatively re-scaffold each editor with `includeComponents="[\"<component ref>\"]"` / `detectComponents=true`, which regenerates the editor with the component already wired in.)
+3. **Embed it** in `Step_Editor` and `LeftTurn_Editor`. Inspect the editors first (`mps_mcp_get_compact_project_structure` on `jetbrains.mps.samples.Kaja.editor` shows both at once): in the Kaja sample each one's `cellModel` is a single bare `CellModel_Component` that references the built-in `alias` component (i.e. **Case B** above) — so print each top cell as `JSON` (`deep=true`) and wrap it in a new `CellModel_Collection` containing the original cell plus a `CellModel_Component` that references `AbstractCommand_PropertiesComponent`. (Alternatively re-scaffold each editor with `includeComponents="[\"<component ref>\"]"` / `detectComponents=true`, which regenerates the editor with the component already wired in.)
 4. Because the component is bound to the super-concept `AbstractCommand`, both the `Step` and `LeftTurn` editors (sub-concepts) accept it — the inheritance rule in action.
 
 ## Validation
