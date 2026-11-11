@@ -15,7 +15,8 @@ editor definition is not checked by reading it: render a node that uses it.
    `(+N children)` was cut at the depth (cells in a nested collection need more): re-run with the root's name after
    the file and no `--depth`. Output beyond 200 lines is in the `file` named by the summary line.
    Printing an editor root as `PLAIN TEXT` shows its cells but **not** its style items (MPS shows those in the
-   Inspector), so never judge styling from the projection of the definition.
+   Inspector), so never judge styling from the projection of the definition. One editor root with its style items, ids and
+   reference targets: `mps_mcp_print_node` `format: "AGENTIC VIEW"`.
 2. **Edit the definition**, then make the language: `mps_mcp_alter_nodes` MAKE with the language module.
    `mps_mcp_print_node` renders the compiled editor, so a print before the make shows the old look, and a hint declared
    since the last make fails with `'<id>' is not declared by any loaded language`.

@@ -22,15 +22,15 @@ Hints are declared in a language's `editor` model, in a root `ConceptEditorConte
 
 - `name` is the hint's ID (letters, digits, `$`, `_`), unique within the model. `presentation` is the label the IDE
   shows. `showInUI` (true by default) puts the hint in the IDE's hint lists; set it to `false` for a hint that only your
-  own code or cells switch on. A `false` value is not printed by `mps_mcp_print_node`: a hint printed without `showInUI`
+  own code or cells switch on. A `false` value is not printed by `mps_mcp_print_node` JSON: a hint printed without `showInUI`
   has it false.
 - At run time a hint is the string `<editor model name>.<container name>.<hint name>`, e.g.
   `org.example.tasks.editor.TaskViews.summary`. In BaseLanguage code of a model that imports the hint's editor model and
   uses `jetbrains.mps.lang.editor`, the expression `concept editor hint/<name>/`
   (`ConceptEditorHintDeclarationReferenceExpression`, reference `hint`, type `string`) yields it; elsewhere write the
   string.
-- The insert answer names only the root. Take the hint's node reference from `mps_mcp_print_node` on the container (a
-  shallow print lists the children's references); hint references below need it.
+- The insert answer names only the root. Take the hint's node reference from `mps_mcp_print_node`
+  `format: "AGENTIC VIEW"` on the container (a line per hint with its id); hint references below need it.
 
 ### A hinted concept editor
 

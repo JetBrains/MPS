@@ -1,17 +1,17 @@
 ## `mps_mcp_print_node` — Output Format
 
-`format` accepts exactly four literals — `JSON` (default), `HTML`, `PLAIN TEXT`, `IMAGE`. The value is upper-cased before matching, but the spelling matters: `PLAIN TEXT` contains a **space** (`PLAIN_TEXT`, `TEXT` and `text` all fail with `Invalid format 'text'. Allowed values: JSON, HTML, PLAIN TEXT, IMAGE`).
+`format` accepts exactly five literals — `JSON` (default), `HTML`, `PLAIN TEXT`, `IMAGE`, `AGENTIC VIEW`. The value is upper-cased before matching, but the spelling matters: `PLAIN TEXT` contains a **space** (`PLAIN_TEXT`, `TEXT` and `text` all fail with `Invalid format 'text'. Allowed values: JSON, HTML, PLAIN TEXT, IMAGE, AGENTIC VIEW`).
 
 `nodeReference` must be a **node** reference (`r:<uuid>(name)/<node-id>`). A model reference (`r:<uuid>(name)`) or qualified model name is rejected with INVALID_REQUEST that names the model and a retry line for `mps_mcp_get_project_structure` (`startingPoint`, `includeNodes=true`). `mps_mcp_check_root_node_problems` accepts those model forms in `nodeReference`.
 
-`data` is inline when the printout is at most `maxInlineBytes` characters (default 20000) and the absolute path of a temp file above that; the file holds the same `{ok, data}` envelope. Pass a small `maxInlineBytes` to force the file form, or a large one to keep a big dump inline. Behaviour depends on `deep`:
+`data` is inline when the printout is at most `maxInlineBytes` characters (default 20000) and the absolute path of a temp file above that; the file holds the same `{ok, data}` envelope (`AGENTIC VIEW` is cut by depth instead; its rare file is raw text). Pass a small `maxInlineBytes` to force the file form, or a large one to keep a big dump inline. For `JSON`, the shape depends on `deep`:
 
 - `deep=true` recursively inlines all descendants.
 - `deep=false` (shallow) lists properties, children roles with references, and reference roles.
 
-**Verifying a whole root costs one call.** Pass `deep=true` for machine-readable JSON of the root and every descendant, or `format: "PLAIN TEXT"` for the editor projection when you only need to read it (~10× cheaper than walking the tree). The default is **shallow**, and a shallow printout gives a child as `{name, reference}` only — nothing about its properties is in the answer, which is what turns a naive verification loop into one call per child.
+**Verifying a whole root costs one call.** Pass `format: "AGENTIC VIEW"` to read it, `deep=true` for machine-readable JSON of the root and every descendant, or `format: "PLAIN TEXT"` for the editor projection (~10× cheaper than walking the tree). The default is **shallow**, and a shallow printout gives a child as `{name, reference}` only — nothing about its properties is in the answer, which is what turns a naive verification loop into one call per child.
 
-**`PLAIN TEXT` renders an empty collection as an editor placeholder.** An empty `0..n` role prints as its placeholder cell, e.g. `see also: << ... >>`, which reads like a one-element list; it means the role is **empty**. Never count elements from the projection — take counts from the JSON form.
+**`PLAIN TEXT` renders an empty collection as an editor placeholder.** An empty `0..n` role prints as its placeholder cell, e.g. `see also: << ... >>`, which reads like a one-element list; it means the role is **empty**. Never count elements from the projection — take counts from `AGENTIC VIEW` or JSON.
 
 ### Editor projections: `editorHints`, `IMAGE`, grid text
 
@@ -19,8 +19,8 @@
 
 - Omitted: the project's hint settings (Settings, "Editor hints"). `[]`: no hints. Otherwise a hint FQ name (`my.lang.editor.Views.tabular`), a short id (`tabular`), or an array of them, given as a real JSON array or as a string (`"[\"tabular\"]"`).
 - Resolution: the node's model catalog first (hints of the languages the model uses, extended and aggregated ones), then the global catalog of every deployed language; a global-only hint is applied with a warning. An unknown or ambiguous value fails with INVALID_REQUEST (`'x' is ambiguous (<fq1>, <fq2>); pass the FQ name`), and `details.editorHints.available` of the error lists the model's hints.
-- `reflective` (`jetbrains.mps.lang.core.editor.reflective`) is a runtime hint, not declared by a language: it prints the raw structural view (concept, properties, references, children) of a node whose own editor hides them.
-- Ignored with a warning for `JSON`. Hints pushed in an open IDE editor tab are not seen; only the project settings and this parameter count.
+- `reflective` (`jetbrains.mps.lang.core.editor.reflective`), a runtime hint, prints a node's raw structure; `AGENTIC VIEW` adds ids and reference targets.
+- Ignored with a warning for `JSON` and `AGENTIC VIEW`. Hints pushed in an open IDE editor tab are not seen; only the project settings and this parameter count.
 
 `details.editorHints` is in every projection envelope:
 
@@ -45,7 +45,7 @@ When `editorHints` is passed, `available` is the full form instead: `{fqName, id
 
 **`HTML`** writes a page and the painted editor into a fresh temp directory: `data` is the path of `index.html`, `details.html` is `{directory, files: {name: bytes}}` (`maxInlineBytes` does not apply). Read it as source: the `<pre>` text has the editor's line breaks, and `data-n`/`data-c`/`data-r` on a span mark where a node's projection starts (its id in `mps-model`, or `mN/<id>` in meta `mps-model-mN`; concept; role), `data-t` a reference target: from what you see to the node to edit. Stacks (`v`), tables (`t`/`tl`/`tc`), `sup`/`sub`, brackets (`br`) and rules (`hr`) are CSS boxes; a cell without text or a diagram is a cut-out of `editor.png` (`im`, `data-o` = its `omittedCells` entry). A comment in the page lists all classes.
 
-**Which one.** Discover projections with an ordinary `PLAIN TEXT` print and read `details.editorHints.available`; print again with `editorHints=[...]`. Use `IMAGE` for diagrams and other painted cells, `HTML` to map a notation to its nodes and for exact text styles (`sN` classes: colour, weight, italic, size, underline); cell backgrounds only in its `editor.png`. `JSON` is the only form that mutation tools consume.
+**Which one.** `references/analysis-tools/print-node-agentic-view.md` maps tasks to formats and describes `AGENTIC VIEW`. `IMAGE` shows painted cells, `HTML` maps text to nodes and gives exact text styles (`sN` classes; backgrounds in `editor.png`). Only `JSON` feeds mutation tools.
 
 The saved file contains the full MCP response envelope; its `data` field contains the node JSON object shown below. **JSON mutation tools accept either that full envelope file or a file containing only the raw `data` object** — load the `mps-node-editing` companion skill from the same origin, then see its File-Path Semantics section and `references/json-format.md` in the `mps-node-editing` skill root.
 

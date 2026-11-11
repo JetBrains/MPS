@@ -65,7 +65,7 @@ this file, are symptom indexes for that step — not a reading order.
 
 ## Common-path workflow
 
-1. **Identify the source-of-truth layer**. If the change is to existing logic in a rule/method body, inspect the current node (shallow `mps_mcp_print_node`) before editing.
+1. **Identify the source-of-truth layer**. If the change is to existing logic in a rule/method body, inspect the current node (`mps_mcp_print_node` `format: "AGENTIC VIEW"`, or `PLAIN TEXT` to read it as code) before editing.
 2. **Prefer `parse_java_and_insert`** for plain Java method bodies, expression replacements, and field declarations on `LINKS`/`CONCEPTS` inner classes. See `references/java-parser-capabilities.md`.
 3. **For smodel constructs not parseable as Java**, build the node blueprint by hand — open the single file the "Minimum reading set" above names for your body shape, and stop there.
 4. **For variable declarations and method return types** of MPS collection / smodel types, build the type child explicitly — `parse_java_and_insert` produces a wrong `ClassifierType` for these in return-type position. See `references/variable-declarations.md`.

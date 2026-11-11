@@ -22,7 +22,7 @@ ceab5195-25ea-4f22-9b92-103b95ca8c0c/1169194658468/1169194664001
 When inserting via MPS MCP, prefer to:
 
 1. Insert the antiquotation through a tool that the IDE owns (e.g. an intention) so MPS sets the ids itself; or
-2. Look up the live values via `mps_mcp_get_concept_details` / `mps_mcp_print_node` on the property/link declaration first, then assemble the encoded string.
+2. Look up the live values via `mps_mcp_get_concept_details` / `mps_mcp_print_node` (`format: "AGENTIC VIEW"`) on the property/link declaration first, then assemble the encoded string.
 
 ## Companion debug properties
 

@@ -15,7 +15,7 @@ Before writing the method, list every:
 
 ### Step 2 — Ensure LINKS/CONCEPTS constants exist
 
-Print the target class (shallow) to find its `LINKS`/`CONCEPTS` inner class refs.
+Print the target class (`format: "AGENTIC VIEW"`, `nodeDepth: 1`) to find its `LINKS`/`CONCEPTS` inner class refs.
 For each needed constant that does not exist, add it with `parse_java_and_insert`
 (`featureKind: "FIELD"`, `contextNodeRef` = the inner class node ref).
 
@@ -51,7 +51,7 @@ Note the returned node ref for the inserted method.
 
 ### Step 5 — Fix MPS-specific return / parameter types
 
-Print the method node (shallow) and replace any type child that should be an MPS type:
+Print the method node (`format: "AGENTIC VIEW"`, `nodeDepth: 1`) and replace any type child that should be an MPS type:
 
 ```json
 // Replace returnType child

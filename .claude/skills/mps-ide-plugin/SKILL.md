@@ -43,7 +43,7 @@ Official documentation: <https://www.jetbrains.com/help/mps/plugin.html>
 For a typical "add a menu item that does X on the selected node":
 
 1. **Identify the context** — which IDE menu/toolbar should it appear in? (`MainMenu`, `EditorPopup`, `NodeActions`, `ProjectViewPopupMenu`, …).
-2. **Locate the target group.** `mps_mcp_search_root_node_by_name` for the group name. Inspect with `mps_mcp_print_node` to discover the `GroupAnchor`s you can target.
+2. **Locate the target group.** `mps_mcp_search_root_node_by_name` for the group name. Inspect with `mps_mcp_print_node` `format: "AGENTIC VIEW"` to discover the `GroupAnchor`s you can target.
 3. **Decide plugin solution location.** Reuse an existing `*.pluginSolution` module if one fits; otherwise create a new solution and a `<name>.plugin` model with the used languages above.
 4. **Author an `ActionDeclaration`** — see `references/actions.md`. Set name, caption, parameters (`MPSCommonDataKeys.MPS_PROJECT` / `.NODE` etc.), `requiredAccess`, isApplicable, execute body.
 5. **Author an `ActionGroupDeclaration`** — see `references/action-groups.md`. Owns your action(s) via `ElementListContents` → `ActionInstance`. Add a `ModificationStatement` under `modifier` targeting the existing group + an anchor.

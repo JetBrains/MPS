@@ -4,7 +4,7 @@ Edit plans with the generic node tools; the plan language has no special editing
 
 ## Read before editing
 
-- `mps_mcp_print_node(nodeReference: "<plan root>", deep: true)` gives step node references; `format: "PLAIN TEXT"` shows the plan as the editor does (`transform …`, `checkpoint …`, `fork with …`, `include plan …`).
+- `mps_mcp_print_node(nodeReference: "<plan root>", format: "AGENTIC VIEW")` gives step node references; `format: "PLAIN TEXT"` shows the plan as the editor does (`transform …`, `checkpoint …`, `fork with …`, `include plan …`).
 - `PLAN` shows the effective step list with `IncludePlan` already expanded, so it cannot tell an included plan from copied steps; the plan's own nodes can.
 
 ## Recipes

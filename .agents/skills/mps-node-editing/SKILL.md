@@ -59,7 +59,7 @@ Where a documented null means something, how you express it depends on where it 
 
 ## Common Workflow
 
-1. **Identify** the target node (existing) or parent model (new root).
+1. **Identify** the target node (existing) or parent model (new root). `mps_mcp_print_node` `format: "AGENTIC VIEW"` gives the ids of the nodes inside a root.
 2. **Choose the right tool**: `mps_mcp_create_root_node` / `mps_mcp_insert_root_node_from_json` for new roots; `mps_mcp_update_node` (`ADD`/`SET` × `CHILD`/`PROPERTY`/`REFERENCE`) for surgical edits; `mps_mcp_update_root_node_from_json` only for full-root rewrites.
 3. **Author the JSON** following the unified blueprint format. A BaseLanguage body or anything deeper than ~5 node levels: build it with `scripts/blueprint.py` (see "Scripts") instead of typing it inline.
 4. **Insert.** A `dryRun: true` call checks concepts, roles, properties and assignability, but it never looks up a reference target given by name: it warns "is a name, not looked up" for every one, including names that exist. Do not rewrite names or dry-run again because of those warnings. Fix only the "names no node" and "matches no Model.Root" warnings, and after the real write check `fixReferences.stillBroken`. The full rule is under "Dry-run response" in `references/reference-formats/response-envelope.md` in the `mps-mcp-workflow` skill root after loading that companion skill from the same origin.
@@ -81,7 +81,7 @@ The tools that accept a node JSON blueprint (`mps_mcp_update_node` for `ADD`/`SE
 
 - The parameter can be **either** the JSON itself (max 4 KB) — sent as real JSON or as that JSON written as a string, both equivalent — **or** an absolute path to a TEMPORARY file (inside the system temp directory) containing it; see `references/json-format.md` for the accepted directories.
 - `mps_mcp_insert_root_node_from_json` and `mps_mcp_update_root_node_from_json` additionally accept a **top-level array** for a bulk insert, which `mps_mcp_update_node`'s `childJson` does not — it takes a single object (or a file path).
-- Files may contain either a **raw node blueprint** or the **full MCP response envelope** produced by `mps_mcp_print_node`; in the latter case the `data` field is used.
+- Files may contain either a **raw node blueprint** or the **full MCP response envelope** produced by `mps_mcp_print_node` (JSON; `AGENTIC VIEW` text is read-only); in the latter case the `data` field is used.
 - **Ordinary input files are never deleted.** Only temporary JSON files created by this toolset may be cleaned up after reading (and only when `dryRun=false`).
 - Very large JSON inputs may be truncated by the MCP transport before the tool reads them. If that happens, insert a smaller blueprint first and add children in follow-up calls with `mps_mcp_update_node` (`ADD`/`CHILD` or `SET`/`CHILD`), or pass the JSON as a file path instead of an inline string. See `references/staged-construction.md` for the recommended pattern.
 

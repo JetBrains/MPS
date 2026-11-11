@@ -28,7 +28,7 @@ Workflow for inspecting an MPS language from a name (e.g. `jetbrains.mps.lang.co
     * **Structure**: properties, children, and references are detailed here.
 4. **Drill Down**:
     * **Declaration**: use the `sourceNode` reference with `mps_mcp_open_node` to open the definition.
-    * **Examples**: use `mps_mcp_query_nodes` with `FIND_INSTANCES` (`sampleOnly: true`) to get a sample node. Then use `mps_mcp_print_node` to see its canonical JSON structure for use as a template.
+    * **Examples**: use `mps_mcp_query_nodes` with `FIND_INSTANCES` (`sampleOnly: true`) to get a sample node. Then print it with `mps_mcp_print_node`: `format: "AGENTIC VIEW"` to see its shape, values and unset features, JSON (`deep=true`) for use as a template.
     * **Inheritance**: load the `mps-language-inheritance` skill for deeper hierarchy analysis.
 
 ## Inspecting Concept Aspects

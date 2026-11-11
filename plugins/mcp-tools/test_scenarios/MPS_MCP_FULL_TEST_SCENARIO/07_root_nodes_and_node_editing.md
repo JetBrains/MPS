@@ -3,7 +3,7 @@
 > **Captured-value contract** — _Inputs:_ `{{SERVER_PREFIX}}`, `{{PROJECT_DIR}}`. _Produces (cross-part):_ `{{GEARBOX_REF}}`, `{{GBX_PARKED_REF}}`, `{{GBX_DRIVING_REF}}`, `{{GBX_TRANS_REF}}`. _(Also creates many intra-part refs — `{{OTHER_ROOT_REF}}`, `{{GBX_GO_REF}}`, etc. — used only inside this part.)_
 
 Tools: `mps_mcp_create_root_node`, `mps_mcp_insert_root_node_from_json` (single + array +
-`dryRun`), `mps_mcp_print_node` (formats `JSON`/`HTML`/`PLAIN TEXT`/`IMAGE`, `editorHints`, `deep` true/false),
+`dryRun`), `mps_mcp_print_node` (formats `JSON`/`AGENTIC VIEW`/`HTML`/`PLAIN TEXT`/`IMAGE`, `editorHints`, `deep` true/false, `nodeDepth`),
 `mps_mcp_update_node` (ops×kinds: ADD/CHILD, SET/CHILD, SET/PROPERTY, SET/REFERENCE, plus
 deletes via `null`, plus invalid combos), `mps_mcp_check_root_node_problems`
 (`onlyNodesWithProblems` true/false; clean + problem), `mps_mcp_update_root_node_from_json`
@@ -209,6 +209,21 @@ Send the array (as a string) as `json`, same other args as 07.03.
   `applied==[]` and full-form `available` entries. Repeat with `format:"PLAIN TEXT"` and
   `editorHints:["noSuchHint"]` → `ok==false`, `code==INVALID_REQUEST`; with `format:"JSON"` and
   `editorHints:[]` → `ok==true` plus a warning that `editorHints` is ignored.
+
+---
+
+### Step 07.09b — `print_node` `format:"AGENTIC VIEW"` and `nodeDepth`
+
+```json
+{
+  "tool": "mps_mcp_print_node",
+  "arguments": { "projectPath": "{{PROJECT_DIR}}", "nodeReference": "{{OTHER_ROOT_REF}}", "format": "AGENTIC VIEW" }
+}
+```
+- Validation: `ok==true`; `data` is inline text whose first line starts with `# AGENTIC VIEW 1 | model m0=`, then the other
+  header lines, then one line per node of `OtherStateChart` (plus `empty:` lines) with `#<id>` (the root line carries `{{OTHER_ROOT_REF}}`'s node id);
+  `details.agenticView` has `nodes` and `printedNodes`, equal. Repeat with `nodeDepth:0` → one node line ending in
+  `(+N)` and `printedNodes==1`. Exercises `format:"AGENTIC VIEW"` and `nodeDepth`.
 
 ---
 
