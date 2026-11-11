@@ -6,19 +6,19 @@ The enum literals accepted by `ForegroundColorStyleClassItem.color`, `Background
 
 Used by all `*ColorStyleClassItem` concepts (`ForegroundColorStyleClassItem`, `BackgroundColorStyleClassItem`, `BracketColorStyleClassItem`, `TextBackgroundColorStyleClassItem`, `ForegroundNullColorStyleClassItem`).
 
-Default literal: `none`. Two-tone notes (`light / dark`) describe how the color renders in light vs. dark UI themes.
+Default literal: `none`. Two-tone notes (`light / dark`) describe how the color renders in light vs. dark UI themes. A literal resolves to the same-named field of `jetbrains.mps.nodeEditor.MPSColors` (which redefines `red`, `darkBlue`, `lightBlue`, `darkGreen`, `darkMagenta`, `pink`, `yellow`; the others are `JBColor`'s), and `mps_mcp_print_node` HTML reports the light value in its `sN` classes.
 
 | Literal | Notes |
 | --- | --- |
 | `none` | no color set (default) |
-| `red` | `#FF0000` |
-| `pink` | light: pink / dark: lampoon (`#FFAFAF` / `#7D5656`) |
+| `red` | light: `#B20000` / dark: Darcula red |
+| `pink` | light: pink / dark: lampoon (`#FFAFAF` / `#7C5555`) |
 | `orange` | light: orange / dark: cumin ochre (`#FFC800` / `#9F6B00`) |
-| `yellow` | light: yellow / dark: old asparagus (`#FFFF00` / `#8A8A00`) |
+| `yellow` | a translucent tint, not pure yellow: light `#FDFEE2` at alpha 100 / dark `#114957` at alpha 200 (a highlight background, not a text colour) |
 | `green` | light: green / dark: fluorite green (`#00FF00` / `#629655`) |
-| `darkGreen` | light: dark green / dark: green (`#007D00` / `#00FF00`) |
+| `darkGreen` | light: dark green `#007C00` / dark: `JBColor.GREEN` |
 | `magenta` | light: magenta / dark: ce soir (`#FF00FF` / `#9776A9`) |
-| `darkMagenta` | light: dark magenta / dark: magenta (`#7D007D` / `#FF00FF`) |
+| `darkMagenta` | light: dark magenta `#7C007C` / dark: `JBColor.MAGENTA` |
 | `cyan` | light: cyan / dark: green moblin (`#00FFFF` / `#008989`) |
 | `blue` | light: blue / dark: feather star (`#0000FF` / `#589DF6`) |
 | `lightBlue` | light: light blue / dark: lupine blue (`#A2B8D0` / `#6897BA`) |
