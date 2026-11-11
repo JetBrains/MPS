@@ -21,13 +21,12 @@ public class DiffChangeGroupLayout extends ChangeGroupLayout {
 
   private UpdaterListener myInspectorUpdaterListener;
 
-  public DiffChangeGroupLayout(@Nullable ChangeEditorMessage.ConflictChecker conflictChecker, @NotNull ChangeSet changeSet, @NotNull DiffEditor leftEditor, @NotNull DiffEditor rightEditor, SplitterRepainter splitterRepainter, boolean inspector) {
+  public DiffChangeGroupLayout(@Nullable ChangeEditorMessage.ConflictChecker conflictChecker, @NotNull ChangeSet changeSet, @NotNull DiffEditor leftEditor, @NotNull DiffEditor rightEditor, @Nullable SplitterRepainter splitterRepainter, boolean inspector) {
     // Both editors share a panel, so their visibility changes together.
     super(conflictChecker, inspector, false, leftEditor.getEditorComponent(inspector));
     myLeftEditor = leftEditor;
     myRightEditor = rightEditor;
     myChangeSet = changeSet;
-    mySplitterRepainter = splitterRepainter;
     if (inspector) {
       myInspectorUpdaterListener = new UpdaterListenerAdapter() {
         @Override
@@ -38,6 +37,7 @@ public class DiffChangeGroupLayout extends ChangeGroupLayout {
       myLeftEditor.getInspector().getUpdater().addListener(myInspectorUpdaterListener);
       myRightEditor.getInspector().getUpdater().addListener(myInspectorUpdaterListener);
     }
+    installPainter(splitterRepainter);
   }
 
   @NotNull
@@ -67,14 +67,18 @@ public class DiffChangeGroupLayout extends ChangeGroupLayout {
     myChangeSet = changeSet;
   }
 
+  public void installPainter(@Nullable SplitterRepainter splitterRepainter) {
+    mySplitterRepainter = splitterRepainter;
+  }
+
   public void repaintSplitter() {
     if (mySplitterRepainter != null) {
-      mySplitterRepainter.repaintSplitter();
+      mySplitterRepainter.repaintSplitter(myLeftEditor, myRightEditor);
     }
   }
 
   public interface SplitterRepainter {
-    void repaintSplitter();
+    void repaintSplitter(DiffEditor left, DiffEditor right);
   }
 
   public DiffEditor getDiffEditor(boolean left) {

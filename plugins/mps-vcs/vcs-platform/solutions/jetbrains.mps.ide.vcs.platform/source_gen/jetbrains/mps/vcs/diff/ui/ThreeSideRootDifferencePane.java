@@ -16,6 +16,7 @@ import com.intellij.ui.JBSplitter;
 import com.intellij.diff.tools.util.side.ThreesideContentPanel;
 import com.intellij.diff.util.DiffUtil;
 import com.intellij.diff.util.Side;
+import jetbrains.mps.vcs.diff.ui.common.DiffChangeGroupLayout;
 import jetbrains.mps.vcs.diff.ui.common.ChangeEditorMessage;
 import jetbrains.mps.vcs.diff.changes.ModelChange;
 import jetbrains.mps.internal.collections.runtime.MapSequence;
@@ -30,7 +31,6 @@ import org.jetbrains.mps.openapi.model.SNodeId;
 import jetbrains.mps.vcs.diff.ChangeSetBuilder;
 import org.jetbrains.mps.openapi.model.SModel;
 import jetbrains.mps.internal.collections.runtime.Sequence;
-import jetbrains.mps.vcs.diff.ui.common.DiffChangeGroupLayout;
 
 @GeneratedClass(nodeId = "1614774294889322589", model = "r:df1b052a-af27-4b87-80fc-1492fa2192be(jetbrains.mps.vcs.diff.ui)")
 /*package*/ final class ThreeSideRootDifferencePane extends RootDifferencePaneBase {
@@ -60,6 +60,15 @@ import jetbrains.mps.vcs.diff.ui.common.DiffChangeGroupLayout;
     panel.setPainter(createDividerPainter(getMyEditor(), getBaseEditor()), Side.LEFT);
     panel.setPainter(createDividerPainter(getBaseEditor(), getRepoEditor()), Side.RIGHT);
     installMainPanel(panel);
+    installSplitterRepainter(new DiffChangeGroupLayout.SplitterRepainter() {
+      @Override
+      public void repaintSplitter(DiffEditor leftEditor, DiffEditor rightEditor) {
+        final boolean mine = leftEditor == getMyEditor() && rightEditor == getBaseEditor();
+        final boolean repo = leftEditor == getBaseEditor() && rightEditor == getRepoEditor();
+        assert mine != repo;
+        ((ThreesideContentPanel) getPanel()).repaintDivider((mine ? Side.LEFT : Side.RIGHT));
+      }
+    });
   }
 
   @Override
@@ -158,18 +167,5 @@ import jetbrains.mps.vcs.diff.ui.common.DiffChangeGroupLayout;
       getRepoEditor().highlightChanges(getRepoModel(), repoChanges, true, getConflictChecker());
     }
     invalidateLayouts();
-  }
-
-  @Override
-  protected DiffChangeGroupLayout.SplitterRepainter getSplitterRepainter(DiffEditor leftEditor, DiffEditor rightEditor) {
-    final boolean mine = leftEditor == getMyEditor() && rightEditor == getBaseEditor();
-    final boolean repo = leftEditor == getBaseEditor() && rightEditor == getRepoEditor();
-    assert mine != repo;
-    return new DiffChangeGroupLayout.SplitterRepainter() {
-      @Override
-      public void repaintSplitter() {
-        ((ThreesideContentPanel) getPanel()).repaintDivider((mine ? Side.LEFT : Side.RIGHT));
-      }
-    };
   }
 }

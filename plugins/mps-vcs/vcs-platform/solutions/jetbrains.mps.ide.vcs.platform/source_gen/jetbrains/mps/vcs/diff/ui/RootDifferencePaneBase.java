@@ -30,6 +30,9 @@ import com.intellij.ui.JBColor;
 import com.intellij.ui.IslandsState;
 import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.util.ui.UIUtil;
+import org.jetbrains.annotations.Nullable;
+import jetbrains.mps.vcs.diff.ui.common.DiffChangeGroupLayout;
+import jetbrains.mps.internal.collections.runtime.NotNullWhereFilter;
 import jetbrains.mps.vcs.diff.changes.ModelChange;
 import com.intellij.openapi.actionSystem.ToggleAction;
 import com.intellij.openapi.project.DumbAware;
@@ -42,13 +45,10 @@ import com.intellij.openapi.actionSystem.AnAction;
 import java.awt.Graphics;
 import javax.swing.JComponent;
 import com.intellij.openapi.actionSystem.ActionGroup;
-import org.jetbrains.annotations.Nullable;
 import jetbrains.mps.vcs.diff.ui.common.Bounds;
 import com.intellij.openapi.application.ApplicationManager;
 import java.util.Iterator;
 import jetbrains.mps.vcs.diff.ChangeSet;
-import jetbrains.mps.vcs.diff.ui.common.DiffChangeGroupLayout;
-import jetbrains.mps.internal.collections.runtime.NotNullWhereFilter;
 import jetbrains.mps.internal.collections.runtime.Sequence;
 import java.util.Collections;
 import jetbrains.mps.vcs.diff.changes.NodeIdChange;
@@ -84,7 +84,7 @@ public abstract class RootDifferencePaneBase implements RootDifferencePane, Prop
   protected boolean myDisposed = false;
   private final List<ChangeGroupMessages> myGutterMessagesRebuilders = ListSequence.fromList(new ArrayList<ChangeGroupMessages>());
 
-  public RootDifferencePaneBase(MPSProject project, List<DiffEditor> editors, List<ModelChangeSet> changeSets) {
+  protected RootDifferencePaneBase(MPSProject project, List<DiffEditor> editors, List<ModelChangeSet> changeSets) {
     myMpsProject = project;
     assert ListSequence.fromList(editors).count() > 1;
     // DiffEditor combines node editor + inspector; but ChangeGroupLayouts are tracked independently for the node and its inspector,
@@ -141,6 +141,10 @@ public abstract class RootDifferencePaneBase implements RootDifferencePane, Prop
     myPanel.setOpaque(true);
     myPanel.setBackground(JBColor.lazy(() -> (IslandsState.Companion.isEnabled() ? EditorColorsManager.getInstance().getGlobalScheme().getDefaultBackground() : UIUtil.getPanelBackground())));
     registerShortcuts(myPanel);
+  }
+
+  protected final void installSplitterRepainter(@Nullable final DiffChangeGroupLayout.SplitterRepainter splitterRepainter) {
+    ListSequence.fromList(myMainChangeGroupLayouts).concat(ListSequence.fromList(myInspectorChangeGroupLayouts)).where(new NotNullWhereFilter()).select((obj) -> DiffChangeGroupLayout.class.cast(obj)).visitAll((it) -> it.installPainter(splitterRepainter));
   }
 
   protected DefaultActionGroup createActionGroup(boolean isEditable) {
@@ -317,8 +321,7 @@ public abstract class RootDifferencePaneBase implements RootDifferencePane, Prop
         ChangeSet changeSet = changeSetsIt.next();
         DiffChangeGroupLayout layout = null;
         if (changeSet != null) {
-          DiffChangeGroupLayout.SplitterRepainter splitterRepainter = getSplitterRepainter(leftEditor, editor);
-          layout = new DiffChangeGroupLayout(getConflictChecker(), changeSet, leftEditor, editor, splitterRepainter, inspector);
+          layout = new DiffChangeGroupLayout(getConflictChecker(), changeSet, leftEditor, editor, null, inspector);
         }
         ListSequence.fromList(layouts).addElement(layout);
       }
@@ -343,8 +346,6 @@ public abstract class RootDifferencePaneBase implements RootDifferencePane, Prop
     ListSequence.fromList(myMainChangeGroupLayouts).where(new NotNullWhereFilter()).visitAll((final ChangeGroupLayout layout) -> ListSequence.fromList(getEditors()).visitAll((editor) -> DiffButtonsPainter.addTo(RootDifferencePaneBase.this, editor, layout, false)));
     ListSequence.fromList(myInspectorChangeGroupLayouts).where(new NotNullWhereFilter()).visitAll((final ChangeGroupLayout layout) -> ListSequence.fromList(getEditors()).visitAll((editor) -> DiffButtonsPainter.addTo(RootDifferencePaneBase.this, editor, layout, true)));
   }
-
-  protected abstract DiffChangeGroupLayout.SplitterRepainter getSplitterRepainter(DiffEditor leftEditor, DiffEditor rightEditor);
 
   protected Iterable<ModelChange> getChangesToHighlight(ModelChangeSet changeSet) {
     if (changeSet == null) {

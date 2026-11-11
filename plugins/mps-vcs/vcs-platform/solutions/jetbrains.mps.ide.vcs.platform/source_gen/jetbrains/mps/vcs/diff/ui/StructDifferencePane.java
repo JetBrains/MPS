@@ -294,7 +294,7 @@ public class StructDifferencePane implements PropertyChangeListener {
   private DiffChangeGroupLayout.SplitterRepainter getSplitterRepainter(final TwosideContentPanel panel) {
     return new DiffChangeGroupLayout.SplitterRepainter() {
       @Override
-      public void repaintSplitter() {
+      public void repaintSplitter(DiffEditor left, DiffEditor right) {
         panel.repaintDivider();
       }
     };

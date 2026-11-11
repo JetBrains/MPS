@@ -6160,6 +6160,18 @@
                   <node concept="2AHcQZ" id="6Gx$enTY5Qx" role="2AJF6D">
                     <ref role="2AI5Lk" to="wyt6:~Override" resolve="Override" />
                   </node>
+                  <node concept="37vLTG" id="4wSSXCWPi7V" role="3clF46">
+                    <property role="TrG5h" value="left" />
+                    <node concept="3uibUv" id="4wSSXCWPi7W" role="1tU5fm">
+                      <ref role="3uigEE" to="hdhb:42hl10VHay4" resolve="DiffEditor" />
+                    </node>
+                  </node>
+                  <node concept="37vLTG" id="4wSSXCWPi7X" role="3clF46">
+                    <property role="TrG5h" value="right" />
+                    <node concept="3uibUv" id="4wSSXCWPi7Y" role="1tU5fm">
+                      <ref role="3uigEE" to="hdhb:42hl10VHay4" resolve="DiffEditor" />
+                    </node>
+                  </node>
                 </node>
               </node>
             </node>

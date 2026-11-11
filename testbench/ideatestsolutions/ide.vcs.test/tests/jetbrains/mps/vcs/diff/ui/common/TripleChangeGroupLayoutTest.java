@@ -66,7 +66,7 @@ public class TripleChangeGroupLayoutTest {
 
     @Test
     public void disposingTripleLeavesSourceLayoutToItsOwner() throws Exception {
-      createLayout(true, false, () -> { });
+      createLayout(true, false, null);
       try {
         onEdt(() -> {
           disposeLayout();
@@ -83,7 +83,7 @@ public class TripleChangeGroupLayoutTest {
     public void onlyLatestQueuedLayersArePublished() throws Exception {
       AtomicInteger publications = new AtomicInteger();
       CountDownLatch updated = new CountDownLatch(1);
-      createLayout(true, false, () -> {
+      createLayout(true, false, (e1, e2) -> {
         publications.incrementAndGet();
         updated.countDown();
       });
@@ -132,7 +132,7 @@ public class TripleChangeGroupLayoutTest {
     @Test
     public void disposedLayoutIgnoresQueuedPublication() throws Exception {
       CountDownLatch updated = new CountDownLatch(1);
-      createLayout(true, false, updated::countDown);
+      createLayout(true, false, (left, right) -> updated.countDown());
       CountDownLatch edtBlocked = new CountDownLatch(1);
       CountDownLatch dispose = new CountDownLatch(1);
       FutureTask<Void> disposeTask = new FutureTask<>(() -> {
@@ -171,7 +171,7 @@ public class TripleChangeGroupLayoutTest {
       for (boolean inspector : new boolean[]{false, true}) {
         CountDownLatch updated = new CountDownLatch(1);
         AtomicBoolean publishedOnEdt = new AtomicBoolean();
-        createLayout(left, inspector, () -> {
+        createLayout(left, inspector, (e1, e2) -> {
           publishedOnEdt.set(SwingUtilities.isEventDispatchThread());
           updated.countDown();
         });

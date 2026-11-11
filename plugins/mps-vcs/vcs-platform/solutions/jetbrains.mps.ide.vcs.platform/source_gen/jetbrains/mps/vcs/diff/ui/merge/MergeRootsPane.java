@@ -495,7 +495,7 @@ public class MergeRootsPane implements PropertyChangeListener {
   private DiffChangeGroupLayout.SplitterRepainter getSplitterRepainter(final ThreesideContentPanel panel, final boolean mine) {
     return new DiffChangeGroupLayout.SplitterRepainter() {
       @Override
-      public void repaintSplitter() {
+      public void repaintSplitter(DiffEditor left, DiffEditor right) {
         panel.repaintDivider((mine ? Side.LEFT : Side.RIGHT));
       }
     };

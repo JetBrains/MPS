@@ -14,10 +14,10 @@ import jetbrains.mps.internal.collections.runtime.ListSequence;
 import com.intellij.ui.JBSplitter;
 import com.intellij.diff.tools.util.side.TwosideContentPanel;
 import com.intellij.diff.util.DiffUtil;
+import jetbrains.mps.vcs.diff.ui.common.DiffChangeGroupLayout;
 import jetbrains.mps.vcs.diff.changes.ModelChange;
 import org.jetbrains.mps.openapi.model.SModel;
 import org.jetbrains.mps.openapi.model.SNodeId;
-import jetbrains.mps.vcs.diff.ui.common.DiffChangeGroupLayout;
 import jetbrains.mps.vcs.diff.ChangeSetBuilder;
 import jetbrains.mps.vcs.diff.ui.common.DiffSettingsUtil;
 
@@ -38,6 +38,13 @@ import jetbrains.mps.vcs.diff.ui.common.DiffSettingsUtil;
     panel.setTitles(DiffUtil.createSyncHeightComponents(DiffUtil.createSimpleTitles(diffViewer, request)));
     panel.setPainter(createDividerPainter(getOldEditor(), getNewEditor()));
     installMainPanel(panel);
+    installSplitterRepainter(new DiffChangeGroupLayout.SplitterRepainter() {
+      @Override
+      public void repaintSplitter(DiffEditor left, DiffEditor right) {
+        assert left == getOldEditor() && right == getNewEditor();
+        ((TwosideContentPanel) getPanel()).repaintDivider();
+      }
+    });
   }
 
 
@@ -71,16 +78,6 @@ import jetbrains.mps.vcs.diff.ui.common.DiffSettingsUtil;
   public void editRootId(SNodeId rootId) {
     getOldEditor().editRoot(rootId);
     getNewEditor().editRoot(rootId);
-  }
-
-  @Override
-  protected DiffChangeGroupLayout.SplitterRepainter getSplitterRepainter(DiffEditor leftEditor, DiffEditor rightEditor) {
-    return new DiffChangeGroupLayout.SplitterRepainter() {
-      @Override
-      public void repaintSplitter() {
-        ((TwosideContentPanel) getPanel()).repaintDivider();
-      }
-    };
   }
 
   @Override

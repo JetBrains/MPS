@@ -209,7 +209,7 @@
       <node id="3697948565746741995" at="489,60,490,104" concept="3" />
       <node id="4664177994952686631" at="490,104,491,67" concept="3" />
       <node id="5778592416296185061" at="491,67,492,99" concept="3" />
-      <node id="7719610553705455001" at="498,37,499,62" concept="3" />
+      <node id="7719610553705455001" at="498,70,499,62" concept="3" />
       <node id="2657001694096389381" at="504,47,505,41" concept="9" />
       <node id="2657001694096389391" at="506,51,507,22" concept="10" />
       <node id="2657001694096389404" at="509,51,510,70" concept="9" />
@@ -351,7 +351,7 @@
       <node id="6846469800156673539" at="338,0,342,0" concept="8" trace="setSelected#(Lcom/intellij/openapi/actionSystem/AnActionEvent;Z)V" />
       <node id="1973725742812731870" at="382,0,386,0" concept="8" trace="registerShortcuts#(Ljavax/swing/JComponent;)V" />
       <node id="1973725742812934966" at="387,0,391,0" concept="8" trace="unregisterShortcuts#(Ljavax/swing/JComponent;)V" />
-      <node id="7719610553705454997" at="497,0,501,0" concept="8" trace="repaintSplitter#()V" />
+      <node id="7719610553705454997" at="497,0,501,0" concept="8" trace="repaintSplitter#(Ljetbrains/mps/vcs/diff/ui/common/DiffEditor;Ljetbrains/mps/vcs/diff/ui/common/DiffEditor;)V" />
       <node id="8136967807529688318" at="580,0,584,0" concept="2" trace="InvalidationHandler#(Lorg/jetbrains/mps/openapi/module/ModelAccess;)V" />
       <node id="8136967807529648889" at="593,0,597,0" concept="8" trace="someChangesInvalidated#()V" />
       <node id="8136967807529648895" at="598,0,602,0" concept="8" trace="commandStarted#()V" />
@@ -445,7 +445,7 @@
       <scope id="2657001694096389205" at="470,46,471,81" />
       <scope id="2657001694096389214" at="472,14,473,95" />
       <scope id="2657001694096389278" at="482,109,483,78" />
-      <scope id="7719610553705455000" at="498,37,499,62" />
+      <scope id="7719610553705455000" at="498,70,499,62" />
       <scope id="2657001694096389390" at="506,51,507,22" />
       <scope id="2657001694096389412" at="511,32,512,27" />
       <scope id="2657001694096389604" at="525,46,526,26" />
@@ -572,7 +572,10 @@
       <scope id="1973725742812934966" at="387,0,391,0">
         <var name="component" id="1973725742812960046" />
       </scope>
-      <scope id="7719610553705454997" at="497,0,501,0" />
+      <scope id="7719610553705454997" at="497,0,501,0">
+        <var name="left" id="5204159895889584635" />
+        <var name="right" id="5204159895889584637" />
+      </scope>
       <scope id="2657001694096389403" at="509,51,513,7">
         <var name="replacement" id="2657001694096389405" />
       </scope>
