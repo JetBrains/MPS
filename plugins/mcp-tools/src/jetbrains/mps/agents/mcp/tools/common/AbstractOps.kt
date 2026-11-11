@@ -19,6 +19,7 @@ import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.io.FileUtil
 import jetbrains.mps.checkers.ConstraintsChecker
 import jetbrains.mps.checkers.ErrorReportHelper
+import jetbrains.mps.smodel.adapter.structure.types.SEnumerationAdapter
 import jetbrains.mps.smodel.SModelStereotype
 import jetbrains.mps.checkers.RefScopeChecker
 import jetbrains.mps.checkers.TargetConceptChecker2
@@ -89,6 +90,7 @@ import org.jetbrains.mps.openapi.module.SRepository
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
 import org.jetbrains.mps.openapi.util.Consumer
 import java.io.File
+import java.io.IOException
 import java.nio.file.Paths
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CountDownLatch
@@ -1351,19 +1353,47 @@ abstract class AbstractOps : McpToolset {
     }
 
     /**
+     * [finalizeResult] for a plain-text printout: [text] inline as a JSON string when that string is at most
+     * [maxInlineBytes] long, else written as raw text to a `.txt` temp file whose path is `data`. The file is
+     * not an envelope and no mutation tool consumes it, so it is not registered in [createdTempJsonFiles].
+     */
+    protected fun finalizeTextResult(
+        text: String,
+        maxInlineBytes: Int,
+        details: Map<String, Any?> = emptyMap(),
+        warnings: List<String> = emptyList()
+    ): String {
+        val payload = JsonPrimitive(text)
+        if (payload.toString().length <= maxInlineBytes) return okJson(payload, warnings = warnings, details = details)
+        return try {
+            val file = File.createTempFile(TEMP_JSON_PREFIX, ".txt")
+            file.deleteOnExit()
+            file.writeText(text, Charsets.UTF_8)
+            okJson(JsonPrimitive(file.absolutePath), warnings = warnings, details = details)
+        } catch (e: IOException) {
+            logger.warn("Failed to save MCP tool result to a temporary file", e)
+            errJson("Failed to save result to a temporary file: ${e.message}")
+        }
+    }
+
+    /**
      * The envelope warning for a printout that contains records whose concept is not loaded (the
      * `unloadedConcepts` sink of [nodeHierarchyJsonObject]); empty when there are none. Without it a
      * reader took such a printout as the whole node and reported the content as missing (D89).
      */
-    protected fun unloadedConceptsWarnings(concepts: Collection<SAbstractConcept>): List<String> {
+    protected fun unloadedConceptsWarnings(concepts: Collection<SAbstractConcept>, agenticView: Boolean = false): List<String> {
         if (concepts.isEmpty()) return emptyList()
         val names = concepts.map { structureQualifiedName(it) }.distinct().sorted()
         val listed = names.take(5).joinToString(", ") + if (names.size > 5) ", … (+${names.size - 5} more)" else ""
+        val markers = if (agenticView) {
+            "marked !undeclared, with no empty: line (!conceptNotLoaded on each such node)"
+        } else {
+            "marked declared:false, with types, cardinalities and docs only for features of loaded languages (conceptLoaded:false on each such node)"
+        }
         return listOf(
             "Printed nodes use ${names.size} concept(s) that are not loaded, because their language is not loaded or " +
                 "no longer declares them ($listed): " +
-                "what they store is printed from the stored node, marked declared:false, with types, cardinalities and docs " +
-                "only for features of loaded languages (conceptLoaded:false on each such node). Run mps_mcp_alter_nodes MAKE with rebuild=true on the " +
+                "what they store is printed from the stored node, $markers. Run mps_mcp_alter_nodes MAKE with rebuild=true on the " +
                 "language module for the full record, or read the editor projection with format \"PLAIN TEXT\"."
         )
     }
@@ -1858,10 +1888,14 @@ abstract class AbstractOps : McpToolset {
      */
     protected fun propertyDisplayValue(node: SNode, prop: SProperty): String? {
         val rawValue = SNodeAccessUtil.getPropertyValue(node, prop)
-        return if (prop.type is SEnumeration && rawValue is SEnumerationLiteral) {
-            rawValue.getName() ?: rawValue.presentation
-        } else {
-            rawValue?.let { prop.type.toString(it) }
+        return when {
+            prop.type !is SEnumeration -> rawValue?.let { prop.type.toString(it) }
+            // A stored value that is no literal of an enumeration without a raw member type: the invalid
+            // literal that stands for it throws from getName(), so it has no display value.
+            rawValue is SEnumerationLiteral ->
+                if (rawValue.ordinal < 0 && (prop.type as? SEnumerationAdapter)?.rawMemberType == null) null
+                else rawValue.getName() ?: rawValue.presentation
+            else -> null
         }
     }
 

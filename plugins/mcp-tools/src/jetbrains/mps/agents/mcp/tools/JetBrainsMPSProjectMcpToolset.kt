@@ -263,7 +263,7 @@ class JetBrainsMPSProjectMcpToolset(
         @McpDescription("Include models within modules.") includeModels: Boolean = false,
         @McpDescription("Include module/model dependencies and used languages. Leave it off for orientation (which modules and models exist): it adds a dependency block to every module and model.") includeDependencies: Boolean = false,
         @McpDescription("Include root nodes of models.") includeRootNodes: Boolean = false,
-        @McpDescription("Include all nodes (full AST), inlined under each root's containment roles. Implies includeRootNodes (and includeModels for module/project dumps). Unbounded unless you pass nodeDepth, so prefer scoping with `startingPoint`, `nodeDetail` and `nodeDepth`, or use `mps_mcp_print_node` (deep=true) for a single root. Warning: can be extremely large.") includeNodes: Boolean = false,
+        @McpDescription("Include all nodes (full AST), inlined under each root's containment roles. Implies includeRootNodes (and includeModels for module/project dumps). Unbounded unless you pass nodeDepth, so prefer scoping with `startingPoint`, `nodeDetail` and `nodeDepth`, or use `mps_mcp_print_node` (format AGENTIC VIEW) for a single root. Warning: can be extremely large.") includeNodes: Boolean = false,
         @McpDescription(
             "Optional starting point: a persistent reference (module/model/root-node/node id) or a plain name. " +
                     "A plain NAME is resolved in the order node -> model -> module, so a name shared by a model and a " +

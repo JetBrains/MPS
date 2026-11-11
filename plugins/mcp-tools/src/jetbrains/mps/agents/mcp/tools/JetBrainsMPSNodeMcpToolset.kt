@@ -1567,23 +1567,26 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
     @McpTool
     @McpDescription(
         """
-        Prints the specified node as JSON. `data` is inline when the printout is <= `maxInlineBytes` (default 20000), otherwise a temp-file path. `deep=true` inlines all descendants; `deep=false` (default) lists direct children's refs only. The result (inline `data` or the saved envelope) is consumable by every node-mutation tool (`mps_mcp_update_node`, `mps_mcp_update_root_node_from_json`, etc.). See `mps-mcp-workflow/references/analysis-tools.md` for the output schema and `mps-node-editing/references/json-format.md` for the matching blueprint shape.
-        A stored property, child role or reference that the node's concept does not declare is printed with `declared:false`; a node whose concept is not loaded (its language is not loaded or no longer declares it) prints `conceptLoaded:false` with only such entries (types and docs only for features of loaded languages), and the envelope `warnings` say so — build the language or use `PLAIN TEXT`, never read that printout as an empty node.
+        Prints the specified node in one of five formats. Pick the format by task (see `mps-mcp-workflow/references/analysis-tools/print-node-agentic-view.md`):
+        `JSON` (default) is the node record that mutation tools consume: the result (inline `data` or the saved envelope) is accepted by every node-mutation tool (`mps_mcp_update_node`, `mps_mcp_update_root_node_from_json`, etc.); print it only for the subtree such a tool will take. `deep=true` inlines all descendants; `deep=false` (default) lists direct children's refs only. `data` is inline when the printout is <= `maxInlineBytes` (default 20000), otherwise a temp-file path. Schema: `mps-mcp-workflow/references/analysis-tools/print-node-output.md`; blueprint shape: `mps-node-editing/references/json-format.md`.
+        `AGENTIC VIEW` is for reading a node: structure, node ids, reference targets (name, model alias, id) and unset features, one line per node for the whole subtree. It is read-only text that no tool takes as input; `nodeDepth` bounds it, and above `maxInlineBytes` it is cut by depth instead of written to a file, unless even depth 1 does not fit (then `data` is the path of a raw `.txt` file); print a `(+N)` node by its reference `<model>/<id>` to continue.
+        `PLAIN TEXT` is for reading code or a notation as the editor shows it: the editor-projected text, inline or as a temp-file path under the `maxInlineBytes` rule; a two-dimensional projection (table, fraction, matrix) is drawn as a character grid.
+        `HTML` is for an editor's text styles and for mapping text to nodes: it writes a standalone page `index.html` and the painted editor `editor.png` into a fresh temp directory and returns the page's path as `data` (`details.html` gives the directory and each file's size; `maxInlineBytes` does not apply): the projection's text in reading order, every node's part tagged with its node id, concept and role, tables, fractions and brackets as CSS boxes, cells without text as cut-outs of the image.
+        `IMAGE` is for diagrams, tables and other graphical cells: it paints the editor projection to a PNG temp file whose path is `data` (size in `details.image`), exactly as drawn.
+        `editorHints` selects an alternative projection (editor hints) for HTML, PLAIN TEXT and IMAGE; `details.editorHints` reports the hints applied and those `available` for the node's model.
+        A stored property, child role or reference that the node's concept does not declare is printed with `declared:false` (`!undeclared` in AGENTIC VIEW); a node whose concept is not loaded (its language is not loaded or no longer declares it) prints `conceptLoaded:false` with only such entries (types and docs only for features of loaded languages), and the envelope `warnings` say so — build the language or use `PLAIN TEXT`, never read that printout as an empty node.
         `nodeReference` must be a node reference (`r:<uuid>(model)/<node-id>`). A model reference or qualified model name is rejected with INVALID_REQUEST that names the model and a retry line for `mps_mcp_get_project_structure` (`startingPoint`, `includeNodes=true`); `mps_mcp_check_root_node_problems` accepts those model forms in `nodeReference`.
         A node of a transient model a make kept (references from `mps_mcp_generation` TRANSIENT_MODELS, `i:` model ids) prints like any other; `mps_mcp_generation` TRACE tells which input node and rule produced it.
-        `PLAIN TEXT` returns the editor-projected text of the node, inline or as a temp-file path under the same `maxInlineBytes` rule; a two-dimensional projection (table, fraction, matrix) is drawn as a character grid.
-        `HTML` writes a standalone page `index.html` and the painted editor `editor.png` into a fresh temp directory and returns the page's path as `data` (`details.html` gives the directory and each file's size; `maxInlineBytes` does not apply): the projection's text in reading order, every node's part tagged with its node id, concept and role, tables, fractions and brackets as CSS boxes, cells without text as cut-outs of the image.
-        `IMAGE` paints the editor projection to a PNG temp file whose path is `data` (size in `details.image`), which shows diagrams, tables and other graphical cells exactly as drawn.
-        `editorHints` selects an alternative projection (editor hints) for HTML, PLAIN TEXT and IMAGE; `details.editorHints` reports the hints applied and those `available` for the node's model. See `mps-mcp-workflow/references/analysis-tools/print-node-output.md`.
         If the goal is to duplicate this node rather than merely inspect it, prefer `mps_mcp_alter_nodes` `COPY_NODE` over printing it deep and re-inserting the JSON — it's fewer calls and produces a structurally guaranteed-valid clone.
     """
     )
     suspend fun mps_mcp_print_node(
         @McpDescription("Required. Persistent form of SNodeReference (r:<uuid>(model)/<node-id>). A model reference or qualified model name is rejected with a retry line pointing at mps_mcp_get_project_structure.") nodeReference: String = "",
-        @McpDescription("One of exactly four literals: JSON (default), HTML, PLAIN TEXT, IMAGE.") format: String = "JSON",
-        @McpDescription("Whether to perform a deep (true) or shallow (false) printout. Only relevant for JSON format. Defaults to false.") deep: Boolean = false,
-        @McpDescription("Inline the printout in `data` when it is at most this many characters; larger printouts are saved to a temp file whose path is returned instead (default 20000).") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES,
+        @McpDescription("One of exactly five literals: JSON (default), AGENTIC VIEW, PLAIN TEXT, HTML, IMAGE.") format: String = "JSON",
+        @McpDescription("JSON only: a deep (true) or shallow (false) printout. Defaults to false; AGENTIC VIEW always prints the whole subtree (bound it with nodeDepth).") deep: Boolean = false,
+        @McpDescription("Inline the printout in `data` when it is at most this many characters; larger printouts are saved to a temp file whose path is returned instead (default 20000). AGENTIC VIEW: the limit cuts the printout by depth instead of writing a file, unless even depth 1 does not fit.") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES,
         @McpDescription("HTML, PLAIN TEXT and IMAGE only: an editor hint FQ name or short id, or a JSON array of them (a real array or the array written as a string). Omit to use the project's hint settings; [] for no hints.") editorHints: JsonOrText? = null,
+        @McpDescription("AGENTIC VIEW only: how many levels to print below the node: -1 (default) for the whole subtree, 0 for the node alone, n for n levels; a node with unprinted descendants ends in (+N).") nodeDepth: Int = -1,
     ): String {
         rejectMissingParameters(
             "mps_mcp_print_node",
@@ -1603,8 +1606,11 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
             else -> null
         }
         if (projection != null) return showNodeAppearance(nodeReference, projection, maxInlineBytes = maxInlineBytes, editorHints = hints)
+        if (normalizedFormat == "AGENTIC VIEW" || normalizedFormat == "AGENTIC_VIEW") {
+            return printAgenticView(nodeReference, nodeDepth, maxInlineBytes, editorHintsGiven = hints != null)
+        }
         if (normalizedFormat != "JSON") return McpCallOutcomes.record(
-            errJson("Invalid format '$format'. Allowed values: JSON, HTML, PLAIN TEXT, IMAGE", McpErrorCode.INVALID_REQUEST)
+            errJson("Invalid format '$format'. Allowed values: JSON, HTML, PLAIN TEXT, IMAGE, AGENTIC VIEW", McpErrorCode.INVALID_REQUEST)
         )
         val hintsWarnings = if (hints == null) emptyList() else listOf("editorHints applies to the HTML, PLAIN TEXT and IMAGE formats only; ignored for JSON")
         return withMpsProject(if (deep) "Deep printing MPS node" else "Shallow printing MPS node") { mpsProject ->
@@ -1619,6 +1625,40 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
             }
         }
     }
+
+    /** `format = AGENTIC VIEW`: [AgenticViewRenderer] under the JSON branch's resolution, cut by depth to fit [maxInlineBytes]. */
+    private suspend fun printAgenticView(nodeReference: String, nodeDepth: Int, maxInlineBytes: Int, editorHintsGiven: Boolean): String =
+        withMpsProject("Printing MPS node as AGENTIC VIEW") { mpsProject ->
+            executeShortReadOnEdt(mpsProject) {
+                val repo = mpsProject.repository
+                val sNodeRef = resolveNodeReferencePreferringProject(mpsProject, nodeReference)
+                val node = sNodeRef?.resolve(repo)
+                    ?: return@executeShortReadOnEdt unresolvedPrintNode(mpsProject, nodeReference, parsedAsNode = sNodeRef != null)
+                val membership = ProjectMembershipCache(mpsProject)
+                val rendering = AgenticViewRenderer(repo, ::propertyDisplayValue, ::defaultEnumLiteralName, ::getDeprecationInfo) { model ->
+                    membership.ownerOf(model)?.let { !sameOpenProject(it, mpsProject) } ?: false
+                }.render(node, nodeDepth)
+                val fit = rendering.fit(maxInlineBytes)
+                val warnings = ArrayList<String>()
+                if (editorHintsGiven) warnings += "editorHints applies to the HTML, PLAIN TEXT and IMAGE formats only; ignored for AGENTIC VIEW"
+                warnings += unloadedConceptsWarnings(rendering.unloadedConcepts(fit.depth), agenticView = true)
+                val agenticView = linkedMapOf<String, Any?>("nodes" to rendering.totalNodes, "printedNodes" to rendering.printedNodes(fit.depth))
+                if (fit.cutDepth != null) {
+                    agenticView["cutDepth"] = fit.cutDepth
+                    val wholeChars = rendering.wholeChars
+                    agenticView["wholeChars"] = wholeChars
+                    warnings += "The printout was cut at depth ${fit.cutDepth} of ${rendering.treeDepth} to fit maxInlineBytes=$maxInlineBytes " +
+                        "(the whole printout is $wholeChars chars): a node marked (+N) has N descendants that are not printed; " +
+                        "print the (+N) nodes you need by their ids rather than raising maxInlineBytes"
+                }
+                if (!fit.inline) {
+                    val smallest = if (fit.depth == 0) "The node alone exceeds" else "Even depth 1 exceeds"
+                    warnings += "$smallest maxInlineBytes=$maxInlineBytes, so `data` is the path of a .txt file holding " +
+                        "the whole printout as raw text (not a JSON envelope); print a child node or pass nodeDepth for a smaller printout"
+                }
+                finalizeTextResult(fit.text, if (fit.inline) Int.MAX_VALUE else maxInlineBytes, mapOf("agenticView" to agenticView), warnings)
+            }
+        }
 
     @McpTool
     @McpDescription(
