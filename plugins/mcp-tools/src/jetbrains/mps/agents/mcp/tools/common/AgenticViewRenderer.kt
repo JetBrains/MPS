@@ -22,13 +22,15 @@ import org.jetbrains.mps.openapi.module.SRepository
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
 
 /**
- * The `AGENTIC VIEW` format of `mps_mcp_print_node`: one line per node with its role, concept, id, name, properties
- * and references, read from the model (no editor), plus an `empty:` line for unset features. The grammar is §2 of
- * `plugins/mcp-tools/docs/AGENTIC_VIEW-plan.md`; the feature semantics are those of the JSON printout.
+ * The `AGENTIC VIEW` format of `mps_mcp_print_node` and `mps_mcp_get_compact_project_structure`: one line per node
+ * with its role, concept, id, name, properties and references, read from the model (no editor), plus an `empty:` line
+ * for unset features. The grammar is §2 of `plugins/mcp-tools/docs/AGENTIC_VIEW-plan.md`; the feature semantics are
+ * those of the JSON printout.
  *
  * One instance per render, under a read action: it memoizes deprecation and project membership for that call only.
- * [render] walks the tree once; [Rendering.text] and [Rendering.fit] assemble printouts from the recorded lines
- * without touching the model.
+ * [render] walks the tree, or the roots of some models, once; [Rendering.text] and [Rendering.fit] assemble printouts
+ * from the recorded lines without touching the model. With a `codeText` function, each outermost BaseLanguage
+ * statement or expression is one line with its editor text (`codeAsText`).
  */
 class AgenticViewRenderer(
     private val repository: SRepository,
@@ -48,89 +50,277 @@ class AgenticViewRenderer(
         val concept: ConceptKey,
         val id: String,
         val name: String? = null,
+        /** The name is not stored: it is what reading the `name` property returns (a constraints getter). */
+        val nameComputed: Boolean = false,
         val properties: List<String> = emptyList(),
         val references: List<Reference> = emptyList(),
         val flags: List<String> = emptyList(),
         val empty: String? = null,
         var descendants: Int = 0,
+        /** The editor text of a code node printed as one line (`= "…"`); its subtree is not printed, only its attributes. */
+        val text: String? = null,
+        /** The descendants of a [text] line that are not printed when its attribute lines are. */
+        var skipped: Int = 0,
     )
 
-    class Fit(val text: String, val depth: Int, val cutDepth: Int?, val inline: Boolean)
+    /**
+     * The printout for a `maxInlineBytes` limit; [inline] false means that [text] is the whole printout, for a file.
+     * [collapsed] counts its code lines (`= "…"`).
+     */
+    class Fit(
+        val text: String,
+        val printedNodes: Int,
+        val unloadedConcepts: List<SAbstractConcept>,
+        val cut: Boolean,
+        val inline: Boolean,
+        val collapsed: Int,
+    )
 
+    /** One model's part of a printout: its header lines, then the lines from [start] up to the next section's start. */
+    class Section(val model: String, val start: Int)
+
+    /**
+     * The recorded lines of one walk, in document order, in one [Section] per model; the depth-0 lines are the
+     * roots. A printout is a selection of the lines that holds every root, is closed under "a printed node has
+     * its parent printed" and prints either all or none of a node's children; a printed node whose children are
+     * not printed and that has descendants ends with `(+N)`.
+     */
     class Rendering(
-        val model: String,
+        val sections: List<Section>,
         val lines: List<Line>,
         val totalNodes: Int,
-        val treeDepth: Int,
         val foreignModels: Set<String> = emptySet(),
         val deprecated: Map<ConceptKey, List<String>> = emptyMap(),
         val unloaded: Map<ConceptKey, SAbstractConcept> = emptyMap(),
+        /** A line before the first section (`# module …`). */
+        val preamble: String? = null,
     ) {
-        /** The deepest printed level without a size cut: `nodeDepth`, or the tree's depth for `-1`. */
-        val effectiveDepth: Int get() = lines.maxOf { it.depth }
+        /** The printout of one node's subtree. */
+        constructor(
+            model: String,
+            lines: List<Line>,
+            totalNodes: Int,
+            foreignModels: Set<String> = emptySet(),
+            deprecated: Map<ConceptKey, List<String>> = emptyMap(),
+            unloaded: Map<ConceptKey, SAbstractConcept> = emptyMap(),
+        ) : this(listOf(Section(model, 0)), lines, totalNodes, foreignModels, deprecated, unloaded)
+
+        /** The indices of each line's child lines, from the depths of the document order. */
+        private val children: List<IntArray> = run {
+            val kids = List(lines.size) { ArrayList<Int>() }
+            val stack = ArrayList<Int>()
+            lines.forEachIndexed { i, line ->
+                while (stack.size > line.depth) stack.removeAt(stack.size - 1)
+                stack.lastOrNull()?.let { kids[it] += i }
+                stack += i
+            }
+            kids.map { it.toIntArray() }
+        }
+
+        private fun end(section: Int): Int = sections.getOrNull(section + 1)?.start ?: lines.size
+
+        private val sectionOf = IntArray(lines.size).also { of -> sections.indices.forEach { s -> (sections[s].start until end(s)).forEach { of[it] = s } } }
+
+        private val all = BooleanArray(lines.size) { true }
+
+        val roots: Int get() = lines.count { it.depth == 0 }
 
         /** The size of the uncut printout, for the cut header: what raising `maxInlineBytes` would return. */
-        val wholeChars: Int by lazy { size(effectiveDepth, cut = false) }
+        val wholeChars: Int by lazy { size(all, cut = false) }
 
-        fun printedNodes(maxDepth: Int): Int = lines.count { it.depth <= maxDepth }
+        /** The whole printout. */
+        fun text(): String = text(all, cut = false)
 
-        fun unloadedConcepts(maxDepth: Int): List<SAbstractConcept> =
-            lines.filter { it.depth <= maxDepth }.mapNotNull { unloaded[it.concept] }.distinct()
-
-        fun text(maxDepth: Int, cut: Boolean = false): String = printoutLines(maxDepth, cut).joinToString("\n")
+        /** The printout of the [printed] lines, with the `# cut` line when [cut]. */
+        fun text(printed: BooleanArray, cut: Boolean): String = printoutLines(printed, cut).joinToString("\n")
 
         /**
          * [jsonLength] of [text] without building it, from the escaped length of each line; it stops counting once the
          * size is above [stopAbove], so a printout that is too large costs only its first lines.
          */
-        fun size(maxDepth: Int, cut: Boolean, stopAbove: Int = Int.MAX_VALUE): Int {
+        private fun size(printed: BooleanArray, cut: Boolean, stopAbove: Int = Int.MAX_VALUE): Int {
             var size = 2
             var first = true
-            for (line in printoutLines(maxDepth, cut)) {
-                size += jsonLength(line) - 2 + if (first) 0 else 2
+            for (line in printoutLines(printed, cut)) {
+                size += escapedLength(line) + if (first) 0 else 2
                 first = false
                 if (size > stopAbove) return size
             }
             return size
         }
 
-        private fun printoutLines(maxDepth: Int, cut: Boolean): Sequence<String> = sequence {
-            val printed = lines.filter { it.depth <= maxDepth }
-            val tokens = conceptTokens(printed.map { it.concept })
-            val aliases = LinkedHashMap<String, String>()
-            aliases[model] = "m0"
-            for (line in printed) for (ref in line.references) {
-                val m = ref.model ?: continue
-                if (m !in aliases) aliases[m] = "m${aliases.size}"
+        private fun modelLine(model: String): String =
+            "# AGENTIC VIEW 1 | model m0=$model${if (model in foreignModels) " !foreign" else ""} | node reference = <model>/<id>"
+
+        private fun cutLine(printedNodes: Int): String =
+            "# cut: $printedNodes of $totalNodes nodes printed (the whole printout is $wholeChars chars); " +
+                "print the \"(+N)\" nodes you need by their ids"
+
+        private fun printoutLines(printed: BooleanArray, cut: Boolean): Sequence<String> = sequence {
+            preamble?.let { yield(it) }
+            val printedNodes = printed.count { it }
+            sections.forEachIndexed { s, section ->
+                val model = section.model
+                val shown = (section.start until end(s)).filter { printed[it] }
+                val tokens = conceptTokens(shown.map { lines[it].concept })
+                val aliases = LinkedHashMap<String, String>()
+                aliases[model] = "m0"
+                for (i in shown) for (ref in lines[i].references) {
+                    val m = ref.model ?: continue
+                    if (m !in aliases) aliases[m] = "m${aliases.size}"
+                }
+                fun foreign(m: String) = if (m in foreignModels) " !foreign" else ""
+                yield(modelLine(model))
+                if (aliases.size > 1) yield("# models " + aliases.entries.drop(1).joinToString(" ") { "${it.value}=${it.key}${foreign(it.key)}" })
+                val concepts = shown.map { lines[it].concept }.distinct()
+                if (concepts.isNotEmpty()) yield(conceptsLine(concepts))
+                deprecatedLine(concepts) { tokens.getValue(it) }?.let { yield(it) }
+                if (cut && s == 0) yield(cutLine(printedNodes))
+                for (i in shown) {
+                    val line = lines[i]
+                    val expanded = children[i].isNotEmpty() && printed[children[i][0]]
+                    yield(nodeLine(line, tokens.getValue(line.concept), showHidden = !expanded) { m -> if (m == model) null else aliases[m] })
+                    line.empty?.let { yield(emptyLineText(line)) }
+                }
             }
-            fun foreign(m: String) = if (m in foreignModels) " !foreign" else ""
-            yield("# AGENTIC VIEW 1 | model m0=$model${foreign(model)} | node reference = <model>/<id>")
-            if (aliases.size > 1) yield("# models " + aliases.entries.drop(1).joinToString(" ") { "${it.value}=${it.key}${foreign(it.key)}" })
-            yield("# concepts " + printed.map { it.concept }.distinct().groupBy { it.language }.toSortedMap()
-                .entries.joinToString(" | ") { (language, keys) -> "$language: " + keys.map { it.name }.sorted().joinToString(" ") })
-            val deprecatedParts = printed.map { it.concept }.distinct().sortedBy { tokens.getValue(it) }
-                .mapNotNull { key -> deprecated[key]?.takeIf { it.isNotEmpty() }?.let { "${tokens.getValue(key)}: ${it.joinToString(" ")}" } }
-            if (deprecatedParts.isNotEmpty()) yield("# deprecated, printed only when set: " + deprecatedParts.joinToString(" | "))
-            if (cut) {
-                yield("# cut at depth $maxDepth of $treeDepth: ${printed.size} of $totalNodes nodes printed " +
-                    "(the whole printout is $wholeChars chars); print the \"(+N)\" nodes you need by their ids")
+        }
+
+        private fun conceptsLine(concepts: Collection<ConceptKey>): String =
+            "# concepts " + concepts.groupBy { it.language }.toSortedMap()
+                .entries.joinToString(" | ") { (language, keys) -> "$language: " + keys.map { it.name }.sorted().joinToString(" ") }
+
+        private fun deprecatedLine(concepts: Collection<ConceptKey>, token: (ConceptKey) -> String): String? {
+            val parts = concepts.sortedBy(token)
+                .mapNotNull { key -> deprecated[key]?.takeIf { it.isNotEmpty() }?.let { "${token(key)}: ${it.joinToString(" ")}" } }
+            return if (parts.isEmpty()) null else "# deprecated, printed only when set: " + parts.joinToString(" | ")
+        }
+
+        private fun emptyLineText(line: Line): String = "  ".repeat(line.depth + 1) + line.empty
+
+        /**
+         * The printout for `maxInlineBytes` [limit]: the whole of it when it fits, else the budget-filling cut
+         * ([cutSelection]); when not even the roots alone fit, the whole text with `inline = false`.
+         */
+        fun fit(limit: Int): Fit {
+            if (size(all, cut = false, stopAbove = limit) <= limit) return Fit(text(), lines.size, unloadedConcepts(all), cut = false, inline = true, collapsed(all))
+            val printed = cutSelection(limit) ?: return Fit(text(), lines.size, unloadedConcepts(all), cut = false, inline = false, collapsed(all))
+            return Fit(text(printed, cut = true), printed.count { it }, unloadedConcepts(printed), cut = true, inline = true, collapsed(printed))
+        }
+
+        private fun collapsed(printed: BooleanArray): Int = lines.indices.count { printed[it] && lines[it].text != null }
+
+        private fun unloadedConcepts(printed: BooleanArray): List<SAbstractConcept> =
+            lines.indices.filter { printed[it] }.mapNotNull { unloaded[lines[it].concept] }.distinct()
+
+        /**
+         * The header lines of one section in a cut, sized from what its printed lines use: the concepts with their
+         * line counts (for the concept tokens on the node lines) and the referenced models with their reference
+         * counts and first occurrence (for the aliases).
+         */
+        private inner class SectionHeader(val model: String) {
+            val conceptLines = LinkedHashMap<ConceptKey, Int>()
+            val refsTo = HashMap<String, Int>()
+            val firstRef = HashMap<String, Long>()
+            private var cached = -1L
+            var lineCount = 0
+                private set
+
+            fun changed() {
+                cached = -1L
             }
-            for (line in printed) {
-                yield(nodeLine(line, tokens.getValue(line.concept), showHidden = line.depth == maxDepth) { m -> if (m == model) null else aliases[m] })
-                line.empty?.let { yield("  ".repeat(line.depth + 1) + it) }
+
+            /** The header characters plus the concept tokens and model aliases of the section's node lines. */
+            fun chars(): Long {
+                if (cached >= 0) return cached
+                val tokens = conceptTokens(conceptLines.keys)
+                var chars = escapedLength(modelLine(model)).toLong()
+                var count = 1
+                if (conceptLines.isNotEmpty()) {
+                    chars += escapedLength(conceptsLine(conceptLines.keys))
+                    count++
+                }
+                for ((key, n) in conceptLines) chars += n.toLong() * escapedLength(tokens.getValue(key))
+                deprecatedLine(conceptLines.keys) { tokens.getValue(it) }?.let { chars += escapedLength(it); count++ }
+                if (refsTo.isNotEmpty()) {
+                    count++
+                    chars += "# models ".length + refsTo.size - 1
+                    firstRef.entries.sortedBy { it.value }.forEachIndexed { rank, (m, _) ->
+                        val alias = 1 + digits(rank + 1)
+                        chars += alias + 1 + escapedLength(m + if (m in foreignModels) " !foreign" else "")
+                        chars += refsTo.getValue(m).toLong() * alias
+                    }
+                }
+                lineCount = count
+                cached = chars
+                return chars
             }
         }
 
         /**
-         * The printout for `maxInlineBytes` [limit] (P1.4): the whole of it when it fits, else the largest smaller
-         * depth that fits, never below 1; when not even depth 1 fits, the uncut text with `inline = false`. Sizes are
-         * measured per line; only the chosen printout is built.
+         * The lines of the budget-filling cut, null when the roots alone do not fit [limit]. Nodes are expanded in
+         * breadth-first order across all sections (level by level, document order within a level); an expansion
+         * prints all children of the node, and the first expansion that does not fit ends the cut. The size of each
+         * candidate is kept exact from per-line escaped lengths: the node lines without their concept token, model
+         * aliases and `(+N)`, and the header lines of each section, which depend only on the section's printed
+         * concepts and referenced models, and the node count of the `# cut` line.
          */
-        fun fit(limit: Int): Fit {
-            val effective = effectiveDepth
-            val depth = selectCutDepth(effective, limit) { size(it, cut = it < effective, stopAbove = limit) }
-                ?: return Fit(text(effective), effective, null, inline = false)
-            return Fit(text(depth, cut = depth < effective), depth, if (depth < effective) depth else null, inline = true)
+        private fun cutSelection(limit: Int): BooleanArray? {
+            val printed = BooleanArray(lines.size)
+            var lineChars = 0L
+            var outputLines = 0
+            var printedNodes = 0
+            var hiddenChars = 0L
+            val headers = sections.map { SectionHeader(it.model) }
+            val preambleChars = preamble?.let { escapedLength(it).toLong() } ?: 0L
+            val preambleLines = if (preamble != null) 1 else 0
+
+            fun hiddenLength(n: Int) = if (n > 0) 4 + digits(n) else 0
+
+            fun add(i: Int) {
+                val line = lines[i]
+                val header = headers[sectionOf[i]]
+                printed[i] = true
+                printedNodes++
+                lineChars += escapedLength(nodeLine(line, "", hidden = 0) { m -> if (m == header.model) null else "" })
+                outputLines++
+                if (line.empty != null) {
+                    lineChars += escapedLength(emptyLineText(line))
+                    outputLines++
+                }
+                hiddenChars += hiddenLength(line.descendants)
+                header.conceptLines.merge(line.concept, 1, Int::plus)
+                line.references.forEachIndexed { pos, ref ->
+                    val m = ref.model ?: return@forEachIndexed
+                    if (m == header.model) return@forEachIndexed
+                    header.refsTo.merge(m, 1, Int::plus)
+                    header.firstRef.merge(m, (i.toLong() shl 20) + pos, ::minOf)
+                }
+                header.changed()
+            }
+
+            fun size(): Long {
+                var chars = preambleChars + lineChars + hiddenChars + escapedLength(cutLine(printedNodes))
+                var headerLines = preambleLines + 1
+                for (header in headers) {
+                    chars += header.chars()
+                    headerLines += header.lineCount
+                }
+                return 2 + chars + 2L * (headerLines + outputLines - 1)
+            }
+
+            lines.indices.filter { lines[it].depth == 0 }.forEach(::add)
+            if (size() > limit) return null
+            for (v in lines.indices.sortedBy { lines[it].depth }) {
+                val kids = children[v]
+                if (kids.isEmpty()) continue
+                hiddenChars -= hiddenLength(lines[v].descendants) - hiddenLength(lines[v].skipped)
+                kids.forEach(::add)
+                if (size() > limit) {
+                    kids.forEach { printed[it] = false }
+                    break
+                }
+            }
+            return printed
         }
     }
 
@@ -140,36 +330,91 @@ class AgenticViewRenderer(
     private val deprecatedFeatures = HashMap<SConceptFeature, Boolean>()
     private val legend = HashMap<ConceptKey, List<String>>()
     private val unloaded = LinkedHashMap<ConceptKey, SAbstractConcept>()
-    private var treeDepth = 0
+    private val codeConcepts = HashMap<SAbstractConcept, Boolean>()
+    private var codeText: ((SNode) -> String?)? = null
 
-    /** Walks [root]'s subtree; [nodeDepth] `-1` describes every level, `n` describes `n` levels and only counts the rest. */
-    fun render(root: SNode, nodeDepth: Int): Rendering {
+    /** The code nodes that [codeText] had no text for, printed as node lines. */
+    var textless = 0
+        private set
+
+    /**
+     * Walks [root]'s subtree; [nodeDepth] `-1` describes every level, `n` describes `n` levels and only counts the rest.
+     * With [codeText], a statement or expression that is the printed node or whose parent is neither is one line with
+     * the text [codeText] gives for it, followed by the attributes in its subtree; a null text prints its tree.
+     */
+    fun render(root: SNode, nodeDepth: Int, codeText: ((SNode) -> String?)? = null): Rendering {
+        this.codeText = codeText
         val model = root.model?.let { PersistenceFacade.getInstance().asString(it.reference) } ?: ""
         root.model?.let { checkForeign(model, it) }
-        val below = visit(root, 0, null, if (nodeDepth < 0) Int.MAX_VALUE else nodeDepth)
-        return Rendering(model, lines, below + 1, treeDepth, foreignModels, legend, unloaded)
+        val below = visit(root, 0, null, levels(nodeDepth), inCode = false)
+        return Rendering(model, lines, below + 1, foreignModels, legend, unloaded)
     }
 
-    private fun visit(node: SNode, depth: Int, label: String?, limit: Int): Int {
-        treeDepth = maxOf(treeDepth, depth)
-        val (line, children) = describe(node, depth, label)
+    /**
+     * Walks every root of each of [models], in model order, one section per model; [nodeDepth] applies below each
+     * root. [module] names the module the models belong to, for the `# module` line.
+     */
+    fun render(models: List<SModel>, nodeDepth: Int, module: String? = null): Rendering {
+        val sections = ArrayList<Section>()
+        var total = 0
+        for (model in models) {
+            val ref = PersistenceFacade.getInstance().asString(model.reference)
+            checkForeign(ref, model)
+            sections += Section(ref, lines.size)
+            for (root in model.rootNodes) total += 1 + visit(root, 0, null, levels(nodeDepth), inCode = false)
+        }
+        return Rendering(sections, lines, total, foreignModels, legend, unloaded, module?.let { "# module $it | ${models.size} models" })
+    }
+
+    private fun levels(nodeDepth: Int): Int = if (nodeDepth < 0) Int.MAX_VALUE else nodeDepth
+
+    /** [inCode]: the parent is a statement or expression, so a code node is part of its parent's text. */
+    private fun visit(node: SNode, depth: Int, label: String?, limit: Int, inCode: Boolean): Int {
+        val code = codeText != null && isCode(node.concept)
+        val text = if (code && !inCode) codeText?.invoke(node) else null
+        if (code && !inCode && text == null) textless++
+        val (line, children) = describe(node, depth, label, text)
         lines += line
+        if (text != null) return collapse(node, line, limit)
         var count = 0
         for ((child, childLabel) in children) {
-            count += 1 + if (depth + 1 > limit) countBelow(child, depth + 1) else visit(child, depth + 1, childLabel, limit)
+            count += 1 + if (depth + 1 > limit) countBelow(child) else visit(child, depth + 1, childLabel, limit, code)
         }
         line.descendants = count
         return count
     }
 
-    private fun countBelow(node: SNode, depth: Int): Int {
-        treeDepth = maxOf(treeDepth, depth)
-        return node.children.sumOf { 1 + countBelow(it, depth + 1) }
+    /**
+     * [line] of a code node, with its text; its child lines are the attributes of its subtree in document order, those
+     * of a node below it labelled `on #<id>` with the id of the annotated node.
+     */
+    private fun collapse(node: SNode, line: Line, limit: Int): Int {
+        val attributes = ArrayList<Pair<SNode, String>>()
+        fun collect(n: SNode) {
+            val (own, other) = n.children.partition { it.containmentLink == SNodeUtil.link_BaseConcept_smodelAttribute }
+            val on = if (n == node) "" else " on #" + escapeNodeId(n.nodeId.toString())
+            own.forEach { attributes += it to attributeLabel(it) + on }
+            other.forEach(::collect)
+        }
+        collect(node)
+        var shown = 0
+        for ((attribute, label) in attributes) {
+            shown += 1 + if (line.depth + 1 > limit) countBelow(attribute) else visit(attribute, line.depth + 1, label, limit, inCode = false)
+        }
+        line.descendants = countBelow(node)
+        line.skipped = line.descendants - shown
+        return line.descendants
     }
+
+    private fun isCode(concept: SAbstractConcept): Boolean =
+        codeConcepts.getOrPut(concept) { concept.isSubConceptOf(STATEMENT) || concept.isSubConceptOf(EXPRESSION) }
+
+    private fun countBelow(node: SNode): Int = node.children.sumOf { 1 + countBelow(it) }
 
     private class Feature(val feature: SConceptFeature, val format: (String) -> String)
 
-    private fun describe(node: SNode, depth: Int, label: String?): Pair<Line, List<Pair<SNode, String>>> {
+    /** [text]: the text of a code line, which shows the node's children, so its `empty:` line has no children group. */
+    private fun describe(node: SNode, depth: Int, label: String?, text: String?): Pair<Line, List<Pair<SNode, String>>> {
         val concept = node.concept
         val loaded = concept.isValid
         val key = ConceptKey(concept.language.qualifiedName, concept.name)
@@ -177,6 +422,7 @@ class AgenticViewRenderer(
         legend.getOrPut(key) { deprecatedLegend(concept) }
 
         var name: String? = null
+        var nameComputed = false
         val storedProps = ArrayList<Feature>()
         val starredProps = ArrayList<Feature>()
         val emptyProps = ArrayList<Feature>()
@@ -199,6 +445,10 @@ class AgenticViewRenderer(
             } else if (!hidden && loaded) {
                 val value = defaultEnumLiteral(prop) ?: display
                 when {
+                    !bool && !value.isNullOrEmpty() && prop == SNodeUtil.property_INamedConcept_name -> {
+                        name = value
+                        nameComputed = true
+                    }
                     bool -> starredProps += Feature(prop) { "$it=${if (value.isNullOrEmpty()) "false" else token(value)}*" }
                     !value.isNullOrEmpty() -> starredProps += Feature(prop) { "$it=${propertyValue(prop, value)}*" }
                     else -> emptyProps += Feature(prop) { it }
@@ -265,10 +515,12 @@ class AgenticViewRenderer(
             concept = key,
             id = escapeNodeId(node.nodeId.toString()),
             name = name,
+            nameComputed = nameComputed,
             properties = (storedProps + starredProps).map { it.text() },
             references = storedRefs.map { (link, make) -> make(displayName.getValue(link)) },
             flags = if (loaded) emptyList() else listOf("!conceptNotLoaded"),
-            empty = emptyLine(emptyProps.map { it.text() }, emptyRefs.map { it.text() }, emptyChildren.map { it.text() }),
+            empty = emptyLine(emptyProps.map { it.text() }, emptyRefs.map { it.text() }, if (text == null) emptyChildren.map { it.text() } else emptyList()),
+            text = text,
         )
         val children = ArrayList<Pair<SNode, String>>()
         attributes.forEach { children += it to attributeLabel(it) }
@@ -327,6 +579,12 @@ class AgenticViewRenderer(
         private val CHILD_ATTRIBUTE = MetaAdapterFactory.getConcept(
             0xceab519525ea4f22uL.toLong(), 0x9b92103b95ca8c0cuL.toLong(), 0x9d98713f247885aL, "jetbrains.mps.lang.core.structure.ChildAttribute"
         )
+        private val STATEMENT = MetaAdapterFactory.getConcept(
+            0xf3061a5392264cc5uL.toLong(), 0xa443f952ceaf5816uL.toLong(), 0xf8cc56b215L, "jetbrains.mps.baseLanguage.structure.Statement"
+        )
+        private val EXPRESSION = MetaAdapterFactory.getConcept(
+            0xf3061a5392264cc5uL.toLong(), 0xa443f952ceaf5816uL.toLong(), 0xf8c37f506fL, "jetbrains.mps.baseLanguage.structure.Expression"
+        )
         private val PROPERTY_ATTRIBUTE_GET_PROPERTY = SMethodIdV2.create("getProperty", 1341860900488756504L, 0x553941aeb020c32eL)
         private val LINK_ATTRIBUTE_GET_LINK = SMethodIdV2.create("getLink", 1341860900489573894L, 0x553941aeb020c32eL)
         private val CHILD_ATTRIBUTE_GET_LINK = SMethodIdV2.create("getLink", 709746936026609871L, 0x553941aeb020c32eL)
@@ -338,6 +596,11 @@ class AgenticViewRenderer(
 
         /** The length `finalizeResult` measures: the text as a JSON string. */
         fun jsonLength(text: String): Int = jsonString(text).length
+
+        /** [jsonLength] without the quotes: escaping is per character, so the lengths of the parts of a text add up. */
+        private fun escapedLength(text: String): Int = jsonLength(text) - 2
+
+        private fun digits(n: Int): Int = n.toString().length
 
         fun propertyValue(prop: SProperty, value: String): String = propertyValue(prop.type, value)
 
@@ -387,33 +650,24 @@ class AgenticViewRenderer(
             return "-> ${ref.role}=$target$model$id" + ref.flags.joinToString("") { " $it" }
         }
 
-        /** One node line; [showHidden] adds `(+N)` for a node whose descendants are not printed. */
-        fun nodeLine(line: Line, concept: String, showHidden: Boolean, alias: (String) -> String?): String {
+        /**
+         * One node line; [showHidden] adds `(+N)` for a node whose children are not printed; a code line whose attribute
+         * lines are printed ends with the count of its other descendants.
+         */
+        fun nodeLine(line: Line, concept: String, showHidden: Boolean, alias: (String) -> String?): String =
+            nodeLine(line, concept, if (showHidden) line.descendants else line.skipped, alias)
+
+        private fun nodeLine(line: Line, concept: String, hidden: Int, alias: (String) -> String?): String {
             val parts = ArrayList<String>()
             parts += (line.label?.let { "$it: " } ?: "") + concept
             parts += "#" + line.id
-            line.name?.let { parts += token(it) }
+            line.name?.let { parts += token(it) + if (line.nameComputed) "*" else "" }
             parts += line.properties
             line.references.forEach { parts += referenceText(it, alias) }
             parts += line.flags
-            if (showHidden && line.descendants > 0) parts += "(+${line.descendants})"
+            line.text?.let { parts += "= " + jsonString(it) }
+            if (hidden > 0) parts += "(+$hidden)"
             return "  ".repeat(line.depth) + parts.joinToString(" ")
-        }
-
-        /**
-         * The depth to print (P1.4): [effectiveDepth] when its printout fits [limit], else the largest smaller depth
-         * whose printout fits, never below 1; null when none does. [sizeAt] is the measured size of the printout at a
-         * depth. The scan runs upward from 1 and stops at the first depth that does not fit, so the large printouts
-         * below the cut are never measured in full.
-         */
-        fun selectCutDepth(effectiveDepth: Int, limit: Int, sizeAt: (Int) -> Int): Int? {
-            if (sizeAt(effectiveDepth) <= limit) return effectiveDepth
-            var fits: Int? = null
-            for (depth in 1 until effectiveDepth) {
-                if (sizeAt(depth) > limit) break
-                fits = depth
-            }
-            return fits
         }
     }
 }

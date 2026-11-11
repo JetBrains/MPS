@@ -476,8 +476,33 @@ class SkillScriptsDriftTest : McpIntegrationTestBase() {
         assertTrue("children are indented under their role: $deep", deep.contains("    uses: ResourceRef 2518891257436048006 -> resource=ScaleSheets"))
 
         val withDefault = tree(example("get_project_structure_node_deep.json"))
-        assertTrue("a default-valued enum is omitted: ${withDefault.first()}",
-                   withDefault.first().startsWith("Course ") && !withDefault.first().contains("level="))
+        assertEquals("a default-valued enum is printed with a star",
+                     "Course 2518891257436048011 credits=2 level=INTRO* name=\"Score Reading\"", withDefault.first())
+
+        // A target in another model than its node names that model; one in the same model does not.
+        fun treeWithTarget(targetReference: String): List<String> {
+            val crossModel = JsonParser.parseString(Files.readString(Path.of(example("print_node_deep.json")))).asJsonObject
+            crossModel.getAsJsonObject("data").getAsJsonArray("children")
+                .flatMap { it.asJsonObject.getAsJsonArray("nodes") }.map { it.asJsonObject }
+                .single { it.get("reference").asString.endsWith("/2518891257436048028") }
+                .getAsJsonArray("references")[0].asJsonObject
+                .addProperty("targetReference", targetReference)
+            val crossDump = Files.createTempFile("tree-cross", ".json")
+            generatedFiles.add(crossDump)
+            Files.writeString(crossDump, crossModel.toString())
+            return tree(crossDump.toString())
+        }
+        val prerequisite = "  prerequisites: CourseRef 2518891257436048028 -> course=\"Score Reading\""
+        val cross = treeWithTarget("r:00000000-0000-0000-0000-000000000001(com.example.other)/42")
+        assertTrue("a target in another model carries its model name: $cross",
+                   cross.contains("$prerequisite@com.example.other"))
+        assertTrue("a target in the node's model has no model name: $cross",
+                   cross.contains("    uses: ResourceRef 2518891257436048006 -> resource=ScaleSheets"))
+        val stub = treeWithTarget("6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:java.lang(JDK/)/~String")
+        assertTrue("a java stub target names its package, not its module: $stub", stub.contains("$prerequisite@java.lang"))
+        val transient = treeWithTarget("i:10000009(mcp.study.kitchen@transient12/mcp.study.kitchen.samples@6_7)/9")
+        assertTrue("a module-qualified target drops the module: $transient",
+                   transient.contains("$prerequisite@mcp.study.kitchen.samples@6_7"))
 
         val cut = tree(example("print_node_deep.json"), "--depth", "0")
         assertEquals(listOf("Course 2518891257436048003 credits=4 level=CORE name=\"Sight Reading\" (+5 children)"), cut)

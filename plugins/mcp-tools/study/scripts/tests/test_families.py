@@ -185,6 +185,13 @@ class FamiliesTest(unittest.TestCase):
                        + check("a", NODE, NODE_CLEAN))
         self.assertCounts(f, C_root_after_clean_model=1)
 
+    def test_t8_a_compact_structure_read_keeps_the_clean_verdict(self) -> None:
+        f = self.count(check("m", MODEL, MODEL_CLEAN)
+                       + [tool("p", "mcp__mps__mps_mcp_get_compact_project_structure", {"startingPoint": MODEL}),
+                          result("p", ok("text"))]
+                       + check("a", NODE, NODE_CLEAN))
+        self.assertCounts(f, C_root_after_clean_model=1)
+
     def test_t9_temp_file_answer_is_unknown(self) -> None:
         answer = ok("/tmp/mps-node-1.json", scope="model", rootsChecked=40)
         self.assertEqual("unknown", families.check_verdict(json.dumps(answer)))
@@ -445,6 +452,7 @@ class FamiliesTest(unittest.TestCase):
         for i, (name, inp) in enumerate([
                 ("mps_mcp_print_node", {"nodeReference": TRANSIENT_NODE}),
                 ("mps_mcp_get_project_structure", {"startingPoint": TRANSIENT_MODEL, "includeRootNodes": True}),
+                ("mps_mcp_get_compact_project_structure", {"startingPoint": TRANSIENT_MODEL}),
                 ("mps_mcp_query_nodes", {"operation": "FIND_INSTANCES", "parameters": {
                     "conceptRef": "jetbrains.mps.baseLanguage.structure.IntegerConstant", "scope": "models",
                     "models": [TRANSIENT_MODEL]}}),
@@ -460,7 +468,7 @@ class FamiliesTest(unittest.TestCase):
                 ("mps_mcp_query_nodes", {"operation": "FIND_INSTANCES", "parameters": {"scope": "models", "models": [SAMPLES]}}),
                 ("mps_mcp_update_node", {"nodeReference": TRANSIENT_NODE})]):
             events += [tool(f"r{i}", "mcp__mps__" + name, inp), result(f"r{i}", ok("x"))]
-        self.assertCounts(self.count(events), GN_transient_reads=6)
+        self.assertCounts(self.count(events), GN_transient_reads=7)
 
     def test_generation_is_read_only_for_check_verdict(self) -> None:
         f = self.count(check("m", MODEL, MODEL_CLEAN) + gen("t", "TRACE", BACKWARD)

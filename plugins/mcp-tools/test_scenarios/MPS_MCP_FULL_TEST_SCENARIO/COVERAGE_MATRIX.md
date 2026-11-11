@@ -6,11 +6,11 @@ parameters and enum values covered, the covering `Step PP.NN` ids, and the valid
 check (follow-up query / structure dump / file read), **F** = detailed payload read (inline
 `data`, or the temp file when `data` is a path).
 
-## A. MPS MCP tools (`mps_mcp_*`) — all 45
+## A. MPS MCP tools (`mps_mcp_*`) — all 46
 
 The authoritative list is the `@McpTool` methods of the toolsets registered in
 `plugins/mcp-tools/META-INF/plugin.xml` (`plugins/mcp-tools/src/jetbrains/mps/agents/mcp/tools/`).
-Rows 37–45 were added after the original 36; rows 38–40 and 43–45 are not exercised by this
+Rows 37–46 were added after the original 36; rows 38–40 and 43–45 are not exercised by this
 scenario (see the notes below the table).
 
 | # | Tool | Purpose | Valid? | Invalid? | Parameters / enum values covered | Steps | Val |
@@ -60,6 +60,7 @@ scenario (see the notes below the table).
 | 43 | `generation` | Generation plan, transient models, trace | (○) | (○) | — | — (see below) | — |
 | 44 | `run_migrations` | Run pending migrations | (○) | (○) | — | — (see below) | — |
 | 45 | `read_ide_log` | Read the IDE log | (○) | (○) | — | — (see below) | — |
+| 46 | `get_compact_project_structure` | Read a model or module as AGENTIC VIEW text | ✅ | — | `startingPoint` = model / module; `nodeDepth`=0 | 07.41 | F |
 
 (–) under "Invalid?" = no invalid case included for that tool because none is meaningful/safe
 beyond what shared dispatch already covers. ▲ for `query_structure`: the unknown-operation
@@ -123,6 +124,7 @@ the scenario, and part 14 must still snapshot the project. Opening and closing p
 - **`alter_nodes.operation`**: MOVE_CHILD ✔(07.32), MOVE_NODE_TO_PARENT ✔(07.33), MAKE ✔(06.13/06.24/06.25), FIX_REFERENCES ✔(07.34)
 - **`alter_nodes MAKE` targets**: modules+rebuild ✔(06.13), models ✔(06.24), wholeProject ✔(06.25)
 - **`update_node.operation × kind`**: ADD/CHILD ✔(07.10), SET/CHILD ✔(07.24), SET/CHILD null-delete ✔(07.25), SET/PROPERTY ✔(07.18), SET/PROPERTY null-delete ✔(07.23), SET/REFERENCE ✔(07.19), SET/REFERENCE null-delete ✔(07.22); invalid ADD/PROPERTY ✔(07.26), ADD/REFERENCE ✔(07.27), op DELETE ✔(07.28)
+- **`get_compact_project_structure.startingPoint`**: model ✔(07.41), module ✔(07.41); **`nodeDepth`**: 0 ✔(07.41)
 - **`print_node.format`**: JSON ✔(07.06), HTML ✔(07.09), PLAIN TEXT ✔(07.08), IMAGE ✔(07.09a), AGENTIC VIEW ✔(07.09b); **`print_node.nodeDepth`**: 0 ✔(07.09b); **`print_node.editorHints`**: `[]` ✔(07.09a), unknown value ✔(07.09a), ignored for JSON ✔(07.09a); **`deep`**: true ✔(07.06), false ✔(07.07)
 - **`check_root_node_problems.onlyNodesWithProblems`**: true ✔(07.29), false ✔(07.30)
 - **`check_root_node_problems` report fields**: problem `rules` ✔(10.24.s2), `details.uncheckedSubtrees` with problems ✔(10.24.s4) and on a clean verdict + `warnings` ✔(10.24.s5), clean verdict without unchecked subtrees ✔(10.24.s6)

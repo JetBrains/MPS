@@ -206,8 +206,8 @@ Send the array (as a string) as `json`, same other args as 07.03.
 ```
 - Validation: `ok==true`; `data` is the path of a `.png` file that exists; `details.image` has
   `width`, `height`, `mediaType:"image/png"`; `details.editorHints.source=="request"` with
-  `applied==[]` and full-form `available` entries. Repeat with `format:"PLAIN TEXT"` and
-  `editorHints:["noSuchHint"]` → `ok==false`, `code==INVALID_REQUEST`; with `format:"JSON"` and
+  `applied==[]`, compact `available` (FQ-name strings) and `hiddenCount`. Repeat with `format:"PLAIN TEXT"` and
+  `editorHints:["noSuchHint"]` → `ok==false`, `code==INVALID_REQUEST` whose `details.editorHints.available` holds the full-form objects; with `format:"JSON"` and
   `editorHints:[]` → `ok==true` plus a warning that `editorHints` is ignored.
 
 ---
@@ -715,5 +715,23 @@ Exercises `includeNodes` with a `startingPoint` (one model).
 ```
 - Validation: `ok==true`; read the file if `data` is a path. The payload contains the full node trees of the roots
   (states, transitions, events inlined). Exercises `includeNodes`.
+
+---
+
+### Step 07.41 — Compact project structure: the model as AGENTIC VIEW text
+
+```json
+{
+  "tool": "mps_mcp_get_compact_project_structure",
+  "arguments": { "projectPath": "{{PROJECT_DIR}}", "startingPoint": "mcp.test.sandbox.model" }
+}
+```
+- Validation: `ok==true`; `data` is inline text whose first line starts with `# AGENTIC VIEW 1 | model m0=` and names
+  `mcp.test.sandbox.model`; the depth-0 lines (no leading spaces, not starting with `#`) are the model's roots in model order,
+  `GearboxStateChart` and `OtherStateChart` among them, each with `#<id>`; `details.agenticView` has `models==1`, `roots`
+  equal to the number of root lines, and `nodes==printedNodes`. Repeat with `nodeDepth:0` → only root lines; a root with
+  descendants ends in `(+N)`, and `printedNodes==roots`. Repeat with `startingPoint:"mcp.test.sandbox"` (the module) → the first
+  line is `# module mcp.test.sandbox | <N> models`, followed by one `# AGENTIC VIEW 1` section per model.
+  Exercises `startingPoint` (model, module) and `nodeDepth`.
 
 Proceed to `08_queries_and_navigation.md`.

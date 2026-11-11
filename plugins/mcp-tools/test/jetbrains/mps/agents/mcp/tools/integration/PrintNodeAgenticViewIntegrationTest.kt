@@ -11,8 +11,6 @@ import jetbrains.mps.project.modules.LanguageProducer
 import jetbrains.mps.smodel.SNodeUtil
 import jetbrains.mps.smodel.adapter.ids.MetaIdHelper
 import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory
-import jetbrains.mps.smodel.adapter.structure.types.SConstrainedStringDatatypeAdapter
-import jetbrains.mps.smodel.adapter.structure.types.SPrimitiveTypes
 import jetbrains.mps.util.StringUtil
 import org.jetbrains.mps.openapi.language.SEnumeration
 import org.jetbrains.mps.openapi.language.SProperty
@@ -33,55 +31,11 @@ import java.io.File
  * `mps_mcp_print_node` format AGENTIC VIEW (plan `docs/AGENTIC_VIEW-plan.md`, P2): parity with JSON deep under
  * the mapping of §2.1, read back with a parser of the §2 grammar, and the format's own rules.
  */
-class PrintNodeAgenticViewIntegrationTest : McpIntegrationTestBase() {
-
-    private val toolset = JetBrainsMPSNodeMcpToolset()
-
-    // ── calls ─────────────────────────────────────────────────────────────────────────────
-
-    private fun agentic(
-        ref: String,
-        nodeDepth: Int = -1,
-        maxInlineBytes: Int = 1_000_000,
-        format: String = "AGENTIC VIEW",
-        editorHints: String? = null,
-    ): JsonObject = JsonParser.parseString(runTool(toolset) {
-        it.mps_mcp_print_node(ref, format = format, maxInlineBytes = maxInlineBytes, editorHints = editorHints?.let(::JsonOrText), nodeDepth = nodeDepth)
-    }).asJsonObject
-
-    private fun okText(envelope: JsonObject): String {
-        assertTrue("expected an ok envelope: $envelope", envelope.get("ok").asBoolean)
-        return envelope.get("data").asString
-    }
-
-    private fun text(ref: String, nodeDepth: Int = -1): String = okText(agentic(ref, nodeDepth))
-
-    private fun jsonDeep(ref: String): JsonObject =
-        payloadObjectFromOkData(runTool(toolset) { it.mps_mcp_print_node(ref, deep = true, maxInlineBytes = 1_000_000) })
-
-    private fun warnings(envelope: JsonObject): List<String> = envelope.getAsJsonArray("warnings")?.map { it.asString } ?: emptyList()
-
-    private fun agenticDetails(envelope: JsonObject): JsonObject =
-        envelope.getAsJsonObject("details")?.getAsJsonObject("agenticView") ?: error("no details.agenticView: $envelope")
+class PrintNodeAgenticViewIntegrationTest : AgenticViewIntegrationTestBase() {
 
     // ── fixtures ──────────────────────────────────────────────────────────────────────────
 
-    private fun refOf(node: SNode): String = readOnRepo { PersistenceFacade.getInstance().asString(node.reference) }
-
     private fun property(node: SNode, name: String): SProperty = readOnRepo { node.concept.properties.single { it.name == name } }
-
-    /** A BaseLanguage class root parsed from `public class [name] { [body] }` into a fresh solution model. */
-    private fun classRoot(name: String, body: String): SNode {
-        val model = createModel(createSolution(), "agentic.code${System.nanoTime()}")
-        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
-            it.mps_mcp_parse_java_and_insert(
-                """{"code":"public class $name { $body }","featureKind":"CLASS",
-                    "insert":{"mode":"root","modelRef":"${modelRefOf(model)}"}}"""
-            )
-        }
-        assertTrue("parse_java_and_insert: $response", JsonParser.parseString(response).asJsonObject.get("ok").asBoolean)
-        return readOnRepo { model.rootNodes.single { it.name == name } }
-    }
 
     private fun subtree(node: SNode): List<SNode> = listOf(node) + node.children.flatMap { subtree(it) }
 
@@ -130,257 +84,6 @@ class PrintNodeAgenticViewIntegrationTest : McpIntegrationTestBase() {
             model.addRootNode(root)
         }
         return GhostFixture(root, conceptName)
-    }
-
-    // ── the §2 grammar, read back ────────────────────────────────────────────────────────
-
-    private class PProp(val value: String, val starred: Boolean, val flags: MutableList<String> = mutableListOf())
-    private class PRef(val target: String?, val alias: String?, val id: String?, val flags: MutableList<String> = mutableListOf())
-
-    private class PNode(val depth: Int, val label: String?, val concept: String, val id: String) {
-        var name: String? = null
-        val props = LinkedHashMap<String, PProp>()
-        val refs = LinkedHashMap<String, PRef>()
-        val flags = mutableListOf<String>()
-        var hidden = 0
-        val empty = HashMap<String, List<String>>()
-        val children = mutableListOf<PNode>()
-        val role: String? get() = label?.substringBefore(' ')?.substringBefore('[')?.let { if (it.startsWith("@")) it else it.substringBefore('@') }
-        val index: Int? get() = label?.substringBefore(' ')?.takeIf { it.endsWith("]") }?.substringAfter('[')?.removeSuffix("]")?.toInt()
-
-        fun all(): List<PNode> = listOf(this) + children.flatMap { it.all() }
-    }
-
-    private class Parsed(val header: List<String>, val models: Map<String, String>, val root: PNode)
-
-    private fun tokens(s: String): List<String> {
-        val out = mutableListOf<String>()
-        val sb = StringBuilder()
-        var i = 0
-        while (i < s.length) {
-            val c = s[i]
-            if (c == ' ') {
-                if (sb.isNotEmpty()) out += sb.toString().also { sb.clear() }
-                i++
-            } else if (c == '"') {
-                val start = i++
-                while (s[i] != '"') i += if (s[i] == '\\') 2 else 1
-                sb.append(s, start, ++i)
-            } else {
-                sb.append(c)
-                i++
-            }
-        }
-        if (sb.isNotEmpty()) out += sb.toString()
-        return out
-    }
-
-    private fun unquote(v: String): String = if (v.startsWith("\"")) JsonParser.parseString(v).asString else v
-
-    private fun parseRef(token: String): Pair<String, PRef> {
-        val role = token.substringBefore('=')
-        val rest = token.substringAfter('=')
-        val (target, remainder) = if (rest.startsWith("\"")) {
-            var i = 1
-            while (rest[i] != '"') i += if (rest[i] == '\\') 2 else 1
-            unquote(rest.substring(0, i + 1)) to rest.substring(i + 1)
-        } else {
-            val cut = rest.indexOfFirst { it == '@' || it == '#' }.let { if (it < 0) rest.length else it }
-            rest.substring(0, cut) to rest.substring(cut)
-        }
-        val alias = if (remainder.startsWith("@")) remainder.substring(1).substringBefore('#') else null
-        val id = if ('#' in remainder) remainder.substringAfter('#') else null
-        return role to PRef(if (target == "?") null else target, alias, id)
-    }
-
-    /** An `empty:` line, not the node line of a child in a role named `empty` (`empty: Concept #id …`). */
-    private fun isEmptyLine(content: String): Boolean {
-        if (!content.startsWith("empty: ")) return false
-        val t = tokens(content)
-        return t[1] in setOf("properties", "references", "children") && t.size > 2 && !t[2].startsWith("#")
-    }
-
-    private fun parse(text: String): Parsed {
-        val lines = text.split("\n")
-        val header = lines.takeWhile { it.startsWith("# ") }
-        val models = LinkedHashMap<String, String>()
-        models["m0"] = header[0].substringAfter("model m0=").substringBefore(" | ").removeSuffix(" !foreign")
-        header.firstOrNull { it.startsWith("# models ") }?.removePrefix("# models ")?.split(" ")?.filter { it != "!foreign" }
-            ?.forEach { models[it.substringBefore('=')] = it.substringAfter('=') }
-        val stack = ArrayList<PNode>()
-        var root: PNode? = null
-        for (line in lines.drop(header.size)) {
-            val depth = (line.length - line.trimStart(' ').length) / 2
-            val content = line.trimStart(' ')
-            if (isEmptyLine(content)) {
-                val owner = stack[depth - 1]
-                content.removePrefix("empty: ").split("; ").forEach { owner.empty[it.substringBefore(' ')] = it.substringAfter(' ').split(" ") }
-                continue
-            }
-            val t = tokens(content)
-            var k = 0
-            var label: String? = null
-            if (!t[1].startsWith("#")) {
-                val end = t.indexOfFirst { it.endsWith(":") }
-                label = t.subList(0, end + 1).joinToString(" ").removeSuffix(":")
-                k = end + 1
-            }
-            val node = PNode(depth, label, t[k], t[k + 1].removePrefix("#"))
-            k += 2
-            if (k < t.size && (t[k].startsWith("\"") || ('=' !in t[k] && t[k] != "->" && !t[k].startsWith("!") && !t[k].startsWith("(+")))) {
-                node.name = unquote(t[k++])
-            }
-            var last: MutableList<String>? = null
-            while (k < t.size) {
-                val tok = t[k++]
-                when {
-                    tok == "->" -> parseRef(t[k++]).let { (role, r) -> node.refs[role] = r; last = r.flags }
-                    tok == "!conceptNotLoaded" -> node.flags += tok
-                    tok.startsWith("!") -> last!!.add(tok)
-                    tok.startsWith("(+") -> node.hidden = tok.removePrefix("(+").removeSuffix(")").toInt()
-                    else -> {
-                        val value = tok.substringAfter('=')
-                        val p = PProp(value.removeSuffix("*"), value.endsWith("*"))
-                        node.props[tok.substringBefore('=')] = p
-                        last = p.flags
-                    }
-                }
-            }
-            while (stack.size > depth) stack.removeAt(stack.size - 1)
-            if (depth == 0) root = node else stack[depth - 1].children += node
-            stack += node
-        }
-        return Parsed(header, models, root!!)
-    }
-
-    // ── parity with JSON deep (§2.1) ─────────────────────────────────────────────────────
-
-    private fun splitRef(ref: String): Pair<String, String> {
-        val i = ref.lastIndexOf(")/")
-        return ref.substring(0, i + 1) to StringUtil.unescapeRefChars(ref.substring(i + 2))
-    }
-
-    private fun assertParity(ref: String) {
-        val parsed = parse(text(ref))
-        assertNode(jsonDeep(ref), parsed.root, parsed)
-    }
-
-    private fun matches(key: String, name: String) = key == name || key.startsWith("$name@")
-
-    private fun isDeprecatedDeclaration(prop: SProperty): Boolean =
-        prop.sourceNode?.resolve(myProject.repository)?.getChildren(SNodeUtil.link_BaseConcept_smodelAttribute)
-            ?.any { it.concept.name == "DeprecatedNodeAnnotation" } == true
-
-    private fun assertNode(j: JsonObject, p: PNode, parsed: Parsed) {
-        val where = "${j.get("concept").asString} ${j.get("reference").asString}"
-        val (model, id) = splitRef(j.get("reference").asString)
-        assertEquals(where, parsed.models["m0"], model)
-        assertEquals(where, id, StringUtil.unescapeRefChars(p.id))
-        assertTrue("$where: concept ${p.concept}", p.concept == j.get("concept").asString || p.concept.endsWith("." + j.get("concept").asString))
-        assertEquals(where, j.has("conceptLoaded") && !j.get("conceptLoaded").asBoolean, "!conceptNotLoaded" in p.flags)
-
-        val node = resolveNodeRef(j.get("reference").asString)
-        // Two properties may share a name (ClassConcept.isDeprecated); without an @Owner suffix only one of them is
-        // printed, the deprecated one only with !deprecated.
-        fun liveProperty(key: String, deprecatedFlag: Boolean): SProperty? = readOnRepo {
-            val name = key.substringBefore('@')
-            val owner = key.substringAfter('@', "")
-            val candidates = node.concept.properties.filter { it.name == name && (owner.isEmpty() || it.owner.name == owner) }
-            candidates.singleOrNull() ?: candidates.singleOrNull { isDeprecatedDeclaration(it) == deprecatedFlag }
-        }
-        val explained = HashSet<String>()
-        for (e in j.getAsJsonArray("properties").map { it.asJsonObject }) {
-            val name = e.get("name").asString
-            val value = e.get("value").asString
-            val isDefault = e.has("isDefault") && e.get("isDefault").asBoolean
-            val declared = !(e.has("declared") && !e.get("declared").asBoolean)
-            val deprecated = e.get("deprecated")?.asString?.startsWith("true") == true
-            if (name == "name" && declared && p.name != null) {
-                assertEquals(where, value, p.name)
-                continue
-            }
-            val hit = p.props.entries.firstOrNull { (k, v) -> matches(k, name) && unquote(v.value) == value && k !in explained }
-            if (hit == null) {
-                val unset = readOnRepo {
-                    node.concept.properties.filter { it.name == name }.any { !SNodeAccessUtil.hasProperty(node, it) || node.getProperty(it).isNullOrEmpty() }
-                }
-                assertTrue("$where: JSON property $name=$value has no counterpart", deprecated && unset)
-                continue
-            }
-            explained += hit.key
-            if (isDefault) assertTrue("$where: $name is a default", hit.value.starred)
-            assertEquals("$where: $name declared", !declared, "!undeclared" in hit.value.flags)
-            if (deprecated) assertTrue("$where: deprecated $name is printed only when stored", !hit.value.starred && "!deprecated" in hit.value.flags)
-        }
-        for ((k, v) in p.props) {
-            if (k !in explained) {
-                assertTrue("$where: $k is explained only as a boolean false or a raw value", v.value == "false" || "!raw" in v.flags)
-            }
-            if ("!undeclared" in v.flags) continue
-            val prop = liveProperty(k, "!deprecated" in v.flags) ?: error("$where: printed $k is no property of the concept")
-            assertEquals("$where: $k has a star exactly when it is not stored", !readOnRepo { SNodeAccessUtil.hasProperty(node, prop) }, v.starred)
-            val type = readOnRepo { prop.type }
-            if (type == SPrimitiveTypes.STRING || type is SConstrainedStringDatatypeAdapter || "!raw" in v.flags) {
-                assertTrue("$where: the string value of $k is quoted: ${v.value}", v.value.startsWith("\""))
-            }
-        }
-
-        val jRefs = j.getAsJsonArray("references").map { it.asJsonObject }
-        assertEquals(where, jRefs.size, p.refs.size)
-        for (e in jRefs) {
-            val role = e.get("role").asString
-            val r = p.refs.entries.single { matches(it.key, role) }.value
-            if (e.get("target").isJsonNull) {
-                assertNull(where, r.target)
-                assertTrue(where, "!unresolved" in r.flags)
-            } else {
-                assertEquals(where, e.get("target").asString, r.target)
-                assertFalse("$where: $role resolves", "!unresolved" in r.flags)
-            }
-            val targetReference = e.get("targetReference")?.takeUnless { it.isJsonNull }?.asString
-            if (targetReference != null && ")/" in targetReference) {
-                assertNotNull("$where: $role has a target id", r.id)
-                val targetModel = if (r.alias == null) parsed.models["m0"] else parsed.models[r.alias]
-                assertEquals("$where: $role", splitRef(targetReference), targetModel to StringUtil.unescapeRefChars(r.id!!))
-            }
-            assertEquals(where, e.has("declared") && !e.get("declared").asBoolean, "!undeclared" in r.flags)
-        }
-
-        val pAttributes = p.children.filter { it.label!!.startsWith("@") }
-        val pByRole = p.children.filterNot { it.label!!.startsWith("@") }.groupBy { it.role!! }
-        val jRoles = j.getAsJsonArray("children").map { it.asJsonObject }
-        for (jr in jRoles) {
-            val role = jr.get("role").asString
-            val nodes = jr.getAsJsonArray("nodes").map { it.asJsonObject }
-            when {
-                role == "smodelAttribute" -> {
-                    assertEquals(where, nodes.size, pAttributes.size)
-                    nodes.zip(pAttributes).forEach { (jn, pn) -> assertNode(jn, pn, parsed) }
-                }
-                nodes.isEmpty() -> assertTrue(
-                    "$where: required empty $role must be on the empty line: ${p.empty}",
-                    p.empty["children"].orEmpty().any { it.removeSuffix("!required").let { n -> matches(n, role) } && it.endsWith("!required") },
-                )
-                else -> {
-                    val kids = pByRole.entries.single { matches(it.key, role) }.value
-                    assertEquals("$where: $role", nodes.size, kids.size)
-                    val multiple = jr.get("cardinality")?.asString?.endsWith("n")
-                    kids.forEachIndexed { i, kid -> if (multiple == true) assertEquals(where, i, kid.index) }
-                    assertEquals(where, jr.has("declared") && !jr.get("declared").asBoolean, kids.all { "!undeclared" in it.label!! })
-                    nodes.zip(kids).forEach { (jn, pn) -> assertNode(jn, pn, parsed) }
-                }
-            }
-        }
-        for (role in pByRole.keys) assertTrue("$where: printed role $role is not in JSON", jRoles.any { matches(role, it.get("role").asString) })
-        fun emptyNames(group: String) = p.empty[group].orEmpty().map { it.removeSuffix("!required") }.toSet()
-        val printedProps = p.props.keys + listOfNotNull(p.name?.let { "name" })
-        assertTrue("$where: empty properties ${p.empty} vs $printedProps", emptyNames("properties").intersect(printedProps).isEmpty())
-        assertTrue("$where: empty references ${p.empty} vs ${p.refs.keys}", emptyNames("references").intersect(p.refs.keys).isEmpty())
-        assertTrue("$where: empty children ${p.empty} vs ${pByRole.keys}", emptyNames("children").intersect(pByRole.keys).isEmpty())
-        for (required in p.empty["children"].orEmpty().filter { it.endsWith("!required") }) {
-            val role = required.removeSuffix("!required")
-            assertTrue("$where: $role", jRoles.any { matches(role, it.get("role").asString) && it.getAsJsonArray("nodes").isEmpty })
-        }
     }
 
     // ── 1: parity ────────────────────────────────────────────────────────────────────────
@@ -634,38 +337,112 @@ class PrintNodeAgenticViewIntegrationTest : McpIntegrationTestBase() {
             assertTrue(nodes.filter { it.hidden > 0 }.all { it.depth == depth })
             assertEquals(total, agenticDetails(envelope).get("nodes").asInt)
             assertEquals(nodes.size, agenticDetails(envelope).get("printedNodes").asInt)
-            assertFalse("nodeDepth is not a size cut", agenticDetails(envelope).has("cutDepth"))
+            assertFalse("nodeDepth is not a size cut", agenticDetails(envelope).has("cut"))
+            assertFalse(okText(envelope).contains("\n# cut: "))
         }
         assertEquals(1, parse(text(ref, nodeDepth = 0)).root.all().size)
     }
 
     // ── 8: size cut and file ─────────────────────────────────────────────────────────────
 
+    private fun assertCut(envelope: JsonObject, budget: Int): List<PNode> {
+        val text = okText(envelope)
+        assertFalse("a cut, not a file: $text", File(text).isAbsolute)
+        assertTrue(AgenticViewRenderer.jsonLength(text) <= budget)
+        val details = agenticDetails(envelope)
+        assertTrue(details.toString(), details.get("cut").asBoolean)
+        assertFalse(details.has("cutDepth"))
+        val total = details.get("nodes").asInt
+        val printed = details.get("printedNodes").asInt
+        val wholeChars = details.get("wholeChars").asInt
+        assertTrue(text, text.contains("\n# cut: $printed of $total nodes printed (the whole printout is $wholeChars chars); " +
+            "print the \"(+N)\" nodes you need by their ids\n"))
+        val nodes = parse(text).root.all()
+        assertEquals(printed, nodes.size)
+        assertEquals("the (+N) counts add up to the total", total, nodes.size + nodes.sumOf { it.hidden })
+        for (node in nodes) {
+            assertTrue("a node is expanded with all its children or not at all", node.children.isEmpty() || node.hidden == 0 || node.text != null)
+        }
+        assertTrue(warnings(envelope).toString(), warnings(envelope).any { it.contains("cut to fit maxInlineBytes=$budget: $printed of $total nodes printed") })
+        return nodes
+    }
+
     @Test
-    fun `a small budget cuts by depth and a tiny one writes the raw text to a txt file`() {
+    fun `a small limit gives a cut, not a file, and a tiny one writes the raw text to a txt file`() {
         val ref = refOf(classRoot("Budget", "int total = 1 + 2; int other = 3;"))
         val full = text(ref)
         val budget = AgenticViewRenderer.jsonLength(full) - 1
         val cut = agentic(ref, maxInlineBytes = budget)
-        val cutText = okText(cut)
-        assertFalse("a cut, not a file: $cutText", File(cutText).isAbsolute)
-        assertTrue(AgenticViewRenderer.jsonLength(cutText) <= budget)
-        val details = agenticDetails(cut)
-        val cutDepth = details.get("cutDepth").asInt
-        assertTrue(cutText, cutText.contains("\n# cut at depth $cutDepth of "))
-        val nodes = parse(cutText).root.all()
-        assertEquals(details.get("nodes").asInt, nodes.size + nodes.sumOf { it.hidden })
-        assertTrue(warnings(cut).toString(), warnings(cut).any { it.contains("cut at depth $cutDepth") })
+        assertCut(cut, budget)
+        assertEquals(AgenticViewRenderer.jsonLength(full), agenticDetails(cut).get("wholeChars").asInt)
 
         val tiny = agentic(ref, maxInlineBytes = 100)
         val path = extractFilePathFromData(tiny.toString())
         assertTrue(path, path.endsWith(".txt"))
         assertEquals(full, File(path).readText())
-        assertFalse(agenticDetails(tiny).has("cutDepth"))
-        assertTrue(warnings(tiny).toString(), warnings(tiny).any { it.contains(".txt") })
+        assertFalse(agenticDetails(tiny).has("cut"))
+        assertTrue(warnings(tiny).toString(), warnings(tiny).any { it.contains("The node alone exceeds maxInlineBytes=100") && it.contains(".txt") })
     }
 
-    // ── 9: literals and editorHints ──────────────────────────────────────────────────────
+    @Test
+    fun `the cut fills the budget breadth-first and prints at least as many nodes as the uniform depth cut`() {
+        // About ten nodes per initialized field.
+        val ref = refOf(classRoot("WideBudget", (0 until 12).joinToString(" ") { "int f$it = 1 + 2 * $it;" }))
+        val total = agenticDetails(agentic(ref)).get("nodes").asInt
+        val depths = (0..8).map { d -> agentic(ref, nodeDepth = d) }
+        var beatUniform = false
+        for (budget in listOf(800, 1500, 2500, 3500, 5000)) {
+            val cut = agentic(ref, maxInlineBytes = budget)
+            if (!agenticDetails(cut).has("cut")) continue
+            val nodes = assertCut(cut, budget)
+            // A level is printed only when the one above it is printed in full: breadth-first order.
+            val deepest = nodes.maxOf { it.depth }
+            assertTrue(nodes.filter { it.depth < deepest - 1 }.all { it.hidden == 0 })
+            // The old rule: the deepest uniform depth whose printout, with the cut line, fits.
+            val uniform = depths.filter { d ->
+                val printed = agenticDetails(d).get("printedNodes").asInt
+                val cutLine = "# cut: $printed of $total nodes printed (the whole printout is ${agenticDetails(cut).get("wholeChars").asInt} chars); " +
+                    "print the \"(+N)\" nodes you need by their ids"
+                AgenticViewRenderer.jsonLength(okText(d)) + AgenticViewRenderer.jsonLength(cutLine) <= budget
+            }.maxOfOrNull { agenticDetails(it).get("printedNodes").asInt } ?: 1
+            val printed = agenticDetails(cut).get("printedNodes").asInt
+            assertTrue("budget $budget: $printed nodes against $uniform for a uniform cut", printed >= uniform)
+            if (printed > uniform) beatUniform = true
+        }
+        assertTrue("the budget-filling cut prints more than a uniform cut for some budget", beatUniform)
+    }
+
+    // ── 9: computed names ─────────────────────────────────────────────────────────────────
+
+    @Test
+    fun `a computed name prints in the name position with a star and a stored one without`() {
+        val behavior = createConceptBehaviorRoot("Computed${System.nanoTime() % 100000}")
+        val root = parse(text(behavior)).root
+        val concept = readOnRepo { resolveNodeRef(behavior).references.single { it.link.name == "concept" }.targetNode!!.name!! }
+        assertEquals("${concept}_Behavior", root.name)
+        assertTrue("a computed name has a star", root.nameStarred)
+        assertFalse("the name is not repeated among the properties: ${root.props.keys}", root.props.containsKey("name"))
+        assertTrue(text(behavior).contains("\nConceptBehavior #${root.id} ${concept}_Behavior* "))
+        assertParity(behavior)
+
+        val conceptNode = resolveNodeRef(createConceptRoot("Renamed${System.nanoTime() % 100000}"))
+        executeCommand { conceptNode.setProperty(SNodeUtil.property_INamedConcept_name, "two words") }
+        val stored = parse(text(refOf(conceptNode))).root
+        assertEquals("two words", stored.name)
+        assertFalse("a stored name has no star", stored.nameStarred)
+        assertTrue(text(refOf(conceptNode)).contains(" \"two words\" "))
+
+        executeCommand {
+            val behaviorNode = resolveNodeRef(behavior)
+            behaviorNode.setReferenceTarget(behaviorNode.concept.referenceLinks.single { it.name == "concept" }, conceptNode)
+        }
+        val quoted = text(behavior)
+        assertTrue(quoted, quoted.contains(" \"two words_Behavior\"* "))
+        assertEquals("two words_Behavior", parse(quoted).root.name)
+        assertParity(behavior)
+    }
+
+    // ── 10: literals and editorHints ──────────────────────────────────────────────────────
 
     @Test
     fun `the literal is case-insensitive with a space or an underscore and editorHints is ignored with a warning`() {
@@ -680,7 +457,125 @@ class PrintNodeAgenticViewIntegrationTest : McpIntegrationTestBase() {
         assertEquals("Invalid format 'AGENTIC'. Allowed values: JSON, HTML, PLAIN TEXT, IMAGE, AGENTIC VIEW", rejected.get("error").asString)
     }
 
-    // ── 10: hygiene ──────────────────────────────────────────────────────────────────────
+    // ── 11: codeAsText ────────────────────────────────────────────────────────────────────
+
+    private val codeBody = "int total = 1 + 2; public int sum(int a) { int b = a * 2; return b + total; }"
+
+    @Test
+    fun `codeAsText prints each outermost statement and expression as one line with its text and keeps ids and counts`() {
+        val klass = classRoot("CodeText", codeBody)
+        val ref = refOf(klass)
+        val envelope = agentic(ref, codeAsText = true)
+        val nodes = parse(okText(envelope)).root.all()
+        val details = agenticDetails(envelope)
+        val total = details.get("nodes").asInt
+        assertEquals(total, readOnRepo { subtree(klass).size })
+        assertEquals("the (+N) counts add up to the total", total, nodes.size + nodes.sumOf { it.hidden })
+        assertEquals(nodes.size, details.get("printedNodes").asInt)
+        val code = nodes.filter { it.text != null }
+        assertEquals(details.toString(), code.size, details.get("collapsed").asInt)
+        assertEquals(
+            listOf("initializer" to "1 + 2", "statement" to "int b = a * 2;", "statement" to "return b + total;"),
+            code.map { it.role to it.text },
+        )
+        assertEquals("the statements keep their concepts", listOf("PlusExpression", "LocalVariableDeclarationStatement", "ReturnStatement"), code.map { it.concept })
+        val byId = readOnRepo { subtree(klass).associateBy { it.nodeId.toString() } }
+        for (line in code) {
+            val node = byId[StringUtil.unescapeRefChars(line.id)] ?: error("id ${line.id} is no node of the class")
+            assertEquals(line.concept, readOnRepo { node.concept.name })
+            assertEquals("${line.id}: its inner nodes are counted", readOnRepo { subtree(node).size } - 1, line.hidden)
+        }
+        assertTrue("the method body is a node line, not code: $nodes", nodes.any { it.concept == "StatementList" && it.text == null })
+        assertTrue(warnings(envelope).toString(), warnings(envelope).isEmpty())
+        assertParity(ref, codeAsText = true)
+    }
+
+    @Test
+    fun `codeAsText lists a macro inside a collapsed statement under it with the id of the annotated node`() {
+        val klass = classRoot("CodeMacro", codeBody)
+        val (statementNode, constant) = readOnRepo {
+            val statement = subtree(klass).single { it.concept.name == "LocalVariableDeclarationStatement" }
+            statement to subtree(statement).single { it.concept.name == "IntegerConstant" }
+        }
+        val propertyMacro = concept("jetbrains.mps.lang.generator", "PropertyMacro")
+        lateinit var macroNode: SNode
+        executeCommand { macroNode = IAttributeDescriptor.PropertyAttribute(propertyMacro, property(constant, "value")).setNew(constant) }
+        val envelope = agentic(refOf(klass), codeAsText = true)
+        val statement = parse(okText(envelope)).root.all().single { it.concept == "LocalVariableDeclarationStatement" }
+        assertNotNull(statement.text)
+        val macro = statement.children.single()
+        assertEquals("PropertyMacro", macro.concept)
+        assertEquals(readOnRepo { macroNode.nodeId.toString() }, macro.id)
+        assertEquals("@prop(value) on #${readOnRepo { constant.nodeId.toString() }}", macro.label)
+        assertEquals(
+            "the macro is printed, the other inner nodes are counted",
+            readOnRepo { subtree(statementNode).size - 1 - subtree(macroNode).size }, statement.hidden,
+        )
+        assertTrue(warnings(envelope).toString(), warnings(envelope).isEmpty())
+        assertParity(refOf(klass), codeAsText = true)
+    }
+
+    @Test
+    fun `codeAsText prints code without a cell in the editor as node lines, with one warning`() {
+        val klass = classRoot("CodeInspector", codeBody)
+        val bl = "jetbrains.mps.baseLanguage"
+        val (macroConcept, functionConcept) = concept("jetbrains.mps.lang.generator", "PropertyMacro") to
+            concept("jetbrains.mps.lang.generator", "PropertyMacro_GetPropertyValue")
+        val (bodyConcept, returnConcept, literalConcept) = Triple(concept(bl, "StatementList"), concept(bl, "ReturnStatement"), concept(bl, "StringLiteral"))
+        val constant = readOnRepo {
+            subtree(subtree(klass).single { it.concept.name == "LocalVariableDeclarationStatement" }).single { it.concept.name == "IntegerConstant" }
+        }
+        val value = property(constant, "value")
+        fun SNode.add(role: String, child: SNode) = addChild(concept.containmentLinks.single { it.name == role }, child)
+        lateinit var query: SNode
+        executeCommand {
+            val macro = IAttributeDescriptor.PropertyAttribute(macroConcept, value).setNew(constant)
+            val function = jetbrains.mps.smodel.SNode(functionConcept).also { macro.add("propertyValueFunction", it) }
+            val body = jetbrains.mps.smodel.SNode(bodyConcept).also { function.add("body", it) }
+            query = jetbrains.mps.smodel.SNode(returnConcept).also { body.add("statement", it) }
+            val literal = jetbrains.mps.smodel.SNode(literalConcept)
+            literal.setProperty(literalConcept.properties.single { it.name == "value" }, "7")
+            query.add("expression", literal)
+        }
+        val envelope = agentic(refOf(klass), codeAsText = true)
+        val warning = warnings(envelope).single()
+        assertTrue(warning, warning.startsWith("codeAsText: 1 statement(s) or expression(s) have no cell in this node's editor"))
+        val nodes = parse(okText(envelope)).root.all()
+        val queryIds = readOnRepo { subtree(query).map { it.nodeId.toString() } }
+        val queryLines = nodes.filter { StringUtil.unescapeRefChars(it.id) in queryIds }
+        assertEquals("the inspector-only query is printed as node lines", listOf("ReturnStatement", "StringLiteral"), queryLines.map { it.concept })
+        assertTrue(queryLines.toString(), queryLines.all { it.text == null })
+        val code = nodes.filter { it.text != null }
+        assertEquals("the macro shows in the text as the editor draws it", listOf("1 + 2", "int b = a * $2;", "return b + total;"), code.map { it.text })
+        assertEquals("collapsed counts the code lines only", code.size, agenticDetails(envelope).get("collapsed").asInt)
+        assertParity(refOf(klass), codeAsText = true)
+    }
+
+    @Test
+    fun `without codeAsText the printout is unchanged and nodeDepth and the cut apply after collapsing`() {
+        val ref = refOf(classRoot("CodeFlag", codeBody))
+        val plain = agentic(ref)
+        assertEquals("one line per node", jsonSize(jsonDeep(ref)), parse(okText(plain)).root.all().size)
+        assertFalse(okText(plain), okText(plain).contains(" = \""))
+        assertFalse(agenticDetails(plain).has("collapsed"))
+        assertTrue(parse(okText(plain)).root.all().none { it.text != null })
+
+        val collapsed = parse(text(ref, codeAsText = true)).root.all()
+        val deepest = collapsed.maxOf { it.depth }
+        val bounded = agentic(ref, nodeDepth = deepest - 1, codeAsText = true)
+        val boundedNodes = parse(okText(bounded)).root.all()
+        assertEquals(collapsed.filter { it.depth < deepest }.map { it.id }, boundedNodes.map { it.id })
+        assertEquals(agenticDetails(bounded).get("nodes").asInt, boundedNodes.size + boundedNodes.sumOf { it.hidden })
+
+        val full = text(ref, codeAsText = true)
+        val budget = AgenticViewRenderer.jsonLength(full) - 1
+        val cut = agentic(ref, maxInlineBytes = budget, codeAsText = true)
+        val cutCode = assertCut(cut, budget).count { it.text != null }
+        assertEquals("collapsed counts the printed code lines", cutCode, agenticDetails(cut).get("collapsed").asInt)
+        assertTrue("the cut drops a code line: $cutCode", cutCode < collapsed.count { it.text != null })
+    }
+
+    // ── 12: hygiene ──────────────────────────────────────────────────────────────────────
 
     @Test
     fun `no line has trailing whitespace or tabs and two prints are identical`() {

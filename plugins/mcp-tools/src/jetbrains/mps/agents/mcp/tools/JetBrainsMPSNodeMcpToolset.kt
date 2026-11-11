@@ -56,6 +56,8 @@ private const val MODULE_CHECK_BUDGET_MS: Long = 20_000
 private val GRAPHICAL_CELL_CLASSES = setOf("DiagramCell", "AbstractJetpadCell")
 private const val GRAPHICAL_CELL_MIN_SIZE = 64
 
+private val WHITESPACE = Regex("\\s+")
+
 // lang.core markers whose subtrees the typesystem checkers (TypeSystemUtil.shouldApplyTypeSystemRules) and
 // the constraints, reference-scope and target-concept checkers (AbstractNodeCheckerInEditor.SKIP_CONSTRAINTS_CONDITION)
 // skip; the structure checker skips nothing.
@@ -833,17 +835,19 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                 val catalog = EditorHintCatalog.forNode(node, repo)
                 val warnings = mutableListOf<String>()
                 val hintsBlock = linkedMapOf<String, Any?>()
+                var compactHints = true
                 val applied = if (editorHints == null) {
                     hintsBlock["source"] = "projectSettings"
                     hintsBlock["applied"] = projectEditorHints(mpsProject)
                     null
                 } else {
                     resolveRequestedEditorHints(editorHints, catalog, repo, warnings).also {
+                        compactHints = warnings.isEmpty()
                         hintsBlock["source"] = "request"
                         hintsBlock["applied"] = it
                     }
                 }
-                if (editorHints == null) {
+                if (compactHints) {
                     val (shown, hidden) = catalog.compactListing()
                     hintsBlock["available"] = shown
                     if (hidden > 0) hintsBlock["hiddenCount"] = hidden
@@ -874,7 +878,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                                 }
                                 return@withHeadlessEditor HtmlBundle(page.html, painted.image, details, warnings + painted.warnings)
                             }
-                            Projection.TEXT -> renderPlainText(component, omitted, shownAs, details, warnings)
+                            Projection.TEXT -> trimTrailingWhitespace(renderPlainText(component, omitted, shownAs, details, warnings))
                             Projection.IMAGE -> {
                                 val painted = EditorImageRenderer.paint(component, paintableComponentCells(component))
                                 details["image"] = painted.details
@@ -941,10 +945,11 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
     }
 
     /**
-     * `renderText()` of the root cell, unless the projection is two-dimensional (a table, a superscript layout, a cell
-     * without text): then the cell geometry is laid out as a character grid ([CellGridText]), which keeps the columns and
-     * rows `renderText()` collapses and draws brackets, rules and `⟦n⟧` placeholders. [shownAs] receives how each of the
-     * [omitted] cells appears in the grid.
+     * `renderText()` of the root cell ([CellPlainText], which keeps the rows of a vertical block inside an indent
+     * line), unless the projection is two-dimensional (a table, a superscript layout, a cell without text): then the
+     * cell geometry is laid out as a character grid ([CellGridText]), which keeps the columns and rows `renderText()`
+     * collapses and draws brackets, rules and `⟦n⟧` placeholders. [shownAs] receives how each of the [omitted] cells
+     * appears in the grid. The caller trims trailing whitespace from the result.
      */
     private fun renderPlainText(
         component: EditorComponent,
@@ -954,7 +959,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         warnings: MutableList<String>,
     ): String {
         val root = component.rootCell
-        val reason = CellGridText.gridReason(root, omitted) ?: return root.renderText().getText()
+        val reason = CellGridText.gridReason(root, omitted) ?: return CellPlainText.render(root)
         val grid = try {
             CellGridText.render(root, omitted)
         } catch (e: RuntimeException) {
@@ -965,7 +970,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         if (grid == null) {
             warnings += "Because $reason, the text should be a character grid, but it could not be built; fell back to the plain " +
                 "text rendering, which may collapse table columns and stacked cells (use format IMAGE)"
-            return root.renderText().getText()
+            return CellPlainText.render(root)
         }
         details["textRenderer"] = "grid"
         shownAs += grid.shownAs
@@ -1569,7 +1574,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         """
         Prints the specified node in one of five formats. Pick the format by task (see `mps-mcp-workflow/references/analysis-tools/print-node-agentic-view.md`):
         `JSON` (default) is the node record that mutation tools consume: the result (inline `data` or the saved envelope) is accepted by every node-mutation tool (`mps_mcp_update_node`, `mps_mcp_update_root_node_from_json`, etc.); print it only for the subtree such a tool will take. `deep=true` inlines all descendants; `deep=false` (default) lists direct children's refs only. `data` is inline when the printout is <= `maxInlineBytes` (default 20000), otherwise a temp-file path. Schema: `mps-mcp-workflow/references/analysis-tools/print-node-output.md`; blueprint shape: `mps-node-editing/references/json-format.md`.
-        `AGENTIC VIEW` is for reading a node: structure, node ids, reference targets (name, model alias, id) and unset features, one line per node for the whole subtree. It is read-only text that no tool takes as input; `nodeDepth` bounds it, and above `maxInlineBytes` it is cut by depth instead of written to a file, unless even depth 1 does not fit (then `data` is the path of a raw `.txt` file); print a `(+N)` node by its reference `<model>/<id>` to continue.
+        `AGENTIC VIEW` is for reading a node: structure, node ids, reference targets (name, model alias, id) and unset features, one line per node for the whole subtree. It is read-only text that no tool takes as input; `nodeDepth` bounds it, and above `maxInlineBytes` it is cut (level by level, as many nodes as fit) instead of written to a file, unless even the node alone does not fit (then `data` is the path of a raw `.txt` file); print a `(+N)` node by its reference `<model>/<id>` to continue. `codeAsText=true` prints each outermost BaseLanguage statement or expression as one line with its editor text, for roots that mix structure and code.
         `PLAIN TEXT` is for reading code or a notation as the editor shows it: the editor-projected text, inline or as a temp-file path under the `maxInlineBytes` rule; a two-dimensional projection (table, fraction, matrix) is drawn as a character grid.
         `HTML` is for an editor's text styles and for mapping text to nodes: it writes a standalone page `index.html` and the painted editor `editor.png` into a fresh temp directory and returns the page's path as `data` (`details.html` gives the directory and each file's size; `maxInlineBytes` does not apply): the projection's text in reading order, every node's part tagged with its node id, concept and role, tables, fractions and brackets as CSS boxes, cells without text as cut-outs of the image.
         `IMAGE` is for diagrams, tables and other graphical cells: it paints the editor projection to a PNG temp file whose path is `data` (size in `details.image`), exactly as drawn.
@@ -1584,9 +1589,10 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         @McpDescription("Required. Persistent form of SNodeReference (r:<uuid>(model)/<node-id>). A model reference or qualified model name is rejected with a retry line pointing at mps_mcp_get_project_structure.") nodeReference: String = "",
         @McpDescription("One of exactly five literals: JSON (default), AGENTIC VIEW, PLAIN TEXT, HTML, IMAGE.") format: String = "JSON",
         @McpDescription("JSON only: a deep (true) or shallow (false) printout. Defaults to false; AGENTIC VIEW always prints the whole subtree (bound it with nodeDepth).") deep: Boolean = false,
-        @McpDescription("Inline the printout in `data` when it is at most this many characters; larger printouts are saved to a temp file whose path is returned instead (default 20000). AGENTIC VIEW: the limit cuts the printout by depth instead of writing a file, unless even depth 1 does not fit.") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES,
+        @McpDescription("Inline the printout in `data` when it is at most this many characters; larger printouts are saved to a temp file whose path is returned instead (default 20000). AGENTIC VIEW: the limit cuts the printout instead of writing a file, unless even the node alone does not fit.") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES,
         @McpDescription("HTML, PLAIN TEXT and IMAGE only: an editor hint FQ name or short id, or a JSON array of them (a real array or the array written as a string). Omit to use the project's hint settings; [] for no hints.") editorHints: JsonOrText? = null,
         @McpDescription("AGENTIC VIEW only: how many levels to print below the node: -1 (default) for the whole subtree, 0 for the node alone, n for n levels; a node with unprinted descendants ends in (+N).") nodeDepth: Int = -1,
+        @McpDescription("AGENTIC VIEW only: print each outermost statement or expression as its node line plus `= \"<editor text>\"`, its inner nodes counted in (+N) and its attributes still listed. Default false.") codeAsText: Boolean = false,
     ): String {
         rejectMissingParameters(
             "mps_mcp_print_node",
@@ -1607,7 +1613,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         }
         if (projection != null) return showNodeAppearance(nodeReference, projection, maxInlineBytes = maxInlineBytes, editorHints = hints)
         if (normalizedFormat == "AGENTIC VIEW" || normalizedFormat == "AGENTIC_VIEW") {
-            return printAgenticView(nodeReference, nodeDepth, maxInlineBytes, editorHintsGiven = hints != null)
+            return printAgenticView(nodeReference, nodeDepth, maxInlineBytes, editorHintsGiven = hints != null, codeAsText)
         }
         if (normalizedFormat != "JSON") return McpCallOutcomes.record(
             errJson("Invalid format '$format'. Allowed values: JSON, HTML, PLAIN TEXT, IMAGE, AGENTIC VIEW", McpErrorCode.INVALID_REQUEST)
@@ -1626,39 +1632,48 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         }
     }
 
-    /** `format = AGENTIC VIEW`: [AgenticViewRenderer] under the JSON branch's resolution, cut by depth to fit [maxInlineBytes]. */
-    private suspend fun printAgenticView(nodeReference: String, nodeDepth: Int, maxInlineBytes: Int, editorHintsGiven: Boolean): String =
+    /** `format = AGENTIC VIEW`: [AgenticViewRenderer] under the JSON branch's resolution, cut to fit [maxInlineBytes]. */
+    private suspend fun printAgenticView(nodeReference: String, nodeDepth: Int, maxInlineBytes: Int, editorHintsGiven: Boolean, codeAsText: Boolean): String =
         withMpsProject("Printing MPS node as AGENTIC VIEW") { mpsProject ->
             executeShortReadOnEdt(mpsProject) {
                 val repo = mpsProject.repository
                 val sNodeRef = resolveNodeReferencePreferringProject(mpsProject, nodeReference)
                 val node = sNodeRef?.resolve(repo)
                     ?: return@executeShortReadOnEdt unresolvedPrintNode(mpsProject, nodeReference, parsedAsNode = sNodeRef != null)
-                val membership = ProjectMembershipCache(mpsProject)
-                val rendering = AgenticViewRenderer(repo, ::propertyDisplayValue, ::defaultEnumLiteralName, ::getDeprecationInfo) { model ->
-                    membership.ownerOf(model)?.let { !sameOpenProject(it, mpsProject) } ?: false
-                }.render(node, nodeDepth)
-                val fit = rendering.fit(maxInlineBytes)
-                val warnings = ArrayList<String>()
+                val warnings = mutableListOf<String>()
                 if (editorHintsGiven) warnings += "editorHints applies to the HTML, PLAIN TEXT and IMAGE formats only; ignored for AGENTIC VIEW"
-                warnings += unloadedConceptsWarnings(rendering.unloadedConcepts(fit.depth), agenticView = true)
-                val agenticView = linkedMapOf<String, Any?>("nodes" to rendering.totalNodes, "printedNodes" to rendering.printedNodes(fit.depth))
-                if (fit.cutDepth != null) {
-                    agenticView["cutDepth"] = fit.cutDepth
-                    val wholeChars = rendering.wholeChars
-                    agenticView["wholeChars"] = wholeChars
-                    warnings += "The printout was cut at depth ${fit.cutDepth} of ${rendering.treeDepth} to fit maxInlineBytes=$maxInlineBytes " +
-                        "(the whole printout is $wholeChars chars): a node marked (+N) has N descendants that are not printed; " +
-                        "print the (+N) nodes you need by their ids rather than raising maxInlineBytes"
-                }
-                if (!fit.inline) {
-                    val smallest = if (fit.depth == 0) "The node alone exceeds" else "Even depth 1 exceeds"
-                    warnings += "$smallest maxInlineBytes=$maxInlineBytes, so `data` is the path of a .txt file holding " +
-                        "the whole printout as raw text (not a JSON envelope); print a child node or pass nodeDepth for a smaller printout"
-                }
-                finalizeTextResult(fit.text, if (fit.inline) Int.MAX_VALUE else maxInlineBytes, mapOf("agenticView" to agenticView), warnings)
+                val rendering = if (codeAsText) renderCodeAsText(mpsProject, node, nodeDepth, warnings) else agenticViewRenderer(mpsProject).render(node, nodeDepth)
+                agenticViewResult(
+                    rendering, maxInlineBytes, emptyMap(), warnings,
+                    floorExceeds = "The node alone exceeds", smaller = "print a child node for a smaller printout", codeAsText = codeAsText,
+                )
             }
         }
+
+    /**
+     * AGENTIC VIEW with `codeAsText`: the code texts come from one headless editor of [node] under the project's hint
+     * settings, each the rendered text of the code node's cell (also under a folded cell) with its whitespace collapsed;
+     * without an editor, or for code without a cell, the tree is printed and [warnings] say so.
+     */
+    private fun renderCodeAsText(mpsProject: MPSProject, node: SNode, nodeDepth: Int, warnings: MutableList<String>): AgenticViewRenderer.Rendering {
+        val renderer = agenticViewRenderer(mpsProject)
+        val rendering = try {
+            withHeadlessEditor(mpsProject.repository, node) { ctx ->
+                val component = ctx.editorComponent
+                renderer.render(node, nodeDepth) { code -> component.findNodeCell(code, true)?.let { WHITESPACE.replace(CellPlainText.render(it), " ").trim() } }
+            }
+        } catch (e: RuntimeException) {
+            rethrowIfCancellation(e)
+            logger.warn("codeAsText: editor failed for ${PersistenceFacade.getInstance().asString(node.reference)}", e)
+            warnings += "codeAsText: the editor of this node could not be built or rendered ($e), so all code is printed as node lines"
+            return agenticViewRenderer(mpsProject).render(node, nodeDepth)
+        }
+        if (renderer.textless > 0) {
+            warnings += "codeAsText: ${renderer.textless} statement(s) or expression(s) have no cell in this node's editor (code the " +
+                "inspector shows, or that the editor does not project), so they are printed as node lines"
+        }
+        return rendering
+    }
 
     @McpTool
     @McpDescription(
@@ -2374,3 +2389,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
 
 
 }
+
+/** No line ends with whitespace and the text ends with no blank line; blank lines inside stay. */
+internal fun trimTrailingWhitespace(text: String): String =
+    text.lines().joinToString("\n") { it.trimEnd() }.trimEnd('\n')

@@ -1398,6 +1398,51 @@ abstract class AbstractOps : McpToolset {
         )
     }
 
+    /** An [AgenticViewRenderer] for one render under a read action; a model of another open project is `!foreign`. */
+    protected fun agenticViewRenderer(mpsProject: MPSProject): AgenticViewRenderer {
+        val membership = ProjectMembershipCache(mpsProject)
+        return AgenticViewRenderer(mpsProject.repository, ::propertyDisplayValue, ::defaultEnumLiteralName, ::getDeprecationInfo) { model ->
+            membership.ownerOf(model)?.let { !sameOpenProject(it, mpsProject) } ?: false
+        }
+    }
+
+    /**
+     * The envelope of an `AGENTIC VIEW` [rendering] cut to fit [maxInlineBytes]: `details.agenticView` is [counts]
+     * followed by `nodes`, `printedNodes`, with [codeAsText] `collapsed` (the printed code lines) and, for a cut, `cut`
+     * and `wholeChars`. When not even the roots fit, the
+     * warning starts with [floorExceeds] ("The node alone exceeds") and ends with [smaller], how to print less.
+     */
+    protected fun agenticViewResult(
+        rendering: AgenticViewRenderer.Rendering,
+        maxInlineBytes: Int,
+        counts: Map<String, Any?>,
+        warnings: List<String>,
+        floorExceeds: String,
+        smaller: String,
+        codeAsText: Boolean = false,
+    ): String {
+        val fit = rendering.fit(maxInlineBytes)
+        val allWarnings = ArrayList(warnings)
+        allWarnings += unloadedConceptsWarnings(fit.unloadedConcepts, agenticView = true)
+        val agenticView = LinkedHashMap(counts)
+        agenticView["nodes"] = rendering.totalNodes
+        agenticView["printedNodes"] = fit.printedNodes
+        if (codeAsText) agenticView["collapsed"] = fit.collapsed
+        if (fit.cut) {
+            agenticView["cut"] = true
+            val wholeChars = rendering.wholeChars
+            agenticView["wholeChars"] = wholeChars
+            allWarnings += "The printout was cut to fit maxInlineBytes=$maxInlineBytes: ${fit.printedNodes} of ${rendering.totalNodes} nodes printed " +
+                "(the whole printout is $wholeChars chars); a node marked (+N) has N descendants that are not printed; " +
+                "print the (+N) nodes you need by their ids rather than raising maxInlineBytes"
+        }
+        if (!fit.inline) {
+            allWarnings += "$floorExceeds maxInlineBytes=$maxInlineBytes, so `data` is the path of a .txt file holding " +
+                "the whole printout as raw text (not a JSON envelope); $smaller"
+        }
+        return finalizeTextResult(fit.text, if (fit.inline) Int.MAX_VALUE else maxInlineBytes, mapOf("agenticView" to agenticView), allWarnings)
+    }
+
     protected fun saveToTempFileResult(json: String): String {
         return try {
             val tempFile = saveToTempFile(json)
@@ -1856,10 +1901,10 @@ abstract class AbstractOps : McpToolset {
 
     private fun getPropertyType(prop: SProperty): String {
         val type = prop.type
-        return if (type is SEnumeration) {
-            "enum:${type.name}"
-        } else {
-            type.toString()
+        return when (type) {
+            is SEnumeration -> "enum:${type.name}"
+            is SNamedElement -> type.name
+            else -> type.toString()
         }
     }
 
@@ -1891,7 +1936,8 @@ abstract class AbstractOps : McpToolset {
         return when {
             prop.type !is SEnumeration -> rawValue?.let { prop.type.toString(it) }
             // A stored value that is no literal of an enumeration without a raw member type: the invalid
-            // literal that stands for it throws from getName(), so it has no display value.
+            // literal's name is only the raw value's string form, so report no display value and let
+            // callers show it as raw (AGENTIC VIEW `!raw`).
             rawValue is SEnumerationLiteral ->
                 if (rawValue.ordinal < 0 && (prop.type as? SEnumerationAdapter)?.rawMemberType == null) null
                 else rawValue.getName() ?: rawValue.presentation

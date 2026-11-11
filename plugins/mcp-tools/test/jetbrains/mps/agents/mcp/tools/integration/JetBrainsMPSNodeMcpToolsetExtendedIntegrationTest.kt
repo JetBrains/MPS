@@ -14,7 +14,9 @@ import jetbrains.mps.smodel.SModelInternal
 import jetbrains.mps.smodel.SModelStereotype
 import jetbrains.mps.smodel.SNodeUtil
 import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory
+import jetbrains.mps.smodel.adapter.structure.types.SConstrainedStringDatatypeAdapter
 import java.util.UUID
+import org.jetbrains.mps.openapi.language.SNamedElement
 import org.jetbrains.mps.openapi.model.SModel
 import org.jetbrains.mps.openapi.model.SNode
 import org.jetbrains.mps.openapi.module.SModule
@@ -1960,6 +1962,29 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
                 property.get("type").asString.startsWith("enum:"),
             )
         }
+    }
+
+    @Test
+    fun `a constrained string datatype property prints its datatype name as type`() {
+        val ref = createConceptRoot("ConstrainedTypeProbe")
+        val constrained = readOnRepo {
+            resolveNode(ref).concept.properties
+                .filter { it.type is SConstrainedStringDatatypeAdapter }
+                .associate { it.name to (it.type as SNamedElement).name }
+        }
+        assertTrue("test precondition: ConceptDeclaration declares a constrained string property", constrained.isNotEmpty())
+        val printed = payloadObjectFromOkData(runTool(toolset) { it.mps_mcp_print_node(ref, deep = false) })
+        val types = printed.getAsJsonArray("properties").associate { entry ->
+            entry.asJsonObject.get("name").asString to entry.asJsonObject.get("type").asString
+        }
+        for ((name, type) in types) assertFalse("'$name' has an object-hash type: $type", type.contains("@"))
+        assertTrue(types.toString(), constrained.keys.any { it in types })
+        for ((name, datatype) in constrained) if (name in types) assertEquals(name, datatype, types[name])
+        val details = payloadArrayFromOkData(runTool(JetBrainsMPSLanguageMcpToolset()) {
+            it.mps_mcp_get_concept_details(conceptRefs = listOf("jetbrains.mps.lang.structure.structure.ConceptDeclaration"))
+        }).first().asJsonObject.getAsJsonArray("properties")
+            .associate { it.asJsonObject.get("name").asString to it.asJsonObject.get("type").asString }
+        for ((name, type) in types) if (name in details && !type.startsWith("enum:")) assertEquals(name, details[name], type)
     }
 
     @Test

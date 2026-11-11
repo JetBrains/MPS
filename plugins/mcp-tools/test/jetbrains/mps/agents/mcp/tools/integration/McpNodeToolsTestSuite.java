@@ -14,6 +14,7 @@ import jetbrains.mps.agents.mcp.tools.unit.AbstractOpsPropertyProblemsTest;
 import jetbrains.mps.agents.mcp.tools.unit.AgenticViewLinesTest;
 import jetbrains.mps.agents.mcp.tools.unit.AssignableReferenceServiceTest;
 import jetbrains.mps.agents.mcp.tools.unit.CellGridTextRendererTest;
+import jetbrains.mps.agents.mcp.tools.unit.CellPlainTextTest;
 import jetbrains.mps.agents.mcp.tools.unit.DataflowBuilderFrameTest;
 import jetbrains.mps.agents.mcp.tools.unit.ModuleLessReferencesTest;
 
@@ -48,6 +49,7 @@ import org.junit.runners.Suite;
     PrintNodeHtmlIntegrationTest.class,
     PrintNodeAgenticViewIntegrationTest.class,
     CellGridTextRendererTest.class,
+    CellPlainTextTest.class,
     AgenticViewLinesTest.class,
     AbstractOpsPropertyProblemsTest.class,
     AbstractOpsAutoApplyQuickFixesTest.class,

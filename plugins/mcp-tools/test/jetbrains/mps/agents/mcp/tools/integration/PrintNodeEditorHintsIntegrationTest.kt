@@ -42,6 +42,13 @@ class PrintNodeEditorHintsIntegrationTest : McpIntegrationTestBase() {
     private fun available(envelope: JsonObject): List<JsonObject> =
         hintsBlock(envelope).getAsJsonArray("available").map { it.asJsonObject }
 
+    private fun assertCompactListing(envelope: JsonObject) {
+        val block = hintsBlock(envelope)
+        val names = block.getAsJsonArray("available").map { it.asString }
+        assertFalse(envelope.toString(), commentHint in names)
+        assertTrue(envelope.toString(), block.get("hiddenCount").asInt >= 2)
+    }
+
     @Test
     fun `a plain print reports the project hint settings and a compact catalog`() {
         val envelope = print(createConceptRoot("HintsDefault"))
@@ -68,10 +75,7 @@ class PrintNodeEditorHintsIntegrationTest : McpIntegrationTestBase() {
             val block = hintsBlock(envelope)
             assertEquals(envelope.toString(), "request", block.get("source").asString)
             assertEquals(envelope.toString(), listOf(commentHint), block.getAsJsonArray("applied").map { it.asString })
-            val comment = available(envelope).single { it.get("fqName").asString == commentHint }
-            assertEquals(envelope.toString(), "comment", comment.get("id").asString)
-            assertEquals(envelope.toString(), "jetbrains.mps.lang.core", comment.get("language").asString)
-            assertFalse(envelope.toString(), comment.get("showInUI").asBoolean)
+            assertCompactListing(envelope)
             assertNull(envelope.toString(), envelope.get("warnings"))
         }
     }
@@ -99,8 +103,7 @@ class PrintNodeEditorHintsIntegrationTest : McpIntegrationTestBase() {
         assertNotEquals(default, text)
         assertNull(envelope.toString(), envelope.get("warnings"))
         assertEquals(listOf(EditorHintCatalog.REFLECTIVE_HINT), hintsBlock(envelope).getAsJsonArray("applied").map { it.asString })
-        val entry = available(envelope).single { it.get("fqName").asString == EditorHintCatalog.REFLECTIVE_HINT }
-        assertEquals("(editor runtime)", entry.get("language").asString)
+        assertCompactListing(envelope)
     }
 
     @Test
@@ -121,7 +124,12 @@ class PrintNodeEditorHintsIntegrationTest : McpIntegrationTestBase() {
         assertEquals(envelope.toString(), "INVALID_REQUEST", envelope.get("code").asString)
         assertTrue(envelope.toString(), envelope.get("error").asString.contains("'noSuchHint'"))
         assertFalse(envelope.toString(), envelope.get("error").asString.contains("'comment'"))
-        assertTrue(envelope.toString(), available(envelope).any { it.get("fqName").asString == commentHint })
+        val comment = available(envelope).single { it.get("fqName").asString == commentHint }
+        assertEquals(envelope.toString(), "comment", comment.get("id").asString)
+        assertEquals(envelope.toString(), "jetbrains.mps.lang.core", comment.get("language").asString)
+        assertFalse(envelope.toString(), comment.get("showInUI").asBoolean)
+        val reflective = available(envelope).single { it.get("fqName").asString == EditorHintCatalog.REFLECTIVE_HINT }
+        assertEquals(envelope.toString(), "(editor runtime)", reflective.get("language").asString)
     }
 
     @Test
@@ -158,13 +166,29 @@ class PrintNodeEditorHintsIntegrationTest : McpIntegrationTestBase() {
             (model as SModelInternal).addLanguage(MetaAdapterByDeclaration.getLanguage(language))
             ref = PersistenceFacade.getInstance().asString(cls.reference)
         }
-        val envelope = print(ref, editorHints = "[]")
-        okText(envelope)
+        okText(print(ref, editorHints = "[]"))
+        val envelope = print(ref, editorHints = "[\"noSuchHint\"]")
+        assertFalse(envelope.toString(), envelope.get("ok").asBoolean)
         val entries = available(envelope)
         assertEquals(envelope.toString(), "jetbrains.mps.lang.core",
             entries.single { it.get("fqName").asString == commentHint }.get("language").asString)
         assertTrue(envelope.toString(), entries.any { it.get("language").asString == "jetbrains.mps.baseLanguage" })
         assertTrue(envelope.toString(),
-            hintsBlock(envelope).getAsJsonArray("unloadedLanguages").map { it.asString }.contains(language.moduleName))
+            hintsBlock(print(ref, editorHints = "[]")).getAsJsonArray("unloadedLanguages").map { it.asString }.contains(language.moduleName))
+    }
+
+    @Test
+    fun `a hint found only globally keeps the full listing and warns`() {
+        val ref = createConceptRoot("HintsGlobalOnly")
+        val outside = readOnRepo {
+            val local = EditorHintCatalog.forNode(resolveNodeRef(ref), myProject.repository)
+            EditorHintCatalog.global(myProject.repository).entries
+                .firstOrNull { local.find(it.fqName) is EditorHintCatalog.Match.Missing }?.fqName
+        }
+        assumeTrue("a deployed language declares a hint the model does not see", outside != null)
+        val envelope = print(ref, editorHints = outside)
+        assertTrue(envelope.toString(), envelope.get("ok").asBoolean)
+        assertTrue(envelope.toString(), envelope.getAsJsonArray("warnings").any { it.asString.contains("which this node's model does not use") })
+        assertTrue(envelope.toString(), hintsBlock(envelope).getAsJsonArray("available").all { it.isJsonObject })
     }
 }

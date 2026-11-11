@@ -21,6 +21,7 @@ import com.intellij.openapi.wm.WindowManager
 import com.intellij.openapi.wm.impl.welcomeScreen.WelcomeFrame
 import jetbrains.mps.agents.mcp.tools.common.AbstractOps
 import jetbrains.mps.agents.mcp.tools.common.IdeLogReader
+import jetbrains.mps.agents.mcp.tools.common.RequiredParameter
 import jetbrains.mps.agents.mcp.tools.common.TransientModelsOps
 import jetbrains.mps.agents.mcp.tools.config.AgentConfigRootResolver
 import jetbrains.mps.agents.mcp.tools.logging.McpCallOutcomes
@@ -255,7 +256,7 @@ class JetBrainsMPSProjectMcpToolset(
     @McpTool
     @McpDescription(
         """
-        Primary tool for project discovery, name-based searching, dependency analysis, and shortened-name expansion (e.g. `j.m.l.core` → `jetbrains.mps.lang.core`). `data` is inline when the serialized dump is <= `maxInlineBytes` (default 20000), otherwise a temp-file path (which keeps large dumps below the MCP response-size limit). Use `startingPoint` (a module/model/node reference) to scope the dump; use the `include...` flags to control depth. Keep `include...` flags false for fast project-wide discovery. Two projection knobs cut the payload without changing the envelope: `nodeDetail="names"` reduces every node record to name/concept/reference (the cheap way to list a model's roots and their ids), and `nodeDepth` bounds how far `includeNodes` inlines the AST. Every Language module carries a `languageVersion` field (emitted without `includeDependencies`): the language's OWN version integer, the one a migration script's `fromVersion` gates on and the one `mps_mcp_update_module` SYNC_VERSION derives from the migration scripts. Do not confuse it with the consumer-side `usedLanguages[].version` stamps below, which say which version of some *other* language a module was last migrated against. With `includeDependencies`, each model's `usedLanguages` lists directly-used languages plus used devkits; every devkit entry (`kind: devkit`) carries a `providedLanguages` array enumerating the languages it brings into scope transitively (including via extended devkits), so a language already supplied by a devkit need not be imported again. A model's reported `name` is its full name including any stereotype (e.g. `foo.bar@tests`, `foo.bar@generator`); pass that exact name (stereotype included) when addressing the model. Transient models a make kept (`mps_mcp_generation` TRANSIENT_MODELS) are addressed by reference only: a `startingPoint` that references a transient module, model or node is dumped without `includeStubModules`, their records carry `transient: true`, and `includeStubModules=true` lists transient modules under kind `transient`. See `mps-mcp-workflow/references/finding-things.md` for the name-resolution protocol.
+        Primary tool for project discovery, name-based searching, dependency analysis, and shortened-name expansion (e.g. `j.m.l.core` → `jetbrains.mps.lang.core`). `data` is inline when the serialized dump is <= `maxInlineBytes` (default 20000), otherwise a temp-file path (which keeps large dumps below the MCP response-size limit). Use `startingPoint` (a module/model/node reference) to scope the dump; use the `include...` flags to control depth. Keep `include...` flags false for fast project-wide discovery. Two projection knobs cut the payload without changing the envelope: `nodeDetail="names"` reduces every node record to name/concept/reference (the cheap way to list a model's roots and their ids), and `nodeDepth` bounds how far `includeNodes` inlines the AST. The node dump is JSON for scripts (`scripts/mps_dump.py`); to read a model or module (roots, structure, ids, reference targets), use `mps_mcp_get_compact_project_structure`. Every Language module carries a `languageVersion` field (emitted without `includeDependencies`): the language's OWN version integer, the one a migration script's `fromVersion` gates on and the one `mps_mcp_update_module` SYNC_VERSION derives from the migration scripts. Do not confuse it with the consumer-side `usedLanguages[].version` stamps below, which say which version of some *other* language a module was last migrated against. With `includeDependencies`, each model's `usedLanguages` lists directly-used languages plus used devkits; every devkit entry (`kind: devkit`) carries a `providedLanguages` array enumerating the languages it brings into scope transitively (including via extended devkits), so a language already supplied by a devkit need not be imported again. A model's reported `name` is its full name including any stereotype (e.g. `foo.bar@tests`, `foo.bar@generator`); pass that exact name (stereotype included) when addressing the model. Transient models a make kept (`mps_mcp_generation` TRANSIENT_MODELS) are addressed by reference only: a `startingPoint` that references a transient module, model or node is dumped without `includeStubModules`, their records carry `transient: true`, and `includeStubModules=true` lists transient modules under kind `transient`. See `mps-mcp-workflow/references/finding-things.md` for the name-resolution protocol.
     """
     )
     suspend fun mps_mcp_get_project_structure(
@@ -263,7 +264,7 @@ class JetBrainsMPSProjectMcpToolset(
         @McpDescription("Include models within modules.") includeModels: Boolean = false,
         @McpDescription("Include module/model dependencies and used languages. Leave it off for orientation (which modules and models exist): it adds a dependency block to every module and model.") includeDependencies: Boolean = false,
         @McpDescription("Include root nodes of models.") includeRootNodes: Boolean = false,
-        @McpDescription("Include all nodes (full AST), inlined under each root's containment roles. Implies includeRootNodes (and includeModels for module/project dumps). Unbounded unless you pass nodeDepth, so prefer scoping with `startingPoint`, `nodeDetail` and `nodeDepth`, or use `mps_mcp_print_node` (format AGENTIC VIEW) for a single root. Warning: can be extremely large.") includeNodes: Boolean = false,
+        @McpDescription("Include all nodes (full AST), inlined under each root's containment roles. Implies includeRootNodes (and includeModels for module/project dumps). Unbounded unless you pass nodeDepth, so prefer scoping with `startingPoint`, `nodeDetail` and `nodeDepth`. To read the nodes rather than process them, use `mps_mcp_get_compact_project_structure` (a model or module) or `mps_mcp_print_node` format AGENTIC VIEW (one root). Warning: can be extremely large.") includeNodes: Boolean = false,
         @McpDescription(
             "Optional starting point: a persistent reference (module/model/root-node/node id) or a plain name. " +
                     "A plain NAME is resolved in the order node -> model -> module, so a name shared by a model and a " +
@@ -308,92 +309,24 @@ class JetBrainsMPSProjectMcpToolset(
                 // Concepts of printed nodes that are not loaded, for one envelope warning (D89).
                 val unloadedConcepts = linkedSetOf<SAbstractConcept>()
                 if (!startingPoint.isNullOrBlank()) {
-                    // A transient module, model or node a make kept belongs to no project, so the project-first
-                    // lookups below never return it; it is addressed by reference only.
-                    when (val transient = transientStartingPoint(mpsProject.repository, startingPoint)) {
-                        is SNode -> return@executeShortReadOnEdt finalizeResult(
-                            nodeHierarchyToJson(transient, includeNodes, mpsProject, projection = projection, unloadedConcepts = unloadedConcepts),
+                    when (val resolved = resolveStartingPoint(mpsProject, startingPoint, includeStubModules)) {
+                        is StartingPoint.Node -> finalizeResult(
+                            nodeHierarchyToJson(resolved.node, includeNodes, mpsProject, projection = projection, unloadedConcepts = unloadedConcepts),
                             maxInlineBytes, warnings = unloadedConceptsWarnings(unloadedConcepts),
                         )
-                        is SModel -> return@executeShortReadOnEdt finalizeResult(
-                            modelToJson(mpsProject, transient, effectiveIncludeRootNodes, includeNodes, includeDependencies, projection = projection, unloadedConcepts = unloadedConcepts),
+                        is StartingPoint.Model -> finalizeResult(
+                            modelToJson(mpsProject, resolved.model, effectiveIncludeRootNodes, includeNodes, includeDependencies, projection = projection, unloadedConcepts = unloadedConcepts),
                             maxInlineBytes, warnings = unloadedConceptsWarnings(unloadedConcepts),
                         )
-                        is SModule -> return@executeShortReadOnEdt finalizeResult(
+                        is StartingPoint.Module -> finalizeResult(
                             moduleToJson(
-                                mpsProject, transient, effectiveIncludeModels, effectiveIncludeRootNodes, includeNodes, includeDependencies,
+                                mpsProject, resolved.module, effectiveIncludeModels, effectiveIncludeRootNodes, includeNodes, includeDependencies,
                                 projection = projection, unloadedConcepts = unloadedConcepts,
                             ),
                             maxInlineBytes, warnings = unloadedConceptsWarnings(unloadedConcepts),
                         )
+                        is StartingPoint.Rejected -> resolved.envelope
                     }
-
-                    // Try to resolve as node, then model, then module
-
-                    // 1. Try Node
-                    val nodeRef = if (includeStubModules) {
-                        resolveNodeReferencePreferringProject(mpsProject, startingPoint)
-                    } else {
-                        resolveNodeReference(mpsProject, startingPoint)
-                    }
-                    val node = nodeRef?.resolve(mpsProject.repository)
-                    if (node != null) {
-                        val json = nodeHierarchyToJson(node, includeNodes, mpsProject, projection = projection, unloadedConcepts = unloadedConcepts)
-                        return@executeShortReadOnEdt finalizeResult(json, maxInlineBytes, warnings = unloadedConceptsWarnings(unloadedConcepts))
-                    }
-
-                    // 2. Try Model
-                    val model = if (includeStubModules) {
-                        resolveModelPreferringProject(mpsProject, startingPoint)
-                    } else {
-                        resolveModel(mpsProject, startingPoint, projectOnly = true)
-                    }
-                    if (model != null) {
-                        val json = modelToJson(
-                            mpsProject,
-                            model,
-                            effectiveIncludeRootNodes,
-                            includeNodes,
-                            includeDependencies,
-                            projection = projection,
-                            unloadedConcepts = unloadedConcepts
-                        )
-                        return@executeShortReadOnEdt finalizeResult(json, maxInlineBytes, warnings = unloadedConceptsWarnings(unloadedConcepts))
-                    }
-
-                    // 3. Try Module
-                    val module = if (includeStubModules) {
-                        resolveModulePreferringProject(mpsProject, startingPoint)
-                    } else {
-                        resolveModule(mpsProject, startingPoint, projectOnly = true)
-                    }
-                    if (module != null) {
-                        // Check if we should filter out non-project modules if they are not included.
-                        val isProjectModule = isModuleInSelectedProject(mpsProject, module)
-                        if (includeStubModules || isProjectModule) {
-                            val json = moduleToJson(
-                                mpsProject, module, effectiveIncludeModels, effectiveIncludeRootNodes, includeNodes, includeDependencies,
-                                projection = projection, unloadedConcepts = unloadedConcepts
-                            )
-                            return@executeShortReadOnEdt finalizeResult(json, maxInlineBytes, warnings = unloadedConceptsWarnings(unloadedConcepts))
-                        }
-                        return@executeShortReadOnEdt filteredOutStartingPoint(startingPoint, "module")
-                    }
-
-                    // A library/stub model or module (e.g. `jetbrains.mps.scope`) is only looked up
-                    // project-first above; say it exists instead of reporting it as unknown, so the
-                    // caller does not have to guess that includeStubModules was the missing flag.
-                    if (!includeStubModules) {
-                        val repository = mpsProject.repository
-                        when {
-                            resolveModel(repository, startingPoint) != null ->
-                                return@executeShortReadOnEdt filteredOutStartingPoint(startingPoint, "model")
-                            resolveModule(repository, startingPoint) != null ->
-                                return@executeShortReadOnEdt filteredOutStartingPoint(startingPoint, "module")
-                        }
-                    }
-
-                    errJson("Starting point '$startingPoint' not found", McpErrorCode.NOT_FOUND)
                 } else {
                     val modules = if (includeStubModules) {
                         mpsProject.repository.modules
@@ -429,6 +362,113 @@ class JetBrainsMPSProjectMcpToolset(
                 }
             }
         }
+    }
+
+    @McpTool
+    @McpDescription(
+        """
+        Reads a model or a module as text: every root with its subtree, one line per node in the `AGENTIC VIEW` notation of `mps_mcp_print_node` (structure, node ids, reference targets, unset features), one section per model. Read-only text that no tool takes as input; JSON for scripts and blueprints stays `mps_mcp_get_project_structure` / `mps_mcp_print_node`.
+        `nodeDepth` bounds the levels below each root. Above `maxInlineBytes` the printout is cut breadth-first across all roots (the roots first; a node with unprinted descendants ends in (+N)) instead of written to a file, unless even the root lines do not fit (then `data` is the path of a raw `.txt` file). A node reference prints that node as `mps_mcp_print_node` AGENTIC VIEW does.
+        See `mps-mcp-workflow/references/analysis-tools/print-node-agentic-view.md`.
+    """
+    )
+    suspend fun mps_mcp_get_compact_project_structure(
+        @McpDescription("Required. A model reference or qualified model name, a module reference or name, or a root-node reference, resolved as by mps_mcp_get_project_structure (node, then model, then module); models and modules of libraries and other open projects included.") startingPoint: String = "",
+        @McpDescription("How many levels to print below each root: -1 (default) for the whole tree, 0 for the root lines only, n for n levels.") nodeDepth: Int = -1,
+        @McpDescription("Inline the printout in `data` when it is at most this many characters (default 20000); a larger printout is cut instead of written to a file, unless even the root lines do not fit.") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES,
+    ): String {
+        rejectMissingParameters(
+            "mps_mcp_get_compact_project_structure",
+            RequiredParameter(
+                "startingPoint",
+                startingPoint,
+                "a model reference or qualified model name, a module reference or name, or a root-node reference",
+            ),
+        )?.let { return it }
+        return withMpsProject("Reading MPS project structure as AGENTIC VIEW") { mpsProject ->
+            executeShortReadOnEdt(mpsProject) {
+                val renderer = agenticViewRenderer(mpsProject)
+                val rootsExceed = "The root lines alone exceed"
+                val (rendering, floorExceeds, smaller) = when (val resolved = resolveStartingPoint(mpsProject, startingPoint, includeStubModules = true)) {
+                    is StartingPoint.Node -> Triple(
+                        renderer.render(resolved.node, nodeDepth), "The node alone exceeds", "print a child node for a smaller printout",
+                    )
+                    is StartingPoint.Model -> Triple(
+                        renderer.render(listOf(resolved.model), nodeDepth), rootsExceed, "print the roots you need by their references for a smaller printout",
+                    )
+                    is StartingPoint.Module -> Triple(
+                        renderer.render(resolved.module.models.toList(), nodeDepth, resolved.module.moduleName ?: ""), rootsExceed,
+                        "print one of its models for a smaller printout",
+                    )
+                    is StartingPoint.Rejected -> return@executeShortReadOnEdt resolved.envelope
+                }
+                agenticViewResult(
+                    rendering, maxInlineBytes, linkedMapOf("models" to rendering.sections.size, "roots" to rendering.roots), emptyList(),
+                    floorExceeds, smaller,
+                )
+            }
+        }
+    }
+
+    /** What a `startingPoint` resolved to: a node, a model, a module, or the error envelope to answer with. */
+    private sealed interface StartingPoint {
+        class Node(val node: SNode) : StartingPoint
+        class Model(val model: SModel) : StartingPoint
+        class Module(val module: SModule) : StartingPoint
+        class Rejected(val envelope: String) : StartingPoint
+    }
+
+    /**
+     * Resolves [startingPoint] as a transient node, model or module a make kept, else as a node, a model and a module,
+     * in that order. Without [includeStubModules] only the selected project's models and modules are taken, and a
+     * library or foreign one is rejected with a pointer to that flag rather than reported as unknown.
+     */
+    private fun resolveStartingPoint(mpsProject: MPSProject, startingPoint: String, includeStubModules: Boolean): StartingPoint {
+        // A transient module, model or node a make kept belongs to no project, so the project-first
+        // lookups below never return it; it is addressed by reference only.
+        when (val transient = transientStartingPoint(mpsProject.repository, startingPoint)) {
+            is SNode -> return StartingPoint.Node(transient)
+            is SModel -> return StartingPoint.Model(transient)
+            is SModule -> return StartingPoint.Module(transient)
+        }
+        val nodeRef = if (includeStubModules) {
+            resolveNodeReferencePreferringProject(mpsProject, startingPoint)
+        } else {
+            resolveNodeReference(mpsProject, startingPoint)
+        }
+        nodeRef?.resolve(mpsProject.repository)?.let { return StartingPoint.Node(it) }
+
+        val model = if (includeStubModules) {
+            resolveModelPreferringProject(mpsProject, startingPoint)
+        } else {
+            resolveModel(mpsProject, startingPoint, projectOnly = true)
+        }
+        if (model != null) return StartingPoint.Model(model)
+
+        val module = if (includeStubModules) {
+            resolveModulePreferringProject(mpsProject, startingPoint)
+        } else {
+            resolveModule(mpsProject, startingPoint, projectOnly = true)
+        }
+        if (module != null) {
+            return if (includeStubModules || isModuleInSelectedProject(mpsProject, module)) {
+                StartingPoint.Module(module)
+            } else {
+                StartingPoint.Rejected(filteredOutStartingPoint(startingPoint, "module"))
+            }
+        }
+
+        // A library/stub model or module (e.g. `jetbrains.mps.scope`) is only looked up
+        // project-first above; say it exists instead of reporting it as unknown, so the
+        // caller does not have to guess that includeStubModules was the missing flag.
+        if (!includeStubModules) {
+            val repository = mpsProject.repository
+            when {
+                resolveModel(repository, startingPoint) != null -> return StartingPoint.Rejected(filteredOutStartingPoint(startingPoint, "model"))
+                resolveModule(repository, startingPoint) != null -> return StartingPoint.Rejected(filteredOutStartingPoint(startingPoint, "module"))
+            }
+        }
+        return StartingPoint.Rejected(errJson("Starting point '$startingPoint' not found", McpErrorCode.NOT_FOUND))
     }
 
     /** The transient node, model or module [startingPoint] references persistently, or null for anything else. */

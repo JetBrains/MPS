@@ -41,7 +41,7 @@ Append a **Final Summary** section containing, at minimum:
 4. **Unexpected failures** (success-expected calls that failed) — count + list of step ids.
 5. **Unexpected successes** (failure-expected calls that succeeded) — count + list of step ids.
 6. **Tools fully covered** — list. Should be every `mps_mcp_*` tool exercised across parts
-   01–13 (cross-check against `COVERAGE_MATRIX.md`, which lists all 45).
+   01–13 (cross-check against `COVERAGE_MATRIX.md`, which lists all 46).
 7. **Tools partially covered** — list with reason (expected: none for the `mps_mcp_*` tools —
    `GET_ASSIGNABLE_REFERENCES` `kindFilter` is now fully exercised by Step 10.12; list any tool
    whose step failed, plus `create_run_configuration`'s `IMainClass` path, which is documented

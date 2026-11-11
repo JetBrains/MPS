@@ -71,6 +71,75 @@ class PrintNodeGridTextIntegrationTest : McpIntegrationTestBase() {
         assertTrue(envelope.toString(), envelope.get("ok").asBoolean)
         assertNull(envelope.toString(), envelope.getAsJsonObject("details").get("textRenderer"))
         assertNull(envelope.toString(), envelope.get("warnings"))
+        val text = envelope.get("data").asString
+        assertTrue(text, text.lines().none { it.endsWith(" ") || it.endsWith("\t") })
+        assertFalse(text, text.endsWith("\n"))
+        inEditor(ref) { root ->
+            val message = "no block of several rows inside an indent line: exactly renderText()"
+            assertEquals(message, root.renderText().text, CellPlainText.render(root))
+        }
+    }
+
+    @Test
+    fun `a ConceptBehavior with nested indent collections and a constructor block prints exactly renderText`() {
+        val ref = createConceptBehaviorRoot("PlainBehavior")
+        inEditor(ref) { root ->
+            assertNull(CellGridText.gridReason(root, NonTextCells.collect(root)))
+            val text = root.renderText().text
+            assertTrue(text, text.contains("constructor"))
+            assertEquals(text, CellPlainText.render(root))
+        }
+    }
+
+    @Test
+    fun `a ConceptDeclaration with two child links prints both under children, before the references`() {
+        val ref = createConceptRoot(
+            "PlainTwoLinks",
+            childrenJson = """[ { "role": "trueBranch", "target": "jetbrains.mps.lang.core.structure.BaseConcept" },
+                { "role": "falseBranch", "target": "jetbrains.mps.lang.core.structure.BaseConcept",
+                  "multiple": true, "optional": true } ]""",
+            propertiesJson = """[ { "name": "first", "type": "integer" }, { "name": "second", "type": "string" } ]""",
+        )
+        val labels = inEditor(ref) { root ->
+            assertNull(CellGridText.gridReason(root, NonTextCells.collect(root)))
+            labelTexts(root)
+        }
+        val envelope = JsonParser.parseString(runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_print_node(ref, format = "PLAIN TEXT")
+        }).asJsonObject
+        assertTrue(envelope.toString(), envelope.get("ok").asBoolean)
+        assertNull(envelope.toString(), envelope.getAsJsonObject("details").get("textRenderer"))
+        assertNull(envelope.toString(), envelope.get("warnings"))
+        val text = envelope.get("data").asString
+        val lines = text.lines()
+        fun row(prefix: String) = lines.indexOfFirst { it.trimStart().startsWith(prefix) }
+            .also { assertTrue("no '$prefix' line in:\n$text", it >= 0) }
+        val properties = row("properties:")
+        val first = row("first :")
+        val second = row("second :")
+        val children = row("children:")
+        val trueBranch = row("trueBranch :")
+        val falseBranch = row("falseBranch :")
+        val references = row("references:")
+        assertTrue(text, properties < first && first < second && second < children)
+        assertTrue(text, children < trueBranch && trueBranch < falseBranch && falseBranch < references)
+        assertEquals(text, lines[trueBranch].indexOf("trueBranch"), lines[falseBranch].indexOf("falseBranch"))
+        assertEquals(text, lines[first].indexOf("first"), lines[second].indexOf("second"))
+        for (label in labels) assertTrue("'$label' missing from:\n$text", text.contains(label))
+    }
+
+    @Test
+    fun `trimming a grid text keeps column positions and inner blank lines`() {
+        val ref = createConceptRoot("GridTrim")
+        inEditor(ref) { root ->
+            root.style.set(StyleAttributes.TABLE_COMPONENT, TableComponent.VERTICAL_COLLECTION)
+            val grid = CellGridText.render(root, emptyList())!!.text
+            val trimmed = trimTrailingWhitespace(grid)
+            assertTrue(trimmed, trimmed.lines().none { it.endsWith(" ") })
+            assertFalse(trimmed, trimmed.endsWith("\n"))
+            assertEquals(grid.lines().map { it.trimEnd() }.dropLastWhile { it.isEmpty() }, trimmed.lines())
+        }
+        assertEquals("a\n\n  b", trimTrailingWhitespace("a  \n \n  b \n\n  "))
     }
 
     @Test
