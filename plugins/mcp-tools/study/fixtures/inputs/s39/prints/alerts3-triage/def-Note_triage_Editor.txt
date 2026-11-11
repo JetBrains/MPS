@@ -1,0 +1,7 @@
+triage editor for concept Note
+  node cell layout:
+     [- # { text } -]
+
+  inspected cell layout:
+    <choose cell model>
+

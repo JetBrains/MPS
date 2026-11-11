@@ -1,0 +1,14 @@
+triage editor for concept Alert
+  node cell layout:
+     [-
+ # AlertHeader #
+   ?[- notify (- % notify % /empty cell: <default> -) -]
+   [- when % condition % -]
+ -]
+
+  inspected cell layout:
+     [-
+ severity: { severity }
+ muted: { muted }
+ -]
+

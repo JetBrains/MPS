@@ -1,0 +1,8 @@
+1: alert → #000080, bold, upright | book → #000080, bold, upright | Ops → default, plain, upright
+2: # → default, bold, upright | production → default, plain, upright | alerts → default, plain, upright
+3: channel → #000080, bold, upright | pager → default, plain, upright | -> → default, bold, upright | pager://ops → default, plain, upright
+4: channel → #000080, bold, upright | mail → default, plain, upright | -> → default, bold, upright | ops@example.com → default, plain, upright
+5: cpuLimit → default, plain, upright | = → default, bold, upright | 90 → default, plain, upright
+7: alert → #000080, bold, upright | HighCpu → default, plain, upright | [ → default, bold, upright | high → #7c007c, bold, upright | ] → default, bold, upright
+8: alert → #000080, bold, upright | LowDisk → default, plain, upright | [ → default, bold, upright | low → #7c007c, bold, upright | ] → default, bold, upright
+9: muted → #000080, bold, upright | alert → #000080, bold, upright | Heartbeat → default, plain, upright | [ → default, bold, upright | low → #7c007c, bold, upright | ] → default, bold, upright

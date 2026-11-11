@@ -1,0 +1,19 @@
+alert book Night
+  # paging rules for the night shift
+  channel pager -> pager://night
+  channel mail -> night@example.com
+  channel chat -> chat://night
+  threshold cpuLimit = 90
+  threshold diskFloor = 10
+
+  alert HighCpu [high]
+    when cpu over 5 min > cpuLimit
+    notify pager, mail
+  alert LowDisk [low]
+    when disk < diskFloor and not ( memory > cpuLimit + 5 )
+    notify mail
+  muted alert Heartbeat [high]
+    when uptime < 1
+  muted alert Backlog [low]
+    when queue over 10 min > 100
+    notify chat, mail, pager

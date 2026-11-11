@@ -1,0 +1,4 @@
+concept editor context hints AlertHints
+  hints:
+    ID: compact Presentation: Compact
+    ID: triage Presentation: Triage

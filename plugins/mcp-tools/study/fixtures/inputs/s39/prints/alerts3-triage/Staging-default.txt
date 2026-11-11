@@ -1,0 +1,3 @@
+alert book Staging
+  channel chat -> chat://staging
+  cpuLimit = 95

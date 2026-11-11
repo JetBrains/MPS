@@ -1,0 +1,8 @@
+editor component AlertHeader
+  overrides:
+    <no EditorComponent>
+  applicable concept:
+    Alert
+
+  component cell layout:
+     [- ?^ muted alert { name } [ { severity } ] -]
