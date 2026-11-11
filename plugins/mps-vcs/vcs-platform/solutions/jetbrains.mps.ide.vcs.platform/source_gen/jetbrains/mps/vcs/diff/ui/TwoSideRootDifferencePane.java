@@ -75,11 +75,6 @@ import jetbrains.mps.vcs.diff.ui.common.DiffSettingsUtil;
 
   @Override
   protected DiffChangeGroupLayout.SplitterRepainter getSplitterRepainter(DiffEditor leftEditor, DiffEditor rightEditor) {
-    assert leftEditor == getOldEditor() && rightEditor == getNewEditor();
-    return getSplitterRepainter();
-  }
-
-  private DiffChangeGroupLayout.SplitterRepainter getSplitterRepainter() {
     return new DiffChangeGroupLayout.SplitterRepainter() {
       @Override
       public void repaintSplitter() {

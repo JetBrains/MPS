@@ -26951,40 +26951,6 @@
         <ref role="3uigEE" to="hdhb:6Gx$enTWXiW" resolve="DiffChangeGroupLayout.SplitterRepainter" />
       </node>
       <node concept="3clFbS" id="7qyF42EhBcq" role="3clF47">
-        <node concept="1gVbGN" id="7qyF42EhXdV" role="3cqZAp">
-          <node concept="1Wc70l" id="7qyF42EhXdW" role="1gVkn0">
-            <node concept="3clFbC" id="7qyF42EhXdX" role="3uHU7w">
-              <node concept="1rXfSq" id="7qyF42EhXdY" role="3uHU7w">
-                <ref role="37wK5l" node="7qyF42Dq2AP" resolve="getNewEditor" />
-              </node>
-              <node concept="37vLTw" id="7qyF42EhXdZ" role="3uHU7B">
-                <ref role="3cqZAo" node="7qyF42EhBcl" resolve="rightEditor" />
-              </node>
-            </node>
-            <node concept="3clFbC" id="7qyF42EhXe0" role="3uHU7B">
-              <node concept="37vLTw" id="7qyF42EhXe1" role="3uHU7B">
-                <ref role="3cqZAo" node="7qyF42EhBcj" resolve="leftEditor" />
-              </node>
-              <node concept="1rXfSq" id="7qyF42EhXe2" role="3uHU7w">
-                <ref role="37wK5l" node="7qyF42DpTVG" resolve="getOldEditor" />
-              </node>
-            </node>
-          </node>
-        </node>
-        <node concept="3clFbF" id="7qyF42EhBct" role="3cqZAp">
-          <node concept="1rXfSq" id="7qyF42EhMmq" role="3clFbG">
-            <ref role="37wK5l" node="59GNzBiuwdf" resolve="getSplitterRepainter" />
-          </node>
-        </node>
-      </node>
-      <node concept="2AHcQZ" id="7qyF42EhBcr" role="2AJF6D">
-        <ref role="2AI5Lk" to="wyt6:~Override" resolve="Override" />
-      </node>
-    </node>
-    <node concept="2tJIrI" id="7qyF42EhGzN" role="jymVt" />
-    <node concept="3clFb_" id="59GNzBiuwdf" role="jymVt">
-      <property role="TrG5h" value="getSplitterRepainter" />
-      <node concept="3clFbS" id="59GNzBiuwdg" role="3clF47">
         <node concept="3clFbF" id="6Gx$enTY5Qf" role="3cqZAp">
           <node concept="2ShNRf" id="6Gx$enTY5Qh" role="3clFbG">
             <node concept="YeOm9" id="6Gx$enTY5Qi" role="2ShVmc">
@@ -27025,12 +26991,11 @@
           </node>
         </node>
       </node>
-      <node concept="3Tm6S6" id="6Gx$enTXKcC" role="1B3o_S" />
-      <node concept="3uibUv" id="59GNzBiuwdh" role="3clF45">
-        <ref role="3uigEE" to="hdhb:6Gx$enTWXiW" resolve="DiffChangeGroupLayout.SplitterRepainter" />
+      <node concept="2AHcQZ" id="7qyF42EhBcr" role="2AJF6D">
+        <ref role="2AI5Lk" to="wyt6:~Override" resolve="Override" />
       </node>
     </node>
-    <node concept="2tJIrI" id="59GNzBiuwdi" role="jymVt" />
+    <node concept="2tJIrI" id="7qyF42EhGzN" role="jymVt" />
     <node concept="3clFb_" id="59GNzBiuwdA" role="jymVt">
       <property role="TrG5h" value="rehighlight" />
       <node concept="3Tm1VV" id="59GNzBiuwdB" role="1B3o_S" />
