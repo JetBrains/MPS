@@ -4,7 +4,7 @@
 
 `nodeReference` must be a **node** reference (`r:<uuid>(name)/<node-id>`). A model reference (`r:<uuid>(name)`) or qualified model name is rejected with INVALID_REQUEST that names the model and a retry line for `mps_mcp_get_project_structure` (`startingPoint`, `includeNodes=true`). `mps_mcp_check_root_node_problems` accepts those model forms in `nodeReference`.
 
-`data` is inline when the printout is at most `maxInlineBytes` characters (default 20000) and the absolute path of a temp file above that; the file holds the same `{ok, data}` envelope (`AGENTIC VIEW` is cut by depth instead; its rare file is raw text). Pass a small `maxInlineBytes` to force the file form, or a large one to keep a big dump inline. For `JSON`, the shape depends on `deep`:
+`data` is inline when the printout is at most `maxInlineBytes` characters (default 20000) and the absolute path of a temp file above that; the file holds the same `{ok, data}` envelope (`AGENTIC VIEW` is cut to fit instead; its rare file is raw text). Pass a small `maxInlineBytes` to force the file form, or a large one to keep a big dump inline. For `JSON`, the shape depends on `deep`:
 
 - `deep=true` recursively inlines all descendants.
 - `deep=false` (shallow) lists properties, children roles with references, and reference roles.
@@ -18,7 +18,7 @@
 `HTML`, `PLAIN TEXT` and `IMAGE` render the node's editor. Which alternative editor (editor hint) is used is chosen with `editorHints`:
 
 - Omitted: the project's hint settings (Settings, "Editor hints"). `[]`: no hints. Otherwise a hint FQ name (`my.lang.editor.Views.tabular`), a short id (`tabular`), or an array of them, given as a real JSON array or as a string (`"[\"tabular\"]"`).
-- Resolution: the node's model catalog first (hints of the languages the model uses, extended and aggregated ones), then the global catalog of every deployed language; a global-only hint is applied with a warning. An unknown or ambiguous value fails with INVALID_REQUEST (`'x' is ambiguous (<fq1>, <fq2>); pass the FQ name`), and `details.editorHints.available` of the error lists the model's hints.
+- Resolution: the node's model catalog first (hints of the languages the model uses, extended and aggregated ones), then the global catalog of every deployed language; a global-only hint is applied with a warning (and `available` then takes the full form). An unknown or ambiguous value fails with INVALID_REQUEST (`'x' is ambiguous (<fq1>, <fq2>); pass the FQ name`), and `details.editorHints.available` of the error lists the model's hints.
 - `reflective` (`jetbrains.mps.lang.core.editor.reflective`), a runtime hint, prints a node's raw structure; `AGENTIC VIEW` adds ids and reference targets.
 - Ignored with a warning for `JSON` and `AGENTIC VIEW`. Hints pushed in an open IDE editor tab are not seen; only the project settings and this parameter count.
 
@@ -28,12 +28,12 @@
 {"ok":true,"data":"...","details":{"editorHints":{
   "source":"projectSettings",                       // or "request"
   "applied":[],                                      // FQ names in effect
-  "available":["my.lang.editor.Views.tabular", ...], // compact: FQ names only (source=projectSettings)
-  "hiddenCount":3,                                   // hints with showInUI=false, not listed in compact form
+  "available":["my.lang.editor.Views.tabular", ...], // compact: FQ names only
+  "hiddenCount":3,                                   // hints with showInUI=false, not listed in compact form (an unknown hint value returns the full list)
   "unloadedLanguages":["my.lang"]}}}                 // only when a used language has no runtime
 ```
 
-When `editorHints` is passed, `available` is the full form instead: `{fqName, id, presentation, language, showInUI}` per hint, including the hidden ones and the `reflective` entry. Entries of `jetbrains.mps.lang.core` are not alternative notations of your language: `include_deprecated_elements` and `ShowSuppressedErrors` are display toggles, `comment` prints a node the way it looks when commented out; the alternatives are the entries of the node's own languages. A language without runtime cannot contribute: build it (see `unloadedLanguages`).
+`available` is the full form `{fqName, id, presentation, language, showInUI}` per hint, hidden ones and the `reflective` entry included, only in an error or after a global-only hint warning. Entries of `jetbrains.mps.lang.core` are display toggles (`include_deprecated_elements`, `ShowSuppressedErrors`) or `comment` (prints a node as when commented out), not notations of your language. A language without runtime cannot contribute: build it (see `unloadedLanguages`).
 
 **`IMAGE`** paints the projection to a PNG. `data` is the absolute path of a temp `.png` (never inline; `maxInlineBytes` does not apply); open it with a file-read tool that shows images. `details.image` is `{width, height, mediaType, scale}`. It uses the IDE colour scheme. Above 16 Mpx the image is clipped to its top-left part (`details.image.clipped: true` plus a warning): print a sub-node instead. The envelope still carries `details.editorHints`.
 

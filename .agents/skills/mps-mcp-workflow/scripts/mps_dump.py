@@ -27,7 +27,9 @@ CLI:
   mps_dump.py roots  <file> [--concept C]           name, concept, reference per root
   mps_dump.py models <file>                         module, model, root count per model
   mps_dump.py node   <file> <nameOrRef>             properties, references, children
-  mps_dump.py tree   <file> [nameOrRef] [--depth N] indented subtree, one line per node
+  mps_dump.py tree   <file> [nameOrRef] [--depth N] indented subtree, one line per node; a default
+                                                    property ends with `*`, a target in another
+                                                    model with `@<model name>`
   mps_dump.py shape  <conceptDetailsFile> [--concept C]
   mps_dump.py count  <file>                         roots per concept
   mps_dump.py --list-tools                          MPS MCP tools/parameters relied upon
@@ -611,6 +613,19 @@ def _node_id(reference):
     return (reference or "").rsplit("/", 1)[-1]
 
 
+def _model_of(reference):
+    """The model of a node reference `[<moduleId>/]<modelId>([<moduleName>/]<modelName>)/<id>` as (modelId, name),
+    or None. A java stub's name is empty in the reference (`java:java.lang(JDK/)`); its model id gives the name."""
+    cut = (reference or "").rfind(")/")
+    if cut < 0:
+        return None
+    model = reference[:cut]
+    open_paren = model.find("(")
+    model_id = model[:open_paren].rsplit("/", 1)[-1]
+    name = model[open_paren + 1:].split("/", 1)[-1]
+    return model_id, name or model_id.split(":", 1)[-1]
+
+
 def _tree_value(value):
     if not value or any(c.isspace() for c in value):
         return json.dumps(value, ensure_ascii=False)
@@ -625,19 +640,29 @@ def _tree_line(node, role, args):
         detail["name"] = (node["name"], "set")
     for name in sorted(detail):
         value, source = detail[name]
-        if source != "set":
+        if source == "unset":
             continue
         if not args.all and (name in TREE_NOISE_PROPERTIES
                              or (name == "resolveInfo" and value == node.get("name"))):
             continue
-        parts.append("%s=%s" % (name, _tree_value(value)))
+        parts.append("%s=%s%s" % (name, _tree_value(value), "*" if source == "default" else ""))
     references = refs(node)
     if references:
         parts.append("->")
         parts.extend("%s=%s" % (r, (t or "<unresolved>") if args.target_refs
-                                else _tree_value(n or t or "<unresolved>"))
+                                else _tree_target(node, t, n))
                      for r, t, n in references)
     return " ".join(parts)
+
+
+def _tree_target(node, target_reference, target_name):
+    """The target's name; `@<model name>` after it when the target is in another model than `node`."""
+    text = _tree_value(target_name or target_reference or "<unresolved>")
+    target_model = _model_of(target_reference)
+    node_model = _model_of(node.get("reference"))
+    if target_model and (not node_model or target_model[0] != node_model[0]):
+        text += "@" + target_model[1]
+    return text
 
 
 def _tree_walk(node, role, level, args, lines, stats):
