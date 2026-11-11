@@ -82,15 +82,6 @@ public class DiffEditorsGroup {
     }
   }
 
-  /**
-   * 
-   * @deprecated 
-   */
-  @Deprecated
-  public void synchronizeViewWithOther(DiffEditor thisDiffEditor, DiffEditor otherDiffEditor) {
-    synchronizeViewWithOther(thisDiffEditor, otherDiffEditor, false);
-  }
-
   public void synchronizeViewWithOther(final DiffEditor thisDiffEditor, final DiffEditor otherDiffEditor, boolean inspector) {
     if (thisDiffEditor == otherDiffEditor) {
       return;
@@ -98,15 +89,17 @@ public class DiffEditorsGroup {
     final EditorComponent thisEditor = thisDiffEditor.getEditorComponent(inspector);
     final EditorComponent otherEditor = otherDiffEditor.getEditorComponent(inspector);
 
-    final SRepository editorRepo = thisEditor.getEditorContext().getRepository();
-    assert editorRepo == otherEditor.getEditorContext().getRepository();
+    // XXX used to assert both editors come from the same repo, as we need to lock one while working with nodes of both editors.
+    //    However, it's perfectly ok for editors to belong to different repositories, and the algorithm below shall respect that.
+    //    Meanwhile, an attempt to tell editors working against real (project) repo by looking at read-only flag (DiffEditor receives one for all models but one)
+    final SRepository editorRepo = (thisEditor.isReadOnly() ? otherEditor.getEditorContext().getRepository() : thisEditor.getEditorContext().getRepository());
     editorRepo.getModelAccess().runReadAction(() -> {
       int viewY = thisEditor.getViewport().getViewPosition().y;
       SNode visibleNode = thisEditor.getEditedNode();
       if (viewY > thisEditor.getRootCell().getY()) {
-        visibleNode = check_s6qw4f_a0a0c0a0a6a12(thisEditor.findCellWeak(1, viewY));
+        visibleNode = check_s6qw4f_a0a0c0a0a8a91(thisEditor.findCellWeak(1, viewY));
       }
-      SModel otherModel = check_s6qw4f_a0d0a0a6a12(otherEditor.getEditedNode());
+      SModel otherModel = check_s6qw4f_a0d0a0a8a91(otherEditor.getEditedNode());
       if (otherModel == null) {
         return;
       }
@@ -150,13 +143,13 @@ public class DiffEditorsGroup {
     @Override
     protected void selectionChangedTo(final jetbrains.mps.openapi.editor.EditorComponent component, final SingularSelection newSelection) {
       component.getEditorContext().getRepository().getModelAccess().runReadAction(() -> {
-        SNodeId selectionId = check_s6qw4f_a0a0a0a0a1w(check_s6qw4f_a0a0a0a0a0b22(newSelection.getEditorCell()));
+        SNodeId selectionId = check_s6qw4f_a0a0a0a0a1u(check_s6qw4f_a0a0a0a0a0b02(newSelection.getEditorCell()));
         if (selectionId != null) {
           DiffEditor diffEditor0 = getDiffEditor(component);
           for (DiffEditor diffEditor : ListSequence.fromList(myDiffEditors)) {
             jetbrains.mps.openapi.editor.EditorComponent mainEditor = diffEditor.getEditorComponent(false);
             SNodeId nodeId = mapID(diffEditor0, selectionId, diffEditor);
-            SNode node = (nodeId != null ? check_s6qw4f_a0a2a1a1a0a0a0b22(check_s6qw4f_a0a0c0b0b0a0a0a1w(mainEditor.getEditedNode()), nodeId) : null);
+            SNode node = (nodeId != null ? check_s6qw4f_a0a2a1a1a0a0a0b02(check_s6qw4f_a0a0c0b0b0a0a0a1u(mainEditor.getEditedNode()), nodeId) : null);
             diffEditor.inspect(node);
           }
         }
@@ -196,37 +189,37 @@ public class DiffEditorsGroup {
   public List<DiffEditor> getEditors() {
     return myDiffEditors;
   }
-  private static SNode check_s6qw4f_a0a0c0a0a6a12(EditorCell checkedDotOperand) {
+  private static SNode check_s6qw4f_a0a0c0a0a8a91(EditorCell checkedDotOperand) {
     if (null != checkedDotOperand) {
       return checkedDotOperand.getSNode();
     }
     return null;
   }
-  private static SModel check_s6qw4f_a0d0a0a6a12(SNode checkedDotOperand) {
+  private static SModel check_s6qw4f_a0d0a0a8a91(SNode checkedDotOperand) {
     if (null != checkedDotOperand) {
       return checkedDotOperand.getModel();
     }
     return null;
   }
-  private static SNodeId check_s6qw4f_a0a0a0a0a1w(SNode checkedDotOperand) {
+  private static SNodeId check_s6qw4f_a0a0a0a0a1u(SNode checkedDotOperand) {
     if (null != checkedDotOperand) {
       return checkedDotOperand.getNodeId();
     }
     return null;
   }
-  private static SNode check_s6qw4f_a0a0a0a0a0b22(EditorCell checkedDotOperand) {
+  private static SNode check_s6qw4f_a0a0a0a0a0b02(EditorCell checkedDotOperand) {
     if (null != checkedDotOperand) {
       return checkedDotOperand.getSNode();
     }
     return null;
   }
-  private static SNode check_s6qw4f_a0a2a1a1a0a0a0b22(SModel checkedDotOperand, SNodeId nodeId) {
+  private static SNode check_s6qw4f_a0a2a1a1a0a0a0b02(SModel checkedDotOperand, SNodeId nodeId) {
     if (null != checkedDotOperand) {
       return checkedDotOperand.getNode(nodeId);
     }
     return null;
   }
-  private static SModel check_s6qw4f_a0a0c0b0b0a0a0a1w(SNode checkedDotOperand) {
+  private static SModel check_s6qw4f_a0a0c0b0b0a0a0a1u(SNode checkedDotOperand) {
     if (null != checkedDotOperand) {
       return checkedDotOperand.getModel();
     }
