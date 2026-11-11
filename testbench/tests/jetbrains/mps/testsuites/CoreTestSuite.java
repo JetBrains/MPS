@@ -51,6 +51,7 @@ import org.junit.runners.model.RunnerBuilder;
     jetbrains.mps.smodel.TreeIteratorTest.class,
     jetbrains.mps.smodel.SModelReferenceTest.class,
     jetbrains.mps.smodel.adapter.SAdapterEqualityTest.class,
+    jetbrains.mps.smodel.adapter.InvalidEnumerationLiteralTest.class,
     jetbrains.mps.smodel.ModelImplementationTest.class,
     jetbrains.mps.smodel.ModelListenerTest.class,
     jetbrains.mps.smodel.ModelChangeListenerTest.class,
