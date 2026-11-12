@@ -17,11 +17,15 @@ package jetbrains.mps.smodel.adapter;
 
 import jetbrains.mps.smodel.adapter.ids.MetaIdFactory;
 import jetbrains.mps.smodel.adapter.ids.PrimitiveTypeId;
+import jetbrains.mps.smodel.adapter.ids.SConceptId;
 import jetbrains.mps.smodel.adapter.ids.SDataTypeId;
 import jetbrains.mps.smodel.adapter.structure.types.InvalidEnumerationLiteral;
 import jetbrains.mps.smodel.adapter.structure.types.SEnumerationAdapter;
+import jetbrains.mps.smodel.behaviour.BHReflection;
 import jetbrains.mps.smodel.language.ConceptRegistry;
 import jetbrains.mps.smodel.language.LanguageRegistry;
+import jetbrains.mps.smodel.language.StructureRegistry;
+import jetbrains.mps.smodel.runtime.ConceptDescriptor;
 import jetbrains.mps.smodel.runtime.DataTypeDescriptor;
 import jetbrains.mps.smodel.runtime.EnumerationDescriptor;
 import org.jetbrains.annotations.NotNull;
@@ -36,33 +40,63 @@ import java.util.Collections;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 
 @SuppressWarnings("removal")
 public class InvalidEnumerationLiteralTest {
   private static final SDataTypeId ENUM_ID = MetaIdFactory.dataTypeId(0x1234L, 0x5678L, 42L);
 
-  private static Field instanceField() throws Exception {
-    Field field = ConceptRegistry.class.getDeclaredField("INSTANCE");
-    field.setAccessible(true);
-    return field;
-  }
-
-  // SEnumerationAdapter is final and reads the ConceptRegistry singleton, so a synthetic descriptor needs the swap.
+  // SEnumerationAdapter is final and reads ConceptRegistry.getInstance().
+  // Never construct a replacement ConceptRegistry when one is already initialized:
+  // ConceptRegistry's constructor creates BehaviorRegistryImpl and ConstraintsRegistry,
+  // which overwrite global static registries in BHReflection, SMethodBuilder, and ConstraintsInit.
   private static void withRegistry(@Nullable PrimitiveTypeId rawType, ThrowingRunnable body) throws Exception {
-    Field field = instanceField();
-    ConceptRegistry saved = (ConceptRegistry) field.get(null);
+    ConceptRegistry existing = ConceptRegistry.getInstance();
+    if (existing != null) {
+      Field structureField = ConceptRegistry.class.getDeclaredField("myStructureRegistry");
+      structureField.setAccessible(true);
+      StructureRegistry savedStructure = (StructureRegistry) structureField.get(existing);
+      StructureRegistry fakeStructure = new StructureRegistry(null) {
+        @Nullable
+        @Override
+        public ConceptDescriptor getConceptDescriptor(@NotNull SConceptId concept) {
+          return savedStructure.getConceptDescriptor(concept);
+        }
+
+        @Nullable
+        @Override
+        public DataTypeDescriptor getDataTypeDescriptor(SDataTypeId id) {
+          return ENUM_ID.equals(id) ? new TestEnumeration(rawType) : savedStructure.getDataTypeDescriptor(id);
+        }
+
+        @Override
+        public void clear() {
+          savedStructure.clear();
+        }
+      };
+      structureField.set(existing, fakeStructure);
+      try {
+        body.run();
+      } finally {
+        structureField.set(existing, savedStructure);
+      }
+      return;
+    }
+
+    Field instanceField = ConceptRegistry.class.getDeclaredField("INSTANCE");
+    instanceField.setAccessible(true);
     ConceptRegistry fake = new ConceptRegistry(new LanguageRegistry(null, () -> null)) {
       @Nullable
       @Override
       public DataTypeDescriptor getDataTypeDescriptor(@NotNull SDataTypeId id) {
-        return new TestEnumeration(rawType);
+        return ENUM_ID.equals(id) ? new TestEnumeration(rawType) : null;
       }
     };
-    field.set(null, fake);
+    instanceField.set(null, fake);
     try {
       body.run();
     } finally {
-      field.set(null, saved);
+      instanceField.set(null, null);
     }
   }
 
@@ -110,6 +144,41 @@ public class InvalidEnumerationLiteralTest {
       assertEquals("d", literal.getName());
       assertEquals("d", literal.getPresentation());
     });
+  }
+
+  @Test
+  public void withRegistryPreservesInitializedBehaviorRegistry() throws Exception {
+    Field bhField = BHReflection.class.getDeclaredField("ourRegistry");
+    bhField.setAccessible(true);
+    ConceptRegistry preExisting = ConceptRegistry.getInstance();
+    if (preExisting != null) {
+      StructureRegistry structureBefore = preExisting.getStructureRegistry();
+      Object bhBefore = bhField.get(null);
+      withRegistry(null, () -> {
+        assertNull(new SEnumerationAdapter(ENUM_ID, "test.NoRawType").getRawMemberType());
+        assertSame(bhBefore, bhField.get(null));
+      });
+      assertSame(bhBefore, bhField.get(null));
+      assertSame(structureBefore, preExisting.getStructureRegistry());
+      return;
+    }
+
+    Field instanceField = ConceptRegistry.class.getDeclaredField("INSTANCE");
+    instanceField.setAccessible(true);
+    ConceptRegistry baseline = new ConceptRegistry(new LanguageRegistry(null, () -> null));
+    instanceField.set(null, baseline);
+    try {
+      StructureRegistry structureBefore = baseline.getStructureRegistry();
+      Object bhBefore = bhField.get(null);
+      withRegistry(null, () -> {
+        assertNull(new SEnumerationAdapter(ENUM_ID, "test.NoRawType").getRawMemberType());
+        assertSame(bhBefore, bhField.get(null));
+      });
+      assertSame(bhBefore, bhField.get(null));
+      assertSame(structureBefore, baseline.getStructureRegistry());
+    } finally {
+      instanceField.set(null, null);
+    }
   }
 
   private static class TestEnumeration implements EnumerationDescriptor {
