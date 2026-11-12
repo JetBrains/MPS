@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Set;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.BiConsumer;
@@ -198,27 +199,37 @@ import java.util.stream.StreamSupport;
     return rec.valueStream();
   }
 
-  /*package*/ LMSnapshot snapshot(@NotNull final TransitionTrace activeTransition) {
+  /*package*/ LMSnapshot snapshot(@NotNull final TransitionTrace activeTransition, @NotNull final Set<String> privateLabels) {
+    final PairList<String, SNode> conditionalRoots = new PairList<>();
+    myConditionalRoots.forEach((label, node) -> {
+      if (!privateLabels.contains(label)) {
+        conditionalRoots.add(label, node);
+      }
+    });
     final ArrayList<LabelRecordBase<InputKeyRecord, SNode>> records = new ArrayList<>();
     final ArrayList<SNode> values = new ArrayList<>();
     forEachWithInput((label, nm) -> {
-      nm.forEachRecord(record -> {
-        InputKeyRecord kr = InputKeyRecord.of(record.key(), activeTransition);
-        record.valuesInto(values);
-        LabelRecordBase<InputKeyRecord, SNode> lr = new LabelRecordBase<>(label, kr, null, values);
-        values.clear();
-        records.add(lr);
-      });
+      if (!privateLabels.contains(label)) {
+        nm.forEachRecord(record -> {
+          InputKeyRecord kr = InputKeyRecord.of(record.key(), record.keyPresentation(), activeTransition);
+          record.valuesInto(values);
+          LabelRecordBase<InputKeyRecord, SNode> lr = new LabelRecordBase<>(label, kr, null, values);
+          values.clear();
+          records.add(lr);
+        });
+      }
     });
     final ArrayList<LabelRecordBase<InputKeyRecord, SNode>> composites = new ArrayList<>();
     forEachComposite(lr -> {
-      InputKeyRecord k1 = lr.key1 != null ? InputKeyRecord.of(lr.key1, activeTransition) : null;
-      InputKeyRecord k2 = lr.key2 != null ? InputKeyRecord.of(lr.key2, activeTransition) : null;
-      // Note, lr.values are accessed by reference. Now that this code runs to major step end, AND there's only 1 snapshot per step,
-      // I can reuse them by reference as GM would be abandoned right after snapshot is made
-      composites.add(new LabelRecordBase<>(lr.label, k1, k2, lr.values));
+      if (!privateLabels.contains(lr.label)) {
+        InputKeyRecord k1 = lr.key1 != null ? InputKeyRecord.of(lr.key1, lr.key1Presentation, activeTransition) : null;
+        InputKeyRecord k2 = lr.key2 != null ? InputKeyRecord.of(lr.key2, lr.key2Presentation, activeTransition) : null;
+        // Note, lr.values are accessed by reference. Now that this code runs to major step end, AND there's only 1 snapshot per step,
+        // I can reuse them by reference as GM would be abandoned right after snapshot is made
+        composites.add(new LabelRecordBase<>(lr.label, k1, k2, lr.values));
+      }
     });
-    return new LMSnapshot(records, myConditionalRoots.copy(), composites);
+    return new LMSnapshot(records, conditionalRoots, composites);
   }
 
   private static final class KK {

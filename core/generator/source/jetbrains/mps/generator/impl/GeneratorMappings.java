@@ -312,25 +312,9 @@ public final class GeneratorMappings {
     // work doesn't leave me too much room for creativity here.
     // What is beneficial is that we now keep only labels we gonna need (i.e. not complete GM with
     // copied/template nodes)
-    // FIXME now with LMSnapshot, which seems to be 4th generation of GM snapshot, we shall create one right away, without intermediate LMCollector
-    final LMCollector exposed = new LMCollector();
+    // Now with LMSnapshot, which seems to be 4th generation of GM snapshot, we create one right away
     final Set<String> privateLabels = myPrivateLabels.stream().map(LabelDeclaration::getName).collect(Collectors.toUnmodifiableSet());
-    myLabeledMappings.forEachNoInput((l, n) -> {
-      if (!privateLabels.contains(l)) {
-        exposed.add(l, n);
-      }
-    });
-    myLabeledMappings.forEachWithInput((l, nm) -> {
-      if (!privateLabels.contains(l)) {
-        exposed.add(l, nm);
-      }
-    });
-    myLabeledMappings.forEachComposite(lr -> {
-      if (!privateLabels.contains(lr.label)) {
-        exposed.addComposite(lr);
-      }
-    });
-    return exposed.snapshot(transitionTrace);
+    return myLabeledMappings.snapshot(transitionTrace, privateLabels);
   }
 
   private static final class TagNodeList {

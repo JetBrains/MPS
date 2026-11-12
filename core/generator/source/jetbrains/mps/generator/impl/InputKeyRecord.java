@@ -55,7 +55,7 @@ public final class InputKeyRecord {
     this.nearestOrigin = nearestOrigin;
   }
 
-  /*package*/ static InputKeyRecord of(@NotNull SNode key, @NotNull TransitionTrace originTrace) {
+  /*package*/ static InputKeyRecord of(@NotNull SNode key, String keyPresentation, @NotNull TransitionTrace originTrace) {
     SNodeId inputNodeId = originTrace.hasOrigin(key) ? originTrace.getOrigin(key) : key.getNodeId();
     SModel inputNodeModel = key.getModel();
     final SModelReference mr;
@@ -77,7 +77,7 @@ public final class InputKeyRecord {
     // XXX perhaps, counting origin depth could help comparator, too.
     //     Depth was implicitly in original SNodeComparator due to iteration over 2 parent hierarchies simultaneously.
     //     Now I want to try without it - after all, it's not quite an attribute of "input node/key" itself, rather of its use.
-    return new InputKeyRecord(key.getReference(), inputNodeId, SNodeUtil.getPresentation(key), mr, origin, nearestOrigin);
+    return new InputKeyRecord(key.getReference(), inputNodeId, keyPresentation, mr, origin, nearestOrigin);
   }
 
   private static boolean isCheckpointModel(SModel m)  {

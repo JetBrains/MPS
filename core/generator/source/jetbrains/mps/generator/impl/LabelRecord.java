@@ -16,6 +16,7 @@
 package jetbrains.mps.generator.impl;
 
 import jetbrains.mps.generator.impl.LMCollector.OneOrMany;
+import jetbrains.mps.smodel.SNodeUtil;
 import org.jetbrains.mps.openapi.model.SNode;
 
 /**
@@ -25,14 +26,20 @@ import org.jetbrains.mps.openapi.model.SNode;
  */
 /*package*/ final class LabelRecord extends LabelRecordBase<SNode, SNode> {
   final boolean composite;
+  final String key1Presentation;
+  final String key2Presentation;
 
   LabelRecord(/*NotNull*/ String label, SNode in, /*NotNull*/ OneOrMany<SNode> out) {
     super(label, in, null, out);
     composite = false;
+    key1Presentation = in == null ? null : SNodeUtil.getPresentation(in);
+    key2Presentation = null;
   }
 
   LabelRecord(/*NotNull*/ String label, SNode in1, SNode in2, /*NotNull*/ OneOrMany<SNode> out) {
     super(label, in1, in2, out);
     composite = true;
+    key1Presentation = in1 == null ? null : SNodeUtil.getPresentation(in1);
+    key2Presentation = in2 == null ? null : SNodeUtil.getPresentation(in2);
   }
 }

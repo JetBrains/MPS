@@ -15,6 +15,7 @@
  */
 package jetbrains.mps.generator.impl;
 
+import jetbrains.mps.smodel.SNodeUtil;
 import org.jetbrains.mps.openapi.model.SNode;
 
 import java.util.Collection;
@@ -30,12 +31,14 @@ import java.util.stream.StreamSupport;
  */
 public final class NodeMapRecord {
   private final SNode myInputNode;
+  private final String myInputNodePresentation;
   private Object myOutputValue = null;
   private int myCount = 0;
 
   // neither inputNode nor outputNode are null
   /*package*/ NodeMapRecord(SNode inputNode, SNode outputNode) {
     myInputNode = inputNode;
+    myInputNodePresentation = SNodeUtil.getPresentation(inputNode);
     myOutputValue = outputNode;
     myCount = 1;
   }
@@ -43,6 +46,7 @@ public final class NodeMapRecord {
   // neither inputNode nor outputNode are null
   /*package*/ NodeMapRecord(SNode inputNode, Collection<SNode> outputNode) {
     myInputNode = inputNode;
+    myInputNodePresentation = SNodeUtil.getPresentation(inputNode);
     update(outputNode);
   }
 
@@ -129,6 +133,10 @@ public final class NodeMapRecord {
 
   public SNode key() {
     return myInputNode;
+  }
+
+  public String keyPresentation() {
+    return myInputNodePresentation;
   }
 
   /*public?*/Object value() {
