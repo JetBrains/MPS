@@ -164,7 +164,7 @@ public class GenerationSessionContext {
     return result == NULL_OBJECT ? null : result;
   }
 
-  private static void appendNodeUniqueId(SNode node, StringBuilder sb) {
+  private static void appendNodeUniqueId(SNode node, StringBuilder sb, boolean useContainmentlinkToIndexAt) {
     SNode parent = node.getParent();
 
     if (parent == null) {
@@ -173,7 +173,7 @@ public class GenerationSessionContext {
     sb.append('_');
     boolean sym = true;
     do {
-      int index = IterableUtil.asList(parent.getChildren(node.getContainmentLink())).indexOf(node);
+      int index = IterableUtil.asList(parent.getChildren(useContainmentlinkToIndexAt ? node.getContainmentLink() : null)).indexOf(node);
       if (index == 0) {
         sb.append(sym ? 'a' : '0');
       }
@@ -232,7 +232,7 @@ public class GenerationSessionContext {
     } // if(contextNode != null)
 
     if (inputNode != null) {
-      appendNodeUniqueId(inputNode, uniqueNameBuffer);
+      appendNodeUniqueId(inputNode, uniqueNameBuffer, roughName == null || !roughName.startsWith("Pattern_"));
     }
 
     final boolean suffixAdded = roughName.length() < uniqueNameBuffer.length();
