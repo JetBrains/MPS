@@ -125,7 +125,7 @@ model-level check "to be sure"): shape it with envelope fields (`rootsChecked`) 
 
 ## Evaluating a run
 Give every evaluator this section with the scenario's `done_criteria.md`, so two evaluators reach a
-verdict by the same route. Calls go through `scripts/mcp_call.py`, read-only, `projectPath` on each.
+verdict by the same route. `study-scenario-evaluator`, when the observer has it, reads both itself (runbook "Observer subagents"). Calls go through `scripts/mcp_call.py`, read-only, `projectPath` on each.
 - **Aspects** (editor, constraints, typesystem, behavior, intentions): `get_concept_details` returns
   structure only, at every `detail` level. List the aspect model's roots with
   `get_project_structure(startingPoint=<lang>.<aspect>, includeRootNodes=true)`, then read each
