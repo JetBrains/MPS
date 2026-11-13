@@ -765,36 +765,6 @@
         </node>
       </node>
     </node>
-    <node concept="1qefOq" id="6eup$H2Z1gU" role="1SKRRt">
-      <node concept="3HP615" id="6eup$H2Z1gV" role="1qenE9">
-        <property role="TrG5h" value="FunIface" />
-        <property role="2bfB8j" value="true" />
-        <node concept="3Tm1VV" id="6eup$H2Z1gW" role="1B3o_S" />
-        <node concept="3xLA65" id="6eup$H2Z1hd" role="lGtFl">
-          <property role="TrG5h" value="iface" />
-        </node>
-        <node concept="16euLQ" id="6eup$H2Z7ig" role="16eVyc">
-          <property role="TrG5h" value="T" />
-        </node>
-        <node concept="16euLQ" id="6eup$H2Z9zc" role="16eVyc">
-          <property role="TrG5h" value="S" />
-        </node>
-        <node concept="3clFb_" id="6eup$H2Z1gZ" role="jymVt">
-          <property role="TrG5h" value="method" />
-          <node concept="16syzq" id="6eup$H2Z7ii" role="3clF45">
-            <ref role="16sUi3" node="6eup$H2Z7ig" resolve="T" />
-          </node>
-          <node concept="3Tm1VV" id="6eup$H2Z1h1" role="1B3o_S" />
-          <node concept="3clFbS" id="6eup$H2Z1h2" role="3clF47" />
-          <node concept="37vLTG" id="6eup$H2Z9ze" role="3clF46">
-            <property role="TrG5h" value="p" />
-            <node concept="16syzq" id="6eup$H2Z9zf" role="1tU5fm">
-              <ref role="16sUi3" node="6eup$H2Z9zc" resolve="S" />
-            </node>
-          </node>
-        </node>
-      </node>
-    </node>
     <node concept="1qefOq" id="6eup$H2Z9fY" role="1SKRRt">
       <node concept="312cEu" id="6eup$H2Z9fZ" role="1qenE9">
         <property role="TrG5h" value="Foo" />
@@ -3185,6 +3155,31 @@
       <node concept="15s5l7" id="7yNlrCgfxQ$" role="lGtFl">
         <property role="1eyWvh" value="FLAVOUR_ISSUE_KIND=&quot;typesystem (typesystem)&quot;;FLAVOUR_MESSAGE=&quot;Error: type void is not a subtype of int&quot;;FLAVOUR_RULE_ID=&quot;[r:00000000-0000-4000-0000-011c89590337(jetbrains.mps.baseLanguage.closures.typesystem)/6738660214039477268,r:00000000-0000-4000-0000-011c895902c5(jetbrains.mps.baseLanguage.typesystem)/4371905702104109662]&quot;;" />
         <property role="huDt6" value="Error: type void is not a subtype of int" />
+      </node>
+    </node>
+  </node>
+  <node concept="3HP615" id="6eup$H2Z1gV">
+    <property role="TrG5h" value="FunIface" />
+    <property role="2bfB8j" value="true" />
+    <node concept="3Tm1VV" id="6eup$H2Z1gW" role="1B3o_S" />
+    <node concept="16euLQ" id="6eup$H2Z7ig" role="16eVyc">
+      <property role="TrG5h" value="T" />
+    </node>
+    <node concept="16euLQ" id="6eup$H2Z9zc" role="16eVyc">
+      <property role="TrG5h" value="S" />
+    </node>
+    <node concept="3clFb_" id="6eup$H2Z1gZ" role="jymVt">
+      <property role="TrG5h" value="method" />
+      <node concept="16syzq" id="6eup$H2Z7ii" role="3clF45">
+        <ref role="16sUi3" node="6eup$H2Z7ig" resolve="T" />
+      </node>
+      <node concept="3Tm1VV" id="6eup$H2Z1h1" role="1B3o_S" />
+      <node concept="3clFbS" id="6eup$H2Z1h2" role="3clF47" />
+      <node concept="37vLTG" id="6eup$H2Z9ze" role="3clF46">
+        <property role="TrG5h" value="p" />
+        <node concept="16syzq" id="6eup$H2Z9zf" role="1tU5fm">
+          <ref role="16sUi3" node="6eup$H2Z9zc" resolve="S" />
+        </node>
       </node>
     </node>
   </node>

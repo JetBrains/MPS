@@ -246,7 +246,7 @@
       <node id="7178287329507546203" at="32,43,33,34" concept="2" />
       <node id="7178287329507581133" at="36,44,37,35" concept="2" />
       <node id="7178287329507546162" at="42,52,43,19" concept="10" />
-      <node id="7178287329507546162" at="47,36,48,69" concept="2" />
+      <node id="7178287329507546162" at="47,36,48,46" concept="2" />
       <node id="7178287329507546203" at="51,45,52,22" concept="2" />
       <node id="7178287329507546210" at="53,30,54,69" concept="5" />
       <node id="7178287329507551974" at="54,69,55,52" concept="5" />
@@ -410,7 +410,7 @@
       <scope id="7178287329507546203" at="32,43,33,34" />
       <scope id="7178287329507581133" at="36,44,37,35" />
       <scope id="7178287329507546162" at="42,52,43,19" />
-      <scope id="7178287329507546162" at="47,36,48,69" />
+      <scope id="7178287329507546162" at="47,36,48,46" />
       <scope id="7178287329507571059" at="70,46,71,92" />
       <scope id="7178287329507579297" at="73,101,75,68">
         <var name="target" id="7178287329507579315" />
@@ -516,6 +516,15 @@
       <scope id="7178287329507579485" at="126,0,159,0" />
       <unit id="7178287329507546162" at="40,0,218,0" name="jetbrains.mps.closures.test.model.ClosureLiteraltargetIface_Test$TestBody" />
       <unit id="7178287329507546162" at="22,0,219,0" name="jetbrains.mps.closures.test.model.ClosureLiteraltargetIface_Test" />
+    </file>
+  </root>
+  <root nodeRef="r:115773d0-1d8a-4cef-9476-a19eb511afc3(jetbrains.mps.closures.test.model@tests)/7178287329507546171">
+    <file name="FunIface.java">
+      <node id="7178287329507546175" at="7,0,8,0" concept="4" trace="method#(null)null" />
+      <scope id="7178287329507546175" at="7,0,8,0">
+        <var name="p" id="7178287329507580110" />
+      </scope>
+      <unit id="7178287329507546171" at="6,0,9,0" name="jetbrains.mps.closures.test.model.FunIface" />
     </file>
   </root>
   <root nodeRef="r:115773d0-1d8a-4cef-9476-a19eb511afc3(jetbrains.mps.closures.test.model@tests)/7289865355732881079">

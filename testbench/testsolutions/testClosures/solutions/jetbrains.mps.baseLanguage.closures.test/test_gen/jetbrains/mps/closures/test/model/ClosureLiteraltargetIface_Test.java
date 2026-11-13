@@ -45,7 +45,7 @@ public class ClosureLiteraltargetIface_Test extends BaseTransformationTest {
 
     @Override
     protected void initTestNodes() {
-      prepareTestNodes("7178287329507546170", "7178287329507578878");
+      prepareTestNodes("7178287329507578878");
     }
 
     public void test_baz() throws Exception {
