@@ -24,7 +24,7 @@ public class supertypesOf_ClassifierTypeSNodeReference_SNodePointerType_Subtypin
   }
   public IsApplicableStatus isApplicableAndPattern(SNode argument) {
     {
-      GeneratedMatchingPattern pattern = new Pattern_41ksn1_a0a0a0e(_quotation_createNode_41ksn1_a0a0a0a0e());
+      GeneratedMatchingPattern pattern = new Pattern_41ksn1_a0a0a1e(_quotation_createNode_41ksn1_a0a0a0a0e());
       this.myMatchingPattern = pattern;
       boolean b = pattern.match(argument);
       return new IsApplicableStatus(b, pattern);

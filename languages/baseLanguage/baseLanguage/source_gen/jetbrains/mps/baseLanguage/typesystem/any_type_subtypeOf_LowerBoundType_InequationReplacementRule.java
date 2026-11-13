@@ -38,7 +38,7 @@ public class any_type_subtypeOf_LowerBoundType_InequationReplacementRule extends
   }
   public IsApplicableStatus isApplicableSupertypeAndPattern(SNode node) {
     {
-      GeneratedMatchingPattern pattern = new Pattern_w2c88q_a0a0a0h(_quotation_createNode_w2c88q_a0a0a0a0h());
+      GeneratedMatchingPattern pattern = new Pattern_w2c88q_b0a0a1h(_quotation_createNode_w2c88q_a0a0a0a0h());
       this.myMatchingPattern2 = pattern;
       boolean b = pattern.match(node);
       return new IsApplicableStatus(b, pattern);

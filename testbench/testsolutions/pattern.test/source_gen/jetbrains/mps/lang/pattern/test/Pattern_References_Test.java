@@ -60,7 +60,7 @@ public class Pattern_References_Test extends BaseTransformationTest {
           SNode matchedNode_kxljzf_c0a = _quotation_createNode_1sosjx_a0a0c0a0b0f8(vd);
           {
             boolean matches_kxljzf_a2a0 = false;
-            GeneratedMatchingPattern matchingPattern_kxljzf_a2a0 = new Pattern_kxljzf_a0b0b0c0a(_quotation_createNode_1sosjx_a0a0b0b0c0a0b0f8(vd));
+            GeneratedMatchingPattern matchingPattern_kxljzf_a2a0 = new Pattern_kxljzf_b0b0b0c1b(_quotation_createNode_1sosjx_a0a0b0b0c0a0b0f8(vd));
             matches_kxljzf_a2a0 = matchingPattern_kxljzf_a2a0.match(matchedNode_kxljzf_c0a);
             if (matches_kxljzf_a2a0) {
               matches = true;
@@ -80,7 +80,7 @@ public class Pattern_References_Test extends BaseTransformationTest {
           SNode matchedNode_kxljzf_b0b = _quotation_createNode_1sosjx_a0a0b0a0b0g8(getAnnotatedNode("variableToReference"));
           {
             boolean matches_kxljzf_a1a1 = false;
-            GeneratedMatchingPattern matchingPattern_kxljzf_a1a1 = new Pattern_kxljzf_a0b0b0b0b(_quotation_createNode_1sosjx_a0a0b0b0b0a0b0g8(getAnnotatedNode("variableToReference")));
+            GeneratedMatchingPattern matchingPattern_kxljzf_a1a1 = new Pattern_kxljzf_b0b0b0b1c(_quotation_createNode_1sosjx_a0a0b0b0b0a0b0g8(getAnnotatedNode("variableToReference")));
             matches_kxljzf_a1a1 = matchingPattern_kxljzf_a1a1.match(matchedNode_kxljzf_b0b);
             if (matches_kxljzf_a1a1) {
               matches = true;
@@ -100,7 +100,7 @@ public class Pattern_References_Test extends BaseTransformationTest {
           SNode matchedNode_kxljzf_b0c = _quotation_createNode_1sosjx_a0a0b0a0b0h8();
           {
             boolean matches_kxljzf_a1a2 = false;
-            GeneratedMatchingPattern matchingPattern_kxljzf_a1a2 = new Pattern_kxljzf_a0b0b0b0c(_quotation_createNode_1sosjx_a0a0b0b0b0a0b0h8());
+            GeneratedMatchingPattern matchingPattern_kxljzf_a1a2 = new Pattern_kxljzf_b0b0b0b1d(_quotation_createNode_1sosjx_a0a0b0b0b0a0b0h8());
             matches_kxljzf_a1a2 = matchingPattern_kxljzf_a1a2.match(matchedNode_kxljzf_b0c);
             if (matches_kxljzf_a1a2) {
               matches = true;

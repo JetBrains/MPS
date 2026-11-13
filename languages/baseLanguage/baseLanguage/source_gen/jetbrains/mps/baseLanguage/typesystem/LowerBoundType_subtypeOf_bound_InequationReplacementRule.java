@@ -35,7 +35,7 @@ public class LowerBoundType_subtypeOf_bound_InequationReplacementRule extends Ab
   }
   public IsApplicableStatus isApplicableSubtypeAndPattern(SNode node) {
     {
-      GeneratedMatchingPattern pattern = new Pattern_ap69b7_a0a0a0g(_quotation_createNode_ap69b7_a0a0a0a0g());
+      GeneratedMatchingPattern pattern = new Pattern_ap69b7_b0a0a3g(_quotation_createNode_ap69b7_a0a0a0a0g());
       this.myMatchingPattern1 = pattern;
       boolean b = pattern.match(node);
       return new IsApplicableStatus(b, pattern);

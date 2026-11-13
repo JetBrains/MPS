@@ -25,7 +25,7 @@ public class mappingType_sypertypeOf_IMapping_interface_SubtypingRule extends Su
   }
   public IsApplicableStatus isApplicableAndPattern(SNode argument) {
     {
-      GeneratedMatchingPattern pattern = new Pattern_y1o6nk_a0a0a0e(_quotation_createNode_y1o6nk_a0a0a0a0e());
+      GeneratedMatchingPattern pattern = new Pattern_y1o6nk_a0a0a1e(_quotation_createNode_y1o6nk_a0a0a0a0e());
       this.myMatchingPattern = pattern;
       boolean b = pattern.match(argument);
       return new IsApplicableStatus(b, pattern);

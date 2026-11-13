@@ -24,7 +24,7 @@ public class int_unboxing_SubtypingRule extends SubtypingRule_Runtime implements
   }
   public IsApplicableStatus isApplicableAndPattern(SNode argument) {
     {
-      GeneratedMatchingPattern pattern = new Pattern_nhleq2_a0a0a0e(_quotation_createNode_nhleq2_a0a0a0a0e());
+      GeneratedMatchingPattern pattern = new Pattern_nhleq2_a0a0a1e(_quotation_createNode_nhleq2_a0a0a0a0e());
       this.myMatchingPattern = pattern;
       boolean b = pattern.match(argument);
       return new IsApplicableStatus(b, pattern);

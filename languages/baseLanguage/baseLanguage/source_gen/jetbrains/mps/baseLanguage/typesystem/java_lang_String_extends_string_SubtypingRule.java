@@ -24,7 +24,7 @@ public class java_lang_String_extends_string_SubtypingRule extends SubtypingRule
   }
   public IsApplicableStatus isApplicableAndPattern(SNode argument) {
     {
-      GeneratedMatchingPattern pattern = new Pattern_cxnqcy_a0a0a0e(_quotation_createNode_cxnqcy_a0a0a0a0e());
+      GeneratedMatchingPattern pattern = new Pattern_cxnqcy_a0a0a1e(_quotation_createNode_cxnqcy_a0a0a0a0e());
       this.myMatchingPattern = pattern;
       boolean b = pattern.match(argument);
       return new IsApplicableStatus(b, pattern);

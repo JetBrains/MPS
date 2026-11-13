@@ -34,7 +34,7 @@ public final class TemplateCallMacro__BehaviorDescriptor extends BaseBHDescripto
 
   /*package*/ static SNode getInputNodeTypeInsideOfMacro_idhEwIosJ(@NotNull SNode __thisNode__) {
     {
-      GeneratedMatchingPattern pattern_4ckpni_a0a = new Pattern_4ckpni_a0a0a0a(_quotation_createNode_4ckpni_a0a0a0a0a());
+      GeneratedMatchingPattern pattern_4ckpni_a0a = new Pattern_4ckpni_b0a0a0a(_quotation_createNode_4ckpni_a0a0a0a0a());
       SNode coercedNode_4ckpni_a0a = TypecheckingFacade.getFromContext().coerceType(TypecheckingFacade.getFromContext().getTypeOf(SLinkOperations.getTarget(__thisNode__, LINKS.sourceNodeQuery$r9Sk)), pattern_4ckpni_a0a);
       if (coercedNode_4ckpni_a0a != null) {
         return pattern_4ckpni_a0a.getMatchedNode("concept");

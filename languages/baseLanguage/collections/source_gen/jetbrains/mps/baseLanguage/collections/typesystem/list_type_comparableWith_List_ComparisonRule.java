@@ -27,7 +27,7 @@ public class list_type_comparableWith_List_ComparisonRule extends ComparisonRule
   }
   public IsApplicableStatus isApplicableSecond(SNode node) {
     {
-      GeneratedMatchingPattern pattern = new Pattern_ovtchh_a0a0a0f(_quotation_createNode_ovtchh_a0a0a0a0f());
+      GeneratedMatchingPattern pattern = new Pattern_ovtchh_b0a0a1f(_quotation_createNode_ovtchh_a0a0a0a0f());
       this.myMatchingPattern2 = pattern;
       boolean b = pattern.match(node);
       return new IsApplicableStatus(b, pattern);

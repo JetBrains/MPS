@@ -30,7 +30,7 @@ public class supertypesOf_SNodeType_SConceptType_SubtypingRule extends Subtyping
   }
   public IsApplicableStatus isApplicableAndPattern(SNode argument) {
     {
-      GeneratedMatchingPattern pattern = new Pattern_6gcjzy_a0a0a0e(_quotation_createNode_6gcjzy_a0a0a0a0e());
+      GeneratedMatchingPattern pattern = new Pattern_6gcjzy_a0a0a1e(_quotation_createNode_6gcjzy_a0a0a0a0e());
       this.myMatchingPattern = pattern;
       boolean b = pattern.match(argument);
       return new IsApplicableStatus(b, pattern);

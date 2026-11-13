@@ -32,7 +32,7 @@ public class PatternListPattern_Test extends BaseTransformationTest {
   public void testMethod() throws Throwable {
     getProject().getModelAccess().runReadAction(() -> {
       SNode nodeToMatch = _quotation_createNode_i79cpz_a0a0a0a0a4();
-      DefaultMatchingPattern pattern = new Pattern_i79cpz_a0b0a0a0a4(_quotation_createNode_i79cpz_a0a0b0a0a0a4());
+      DefaultMatchingPattern pattern = new Pattern_i79cpz_b0b0a1a0d7(_quotation_createNode_i79cpz_a0a0b0a0a0a4());
       final boolean matches = pattern.match(nodeToMatch);
       Assert.assertTrue("Pattern match expected", matches);
       {

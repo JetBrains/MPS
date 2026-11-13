@@ -25,7 +25,7 @@ public class supertypesOf_ClassifierType_Queue_QueueType_SubtypingRule extends S
   }
   public IsApplicableStatus isApplicableAndPattern(SNode argument) {
     {
-      GeneratedMatchingPattern pattern = new Pattern_4viu4b_a0a0a0e(_quotation_createNode_4viu4b_a0a0a0a0e());
+      GeneratedMatchingPattern pattern = new Pattern_4viu4b_a0a0a1e(_quotation_createNode_4viu4b_a0a0a0a0e());
       this.myMatchingPattern = pattern;
       boolean b = pattern.match(argument);
       return new IsApplicableStatus(b, pattern);

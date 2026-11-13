@@ -1513,17 +1513,17 @@
     </file>
   </root>
   <root nodeRef="r:529e2ccf-8d81-4b68-8e71-328f91951f93(jetbrains.mps.lang.editor.diagram.generator.template.main@generator)/7755191110383186057">
-    <file name="Pattern_x583g4_a0a0a0gf.java">
+    <file name="Pattern_x583g4_b0a0a3hf.java">
       <node id="7755191110383342141" at="10,53,11,30" concept="8" />
       <node id="7755191110383342141" at="11,30,12,0" concept="6" />
       <node id="7755191110383342141" at="12,0,13,0" concept="6" />
       <node id="7755191110383346240" at="13,0,14,161" concept="2" />
-      <node id="7755191110383342141" at="10,0,16,0" concept="1" trace="Pattern_x583g4_a0a0a0gf#(Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="7755191110383342141" at="10,0,16,0" concept="1" trace="Pattern_x583g4_b0a0a3hf#(Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <scope id="7755191110383342141" at="10,53,14,161" />
       <scope id="7755191110383342141" at="10,0,16,0">
         <var name="patternNode" id="7755191110383342141" />
       </scope>
-      <unit id="7755191110383342141" at="9,0,18,0" name="jetbrains.mps.lang.editor.diagram.generator.template.main.Pattern_x583g4_a0a0a0gf" />
+      <unit id="7755191110383342141" at="9,0,18,0" name="jetbrains.mps.lang.editor.diagram.generator.template.main.Pattern_x583g4_b0a0a3hf" />
     </file>
     <file name="QueriesGenerated.java">
       <node id="7755191110383330876" at="476,5,477,124" concept="4" />

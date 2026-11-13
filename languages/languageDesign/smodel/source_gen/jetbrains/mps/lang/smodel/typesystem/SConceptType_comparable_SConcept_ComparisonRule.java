@@ -27,7 +27,7 @@ public class SConceptType_comparable_SConcept_ComparisonRule extends ComparisonR
   }
   public IsApplicableStatus isApplicableSecond(SNode node) {
     {
-      GeneratedMatchingPattern pattern = new Pattern_2k85jh_a0a0a0f(_quotation_createNode_2k85jh_a0a0a0a0f());
+      GeneratedMatchingPattern pattern = new Pattern_2k85jh_b0a0a1f(_quotation_createNode_2k85jh_a0a0a0a0f());
       this.myMatchingPattern2 = pattern;
       boolean b = pattern.match(node);
       return new IsApplicableStatus(b, pattern);

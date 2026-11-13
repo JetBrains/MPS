@@ -106,7 +106,7 @@ public class QueriesGenerated extends QueryProviderBase {
     return true;
   }
   public static boolean rule_Condition_2_1(final BaseMappingRuleContext _context) {
-    return jetbrains.mps.util.SNodeOperations.getModelLongName(SLinkOperations.getTarget(_context.getNode(), LINKS.classConcept$M5BC).getModel()).startsWith("jetbrains.mps.internal.collections.runtime") && (TypecheckingFacade.getFromContext().coerceType(TypecheckingFacade.getFromContext().getTypeOf(_context.getNode()), new Pattern_x583g4_b0a0a0a8(_quotation_createNode_x583g4_a0b0a0a0a8())) != null);
+    return jetbrains.mps.util.SNodeOperations.getModelLongName(SLinkOperations.getTarget(_context.getNode(), LINKS.classConcept$M5BC).getModel()).startsWith("jetbrains.mps.internal.collections.runtime") && (TypecheckingFacade.getFromContext().coerceType(TypecheckingFacade.getFromContext().getTypeOf(_context.getNode()), new Pattern_x583g4_b1a1a0d9(_quotation_createNode_x583g4_a0b0a0a0a8())) != null);
   }
   public static boolean rule_Condition_3_0(final BaseMappingRuleContext _context) {
     return SNodeOperations.isInstanceOf(SLinkOperations.getTarget(_context.getNode(), LINKS.elementType$KpjL), CONCEPTS.SequenceType$_s);
@@ -169,7 +169,7 @@ public class QueriesGenerated extends QueryProviderBase {
     return (TypecheckingFacade.getFromContext().coerceType(TypecheckingFacade.getFromContext().getTypeOf(_context.getNode()), CONCEPTS.ListType$LR) != null);
   }
   public static boolean rule_Condition_5_1(final BaseMappingRuleContext _context) {
-    return (TypecheckingFacade.getFromContext().coerceType(TypecheckingFacade.getFromContext().getTypeOf(_context.getNode()), new Pattern_x583g4_b0a0a0t(_quotation_createNode_x583g4_a0b0a0a0t())) != null);
+    return (TypecheckingFacade.getFromContext().coerceType(TypecheckingFacade.getFromContext().getTypeOf(_context.getNode()), new Pattern_x583g4_b1a0a3u(_quotation_createNode_x583g4_a0b0a0a0t())) != null);
   }
   public static boolean rule_Condition_5_2(final BaseMappingRuleContext _context) {
     return (TypecheckingFacade.getFromContext().coerceType(TypecheckingFacade.getFromContext().getTypeOf(_context.getNode()), CONCEPTS.ListType$LR) != null);
@@ -178,7 +178,7 @@ public class QueriesGenerated extends QueryProviderBase {
     return (TypecheckingFacade.getFromContext().coerceType(TypecheckingFacade.getFromContext().getTypeOf(_context.getNode()), CONCEPTS.SequenceType$_s) != null);
   }
   public static boolean rule_Condition_6_0(final BaseMappingRuleContext _context) {
-    return (TypecheckingFacade.getFromContext().coerceType(((SNode) _context.getVariable("exprType")), new Pattern_x583g4_b0a0a0w(_quotation_createNode_x583g4_a0b0a0a0w())) != null);
+    return (TypecheckingFacade.getFromContext().coerceType(((SNode) _context.getVariable("exprType")), new Pattern_x583g4_b1a0a3x(_quotation_createNode_x583g4_a0b0a0a0w())) != null);
   }
   public static boolean rule_Condition_6_1(final BaseMappingRuleContext _context) {
     return (TypecheckingFacade.getFromContext().coerceType(((SNode) _context.getVariable("exprType")), CONCEPTS.SortedMapType$AZ) != null);
@@ -196,7 +196,7 @@ public class QueriesGenerated extends QueryProviderBase {
     return (TypecheckingFacade.getFromContext().coerceType(((SNode) _context.getVariable("nodeType")), CONCEPTS.SetType$g6) != null);
   }
   public static boolean rule_Condition_7_1(final BaseMappingRuleContext _context) {
-    return (TypecheckingFacade.getFromContext().coerceType(((SNode) _context.getVariable("nodeType")), new Pattern_x583g4_b0a0a0bb(_quotation_createNode_x583g4_a0b0a0a0bb())) != null);
+    return (TypecheckingFacade.getFromContext().coerceType(((SNode) _context.getVariable("nodeType")), new Pattern_x583g4_b1a0a3cb(_quotation_createNode_x583g4_a0b0a0a0bb())) != null);
   }
   public static boolean rule_Condition_7_2(final BaseMappingRuleContext _context) {
     return (TypecheckingFacade.getFromContext().coerceType(((SNode) _context.getVariable("nodeType")), CONCEPTS.SortedSetType$7K) != null);
@@ -240,13 +240,13 @@ public class QueriesGenerated extends QueryProviderBase {
     return SNodeOperations.isInstanceOf(type, CONCEPTS.ArrayType$rh) && SNodeOperations.isInstanceOf(SLinkOperations.getTarget(SNodeOperations.cast(type, CONCEPTS.ArrayType$rh), LINKS.componentType$F$Gi), CONCEPTS.ShortType$ro);
   }
   public static boolean rule_Condition_9_0(final BaseMappingRuleContext _context) {
-    return (TypecheckingFacade.getFromContext().coerceType(TypecheckingFacade.getFromContext().getTypeOf(_context.getNode()), new Pattern_x583g4_b0a0a0nb(_quotation_createNode_x583g4_a0b0a0a0nb())) != null);
+    return (TypecheckingFacade.getFromContext().coerceType(TypecheckingFacade.getFromContext().getTypeOf(_context.getNode()), new Pattern_x583g4_b1a0a3ob(_quotation_createNode_x583g4_a0b0a0a0nb())) != null);
   }
   public static boolean rule_Condition_9_1(final BaseMappingRuleContext _context) {
     return (TypecheckingFacade.getFromContext().coerceType(TypecheckingFacade.getFromContext().getTypeOf(_context.getNode()), CONCEPTS.IteratorType$5a) != null);
   }
   public static boolean rule_Condition_10_0(final BaseMappingRuleContext _context) {
-    return (TypecheckingFacade.getFromContext().coerceType(((SNode) _context.getVariable("nodeType")), new Pattern_x583g4_b0a0a0pb(_quotation_createNode_x583g4_a0b0a0a0pb())) != null);
+    return (TypecheckingFacade.getFromContext().coerceType(((SNode) _context.getVariable("nodeType")), new Pattern_x583g4_b1a0a3qb(_quotation_createNode_x583g4_a0b0a0a0pb())) != null);
   }
   public static boolean rule_Condition_10_1(final BaseMappingRuleContext _context) {
     return (TypecheckingFacade.getFromContext().coerceType(((SNode) _context.getVariable("nodeType")), CONCEPTS.SortedMapType$AZ) != null);
@@ -261,7 +261,7 @@ public class QueriesGenerated extends QueryProviderBase {
     return (TypecheckingFacade.getFromContext().coerceType(((SNode) _context.getVariable("nodeType")), CONCEPTS.SortedSetType$7K) != null);
   }
   public static boolean rule_Condition_11_1(final BaseMappingRuleContext _context) {
-    return (TypecheckingFacade.getFromContext().coerceType(((SNode) _context.getVariable("nodeType")), new Pattern_x583g4_b0a0a0tb(_quotation_createNode_x583g4_a0b0a0a0tb())) != null);
+    return (TypecheckingFacade.getFromContext().coerceType(((SNode) _context.getVariable("nodeType")), new Pattern_x583g4_b1a0a3ub(_quotation_createNode_x583g4_a0b0a0a0tb())) != null);
   }
   public static boolean rule_Condition_11_2(final BaseMappingRuleContext _context) {
     return (TypecheckingFacade.getFromContext().coerceType(((SNode) _context.getVariable("nodeType")), CONCEPTS.SortedSetType$7K) != null);
@@ -276,7 +276,7 @@ public class QueriesGenerated extends QueryProviderBase {
     return (TypecheckingFacade.getFromContext().coerceType(((SNode) _context.getVariable("nodeType")), CONCEPTS.QueueType$iX) != null);
   }
   public static boolean rule_Condition_12_1(final BaseMappingRuleContext _context) {
-    return (TypecheckingFacade.getFromContext().coerceType(((SNode) _context.getVariable("nodeType")), new Pattern_x583g4_b0a0a0xb(_quotation_createNode_x583g4_a0b0a0a0xb())) != null);
+    return (TypecheckingFacade.getFromContext().coerceType(((SNode) _context.getVariable("nodeType")), new Pattern_x583g4_b1a0a3yb(_quotation_createNode_x583g4_a0b0a0a0xb())) != null);
   }
   public static boolean rule_Condition_12_2(final BaseMappingRuleContext _context) {
     return (TypecheckingFacade.getFromContext().coerceType(((SNode) _context.getVariable("nodeType")), CONCEPTS.QueueType$iX) != null);
@@ -291,7 +291,7 @@ public class QueriesGenerated extends QueryProviderBase {
     return (TypecheckingFacade.getFromContext().coerceType(((SNode) _context.getVariable("nodeType")), CONCEPTS.ListType$LR) != null) || (TypecheckingFacade.getFromContext().coerceType(((SNode) _context.getVariable("nodeType")), CONCEPTS.QueueType$iX) != null) || (TypecheckingFacade.getFromContext().coerceType(((SNode) _context.getVariable("nodeType")), CONCEPTS.DequeType$bp) != null) || (TypecheckingFacade.getFromContext().coerceType(((SNode) _context.getVariable("nodeType")), CONCEPTS.StackType$C4) != null);
   }
   public static boolean rule_Condition_13_1(final BaseMappingRuleContext _context) {
-    return (TypecheckingFacade.getFromContext().coerceType(((SNode) _context.getVariable("nodeType")), new Pattern_x583g4_b0a0a0bc(_quotation_createNode_x583g4_a0b0a0a0bc())) != null);
+    return (TypecheckingFacade.getFromContext().coerceType(((SNode) _context.getVariable("nodeType")), new Pattern_x583g4_b1a0a3cc(_quotation_createNode_x583g4_a0b0a0a0bc())) != null);
   }
   public static boolean rule_Condition_13_2(final BaseMappingRuleContext _context) {
     return (TypecheckingFacade.getFromContext().coerceType(((SNode) _context.getVariable("nodeType")), CONCEPTS.SequenceType$_s) != null);
@@ -336,7 +336,7 @@ public class QueriesGenerated extends QueryProviderBase {
     return (TypecheckingFacade.getFromContext().coerceType(((SNode) _context.getVariable("nodeType")), CONCEPTS.DequeType$bp) != null) || (TypecheckingFacade.getFromContext().coerceType(((SNode) _context.getVariable("nodeType")), CONCEPTS.StackType$C4) != null);
   }
   public static boolean rule_Condition_15_1(final BaseMappingRuleContext _context) {
-    return (TypecheckingFacade.getFromContext().coerceType(((SNode) _context.getVariable("nodeType")), new Pattern_x583g4_b0a0a0pc(_quotation_createNode_x583g4_a0b0a0a0pc())) != null);
+    return (TypecheckingFacade.getFromContext().coerceType(((SNode) _context.getVariable("nodeType")), new Pattern_x583g4_b1a0a3qc(_quotation_createNode_x583g4_a0b0a0a0pc())) != null);
   }
   public static boolean rule_Condition_15_2(final BaseMappingRuleContext _context) {
     return (TypecheckingFacade.getFromContext().coerceType(((SNode) _context.getVariable("nodeType")), CONCEPTS.DequeType$bp) != null) || (TypecheckingFacade.getFromContext().coerceType(((SNode) _context.getVariable("nodeType")), CONCEPTS.StackType$C4) != null);
@@ -471,7 +471,7 @@ public class QueriesGenerated extends QueryProviderBase {
     return (TypecheckingFacade.getFromContext().coerceType(((SNode) _context.getVariable("nodeType")), CONCEPTS.LinkedListType$qf) != null);
   }
   public static boolean rule_Condition_21_1(final BaseMappingRuleContext _context) {
-    return (TypecheckingFacade.getFromContext().coerceType(((SNode) _context.getVariable("nodeType")), new Pattern_x583g4_b0a0a0ge(_quotation_createNode_x583g4_a0b0a0a0ge())) != null);
+    return (TypecheckingFacade.getFromContext().coerceType(((SNode) _context.getVariable("nodeType")), new Pattern_x583g4_b1a0a3he(_quotation_createNode_x583g4_a0b0a0a0ge())) != null);
   }
   public static boolean rule_Condition_21_2(final BaseMappingRuleContext _context) {
     return (TypecheckingFacade.getFromContext().coerceType(((SNode) _context.getVariable("nodeType")), CONCEPTS.LinkedListType$qf) != null);

@@ -27,7 +27,7 @@ public class collection_comparableWith_Collection_ComparisonRule extends Compari
   }
   public IsApplicableStatus isApplicableSecond(SNode node) {
     {
-      GeneratedMatchingPattern pattern = new Pattern_5x9es4_a0a0a0f(_quotation_createNode_5x9es4_a0a0a0a0f());
+      GeneratedMatchingPattern pattern = new Pattern_5x9es4_b0a0a1f(_quotation_createNode_5x9es4_a0a0a0a0f());
       this.myMatchingPattern2 = pattern;
       boolean b = pattern.match(node);
       return new IsApplicableStatus(b, pattern);

@@ -49,7 +49,7 @@ public class MigrateStaticBehaviorThisAndSuper extends MigrationScriptBase {
   }
   public void doExecute(final SModule m) {
     {
-      final GeneratedMatchingPattern pattern = new Pattern_bb55mu_a0a6(_quotation_createNode_bb55mu_a0a0a6());
+      final GeneratedMatchingPattern pattern = new Pattern_bb55mu_a0b7(_quotation_createNode_bb55mu_a0a0a6());
       Sequence.fromIterable(((Iterable<SModel>) m.getModels())).translate((it) -> SModelOperations.nodes(it, SNodeOperations.asSConcept(pattern.getConcept()))).where((it) -> pattern.match(it)).where((it) -> !(isInTransformPattern(it))).where((SNode node) -> !(SNodeOperations.is(SNodeOperations.getContainingRoot(node), new SNodePointer("r:5b50f66c-902d-44ec-9df8-a31727156b65(jetbrains.mps.lang.behavior.migration)", "1703835097132830266"))) && ConstraintsUtil.isInsideOfBehavior(node, true)).sort((it) -> ListSequence.fromList(SNodeOperations.getNodeAncestors(it, null, false)).count(), false).visitAll((final SNode nodeToMigrate) -> {
         pattern.match(nodeToMigrate);
         List<SNode> attributes = SNodeOperations.getNodeDescendants(nodeToMigrate, CONCEPTS.Attribute$g1, false, new SAbstractConcept[]{});
@@ -65,7 +65,7 @@ public class MigrateStaticBehaviorThisAndSuper extends MigrationScriptBase {
       });
     }
     {
-      final GeneratedMatchingPattern pattern = new Pattern_bb55mu_a1a6(_quotation_createNode_bb55mu_a0a1a6());
+      final GeneratedMatchingPattern pattern = new Pattern_bb55mu_a1b7(_quotation_createNode_bb55mu_a0a1a6());
       Sequence.fromIterable(((Iterable<SModel>) m.getModels())).translate((it) -> SModelOperations.nodes(it, SNodeOperations.asSConcept(pattern.getConcept()))).where((it) -> pattern.match(it)).where((it) -> !(isInTransformPattern(it))).where((SNode node) -> !(SNodeOperations.is(SNodeOperations.getContainingRoot(node), new SNodePointer("r:5b50f66c-902d-44ec-9df8-a31727156b65(jetbrains.mps.lang.behavior.migration)", "1703835097132830266"))) && ConstraintsUtil.isInsideOfBehavior(node, true)).sort((it) -> ListSequence.fromList(SNodeOperations.getNodeAncestors(it, null, false)).count(), false).visitAll((final SNode nodeToMigrate) -> {
         pattern.match(nodeToMigrate);
         List<SNode> attributes = SNodeOperations.getNodeDescendants(nodeToMigrate, CONCEPTS.Attribute$g1, false, new SAbstractConcept[]{});
@@ -81,7 +81,7 @@ public class MigrateStaticBehaviorThisAndSuper extends MigrationScriptBase {
       });
     }
     {
-      final GeneratedMatchingPattern pattern = new Pattern_bb55mu_a2a6(_quotation_createNode_bb55mu_a0a2a6());
+      final GeneratedMatchingPattern pattern = new Pattern_bb55mu_a2b7(_quotation_createNode_bb55mu_a0a2a6());
       Sequence.fromIterable(((Iterable<SModel>) m.getModels())).translate((it) -> SModelOperations.nodes(it, SNodeOperations.asSConcept(pattern.getConcept()))).where((it) -> pattern.match(it)).where((it) -> !(isInTransformPattern(it))).where((SNode node) -> !(SNodeOperations.is(SNodeOperations.getContainingRoot(node), new SNodePointer("r:5b50f66c-902d-44ec-9df8-a31727156b65(jetbrains.mps.lang.behavior.migration)", "1703835097132830266"))) && ConstraintsUtil.isInsideOfBehavior(node, true)).sort((it) -> ListSequence.fromList(SNodeOperations.getNodeAncestors(it, null, false)).count(), false).visitAll((final SNode nodeToMigrate) -> {
         pattern.match(nodeToMigrate);
         List<SNode> attributes = SNodeOperations.getNodeDescendants(nodeToMigrate, CONCEPTS.Attribute$g1, false, new SAbstractConcept[]{});

@@ -263,17 +263,17 @@
       <unit id="1216353055130387064" at="70,417,78,7" name="jetbrains.mps.baseLanguage.migration.AddNecessaryParenthsToNotExpressions$2" />
       <unit id="4787009421625770137" at="32,0,117,0" name="jetbrains.mps.baseLanguage.migration.AddNecessaryParenthsToNotExpressions" />
     </file>
-    <file name="Pattern_fbexqr_a0a5.java">
+    <file name="Pattern_fbexqr_a0b6.java">
       <node id="4787009421625772293" at="10,49,11,30" concept="13" />
       <node id="4787009421625772293" at="11,30,12,0" concept="10" />
       <node id="4787009421625772293" at="12,0,13,0" concept="10" />
       <node id="4787009421625772963" at="13,0,14,170" concept="2" />
-      <node id="4787009421625772293" at="10,0,16,0" concept="1" trace="Pattern_fbexqr_a0a5#(Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4787009421625772293" at="10,0,16,0" concept="1" trace="Pattern_fbexqr_a0b6#(Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <scope id="4787009421625772293" at="10,49,14,170" />
       <scope id="4787009421625772293" at="10,0,16,0">
         <var name="patternNode" id="4787009421625772293" />
       </scope>
-      <unit id="4787009421625772293" at="9,0,18,0" name="jetbrains.mps.baseLanguage.migration.Pattern_fbexqr_a0a5" />
+      <unit id="4787009421625772293" at="9,0,18,0" name="jetbrains.mps.baseLanguage.migration.Pattern_fbexqr_a0b6" />
     </file>
   </root>
   <root nodeRef="r:1dca72a1-44ae-4339-a783-4859610b0285(jetbrains.mps.baseLanguage.migration)/4931648574717428081">
@@ -701,7 +701,7 @@
       <unit id="4931648574717428081" at="311,0,326,0" name="jetbrains.mps.baseLanguage.migration.MigrateTryStatement$LINKS" />
       <unit id="4931648574717428081" at="35,0,332,0" name="jetbrains.mps.baseLanguage.migration.MigrateTryStatement" />
     </file>
-    <file name="Pattern_5idd3j_a0a11.java">
+    <file name="Pattern_5idd3j_a0b21.java">
       <node id="7192883672011481892" at="10,50,11,30" concept="13" />
       <node id="7192883672011481892" at="11,30,12,0" concept="10" />
       <node id="7192883672011481892" at="12,0,13,0" concept="10" />
@@ -709,78 +709,78 @@
       <node id="7192883672011481898" at="14,176,15,173" concept="2" />
       <node id="7192883672011481899" at="15,173,16,158" concept="2" />
       <node id="7192883672011481900" at="16,158,17,153" concept="2" />
-      <node id="7192883672011481892" at="10,0,19,0" concept="1" trace="Pattern_5idd3j_a0a11#(Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="7192883672011481892" at="10,0,19,0" concept="1" trace="Pattern_5idd3j_a0b21#(Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <scope id="7192883672011481892" at="10,50,17,153" />
       <scope id="7192883672011481892" at="10,0,19,0">
         <var name="patternNode" id="7192883672011481892" />
       </scope>
-      <unit id="7192883672011481892" at="9,0,21,0" name="jetbrains.mps.baseLanguage.migration.Pattern_5idd3j_a0a11" />
+      <unit id="7192883672011481892" at="9,0,21,0" name="jetbrains.mps.baseLanguage.migration.Pattern_5idd3j_a0b21" />
     </file>
-    <file name="Pattern_5idd3j_a1a11.java">
+    <file name="Pattern_5idd3j_a1b21.java">
       <node id="2519056534001299251" at="10,50,11,30" concept="13" />
       <node id="2519056534001299251" at="11,30,12,0" concept="10" />
       <node id="2519056534001299251" at="12,0,13,0" concept="10" />
       <node id="2519056534001317903" at="13,0,14,176" concept="2" />
       <node id="2519056534001300950" at="14,176,15,176" concept="2" />
-      <node id="2519056534001299251" at="10,0,17,0" concept="1" trace="Pattern_5idd3j_a1a11#(Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="2519056534001299251" at="10,0,17,0" concept="1" trace="Pattern_5idd3j_a1b21#(Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <scope id="2519056534001299251" at="10,50,15,176" />
       <scope id="2519056534001299251" at="10,0,17,0">
         <var name="patternNode" id="2519056534001299251" />
       </scope>
-      <unit id="2519056534001299251" at="9,0,19,0" name="jetbrains.mps.baseLanguage.migration.Pattern_5idd3j_a1a11" />
+      <unit id="2519056534001299251" at="9,0,19,0" name="jetbrains.mps.baseLanguage.migration.Pattern_5idd3j_a1b21" />
     </file>
-    <file name="Pattern_5idd3j_a2a11.java">
+    <file name="Pattern_5idd3j_a2b21.java">
       <node id="2519056534000763557" at="10,50,11,30" concept="13" />
       <node id="2519056534000763557" at="11,30,12,0" concept="10" />
       <node id="2519056534000763557" at="12,0,13,0" concept="10" />
       <node id="2519056534001316376" at="13,0,14,166" concept="2" />
       <node id="2519056534001316872" at="14,166,15,174" concept="2" />
-      <node id="2519056534000763557" at="10,0,17,0" concept="1" trace="Pattern_5idd3j_a2a11#(Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="2519056534000763557" at="10,0,17,0" concept="1" trace="Pattern_5idd3j_a2b21#(Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <scope id="2519056534000763557" at="10,50,15,174" />
       <scope id="2519056534000763557" at="10,0,17,0">
         <var name="patternNode" id="2519056534000763557" />
       </scope>
-      <unit id="2519056534000763557" at="9,0,19,0" name="jetbrains.mps.baseLanguage.migration.Pattern_5idd3j_a2a11" />
+      <unit id="2519056534000763557" at="9,0,19,0" name="jetbrains.mps.baseLanguage.migration.Pattern_5idd3j_a2b21" />
     </file>
-    <file name="Pattern_5idd3j_a3a11.java">
+    <file name="Pattern_5idd3j_a3b21.java">
       <node id="2519056534000765415" at="10,50,11,30" concept="13" />
       <node id="2519056534000765415" at="11,30,12,0" concept="10" />
       <node id="2519056534000765415" at="12,0,13,0" concept="10" />
       <node id="2519056534001323775" at="13,0,14,174" concept="2" />
       <node id="2519056534001322808" at="14,174,15,166" concept="2" />
       <node id="2519056534001324281" at="15,166,16,180" concept="2" />
-      <node id="2519056534000765415" at="10,0,18,0" concept="1" trace="Pattern_5idd3j_a3a11#(Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="2519056534000765415" at="10,0,18,0" concept="1" trace="Pattern_5idd3j_a3b21#(Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <scope id="2519056534000765415" at="10,50,16,180" />
       <scope id="2519056534000765415" at="10,0,18,0">
         <var name="patternNode" id="2519056534000765415" />
       </scope>
-      <unit id="2519056534000765415" at="9,0,20,0" name="jetbrains.mps.baseLanguage.migration.Pattern_5idd3j_a3a11" />
+      <unit id="2519056534000765415" at="9,0,20,0" name="jetbrains.mps.baseLanguage.migration.Pattern_5idd3j_a3b21" />
     </file>
   </root>
   <root nodeRef="r:1dca72a1-44ae-4339-a783-4859610b0285(jetbrains.mps.baseLanguage.migration)/5539046710450332033">
-    <file name="Pattern_88yha8_a0a6.java">
+    <file name="Pattern_88yha8_a0b7.java">
       <node id="5539046710450334899" at="10,49,11,30" concept="13" />
       <node id="5539046710450334899" at="11,30,12,0" concept="10" />
       <node id="5539046710450334899" at="12,0,13,0" concept="10" />
       <node id="5539046710450335005" at="13,0,14,168" concept="2" />
-      <node id="5539046710450334899" at="10,0,16,0" concept="1" trace="Pattern_88yha8_a0a6#(Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="5539046710450334899" at="10,0,16,0" concept="1" trace="Pattern_88yha8_a0b7#(Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <scope id="5539046710450334899" at="10,49,14,168" />
       <scope id="5539046710450334899" at="10,0,16,0">
         <var name="patternNode" id="5539046710450334899" />
       </scope>
-      <unit id="5539046710450334899" at="9,0,18,0" name="jetbrains.mps.baseLanguage.migration.Pattern_88yha8_a0a6" />
+      <unit id="5539046710450334899" at="9,0,18,0" name="jetbrains.mps.baseLanguage.migration.Pattern_88yha8_a0b7" />
     </file>
-    <file name="Pattern_88yha8_a1a6.java">
+    <file name="Pattern_88yha8_a1b7.java">
       <node id="5539046710450338150" at="10,49,11,30" concept="13" />
       <node id="5539046710450338150" at="11,30,12,0" concept="10" />
       <node id="5539046710450338150" at="12,0,13,0" concept="10" />
       <node id="5539046710450338283" at="13,0,14,168" concept="2" />
-      <node id="5539046710450338150" at="10,0,16,0" concept="1" trace="Pattern_88yha8_a1a6#(Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="5539046710450338150" at="10,0,16,0" concept="1" trace="Pattern_88yha8_a1b7#(Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <scope id="5539046710450338150" at="10,49,14,168" />
       <scope id="5539046710450338150" at="10,0,16,0">
         <var name="patternNode" id="5539046710450338150" />
       </scope>
-      <unit id="5539046710450338150" at="9,0,18,0" name="jetbrains.mps.baseLanguage.migration.Pattern_88yha8_a1a6" />
+      <unit id="5539046710450338150" at="9,0,18,0" name="jetbrains.mps.baseLanguage.migration.Pattern_88yha8_a1b7" />
     </file>
     <file name="ReplaceDeprecatedVarReferencesWithVariableReference.java">
       <node id="5539046710450332033" at="24,0,25,0" concept="3" trace="description" />

@@ -62,7 +62,7 @@ public final class IterateOverIterable_Intention extends AbstractIntentionDescri
     @Override
     public void execute(final SNode node, final EditorContext editorContext) {
       {
-        GeneratedMatchingPattern pattern_6isygg_a0a = new Pattern_6isygg_a0a0a0a(_quotation_createNode_6isygg_a0a0a0a0a());
+        GeneratedMatchingPattern pattern_6isygg_a0a = new Pattern_6isygg_b0a0a0b(_quotation_createNode_6isygg_a0a0a0a0a());
         SNode coercedNode_6isygg_a0a = TypecheckingFacade.getFromContext().coerceType(TypecheckingFacade.getFromContext().getTypeOf(SLinkOperations.getTarget(node, LINKS.expression$5L7M)), pattern_6isygg_a0a);
         if (coercedNode_6isygg_a0a != null) {
           SNode foreachStatement = SNodeFactoryOperations.createNewNode(CONCEPTS.ForeachStatement$Po, null);
@@ -86,7 +86,7 @@ public final class IterateOverIterable_Intention extends AbstractIntentionDescri
     }
 
     private boolean isApplicableToNode(final SNode node, final EditorContext editorContext) {
-      return (TypecheckingFacade.getFromContext().coerceType(TypecheckingFacade.getFromContext().getTypeOf(SLinkOperations.getTarget(node, LINKS.expression$5L7M)), new Pattern_6isygg_b0a0a0a(_quotation_createNode_6isygg_a0b0a0a0a())) != null);
+      return (TypecheckingFacade.getFromContext().coerceType(TypecheckingFacade.getFromContext().getTypeOf(SLinkOperations.getTarget(node, LINKS.expression$5L7M)), new Pattern_6isygg_b1a0a0c(_quotation_createNode_6isygg_a0b0a0a0a())) != null);
     }
 
 

@@ -12,7 +12,7 @@
   <concept fqn="c:f3061a53-9226-4cc5-a443-f952ceaf5816/1081236700938:jetbrains.mps.baseLanguage.structure.StaticMethodDeclaration" />
   <concept fqn="c:f3061a53-9226-4cc5-a443-f952ceaf5816/1070475587102:jetbrains.mps.baseLanguage.structure.SuperConstructorInvocation" />
   <root nodeRef="r:ef0e231b-e6bd-436f-9003-b53de4081716(jetbrains.mps.lang.pattern.test)/1563914226484855981">
-    <file name="Pattern_oo3baa_a0b0a0a0a4.java">
+    <file name="Pattern_oo3baa_b0b0a1a0d7.java">
       <node id="1563914226484855999" at="10,55,11,30" concept="10" />
       <node id="1563914226484855999" at="11,30,12,0" concept="7" />
       <node id="1563914226484855999" at="12,0,13,0" concept="7" />
@@ -20,12 +20,12 @@
       <node id="1563914226484892893" at="14,306,15,302" concept="2" />
       <node id="1563914226484890296" at="15,302,16,316" concept="2" />
       <node id="1563914226484890297" at="16,316,17,312" concept="2" />
-      <node id="1563914226484855999" at="10,0,19,0" concept="1" trace="Pattern_oo3baa_a0b0a0a0a4#(Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1563914226484855999" at="10,0,19,0" concept="1" trace="Pattern_oo3baa_b0b0a1a0d7#(Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <scope id="1563914226484855999" at="10,55,17,312" />
       <scope id="1563914226484855999" at="10,0,19,0">
         <var name="patternNode" id="1563914226484855999" />
       </scope>
-      <unit id="1563914226484855999" at="9,0,21,0" name="jetbrains.mps.lang.pattern.test.Pattern_oo3baa_a0b0a0a0a4" />
+      <unit id="1563914226484855999" at="9,0,21,0" name="jetbrains.mps.lang.pattern.test.Pattern_oo3baa_b0b0a1a0d7" />
     </file>
     <file name="Patternv3_Test.java">
       <node id="1563914226484855981" at="26,27,27,60" concept="10" />
@@ -266,7 +266,7 @@
       <scope id="1563914226484862621" at="53,0,80,0" />
       <unit id="1563914226484862621" at="22,0,116,0" name="jetbrains.mps.lang.pattern.test.PatternListPattern_Test" />
     </file>
-    <file name="Pattern_i79cpz_a0b0a0a0a4.java">
+    <file name="Pattern_i79cpz_b0b0a1a0d7.java">
       <node id="1563914226484862630" at="10,55,11,30" concept="10" />
       <node id="1563914226484862630" at="11,30,12,0" concept="7" />
       <node id="1563914226484862630" at="12,0,13,0" concept="7" />
@@ -275,12 +275,12 @@
       <node id="1563914226484929054" at="15,302,16,307" concept="2" />
       <node id="1563914226484929055" at="16,307,17,315" concept="2" />
       <node id="1563914226484929052" at="17,315,18,312" concept="2" />
-      <node id="1563914226484862630" at="10,0,20,0" concept="1" trace="Pattern_i79cpz_a0b0a0a0a4#(Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1563914226484862630" at="10,0,20,0" concept="1" trace="Pattern_i79cpz_b0b0a1a0d7#(Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <scope id="1563914226484862630" at="10,55,18,312" />
       <scope id="1563914226484862630" at="10,0,20,0">
         <var name="patternNode" id="1563914226484862630" />
       </scope>
-      <unit id="1563914226484862630" at="9,0,22,0" name="jetbrains.mps.lang.pattern.test.Pattern_i79cpz_a0b0a0a0a4" />
+      <unit id="1563914226484862630" at="9,0,22,0" name="jetbrains.mps.lang.pattern.test.Pattern_i79cpz_b0b0a1a0d7" />
     </file>
   </root>
   <root nodeRef="r:ef0e231b-e6bd-436f-9003-b53de4081716(jetbrains.mps.lang.pattern.test)/1563914226484895490">
@@ -370,7 +370,7 @@
       <scope id="2690674587900700734" at="59,0,81,0" />
       <unit id="1563914226484895490" at="18,0,82,0" name="jetbrains.mps.lang.pattern.test.PatternProperty_Test" />
     </file>
-    <file name="Pattern_xihehy_a0b0a0a0a4.java">
+    <file name="Pattern_xihehy_b0b0a1a0d7.java">
       <node id="1563914226484895492" at="10,55,11,30" concept="10" />
       <node id="1563914226484895492" at="11,30,12,0" concept="7" />
       <node id="1563914226484895492" at="12,0,13,0" concept="7" />
@@ -378,16 +378,16 @@
       <node id="1563914226484895496" at="14,306,15,302" concept="2" />
       <node id="1563914226484895506" at="15,302,16,435" concept="2" />
       <node id="1563914226484895500" at="16,435,17,312" concept="2" />
-      <node id="1563914226484895492" at="10,0,19,0" concept="1" trace="Pattern_xihehy_a0b0a0a0a4#(Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1563914226484895492" at="10,0,19,0" concept="1" trace="Pattern_xihehy_b0b0a1a0d7#(Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <scope id="1563914226484895492" at="10,55,17,312" />
       <scope id="1563914226484895492" at="10,0,19,0">
         <var name="patternNode" id="1563914226484895492" />
       </scope>
-      <unit id="1563914226484895492" at="9,0,21,0" name="jetbrains.mps.lang.pattern.test.Pattern_xihehy_a0b0a0a0a4" />
+      <unit id="1563914226484895492" at="9,0,21,0" name="jetbrains.mps.lang.pattern.test.Pattern_xihehy_b0b0a1a0d7" />
     </file>
   </root>
   <root nodeRef="r:ef0e231b-e6bd-436f-9003-b53de4081716(jetbrains.mps.lang.pattern.test)/1563914226484981153">
-    <file name="Pattern_o71ow3_a0b0a0a0a4.java">
+    <file name="Pattern_o71ow3_b0b0a1a0d7.java">
       <node id="1563914226484981159" at="10,55,11,30" concept="10" />
       <node id="1563914226484981159" at="11,30,12,0" concept="7" />
       <node id="1563914226484981159" at="12,0,13,0" concept="7" />
@@ -396,12 +396,12 @@
       <node id="1563914226484981166" at="15,302,16,307" concept="2" />
       <node id="1563914226484981167" at="16,307,17,315" concept="2" />
       <node id="1563914226484981168" at="17,315,18,312" concept="2" />
-      <node id="1563914226484981159" at="10,0,20,0" concept="1" trace="Pattern_o71ow3_a0b0a0a0a4#(Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1563914226484981159" at="10,0,20,0" concept="1" trace="Pattern_o71ow3_b0b0a1a0d7#(Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <scope id="1563914226484981159" at="10,55,18,312" />
       <scope id="1563914226484981159" at="10,0,20,0">
         <var name="patternNode" id="1563914226484981159" />
       </scope>
-      <unit id="1563914226484981159" at="9,0,22,0" name="jetbrains.mps.lang.pattern.test.Pattern_o71ow3_a0b0a0a0a4" />
+      <unit id="1563914226484981159" at="9,0,22,0" name="jetbrains.mps.lang.pattern.test.Pattern_o71ow3_b0b0a1a0d7" />
     </file>
     <file name="Patternv1_Test.java">
       <node id="1563914226484981153" at="27,27,28,60" concept="10" />
@@ -674,7 +674,7 @@
       <scope id="2879868312063084275" at="44,0,71,0" />
       <unit id="2879868312063084275" at="21,0,113,0" name="jetbrains.mps.lang.pattern.test.PatternOrPattern_Test" />
     </file>
-    <file name="Pattern_qttyfe_a0b0a0a0a4.java">
+    <file name="Pattern_qttyfe_b0b0a1a0d7.java">
       <node id="2879868312063084277" at="11,89,12,30" concept="10" />
       <node id="2879868312063084277" at="12,30,13,0" concept="7" />
       <node id="4855904478356985692" at="13,0,14,54" concept="5" />
@@ -684,7 +684,7 @@
       <node id="2879868312063084277" at="17,170,18,0" concept="7" />
       <node id="5520495173577277742" at="18,0,19,302" concept="2" />
       <node id="4855904478356985691" at="19,302,20,215" concept="2" />
-      <node id="2879868312063084277" at="11,0,22,0" concept="1" trace="Pattern_qttyfe_a0b0a0a0a4#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="2879868312063084277" at="11,0,22,0" concept="1" trace="Pattern_qttyfe_b0b0a1a0d7#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <scope id="2879868312063084277" at="11,89,20,215">
         <var name="disjunct0" id="4855904478356985692" />
         <var name="disjunct1" id="4855904478357000966" />
@@ -694,7 +694,7 @@
         <var name="orClause1" id="4855904478357000966" />
         <var name="patternNode" id="2879868312063084277" />
       </scope>
-      <unit id="2879868312063084277" at="10,0,24,0" name="jetbrains.mps.lang.pattern.test.Pattern_qttyfe_a0b0a0a0a4" />
+      <unit id="2879868312063084277" at="10,0,24,0" name="jetbrains.mps.lang.pattern.test.Pattern_qttyfe_b0b0a1a0d7" />
     </file>
   </root>
   <root nodeRef="r:ef0e231b-e6bd-436f-9003-b53de4081716(jetbrains.mps.lang.pattern.test)/3741790230810711775">
@@ -1178,7 +1178,7 @@
       <scope id="4855904478357165289" at="44,0,85,0" />
       <unit id="4855904478357165289" at="21,0,127,0" name="jetbrains.mps.lang.pattern.test.PatternOrPattern2_Test" />
     </file>
-    <file name="Pattern_49ctdq_a0b0a0a0a4.java">
+    <file name="Pattern_49ctdq_b0b0a1a0d7.java">
       <node id="4855904478357165299" at="11,89,12,30" concept="10" />
       <node id="4855904478357165299" at="12,30,13,0" concept="7" />
       <node id="4855904478357165305" at="13,0,14,54" concept="5" />
@@ -1188,7 +1188,7 @@
       <node id="4855904478357165299" at="17,169,18,0" concept="7" />
       <node id="4855904478357165303" at="18,0,19,302" concept="2" />
       <node id="4855904478357165304" at="19,302,20,215" concept="2" />
-      <node id="4855904478357165299" at="11,0,22,0" concept="1" trace="Pattern_49ctdq_a0b0a0a0a4#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4855904478357165299" at="11,0,22,0" concept="1" trace="Pattern_49ctdq_b0b0a1a0d7#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <scope id="4855904478357165299" at="11,89,20,215">
         <var name="disjunct0" id="4855904478357165305" />
         <var name="disjunct1" id="4855904478357165310" />
@@ -1198,7 +1198,7 @@
         <var name="orClause1" id="4855904478357165310" />
         <var name="patternNode" id="4855904478357165299" />
       </scope>
-      <unit id="4855904478357165299" at="10,0,24,0" name="jetbrains.mps.lang.pattern.test.Pattern_49ctdq_a0b0a0a0a4" />
+      <unit id="4855904478357165299" at="10,0,24,0" name="jetbrains.mps.lang.pattern.test.Pattern_49ctdq_b0b0a1a0d7" />
     </file>
   </root>
   <root nodeRef="r:ef0e231b-e6bd-436f-9003-b53de4081716(jetbrains.mps.lang.pattern.test)/6280652366640936687">
@@ -2851,7 +2851,7 @@
     </file>
   </root>
   <root nodeRef="r:ef0e231b-e6bd-436f-9003-b53de4081716(jetbrains.mps.lang.pattern.test)/815823070325240409">
-    <file name="Pattern_ofki36_a0b0a0a0a4.java">
+    <file name="Pattern_ofki36_b0b0a1a0d7.java">
       <node id="815823070325240427" at="10,55,11,30" concept="10" />
       <node id="815823070325240427" at="11,30,12,0" concept="7" />
       <node id="815823070325240427" at="12,0,13,0" concept="7" />
@@ -2859,12 +2859,12 @@
       <node id="815823070325240438" at="14,159,15,443" concept="2" />
       <node id="8925839041031188836" at="15,443,16,304" concept="2" />
       <node id="815823070325240440" at="16,304,17,159" concept="2" />
-      <node id="815823070325240427" at="10,0,19,0" concept="1" trace="Pattern_ofki36_a0b0a0a0a4#(Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="815823070325240427" at="10,0,19,0" concept="1" trace="Pattern_ofki36_b0b0a1a0d7#(Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <scope id="815823070325240427" at="10,55,17,159" />
       <scope id="815823070325240427" at="10,0,19,0">
         <var name="patternNode" id="815823070325240427" />
       </scope>
-      <unit id="815823070325240427" at="9,0,21,0" name="jetbrains.mps.lang.pattern.test.Pattern_ofki36_a0b0a0a0a4" />
+      <unit id="815823070325240427" at="9,0,21,0" name="jetbrains.mps.lang.pattern.test.Pattern_ofki36_b0b0a1a0d7" />
     </file>
     <file name="Patternv2_Test.java">
       <node id="815823070325240409" at="26,27,27,60" concept="10" />
@@ -3482,7 +3482,7 @@
       <scope id="8263735385373599995" at="44,0,88,0" />
       <unit id="8263735385373599995" at="21,0,165,0" name="jetbrains.mps.lang.pattern.test.PatternMultipleOr_Test" />
     </file>
-    <file name="Pattern_ay21uv_a0b0a0a0a4.java">
+    <file name="Pattern_ay21uv_b0b0a1a0d7.java">
       <node id="8263735385373599997" at="11,123,12,30" concept="10" />
       <node id="8263735385373599997" at="12,30,13,0" concept="7" />
       <node id="8297918475033171168" at="13,0,14,54" concept="5" />
@@ -3497,7 +3497,7 @@
       <node id="7228132814203674566" at="22,162,23,310" concept="2" />
       <node id="8263735385373599997" at="23,310,24,0" concept="7" />
       <node id="8297918475033171167" at="24,0,25,277" concept="2" />
-      <node id="8263735385373599997" at="11,0,27,0" concept="1" trace="Pattern_ay21uv_a0b0a0a0a4#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8263735385373599997" at="11,0,27,0" concept="1" trace="Pattern_ay21uv_b0b0a1a0d7#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <scope id="8263735385373599997" at="11,123,25,277">
         <var name="disjunct0" id="8297918475033171168" />
         <var name="disjunct1" id="8297918475033171173" />
@@ -3511,7 +3511,7 @@
         <var name="orClause3" id="8297918475033210020" />
         <var name="patternNode" id="8263735385373599997" />
       </scope>
-      <unit id="8263735385373599997" at="10,0,29,0" name="jetbrains.mps.lang.pattern.test.Pattern_ay21uv_a0b0a0a0a4" />
+      <unit id="8263735385373599997" at="10,0,29,0" name="jetbrains.mps.lang.pattern.test.Pattern_ay21uv_b0b0a1a0d7" />
     </file>
   </root>
   <root nodeRef="r:ef0e231b-e6bd-436f-9003-b53de4081716(jetbrains.mps.lang.pattern.test)/8950533135207398011">
@@ -4262,38 +4262,38 @@
       <unit id="8950533135207578751" at="43,0,237,0" name="jetbrains.mps.lang.pattern.test.Pattern_References_Test$TestBody" />
       <unit id="8950533135207578751" at="21,0,238,0" name="jetbrains.mps.lang.pattern.test.Pattern_References_Test" />
     </file>
-    <file name="Pattern_kxljzf_a0b0b0b0b.java">
+    <file name="Pattern_kxljzf_b0b0b0b1c.java">
       <node id="8950533135207579976" at="9,54,10,29" concept="10" />
       <node id="8950533135207579976" at="10,29,11,0" concept="7" />
       <node id="8950533135207579976" at="11,0,12,0" concept="7" />
-      <node id="8950533135207579976" at="9,0,14,0" concept="1" trace="Pattern_kxljzf_a0b0b0b0b#(Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8950533135207579976" at="9,0,14,0" concept="1" trace="Pattern_kxljzf_b0b0b0b1c#(Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <scope id="8950533135207579976" at="9,54,12,0" />
       <scope id="8950533135207579976" at="9,0,14,0">
         <var name="patternNode" id="8950533135207579976" />
       </scope>
-      <unit id="8950533135207579976" at="8,0,16,0" name="jetbrains.mps.lang.pattern.test.Pattern_kxljzf_a0b0b0b0b" />
+      <unit id="8950533135207579976" at="8,0,16,0" name="jetbrains.mps.lang.pattern.test.Pattern_kxljzf_b0b0b0b1c" />
     </file>
-    <file name="Pattern_kxljzf_a0b0b0b0c.java">
+    <file name="Pattern_kxljzf_b0b0b0b1d.java">
       <node id="8950533135207580490" at="9,54,10,30" concept="10" />
       <node id="8950533135207580490" at="10,30,11,0" concept="7" />
       <node id="8950533135207580490" at="11,0,12,0" concept="7" />
-      <node id="8950533135207580490" at="9,0,14,0" concept="1" trace="Pattern_kxljzf_a0b0b0b0c#(Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8950533135207580490" at="9,0,14,0" concept="1" trace="Pattern_kxljzf_b0b0b0b1d#(Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <scope id="8950533135207580490" at="9,54,12,0" />
       <scope id="8950533135207580490" at="9,0,14,0">
         <var name="patternNode" id="8950533135207580490" />
       </scope>
-      <unit id="8950533135207580490" at="8,0,16,0" name="jetbrains.mps.lang.pattern.test.Pattern_kxljzf_a0b0b0b0c" />
+      <unit id="8950533135207580490" at="8,0,16,0" name="jetbrains.mps.lang.pattern.test.Pattern_kxljzf_b0b0b0b1d" />
     </file>
-    <file name="Pattern_kxljzf_a0b0b0c0a.java">
+    <file name="Pattern_kxljzf_b0b0b0c1b.java">
       <node id="3741790230813479671" at="9,54,10,29" concept="10" />
       <node id="3741790230813479671" at="10,29,11,0" concept="7" />
       <node id="3741790230813479671" at="11,0,12,0" concept="7" />
-      <node id="3741790230813479671" at="9,0,14,0" concept="1" trace="Pattern_kxljzf_a0b0b0c0a#(Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="3741790230813479671" at="9,0,14,0" concept="1" trace="Pattern_kxljzf_b0b0b0c1b#(Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <scope id="3741790230813479671" at="9,54,12,0" />
       <scope id="3741790230813479671" at="9,0,14,0">
         <var name="patternNode" id="3741790230813479671" />
       </scope>
-      <unit id="3741790230813479671" at="8,0,16,0" name="jetbrains.mps.lang.pattern.test.Pattern_kxljzf_a0b0b0c0a" />
+      <unit id="3741790230813479671" at="8,0,16,0" name="jetbrains.mps.lang.pattern.test.Pattern_kxljzf_b0b0b0c1b" />
     </file>
   </root>
   <root nodeRef="r:ef0e231b-e6bd-436f-9003-b53de4081716(jetbrains.mps.lang.pattern.test)/8950533135208846443">

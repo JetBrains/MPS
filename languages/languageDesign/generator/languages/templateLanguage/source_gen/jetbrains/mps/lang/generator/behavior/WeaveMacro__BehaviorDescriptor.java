@@ -32,7 +32,7 @@ public final class WeaveMacro__BehaviorDescriptor extends BaseBHDescriptor {
   /*package*/ static SNode getInputNodeTypeInsideOfMacro_idhEwIosJ(@NotNull SNode __thisNode__) {
     SNode queryType = TypecheckingFacade.getFromContext().getTypeOf(SLinkOperations.getTarget(__thisNode__, LINKS.nodesToWeaveQuery$NXdH));
     {
-      GeneratedMatchingPattern pattern_bvvctf_b0a = new Pattern_bvvctf_a0a0b0a(_quotation_createNode_bvvctf_a0a0a0b0a());
+      GeneratedMatchingPattern pattern_bvvctf_b0a = new Pattern_bvvctf_b0a0b1b(_quotation_createNode_bvvctf_a0a0a0b0a());
       SNode coercedNode_bvvctf_b0a = TypecheckingFacade.getFromContext().coerceType(queryType, pattern_bvvctf_b0a);
       if (coercedNode_bvvctf_b0a != null) {
         return pattern_bvvctf_b0a.getMatchedNode("concept");

@@ -24,7 +24,7 @@ public class supertypesOf_ClassifierTypeSModel_SModelType_SubtypingRule extends 
   }
   public IsApplicableStatus isApplicableAndPattern(SNode argument) {
     {
-      GeneratedMatchingPattern pattern = new Pattern_fggx2c_a0a0a0e(_quotation_createNode_fggx2c_a0a0a0a0e());
+      GeneratedMatchingPattern pattern = new Pattern_fggx2c_a0a0a1e(_quotation_createNode_fggx2c_a0a0a0a0e());
       this.myMatchingPattern = pattern;
       boolean b = pattern.match(argument);
       return new IsApplicableStatus(b, pattern);

@@ -70,7 +70,7 @@ public class nlist_subtypeOf_list_of_nodes_InequationReplacementRule extends Abs
   }
   public IsApplicableStatus isApplicableSubtypeAndPattern(SNode node) {
     {
-      GeneratedMatchingPattern pattern = new Pattern_9szvhv_a0a0a0g(_quotation_createNode_9szvhv_a0a0a0a0g());
+      GeneratedMatchingPattern pattern = new Pattern_9szvhv_b0a0a3g(_quotation_createNode_9szvhv_a0a0a0a0g());
       this.myMatchingPattern1 = pattern;
       boolean b = pattern.match(node);
       return new IsApplicableStatus(b, pattern);
@@ -78,7 +78,7 @@ public class nlist_subtypeOf_list_of_nodes_InequationReplacementRule extends Abs
   }
   public IsApplicableStatus isApplicableSupertypeAndPattern(SNode node) {
     {
-      GeneratedMatchingPattern pattern = new Pattern_9szvhv_a0a0a0h(_quotation_createNode_9szvhv_a0a0a0a0h());
+      GeneratedMatchingPattern pattern = new Pattern_9szvhv_b0a0a1h(_quotation_createNode_9szvhv_a0a0a0a0h());
       this.myMatchingPattern2 = pattern;
       boolean b = pattern.match(node);
       return new IsApplicableStatus(b, pattern);

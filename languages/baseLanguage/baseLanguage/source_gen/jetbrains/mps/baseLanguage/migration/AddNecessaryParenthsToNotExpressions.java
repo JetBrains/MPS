@@ -44,7 +44,7 @@ public class AddNecessaryParenthsToNotExpressions extends MigrationScriptBase {
   }
   public void doExecute(final SModule m) {
     {
-      final GeneratedMatchingPattern pattern = new Pattern_fbexqr_a0a5(_quotation_createNode_fbexqr_a0a0a5());
+      final GeneratedMatchingPattern pattern = new Pattern_fbexqr_a0b6(_quotation_createNode_fbexqr_a0a0a5());
       Sequence.fromIterable(((Iterable<SModel>) m.getModels())).translate((it) -> SModelOperations.nodes(it, SNodeOperations.asSConcept(pattern.getConcept()))).where((it) -> pattern.match(it)).where((it) -> !(isInTransformPattern(it))).where((SNode node) -> PrecedenceUtil.needsParensAroundNotExpression(node)).sort((it) -> ListSequence.fromList(SNodeOperations.getNodeAncestors(it, null, false)).count(), false).visitAll((final SNode nodeToMigrate) -> {
         pattern.match(nodeToMigrate);
         List<SNode> attributes = SNodeOperations.getNodeDescendants(nodeToMigrate, CONCEPTS.Attribute$g1, false, new SAbstractConcept[]{});

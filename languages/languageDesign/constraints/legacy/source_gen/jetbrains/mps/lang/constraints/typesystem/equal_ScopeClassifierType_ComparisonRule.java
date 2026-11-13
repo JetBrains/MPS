@@ -27,7 +27,7 @@ public class equal_ScopeClassifierType_ComparisonRule extends ComparisonRule_Run
   }
   public IsApplicableStatus isApplicableSecond(SNode node) {
     {
-      GeneratedMatchingPattern pattern = new Pattern_f1xpzk_a0a0a0f(_quotation_createNode_f1xpzk_a0a0a0a0f());
+      GeneratedMatchingPattern pattern = new Pattern_f1xpzk_b0a0a1f(_quotation_createNode_f1xpzk_a0a0a0a0f());
       this.myMatchingPattern2 = pattern;
       boolean b = pattern.match(node);
       return new IsApplicableStatus(b, pattern);

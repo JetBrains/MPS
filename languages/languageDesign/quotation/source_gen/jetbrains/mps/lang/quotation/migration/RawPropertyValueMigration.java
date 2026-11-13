@@ -37,7 +37,7 @@ public class RawPropertyValueMigration {
         SNode matchedNode_pswq59_a0h0b = parentExpr;
         {
           boolean matches_pswq59_a0a7a1 = false;
-          GeneratedMatchingPattern matchingPattern_pswq59_a0a7a1 = new Pattern_pswq59_a0b0b0a0h0b(_quotation_createNode_pswq59_a0a0b0b0a0h0b());
+          GeneratedMatchingPattern matchingPattern_pswq59_a0a7a1 = new Pattern_pswq59_b0b0b0a0h0b(_quotation_createNode_pswq59_a0a0b0b0a0h0b());
           matches_pswq59_a0a7a1 = matchingPattern_pswq59_a0a7a1.match(matchedNode_pswq59_a0h0b);
           if (matches_pswq59_a0a7a1) {
             SNodeOperations.replaceWithAnother(parentExpr, expr);
@@ -52,14 +52,14 @@ public class RawPropertyValueMigration {
         SNode matchedNode_pswq59_a0j0b = expr;
         {
           boolean matches_pswq59_a0a9a1 = false;
-          GeneratedMatchingPattern matchingPattern_pswq59_a0a9a1 = new Pattern_pswq59_a0b0b0a0j0b(_quotation_createNode_pswq59_a0a0b0b0a0j0b());
+          GeneratedMatchingPattern matchingPattern_pswq59_a0a9a1 = new Pattern_pswq59_b0b0b0a0j0b(_quotation_createNode_pswq59_a0a0b0b0a0j0b());
           matches_pswq59_a0a9a1 = matchingPattern_pswq59_a0a9a1.match(matchedNode_pswq59_a0j0b);
           if (matches_pswq59_a0a9a1) {
             SNodeOperations.replaceWithAnother(parentExpr, expr);
             return;
           } else {
             boolean matches_pswq59_b0a9a1 = false;
-            GeneratedMatchingPattern matchingPattern_pswq59_b0a9a1 = new Pattern_pswq59_a0b0a3a1a0a9a1(_quotation_createNode_pswq59_a0a0b0a3a1a0a9a1());
+            GeneratedMatchingPattern matchingPattern_pswq59_b0a9a1 = new Pattern_pswq59_b0b0c3a1a0a9a1(_quotation_createNode_pswq59_a0a0b0a3a1a0a9a1());
             matches_pswq59_b0a9a1 = matchingPattern_pswq59_b0a9a1.match(matchedNode_pswq59_a0j0b);
             if (matches_pswq59_b0a9a1) {
               SNodeOperations.replaceWithAnother(parentExpr, expr);
@@ -110,7 +110,7 @@ public class RawPropertyValueMigration {
             }
           } else {
             boolean matches_pswq59_b0a6a3 = false;
-            GeneratedMatchingPattern matchingPattern_pswq59_b0a6a3 = new Pattern_pswq59_a0b0a2a1a0a6a3(_quotation_createNode_pswq59_a0a0b0a2a1a0a6a3());
+            GeneratedMatchingPattern matchingPattern_pswq59_b0a6a3 = new Pattern_pswq59_b0b0c2a1a0a6a3(_quotation_createNode_pswq59_a0a0b0a2a1a0a6a3());
             matches_pswq59_b0a6a3 = matchingPattern_pswq59_b0a6a3.match(matchedNode_pswq59_a0g0d);
             if (matches_pswq59_b0a6a3) {
               if (TypecheckingFacade.getFromContext().isSubtype(TypecheckingFacade.getFromContext().getTypeOf(matchingPattern_pswq59_b0a6a3.getMatchedNode("boolExpr")), _quotation_createNode_pswq59_b0a0a0a3a0c0b0a0g0d())) {
@@ -119,7 +119,7 @@ public class RawPropertyValueMigration {
               }
             } else {
               boolean matches_pswq59_c0a6a3 = false;
-              GeneratedMatchingPattern matchingPattern_pswq59_c0a6a3 = new Pattern_pswq59_a0b0a3a0c0b0a0g0d(_quotation_createNode_pswq59_a0a0b0a3a0c0b0a0g0d());
+              GeneratedMatchingPattern matchingPattern_pswq59_c0a6a3 = new Pattern_pswq59_b0b0c3a2c0b0a0g0d(_quotation_createNode_pswq59_a0a0b0a3a0c0b0a0g0d());
               matches_pswq59_c0a6a3 = matchingPattern_pswq59_c0a6a3.match(matchedNode_pswq59_a0g0d);
               if (matches_pswq59_c0a6a3) {
                 if (TypecheckingFacade.getFromContext().isSubtype(TypecheckingFacade.getFromContext().getTypeOf(matchingPattern_pswq59_c0a6a3.getMatchedNode("boolExpr")), _quotation_createNode_pswq59_b0a0a0a3a0d0a2a1a0a6a3())) {
@@ -128,7 +128,7 @@ public class RawPropertyValueMigration {
                 }
               } else {
                 boolean matches_pswq59_d0a6a3 = false;
-                GeneratedMatchingPattern matchingPattern_pswq59_d0a6a3 = new Pattern_pswq59_a0b0a3a0d0a2a1a0a6a3(_quotation_createNode_pswq59_a0a0b0a3a0d0a2a1a0a6a3());
+                GeneratedMatchingPattern matchingPattern_pswq59_d0a6a3 = new Pattern_pswq59_b0b0c3a2d0c2a1a0a6a3(_quotation_createNode_pswq59_a0a0b0a3a0d0a2a1a0a6a3());
                 matches_pswq59_d0a6a3 = matchingPattern_pswq59_d0a6a3.match(matchedNode_pswq59_a0g0d);
                 if (matches_pswq59_d0a6a3) {
                   if (TypecheckingFacade.getFromContext().isSubtype(TypecheckingFacade.getFromContext().getTypeOf(matchingPattern_pswq59_d0a6a3.getMatchedNode("boolExpr")), _quotation_createNode_pswq59_b0a0a0a3a0d0a3a0c0b0a0g0d())) {
@@ -137,7 +137,7 @@ public class RawPropertyValueMigration {
                   }
                 } else {
                   boolean matches_pswq59_e0a6a3 = false;
-                  GeneratedMatchingPattern matchingPattern_pswq59_e0a6a3 = new Pattern_pswq59_a0b0a3a0d0a3a0c0b0a0g0d(_quotation_createNode_pswq59_a0a0b0a3a0d0a3a0c0b0a0g0d());
+                  GeneratedMatchingPattern matchingPattern_pswq59_e0a6a3 = new Pattern_pswq59_b0b0c3a2d0c3a2c0b0a0g0d(_quotation_createNode_pswq59_a0a0b0a3a0d0a3a0c0b0a0g0d());
                   matches_pswq59_e0a6a3 = matchingPattern_pswq59_e0a6a3.match(matchedNode_pswq59_a0g0d);
                   if (matches_pswq59_e0a6a3) {
                     if (TypecheckingFacade.getFromContext().isSubtype(TypecheckingFacade.getFromContext().getTypeOf(matchingPattern_pswq59_e0a6a3.getMatchedNode("boolExpr")), _quotation_createNode_pswq59_b0a0a0a3a0d0a3a0d0a2a1a0a6a3())) {
@@ -146,7 +146,7 @@ public class RawPropertyValueMigration {
                     }
                   } else {
                     boolean matches_pswq59_f0a6a3 = false;
-                    GeneratedMatchingPattern matchingPattern_pswq59_f0a6a3 = new Pattern_pswq59_a0b0a3a0d0a3a0d0a2a1a0a6a3(_quotation_createNode_pswq59_a0a0b0a3a0d0a3a0d0a2a1a0a6a3());
+                    GeneratedMatchingPattern matchingPattern_pswq59_f0a6a3 = new Pattern_pswq59_b0b0c3a2d0c3a2d0c2a1a0a6a3(_quotation_createNode_pswq59_a0a0b0a3a0d0a3a0d0a2a1a0a6a3());
                     matches_pswq59_f0a6a3 = matchingPattern_pswq59_f0a6a3.match(matchedNode_pswq59_a0g0d);
                     if (matches_pswq59_f0a6a3) {
                       if (TypecheckingFacade.getFromContext().isSubtype(TypecheckingFacade.getFromContext().getTypeOf(matchingPattern_pswq59_f0a6a3.getMatchedNode("boolExpr")), _quotation_createNode_pswq59_b0a0a0a3a0d0a3a0d0a3a0c0b0a0g0d())) {
@@ -189,7 +189,7 @@ public class RawPropertyValueMigration {
             }
           } else {
             boolean matches_pswq59_b0a8a3 = false;
-            GeneratedMatchingPattern matchingPattern_pswq59_b0a8a3 = new Pattern_pswq59_a0b0a2a1a0a8a3(_quotation_createNode_pswq59_a0a0b0a2a1a0a8a3());
+            GeneratedMatchingPattern matchingPattern_pswq59_b0a8a3 = new Pattern_pswq59_b0b0c2a1a0a8a3(_quotation_createNode_pswq59_a0a0b0a2a1a0a8a3());
             matches_pswq59_b0a8a3 = matchingPattern_pswq59_b0a8a3.match(matchedNode_pswq59_a0i0d);
             if (matches_pswq59_b0a8a3) {
               if (TypecheckingFacade.getFromContext().isSubtype(TypecheckingFacade.getFromContext().getTypeOf(matchingPattern_pswq59_b0a8a3.getMatchedNode("intExpr")), _quotation_createNode_pswq59_b0a0a0a3a0c0b0a0i0d())) {
@@ -198,7 +198,7 @@ public class RawPropertyValueMigration {
               }
             } else {
               boolean matches_pswq59_c0a8a3 = false;
-              GeneratedMatchingPattern matchingPattern_pswq59_c0a8a3 = new Pattern_pswq59_a0b0a3a0c0b0a0i0d(_quotation_createNode_pswq59_a0a0b0a3a0c0b0a0i0d());
+              GeneratedMatchingPattern matchingPattern_pswq59_c0a8a3 = new Pattern_pswq59_b0b0c3a2c0b0a0i0d(_quotation_createNode_pswq59_a0a0b0a3a0c0b0a0i0d());
               matches_pswq59_c0a8a3 = matchingPattern_pswq59_c0a8a3.match(matchedNode_pswq59_a0i0d);
               if (matches_pswq59_c0a8a3) {
                 if (TypecheckingFacade.getFromContext().isSubtype(TypecheckingFacade.getFromContext().getTypeOf(matchingPattern_pswq59_c0a8a3.getMatchedNode("intExpr")), _quotation_createNode_pswq59_b0a0a0a3a0d0a2a1a0a8a3())) {
@@ -207,7 +207,7 @@ public class RawPropertyValueMigration {
                 }
               } else {
                 boolean matches_pswq59_d0a8a3 = false;
-                GeneratedMatchingPattern matchingPattern_pswq59_d0a8a3 = new Pattern_pswq59_a0b0a3a0d0a2a1a0a8a3(_quotation_createNode_pswq59_a0a0b0a3a0d0a2a1a0a8a3());
+                GeneratedMatchingPattern matchingPattern_pswq59_d0a8a3 = new Pattern_pswq59_b0b0c3a2d0c2a1a0a8a3(_quotation_createNode_pswq59_a0a0b0a3a0d0a2a1a0a8a3());
                 matches_pswq59_d0a8a3 = matchingPattern_pswq59_d0a8a3.match(matchedNode_pswq59_a0i0d);
                 if (matches_pswq59_d0a8a3) {
                   if (TypecheckingFacade.getFromContext().isSubtype(TypecheckingFacade.getFromContext().getTypeOf(matchingPattern_pswq59_d0a8a3.getMatchedNode("intExpr")), _quotation_createNode_pswq59_b0a0a0a3a0d0a3a0c0b0a0i0d())) {
@@ -216,7 +216,7 @@ public class RawPropertyValueMigration {
                   }
                 } else {
                   boolean matches_pswq59_e0a8a3 = false;
-                  GeneratedMatchingPattern matchingPattern_pswq59_e0a8a3 = new Pattern_pswq59_a0b0a3a0d0a3a0c0b0a0i0d(_quotation_createNode_pswq59_a0a0b0a3a0d0a3a0c0b0a0i0d());
+                  GeneratedMatchingPattern matchingPattern_pswq59_e0a8a3 = new Pattern_pswq59_b0b0c3a2d0c3a2c0b0a0i0d(_quotation_createNode_pswq59_a0a0b0a3a0d0a3a0c0b0a0i0d());
                   matches_pswq59_e0a8a3 = matchingPattern_pswq59_e0a8a3.match(matchedNode_pswq59_a0i0d);
                   if (matches_pswq59_e0a8a3) {
                     if (TypecheckingFacade.getFromContext().isSubtype(TypecheckingFacade.getFromContext().getTypeOf(matchingPattern_pswq59_e0a8a3.getMatchedNode("intExpr")), _quotation_createNode_pswq59_b0a0a0a3a0d0a3a0d0a2a1a0a8a3())) {
@@ -225,7 +225,7 @@ public class RawPropertyValueMigration {
                     }
                   } else {
                     boolean matches_pswq59_f0a8a3 = false;
-                    GeneratedMatchingPattern matchingPattern_pswq59_f0a8a3 = new Pattern_pswq59_a0b0a3a0d0a3a0d0a2a1a0a8a3(_quotation_createNode_pswq59_a0a0b0a3a0d0a3a0d0a2a1a0a8a3());
+                    GeneratedMatchingPattern matchingPattern_pswq59_f0a8a3 = new Pattern_pswq59_b0b0c3a2d0c3a2d0c2a1a0a8a3(_quotation_createNode_pswq59_a0a0b0a3a0d0a3a0d0a2a1a0a8a3());
                     matches_pswq59_f0a8a3 = matchingPattern_pswq59_f0a8a3.match(matchedNode_pswq59_a0i0d);
                     if (matches_pswq59_f0a8a3) {
                       if (TypecheckingFacade.getFromContext().isSubtype(TypecheckingFacade.getFromContext().getTypeOf(matchingPattern_pswq59_f0a8a3.getMatchedNode("intExpr")), _quotation_createNode_pswq59_b0a0a0a3a0d0a3a0d0a3a0c0b0a0i0d())) {

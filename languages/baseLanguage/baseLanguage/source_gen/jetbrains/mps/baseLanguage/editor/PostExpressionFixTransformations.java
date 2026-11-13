@@ -392,7 +392,7 @@ public class PostExpressionFixTransformations extends TransformationMenuBase {
         SLinkOperations.setTarget(forStatement, LINKS.iterable$mImK, SLinkOperations.getTarget(stmt, LINKS.expression$5L7M));
         ListSequence.fromList(SLinkOperations.getChildren(SLinkOperations.getTarget(forStatement, LINKS.body$c1sm), LINKS.statement$53DE)).clear();
         {
-          GeneratedMatchingPattern pattern_isyl5y_e0a5a = new Pattern_isyl5y_a0a0e0a5a(_quotation_createNode_isyl5y_a0a0a0e0a5a());
+          GeneratedMatchingPattern pattern_isyl5y_e0a5a = new Pattern_isyl5y_b0a0e0b5b(_quotation_createNode_isyl5y_a0a0a0e0a5a());
           SNode coercedNode_isyl5y_e0a5a = TypecheckingFacade.getFromContext().coerceType(TypecheckingFacade.getFromContext().getTypeOf(_context.getNode()), pattern_isyl5y_e0a5a);
           if (coercedNode_isyl5y_e0a5a != null) {
             SLinkOperations.setTarget(SLinkOperations.getTarget(forStatement, LINKS.variable$JNH6), LINKS.type$a1UY, pattern_isyl5y_e0a5a.getMatchedNode("ElementType"));
@@ -412,7 +412,7 @@ public class PostExpressionFixTransformations extends TransformationMenuBase {
         SNode stmt = SNodeOperations.getNodeAncestor(_context.getNode(), CONCEPTS.ExpressionStatement$O8, false, false);
         if ((boolean) Expression__BehaviorDescriptor.isRightMostExpression_id6bbTzIwEnym.invoke(_context.getNode()) && (stmt != null)) {
           {
-            GeneratedMatchingPattern pattern_isyl5y_a0b0a5a = new Pattern_isyl5y_a0a0a0b0a5a(_quotation_createNode_isyl5y_a0a0a0a0b0a5a());
+            GeneratedMatchingPattern pattern_isyl5y_a0b0a5a = new Pattern_isyl5y_b0a0a0b0c5b(_quotation_createNode_isyl5y_a0a0a0a0b0a5a());
             SNode coercedNode_isyl5y_a0b0a5a = TypecheckingFacade.getFromContext().coerceType(TypecheckingFacade.getFromContext().getTypeOf(SLinkOperations.getTarget(stmt, LINKS.expression$5L7M)), pattern_isyl5y_a0b0a5a);
             if (coercedNode_isyl5y_a0b0a5a != null) {
               return true;

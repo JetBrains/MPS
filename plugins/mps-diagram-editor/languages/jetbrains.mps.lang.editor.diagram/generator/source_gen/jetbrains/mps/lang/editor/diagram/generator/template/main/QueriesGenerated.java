@@ -474,7 +474,7 @@ public class QueriesGenerated extends QueryProviderBase {
   }
   public static SNode sourceNodeQuery_18_0(final SourceSubstituteMacroNodeContext _context) {
     {
-      GeneratedMatchingPattern pattern_x583g4_a0gf = new Pattern_x583g4_a0a0a0gf(_quotation_createNode_x583g4_a0a0a0a0gf());
+      GeneratedMatchingPattern pattern_x583g4_a0gf = new Pattern_x583g4_b0a0a3hf(_quotation_createNode_x583g4_a0a0a0a0gf());
       SNode coercedNode_x583g4_a0gf = TypecheckingFacade.getFromContext().coerceType(TypecheckingFacade.getFromContext().getTypeOf(SLinkOperations.getTarget(_context.getNode(), LINKS.query$cEj)), pattern_x583g4_a0gf);
       if (coercedNode_x583g4_a0gf != null) {
         return ListSequence.fromList(SLinkOperations.getChildren(coercedNode_x583g4_a0gf, LINKS.parameter$oqG$)).first();

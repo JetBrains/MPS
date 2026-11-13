@@ -27,7 +27,7 @@ public class deque_type_comparableWith_Deque_ComparisonRule extends ComparisonRu
   }
   public IsApplicableStatus isApplicableSecond(SNode node) {
     {
-      GeneratedMatchingPattern pattern = new Pattern_9xe6am_a0a0a0f(_quotation_createNode_9xe6am_a0a0a0a0f());
+      GeneratedMatchingPattern pattern = new Pattern_9xe6am_b0a0a1f(_quotation_createNode_9xe6am_a0a0a0a0f());
       this.myMatchingPattern2 = pattern;
       boolean b = pattern.match(node);
       return new IsApplicableStatus(b, pattern);

@@ -62,7 +62,7 @@ public class SLinkImplicitSelect_Constraints extends BaseConstraintsDescriptor {
         }
         @Override
         public Scope createScope(final ReferenceConstraintsContext _context) {
-          return ListScope.forResolvableElements(AbstractConceptDeclaration__BehaviorDescriptor.getLinkDeclarations_idhEwILKK.invoke(SLinkOperations.getTarget(SNodeOperations.cast(SLinkOperations.getTarget(TypecheckingFacade.getFromContext().coerceType(TypecheckingFacade.getFromContext().getTypeOf(SLinkOperations.getTarget(SNodeOperations.as((((_context.getReferenceNode() == null) ? _context.getContextNode() : SNodeOperations.getParent(_context.getReferenceNode()))), CONCEPTS.DotExpression$yW), LINKS.operand$w6IR)), new Pattern_f4oi2a_a0a0a0a0a0b0a0a0b2(_quotation_createNode_f4oi2a_a0b0a0a0a0a0b0a0a0b2())), LINKS.elementType$KpjL), CONCEPTS.SNodeType$hR), LINKS.concept$OMgE)));
+          return ListScope.forResolvableElements(AbstractConceptDeclaration__BehaviorDescriptor.getLinkDeclarations_idhEwILKK.invoke(SLinkOperations.getTarget(SNodeOperations.cast(SLinkOperations.getTarget(TypecheckingFacade.getFromContext().coerceType(TypecheckingFacade.getFromContext().getTypeOf(SLinkOperations.getTarget(SNodeOperations.as((((_context.getReferenceNode() == null) ? _context.getContextNode() : SNodeOperations.getParent(_context.getReferenceNode()))), CONCEPTS.DotExpression$yW), LINKS.operand$w6IR)), new Pattern_f4oi2a_a0b0b0a0a3c0a0a3b4(_quotation_createNode_f4oi2a_a0b0a0a0a0a0b0a0a0b2())), LINKS.elementType$KpjL), CONCEPTS.SNodeType$hR), LINKS.concept$OMgE)));
         }
       };
     }
@@ -79,7 +79,7 @@ public class SLinkImplicitSelect_Constraints extends BaseConstraintsDescriptor {
     }
   }
   private static boolean staticCanBeAChild(SNode node, SNode parentNode, SAbstractConcept childConcept, SContainmentLink link) {
-    return (TypecheckingFacade.getFromContext().coerceType(TypecheckingFacade.getFromContext().getTypeOf(SLinkOperations.getTarget(SNodeOperations.as(parentNode, CONCEPTS.DotExpression$yW), LINKS.operand$w6IR)), new Pattern_f4oi2a_a0a0a0d(_quotation_createNode_f4oi2a_a0b0a0a0d())) != null);
+    return (TypecheckingFacade.getFromContext().coerceType(TypecheckingFacade.getFromContext().getTypeOf(SLinkOperations.getTarget(SNodeOperations.as(parentNode, CONCEPTS.DotExpression$yW), LINKS.operand$w6IR)), new Pattern_f4oi2a_a0b0a2f(_quotation_createNode_f4oi2a_a0b0a0a0d())) != null);
   }
   private static SNode _quotation_createNode_f4oi2a_a0b0a0a0d() {
     SNode quotedNode_1 = null;

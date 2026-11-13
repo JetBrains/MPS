@@ -27,7 +27,7 @@ public class sequence_type_comparableWith_Iterable_ComparisonRule extends Compar
   }
   public IsApplicableStatus isApplicableSecond(SNode node) {
     {
-      GeneratedMatchingPattern pattern = new Pattern_sh3asd_a0a0a0f(_quotation_createNode_sh3asd_a0a0a0a0f());
+      GeneratedMatchingPattern pattern = new Pattern_sh3asd_b0a0a1f(_quotation_createNode_sh3asd_a0a0a0a0f());
       this.myMatchingPattern2 = pattern;
       boolean b = pattern.match(node);
       return new IsApplicableStatus(b, pattern);

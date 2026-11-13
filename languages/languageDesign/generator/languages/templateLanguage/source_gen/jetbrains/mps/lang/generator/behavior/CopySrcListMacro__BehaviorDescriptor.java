@@ -31,7 +31,7 @@ public final class CopySrcListMacro__BehaviorDescriptor extends BaseBHDescriptor
   /*package*/ static SNode getInputNodeTypeInsideOfMacro_idhEwIosJ(@NotNull SNode __thisNode__) {
     SNode queryType = TypecheckingFacade.getFromContext().getTypeOf(SLinkOperations.getTarget(__thisNode__, LINKS.sourceNodesQuery$RIct));
     {
-      GeneratedMatchingPattern pattern_26ny8p_b0a = new Pattern_26ny8p_a0a0b0a(_quotation_createNode_26ny8p_a0a0a0b0a());
+      GeneratedMatchingPattern pattern_26ny8p_b0a = new Pattern_26ny8p_b0a0b0b(_quotation_createNode_26ny8p_a0a0a0b0a());
       SNode coercedNode_26ny8p_b0a = TypecheckingFacade.getFromContext().coerceType(queryType, pattern_26ny8p_b0a);
       if (coercedNode_26ny8p_b0a != null) {
         return pattern_26ny8p_b0a.getMatchedNode("concept");

@@ -47,7 +47,7 @@ public class MigrateTryStatement extends MigrationScriptBase {
   }
   public void doExecute(final SModule m) {
     {
-      final GeneratedMatchingPattern pattern = new Pattern_5idd3j_a0a11(_quotation_createNode_5idd3j_a0a0a11());
+      final GeneratedMatchingPattern pattern = new Pattern_5idd3j_a0b21(_quotation_createNode_5idd3j_a0a0a11());
       Sequence.fromIterable(((Iterable<SModel>) m.getModels())).translate((it) -> SModelOperations.nodes(it, SNodeOperations.asSConcept(pattern.getConcept()))).where((it) -> pattern.match(it)).where((it) -> !(isInTransformPattern(it))).where((SNode node) -> SNodeOperations.hasRole(node, LINKS.throwable$$5MH) && (SNodeOperations.hasRole(SNodeOperations.getParent(node), LINKS.catchClause$dMnP) || SNodeOperations.hasRole(SNodeOperations.getParent(node), LINKS.catchClause$l$PD)) && ListSequence.fromList(SNodeOperations.getNodeDescendants(SNodeOperations.getParent(SNodeOperations.getParent(node)), CONCEPTS.Attribute$g1, false, new SAbstractConcept[]{})).isEmpty()).sort((it) -> ListSequence.fromList(SNodeOperations.getNodeAncestors(it, null, false)).count(), false).visitAll((final SNode nodeToMigrate) -> {
         pattern.match(nodeToMigrate);
         List<SNode> attributes = SNodeOperations.getNodeDescendants(nodeToMigrate, CONCEPTS.Attribute$g1, false, new SAbstractConcept[]{});
@@ -70,7 +70,7 @@ public class MigrateTryStatement extends MigrationScriptBase {
       });
     }
     {
-      final GeneratedMatchingPattern pattern = new Pattern_5idd3j_a1a11(_quotation_createNode_5idd3j_a0a1a11());
+      final GeneratedMatchingPattern pattern = new Pattern_5idd3j_a1b21(_quotation_createNode_5idd3j_a0a1a11());
       Sequence.fromIterable(((Iterable<SModel>) m.getModels())).translate((it) -> SModelOperations.nodes(it, SNodeOperations.asSConcept(pattern.getConcept()))).where((it) -> pattern.match(it)).where((it) -> !(isInTransformPattern(it))).where((SNode node) -> (SNodeOperations.hasRole(node, LINKS.catchClause$dMnP) || SNodeOperations.hasRole(node, LINKS.catchClause$l$PD)) && ListSequence.fromList(SNodeOperations.getNodeDescendants(SNodeOperations.getParent(node), CONCEPTS.Attribute$g1, false, new SAbstractConcept[]{})).isEmpty() && SNodeOperations.isInstanceOf(pattern.getMatchedNode("throwable"), CONCEPTS.CatchVariable$zI)).sort((it) -> ListSequence.fromList(SNodeOperations.getNodeAncestors(it, null, false)).count(), false).visitAll((final SNode nodeToMigrate) -> {
         pattern.match(nodeToMigrate);
         List<SNode> attributes = SNodeOperations.getNodeDescendants(nodeToMigrate, CONCEPTS.Attribute$g1, false, new SAbstractConcept[]{});
@@ -88,7 +88,7 @@ public class MigrateTryStatement extends MigrationScriptBase {
       });
     }
     {
-      final GeneratedMatchingPattern pattern = new Pattern_5idd3j_a2a11(_quotation_createNode_5idd3j_a0a2a11());
+      final GeneratedMatchingPattern pattern = new Pattern_5idd3j_a2b21(_quotation_createNode_5idd3j_a0a2a11());
       Sequence.fromIterable(((Iterable<SModel>) m.getModels())).translate((it) -> SModelOperations.nodes(it, SNodeOperations.asSConcept(pattern.getConcept()))).where((it) -> pattern.match(it)).where((it) -> !(isInTransformPattern(it))).where((SNode node) -> ListSequence.fromList(SLinkOperations.getChildren(node, LINKS.catchClause$dMnP)).all((it) -> SNodeOperations.isInstanceOf(((SNode) it), CONCEPTS.MultipleCatchClause$mR))).sort((it) -> ListSequence.fromList(SNodeOperations.getNodeAncestors(it, null, false)).count(), false).visitAll((final SNode nodeToMigrate) -> {
         pattern.match(nodeToMigrate);
         List<SNode> attributes = SNodeOperations.getNodeDescendants(nodeToMigrate, CONCEPTS.Attribute$g1, false, new SAbstractConcept[]{});
@@ -106,7 +106,7 @@ public class MigrateTryStatement extends MigrationScriptBase {
       });
     }
     {
-      final GeneratedMatchingPattern pattern = new Pattern_5idd3j_a3a11(_quotation_createNode_5idd3j_a0a3a11());
+      final GeneratedMatchingPattern pattern = new Pattern_5idd3j_a3b21(_quotation_createNode_5idd3j_a0a3a11());
       Sequence.fromIterable(((Iterable<SModel>) m.getModels())).translate((it) -> SModelOperations.nodes(it, SNodeOperations.asSConcept(pattern.getConcept()))).where((it) -> pattern.match(it)).where((it) -> !(isInTransformPattern(it))).where((SNode node) -> ListSequence.fromList(SLinkOperations.getChildren(node, LINKS.catchClause$l$PD)).all((it) -> SNodeOperations.isInstanceOf(((SNode) it), CONCEPTS.MultipleCatchClause$mR))).sort((it) -> ListSequence.fromList(SNodeOperations.getNodeAncestors(it, null, false)).count(), false).visitAll((final SNode nodeToMigrate) -> {
         pattern.match(nodeToMigrate);
         List<SNode> attributes = SNodeOperations.getNodeDescendants(nodeToMigrate, CONCEPTS.Attribute$g1, false, new SAbstractConcept[]{});

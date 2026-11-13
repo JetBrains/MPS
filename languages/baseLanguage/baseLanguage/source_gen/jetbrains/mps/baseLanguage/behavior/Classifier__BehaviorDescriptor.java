@@ -507,7 +507,7 @@ public final class Classifier__BehaviorDescriptor extends BaseBHDescriptor {
     return Classifier__BehaviorDescriptor.getWithResolvedTypeVars_id5DGRLTWx81d.invoke(__thisNode__, t, ancestor, SLinkOperations.getChildren(method, LINKS.typeVariableDeclaration$Lipp), SLinkOperations.getChildren(baseMethod, LINKS.typeVariableDeclaration$Lipp));
   }
   /*package*/ static SNode getWithResolvedTypeVars_id5DGRLTWx81d(@NotNull SNode __thisNode__, SNode t, SNode ancestor, List<SNode> methodVars, List<SNode> baseMethodVars) {
-    SNode coercedType = TypecheckingFacade.getFromContext().coerceType(Classifier__BehaviorDescriptor.getThisType_id2RtWPFZ12w7.invoke(__thisNode__), new Pattern_qw8l7c_b0a0a0kb(_quotation_createNode_qw8l7c_a0b0a0a0kb(ancestor)));
+    SNode coercedType = TypecheckingFacade.getFromContext().coerceType(Classifier__BehaviorDescriptor.getThisType_id2RtWPFZ12w7.invoke(__thisNode__), new Pattern_qw8l7c_b1b0a6kb(_quotation_createNode_qw8l7c_a0b0a0a0kb(ancestor)));
     if (SNodeOperations.isInstanceOf(t, CONCEPTS.TypeVariableReference$WL)) {
       return Classifier__BehaviorDescriptor.getResolvedVar_id2RtWPFZ12Bt.invokeSpecial(__thisNode__, SNodeOperations.cast(t, CONCEPTS.TypeVariableReference$WL), ancestor, coercedType, methodVars, baseMethodVars);
     } else {

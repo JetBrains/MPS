@@ -90,7 +90,7 @@ public enum ShowingKind {
 
 
   public static ShowingKind getKind(SNode type) {
-    SNode seqType = TypecheckingFacade.getFromContext().coerceType(type, new Pattern_jbl8q4_b0a0a0b(_quotation_createNode_jbl8q4_a0b0a0a0b()));
+    SNode seqType = TypecheckingFacade.getFromContext().coerceType(type, new Pattern_jbl8q4_b1b0a1b(_quotation_createNode_jbl8q4_a0b0a0a0b()));
     if (seqType == null) {
       return null;
     }

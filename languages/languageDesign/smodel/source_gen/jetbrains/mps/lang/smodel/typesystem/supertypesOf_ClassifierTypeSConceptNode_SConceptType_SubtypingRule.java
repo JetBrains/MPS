@@ -24,7 +24,7 @@ public class supertypesOf_ClassifierTypeSConceptNode_SConceptType_SubtypingRule 
   }
   public IsApplicableStatus isApplicableAndPattern(SNode argument) {
     {
-      GeneratedMatchingPattern pattern = new Pattern_cez3r7_a0a0a0e(_quotation_createNode_cez3r7_a0a0a0a0e());
+      GeneratedMatchingPattern pattern = new Pattern_cez3r7_a0a0a1e(_quotation_createNode_cez3r7_a0a0a0a0e());
       this.myMatchingPattern = pattern;
       boolean b = pattern.match(argument);
       return new IsApplicableStatus(b, pattern);

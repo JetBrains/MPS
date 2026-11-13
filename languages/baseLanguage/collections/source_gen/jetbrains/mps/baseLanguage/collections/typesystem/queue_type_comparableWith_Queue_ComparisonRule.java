@@ -27,7 +27,7 @@ public class queue_type_comparableWith_Queue_ComparisonRule extends ComparisonRu
   }
   public IsApplicableStatus isApplicableSecond(SNode node) {
     {
-      GeneratedMatchingPattern pattern = new Pattern_ma7wq5_a0a0a0f(_quotation_createNode_ma7wq5_a0a0a0a0f());
+      GeneratedMatchingPattern pattern = new Pattern_ma7wq5_b0a0a1f(_quotation_createNode_ma7wq5_a0a0a0a0f());
       this.myMatchingPattern2 = pattern;
       boolean b = pattern.match(node);
       return new IsApplicableStatus(b, pattern);

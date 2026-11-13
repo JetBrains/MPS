@@ -27,7 +27,7 @@ public class map_type_comparableWith_Map_ComparisonRule extends ComparisonRule_R
   }
   public IsApplicableStatus isApplicableSecond(SNode node) {
     {
-      GeneratedMatchingPattern pattern = new Pattern_yoc8ci_a0a0a0f(_quotation_createNode_yoc8ci_a0a0a0a0f());
+      GeneratedMatchingPattern pattern = new Pattern_yoc8ci_b0a0a1f(_quotation_createNode_yoc8ci_a0a0a0a0f());
       this.myMatchingPattern2 = pattern;
       boolean b = pattern.match(node);
       return new IsApplicableStatus(b, pattern);

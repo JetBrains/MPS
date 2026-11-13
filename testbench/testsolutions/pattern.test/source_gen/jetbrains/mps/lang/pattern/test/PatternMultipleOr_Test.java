@@ -31,7 +31,7 @@ public class PatternMultipleOr_Test extends BaseTransformationTest {
   public void testMethod() throws Throwable {
     getProject().getModelAccess().runReadAction(() -> {
       SNode nodeToMatch = _quotation_createNode_ay21uv_a0a0a0a0a4();
-      DefaultMatchingPattern pattern = new Pattern_ay21uv_a0b0a0a0a4(_quotation_createNode_ay21uv_a0a0b0a0a0a4(), _quotation_createNode_ay21uv_b0a0b0a0a0a4(), _quotation_createNode_ay21uv_c0a0b0a0a0a4(), _quotation_createNode_ay21uv_d0a0b0a0a0a4(), _quotation_createNode_ay21uv_e0a0b0a0a0a4());
+      DefaultMatchingPattern pattern = new Pattern_ay21uv_b0b0a1a0d7(_quotation_createNode_ay21uv_a0a0b0a0a0a4(), _quotation_createNode_ay21uv_b0a0b0a0a0a4(), _quotation_createNode_ay21uv_c0a0b0a0a0a4(), _quotation_createNode_ay21uv_d0a0b0a0a0a4(), _quotation_createNode_ay21uv_e0a0b0a0a0a4());
       final boolean matches = pattern.match(nodeToMatch);
       Assert.assertTrue("Pattern match expected", matches);
       {

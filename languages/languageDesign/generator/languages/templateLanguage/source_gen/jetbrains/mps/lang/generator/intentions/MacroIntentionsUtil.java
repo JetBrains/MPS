@@ -39,7 +39,7 @@ public final class MacroIntentionsUtil {
     // ======
     if (SNodeOperations.isInstanceOf(query, CONCEPTS.SourceSubstituteMacro_SourceNodeQuery$i3)) {
       {
-        GeneratedMatchingPattern pattern_iiuth6_a0d0b = new Pattern_iiuth6_a0a0a0d0b(_quotation_createNode_iiuth6_a0a0a0a0d0b());
+        GeneratedMatchingPattern pattern_iiuth6_a0d0b = new Pattern_iiuth6_b0a0a1d2b(_quotation_createNode_iiuth6_a0a0a0a0d0b());
         SNode coercedNode_iiuth6_a0d0b = TypecheckingFacade.getFromContext().coerceType(returnType, pattern_iiuth6_a0d0b);
         if (coercedNode_iiuth6_a0d0b != null) {
           return pattern_iiuth6_a0d0b.getMatchedNode("concept");
@@ -49,7 +49,7 @@ public final class MacroIntentionsUtil {
       }
     } else if (SNodeOperations.isInstanceOf(query, CONCEPTS.SourceSubstituteMacro_SourceNodesQuery$Rq)) {
       {
-        GeneratedMatchingPattern pattern_iiuth6_a0a3a1 = new Pattern_iiuth6_a0a0a0a3a1(_quotation_createNode_iiuth6_a0a0a0a0a3a1());
+        GeneratedMatchingPattern pattern_iiuth6_a0a3a1 = new Pattern_iiuth6_b0a0a0c3c1(_quotation_createNode_iiuth6_a0a0a0a0a3a1());
         SNode coercedNode_iiuth6_a0a3a1 = TypecheckingFacade.getFromContext().coerceType(returnType, pattern_iiuth6_a0a3a1);
         if (coercedNode_iiuth6_a0a3a1 != null) {
           return pattern_iiuth6_a0a3a1.getMatchedNode("concept");

@@ -30,7 +30,7 @@ public final class MapSrcListMacro__BehaviorDescriptor extends BaseBHDescriptor 
 
   /*package*/ static SNode getInputNodeTypeInsideOfMacro_idhEwIosJ(@NotNull SNode __thisNode__) {
     {
-      GeneratedMatchingPattern pattern_wn5chh_a0a = new Pattern_wn5chh_a0a0a0a(_quotation_createNode_wn5chh_a0a0a0a0a());
+      GeneratedMatchingPattern pattern_wn5chh_a0a = new Pattern_wn5chh_b0a0a0a(_quotation_createNode_wn5chh_a0a0a0a0a());
       SNode coercedNode_wn5chh_a0a = TypecheckingFacade.getFromContext().coerceType(TypecheckingFacade.getFromContext().getTypeOf(SLinkOperations.getTarget(__thisNode__, LINKS.sourceNodesQuery$Em90)), pattern_wn5chh_a0a);
       if (coercedNode_wn5chh_a0a != null) {
         return pattern_wn5chh_a0a.getMatchedNode("concept");

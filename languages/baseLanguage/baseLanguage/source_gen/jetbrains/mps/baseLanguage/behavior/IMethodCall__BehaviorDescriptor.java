@@ -96,7 +96,7 @@ public final class IMethodCall__BehaviorDescriptor extends BaseBHDescriptor {
       }
       final SNode methodClassifier = SNodeOperations.getNodeAncestor(SLinkOperations.getTarget(__thisNode__, LINKS.baseMethodDeclaration$pyYw), CONCEPTS.Classifier$Ix, false, false);
       {
-        GeneratedMatchingPattern pattern_fq0410_d0d0c = new Pattern_fq0410_a0a0d0d0c(_quotation_createNode_fq0410_a0a0a0d0d0c(methodClassifier));
+        GeneratedMatchingPattern pattern_fq0410_d0d0c = new Pattern_fq0410_b0a0d0d0c(_quotation_createNode_fq0410_a0a0a0d0d0c(methodClassifier));
         SNode coercedNode_fq0410_d0d0c = TypecheckingFacade.getFromContext().coerceType(instanceType, pattern_fq0410_d0d0c);
         if (coercedNode_fq0410_d0d0c != null) {
           SNode resultType;

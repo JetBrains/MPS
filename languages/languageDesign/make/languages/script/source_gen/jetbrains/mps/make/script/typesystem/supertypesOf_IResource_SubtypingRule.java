@@ -24,7 +24,7 @@ public class supertypesOf_IResource_SubtypingRule extends SubtypingRule_Runtime 
   }
   public IsApplicableStatus isApplicableAndPattern(SNode argument) {
     {
-      GeneratedMatchingPattern pattern = new Pattern_uqpyyo_a0a0a0e(_quotation_createNode_uqpyyo_a0a0a0a0e());
+      GeneratedMatchingPattern pattern = new Pattern_uqpyyo_a0a0a1e(_quotation_createNode_uqpyyo_a0a0a0a0e());
       this.myMatchingPattern = pattern;
       boolean b = pattern.match(argument);
       return new IsApplicableStatus(b, pattern);

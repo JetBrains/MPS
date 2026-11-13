@@ -49,7 +49,7 @@ public class MigrateOperationsAndNodeRefs extends MigrationScriptBase {
     SNode n;
     SReference r;
     {
-      final GeneratedMatchingPattern pattern = new Pattern_3qm329_a2a6(_quotation_createNode_3qm329_a0a2a6());
+      final GeneratedMatchingPattern pattern = new Pattern_3qm329_a2b7(_quotation_createNode_3qm329_a0a2a6());
       Sequence.fromIterable(((Iterable<SModel>) m.getModels())).translate((it) -> SModelOperations.nodes(it, SNodeOperations.asSConcept(pattern.getConcept()))).where((it) -> pattern.match(it)).where((it) -> !(isInTransformPattern(it))).where(new _FunctionTypes._return_P1_E0<Boolean, SNode>() {
         public Boolean invoke(SNode n) {
           return true;
@@ -69,7 +69,7 @@ public class MigrateOperationsAndNodeRefs extends MigrationScriptBase {
       });
     }
     {
-      final GeneratedMatchingPattern pattern = new Pattern_3qm329_a3a6(_quotation_createNode_3qm329_a0a3a6());
+      final GeneratedMatchingPattern pattern = new Pattern_3qm329_a3b7(_quotation_createNode_3qm329_a0a3a6());
       Sequence.fromIterable(((Iterable<SModel>) m.getModels())).translate((it) -> SModelOperations.nodes(it, SNodeOperations.asSConcept(pattern.getConcept()))).where((it) -> pattern.match(it)).where((it) -> !(isInTransformPattern(it))).where(new _FunctionTypes._return_P1_E0<Boolean, SNode>() {
         public Boolean invoke(SNode n) {
           return true;

@@ -378,7 +378,7 @@ public class EnumExpressionsMigration extends EnumUsagesMigration {
       SNode matchedNode_dd9n22_b0w = expr;
       {
         boolean matches_dd9n22_a1a22 = false;
-        GeneratedMatchingPattern matchingPattern_dd9n22_a1a22 = new Pattern_dd9n22_a0b0b0b0w(_quotation_createNode_dd9n22_a0a0b0b0b0w());
+        GeneratedMatchingPattern matchingPattern_dd9n22_a1a22 = new Pattern_dd9n22_b0b0b0b0w(_quotation_createNode_dd9n22_a0a0b0b0b0w());
         matches_dd9n22_a1a22 = matchingPattern_dd9n22_a1a22.match(matchedNode_dd9n22_b0w);
         if (matches_dd9n22_a1a22) {
           if (SEnumOperations.isMember(SPropertyOperations.getEnum(new IAttributeDescriptor.NodeAttribute(CONCEPTS.EnumMigrationInfo$S$).get(matchingPattern_dd9n22_a1a22.getMatchedNode("enum")), PROPS.valueOpMigration$UswM), 0x5a14f103596433c6L)) {
@@ -388,7 +388,7 @@ public class EnumExpressionsMigration extends EnumUsagesMigration {
           }
         } else {
           boolean matches_dd9n22_b1a22 = false;
-          GeneratedMatchingPattern matchingPattern_dd9n22_b1a22 = new Pattern_dd9n22_a0b0a3a1a1a22(_quotation_createNode_dd9n22_a0a0b0a3a1a1a22());
+          GeneratedMatchingPattern matchingPattern_dd9n22_b1a22 = new Pattern_dd9n22_b0b0c3a1a1a22(_quotation_createNode_dd9n22_a0a0b0a3a1a1a22());
           matches_dd9n22_b1a22 = matchingPattern_dd9n22_b1a22.match(matchedNode_dd9n22_b0w);
           if (matches_dd9n22_b1a22) {
             if (SEnumOperations.isMember(SPropertyOperations.getEnum(new IAttributeDescriptor.NodeAttribute(CONCEPTS.EnumMigrationInfo$S$).get(matchingPattern_dd9n22_b1a22.getMatchedNode("enum")), PROPS.valueOpMigration$UswM), 0x5a14f103596433cbL)) {
@@ -396,7 +396,7 @@ public class EnumExpressionsMigration extends EnumUsagesMigration {
             }
           } else {
             boolean matches_dd9n22_c1a22 = false;
-            GeneratedMatchingPattern matchingPattern_dd9n22_c1a22 = new Pattern_dd9n22_a0b0a3a0d0b0b0w(_quotation_createNode_dd9n22_a0a0b0a3a0d0b0b0w());
+            GeneratedMatchingPattern matchingPattern_dd9n22_c1a22 = new Pattern_dd9n22_b0b0c3a2d0b0b0w(_quotation_createNode_dd9n22_a0a0b0a3a0d0b0b0w());
             matches_dd9n22_c1a22 = matchingPattern_dd9n22_c1a22.match(matchedNode_dd9n22_b0w);
             if (matches_dd9n22_c1a22) {
               if (SEnumOperations.isMember(SPropertyOperations.getEnum(new IAttributeDescriptor.NodeAttribute(CONCEPTS.EnumMigrationInfo$S$).get(matchingPattern_dd9n22_c1a22.getMatchedNode("enum")), PROPS.valueOpMigration$UswM), 0x5a14f103596433d1L)) {
@@ -404,7 +404,7 @@ public class EnumExpressionsMigration extends EnumUsagesMigration {
               }
             } else {
               boolean matches_dd9n22_d1a22 = false;
-              GeneratedMatchingPattern matchingPattern_dd9n22_d1a22 = new Pattern_dd9n22_a0b0a3a0d0a3a1a1a22(_quotation_createNode_dd9n22_a0a0b0a3a0d0a3a1a1a22());
+              GeneratedMatchingPattern matchingPattern_dd9n22_d1a22 = new Pattern_dd9n22_b0b0c3a2d0c3a1a1a22(_quotation_createNode_dd9n22_a0a0b0a3a0d0a3a1a1a22());
               matches_dd9n22_d1a22 = matchingPattern_dd9n22_d1a22.match(matchedNode_dd9n22_b0w);
               if (matches_dd9n22_d1a22) {
                 if (SEnumOperations.isMember(SPropertyOperations.getEnum(new IAttributeDescriptor.NodeAttribute(CONCEPTS.EnumMigrationInfo$S$).get(matchingPattern_dd9n22_d1a22.getMatchedNode("enum")), PROPS.valueOpMigration$UswM), 0x5a14f103596433beL)) {
@@ -412,7 +412,7 @@ public class EnumExpressionsMigration extends EnumUsagesMigration {
                 }
               } else {
                 boolean matches_dd9n22_e1a22 = false;
-                GeneratedMatchingPattern matchingPattern_dd9n22_e1a22 = new Pattern_dd9n22_a0b0a3a0d0a3a0d0b0b0w(_quotation_createNode_dd9n22_a0a0b0a3a0d0a3a0d0b0b0w());
+                GeneratedMatchingPattern matchingPattern_dd9n22_e1a22 = new Pattern_dd9n22_b0b0c3a2d0c3a2d0b0b0w(_quotation_createNode_dd9n22_a0a0b0a3a0d0a3a0d0b0b0w());
                 matches_dd9n22_e1a22 = matchingPattern_dd9n22_e1a22.match(matchedNode_dd9n22_b0w);
                 if (matches_dd9n22_e1a22) {
                   if (SEnumOperations.isMember(SPropertyOperations.getEnum(new IAttributeDescriptor.NodeAttribute(CONCEPTS.EnumMigrationInfo$S$).get(matchingPattern_dd9n22_e1a22.getMatchedNode("enum")), PROPS.valueOpMigration$UswM), 0x5a14f103596433bfL)) {
@@ -420,7 +420,7 @@ public class EnumExpressionsMigration extends EnumUsagesMigration {
                   }
                 } else {
                   boolean matches_dd9n22_f1a22 = false;
-                  GeneratedMatchingPattern matchingPattern_dd9n22_f1a22 = new Pattern_dd9n22_a0b0a3a0d0a3a0d0a3a1a1a22(_quotation_createNode_dd9n22_a0a0b0a3a0d0a3a0d0a3a1a1a22());
+                  GeneratedMatchingPattern matchingPattern_dd9n22_f1a22 = new Pattern_dd9n22_b0b0c3a2d0c3a2d0c3a1a1a22(_quotation_createNode_dd9n22_a0a0b0a3a0d0a3a0d0a3a1a1a22());
                   matches_dd9n22_f1a22 = matchingPattern_dd9n22_f1a22.match(matchedNode_dd9n22_b0w);
                   if (matches_dd9n22_f1a22) {
                     {
@@ -472,7 +472,7 @@ public class EnumExpressionsMigration extends EnumUsagesMigration {
       SNode matchedNode_dd9n22_b0ab = expr;
       {
         boolean matches_dd9n22_a1a62 = false;
-        GeneratedMatchingPattern matchingPattern_dd9n22_a1a62 = new Pattern_dd9n22_a0b0b0b0ab(_quotation_createNode_dd9n22_a0a0b0b0b0ab());
+        GeneratedMatchingPattern matchingPattern_dd9n22_a1a62 = new Pattern_dd9n22_b0b0b0b0ab(_quotation_createNode_dd9n22_a0a0b0b0b0ab());
         matches_dd9n22_a1a62 = matchingPattern_dd9n22_a1a62.match(matchedNode_dd9n22_b0ab);
         if (matches_dd9n22_a1a62) {
           {
@@ -483,7 +483,7 @@ public class EnumExpressionsMigration extends EnumUsagesMigration {
           }
         } else {
           boolean matches_dd9n22_b1a62 = false;
-          GeneratedMatchingPattern matchingPattern_dd9n22_b1a62 = new Pattern_dd9n22_a0b0a3a1a1a62(_quotation_createNode_dd9n22_a0a0b0a3a1a1a62());
+          GeneratedMatchingPattern matchingPattern_dd9n22_b1a62 = new Pattern_dd9n22_b0b0c3a1a1a62(_quotation_createNode_dd9n22_a0a0b0a3a1a1a62());
           matches_dd9n22_b1a62 = matchingPattern_dd9n22_b1a62.match(matchedNode_dd9n22_b0ab);
           if (matches_dd9n22_b1a62) {
             {
@@ -494,7 +494,7 @@ public class EnumExpressionsMigration extends EnumUsagesMigration {
             }
           } else {
             boolean matches_dd9n22_c1a62 = false;
-            GeneratedMatchingPattern matchingPattern_dd9n22_c1a62 = new Pattern_dd9n22_a0b0a3a0d0b0b0ab(_quotation_createNode_dd9n22_a0a0b0a3a0d0b0b0ab());
+            GeneratedMatchingPattern matchingPattern_dd9n22_c1a62 = new Pattern_dd9n22_b0b0c3a2d0b0b0ab(_quotation_createNode_dd9n22_a0a0b0a3a0d0b0b0ab());
             matches_dd9n22_c1a62 = matchingPattern_dd9n22_c1a62.match(matchedNode_dd9n22_b0ab);
             if (matches_dd9n22_c1a62) {
               {
@@ -505,7 +505,7 @@ public class EnumExpressionsMigration extends EnumUsagesMigration {
               }
             } else {
               boolean matches_dd9n22_d1a62 = false;
-              GeneratedMatchingPattern matchingPattern_dd9n22_d1a62 = new Pattern_dd9n22_a0b0a3a0d0a3a1a1a62(_quotation_createNode_dd9n22_a0a0b0a3a0d0a3a1a1a62());
+              GeneratedMatchingPattern matchingPattern_dd9n22_d1a62 = new Pattern_dd9n22_b0b0c3a2d0c3a1a1a62(_quotation_createNode_dd9n22_a0a0b0a3a0d0a3a1a1a62());
               matches_dd9n22_d1a62 = matchingPattern_dd9n22_d1a62.match(matchedNode_dd9n22_b0ab);
               if (matches_dd9n22_d1a62) {
                 {
@@ -516,7 +516,7 @@ public class EnumExpressionsMigration extends EnumUsagesMigration {
                 }
               } else {
                 boolean matches_dd9n22_e1a62 = false;
-                GeneratedMatchingPattern matchingPattern_dd9n22_e1a62 = new Pattern_dd9n22_a0b0a3a0d0a3a0d0b0b0ab(_quotation_createNode_dd9n22_a0a0b0a3a0d0a3a0d0b0b0ab());
+                GeneratedMatchingPattern matchingPattern_dd9n22_e1a62 = new Pattern_dd9n22_b0b0c3a2d0c3a2d0b0b0ab(_quotation_createNode_dd9n22_a0a0b0a3a0d0a3a0d0b0b0ab());
                 matches_dd9n22_e1a62 = matchingPattern_dd9n22_e1a62.match(matchedNode_dd9n22_b0ab);
                 if (matches_dd9n22_e1a62) {
                   {
@@ -527,7 +527,7 @@ public class EnumExpressionsMigration extends EnumUsagesMigration {
                   }
                 } else {
                   boolean matches_dd9n22_f1a62 = false;
-                  GeneratedMatchingPattern matchingPattern_dd9n22_f1a62 = new Pattern_dd9n22_a0b0a3a0d0a3a0d0a3a1a1a62(_quotation_createNode_dd9n22_a0a0b0a3a0d0a3a0d0a3a1a1a62());
+                  GeneratedMatchingPattern matchingPattern_dd9n22_f1a62 = new Pattern_dd9n22_b0b0c3a2d0c3a2d0c3a1a1a62(_quotation_createNode_dd9n22_a0a0b0a3a0d0a3a0d0a3a1a1a62());
                   matches_dd9n22_f1a62 = matchingPattern_dd9n22_f1a62.match(matchedNode_dd9n22_b0ab);
                   if (matches_dd9n22_f1a62) {
                     {

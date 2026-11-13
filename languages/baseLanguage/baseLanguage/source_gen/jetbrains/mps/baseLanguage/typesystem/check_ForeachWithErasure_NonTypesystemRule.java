@@ -33,7 +33,7 @@ public class check_ForeachWithErasure_NonTypesystemRule extends AbstractNonTypes
       return;
     }
     {
-      GeneratedMatchingPattern pattern_gn1qzs_d0 = new Pattern_aftnu9_a0a0d0b(_quotation_createNode_aftnu9_a0a0a0d0b());
+      GeneratedMatchingPattern pattern_gn1qzs_d0 = new Pattern_aftnu9_b0a0d4b(_quotation_createNode_aftnu9_a0a0a0d0b());
       SNode coercedNode_gn1qzs_d0 = TypecheckingFacade.getFromContext().coerceType(iterableType, pattern_gn1qzs_d0);
       if (coercedNode_gn1qzs_d0 != null) {
       } else {

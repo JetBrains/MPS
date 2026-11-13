@@ -43,7 +43,7 @@ public class MigrateDelete2Detach extends MigrationScriptBase {
   }
   public void doExecute(final SModule m) {
     {
-      final GeneratedMatchingPattern pattern = new Pattern_vn1hs7_a0a6(_quotation_createNode_vn1hs7_a0a0a6());
+      final GeneratedMatchingPattern pattern = new Pattern_vn1hs7_a0c7(_quotation_createNode_vn1hs7_a0a0a6());
       Sequence.fromIterable(((Iterable<SModel>) m.getModels())).translate((it) -> SModelOperations.nodes(it, SNodeOperations.asSConcept(pattern.getConcept()))).where((it) -> pattern.match(it)).where((it) -> !(isInTransformPattern(it))).where((SNode n) -> true).sort((it) -> ListSequence.fromList(SNodeOperations.getNodeAncestors(it, null, false)).count(), false).visitAll((final SNode nodeToMigrate) -> {
         pattern.match(nodeToMigrate);
         List<SNode> attributes = SNodeOperations.getNodeDescendants(nodeToMigrate, CONCEPTS.Attribute$g1, false, new SAbstractConcept[]{});

@@ -27,7 +27,7 @@ public class set_type_comparableWith_Set_ComparisonRule extends ComparisonRule_R
   }
   public IsApplicableStatus isApplicableSecond(SNode node) {
     {
-      GeneratedMatchingPattern pattern = new Pattern_3k2v7g_a0a0a0f(_quotation_createNode_3k2v7g_a0a0a0a0f());
+      GeneratedMatchingPattern pattern = new Pattern_3k2v7g_b0a0a1f(_quotation_createNode_3k2v7g_a0a0a0a0f());
       this.myMatchingPattern2 = pattern;
       boolean b = pattern.match(node);
       return new IsApplicableStatus(b, pattern);
