@@ -338,3 +338,19 @@
     `get_compact_project_structure`. Worker skills were updated for AGENTIC VIEW; the evaluator's section was not
     (A18). → After a surface change, re-read "Evaluating a run" against the new tools before the next round, and
     count evaluator calls per run in `server-calllog.jsonl` (client `mps-study-tools-inventory`) as a harness cost.
+
+## From round 51 (2026-11-14; full matrix S1–S39b, opus and sonnet medium, n=1)
+
+51. **A pin of rendered output is bound to the renderer, not only to the MPS build.** The S39 `roots.tsv` hashes were
+    built on MPS 261.25134 and were stale on 261.25134 three days later, untouched roots included, because the
+    `print_node` code that renders them had moved (A20). The evaluators fell back to prints plus the call log's write
+    records, which costs about 165 calls per evaluation and is not the route the criteria name. → Record the plugin
+    revision next to the build for every printed pin, and re-pin before a round whenever `print_node` or the formats
+    it emits changed since the pins were made. Pin only what a criterion compares, and prefer a structural check
+    (the write records in `server-calllog.jsonl` or a model diff) where formatting is not the subject.
+52. **An evaluator's claim about the analysis tooling is a hypothesis too.** Five evaluators reported `families.py`
+    gaps; one held (A19), and even its stated cause was wrong. The others were a column defined as `Read` calls only,
+    observer-counted signals the coverage doc names as a follow-up, a count the evaluator had misread from the
+    transcript, and the evaluator's own timeout. → Before filing a tooling gap, read the column's docstring line,
+    then find the call it should have counted with `show_steps.py` at a full `--input-chars`; the default 400
+    cut off the triplet that renamed the S27 property (lesson 48's rule for MPS internals, applied to the harness).
