@@ -130,16 +130,21 @@ verdict by the same route. `study-scenario-evaluator`, when the observer has it,
   structure only, at every `detail` level. List the aspect model's roots with
   `get_project_structure(startingPoint=<lang>.<aspect>, includeRootNodes=true)`, then read each
   root with `print_node(format="PLAIN TEXT")`.
-- **Reading nodes**: a JSON `print_node` shows one level, so each child (a Step, a reference
-  wrapper) needs its own call. PLAIN TEXT shows the whole subtree as the editor renders it, but no
-  `targetReference`; use it for text and layout and JSON for reference targets.
+- **Reading nodes**: read a whole model, or a root's subtree, with
+  `get_compact_project_structure(startingPoint=<model or root reference>)` (AGENTIC VIEW; `nodeDepth`
+  defaults to the full subtree, and a `# cut:` line means the output was truncated). A reference
+  prints as `-> role=name#id` (`name@mN#id` when the target is in another model, `!unresolved` when
+  it does not resolve); the id names the target node, so map it to its root. Use a JSON `print_node`
+  only for a field the view omits (it shows one level, so each child needs its own call). PLAIN TEXT
+  `print_node` shows the subtree as the editor renders it, but no `targetReference`; use it for text
+  and layout.
 - **Call shapes**: `print_node` and `check_root_node_problems` take the node, root or model as
   `nodeReference` (`nodeRef` and `modelReference` are rejected). `query_structure` takes
   `operation` plus a `parameters` object, e.g.
   `{"operation": "GET_ENUMERATION_LITERALS", "parameters": {"enumerationRef": "<qualified name>"}}`.
   Criteria may abbreviate a call as `OP(arg=…)`; send the real shape.
-- **References**: identify a target by the root its `targetReference` resolves to. A smart-reference
-  wrapper's displayed name can be stale or ambiguous.
+- **References**: identify a target by the root its reference resolves to (`name#id` in the AGENTIC
+  VIEW, `targetReference` in JSON). A smart-reference wrapper's displayed name can be stale or ambiguous.
 - **Descriptors**: `get_concept_details(languageRefs=<lang>)`; an entry carries `descriptorStatus`
   only when hollow, so pass = no entry has it (S1 criterion 6).
 - **Problems**: a model-scope `check_root_node_problems` lists only the roots that have problems.

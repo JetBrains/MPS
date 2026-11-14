@@ -323,3 +323,18 @@
     negative, an apply step, a check between two keys), the prompt's test list names it too, and the test count adds up.
     An evaluator's claim about MPS internals is a hypothesis: check it in the sources before it becomes doc text (one
     such claim, a bypassed menu on smart references, was wrong).
+
+## From round 50 (2026-11-14; S1–S4, sonnet medium, n=1)
+
+49. **`$RUNS` can be archived while MPS still runs with the call log on; the archive stays clean.**
+    `McpCallLogListener` opens the log by path on every call (`Files.write(…, CREATE, APPEND)`), and holds no file
+    handle. After the move, the next call creates a fresh `$RUNS/server-calllog.jsonl`, or fails while `$RUNS` is
+    missing (logged as a `WARN` in `idea.log` only for the first failure of the MPS process) and retries on every later
+    call. → At wrap-up with MPS still up, move `$RUNS`, recreate it empty, and expect the observer's closing calls in
+    the next round's log before its SMOKE offset. The run slices are offset-bounded, so those lines never reach a run.
+50. **When the server gains a read tool, update the evaluator's recipe too, or the evaluator pays per node.** In
+    round 50 the S3 evaluator followed `analysis.md`'s "a JSON print shows one level" and made 297 read calls to check
+    40 rows. The S4 evaluator read the whole model, reference targets included, with one
+    `get_compact_project_structure`. Worker skills were updated for AGENTIC VIEW; the evaluator's section was not
+    (A18). → After a surface change, re-read "Evaluating a run" against the new tools before the next round, and
+    count evaluator calls per run in `server-calllog.jsonl` (client `mps-study-tools-inventory`) as a harness cost.
