@@ -164,7 +164,7 @@ public class GenerationSessionContext {
     return result == NULL_OBJECT ? null : result;
   }
 
-  private static void appendNodeUniqueId(SNode node, StringBuilder sb, boolean useContainmentlinkToIndexAt) {
+  private static void appendNodeUniqueId(SNode node, StringBuilder sb, boolean useContainmentLinkToIndexAt) {
     SNode parent = node.getParent();
 
     if (parent == null) {
@@ -173,7 +173,7 @@ public class GenerationSessionContext {
     sb.append('_');
     boolean sym = true;
     do {
-      int index = IterableUtil.asList(parent.getChildren(useContainmentlinkToIndexAt ? node.getContainmentLink() : null)).indexOf(node);
+      int index = IterableUtil.asList(parent.getChildren(useContainmentLinkToIndexAt ? node.getContainmentLink() : null)).indexOf(node);
       if (index == 0) {
         sb.append(sym ? 'a' : '0');
       }

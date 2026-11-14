@@ -953,6 +953,7 @@
       <concept id="1165525191778" name="jetbrains.mps.baseLanguage.collections.structure.GetFirstOperation" flags="nn" index="1uHKPH" />
       <concept id="1165530316231" name="jetbrains.mps.baseLanguage.collections.structure.IsEmptyOperation" flags="nn" index="1v1jN8" />
       <concept id="7125221305512719026" name="jetbrains.mps.baseLanguage.collections.structure.CollectionType" flags="in" index="3vKaQO" />
+      <concept id="1165595910856" name="jetbrains.mps.baseLanguage.collections.structure.GetLastOperation" flags="nn" index="1yVyf7" />
       <concept id="1225727723840" name="jetbrains.mps.baseLanguage.collections.structure.FindFirstOperation" flags="nn" index="1z4cxt" />
       <concept id="1202120902084" name="jetbrains.mps.baseLanguage.collections.structure.WhereOperation" flags="nn" index="3zZkjj" />
       <concept id="1202128969694" name="jetbrains.mps.baseLanguage.collections.structure.SelectOperation" flags="nn" index="3$u5V9" />
@@ -7517,11 +7518,23 @@
               <node concept="3clFbF" id="5_YqJ2Sml6M" role="3cqZAp">
                 <node concept="2OqwBi" id="5_YqJ2Sml6N" role="3clFbG">
                   <node concept="1iwH7S" id="5_YqJ2Sml6O" role="2Oq$k0" />
-                  <node concept="2piZGk" id="5_YqJ2Sml6P" role="2OqNvi">
-                    <node concept="Xl_RD" id="5_YqJ2Sml6Q" role="2piZGb">
+                  <node concept="32eq0B" id="2HBoqqnHSjb" role="2OqNvi">
+                    <node concept="Xl_RD" id="5_YqJ2Sml6Q" role="32eq0w">
                       <property role="Xl_RC" value="nodeCondition" />
                     </node>
-                    <node concept="30H73N" id="5_YqJ2Sml6R" role="2pr8EU" />
+                    <node concept="2OqwBi" id="3nvRoz9yap6" role="32eq0x">
+                      <node concept="2OqwBi" id="2HBoqqnHT99" role="2Oq$k0">
+                        <node concept="30H73N" id="2HBoqqnHSKX" role="2Oq$k0" />
+                        <node concept="z$bX8" id="3nvRoz9y4AK" role="2OqNvi">
+                          <node concept="1xMEDy" id="3nvRoz9y6DB" role="1xVPHs">
+                            <node concept="chp4Y" id="3nvRoz9y6KG" role="ri$Ld">
+                              <ref role="cht4Q" to="tpc2:fBEYTCT" resolve="EditorCellModel" />
+                            </node>
+                          </node>
+                        </node>
+                      </node>
+                      <node concept="1yVyf7" id="3nvRoz9ycUr" role="2OqNvi" />
+                    </node>
                   </node>
                 </node>
               </node>
@@ -18255,11 +18268,14 @@
               <node concept="3clFbF" id="5_YqJ2T8JkQ" role="3cqZAp">
                 <node concept="2OqwBi" id="5_YqJ2T8JkR" role="3clFbG">
                   <node concept="1iwH7S" id="5_YqJ2T8JkS" role="2Oq$k0" />
-                  <node concept="2piZGk" id="5_YqJ2T8JkT" role="2OqNvi">
-                    <node concept="Xl_RD" id="5_YqJ2T8JkU" role="2piZGb">
+                  <node concept="32eq0B" id="2HBoqqnHCV2" role="2OqNvi">
+                    <node concept="2OqwBi" id="2HBoqqnHRgv" role="32eq0x">
+                      <node concept="30H73N" id="2HBoqqnHQRD" role="2Oq$k0" />
+                      <node concept="2Rxl7S" id="2HBoqqnHRQ0" role="2OqNvi" />
+                    </node>
+                    <node concept="Xl_RD" id="5_YqJ2T8JkU" role="32eq0w">
                       <property role="Xl_RC" value="matchingNode" />
                     </node>
-                    <node concept="30H73N" id="5_YqJ2T8JkV" role="2pr8EU" />
                   </node>
                 </node>
               </node>
@@ -21058,7 +21074,8 @@
     </node>
     <node concept="2rT7sh" id="hG092go" role="2rTMjI">
       <property role="TrG5h" value="query_method" />
-      <ref role="2rZz_L" to="tpee:fIYIFWa" resolve="StaticMethodDeclaration" />
+      <ref role="2rZz_L" to="tpee:fzclF8t" resolve="InstanceMethodDeclaration" />
+      <ref role="2rTdP9" to="tpee:gyVMwX8" resolve="ConceptFunction" />
     </node>
     <node concept="2rT7sh" id="hG092h3" role="2rTMjI">
       <property role="TrG5h" value="cellFactoryMethod" />

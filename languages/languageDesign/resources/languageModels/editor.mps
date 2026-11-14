@@ -12,7 +12,6 @@
     <import index="tpco" ref="r:00000000-0000-4000-0000-011c89590284(jetbrains.mps.lang.core.editor)" />
     <import index="7a0s" ref="r:2af017c2-293f-4ebb-99f3-81e353b3d6e6(jetbrains.mps.editor.runtime)" />
     <import index="exr9" ref="1ed103c3-3aa6-49b7-9c21-6765ee11f224/java:jetbrains.mps.nodeEditor(MPS.Editor/)" />
-    <import index="18ew" ref="6ed54515-acc8-4d1e-a16c-9fd6cfe951ea/java:jetbrains.mps.util(MPS.Core/)" />
     <import index="wyt6" ref="6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:java.lang(JDK/)" implicit="true" />
     <import index="tpck" ref="r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)" implicit="true" />
     <import index="tpch" ref="r:00000000-0000-4000-0000-011c8959028d(jetbrains.mps.lang.structure.editor)" implicit="true" />
@@ -213,7 +212,6 @@
       </concept>
     </language>
     <language id="7866978e-a0f0-4cc7-81bc-4d213d9375e1" name="jetbrains.mps.lang.smodel">
-      <concept id="1179409122411" name="jetbrains.mps.lang.smodel.structure.Node_ConceptMethodCall" flags="nn" index="2qgKlT" />
       <concept id="1138661924179" name="jetbrains.mps.lang.smodel.structure.Property_SetOperation" flags="nn" index="tyxLq">
         <child id="1138662048170" name="value" index="tz02z" />
       </concept>
@@ -339,7 +337,7 @@
                           <ref role="37wK5l" to="3767:1$fQzw7$hd7" resolve="isFileValid" />
                           <node concept="2OqwBi" id="70OdufORdyn" role="37wK5m">
                             <node concept="pncrf" id="70OdufORdyo" role="2Oq$k0" />
-                            <node concept="2qgKlT" id="70OdufORdyp" role="2OqNvi">
+                            <node concept="3zqWPK" id="3nvRoz9x4$V" role="2OqNvi">
                               <ref role="37wK5l" to="3767:1$fQzw7$wcx" resolve="getNamingConventionNewuiFileName" />
                             </node>
                           </node>
@@ -756,7 +754,7 @@
                     <ref role="37wK5l" to="3767:1$fQzw7$hd7" resolve="isFileValid" />
                     <node concept="2OqwBi" id="70OdufORdyS" role="37wK5m">
                       <node concept="pncrf" id="70OdufORdyT" role="2Oq$k0" />
-                      <node concept="2qgKlT" id="70OdufORdyU" role="2OqNvi">
+                      <node concept="3zqWPK" id="3nvRoz9x4$T" role="2OqNvi">
                         <ref role="37wK5l" to="3767:1$fQzw7$wcx" resolve="getNamingConventionNewuiFileName" />
                       </node>
                     </node>
