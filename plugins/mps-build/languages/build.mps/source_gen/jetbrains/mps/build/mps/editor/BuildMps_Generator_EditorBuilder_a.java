@@ -87,25 +87,25 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     setCellContext(editorCell);
     editorCell.addEditorCell(createComponent_0());
     editorCell.addEditorCell(createProperty_0());
-    if (nodeCondition_leuqor_a2a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_1());
     }
-    if (nodeCondition_leuqor_a3a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createCollection_2());
     }
-    if (nodeCondition_leuqor_a4a()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createCollection_3());
     }
     editorCell.addEditorCell(createConstant_12());
     return editorCell;
   }
-  private boolean nodeCondition_leuqor_a2a() {
+  private boolean nodeCondition0() {
     return !((boolean) BuildMps_AbstractModule__BehaviorDescriptor.isCompact_id7gAtt1ju6Jy.invoke(myNode));
   }
-  private boolean nodeCondition_leuqor_a3a() {
+  private boolean nodeCondition1() {
     return !(SNodeOperations.isInstanceOf(SNodeOperations.getParent(myNode), CONCEPTS.BuildMps_Language$RA));
   }
-  private boolean nodeCondition_leuqor_a4a() {
+  private boolean nodeCondition2() {
     return !((boolean) BuildMps_AbstractModule__BehaviorDescriptor.isCompact_id7gAtt1ju6Jy.invoke(myNode));
   }
   private EditorCell createComponent_0() {
@@ -372,13 +372,13 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     editorCell.getStyle().putAll(style);
     editorCell.setFoldable(true);
     editorCell.addEditorCell(createConstant_4());
-    if (nodeCondition_leuqor_a1e0()) {
+    if (nodeCondition3()) {
       editorCell.addEditorCell(createConstant_5());
     }
-    if (nodeCondition_leuqor_a2e0()) {
+    if (nodeCondition4()) {
       editorCell.addEditorCell(createConstant_6());
     }
-    if (nodeCondition_leuqor_a3e0()) {
+    if (nodeCondition5()) {
       editorCell.addEditorCell(createCollection_4());
     }
     editorCell.addEditorCell(createRefNodeList_0());
@@ -386,13 +386,13 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     editorCell.addEditorCell(createRefNodeList_1());
     return editorCell;
   }
-  private boolean nodeCondition_leuqor_a1e0() {
+  private boolean nodeCondition3() {
     return SPropertyOperations.getBoolean(myNode, PROPS.withKotlin$2YBL);
   }
-  private boolean nodeCondition_leuqor_a2e0() {
+  private boolean nodeCondition4() {
     return SPropertyOperations.getBoolean(myNode, PROPS.doNotCompile$4EF);
   }
-  private boolean nodeCondition_leuqor_a3e0() {
+  private boolean nodeCondition5() {
     return SPropertyOperations.getBoolean(myNode, PROPS.doNotCompile$4EF) == false;
   }
   private EditorCell createConstant_4() {

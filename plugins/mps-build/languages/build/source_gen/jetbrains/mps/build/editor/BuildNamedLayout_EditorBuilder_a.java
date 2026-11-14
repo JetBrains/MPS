@@ -110,12 +110,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
     style.set(StyleAttributes.INDENT_LAYOUT_INDENT, true);
     editorCell.getStyle().putAll(style);
     editorCell.addEditorCell(createRefNodeList_0());
-    if (nodeCondition_yt8ri3_a1c0()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_1());
     }
     return editorCell;
   }
-  private boolean nodeCondition_yt8ri3_a1c0() {
+  private boolean nodeCondition0() {
     return !(SNodeOperations.isInstanceOf(ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.children$aMRO)).last(), CONCEPTS.BuildLayout_AbstractContainer$zG));
   }
   private EditorCell createRefNodeList_0() {

@@ -77,7 +77,7 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
   }
   private EditorCell createAlternation_0() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_3jyf1k_a0b0();
+    alternationCondition = nodeCondition0();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createConstant_1();
@@ -91,7 +91,7 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     editorCell.getStyle().putAll(style);
     return editorCell;
   }
-  private boolean nodeCondition_3jyf1k_a0b0() {
+  private boolean nodeCondition0() {
     return SPropertyOperations.getBoolean(myNode, PROPS.booleanProperty1$J55L);
   }
   private EditorCell createConstant_1() {
@@ -126,7 +126,7 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
   }
   private EditorCell createAlternation_1() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_3jyf1k_a0c0();
+    alternationCondition = nodeCondition1();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createConstant_4();
@@ -135,7 +135,7 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     }
     return editorCell;
   }
-  private boolean nodeCondition_3jyf1k_a0c0() {
+  private boolean nodeCondition1() {
     return SPropertyOperations.getBoolean(myNode, PROPS.booleanProperty1$J55L);
   }
   private EditorCell createConstant_4() {
@@ -180,7 +180,7 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
   }
   private EditorCell createAlternation_2() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_3jyf1k_a0f0();
+    alternationCondition = nodeCondition2();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createConstant_8();
@@ -189,7 +189,7 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     }
     return editorCell;
   }
-  private boolean nodeCondition_3jyf1k_a0f0() {
+  private boolean nodeCondition2() {
     return SPropertyOperations.getBoolean(myNode, PROPS.booleanProperty2$x84S);
   }
   private EditorCell createConstant_8() {
@@ -224,7 +224,7 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
   }
   private EditorCell createAlternation_3() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_3jyf1k_a0g0();
+    alternationCondition = nodeCondition3();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createImage_0();
@@ -233,7 +233,7 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     }
     return editorCell;
   }
-  private boolean nodeCondition_3jyf1k_a0g0() {
+  private boolean nodeCondition3() {
     return SPropertyOperations.getBoolean(myNode, PROPS.booleanProperty2$x84S);
   }
   private EditorCell createImage_0() {

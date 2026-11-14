@@ -65,12 +65,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setBig(true);
     setCellContext(editorCell);
     editorCell.addEditorCell(createRefCell_0());
-    if (nodeCondition_wwx4md_a1a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_0());
     }
     return editorCell;
   }
-  private boolean nodeCondition_wwx4md_a1a() {
+  private boolean nodeCondition0() {
     return SNodeOperations.getNodeAncestor(SLinkOperations.getTarget(myNode, LINKS.definition$J8D4), CONCEPTS.Library$oJ, false, false) != null;
   }
   private EditorCell createRefCell_0() {

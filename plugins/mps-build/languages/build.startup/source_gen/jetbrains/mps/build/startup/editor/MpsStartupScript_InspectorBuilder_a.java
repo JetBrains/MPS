@@ -59,12 +59,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
     Style style = new StyleImpl();
     style.set(StyleAttributes.SELECTABLE, false);
     editorCell.getStyle().putAll(style);
-    if (nodeCondition_gszs7u_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_1());
     }
     return editorCell;
   }
-  private boolean nodeCondition_gszs7u_a0a() {
+  private boolean nodeCondition0() {
     // I have no idea why deprecated property is still set in BuildGeneratorImpl
     return isNotEmptyString(SPropertyOperations.getString(myNode, PROPS.startupFolder$jtLx));
   }

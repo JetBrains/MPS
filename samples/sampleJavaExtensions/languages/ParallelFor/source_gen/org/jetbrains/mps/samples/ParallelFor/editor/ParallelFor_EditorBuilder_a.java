@@ -67,7 +67,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createRefNode_1());
     editorCell.addEditorCell(createConstant_3());
     editorCell.addEditorCell(createCollection_1());
-    if (nodeCondition_p0t1np_a7a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_5());
     }
     editorCell.addEditorCell(createConstant_6());
@@ -75,7 +75,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createConstant_7());
     return editorCell;
   }
-  private boolean nodeCondition_p0t1np_a7a() {
+  private boolean nodeCondition0() {
     return SPropertyOperations.getBoolean(myNode, PROPS.nowait$gGom);
   }
   private EditorCell createConstant_0() {
@@ -230,13 +230,13 @@ import org.jetbrains.mps.openapi.language.SConcept;
   private EditorCell createCollection_1() {
     EditorCell_Collection editorCell = new EditorCell_Collection(getEditorContext(), myNode, new CellLayout_Indent());
     editorCell.setCellId("usingThreadPool");
-    if (nodeCondition_p0t1np_a0g0()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createConstant_4());
     }
     editorCell.addEditorCell(createRefNode_2());
     return editorCell;
   }
-  private boolean nodeCondition_p0t1np_a0g0() {
+  private boolean nodeCondition1() {
     return SLinkOperations.getTarget(myNode, LINKS.threadPool$PSS$) != null;
   }
   private EditorCell createConstant_4() {

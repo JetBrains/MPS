@@ -48,7 +48,7 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
 
   private EditorCell createAlternation_0() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_tmyyum_a0_0();
+    alternationCondition = nodeCondition0();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createProperty_0();
@@ -62,7 +62,7 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     }
     return editorCell;
   }
-  private boolean nodeCondition_tmyyum_a0_0() {
+  private boolean nodeCondition0() {
     return Sequence.fromIterable(SNodeOperations.ofConcept(SNodeOperations.getAllSiblings(myNode, false), CONCEPTS.SuppressErrorsAnnotation$D1)).concat(Sequence.fromIterable(Sequence.<SNode>singleton(myNode))).any((it) -> it.getProperty(PROPS.comment$_sJ2) != null);
   }
   private EditorCell createProperty_0() {

@@ -64,17 +64,17 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setBig(true);
     setCellContext(editorCell);
     editorCell.addEditorCell(createAlternation_0());
-    if (nodeCondition_qyzwn3_a1a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_0());
     }
     return editorCell;
   }
-  private boolean nodeCondition_qyzwn3_a1a() {
+  private boolean nodeCondition0() {
     return (boolean) XmlValuePart__BehaviorDescriptor.hasNewLineAfter_id2EZ251g0bSd.invoke(myNode);
   }
   private EditorCell createAlternation_0() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_qyzwn3_a0a();
+    alternationCondition = nodeCondition1();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createProperty_0();
@@ -83,7 +83,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     }
     return editorCell;
   }
-  private boolean nodeCondition_qyzwn3_a0a() {
+  private boolean nodeCondition1() {
     return (boolean) XmlValuePart__BehaviorDescriptor.onNewLine_id2EZ251g0bS6.invoke(myNode);
   }
   private EditorCell createProperty_0() {

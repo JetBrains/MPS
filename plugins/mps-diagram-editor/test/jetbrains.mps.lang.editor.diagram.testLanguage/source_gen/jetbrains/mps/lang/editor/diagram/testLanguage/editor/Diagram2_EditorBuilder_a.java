@@ -85,10 +85,10 @@ import org.jetbrains.mps.openapi.language.SReferenceLink;
     editorCell.setCellId("Collection_dbn5di_a0");
     editorCell.setFoldable(true);
     editorCell.addEditorCell(createDiagram_0());
-    editorCell.setInitiallyCollapsed(nodeCondition_dbn5di_a0a());
+    editorCell.setInitiallyCollapsed(nodeCondition0());
     return editorCell;
   }
-  private boolean nodeCondition_dbn5di_a0a() {
+  private boolean nodeCondition0() {
     return SPropertyOperations.getBoolean(myNode, PROPS.initiallyCollapsed$Mr4Z);
   }
   private EditorCell createDiagram_0() {

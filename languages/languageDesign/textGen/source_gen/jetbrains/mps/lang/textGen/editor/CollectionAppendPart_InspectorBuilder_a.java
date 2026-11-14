@@ -52,12 +52,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setCellId("Collection_wfu8o0_0");
     editorCell.setBig(true);
     setCellContext(editorCell);
-    if (nodeCondition_wfu8o0_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_1());
     }
     return editorCell;
   }
-  private boolean nodeCondition_wfu8o0_a0a() {
+  private boolean nodeCondition0() {
     return isNotEmptyString(SPropertyOperations.getString(myNode, PROPS.separator$jRB0));
   }
   private EditorCell createCollection_1() {

@@ -76,12 +76,12 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     setCellContext(editorCell);
     editorCell.addEditorCell(createComponent_0());
     editorCell.addEditorCell(createComponent_1());
-    if (nodeCondition_955wzk_a2a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_0());
     }
     editorCell.addEditorCell(createConstant_1());
     editorCell.addEditorCell(createProperty_0());
-    if (nodeCondition_955wzk_a5a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createCollection_1());
     }
     editorCell.addEditorCell(createCollection_2());
@@ -89,10 +89,10 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     editorCell.addEditorCell(createCollection_4());
     return editorCell;
   }
-  private boolean nodeCondition_955wzk_a2a() {
+  private boolean nodeCondition0() {
     return SNodeOperations.isInstanceOf(SNodeOperations.getParent(myNode), CONCEPTS.Classifier$Ix);
   }
-  private boolean nodeCondition_955wzk_a5a() {
+  private boolean nodeCondition1() {
     return Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.typeVariableDeclaration$Lipp)).isNotEmpty();
   }
   private EditorCell createComponent_0() {
@@ -464,21 +464,21 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
   private EditorCell createCollection_4() {
     EditorCell_Collection editorCell = new EditorCell_Collection(getEditorContext(), myNode, new CellLayout_Indent());
     editorCell.setCellId("Collection_955wzk_i0");
-    editorCell.setFoldable(nodeCondition_955wzk_a8a());
+    editorCell.setFoldable(nodeCondition3());
     editorCell.setFoldedCell(createComponent_2());
     editorCell.addEditorCell(createConstant_8());
     editorCell.addEditorCell(createRefNodeList_2());
     editorCell.addEditorCell(createRefNodeList_3());
-    if (nodeCondition_955wzk_a3i0()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createCollection_5());
     }
     editorCell.addEditorCell(createConstant_13());
     return editorCell;
   }
-  private boolean nodeCondition_955wzk_a3i0() {
+  private boolean nodeCondition2() {
     return ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.method$_DCK)).isNotEmpty();
   }
-  private boolean nodeCondition_955wzk_a8a() {
+  private boolean nodeCondition3() {
     return (SNodeOperations.getParent(myNode) != null);
   }
   private EditorCell createConstant_8() {

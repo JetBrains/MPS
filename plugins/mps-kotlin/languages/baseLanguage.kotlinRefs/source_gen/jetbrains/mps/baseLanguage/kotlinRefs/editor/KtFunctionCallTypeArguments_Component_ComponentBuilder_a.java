@@ -57,12 +57,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
     Style style = new StyleImpl();
     style.set(StyleAttributes.SELECTABLE, false);
     editorCell.getStyle().putAll(style);
-    if (nodeCondition_ar4y6l_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_1());
     }
     return editorCell;
   }
-  private boolean nodeCondition_ar4y6l_a0a() {
+  private boolean nodeCondition0() {
     return Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.typeArgument$Q6Au)).isNotEmpty();
   }
   private EditorCell createCollection_1() {

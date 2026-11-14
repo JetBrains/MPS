@@ -53,14 +53,14 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setCellId("Collection_ggt0rc_a");
     editorCell.setBig(true);
     setCellContext(editorCell);
-    if (nodeCondition_ggt0rc_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_0());
     }
     editorCell.addEditorCell(createProperty_0());
     editorCell.addEditorCell(createConstant_1());
     return editorCell;
   }
-  private boolean nodeCondition_ggt0rc_a0a() {
+  private boolean nodeCondition0() {
     return (boolean) Slot__BehaviorDescriptor.isCustomizing_idNU25Mr1t4q.invoke(myNode);
   }
   private EditorCell createConstant_0() {

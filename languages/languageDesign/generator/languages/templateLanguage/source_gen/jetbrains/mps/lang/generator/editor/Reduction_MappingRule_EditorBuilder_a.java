@@ -94,13 +94,13 @@ import org.jetbrains.mps.openapi.language.SConcept;
     style.set(StyleAttributes.SELECTABLE, false);
     editorCell.getStyle().putAll(style);
     editorCell.addEditorCell(createConstant_0());
-    if (nodeCondition_c84kqv_a1b0()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_3());
     }
     editorCell.addEditorCell(createRefNode_0());
     return editorCell;
   }
-  private boolean nodeCondition_c84kqv_a1b0() {
+  private boolean nodeCondition0() {
     return SLinkOperations.getTarget(myNode, LINKS.labelDeclaration$4kKU) != null;
   }
   private EditorCell createConstant_0() {

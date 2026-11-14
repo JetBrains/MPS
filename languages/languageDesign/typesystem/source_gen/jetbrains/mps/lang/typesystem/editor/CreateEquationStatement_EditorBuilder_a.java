@@ -53,19 +53,19 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     editorCell.setCellId("Collection_mi4qyq_a");
     editorCell.setBig(true);
     setCellContext(editorCell);
-    if (nodeCondition_mi4qyq_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_1());
     }
-    if (nodeCondition_mi4qyq_a1a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createCollection_2());
     }
     editorCell.addEditorCell(createConstant_3());
     return editorCell;
   }
-  private boolean nodeCondition_mi4qyq_a0a() {
+  private boolean nodeCondition0() {
     return SPropertyOperations.getBoolean(myNode, PROPS.checkOnly$2Mur);
   }
-  private boolean nodeCondition_mi4qyq_a1a() {
+  private boolean nodeCondition1() {
     return !(SPropertyOperations.getBoolean(myNode, PROPS.checkOnly$2Mur));
   }
   private EditorCell createCollection_1() {

@@ -130,7 +130,7 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     editorCell.addEditorCell(createCollection_5());
     editorCell.addEditorCell(createCollection_6());
     editorCell.addEditorCell(createCollection_7());
-    if (nodeCondition_5v10so_a5f0()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_8());
     }
     editorCell.addEditorCell(createCollection_9());
@@ -141,7 +141,7 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     editorCell.addEditorCell(createCollection_16());
     return editorCell;
   }
-  private boolean nodeCondition_5v10so_a5f0() {
+  private boolean nodeCondition0() {
     return SNodeOperations.isInstanceOf(myNode, CONCEPTS.ConstraintFunction_ReferentSearchScope_Presentation$uU);
   }
   private EditorCell createCollection_3() {

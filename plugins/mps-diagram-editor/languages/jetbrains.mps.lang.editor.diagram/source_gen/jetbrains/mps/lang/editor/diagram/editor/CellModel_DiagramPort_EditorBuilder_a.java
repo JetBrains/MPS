@@ -67,7 +67,7 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
   }
   private EditorCell createAlternation_0() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_inwiug_a0a();
+    alternationCondition = nodeCondition0();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createConstant_0();
@@ -77,7 +77,7 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     editorCell.setSubstituteInfo(new CompositeSubstituteInfo(getEditorContext(), new BasicCellContext(myNode), new SubstituteInfoPartExt[]{new CellModel_DiagramPort_generic_cellMenu_inwiug_a0a0(), new CellModel_DiagramPort_generic_cellMenu_inwiug_b0a0(), new SChildSubstituteInfoPartEx(editorCell)}));
     return editorCell;
   }
-  private boolean nodeCondition_inwiug_a0a() {
+  private boolean nodeCondition0() {
     return SPropertyOperations.getBoolean(myNode, PROPS.input$67Ol);
   }
   public static class CellModel_DiagramPort_generic_cellMenu_inwiug_a0a0 extends AbstractCellMenuPart_Generic_Item {

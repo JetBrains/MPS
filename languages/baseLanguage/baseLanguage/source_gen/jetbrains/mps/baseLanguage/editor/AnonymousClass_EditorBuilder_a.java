@@ -115,21 +115,21 @@ import org.jetbrains.mps.openapi.language.SConcept;
     style.set(StyleAttributes.PARAMETERS_INFORMATION, new BaseMethodParameterInformationQuery());
     editorCell.getStyle().putAll(style);
     editorCell.addEditorCell(createRefCell_0());
-    if (nodeCondition_msf9u8_a1a0()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_2());
     }
     editorCell.addEditorCell(createConstant_3());
-    if (nodeCondition_msf9u8_a3a0()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createRefNodeList_1());
     }
     editorCell.addEditorCell(createRefNodeList_2());
     editorCell.addEditorCell(createConstant_6());
     return editorCell;
   }
-  private boolean nodeCondition_msf9u8_a1a0() {
+  private boolean nodeCondition0() {
     return (boolean) IInferredExpression__BehaviorDescriptor.needInference_idQ$FjPqwIoN.invoke(myNode) || Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.typeParameter$F9H8)).isNotEmpty();
   }
-  private boolean nodeCondition_msf9u8_a3a0() {
+  private boolean nodeCondition1() {
     return Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.parameter$yBil)).isNotEmpty();
   }
   private EditorCell createRefCell_0() {
@@ -151,7 +151,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
       editorCell.setReferenceCell(true);
       editorCell.setSRole(LINKS.classifier$q_Y$);
     }
-    if (nodeCondition_msf9u8_a0a0()) {
+    if (nodeCondition2()) {
       editorCell.getStyle().set(StyleAttributes.FOCUS_POLICY, FocusPolicy.FIRST_EDITABLE_CELL);
     }
     editorCell.setTransformationMenuLookup(new DefaultTransformationMenuLookup(LanguageRegistry.getInstance(getEditorContext().getRepository()), CONCEPTS.AnonymousClass$Bt));
@@ -191,7 +191,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
       return editorCell;
     }
   }
-  private boolean nodeCondition_msf9u8_a0a0() {
+  private boolean nodeCondition2() {
     return ListSequence.fromList(SLinkOperations.getChildren(SLinkOperations.getTarget(myNode, LINKS.classifier$q_Y$), LINKS.typeVariableDeclaration$Lipp)).isNotEmpty();
   }
   public static class AnonymousClass_classifier_cellMenu_msf9u8_a0a0a extends PrimaryReferentMenuCellMenuPart {
@@ -559,13 +559,13 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setFoldedCell(createComponent_1());
     editorCell.addEditorCell(createConstant_7());
     editorCell.addEditorCell(createComponent_0());
-    if (nodeCondition_msf9u8_a2b0()) {
+    if (nodeCondition3()) {
       editorCell.addEditorCell(createCollection_4());
     }
     editorCell.addEditorCell(createConstant_15());
     return editorCell;
   }
-  private boolean nodeCondition_msf9u8_a2b0() {
+  private boolean nodeCondition3() {
     return Sequence.fromIterable(Classifier__BehaviorDescriptor.members_id1hodSy8nQmC.invoke(myNode)).subtract(ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.member$L_2d))).isNotEmpty();
   }
   private EditorCell createConstant_7() {
@@ -591,42 +591,42 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.getStyle().putAll(style);
     editorCell.addEditorCell(createConstant_8());
     editorCell.addEditorCell(createConstant_9());
-    if (nodeCondition_msf9u8_a2c1a()) {
+    if (nodeCondition4()) {
       editorCell.addEditorCell(createCollection_5());
     }
-    if (nodeCondition_msf9u8_a3c1a()) {
+    if (nodeCondition5()) {
       editorCell.addEditorCell(createConstant_10());
     }
-    if (nodeCondition_msf9u8_a4c1a()) {
+    if (nodeCondition6()) {
       editorCell.addEditorCell(createCollection_6());
     }
-    if (nodeCondition_msf9u8_a5c1a()) {
+    if (nodeCondition7()) {
       editorCell.addEditorCell(createConstant_12());
     }
-    if (nodeCondition_msf9u8_a6c1a()) {
+    if (nodeCondition8()) {
       editorCell.addEditorCell(createCollection_7());
     }
-    if (nodeCondition_msf9u8_a7c1a()) {
+    if (nodeCondition9()) {
       editorCell.addEditorCell(createCollection_8());
     }
     return editorCell;
   }
-  private boolean nodeCondition_msf9u8_a2c1a() {
+  private boolean nodeCondition4() {
     return Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.instanceInitializer$efI1)).isNotEmpty();
   }
-  private boolean nodeCondition_msf9u8_a3c1a() {
+  private boolean nodeCondition5() {
     return SLinkOperations.getTarget(myNode, LINKS.instanceInitializer$efI1) != null && Sequence.fromIterable(ClassConcept__BehaviorDescriptor.fields_id4_LVZ3pC27C.invoke(myNode)).isNotEmpty();
   }
-  private boolean nodeCondition_msf9u8_a4c1a() {
+  private boolean nodeCondition6() {
     return Sequence.fromIterable(ClassConcept__BehaviorDescriptor.fields_id4_LVZ3pC27C.invoke(myNode)).isNotEmpty();
   }
-  private boolean nodeCondition_msf9u8_a5c1a() {
+  private boolean nodeCondition7() {
     return Sequence.fromIterable(Classifier__BehaviorDescriptor.methods_id4_LVZ3pBKCn.invoke(myNode)).isNotEmpty() && Sequence.fromIterable(ClassConcept__BehaviorDescriptor.fields_id4_LVZ3pC27C.invoke(myNode)).isNotEmpty();
   }
-  private boolean nodeCondition_msf9u8_a6c1a() {
+  private boolean nodeCondition8() {
     return Sequence.fromIterable(Classifier__BehaviorDescriptor.methods_id4_LVZ3pBKCn.invoke(myNode)).isNotEmpty();
   }
-  private boolean nodeCondition_msf9u8_a7c1a() {
+  private boolean nodeCondition9() {
     return !(Sequence.fromIterable(ClassConcept__BehaviorDescriptor.fields_id4_LVZ3pC27C.invoke(myNode)).isNotEmpty() && Sequence.fromIterable(Classifier__BehaviorDescriptor.methods_id4_LVZ3pBKCn.invoke(myNode)).isNotEmpty() && SLinkOperations.getTarget(myNode, LINKS.instanceInitializer$efI1) != null);
   }
   private EditorCell createConstant_8() {

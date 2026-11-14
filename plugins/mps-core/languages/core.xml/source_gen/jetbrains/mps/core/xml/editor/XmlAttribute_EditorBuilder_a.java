@@ -69,7 +69,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
 
   private EditorCell createAlternation_0() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_1uorir_a0();
+    alternationCondition = nodeCondition0();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createCollection_0();
@@ -83,7 +83,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     }
     return editorCell;
   }
-  private boolean nodeCondition_1uorir_a0() {
+  private boolean nodeCondition0() {
     return (boolean) XmlBaseAttribute__BehaviorDescriptor.isMultiline_id2EZ251fZScc.invoke(myNode);
   }
   private EditorCell createCollection_0() {
@@ -316,7 +316,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     AbstractCellListHandler handler = new valueListHandler_1uorir_d0a(myNode, getEditorContext());
     EditorCell_Collection editorCell = handler.createCells(new CellLayout_Indent(), false);
     editorCell.setCellId("refNodeList_value1");
-    if (nodeCondition_1uorir_a3a0()) {
+    if (nodeCondition1()) {
       editorCell.getStyle().set(StyleAttributes.FOCUS_POLICY, FocusPolicy.ATTRACTS_FOCUS);
     }
     editorCell.setSRole(handler.getElementSRole());
@@ -404,7 +404,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
       return editorCell;
     }
   }
-  private boolean nodeCondition_1uorir_a3a0() {
+  private boolean nodeCondition1() {
     return ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.value$1h4D)).isEmpty();
   }
   private EditorCell createConstant_7() {

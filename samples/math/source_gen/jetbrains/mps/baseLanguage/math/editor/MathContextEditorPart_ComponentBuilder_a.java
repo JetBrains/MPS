@@ -53,18 +53,18 @@ import org.jetbrains.mps.openapi.language.SConcept;
     EditorCell_Collection editorCell = new EditorCell_Collection(getEditorContext(), myNode, new CellLayout_Indent());
     editorCell.setCellId("Collection_qri1nn_a");
     editorCell.addEditorCell(createCollection_1());
-    if (nodeCondition_qri1nn_a1a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_2());
     }
-    if (nodeCondition_qri1nn_a2a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createCollection_3());
     }
     return editorCell;
   }
-  private boolean nodeCondition_qri1nn_a1a() {
+  private boolean nodeCondition0() {
     return SPropertyOperations.getEnum(myNode, PROPS.precisionSetting$QkSN) == SEnumOperations.getMember(MetaAdapterFactory.getEnumeration(0x3304fc6e7c6b401eL, 0xa016b944934bb21fL, 0x12056af4e37L, "jetbrains.mps.baseLanguage.math.structure.PrecisionSetting"), 0x12056af4e38L, "CUSTOM");
   }
-  private boolean nodeCondition_qri1nn_a2a() {
+  private boolean nodeCondition1() {
     return SPropertyOperations.getEnum(myNode, PROPS.precisionSetting$QkSN) == SEnumOperations.getMember(MetaAdapterFactory.getEnumeration(0x3304fc6e7c6b401eL, 0xa016b944934bb21fL, 0x12056af4e37L, "jetbrains.mps.baseLanguage.math.structure.PrecisionSetting"), 0x12056af4e38L, "CUSTOM");
   }
   private EditorCell createCollection_1() {

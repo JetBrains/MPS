@@ -75,12 +75,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createConstant_2());
     editorCell.addEditorCell(createConstant_3());
     editorCell.addEditorCell(createRefNode_2());
-    if (nodeCondition_kasahx_a8a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_1());
     }
     return editorCell;
   }
-  private boolean nodeCondition_kasahx_a8a() {
+  private boolean nodeCondition0() {
     return SPropertyOperations.getBoolean(SLinkOperations.getTarget(myNode, LINKS.matches$bNUu), PROPS.value$5y_M) == true;
   }
   private EditorCell createConstant_0() {
@@ -319,24 +319,24 @@ import org.jetbrains.mps.openapi.language.SConcept;
     Style style = new StyleImpl();
     style.set(StyleAttributes.SELECTABLE, false);
     editorCell.getStyle().putAll(style);
-    if (nodeCondition_kasahx_a0i0()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createCollection_2());
     }
-    if (nodeCondition_kasahx_a1i0()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createCollection_3());
     }
-    if (nodeCondition_kasahx_a2i0()) {
+    if (nodeCondition3()) {
       editorCell.addEditorCell(createCollection_4());
     }
     return editorCell;
   }
-  private boolean nodeCondition_kasahx_a0i0() {
+  private boolean nodeCondition1() {
     return ListSequence.fromList(SNodeOperations.getNodeDescendants(SLinkOperations.getTarget(myNode, LINKS.pattern$bNFt), CONCEPTS.PatternVariableDeclaration$ZH, false, new SAbstractConcept[]{})).isNotEmpty();
   }
-  private boolean nodeCondition_kasahx_a1i0() {
+  private boolean nodeCondition2() {
     return ListSequence.fromList(SNodeOperations.getNodeDescendants(SLinkOperations.getTarget(myNode, LINKS.pattern$bNFt), CONCEPTS.PropertyPatternVariableDeclaration$aQ, false, new SAbstractConcept[]{})).isNotEmpty();
   }
-  private boolean nodeCondition_kasahx_a2i0() {
+  private boolean nodeCondition3() {
     return ListSequence.fromList(SNodeOperations.getNodeDescendants(SLinkOperations.getTarget(myNode, LINKS.pattern$bNFt), CONCEPTS.ListPattern$1B, false, new SAbstractConcept[]{})).isNotEmpty();
   }
   private EditorCell createCollection_2() {

@@ -87,7 +87,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
   }
   private EditorCell createAlternation_0() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_kqvvq_a0a();
+    alternationCondition = nodeCondition0();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createConstant_0();
@@ -96,7 +96,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     }
     return editorCell;
   }
-  private boolean nodeCondition_kqvvq_a0a() {
+  private boolean nodeCondition0() {
     return (boolean) XmlPart__BehaviorDescriptor.isFirstPositionAllowed_id1Qs9WekVZ7m.invoke(myNode);
   }
   private EditorCell createConstant_0() {
@@ -280,7 +280,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
   }
   private EditorCell createAlternation_1() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_kqvvq_a2a();
+    alternationCondition = nodeCondition1();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createConstant_3();
@@ -289,7 +289,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     }
     return editorCell;
   }
-  private boolean nodeCondition_kqvvq_a2a() {
+  private boolean nodeCondition1() {
     return (boolean) XmlPart__BehaviorDescriptor.isLastPositionAllowed_id1Qs9WekVZ8v.invoke(myNode);
   }
   private EditorCell createConstant_3() {

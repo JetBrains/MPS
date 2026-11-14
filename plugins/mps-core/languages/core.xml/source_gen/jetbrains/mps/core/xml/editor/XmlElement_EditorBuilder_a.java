@@ -82,13 +82,13 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.getStyle().putAll(style);
     editorCell.addEditorCell(createConstant_0());
     editorCell.addEditorCell(createProperty_0());
-    if (nodeCondition_vc3gub_a2a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_1());
     }
     editorCell.addEditorCell(createAlternation_0());
     return editorCell;
   }
-  private boolean nodeCondition_vc3gub_a2a() {
+  private boolean nodeCondition0() {
     return Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.attributes$ZouQ)).isNotEmpty();
   }
   private EditorCell createConstant_0() {
@@ -215,7 +215,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
   }
   private EditorCell createAlternation_0() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_vc3gub_a3a();
+    alternationCondition = nodeCondition1();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createCollection_2();
@@ -224,7 +224,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     }
     return editorCell;
   }
-  private boolean nodeCondition_vc3gub_a3a() {
+  private boolean nodeCondition1() {
     return ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.content$zkQy)).isEmpty() && SPropertyOperations.getBoolean(myNode, PROPS.shortEmptyNotation$B8Gv);
   }
   private EditorCell createCollection_2() {
@@ -269,7 +269,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
   }
   private EditorCell createAlternation_1() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_vc3gub_a0a3a();
+    alternationCondition = nodeCondition2();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createCollection_4();
@@ -278,7 +278,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     }
     return editorCell;
   }
-  private boolean nodeCondition_vc3gub_a0a3a() {
+  private boolean nodeCondition2() {
     return (boolean) XmlElement__BehaviorDescriptor.isMultiline_id7HilnpQ3Ckr.invoke(myNode);
   }
   private EditorCell createCollection_4() {

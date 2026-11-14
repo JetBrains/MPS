@@ -75,12 +75,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setBig(true);
     setCellContext(editorCell);
     editorCell.addEditorCell(createRefCell_0());
-    if (nodeCondition_jumb3f_a1a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_1());
     }
     return editorCell;
   }
-  private boolean nodeCondition_jumb3f_a1a() {
+  private boolean nodeCondition0() {
     return Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.artifacts$MVTa)).isNotEmpty() || (SNodeOperations.getModel(SLinkOperations.getTarget(myNode, LINKS.script$6Ehy)) != null && SNodeOperations.getModel(SLinkOperations.getTarget(myNode, LINKS.script$6Ehy)).getModule().isPackaged());
   }
   private EditorCell createRefCell_0() {

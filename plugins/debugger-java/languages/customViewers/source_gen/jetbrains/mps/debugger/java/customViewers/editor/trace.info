@@ -997,12 +997,12 @@
       <node id="5117350825036256255" at="120,40,121,34" concept="2" />
       <node id="5117350825036256255" at="121,34,122,22" concept="7" />
       <node id="5117350825036235733" at="124,44,125,40" concept="6" />
-      <node id="5117350825036235733" at="125,40,126,55" concept="2" />
-      <node id="5117350825036235733" at="126,55,127,33" concept="6" />
+      <node id="5117350825036235733" at="125,40,126,44" concept="2" />
+      <node id="5117350825036235733" at="126,44,127,33" concept="6" />
       <node id="5117350825036235733" at="128,31,129,40" concept="2" />
       <node id="5117350825036235733" at="130,12,131,38" concept="2" />
       <node id="5117350825036235733" at="132,5,133,22" concept="7" />
-      <node id="6644923865059674918" at="135,47,136,88" concept="7" />
+      <node id="6644923865059674918" at="135,36,136,88" concept="7" />
       <node id="5117350825036235733" at="138,43,139,122" concept="6" />
       <node id="5117350825036235733" at="139,122,140,51" concept="2" />
       <node id="5117350825036235733" at="140,51,141,34" concept="6" />
@@ -1049,7 +1049,7 @@
       <node id="5117350825036235733" at="40,0,42,0" concept="3" trace="myNode" />
       <node id="5117350825036235733" at="130,10,132,5" concept="0" />
       <node id="5117350825036235733" at="54,0,57,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="5117350825036256258" at="135,0,138,0" concept="5" trace="nodeCondition_rpujt6_a1b0#()Z" />
+      <node id="5117350825036256258" at="135,0,138,0" concept="5" trace="nodeCondition0#()Z" />
       <node id="6644923865057393768" at="193,0,196,0" concept="5" trace="_QueryFunction_JComponent_rpujt6_a2b0#()Ljavax/swing/JComponent;" />
       <node id="6644923865059688383" at="196,0,199,0" concept="10" trace="isNotEmptyString#(Ljava/lang/String;)Z" />
       <node id="5117350825036235733" at="43,0,47,0" concept="1" trace="CustomWatchable_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
@@ -1077,7 +1077,7 @@
       <scope id="5117350825036235748" at="100,15,101,40" />
       <scope id="5117350825036235733" at="128,31,129,40" />
       <scope id="5117350825036235733" at="130,12,131,38" />
-      <scope id="5117350825036256259" at="135,47,136,88" />
+      <scope id="5117350825036256259" at="135,36,136,88" />
       <scope id="5117350825036256303" at="175,15,176,40" />
       <scope id="6644923865057393770" at="193,62,194,95" />
       <scope id="6644923865059688383" at="196,55,197,43" />

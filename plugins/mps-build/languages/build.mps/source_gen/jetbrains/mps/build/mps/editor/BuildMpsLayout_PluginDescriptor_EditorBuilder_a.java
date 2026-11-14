@@ -62,12 +62,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
     setCellContext(editorCell);
     editorCell.addEditorCell(createComponent_0());
     editorCell.addEditorCell(createRefCell_0());
-    if (nodeCondition_bzzv1n_a2a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_0());
     }
     return editorCell;
   }
-  private boolean nodeCondition_bzzv1n_a2a() {
+  private boolean nodeCondition0() {
     return SPropertyOperations.getBoolean(SLinkOperations.getTarget(myNode, LINKS.plugin$ZarS), PROPS.pluginXmlProvided$f2I);
   }
   private EditorCell createComponent_0() {

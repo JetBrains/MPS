@@ -181,7 +181,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     AbstractCellListHandler handler = new actualArgumentListHandler_c9gv4j_c0(myNode, getEditorContext());
     EditorCell_Collection editorCell = handler.createCells(new CellLayout_Indent(), false);
     editorCell.setCellId("refNodeList_actualArgument");
-    if (nodeCondition_c9gv4j_a2a()) {
+    if (nodeCondition0()) {
       editorCell.getStyle().set(StyleAttributes.FOCUS_POLICY, FocusPolicy.FIRST_EDITABLE_CELL);
     }
     editorCell.setSRole(handler.getElementSRole());
@@ -277,7 +277,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
       return editorCell;
     }
   }
-  private boolean nodeCondition_c9gv4j_a2a() {
+  private boolean nodeCondition0() {
     return ListSequence.fromList(SLinkOperations.getChildren(SLinkOperations.getTarget(myNode, LINKS.member$oLt6), LINKS.parameter$5xBj)).isNotEmpty();
   }
   private EditorCell createConstant_2() {
@@ -286,13 +286,13 @@ import org.jetbrains.mps.openapi.language.SConcept;
     Style style = new StyleImpl();
     new RightParenStyleClass(this).apply(style, editorCell);
     editorCell.getStyle().putAll(style);
-    if (nodeCondition_c9gv4j_a3a()) {
+    if (nodeCondition1()) {
       editorCell.getStyle().set(StyleAttributes.FOCUS_POLICY, FocusPolicy.ATTRACTS_FOCUS);
     }
     editorCell.setDefaultText("");
     return editorCell;
   }
-  private boolean nodeCondition_c9gv4j_a3a() {
+  private boolean nodeCondition1() {
     return ListSequence.fromList(SLinkOperations.getChildren(SLinkOperations.getTarget(myNode, LINKS.member$oLt6), LINKS.parameter$5xBj)).isEmpty();
   }
 

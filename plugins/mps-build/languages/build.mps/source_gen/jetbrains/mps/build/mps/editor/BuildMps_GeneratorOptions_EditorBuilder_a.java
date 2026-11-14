@@ -106,7 +106,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createProperty_1());
     editorCell.addEditorCell(createConstant_2());
     editorCell.addEditorCell(createProperty_2());
-    if (nodeCondition_aauy4y_a4c0()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_2());
     }
     editorCell.addEditorCell(createConstant_4());
@@ -121,7 +121,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createProperty_8());
     return editorCell;
   }
-  private boolean nodeCondition_aauy4y_a4c0() {
+  private boolean nodeCondition0() {
     return SPropertyOperations.getBoolean(myNode, PROPS.parallel$AX9E);
   }
   private EditorCell createConstant_1() {

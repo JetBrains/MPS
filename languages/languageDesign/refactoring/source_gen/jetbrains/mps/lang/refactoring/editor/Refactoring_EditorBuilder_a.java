@@ -90,14 +90,14 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createConstant_11());
     editorCell.addEditorCell(createRefNode_3());
     editorCell.addEditorCell(createConstant_12());
-    if (nodeCondition_kt8f5i_a51a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createRefNode_4());
     }
     editorCell.addEditorCell(createConstant_13());
     editorCell.addEditorCell(createRefNode_5());
     return editorCell;
   }
-  private boolean nodeCondition_kt8f5i_a51a() {
+  private boolean nodeCondition0() {
     return (SLinkOperations.getTarget(myNode, LINKS.modelsToGenerateBlock$bor4) != null);
   }
   private EditorCell createCollection_1() {

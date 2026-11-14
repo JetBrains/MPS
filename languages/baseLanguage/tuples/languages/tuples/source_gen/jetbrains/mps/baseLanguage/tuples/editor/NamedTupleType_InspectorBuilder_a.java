@@ -237,12 +237,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
       Style style = new StyleImpl();
       style.set(StyleAttributes.SELECTABLE, false);
       editorCell.getStyle().putAll(style);
-      if (nodeCondition_2ojjgh_a0a0c0a()) {
+      if (nodeCondition0()) {
         editorCell.addEditorCell(createComponent_0());
       }
       return editorCell;
     }
-    private boolean nodeCondition_2ojjgh_a0a0c0a() {
+    private boolean nodeCondition0() {
       return ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.typeVariableDeclaration$Lipp)).isNotEmpty();
     }
     private EditorCell createComponent_0() {

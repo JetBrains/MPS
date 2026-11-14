@@ -59,7 +59,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setBig(true);
     setCellContext(editorCell);
     editorCell.addEditorCell(createCollection_1());
-    if (nodeCondition_8g1p9d_a1a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_2());
     }
     editorCell.addEditorCell(createCollection_3());
@@ -67,7 +67,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createCollection_5());
     return editorCell;
   }
-  private boolean nodeCondition_8g1p9d_a1a() {
+  private boolean nodeCondition0() {
     return (SNodeOperations.getNodeAncestor(myNode, CONCEPTS.IHoldDocumentation$KC, false, false) == null);
   }
   private EditorCell createCollection_1() {
@@ -113,19 +113,19 @@ import org.jetbrains.mps.openapi.language.SConcept;
     Style style = new StyleImpl();
     style.set(StyleAttributes.SELECTABLE, false);
     editorCell.getStyle().putAll(style);
-    if (nodeCondition_8g1p9d_a0b0()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createConstant_1());
     }
-    if (nodeCondition_8g1p9d_a1b0()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createConstant_2());
     }
     editorCell.addEditorCell(createProperty_1());
     return editorCell;
   }
-  private boolean nodeCondition_8g1p9d_a0b0() {
+  private boolean nodeCondition1() {
     return (SNodeOperations.getNodeAncestor(myNode, CONCEPTS.IHoldComment$Sr, false, false) == null);
   }
-  private boolean nodeCondition_8g1p9d_a1b0() {
+  private boolean nodeCondition2() {
     return (SNodeOperations.getNodeAncestor(myNode, CONCEPTS.IHoldComment$Sr, false, false) != null);
   }
   private EditorCell createConstant_1() {
@@ -271,7 +271,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
   }
   private EditorCell createAlternation_0() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_8g1p9d_a2e0();
+    alternationCondition = nodeCondition3();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createCollection_6();
@@ -280,7 +280,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     }
     return editorCell;
   }
-  private boolean nodeCondition_8g1p9d_a2e0() {
+  private boolean nodeCondition3() {
     return SNodeOperations.isInstanceOf(SNodeOperations.getParent(myNode), CONCEPTS.IndentedPoint$BF);
   }
   private EditorCell createCollection_6() {

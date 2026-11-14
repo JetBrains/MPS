@@ -54,12 +54,12 @@ import org.jetbrains.mps.openapi.language.SProperty;
     editorCell.setBig(true);
     setCellContext(editorCell);
     editorCell.addEditorCell(createRefNode_0());
-    if (nodeCondition_kbrshr_a1a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_1());
     }
     return editorCell;
   }
-  private boolean nodeCondition_kbrshr_a1a() {
+  private boolean nodeCondition0() {
     return SPropertyOperations.getBoolean(myNode, PROPS.isHigh$CLIU) || !(SNodeOperations.isInstanceOf(SNodeOperations.getContainingRoot(myNode), CONCEPTS.EvaluatorConcept$pu));
   }
   private EditorCell createRefNode_0() {

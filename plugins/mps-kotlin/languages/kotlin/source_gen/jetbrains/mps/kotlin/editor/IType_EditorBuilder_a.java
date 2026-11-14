@@ -36,7 +36,7 @@ import jetbrains.mps.editor.runtime.style.StyleAttributes;
 
   private EditorCell createAlternation_0() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_gxnl04_a0();
+    alternationCondition = nodeCondition0();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createError_0();
@@ -50,7 +50,7 @@ import jetbrains.mps.editor.runtime.style.StyleAttributes;
     }
     return editorCell;
   }
-  private boolean nodeCondition_gxnl04_a0() {
+  private boolean nodeCondition0() {
     return SNodeOperations.getConcept(myNode).isAbstract();
   }
   private EditorCell createError_0() {

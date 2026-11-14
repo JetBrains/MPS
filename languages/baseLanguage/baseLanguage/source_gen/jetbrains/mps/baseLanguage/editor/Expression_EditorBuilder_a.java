@@ -37,7 +37,7 @@ import jetbrains.mps.editor.runtime.style.Padding;
 
   private EditorCell createAlternation_0() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_1ltshm_a0();
+    alternationCondition = nodeCondition0();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createCustom_0();
@@ -51,7 +51,7 @@ import jetbrains.mps.editor.runtime.style.Padding;
     }
     return editorCell;
   }
-  private boolean nodeCondition_1ltshm_a0() {
+  private boolean nodeCondition0() {
     return isEmptyString(SConceptOperations.conceptAlias(SNodeOperations.getConcept(myNode)));
   }
   private EditorCell createCustom_0() {

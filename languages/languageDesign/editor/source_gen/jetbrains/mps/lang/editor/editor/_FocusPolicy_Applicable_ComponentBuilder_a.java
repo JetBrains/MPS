@@ -52,12 +52,12 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     Style style = new StyleImpl();
     style.set(StyleAttributes.SELECTABLE, false);
     editorCell.getStyle().putAll(style);
-    if (nodeCondition_pmdlax_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_1());
     }
     return editorCell;
   }
-  private boolean nodeCondition_pmdlax_a0a() {
+  private boolean nodeCondition0() {
     return !(SEnumOperations.isMember(SPropertyOperations.getEnum(myNode, PROPS.attractsFocus$GvXL), 0x1075079c86cL));
   }
   private EditorCell createCollection_1() {

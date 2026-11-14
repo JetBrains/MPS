@@ -258,8 +258,8 @@
       <node id="4174052498197176938" at="87,44,88,101" concept="5" />
       <node id="4174052498197176938" at="88,101,89,91" concept="5" />
       <node id="4174052498197176938" at="89,91,90,41" concept="1" />
-      <node id="4174052498197176938" at="90,41,91,56" concept="1" />
-      <node id="4174052498197176938" at="91,56,92,51" concept="1" />
+      <node id="4174052498197176938" at="90,41,91,45" concept="1" />
+      <node id="4174052498197176938" at="91,45,92,51" concept="1" />
       <node id="4174052498197176938" at="92,51,93,22" concept="6" />
       <node id="4174052498197176938" at="99,83,100,28" concept="11" />
       <node id="4174052498197176938" at="100,28,101,25" concept="1" />
@@ -295,7 +295,7 @@
       <node id="4174052498197176938" at="169,42,170,134" concept="1" />
       <node id="4174052498197176938" at="170,134,171,138" concept="1" />
       <node id="4174052498197176938" at="171,138,172,24" concept="6" />
-      <node id="4174052498197176958" at="175,47,176,103" concept="6" />
+      <node id="4174052498197176958" at="175,36,176,103" concept="6" />
       <node id="4174052498197176966" at="178,41,179,94" concept="5" />
       <node id="4174052498197176966" at="179,94,180,48" concept="1" />
       <node id="4174052498197176966" at="180,48,181,82" concept="1" />
@@ -308,7 +308,7 @@
       <node id="4174052498197176938" at="51,0,54,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4174052498197176938" at="108,0,111,0" concept="4" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="4174052498197176938" at="111,0,114,0" concept="4" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
-      <node id="4174052498197176956" at="175,0,178,0" concept="4" trace="nodeCondition_yys6sy_a1b0#()Z" />
+      <node id="4174052498197176956" at="175,0,178,0" concept="4" trace="nodeCondition0#()Z" />
       <node id="4174052498197176938" at="40,0,44,0" concept="0" trace="RequirementTrace_ShowTraces_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4174052498197176938" at="99,0,103,0" concept="0" trace="mentionsListHandler_yys6sy_b1a#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="4174052498197176938" at="104,0,108,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -338,7 +338,7 @@
       <scope id="4174052498197176938" at="108,40,109,33" />
       <scope id="4174052498197176938" at="111,48,112,51" />
       <scope id="4174052498197176938" at="129,17,130,42" />
-      <scope id="4174052498197176957" at="175,47,176,103" />
+      <scope id="4174052498197176957" at="175,36,176,103" />
       <scope id="4174052498197176938" at="40,107,42,18" />
       <scope id="4174052498197176938" at="99,83,101,25" />
       <scope id="4174052498197176938" at="138,122,140,146" />

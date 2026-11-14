@@ -81,13 +81,13 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createConstant_0());
     editorCell.addEditorCell(createConstant_1());
     editorCell.addEditorCell(createProperty_0());
-    if (nodeCondition_x7iq66_a3a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_1());
     }
     editorCell.addEditorCell(createAlternation_0());
     return editorCell;
   }
-  private boolean nodeCondition_x7iq66_a3a() {
+  private boolean nodeCondition0() {
     return Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.attributes$h7TJ)).isNotEmpty();
   }
   private EditorCell createConstant_0() {
@@ -222,7 +222,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
   }
   private EditorCell createAlternation_0() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_x7iq66_a4a();
+    alternationCondition = nodeCondition1();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createCollection_2();
@@ -231,7 +231,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     }
     return editorCell;
   }
-  private boolean nodeCondition_x7iq66_a4a() {
+  private boolean nodeCondition1() {
     return ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.content$P4hr)).isEmpty() && SPropertyOperations.getBoolean(myNode, PROPS.shortEmptyNotation$SS7o);
   }
   private EditorCell createCollection_2() {
@@ -276,7 +276,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
   }
   private EditorCell createAlternation_1() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_x7iq66_a0a4a();
+    alternationCondition = nodeCondition2();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createCollection_4();
@@ -285,7 +285,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     }
     return editorCell;
   }
-  private boolean nodeCondition_x7iq66_a0a4a() {
+  private boolean nodeCondition2() {
     return (boolean) HtmlTag__BehaviorDescriptor.isMultiline_idVhXOWqV8wJ.invoke(myNode);
   }
   private EditorCell createCollection_4() {

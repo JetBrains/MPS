@@ -64,18 +64,18 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     Style style = new StyleImpl();
     style.set(StyleAttributes.SELECTABLE, false);
     editorCell.getStyle().putAll(style);
-    if (nodeCondition_x93f0h_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createError_0());
     }
     return editorCell;
   }
-  private boolean nodeCondition_x93f0h_a0a() {
+  private boolean nodeCondition0() {
     return getEditorContext() != null && myNode != null;
   }
   private EditorCell createError_0() {
     EditorCell_Error editorCell = new EditorCell_Error(getEditorContext(), myNode, "");
     editorCell.setCellId("custom_cell_id");
-    if (nodeCondition_x93f0h_a0a_0()) {
+    if (nodeCondition1()) {
       editorCell.getStyle().set(StyleAttributes.FOCUS_POLICY, FocusPolicy.FIRST_EDITABLE_CELL);
     }
     TestTargetActionMap.setCellActions(editorCell, myNode, getEditorContext());
@@ -84,7 +84,7 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     editorCell.setSubstituteInfo(new CompositeSubstituteInfo(getEditorContext(), new BasicCellContext(myNode), new SubstituteInfoPartExt[]{new Error_generic_cellMenu_x93f0h_a0a0(), new Error_generic_cellMenu_x93f0h_b0a0(), new Error_customReplace_cellMenu_x93f0h_c0a0(), new Error_customReplace_cellMenu_x93f0h_d0a0(), new Error_component_cellMenu_x93f0h_e0a0(), new Error_generic_cellMenu_x93f0h_f0a0(), new ReplaceWith_Error_cellMenu_x93f0h_g0a0(), new SChildSubstituteInfoPartEx(editorCell)}));
     return editorCell;
   }
-  private boolean nodeCondition_x93f0h_a0a_0() {
+  private boolean nodeCondition1() {
     return getEditorContext() != null && myNode != null;
   }
   public static class Error_generic_cellMenu_x93f0h_a0a0 extends AbstractCellMenuPart_Generic_Group {

@@ -63,10 +63,10 @@ import org.jetbrains.mps.openapi.language.SConcept;
     setCellContext(editorCell);
     editorCell.addEditorCell(createConstant_0());
     editorCell.addEditorCell(createConstant_1());
-    if (nodeCondition_jshiyh_a2a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_2());
     }
-    if (nodeCondition_jshiyh_a3a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createConstant_3());
     }
     editorCell.addEditorCell(createProperty_0());
@@ -74,10 +74,10 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createConstant_6());
     return editorCell;
   }
-  private boolean nodeCondition_jshiyh_a2a() {
+  private boolean nodeCondition0() {
     return SPropertyOperations.getBoolean(myNode, PROPS.showCellWithCustomId$nuMP);
   }
-  private boolean nodeCondition_jshiyh_a3a() {
+  private boolean nodeCondition1() {
     return SPropertyOperations.getBoolean(myNode, PROPS.showCellWithStringId$8Zpc);
   }
   private EditorCell createConstant_0() {

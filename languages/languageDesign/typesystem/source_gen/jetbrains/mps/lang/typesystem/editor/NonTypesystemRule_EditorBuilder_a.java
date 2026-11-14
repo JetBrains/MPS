@@ -333,7 +333,7 @@ import org.jetbrains.mps.openapi.language.SReferenceLink;
   }
   private EditorCell createAlternation_0() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_tg6zfx_a0b1b1a();
+    alternationCondition = nodeCondition0();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createConstant_5();
@@ -342,7 +342,7 @@ import org.jetbrains.mps.openapi.language.SReferenceLink;
     }
     return editorCell;
   }
-  private boolean nodeCondition_tg6zfx_a0b1b1a() {
+  private boolean nodeCondition0() {
     return SPropertyOperations.getBoolean(myNode, PROPS.overrides$PgO9);
   }
   private EditorCell createConstant_5() {

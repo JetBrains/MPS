@@ -61,17 +61,17 @@ import org.jetbrains.mps.openapi.language.SInterfaceConcept;
     editorCell.setCellId("Collection_l9yc2b_a");
     editorCell.setBig(true);
     setCellContext(editorCell);
-    if (nodeCondition_l9yc2b_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createRefNode_0());
     }
     editorCell.addEditorCell(createConstant_0());
     editorCell.addEditorCell(createConstant_1());
     editorCell.addEditorCell(createComponent_0());
-    if (nodeCondition_l9yc2b_a4a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createConstant_2());
     }
     editorCell.addEditorCell(createRefNodeList_0());
-    if (nodeCondition_l9yc2b_a6a()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createConstant_3());
     }
     editorCell.addEditorCell(createConstant_4());
@@ -80,13 +80,13 @@ import org.jetbrains.mps.openapi.language.SInterfaceConcept;
     editorCell.addEditorCell(createComponent_1());
     return editorCell;
   }
-  private boolean nodeCondition_l9yc2b_a0a() {
+  private boolean nodeCondition0() {
     return (SLinkOperations.getTarget(myNode, LINKS.label$EneV) != null);
   }
-  private boolean nodeCondition_l9yc2b_a4a() {
+  private boolean nodeCondition1() {
     return ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.variables$EO9Z)).count() > 1;
   }
-  private boolean nodeCondition_l9yc2b_a6a() {
+  private boolean nodeCondition2() {
     return ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.variables$EO9Z)).count() > 1;
   }
   private EditorCell createRefNode_0() {

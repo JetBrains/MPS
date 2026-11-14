@@ -236,7 +236,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
   }
   private EditorCell createAlternation_0() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_hfhp3k_a11a();
+    alternationCondition = nodeCondition0();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createConstant_7();
@@ -245,7 +245,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     }
     return editorCell;
   }
-  private boolean nodeCondition_hfhp3k_a11a() {
+  private boolean nodeCondition0() {
     return isEmptyString(SPropertyOperations.getString(myNode, PROPS.file$Q7$W));
   }
   private EditorCell createConstant_7() {
@@ -259,7 +259,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
   }
   private EditorCell createAlternation_1() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_hfhp3k_a0l0();
+    alternationCondition = nodeCondition1();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createCollection_1();
@@ -268,7 +268,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     }
     return editorCell;
   }
-  private boolean nodeCondition_hfhp3k_a0l0() {
+  private boolean nodeCondition1() {
     return (boolean) MPSTipsAndTricks_Image__BehaviorDescriptor.isValid_idIb_Fk7zRKP.invoke(myNode);
   }
   private EditorCell createCollection_1() {

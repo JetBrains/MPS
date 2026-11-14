@@ -121,12 +121,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.getStyle().putAll(style);
     editorCell.addEditorCell(createCollection_2());
     editorCell.addEditorCell(createCollection_3());
-    if (nodeCondition_2ntrw4_a2d0()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_6());
     }
     return editorCell;
   }
-  private boolean nodeCondition_2ntrw4_a2d0() {
+  private boolean nodeCondition0() {
     return BlockCells.useBraces();
   }
   private EditorCell createCollection_2() {
@@ -135,12 +135,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
     Style style = new StyleImpl();
     style.set(StyleAttributes.SELECTABLE, false);
     editorCell.getStyle().putAll(style);
-    if (nodeCondition_2ntrw4_a0a3a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createConstant_2());
     }
     return editorCell;
   }
-  private boolean nodeCondition_2ntrw4_a0a3a() {
+  private boolean nodeCondition1() {
     return BlockCells.useBraces();
   }
   private EditorCell createConstant_2() {

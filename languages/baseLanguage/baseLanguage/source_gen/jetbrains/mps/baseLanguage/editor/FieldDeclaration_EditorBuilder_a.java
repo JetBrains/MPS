@@ -63,33 +63,33 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createComponent_0());
     editorCell.addEditorCell(createComponent_1());
     editorCell.addEditorCell(createComponent_2());
-    if (nodeCondition_2sbeba_a3a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_0());
     }
-    if (nodeCondition_2sbeba_a4a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createConstant_1());
     }
-    if (nodeCondition_2sbeba_a5a()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createConstant_2());
     }
     editorCell.addEditorCell(createRefNode_0());
     editorCell.addEditorCell(createComponent_3());
-    if (nodeCondition_2sbeba_a8a()) {
+    if (nodeCondition3()) {
       editorCell.addEditorCell(createCollection_1());
     }
     editorCell.addEditorCell(createConstant_4());
     return editorCell;
   }
-  private boolean nodeCondition_2sbeba_a3a() {
+  private boolean nodeCondition0() {
     return SPropertyOperations.getBoolean(myNode, PROPS.isFinal$gvTP);
   }
-  private boolean nodeCondition_2sbeba_a4a() {
+  private boolean nodeCondition1() {
     return SPropertyOperations.getBoolean(myNode, PROPS.isTransient$K3Ge);
   }
-  private boolean nodeCondition_2sbeba_a5a() {
+  private boolean nodeCondition2() {
     return SPropertyOperations.getBoolean(myNode, PROPS.isVolatile$HGG9);
   }
-  private boolean nodeCondition_2sbeba_a8a() {
+  private boolean nodeCondition3() {
     return Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.initializer$2twD)).isNotEmpty();
   }
   private EditorCell createComponent_0() {
@@ -180,7 +180,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
       if (editorCell.getSRole() == null) {
         editorCell.setSRole(LINKS.type$a1UY);
       }
-      if (nodeCondition_2sbeba_a6a()) {
+      if (nodeCondition4()) {
         editorCell.getStyle().set(StyleAttributes.FOCUS_POLICY, FocusPolicy.ATTRACTS_FOCUS);
       }
     }
@@ -201,7 +201,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     protected String getNoTargetText() {
       return "<no type>";
     }
-    private boolean nodeCondition_2sbeba_a6a() {
+    private boolean nodeCondition4() {
       return SLinkOperations.getTarget(myNode, LINKS.type$a1UY) == null;
     }
   }

@@ -66,7 +66,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
 
   private EditorCell createAlternation_0() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_9yq480_a0();
+    alternationCondition = nodeCondition0();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createCollection_0();
@@ -80,7 +80,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     }
     return editorCell;
   }
-  private boolean nodeCondition_9yq480_a0() {
+  private boolean nodeCondition0() {
     return (SNodeOperations.getParent(myNode) != null);
   }
   private EditorCell createCollection_0() {
@@ -204,12 +204,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.getStyle().putAll(style);
     editorCell.addEditorCell(createCollection_3());
     editorCell.addEditorCell(createCollection_5());
-    if (nodeCondition_9yq480_a2a0a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createConstant_4());
     }
     return editorCell;
   }
-  private boolean nodeCondition_9yq480_a2a0a() {
+  private boolean nodeCondition1() {
     return BlockCells.useBraces();
   }
   private EditorCell createCollection_3() {
@@ -219,12 +219,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
     style.set(StyleAttributes.SELECTABLE, false);
     editorCell.getStyle().putAll(style);
     editorCell.addEditorCell(createCollection_4());
-    if (nodeCondition_9yq480_a1a0a0()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createConstant_3());
     }
     return editorCell;
   }
-  private boolean nodeCondition_9yq480_a1a0a0() {
+  private boolean nodeCondition2() {
     return BlockCells.useBraces();
   }
   private EditorCell createCollection_4() {

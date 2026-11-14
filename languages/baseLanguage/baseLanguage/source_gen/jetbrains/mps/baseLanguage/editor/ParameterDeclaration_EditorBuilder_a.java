@@ -69,20 +69,20 @@ import org.jetbrains.mps.openapi.language.SConcept;
     Style style = new StyleImpl();
     style.set(StyleAttributes.SELECTABLE, false);
     editorCell.getStyle().putAll(style);
-    if (nodeCondition_vsmugd_a0a0()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_2());
     }
-    if (nodeCondition_vsmugd_a1a0()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createConstant_0());
     }
     editorCell.addEditorCell(createRefNode_0());
     editorCell.addEditorCell(createComponent_0());
     return editorCell;
   }
-  private boolean nodeCondition_vsmugd_a0a0() {
+  private boolean nodeCondition0() {
     return Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.annotation$K49I)).isNotEmpty();
   }
-  private boolean nodeCondition_vsmugd_a1a0() {
+  private boolean nodeCondition1() {
     return SPropertyOperations.getBoolean(myNode, PROPS.isFinal$gvTP);
   }
   private EditorCell createCollection_2() {
@@ -214,7 +214,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
       if (editorCell.getSRole() == null) {
         editorCell.setSRole(LINKS.type$a1UY);
       }
-      if (nodeCondition_vsmugd_a2a0()) {
+      if (nodeCondition2()) {
         editorCell.getStyle().set(StyleAttributes.FOCUS_POLICY, FocusPolicy.ATTRACTS_RECURSIVELY);
       }
     }
@@ -235,7 +235,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     protected String getNoTargetText() {
       return "<no type>";
     }
-    private boolean nodeCondition_vsmugd_a2a0() {
+    private boolean nodeCondition2() {
       return (boolean) Type__BehaviorDescriptor.hasMissingParameters_id32KZwowVoMu.invoke(SLinkOperations.getTarget(myNode, LINKS.type$a1UY));
     }
   }

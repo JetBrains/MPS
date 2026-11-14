@@ -81,25 +81,25 @@ import org.jetbrains.mps.openapi.language.SConcept;
     setCellContext(editorCell);
     editorCell.addEditorCell(createComponent_0());
     editorCell.addEditorCell(createProperty_0());
-    if (nodeCondition_pa0pfb_a2a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_1());
     }
-    if (nodeCondition_pa0pfb_a3a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createCollection_2());
     }
-    if (nodeCondition_pa0pfb_a4a()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createCollection_3());
     }
     editorCell.addEditorCell(createConstant_7());
     return editorCell;
   }
-  private boolean nodeCondition_pa0pfb_a2a() {
+  private boolean nodeCondition0() {
     return !((boolean) BuildMps_AbstractModule__BehaviorDescriptor.isCompact_id7gAtt1ju6Jy.invoke(myNode));
   }
-  private boolean nodeCondition_pa0pfb_a3a() {
+  private boolean nodeCondition1() {
     return Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.path$iYKB)).isNotEmpty();
   }
-  private boolean nodeCondition_pa0pfb_a4a() {
+  private boolean nodeCondition2() {
     return !((boolean) BuildMps_AbstractModule__BehaviorDescriptor.isCompact_id7gAtt1ju6Jy.invoke(myNode));
   }
   private EditorCell createComponent_0() {

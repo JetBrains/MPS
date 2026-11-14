@@ -65,27 +65,27 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setBig(true);
     setCellContext(editorCell);
     editorCell.addEditorCell(createComponent_0());
-    if (nodeCondition_r9vhx9_a1a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createRefNode_0());
     }
-    if (nodeCondition_r9vhx9_a2a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createConstant_0());
     }
     editorCell.addEditorCell(createProperty_0());
     editorCell.addEditorCell(createConstant_1());
     editorCell.addEditorCell(createRefNode_1());
-    if (nodeCondition_r9vhx9_a6a()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createCollection_1());
     }
     return editorCell;
   }
-  private boolean nodeCondition_r9vhx9_a1a() {
+  private boolean nodeCondition0() {
     return (SLinkOperations.getTarget(myNode, LINKS.modifier$xSnt) != null);
   }
-  private boolean nodeCondition_r9vhx9_a2a() {
+  private boolean nodeCondition1() {
     return SPropertyOperations.getBoolean(myNode, PROPS.isVararg$GaYv);
   }
-  private boolean nodeCondition_r9vhx9_a6a() {
+  private boolean nodeCondition2() {
     return (SLinkOperations.getTarget(myNode, LINKS.defaultValue$1bcs) != null);
   }
   private EditorCell createComponent_0() {

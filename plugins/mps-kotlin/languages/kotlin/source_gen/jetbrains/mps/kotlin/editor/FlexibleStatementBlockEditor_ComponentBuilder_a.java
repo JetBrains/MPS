@@ -57,19 +57,19 @@ import org.jetbrains.mps.openapi.language.SInterfaceConcept;
     Style style = new StyleImpl();
     style.set(StyleAttributes.SELECTABLE, false);
     editorCell.getStyle().putAll(style);
-    if (nodeCondition_czwruj_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_0());
     }
     editorCell.addEditorCell(createRefNodeList_0());
-    if (nodeCondition_czwruj_a2a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createConstant_2());
     }
     return editorCell;
   }
-  private boolean nodeCondition_czwruj_a0a() {
+  private boolean nodeCondition0() {
     return !((boolean) IStatementHolder__BehaviorDescriptor.isOneLiner_idCy8Bus23OC.invoke(myNode));
   }
-  private boolean nodeCondition_czwruj_a2a() {
+  private boolean nodeCondition1() {
     return !((boolean) IStatementHolder__BehaviorDescriptor.isOneLiner_idCy8Bus23OC.invoke(myNode));
   }
   private EditorCell createConstant_0() {

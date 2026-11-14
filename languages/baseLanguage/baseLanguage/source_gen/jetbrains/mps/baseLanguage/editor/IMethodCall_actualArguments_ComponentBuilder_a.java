@@ -83,7 +83,7 @@ import org.jetbrains.mps.openapi.language.SInterfaceConcept;
     Style style = new StyleImpl();
     style.set(StyleAttributes.PARAMETERS_INFORMATION, new BaseMethodParameterInformationQueryRestricted());
     editorCell.getStyle().putAll(style);
-    if (nodeCondition_arlg9k_a1a()) {
+    if (nodeCondition0()) {
       editorCell.getStyle().set(StyleAttributes.FOCUS_POLICY, FocusPolicy.FIRST_EDITABLE_CELL);
     }
     AddFirstMethodCallArgument.setCellActions(editorCell, myNode, getEditorContext());
@@ -187,7 +187,7 @@ import org.jetbrains.mps.openapi.language.SInterfaceConcept;
       return editorCell;
     }
   }
-  private boolean nodeCondition_arlg9k_a1a() {
+  private boolean nodeCondition0() {
     return ListSequence.fromList(SLinkOperations.getChildren(SLinkOperations.getTarget(myNode, LINKS.baseMethodDeclaration$pyYw), LINKS.parameter$5xBj)).isNotEmpty();
   }
   private EditorCell createConstant_2() {
@@ -199,13 +199,13 @@ import org.jetbrains.mps.openapi.language.SInterfaceConcept;
     style.set(StyleAttributes.FONT_STYLE, MPSFonts.PLAIN);
     style.set(StyleAttributes.EDITABLE, false);
     editorCell.getStyle().putAll(style);
-    if (nodeCondition_arlg9k_a2a()) {
+    if (nodeCondition1()) {
       editorCell.getStyle().set(StyleAttributes.FOCUS_POLICY, FocusPolicy.ATTRACTS_FOCUS);
     }
     editorCell.setDefaultText("");
     return editorCell;
   }
-  private boolean nodeCondition_arlg9k_a2a() {
+  private boolean nodeCondition1() {
     if (SLinkOperations.getTarget(myNode, LINKS.baseMethodDeclaration$pyYw) == null) {
       return false;
     }

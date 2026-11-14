@@ -60,18 +60,18 @@ import org.jetbrains.mps.openapi.language.SInterfaceConcept;
     editorCell.addEditorCell(createRefNode_0());
     editorCell.addEditorCell(createConstant_2());
     editorCell.addEditorCell(createComponent_0());
-    if (nodeCondition_gff6z_a5a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_3());
     }
-    if (nodeCondition_gff6z_a6a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createCollection_1());
     }
     return editorCell;
   }
-  private boolean nodeCondition_gff6z_a5a() {
+  private boolean nodeCondition0() {
     return (SLinkOperations.getTarget(myNode, LINKS.else$$UEO) == null) && (boolean) IStatementHolder__BehaviorDescriptor.isOneLiner_idCy8Bus23OC.invoke(myNode);
   }
-  private boolean nodeCondition_gff6z_a6a() {
+  private boolean nodeCondition1() {
     return (SLinkOperations.getTarget(myNode, LINKS.else$$UEO) != null);
   }
   private EditorCell createConstant_0() {

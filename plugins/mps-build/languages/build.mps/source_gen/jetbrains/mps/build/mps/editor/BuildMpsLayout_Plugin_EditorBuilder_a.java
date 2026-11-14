@@ -90,13 +90,13 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     editorCell.addEditorCell(createComponent_0());
     editorCell.addEditorCell(createRefCell_0());
     editorCell.addEditorCell(createCollection_1());
-    if (nodeCondition_y1xun7_a3a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_2());
     }
     editorCell.addEditorCell(createComponent_1());
     return editorCell;
   }
-  private boolean nodeCondition_y1xun7_a3a() {
+  private boolean nodeCondition0() {
     return (boolean) BuildMpsLayout_Plugin__BehaviorDescriptor.isAutoLayoutForPluginDescriptorNeeded_id1RsDREuQnlU.invoke(myNode, null);
   }
   private EditorCell createComponent_0() {

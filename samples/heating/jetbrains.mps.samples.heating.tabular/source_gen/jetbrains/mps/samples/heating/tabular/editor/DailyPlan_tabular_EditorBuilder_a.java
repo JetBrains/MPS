@@ -97,25 +97,25 @@ import org.jetbrains.mps.openapi.language.SProperty;
   private EditorCell createCollection_3() {
     EditorCell_Collection editorCell = new EditorCell_Collection(getEditorContext(), myNode, new CellLayout_Indent());
     editorCell.setCellId("customizingCollection");
-    if (nodeCondition_dgsw3q_a0b0a0()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_1());
     }
     editorCell.addEditorCell(createRefNode_0());
-    if (nodeCondition_dgsw3q_a2b0a0()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createConstant_2());
     }
-    if (nodeCondition_dgsw3q_a3b0a0()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createConstant_3());
     }
     return editorCell;
   }
-  private boolean nodeCondition_dgsw3q_a0b0a0() {
+  private boolean nodeCondition0() {
     return (SLinkOperations.getTarget(myNode, LINKS.customizes$o_Bh) != null);
   }
-  private boolean nodeCondition_dgsw3q_a2b0a0() {
+  private boolean nodeCondition1() {
     return (SLinkOperations.getTarget(myNode, LINKS.customizes$o_Bh) == null);
   }
-  private boolean nodeCondition_dgsw3q_a3b0a0() {
+  private boolean nodeCondition2() {
     return (SLinkOperations.getTarget(myNode, LINKS.customizes$o_Bh) != null);
   }
   private EditorCell createConstant_1() {

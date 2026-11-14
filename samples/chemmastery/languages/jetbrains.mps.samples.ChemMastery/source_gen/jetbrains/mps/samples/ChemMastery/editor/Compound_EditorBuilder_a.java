@@ -70,13 +70,13 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     setCellContext(editorCell);
     editorCell.setTransformationMenuLookup(new DefaultTransformationMenuLookup(LanguageRegistry.getInstance(getEditorContext().getRepository()), CONCEPTS.Compound$vn));
     editorCell.setSubstituteInfo(new SChildSubstituteInfo(editorCell));
-    if (nodeCondition_yoxrgg_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createProperty_0());
     }
     editorCell.addEditorCell(createRefNodeList_0());
     return editorCell;
   }
-  private boolean nodeCondition_yoxrgg_a0a() {
+  private boolean nodeCondition0() {
     return SPropertyOperations.getBoolean(myNode, PROPS.cardinalityVisible$7IlK);
   }
   private EditorCell createProperty_0() {

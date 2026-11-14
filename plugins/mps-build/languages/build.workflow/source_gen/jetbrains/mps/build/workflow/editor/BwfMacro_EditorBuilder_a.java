@@ -54,13 +54,13 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setCellId("Collection_kawrig_a");
     editorCell.setBig(true);
     setCellContext(editorCell);
-    if (nodeCondition_kawrig_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_0());
     }
-    if (nodeCondition_kawrig_a1a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createConstant_1());
     }
-    if (nodeCondition_kawrig_a2a()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createConstant_2());
     }
     editorCell.addEditorCell(createConstant_3());
@@ -70,13 +70,13 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createConstant_5());
     return editorCell;
   }
-  private boolean nodeCondition_kawrig_a0a() {
+  private boolean nodeCondition0() {
     return SPropertyOperations.getBoolean(myNode, PROPS.exportToProperiesFile$Q7Md);
   }
-  private boolean nodeCondition_kawrig_a1a() {
+  private boolean nodeCondition1() {
     return SPropertyOperations.getBoolean(myNode, PROPS.isLocation$Q81e);
   }
-  private boolean nodeCondition_kawrig_a2a() {
+  private boolean nodeCondition2() {
     return SPropertyOperations.getBoolean(myNode, PROPS.uninitialized$BOlp);
   }
   private EditorCell createConstant_0() {

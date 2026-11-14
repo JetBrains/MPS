@@ -108,25 +108,25 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.getStyle().putAll(style);
     editorCell.setGridLayout(true);
     editorCell.addEditorCell(createCollection_2());
-    if (nodeCondition_adk1cf_a1d0()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_3());
     }
-    if (nodeCondition_adk1cf_a2d0()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createCollection_4());
     }
     editorCell.addEditorCell(createCollection_5());
-    if (nodeCondition_adk1cf_a4d0()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createCollection_6());
     }
     return editorCell;
   }
-  private boolean nodeCondition_adk1cf_a1d0() {
+  private boolean nodeCondition0() {
     return !(SPropertyOperations.getBoolean(myNode, PROPS.emptyNoTargetText$9Me5));
   }
-  private boolean nodeCondition_adk1cf_a2d0() {
+  private boolean nodeCondition1() {
     return SPropertyOperations.getString(myNode, PROPS.noTargetText$V1aZ) == null;
   }
-  private boolean nodeCondition_adk1cf_a4d0() {
+  private boolean nodeCondition2() {
     return !(SNodeOperations.isInstanceOf(myNode, CONCEPTS.CellModel_NonEmptyProperty$BH));
   }
   private EditorCell createCollection_2() {

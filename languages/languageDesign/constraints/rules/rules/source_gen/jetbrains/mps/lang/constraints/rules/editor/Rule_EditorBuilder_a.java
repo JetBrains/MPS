@@ -186,7 +186,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
   }
   private EditorCell createAlternation_0() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_z0m96w_a3a();
+    alternationCondition = nodeCondition0();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createConstant_2();
@@ -199,7 +199,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.getStyle().putAll(style);
     return editorCell;
   }
-  private boolean nodeCondition_z0m96w_a3a() {
+  private boolean nodeCondition0() {
     return SLinkOperations.getTarget(myNode, LINKS.condition$h$Ae) == null;
   }
   private EditorCell createConstant_2() {

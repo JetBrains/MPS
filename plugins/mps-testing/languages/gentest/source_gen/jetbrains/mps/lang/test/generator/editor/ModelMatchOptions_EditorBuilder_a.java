@@ -171,7 +171,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
   }
   private EditorCell createAlternation_0() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_u4vn4l_a0b1a();
+    alternationCondition = nodeCondition0();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createConstant_5();
@@ -182,7 +182,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setSubstituteInfo(new SChildSubstituteInfo(editorCell));
     return editorCell;
   }
-  private boolean nodeCondition_u4vn4l_a0b1a() {
+  private boolean nodeCondition0() {
     return SPropertyOperations.getBoolean(myNode, PROPS.propertyUserValue$SyB8);
   }
   private EditorCell createConstant_5() {
@@ -202,7 +202,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
   }
   private EditorCell createAlternation_1() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_u4vn4l_a1b1a();
+    alternationCondition = nodeCondition1();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createConstant_7();
@@ -213,7 +213,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setSubstituteInfo(new SChildSubstituteInfo(editorCell));
     return editorCell;
   }
-  private boolean nodeCondition_u4vn4l_a1b1a() {
+  private boolean nodeCondition1() {
     return SPropertyOperations.getBoolean(myNode, PROPS.associationIdenticalTarget$Yp_U);
   }
   private EditorCell createConstant_7() {
@@ -233,7 +233,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
   }
   private EditorCell createAlternation_2() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_u4vn4l_a2b1a();
+    alternationCondition = nodeCondition2();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createConstant_9();
@@ -244,7 +244,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setSubstituteInfo(new SChildSubstituteInfo(editorCell));
     return editorCell;
   }
-  private boolean nodeCondition_u4vn4l_a2b1a() {
+  private boolean nodeCondition2() {
     return SPropertyOperations.getBoolean(myNode, PROPS.aggregateIgnoreOrder$o_Ly);
   }
   private EditorCell createConstant_9() {

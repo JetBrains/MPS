@@ -52,12 +52,12 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     editorCell.setBig(true);
     setCellContext(editorCell);
     editorCell.addEditorCell(createRefNode_0());
-    if (nodeCondition_1hbqnh_a1a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_1());
     }
     return editorCell;
   }
-  private boolean nodeCondition_1hbqnh_a1a() {
+  private boolean nodeCondition0() {
     return !((boolean) Builder__BehaviorDescriptor.isLeaf_id67LR$5LQnln.invoke(SLinkOperations.getTarget(myNode, LINKS.builder$HP0i)));
   }
   private EditorCell createRefNode_0() {

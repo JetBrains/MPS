@@ -2486,11 +2486,11 @@
       <node id="3751132065236797366" at="61,118,62,48" concept="2" />
       <node id="3751132065236797366" at="62,48,63,28" concept="2" />
       <node id="3751132065236797366" at="63,28,64,31" concept="2" />
-      <node id="2049012130657167485" at="65,37,66,51" concept="2" />
+      <node id="2049012130657167485" at="65,27,66,51" concept="2" />
       <node id="3751132065236797369" at="67,5,68,48" concept="2" />
       <node id="3751132065236797370" at="68,48,69,49" concept="2" />
       <node id="3751132065236797366" at="69,49,70,22" concept="7" />
-      <node id="2049012130657182459" at="72,46,73,77" concept="7" />
+      <node id="2049012130657182459" at="72,36,73,77" concept="7" />
       <node id="2049012130657167485" at="75,41,76,97" concept="6" />
       <node id="2049012130657167485" at="76,97,77,47" concept="2" />
       <node id="2049012130657167485" at="77,47,78,34" concept="6" />
@@ -2542,7 +2542,7 @@
       <node id="3751132065236797366" at="89,0,91,0" concept="3" trace="myNode" />
       <node id="3751132065236797366" at="56,0,59,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="2049012130657167485" at="64,31,67,5" concept="4" />
-      <node id="2049012130657181838" at="72,0,75,0" concept="5" trace="nodeCondition_v24tt6_a0a#()Z" />
+      <node id="2049012130657181838" at="72,0,75,0" concept="5" trace="nodeCondition0#()Z" />
       <node id="3751132065236797366" at="113,87,116,7" concept="4" />
       <node id="3751132065236797366" at="116,7,119,7" concept="4" />
       <node id="3751132065236797366" at="135,0,138,0" concept="5" trace="getNoTargetText#()Ljava/lang/String;" />
@@ -2562,8 +2562,8 @@
       <node id="3751132065236797370" at="139,0,161,0" concept="5" trace="createProperty_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="3751132065236797366" at="52,26,53,18" />
       <scope id="3751132065236797366" at="56,39,57,32" />
-      <scope id="2049012130657167485" at="65,37,66,51" />
-      <scope id="2049012130657181839" at="72,46,73,77" />
+      <scope id="2049012130657167485" at="65,27,66,51" />
+      <scope id="2049012130657181839" at="72,36,73,77" />
       <scope id="3751132065236797366" at="99,28,100,20" />
       <scope id="3751132065236797366" at="114,118,115,137" />
       <scope id="3751132065236797366" at="117,42,118,45" />

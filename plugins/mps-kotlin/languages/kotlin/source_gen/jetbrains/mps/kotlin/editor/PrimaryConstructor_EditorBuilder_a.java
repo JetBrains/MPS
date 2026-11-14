@@ -60,13 +60,13 @@ import org.jetbrains.mps.openapi.language.SProperty;
     setCellContext(editorCell);
     editorCell.addEditorCell(createComponent_0());
     editorCell.addEditorCell(createComponent_1());
-    if (nodeCondition_33ai62_a2a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_0());
     }
     editorCell.addEditorCell(createCollection_1());
     return editorCell;
   }
-  private boolean nodeCondition_33ai62_a2a() {
+  private boolean nodeCondition0() {
     return ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.parameters$$EEQ)).isEmpty() || ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.annotations$bXtr)).isNotEmpty() || (SLinkOperations.getTarget(myNode, LINKS.visibility$vnSV) != null);
   }
   private EditorCell createComponent_0() {

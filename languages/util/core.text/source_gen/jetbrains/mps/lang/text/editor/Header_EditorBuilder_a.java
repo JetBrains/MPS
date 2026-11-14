@@ -56,13 +56,13 @@ import org.jetbrains.mps.openapi.language.SProperty;
     editorCell.setCellId("Collection_tbyzlb_a");
     editorCell.setBig(true);
     setCellContext(editorCell);
-    if (nodeCondition_tbyzlb_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_0());
     }
     editorCell.addEditorCell(createRefNodeList_0());
     return editorCell;
   }
-  private boolean nodeCondition_tbyzlb_a0a() {
+  private boolean nodeCondition0() {
     return !((boolean) IHoldLines__BehaviorDescriptor.enforceExternalIndentation_id4qjHlOWQ7Jg.invoke(SNodeOperations.getNodeAncestor(myNode, CONCEPTS.IHoldLines$ky, false, false)));
   }
   private EditorCell createConstant_0() {

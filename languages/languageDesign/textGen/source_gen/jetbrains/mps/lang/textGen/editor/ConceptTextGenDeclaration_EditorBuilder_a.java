@@ -104,14 +104,14 @@ import org.jetbrains.mps.openapi.language.SInterfaceConcept;
     editorCell.addEditorCell(createConstant_4());
     editorCell.addEditorCell(createRefCell_0());
     editorCell.addEditorCell(createConstant_5());
-    if (nodeCondition_9mcqjq_a7a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_1());
     }
     editorCell.addEditorCell(createCollection_8());
     editorCell.addEditorCell(createConstant_19());
     return editorCell;
   }
-  private boolean nodeCondition_9mcqjq_a7a() {
+  private boolean nodeCondition0() {
     return (boolean) ConceptTextGenDeclaration__BehaviorDescriptor.shallProduceOutputUnit_id3fG6dkhfrk3.invoke(myNode);
   }
   private EditorCell createConstant_0() {

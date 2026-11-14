@@ -85,13 +85,13 @@ import org.jetbrains.mps.openapi.language.SConcept;
     style.set(StyleAttributes.SELECTABLE, false);
     editorCell.getStyle().putAll(style);
     editorCell.addEditorCell(createConstant_0());
-    if (nodeCondition_x6ljyw_a1b0()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_2());
     }
     editorCell.addEditorCell(createProperty_2());
     return editorCell;
   }
-  private boolean nodeCondition_x6ljyw_a1b0() {
+  private boolean nodeCondition0() {
     return isNotEmptyString(SPropertyOperations.getString(myNode, PROPS.mcName$_nXU)) && !(Objects.equals(SPropertyOperations.getString(myNode, PROPS.mcName$_nXU), SPropertyOperations.getString(myNode, PROPS.nodeID$7TTp)));
   }
   private EditorCell createConstant_0() {

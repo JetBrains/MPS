@@ -61,7 +61,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setCellId("Collection_sjf1bb_a");
     editorCell.setBig(true);
     setCellContext(editorCell);
-    if (nodeCondition_sjf1bb_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_0());
     }
     editorCell.addEditorCell(createConstant_1());
@@ -70,7 +70,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createRefNode_0());
     return editorCell;
   }
-  private boolean nodeCondition_sjf1bb_a0a() {
+  private boolean nodeCondition0() {
     return (boolean) Slot__BehaviorDescriptor.isCustomizing_idNU25Mr1t4q.invoke(myNode);
   }
   private EditorCell createConstant_0() {

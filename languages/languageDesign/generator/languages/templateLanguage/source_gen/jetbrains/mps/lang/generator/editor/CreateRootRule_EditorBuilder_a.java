@@ -159,13 +159,13 @@ import org.jetbrains.mps.openapi.language.SConcept;
     Style style = new StyleImpl();
     style.set(StyleAttributes.SELECTABLE, false);
     editorCell.getStyle().putAll(style);
-    if (nodeCondition_7t32xl_a0d0()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createRefCell_0());
     }
     editorCell.addEditorCell(createConstant_2());
     return editorCell;
   }
-  private boolean nodeCondition_7t32xl_a0d0() {
+  private boolean nodeCondition0() {
     return SLinkOperations.getTarget(myNode, LINKS.label$rz_i) != null;
   }
   private EditorCell createRefCell_0() {

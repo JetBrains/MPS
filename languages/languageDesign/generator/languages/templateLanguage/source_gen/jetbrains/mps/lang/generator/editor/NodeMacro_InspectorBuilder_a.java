@@ -86,12 +86,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
   private EditorCell createCollection_1() {
     EditorCell_Collection editorCell = new EditorCell_Collection(getEditorContext(), myNode, new CellLayout_Vertical());
     editorCell.setCellId("Collection_e7cx8x_1");
-    if (nodeCondition_e7cx8x_a0c0()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_2());
     }
     return editorCell;
   }
-  private boolean nodeCondition_e7cx8x_a0c0() {
+  private boolean nodeCondition0() {
     return SLinkOperations.getTarget(myNode, LINKS.mappingLabel$jbOO) != null;
   }
   private EditorCell createCollection_2() {

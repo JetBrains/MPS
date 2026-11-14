@@ -80,13 +80,13 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createConstant_3());
     editorCell.addEditorCell(createProperty_1());
     editorCell.addEditorCell(createConstant_4());
-    if (nodeCondition_paq7mh_a7a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createProperty_2());
     }
     editorCell.addEditorCell(createContextAssistant_0());
     return editorCell;
   }
-  private boolean nodeCondition_paq7mh_a7a() {
+  private boolean nodeCondition0() {
     return (SPropertyOperations.getEnum(myNode, PROPS.change$QdWn) != null);
   }
   private EditorCell createConstant_0() {

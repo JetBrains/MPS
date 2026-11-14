@@ -70,68 +70,68 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     editorCell.addEditorCell(createComponent_0());
     editorCell.addEditorCell(createComponent_1());
     editorCell.addEditorCell(createComponent_2());
-    if (nodeCondition_lnae77_a3a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_0());
     }
-    if (nodeCondition_lnae77_a4a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createConstant_1());
     }
-    if (nodeCondition_lnae77_a5a()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createConstant_2());
     }
-    if (nodeCondition_lnae77_a6a()) {
+    if (nodeCondition3()) {
       editorCell.addEditorCell(createConstant_3());
     }
-    if (nodeCondition_lnae77_a7a()) {
+    if (nodeCondition4()) {
       editorCell.addEditorCell(createConstant_4());
     }
     editorCell.addEditorCell(createComponent_3());
-    if (nodeCondition_lnae77_a9a()) {
+    if (nodeCondition5()) {
       editorCell.addEditorCell(createComponent_4());
     }
     editorCell.addEditorCell(createRefNode_0());
-    if (nodeCondition_lnae77_a11a()) {
+    if (nodeCondition6()) {
       editorCell.addEditorCell(createComponent_5());
     }
-    if (nodeCondition_lnae77_a21a()) {
+    if (nodeCondition7()) {
       editorCell.addEditorCell(createRefNode_1());
     }
-    if (nodeCondition_lnae77_a31a()) {
+    if (nodeCondition8()) {
       editorCell.addEditorCell(createRefNode_2());
     }
-    if (nodeCondition_lnae77_a41a()) {
+    if (nodeCondition9()) {
       editorCell.addEditorCell(createRefNode_3());
     }
     return editorCell;
   }
-  private boolean nodeCondition_lnae77_a3a() {
+  private boolean nodeCondition0() {
     return SPropertyOperations.getBoolean(myNode, PROPS.isOverride$4zN7);
   }
-  private boolean nodeCondition_lnae77_a4a() {
+  private boolean nodeCondition1() {
     return SPropertyOperations.getBoolean(myNode, PROPS.isConstant$zvIz);
   }
-  private boolean nodeCondition_lnae77_a5a() {
+  private boolean nodeCondition2() {
     return SPropertyOperations.getBoolean(myNode, PROPS.isLateInit$qFSS);
   }
-  private boolean nodeCondition_lnae77_a6a() {
+  private boolean nodeCondition3() {
     return !(SPropertyOperations.getBoolean(myNode, PROPS.isReadonly$jzqd));
   }
-  private boolean nodeCondition_lnae77_a7a() {
+  private boolean nodeCondition4() {
     return SPropertyOperations.getBoolean(myNode, PROPS.isReadonly$jzqd);
   }
-  private boolean nodeCondition_lnae77_a9a() {
+  private boolean nodeCondition5() {
     return (SLinkOperations.getTarget(myNode, LINKS.receiverType$7yLT) != null);
   }
-  private boolean nodeCondition_lnae77_a11a() {
+  private boolean nodeCondition6() {
     return ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.constraints$BRhr)).isNotEmpty();
   }
-  private boolean nodeCondition_lnae77_a21a() {
+  private boolean nodeCondition7() {
     return (SLinkOperations.getTarget(myNode, LINKS.assignment$nl1j) != null);
   }
-  private boolean nodeCondition_lnae77_a31a() {
+  private boolean nodeCondition8() {
     return (SLinkOperations.getTarget(myNode, LINKS.getter$C1zs) != null);
   }
-  private boolean nodeCondition_lnae77_a41a() {
+  private boolean nodeCondition9() {
     return (SLinkOperations.getTarget(myNode, LINKS.setter$C2Xy) != null);
   }
   private EditorCell createComponent_0() {

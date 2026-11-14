@@ -64,12 +64,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setBig(true);
     setCellContext(editorCell);
     editorCell.addEditorCell(createConstant_0());
-    if (nodeCondition_bj0fvp_a1a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_1());
     }
     return editorCell;
   }
-  private boolean nodeCondition_bj0fvp_a1a() {
+  private boolean nodeCondition0() {
     return !(SLinkOperations.hasPointer(myNode, LINKS.concept$PItp, new SNodePointer("r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)", "1133920641626")));
   }
   private EditorCell createConstant_0() {

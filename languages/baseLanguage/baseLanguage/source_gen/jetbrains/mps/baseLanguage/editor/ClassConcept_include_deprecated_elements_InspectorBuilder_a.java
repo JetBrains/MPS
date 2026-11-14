@@ -57,23 +57,23 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     Style style = new StyleImpl();
     style.set(StyleAttributes.SELECTABLE, false);
     editorCell.getStyle().putAll(style);
-    if (nodeCondition_tnjsn_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_1());
     }
     editorCell.addEditorCell(createConstant_1());
     editorCell.addEditorCell(createProperty_1());
     editorCell.addEditorCell(createConstant_2());
     editorCell.addEditorCell(createProperty_2());
-    if (nodeCondition_tnjsn_a5a_0()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createCollection_2());
     }
     editorCell.addEditorCell(createComponent_0());
     return editorCell;
   }
-  private boolean nodeCondition_tnjsn_a0a() {
+  private boolean nodeCondition0() {
     return !((boolean) Classifier__BehaviorDescriptor.isInner_idsWroEc0xXl.invoke(myNode));
   }
-  private boolean nodeCondition_tnjsn_a5a_0() {
+  private boolean nodeCondition1() {
     return (boolean) Classifier__BehaviorDescriptor.isInner_idsWroEc0xXl.invoke(myNode) && !(SNodeOperations.isInstanceOf(SNodeOperations.getParent(myNode), CONCEPTS.Interface$db));
   }
   private EditorCell createCollection_1() {

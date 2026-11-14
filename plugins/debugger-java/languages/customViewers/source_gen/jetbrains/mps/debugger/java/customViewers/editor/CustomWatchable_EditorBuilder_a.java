@@ -123,7 +123,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
   }
   private EditorCell createAlternation_0() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_rpujt6_a1b0();
+    alternationCondition = nodeCondition0();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createCollection_3();
@@ -132,7 +132,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     }
     return editorCell;
   }
-  private boolean nodeCondition_rpujt6_a1b0() {
+  private boolean nodeCondition0() {
     return isNotEmptyString(SPropertyOperations.getString(myNode, PROPS.iconPath$qD21));
   }
   private EditorCell createCollection_3() {

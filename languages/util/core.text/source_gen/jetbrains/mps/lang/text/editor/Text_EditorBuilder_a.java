@@ -55,19 +55,19 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setBig(true);
     setCellContext(editorCell);
     Text_InsertPlaceholder_ActionMap.setCellActions(editorCell, myNode, getEditorContext());
-    if (nodeCondition_wlph7j_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_1());
     }
-    if (nodeCondition_wlph7j_a1a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createCollection_2());
     }
     editorCell.addEditorCell(createConstant_1());
     return editorCell;
   }
-  private boolean nodeCondition_wlph7j_a0a() {
+  private boolean nodeCondition0() {
     return ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.paragraphs$ZAOz)).isNotEmpty();
   }
-  private boolean nodeCondition_wlph7j_a1a() {
+  private boolean nodeCondition1() {
     return ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.paragraphs$ZAOz)).isEmpty();
   }
   private EditorCell createCollection_1() {

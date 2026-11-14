@@ -123,12 +123,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.getStyle().putAll(style);
     editorCell.addEditorCell(createConstant_2());
     editorCell.addEditorCell(createProperty_1());
-    if (nodeCondition_koy33t_a2c0()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_3());
     }
     return editorCell;
   }
-  private boolean nodeCondition_koy33t_a2c0() {
+  private boolean nodeCondition0() {
     return SPropertyOperations.getBoolean(myNode, PROPS.testGeneration$xdoj);
   }
   private EditorCell createConstant_2() {

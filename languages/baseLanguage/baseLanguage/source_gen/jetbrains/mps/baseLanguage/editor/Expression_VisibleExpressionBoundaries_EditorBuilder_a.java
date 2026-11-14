@@ -53,19 +53,19 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     editorCell.setCellId("Collection_nejlv4_a");
     editorCell.setBig(true);
     setCellContext(editorCell);
-    if (nodeCondition_nejlv4_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_0());
     }
     editorCell.addEditorCell(createNextEditor_0());
-    if (nodeCondition_nejlv4_a2a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createConstant_1());
     }
     return editorCell;
   }
-  private boolean nodeCondition_nejlv4_a0a() {
+  private boolean nodeCondition0() {
     return SNodeOperations.isInstanceOf(SNodeOperations.getParent(myNode), CONCEPTS.Expression$mB) && (!((boolean) Expression__BehaviorDescriptor.singleValue_id1o8Ht9sES3u.invoke(SNodeOperations.asSConcept(SNodeOperations.getConcept(myNode))))) && !(SNodeOperations.getConcept(myNode).isAbstract()) && !(SNodeOperations.isInstanceOf(myNode, CONCEPTS.ParenthesizedExpression$Ws));
   }
-  private boolean nodeCondition_nejlv4_a2a() {
+  private boolean nodeCondition1() {
     return SNodeOperations.isInstanceOf(SNodeOperations.getParent(myNode), CONCEPTS.Expression$mB) && (!((boolean) Expression__BehaviorDescriptor.singleValue_id1o8Ht9sES3u.invoke(SNodeOperations.asSConcept(SNodeOperations.getConcept(myNode)))) && !(SNodeOperations.getConcept(myNode).isAbstract())) && !(SNodeOperations.isInstanceOf(myNode, CONCEPTS.ParenthesizedExpression$Ws));
   }
   private EditorCell createConstant_0() {

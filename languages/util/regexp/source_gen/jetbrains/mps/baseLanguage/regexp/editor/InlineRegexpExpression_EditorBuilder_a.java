@@ -53,24 +53,24 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     editorCell.addEditorCell(createConstant_0());
     editorCell.addEditorCell(createRefNode_0());
     editorCell.addEditorCell(createConstant_1());
-    if (nodeCondition_5rturt_a3a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_2());
     }
-    if (nodeCondition_5rturt_a4a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createConstant_3());
     }
-    if (nodeCondition_5rturt_a5a()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createConstant_4());
     }
     return editorCell;
   }
-  private boolean nodeCondition_5rturt_a3a() {
+  private boolean nodeCondition0() {
     return SPropertyOperations.getBoolean(myNode, PROPS.multiLine$$IgZ);
   }
-  private boolean nodeCondition_5rturt_a4a() {
+  private boolean nodeCondition1() {
     return SPropertyOperations.getBoolean(myNode, PROPS.dotAll$_Eew);
   }
-  private boolean nodeCondition_5rturt_a5a() {
+  private boolean nodeCondition2() {
     return SPropertyOperations.getBoolean(myNode, PROPS.caseInsensitive$j6L5);
   }
   private EditorCell createConstant_0() {

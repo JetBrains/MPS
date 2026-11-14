@@ -85,10 +85,10 @@ import org.jetbrains.mps.openapi.language.SConcept;
   private EditorCell createCollection_1() {
     EditorCell_Collection editorCell = new EditorCell_Collection(getEditorContext(), myNode, new CellLayout_Horizontal());
     editorCell.setCellId("Collection_cuxtnd_a0");
-    if (nodeCondition_cuxtnd_a0a0()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_0());
     }
-    if (nodeCondition_cuxtnd_a1a0()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createConstant_1());
     }
     editorCell.addEditorCell(createConstant_2());
@@ -96,10 +96,10 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createConstant_3());
     return editorCell;
   }
-  private boolean nodeCondition_cuxtnd_a0a0() {
+  private boolean nodeCondition0() {
     return SNodeOperations.isInstanceOf(SLinkOperations.getTarget(myNode, LINKS.concept$u6dL), CONCEPTS.InterfaceConceptDeclaration$CG);
   }
-  private boolean nodeCondition_cuxtnd_a1a0() {
+  private boolean nodeCondition1() {
     return SPropertyOperations.getBoolean(SLinkOperations.getTarget(myNode, LINKS.concept$u6dL), PROPS.abstract$ibpT);
   }
   private EditorCell createConstant_0() {

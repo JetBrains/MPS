@@ -152,10 +152,10 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createConstant_4());
     editorCell.addEditorCell(createConstant_5());
     editorCell.addEditorCell(createConstant_6());
-    editorCell.setInitiallyCollapsed(nodeCondition_frk6hv_a1e0());
+    editorCell.setInitiallyCollapsed(nodeCondition0());
     return editorCell;
   }
-  private boolean nodeCondition_frk6hv_a1e0() {
+  private boolean nodeCondition0() {
     return SPropertyOperations.getBoolean(myNode, PROPS.collapsed$lNAd);
   }
   private EditorCell createConstant_4() {

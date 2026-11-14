@@ -109,10 +109,10 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.getStyle().putAll(style);
     editorCell.setGridLayout(true);
     editorCell.addEditorCell(createCollection_2());
-    if (nodeCondition_2hk56f_a1d0()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_3());
     }
-    if (nodeCondition_2hk56f_a2d0()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createCollection_4());
     }
     editorCell.addEditorCell(createCollection_5());
@@ -120,10 +120,10 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createCollection_7());
     return editorCell;
   }
-  private boolean nodeCondition_2hk56f_a1d0() {
+  private boolean nodeCondition0() {
     return !(SPropertyOperations.getBoolean(myNode, PROPS.customizeEmptyCell$VwnI));
   }
-  private boolean nodeCondition_2hk56f_a2d0() {
+  private boolean nodeCondition1() {
     return !(SPropertyOperations.getBoolean(myNode, PROPS.customizeEmptyCell$VwnI)) && SPropertyOperations.getString(myNode, PROPS.noTargetText$V1aZ) == null;
   }
   private EditorCell createCollection_2() {

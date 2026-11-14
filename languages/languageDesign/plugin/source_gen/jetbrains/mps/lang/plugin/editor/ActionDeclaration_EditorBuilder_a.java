@@ -92,12 +92,12 @@ import org.jetbrains.mps.openapi.language.SInterfaceConcept;
     editorCell.getStyle().putAll(style);
     editorCell.addEditorCell(createCollection_2());
     editorCell.addEditorCell(createCollection_4());
-    if (nodeCondition_6wnsz8_a2a0()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_24());
     }
     return editorCell;
   }
-  private boolean nodeCondition_6wnsz8_a2a0() {
+  private boolean nodeCondition0() {
     return BlockCells.useBraces();
   }
   private EditorCell createCollection_2() {
@@ -107,12 +107,12 @@ import org.jetbrains.mps.openapi.language.SInterfaceConcept;
     style.set(StyleAttributes.SELECTABLE, false);
     editorCell.getStyle().putAll(style);
     editorCell.addEditorCell(createCollection_3());
-    if (nodeCondition_6wnsz8_a1a0a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createConstant_1());
     }
     return editorCell;
   }
-  private boolean nodeCondition_6wnsz8_a1a0a() {
+  private boolean nodeCondition1() {
     return BlockCells.useBraces();
   }
   private EditorCell createCollection_3() {
@@ -183,10 +183,10 @@ import org.jetbrains.mps.openapi.language.SInterfaceConcept;
   private EditorCell createCollection_5() {
     EditorCell_Collection editorCell = new EditorCell_Collection(getEditorContext(), myNode, new CellLayout_Vertical());
     editorCell.setCellId("Collection_6wnsz8_b1a0");
-    if (nodeCondition_6wnsz8_a0b1a0()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createCollection_6());
     }
-    if (nodeCondition_6wnsz8_a1b1a0()) {
+    if (nodeCondition3()) {
       editorCell.addEditorCell(createCollection_7());
     }
     editorCell.addEditorCell(createCollection_8());
@@ -209,10 +209,10 @@ import org.jetbrains.mps.openapi.language.SInterfaceConcept;
     editorCell.addEditorCell(createRefNodeList_3());
     return editorCell;
   }
-  private boolean nodeCondition_6wnsz8_a0b1a0() {
+  private boolean nodeCondition2() {
     return SPropertyOperations.getBoolean(myNode, PROPS.outsideCommandExecution$RB$x);
   }
-  private boolean nodeCondition_6wnsz8_a1b1a0() {
+  private boolean nodeCondition3() {
     return !(SEnumOperations.isMember(SPropertyOperations.getEnum(myNode, PROPS.requiredAccess$TB4H), 0x6782cab5d9442837L)) || !(SPropertyOperations.getBoolean(myNode, PROPS.outsideCommandExecution$RB$x));
   }
   private EditorCell createCollection_6() {

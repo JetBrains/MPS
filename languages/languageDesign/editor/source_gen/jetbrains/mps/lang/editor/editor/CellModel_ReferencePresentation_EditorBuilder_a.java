@@ -39,19 +39,19 @@ import jetbrains.mps.nodeEditor.MPSFonts;
     editorCell.setCellId("Collection_jf7bj_a");
     editorCell.setBig(true);
     setCellContext(editorCell);
-    if (nodeCondition_jf7bj_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createComponent_0());
     }
     editorCell.addEditorCell(createComponent_1());
-    if (nodeCondition_jf7bj_a2a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createComponent_2());
     }
     return editorCell;
   }
-  private boolean nodeCondition_jf7bj_a0a() {
+  private boolean nodeCondition0() {
     return EditorCellModel__BehaviorDescriptor.getOpeningTag_idhKxXtpm.invoke(myNode).length() > 0;
   }
-  private boolean nodeCondition_jf7bj_a2a() {
+  private boolean nodeCondition1() {
     return EditorCellModel__BehaviorDescriptor.getClosingTag_idhKxXx_K.invoke(myNode).length() > 0;
   }
   private EditorCell createComponent_0() {

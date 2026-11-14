@@ -75,18 +75,18 @@ import org.jetbrains.mps.openapi.language.SInterfaceConcept;
     editorCell.setBig(true);
     setCellContext(editorCell);
     editorCell.addEditorCell(createRefCell_0());
-    if (nodeCondition_bp85z1_a1a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createComponent_0());
     }
-    if (nodeCondition_bp85z1_a2a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createComponent_1());
     }
     return editorCell;
   }
-  private boolean nodeCondition_bp85z1_a1a() {
+  private boolean nodeCondition0() {
     return ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.typeArguments$86s6)).isNotEmpty();
   }
-  private boolean nodeCondition_bp85z1_a2a() {
+  private boolean nodeCondition1() {
     return ListSequence.fromList(SLinkOperations.getChildren(SLinkOperations.getTarget(myNode, LINKS.annotation$XpH6), LINKS.method$_DCK)).isNotEmpty() || ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.arguments$zJyV)).isNotEmpty();
   }
   private EditorCell createRefCell_0() {
@@ -201,12 +201,12 @@ import org.jetbrains.mps.openapi.language.SInterfaceConcept;
   }
   private EditorCell createComponent_1() {
     EditorCell editorCell = getCellFactory().createEditorComponentCell(myNode, "jetbrains.mps.kotlin.editor.Arguments_Component");
-    if (nodeCondition_bp85z1_a2a_0()) {
+    if (nodeCondition2()) {
       editorCell.getStyle().set(StyleAttributes.FOCUS_POLICY, FocusPolicy.FIRST_EDITABLE_CELL);
     }
     return editorCell;
   }
-  private boolean nodeCondition_bp85z1_a2a_0() {
+  private boolean nodeCondition2() {
     return ListSequence.fromList(SLinkOperations.getChildren(SLinkOperations.getTarget(myNode, LINKS.annotation$XpH6), LINKS.method$_DCK)).isNotEmpty();
   }
 

@@ -64,12 +64,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setCellId("Collection_9e78o7_a0");
     ReviewMigration_old_ActionMap.setCellActions(editorCell, myNode, getEditorContext());
     editorCell.addEditorCell(createConstant_0());
-    if (nodeCondition_9e78o7_a1a0()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_2());
     }
     return editorCell;
   }
-  private boolean nodeCondition_9e78o7_a1a0() {
+  private boolean nodeCondition0() {
     return isNotEmptyString(SPropertyOperations.getString(myNode, PROPS.reasonShort$6I8j));
   }
   private EditorCell createConstant_0() {

@@ -81,13 +81,13 @@ import org.jetbrains.mps.openapi.language.SInterfaceConcept;
     setCellContext(editorCell);
     editorCell.addEditorCell(createComponent_0());
     editorCell.addEditorCell(createRefNode_0());
-    if (nodeCondition_1ol6d0_a2a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_1());
     }
     editorCell.addEditorCell(createAlternation_0());
     return editorCell;
   }
-  private boolean nodeCondition_1ol6d0_a2a() {
+  private boolean nodeCondition0() {
     return isNotEmptyString(SPropertyOperations.getString(myNode, PROPS.filemode$Xiae)) || (boolean) BuildLayout_File__BehaviorDescriptor.canHaveFilemode_id7UAfeVQUccL.invoke(myNode);
   }
   private EditorCell createComponent_0() {
@@ -218,7 +218,7 @@ import org.jetbrains.mps.openapi.language.SInterfaceConcept;
   }
   private EditorCell createAlternation_0() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_1ol6d0_a3a();
+    alternationCondition = nodeCondition1();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createRefNodeList_0();
@@ -227,7 +227,7 @@ import org.jetbrains.mps.openapi.language.SInterfaceConcept;
     }
     return editorCell;
   }
-  private boolean nodeCondition_1ol6d0_a3a() {
+  private boolean nodeCondition1() {
     return ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.parameters$xu7T)).isEmpty();
   }
   private EditorCell createRefNodeList_0() {

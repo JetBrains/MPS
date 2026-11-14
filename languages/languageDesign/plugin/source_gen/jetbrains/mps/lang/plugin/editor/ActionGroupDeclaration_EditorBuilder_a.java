@@ -72,14 +72,14 @@ import org.jetbrains.mps.openapi.language.SConcept;
     Style style = new StyleImpl();
     style.set(StyleAttributes.SELECTABLE, false);
     editorCell.getStyle().putAll(style);
-    if (nodeCondition_bepn0t_a0a0()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_0());
     }
     editorCell.addEditorCell(createConstant_1());
     editorCell.addEditorCell(createProperty_0());
     return editorCell;
   }
-  private boolean nodeCondition_bepn0t_a0a0() {
+  private boolean nodeCondition0() {
     return SPropertyOperations.getBoolean(myNode, PROPS.isPluginXmlGroup$KLjg);
   }
   private EditorCell createConstant_0() {
@@ -124,13 +124,13 @@ import org.jetbrains.mps.openapi.language.SConcept;
     Style style = new StyleImpl();
     style.set(StyleAttributes.SELECTABLE, false);
     editorCell.getStyle().putAll(style);
-    if (nodeCondition_bepn0t_a0b0()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createConstant_2());
     }
     editorCell.addEditorCell(createCollection_3());
     return editorCell;
   }
-  private boolean nodeCondition_bepn0t_a0b0() {
+  private boolean nodeCondition1() {
     return (SNodeOperations.getNodeAncestor(myNode, CONCEPTS.ActionGroupDeclaration$VO, false, false) != null);
   }
   private EditorCell createConstant_2() {
@@ -143,20 +143,20 @@ import org.jetbrains.mps.openapi.language.SConcept;
     EditorCell_Collection editorCell = new EditorCell_Collection(getEditorContext(), myNode, new CellLayout_Vertical());
     editorCell.setCellId("Collection_bepn0t_b1a");
     editorCell.addEditorCell(createCollection_4());
-    if (nodeCondition_bepn0t_a1b1a()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createCollection_5());
     }
     editorCell.addEditorCell(createConstant_7());
     editorCell.addEditorCell(createRefNode_0());
-    if (nodeCondition_bepn0t_a4b1a()) {
+    if (nodeCondition3()) {
       editorCell.addEditorCell(createCollection_9());
     }
     return editorCell;
   }
-  private boolean nodeCondition_bepn0t_a1b1a() {
+  private boolean nodeCondition2() {
     return SPropertyOperations.getBoolean(myNode, PROPS.isPopup$3IEK);
   }
-  private boolean nodeCondition_bepn0t_a4b1a() {
+  private boolean nodeCondition3() {
     return SNodeOperations.getNodeAncestor(myNode, CONCEPTS.ActionGroupDeclaration$VO, false, false) == null;
   }
   private EditorCell createCollection_4() {

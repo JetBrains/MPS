@@ -207,21 +207,21 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.getStyle().putAll(style);
     editorCell.addEditorCell(createConstant_3());
     editorCell.addEditorCell(createRefNode_0());
-    if (nodeCondition_y1wtxd_a2e0()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_2());
     }
     editorCell.addEditorCell(createConstant_5());
     editorCell.addEditorCell(createRefNode_2());
-    if (nodeCondition_y1wtxd_a5e0()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createConstant_6());
     }
     editorCell.addEditorCell(createRefNode_3());
     return editorCell;
   }
-  private boolean nodeCondition_y1wtxd_a2e0() {
+  private boolean nodeCondition0() {
     return (SLinkOperations.getTarget(myNode, LINKS.referentSetHandler$J3S2) != null);
   }
-  private boolean nodeCondition_y1wtxd_a5e0() {
+  private boolean nodeCondition1() {
     return (SLinkOperations.getTarget(myNode, LINKS.presentation$VLnP) != null);
   }
   private EditorCell createConstant_3() {

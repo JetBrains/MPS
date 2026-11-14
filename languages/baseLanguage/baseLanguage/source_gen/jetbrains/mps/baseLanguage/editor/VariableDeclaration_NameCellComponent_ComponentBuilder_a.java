@@ -79,7 +79,7 @@ import org.jetbrains.mps.openapi.language.SContainmentLink;
       Style style = new StyleImpl();
       new VariableNameStyleClass(this).apply(style, editorCell);
       editorCell.getStyle().putAll(style);
-      if (nodeCondition_j36akn_a0()) {
+      if (nodeCondition0()) {
         editorCell.getStyle().set(StyleAttributes.FOCUS_POLICY, FocusPolicy.FIRST_EDITABLE_CELL);
       }
       editorCell.addKeyMap(new IgnoreRightSquareBracketInVariableName());
@@ -97,7 +97,7 @@ import org.jetbrains.mps.openapi.language.SContainmentLink;
       getCellFactory().popCellContext();
     }
   }
-  private boolean nodeCondition_j36akn_a0() {
+  private boolean nodeCondition0() {
     boolean condition = SNodeOperations.getConcept(SLinkOperations.getTarget(myNode, LINKS.type$a1UY)) != CONCEPTS.Type$bu;
     if (SNodeOperations.isInstanceOf(SLinkOperations.getTarget(myNode, LINKS.type$a1UY), CONCEPTS.Type$bu)) {
       return condition && !((boolean) Type__BehaviorDescriptor.hasMissingParameters_id32KZwowVoMu.invoke(SLinkOperations.getTarget(myNode, LINKS.type$a1UY)));

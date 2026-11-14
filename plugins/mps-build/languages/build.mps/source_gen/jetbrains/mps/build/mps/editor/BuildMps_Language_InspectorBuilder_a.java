@@ -69,7 +69,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setCellId("Collection_ucemm3_0");
     editorCell.setBig(true);
     setCellContext(editorCell);
-    if (nodeCondition_ucemm3_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_1());
     }
     editorCell.addEditorCell(createConstant_8());
@@ -78,7 +78,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createCollection_5());
     return editorCell;
   }
-  private boolean nodeCondition_ucemm3_a0a() {
+  private boolean nodeCondition0() {
     return (boolean) BuildMps_AbstractModule__BehaviorDescriptor.isCompact_id7gAtt1ju6Jy.invoke(myNode);
   }
   private EditorCell createCollection_1() {
@@ -139,7 +139,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.getStyle().putAll(style);
     editorCell.setFoldable(true);
     editorCell.addEditorCell(createConstant_1());
-    if (nodeCondition_ucemm3_a1b0a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createConstant_2());
     }
     editorCell.addEditorCell(createRefNodeList_0());
@@ -149,7 +149,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createRefNodeList_2());
     return editorCell;
   }
-  private boolean nodeCondition_ucemm3_a1b0a() {
+  private boolean nodeCondition1() {
     return SPropertyOperations.getBoolean(myNode, PROPS.withKotlin$2YBL);
   }
   private EditorCell createConstant_1() {

@@ -63,24 +63,24 @@ import org.jetbrains.mps.openapi.language.SContainmentLink;
     editorCell.getStyle().putAll(style);
     editorCell.addEditorCell(createCollection_1());
     editorCell.addEditorCell(createComponent_0());
-    if (nodeCondition_ekbrl8_a2a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_2());
     }
     return editorCell;
   }
-  private boolean nodeCondition_ekbrl8_a2a() {
+  private boolean nodeCondition0() {
     return SPropertyOperations.getBoolean(SNodeOperations.as(SNodeOperations.getContainingRoot(myNode), CONCEPTS.ChemSheet$VW), PROPS.showButtons$AWXr);
   }
   private EditorCell createCollection_1() {
     EditorCell_Collection editorCell = new EditorCell_Collection(getEditorContext(), myNode, new CellLayout_Vertical());
     editorCell.setCellId("Collection_ekbrl8_a0");
     editorCell.addEditorCell(createConstant_0());
-    if (nodeCondition_ekbrl8_a1a0()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createReadOnlyModelAccessor_0());
     }
     return editorCell;
   }
-  private boolean nodeCondition_ekbrl8_a1a0() {
+  private boolean nodeCondition1() {
     return SNodeOperations.isInstanceOf(myNode, CONCEPTS.EquationEntry$bY);
   }
   private EditorCell createConstant_0() {
@@ -141,12 +141,12 @@ import org.jetbrains.mps.openapi.language.SContainmentLink;
     editorCell.addEditorCell(createCollection_4());
     editorCell.addEditorCell(createCollection_5());
     editorCell.addEditorCell(createCollection_6());
-    if (nodeCondition_ekbrl8_a3b2a()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createCollection_7());
     }
     return editorCell;
   }
-  private boolean nodeCondition_ekbrl8_a3b2a() {
+  private boolean nodeCondition2() {
     return SNodeOperations.isInstanceOf(myNode, CONCEPTS.EquationEntry$bY) && !(SNodeOperations.isInstanceOf(SNodeOperations.getPrevSibling(myNode), CONCEPTS.DocumentationEntry$cW));
   }
   private EditorCell createCollection_4() {

@@ -35,7 +35,7 @@ import jetbrains.mps.lang.structure.editor.structure_StyleSheet.KeywordStyleClas
 
   private EditorCell createAlternation_0() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_vqp46p_a0();
+    alternationCondition = nodeCondition0();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createError_0();
@@ -49,7 +49,7 @@ import jetbrains.mps.lang.structure.editor.structure_StyleSheet.KeywordStyleClas
     }
     return editorCell;
   }
-  private boolean nodeCondition_vqp46p_a0() {
+  private boolean nodeCondition0() {
     return SNodeOperations.getConcept(myNode).isAbstract();
   }
   private EditorCell createError_0() {

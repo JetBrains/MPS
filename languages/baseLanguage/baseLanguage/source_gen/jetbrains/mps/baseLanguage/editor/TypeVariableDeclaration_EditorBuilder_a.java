@@ -70,12 +70,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setBig(true);
     setCellContext(editorCell);
     editorCell.addEditorCell(createProperty_0());
-    if (nodeCondition_bfm5ok_a1a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_1());
     }
     return editorCell;
   }
-  private boolean nodeCondition_bfm5ok_a1a() {
+  private boolean nodeCondition0() {
     return Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.bound$aZCB)).isNotEmpty();
   }
   private EditorCell createProperty_0() {
@@ -113,12 +113,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.getStyle().putAll(style);
     editorCell.addEditorCell(createConstant_0());
     editorCell.addEditorCell(createRefNode_0());
-    if (nodeCondition_bfm5ok_a2b0()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createCollection_2());
     }
     return editorCell;
   }
-  private boolean nodeCondition_bfm5ok_a2b0() {
+  private boolean nodeCondition1() {
     return Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.auxBounds$jgLr)).isNotEmpty();
   }
   private EditorCell createConstant_0() {

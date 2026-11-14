@@ -60,10 +60,10 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setCellId("Collection_bqk3nx_a");
     editorCell.setBig(true);
     setCellContext(editorCell);
-    if (nodeCondition_bqk3nx_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_0());
     }
-    if (nodeCondition_bqk3nx_a1a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createComponent_0());
     }
     editorCell.addEditorCell(createConstant_1());
@@ -71,18 +71,18 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createConstant_3());
     editorCell.addEditorCell(createConstant_4());
     editorCell.addEditorCell(createRefNode_0());
-    if (nodeCondition_bqk3nx_a7a()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createConstant_5());
     }
     return editorCell;
   }
-  private boolean nodeCondition_bqk3nx_a0a() {
+  private boolean nodeCondition0() {
     return SPropertyOperations.getBoolean(myNode, PROPS.isSuspend$O_58);
   }
-  private boolean nodeCondition_bqk3nx_a1a() {
+  private boolean nodeCondition1() {
     return (SLinkOperations.getTarget(myNode, LINKS.receiverType$7yLT) != null);
   }
-  private boolean nodeCondition_bqk3nx_a7a() {
+  private boolean nodeCondition2() {
     return SPropertyOperations.getBoolean(myNode, PROPS.isNullable$KWwD);
   }
   private EditorCell createConstant_0() {

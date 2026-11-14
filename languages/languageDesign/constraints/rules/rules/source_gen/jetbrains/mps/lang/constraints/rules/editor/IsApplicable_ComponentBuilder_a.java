@@ -83,7 +83,7 @@ import jetbrains.mps.openapi.editor.selection.SelectionManager;
   }
   private EditorCell createAlternation_0() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_gagq4k_a0a();
+    alternationCondition = nodeCondition0();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createCollection_1();
@@ -92,7 +92,7 @@ import jetbrains.mps.openapi.editor.selection.SelectionManager;
     }
     return editorCell;
   }
-  private boolean nodeCondition_gagq4k_a0a() {
+  private boolean nodeCondition0() {
     return (SLinkOperations.getTarget(myNode, LINKS.condition$h$Ae) != null);
   }
   private EditorCell createCollection_1() {
@@ -119,12 +119,12 @@ import jetbrains.mps.openapi.editor.selection.SelectionManager;
     new DefStyleStyleClass(this).unapply(style, editorCell);
     editorCell.getStyle().putAll(style);
     editorCell.addEditorCell(createRefNode_0());
-    if (nodeCondition_gagq4k_a1b0a0()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createCollection_3());
     }
     return editorCell;
   }
-  private boolean nodeCondition_gagq4k_a1b0a0() {
+  private boolean nodeCondition1() {
     return ListSequence.fromList(new RequiredDefsCalculator().calculate(myNode)).isNotEmpty();
   }
   private EditorCell createRefNode_0() {
@@ -220,7 +220,7 @@ import jetbrains.mps.openapi.editor.selection.SelectionManager;
   }
   private EditorCell createAlternation_1() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_gagq4k_a0a0();
+    alternationCondition = nodeCondition2();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createConstant_3();
@@ -233,7 +233,7 @@ import jetbrains.mps.openapi.editor.selection.SelectionManager;
     editorCell.getStyle().putAll(style);
     return editorCell;
   }
-  private boolean nodeCondition_gagq4k_a0a0() {
+  private boolean nodeCondition2() {
     return ListSequence.fromList(new RequiredDefsCalculator().calculate(myNode)).isEmpty();
   }
   private EditorCell createConstant_3() {

@@ -98,18 +98,18 @@ import org.jetbrains.mps.openapi.language.SConcept;
     style.set(StyleAttributes.SELECTABLE, false);
     style.set(StyleAttributes.DRAW_BORDER, true);
     editorCell.getStyle().putAll(style);
-    if (nodeCondition_2v2794_a0b0()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_2());
     }
-    if (nodeCondition_2v2794_a1b0()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createCollection_6());
     }
     return editorCell;
   }
-  private boolean nodeCondition_2v2794_a0b0() {
+  private boolean nodeCondition0() {
     return (boolean) CellModel_ListWithRole__BehaviorDescriptor.isVertical_idi2IdWzG.invoke(myNode);
   }
-  private boolean nodeCondition_2v2794_a1b0() {
+  private boolean nodeCondition1() {
     return !((boolean) CellModel_ListWithRole__BehaviorDescriptor.isVertical_idi2IdWzG.invoke(myNode));
   }
   private EditorCell createCollection_2() {
@@ -245,12 +245,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.getStyle().putAll(style);
     editorCell.setGridLayout(true);
     editorCell.addEditorCell(createCollection_5());
-    if (nodeCondition_2v2794_a1b0b0()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createComponent_1());
     }
     return editorCell;
   }
-  private boolean nodeCondition_2v2794_a1b0b0() {
+  private boolean nodeCondition2() {
     return (boolean) CellModel_ListWithRole__BehaviorDescriptor.isFoldingEnabled_id3ZqNA5Aj2vG.invoke(myNode);
   }
   private EditorCell createCollection_5() {
@@ -352,17 +352,17 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createConstant_3());
     editorCell.addEditorCell(createRefCell_1());
     editorCell.addEditorCell(createConstant_4());
-    if (nodeCondition_2v2794_a3a1b0()) {
+    if (nodeCondition3()) {
       editorCell.addEditorCell(createConstant_5());
     }
     editorCell.addEditorCell(createConstant_6());
     editorCell.addEditorCell(createRefNode_1());
-    if (nodeCondition_2v2794_a6a1b0()) {
+    if (nodeCondition4()) {
       editorCell.addEditorCell(createComponent_2());
     }
     return editorCell;
   }
-  private boolean nodeCondition_2v2794_a3a1b0() {
+  private boolean nodeCondition3() {
     for (SNode styleClassItem : SLinkOperations.getChildren(myNode, LINKS.styleItem$FgZD)) {
       if (SNodeOperations.isInstanceOf(styleClassItem, CONCEPTS.IndentLayoutNewLineChildrenStyleClassItem$4j)) {
         SNode style = SNodeOperations.as(styleClassItem, CONCEPTS.IndentLayoutNewLineChildrenStyleClassItem$4j);
@@ -371,7 +371,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     }
     return false;
   }
-  private boolean nodeCondition_2v2794_a6a1b0() {
+  private boolean nodeCondition4() {
     return SPropertyOperations.getBoolean(myNode, PROPS.usesFolding$20NL);
   }
   private EditorCell createConstant_3() {

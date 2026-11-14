@@ -60,12 +60,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createConstant_2());
     editorCell.addEditorCell(createProperty_1());
     editorCell.addEditorCell(createCollection_1());
-    if (nodeCondition_57lpr_a6a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_2());
     }
     return editorCell;
   }
-  private boolean nodeCondition_57lpr_a6a() {
+  private boolean nodeCondition0() {
     return SPropertyOperations.getBoolean(myNode, PROPS.secondAssistant$pX2v);
   }
   private EditorCell createConstant_0() {
@@ -144,10 +144,10 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createConstant_3());
     editorCell.addEditorCell(createContextAssistant_0());
     editorCell.addEditorCell(createConstant_4());
-    editorCell.setInitiallyCollapsed(nodeCondition_57lpr_a5a());
+    editorCell.setInitiallyCollapsed(nodeCondition1());
     return editorCell;
   }
-  private boolean nodeCondition_57lpr_a5a() {
+  private boolean nodeCondition1() {
     return SPropertyOperations.getBoolean(myNode, PROPS.initiallyCollapsed$vRLu);
   }
   private EditorCell createConstant_3() {

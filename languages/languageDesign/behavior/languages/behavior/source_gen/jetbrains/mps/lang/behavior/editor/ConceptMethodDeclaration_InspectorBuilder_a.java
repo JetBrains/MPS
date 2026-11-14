@@ -71,32 +71,32 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setBig(true);
     setCellContext(editorCell);
     editorCell.addEditorCell(createCollection_1());
-    if (nodeCondition_gmtuod_a1a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_2());
     }
-    if (nodeCondition_gmtuod_a2a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createCollection_3());
     }
-    if (nodeCondition_gmtuod_a3a()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createCollection_4());
     }
-    if (nodeCondition_gmtuod_a4a()) {
+    if (nodeCondition3()) {
       editorCell.addEditorCell(createCollection_5());
     }
     editorCell.addEditorCell(createConstant_5());
     editorCell.addEditorCell(createRefNodeList_0());
     return editorCell;
   }
-  private boolean nodeCondition_gmtuod_a1a() {
+  private boolean nodeCondition0() {
     return !(SNodeOperations.isInstanceOf(SLinkOperations.getTarget(myNode, LINKS.visibility$Yyua), CONCEPTS.PrivateVisibility$l0)) && SLinkOperations.getTarget(myNode, LINKS.overriddenMethod$quKH) == null && !((boolean) BaseMethodDeclaration__BehaviorDescriptor.isAnAbstractMethod_id28P2dHxCoRl.invoke(myNode));
   }
-  private boolean nodeCondition_gmtuod_a2a() {
+  private boolean nodeCondition1() {
     return !(SNodeOperations.isInstanceOf(SLinkOperations.getTarget(myNode, LINKS.visibility$Yyua), CONCEPTS.PrivateVisibility$l0)) && SLinkOperations.getTarget(myNode, LINKS.overriddenMethod$quKH) == null && !((boolean) BaseMethodDeclaration__BehaviorDescriptor.isAnAbstractMethod_id28P2dHxCoRl.invoke(myNode));
   }
-  private boolean nodeCondition_gmtuod_a3a() {
+  private boolean nodeCondition2() {
     return SPropertyOperations.getBoolean(myNode, PROPS.isVirtual$quZI);
   }
-  private boolean nodeCondition_gmtuod_a4a() {
+  private boolean nodeCondition3() {
     if (SLinkOperations.getTarget(myNode, LINKS.overriddenMethod$quKH) == null) {
       return false;
     }

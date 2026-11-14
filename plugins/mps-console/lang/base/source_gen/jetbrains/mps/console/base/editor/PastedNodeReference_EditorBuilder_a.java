@@ -42,7 +42,7 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
 
   private EditorCell createAlternation_0() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_7k9x8q_a0();
+    alternationCondition = nodeCondition0();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createReadOnlyModelAccessor_0();
@@ -59,7 +59,7 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     editorCell.getStyle().putAll(style);
     return editorCell;
   }
-  private boolean nodeCondition_7k9x8q_a0() {
+  private boolean nodeCondition0() {
     return !((boolean) INodeWithReference__BehaviorDescriptor.isBroken_id7m$hACyVN2F.invoke(myNode));
   }
   private EditorCell createReadOnlyModelAccessor_0() {

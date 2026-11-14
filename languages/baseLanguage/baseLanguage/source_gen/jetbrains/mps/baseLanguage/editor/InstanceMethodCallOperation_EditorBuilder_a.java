@@ -68,14 +68,14 @@ import org.jetbrains.mps.openapi.language.SConcept;
     Style style = new StyleImpl();
     style.set(StyleAttributes.PARAMETERS_INFORMATION, new BaseMethodParameterInformationQuery());
     editorCell.getStyle().putAll(style);
-    if (nodeCondition_jyer24_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createComponent_0());
     }
     editorCell.addEditorCell(createRefCell_0());
     editorCell.addEditorCell(createComponent_1());
     return editorCell;
   }
-  private boolean nodeCondition_jyer24_a0a() {
+  private boolean nodeCondition0() {
     return Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.typeArgument$jaIN)).isNotEmpty();
   }
   private EditorCell createComponent_0() {

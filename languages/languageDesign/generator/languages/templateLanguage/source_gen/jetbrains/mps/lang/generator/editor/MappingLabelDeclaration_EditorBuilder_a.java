@@ -116,12 +116,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
     EditorCell_Collection editorCell = new EditorCell_Collection(getEditorContext(), myNode, new CellLayout_Horizontal());
     editorCell.setCellId("Collection_sexq64_d0");
     editorCell.addEditorCell(createRefCell_0());
-    if (nodeCondition_sexq64_a1d0()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_2());
     }
     return editorCell;
   }
-  private boolean nodeCondition_sexq64_a1d0() {
+  private boolean nodeCondition0() {
     return (SLinkOperations.getTarget(myNode, LINKS.sourceConcept2$sSLi) != null);
   }
   private EditorCell createRefCell_0() {

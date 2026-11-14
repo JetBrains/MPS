@@ -125,12 +125,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.getStyle().putAll(style);
     editorCell.setGridLayout(true);
     editorCell.addEditorCell(createCollection_3());
-    if (nodeCondition_qlhzuh_a1c0()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_4());
     }
     return editorCell;
   }
-  private boolean nodeCondition_qlhzuh_a1c0() {
+  private boolean nodeCondition0() {
     return SEnumOperations.isMember(SPropertyOperations.getEnum(myNode, PROPS.scriptKind$6esh), 0x1165f07f3c2L);
   }
   private EditorCell createCollection_3() {

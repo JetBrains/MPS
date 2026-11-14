@@ -55,34 +55,34 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setCellId("Collection_x06od6_a");
     editorCell.setBig(true);
     setCellContext(editorCell);
-    if (nodeCondition_x06od6_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_0());
     }
     editorCell.addEditorCell(createRefNode_0());
-    if (nodeCondition_x06od6_a2a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createConstant_1());
     }
     editorCell.addEditorCell(createConstant_2());
     editorCell.addEditorCell(createRefNode_1());
-    if (nodeCondition_x06od6_a5a()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createConstant_3());
     }
-    if (nodeCondition_x06od6_a6a()) {
+    if (nodeCondition3()) {
       editorCell.addEditorCell(createRefNode_2());
     }
     editorCell.addEditorCell(createConstant_4());
     return editorCell;
   }
-  private boolean nodeCondition_x06od6_a0a() {
+  private boolean nodeCondition0() {
     return !(SNodeOperations.isInstanceOf(SLinkOperations.getTarget(myNode, LINKS.expression$nw1u), CONCEPTS.VariableReference$TC) && SNodeOperations.isInstanceOf(SLinkOperations.getTarget(SNodeOperations.cast(SLinkOperations.getTarget(myNode, LINKS.expression$nw1u), CONCEPTS.VariableReference$TC), LINKS.variableDeclaration$N1XG), CONCEPTS.LocalVariableDeclaration$41));
   }
-  private boolean nodeCondition_x06od6_a2a() {
+  private boolean nodeCondition1() {
     return !(SNodeOperations.isInstanceOf(SLinkOperations.getTarget(myNode, LINKS.expression$nw1u), CONCEPTS.VariableReference$TC) && SNodeOperations.isInstanceOf(SLinkOperations.getTarget(SNodeOperations.cast(SLinkOperations.getTarget(myNode, LINKS.expression$nw1u), CONCEPTS.VariableReference$TC), LINKS.variableDeclaration$N1XG), CONCEPTS.LocalVariableDeclaration$41));
   }
-  private boolean nodeCondition_x06od6_a5a() {
+  private boolean nodeCondition2() {
     return !(SNodeOperations.isInstanceOf(TypecheckingFacade.getFromContext().getTypeOf(SLinkOperations.getTarget(myNode, LINKS.expression$nw1u)), CONCEPTS.VectorType$cv));
   }
-  private boolean nodeCondition_x06od6_a6a() {
+  private boolean nodeCondition3() {
     return !(SNodeOperations.isInstanceOf(TypecheckingFacade.getFromContext().getTypeOf(SLinkOperations.getTarget(myNode, LINKS.expression$nw1u)), CONCEPTS.VectorType$cv));
   }
   private EditorCell createConstant_0() {

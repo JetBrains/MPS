@@ -57,13 +57,13 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setBig(true);
     setCellContext(editorCell);
     editorCell.addEditorCell(createConstant_0());
-    if (nodeCondition_9o3sb9_a1a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createProperty_0());
     }
     editorCell.addEditorCell(createAttributedLinkCell_0());
     return editorCell;
   }
-  private boolean nodeCondition_9o3sb9_a1a() {
+  private boolean nodeCondition0() {
     return SPropertyOperations.getString(myNode, PROPS.comment$M_2t) != null;
   }
   private EditorCell createConstant_0() {

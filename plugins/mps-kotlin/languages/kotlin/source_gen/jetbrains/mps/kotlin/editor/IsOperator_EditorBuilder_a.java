@@ -51,14 +51,14 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     editorCell.setBig(true);
     setCellContext(editorCell);
     editorCell.addEditorCell(createRefNode_0());
-    if (nodeCondition_6531wv_a1a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_0());
     }
     editorCell.addEditorCell(createConstant_1());
     editorCell.addEditorCell(createRefNode_1());
     return editorCell;
   }
-  private boolean nodeCondition_6531wv_a1a() {
+  private boolean nodeCondition0() {
     return SPropertyOperations.getBoolean(myNode, PROPS.negation$kFAJ);
   }
   private EditorCell createRefNode_0() {

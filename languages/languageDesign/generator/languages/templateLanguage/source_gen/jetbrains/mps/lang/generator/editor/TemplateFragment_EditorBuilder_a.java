@@ -62,14 +62,14 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setBig(true);
     setCellContext(editorCell);
     editorCell.addEditorCell(createConstant_0());
-    if (nodeCondition_73o0fl_a1a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createRefCell_0());
     }
     editorCell.addEditorCell(createAttributedNodeCell_0());
     editorCell.addEditorCell(createConstant_1());
     return editorCell;
   }
-  private boolean nodeCondition_73o0fl_a1a() {
+  private boolean nodeCondition0() {
     return SLinkOperations.getTarget(myNode, LINKS.labelDeclaration$ORJN) != null;
   }
   private EditorCell createConstant_0() {

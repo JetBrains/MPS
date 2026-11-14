@@ -463,43 +463,43 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setFoldable(true);
     editorCell.setFoldedCell(createComponent_0());
     editorCell.addEditorCell(createConstant_8());
-    if (nodeCondition_lqrwoi_a1b0()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_4());
     }
-    if (nodeCondition_lqrwoi_a2b0()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createConstant_9());
     }
-    if (nodeCondition_lqrwoi_a3b0()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createCollection_5());
     }
-    if (nodeCondition_lqrwoi_a4b0()) {
+    if (nodeCondition3()) {
       editorCell.addEditorCell(createConstant_11());
     }
-    if (nodeCondition_lqrwoi_a5b0()) {
+    if (nodeCondition4()) {
       editorCell.addEditorCell(createCollection_6());
     }
-    if (nodeCondition_lqrwoi_a6b0()) {
+    if (nodeCondition5()) {
       editorCell.addEditorCell(createCollection_7());
     }
     editorCell.addEditorCell(createConstant_14());
     return editorCell;
   }
-  private boolean nodeCondition_lqrwoi_a1b0() {
+  private boolean nodeCondition0() {
     return Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.instanceInitializer$efI1)).isNotEmpty();
   }
-  private boolean nodeCondition_lqrwoi_a2b0() {
+  private boolean nodeCondition1() {
     return SLinkOperations.getTarget(myNode, LINKS.instanceInitializer$efI1) != null && Sequence.fromIterable(ClassConcept__BehaviorDescriptor.fields_id4_LVZ3pC27C.invoke(myNode)).isNotEmpty();
   }
-  private boolean nodeCondition_lqrwoi_a3b0() {
+  private boolean nodeCondition2() {
     return Sequence.fromIterable(ClassConcept__BehaviorDescriptor.fields_id4_LVZ3pC27C.invoke(myNode)).isNotEmpty();
   }
-  private boolean nodeCondition_lqrwoi_a4b0() {
+  private boolean nodeCondition3() {
     return Sequence.fromIterable(Classifier__BehaviorDescriptor.methods_id4_LVZ3pBKCn.invoke(myNode)).isNotEmpty() && Sequence.fromIterable(ClassConcept__BehaviorDescriptor.fields_id4_LVZ3pC27C.invoke(myNode)).isNotEmpty();
   }
-  private boolean nodeCondition_lqrwoi_a5b0() {
+  private boolean nodeCondition4() {
     return Sequence.fromIterable(Classifier__BehaviorDescriptor.methods_id4_LVZ3pBKCn.invoke(myNode)).isNotEmpty();
   }
-  private boolean nodeCondition_lqrwoi_a6b0() {
+  private boolean nodeCondition5() {
     return !(Sequence.fromIterable(ClassConcept__BehaviorDescriptor.fields_id4_LVZ3pC27C.invoke(myNode)).isNotEmpty() && Sequence.fromIterable(Classifier__BehaviorDescriptor.methods_id4_LVZ3pBKCn.invoke(myNode)).isNotEmpty() && SLinkOperations.getTarget(myNode, LINKS.instanceInitializer$efI1) != null);
   }
   private EditorCell createConstant_8() {

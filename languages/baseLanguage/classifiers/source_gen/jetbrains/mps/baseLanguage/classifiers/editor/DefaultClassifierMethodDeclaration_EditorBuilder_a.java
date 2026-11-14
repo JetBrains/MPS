@@ -69,7 +69,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createComponent_0());
     editorCell.addEditorCell(createComponent_1());
     editorCell.addEditorCell(createComponent_2());
-    if (nodeCondition_77c6be_a3a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createComponent_3());
     }
     editorCell.addEditorCell(createRefNode_0());
@@ -77,16 +77,16 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createConstant_0());
     editorCell.addEditorCell(createRefNodeList_0());
     editorCell.addEditorCell(createConstant_2());
-    if (nodeCondition_77c6be_a9a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createCollection_1());
     }
     editorCell.addEditorCell(createComponent_5());
     return editorCell;
   }
-  private boolean nodeCondition_77c6be_a3a() {
+  private boolean nodeCondition0() {
     return ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.typeVariableDeclaration$Lipp)).isNotEmpty();
   }
-  private boolean nodeCondition_77c6be_a9a() {
+  private boolean nodeCondition1() {
     return Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.throwsItem$CdW$)).isNotEmpty();
   }
   private EditorCell createComponent_0() {

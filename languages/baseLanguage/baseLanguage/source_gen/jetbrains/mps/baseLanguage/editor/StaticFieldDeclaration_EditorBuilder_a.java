@@ -63,40 +63,40 @@ import org.jetbrains.mps.openapi.language.SProperty;
     setCellContext(editorCell);
     editorCell.addEditorCell(createComponent_0());
     editorCell.addEditorCell(createComponent_1());
-    if (nodeCondition_t6d1qn_a2a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createComponent_2());
     }
     editorCell.addEditorCell(createConstant_0());
-    if (nodeCondition_t6d1qn_a4a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createConstant_1());
     }
-    if (nodeCondition_t6d1qn_a5a()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createConstant_2());
     }
-    if (nodeCondition_t6d1qn_a6a()) {
+    if (nodeCondition3()) {
       editorCell.addEditorCell(createConstant_3());
     }
     editorCell.addEditorCell(createRefNode_0());
     editorCell.addEditorCell(createComponent_3());
-    if (nodeCondition_t6d1qn_a9a()) {
+    if (nodeCondition4()) {
       editorCell.addEditorCell(createCollection_1());
     }
     editorCell.addEditorCell(createConstant_5());
     return editorCell;
   }
-  private boolean nodeCondition_t6d1qn_a2a() {
+  private boolean nodeCondition0() {
     return !(SNodeOperations.isInstanceOf(SNodeOperations.getParent(myNode), CONCEPTS.Interface$db));
   }
-  private boolean nodeCondition_t6d1qn_a4a() {
+  private boolean nodeCondition1() {
     return SPropertyOperations.getBoolean(myNode, PROPS.isFinal$gvTP);
   }
-  private boolean nodeCondition_t6d1qn_a5a() {
+  private boolean nodeCondition2() {
     return SPropertyOperations.getBoolean(myNode, PROPS.isTransient$Npqn);
   }
-  private boolean nodeCondition_t6d1qn_a6a() {
+  private boolean nodeCondition3() {
     return SPropertyOperations.getBoolean(myNode, PROPS.isVolatile$pswk);
   }
-  private boolean nodeCondition_t6d1qn_a9a() {
+  private boolean nodeCondition4() {
     return Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.initializer$2twD)).isNotEmpty();
   }
   private EditorCell createComponent_0() {
@@ -209,7 +209,7 @@ import org.jetbrains.mps.openapi.language.SProperty;
       if (editorCell.getSRole() == null) {
         editorCell.setSRole(LINKS.type$a1UY);
       }
-      if (nodeCondition_t6d1qn_a7a()) {
+      if (nodeCondition5()) {
         editorCell.getStyle().set(StyleAttributes.FOCUS_POLICY, FocusPolicy.ATTRACTS_FOCUS);
       }
     }
@@ -230,7 +230,7 @@ import org.jetbrains.mps.openapi.language.SProperty;
     protected String getNoTargetText() {
       return "<no type>";
     }
-    private boolean nodeCondition_t6d1qn_a7a() {
+    private boolean nodeCondition5() {
       return SLinkOperations.getTarget(myNode, LINKS.type$a1UY) == null;
     }
   }

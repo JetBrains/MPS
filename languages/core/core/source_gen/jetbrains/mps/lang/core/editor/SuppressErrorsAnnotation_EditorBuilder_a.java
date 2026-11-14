@@ -37,7 +37,7 @@ import org.jetbrains.mps.openapi.language.SProperty;
 
   private EditorCell createAlternation_0() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_tmyyum_a0();
+    alternationCondition = nodeCondition0();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createComponent_0();
@@ -51,7 +51,7 @@ import org.jetbrains.mps.openapi.language.SProperty;
     }
     return editorCell;
   }
-  private boolean nodeCondition_tmyyum_a0() {
+  private boolean nodeCondition0() {
     return Sequence.fromIterable(SNodeOperations.ofConcept(SNodeOperations.getAllSiblings(myNode, false), CONCEPTS.SuppressErrorsAnnotation$D1)).concat(Sequence.fromIterable(Sequence.<SNode>singleton(myNode))).any((it) -> it.getProperty(PROPS.comment$_sJ2) != null);
   }
   private EditorCell createComponent_0() {

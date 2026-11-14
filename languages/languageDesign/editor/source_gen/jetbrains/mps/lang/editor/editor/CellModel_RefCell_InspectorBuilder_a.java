@@ -109,19 +109,19 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setCellId("Collection_lfsepz_1");
     editorCell.setGridLayout(true);
     editorCell.addEditorCell(createCollection_2());
-    if (nodeCondition_lfsepz_a1d0()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_3());
     }
     editorCell.addEditorCell(createCollection_5());
-    if (nodeCondition_lfsepz_a3d0()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createCollection_6());
     }
     return editorCell;
   }
-  private boolean nodeCondition_lfsepz_a1d0() {
+  private boolean nodeCondition0() {
     return (SLinkOperations.getTarget(SLinkOperations.getTarget(myNode, LINKS.editorComponent$$jf3), LINKS.conceptDeclaration$HJmJ) != null);
   }
-  private boolean nodeCondition_lfsepz_a3d0() {
+  private boolean nodeCondition1() {
     return SPropertyOperations.getString(myNode, PROPS.noTargetText$V1aZ) == null;
   }
   private EditorCell createCollection_2() {

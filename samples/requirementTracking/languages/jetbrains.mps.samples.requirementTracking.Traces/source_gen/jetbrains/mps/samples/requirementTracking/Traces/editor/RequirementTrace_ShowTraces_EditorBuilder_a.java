@@ -88,7 +88,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     AbstractCellListHandler handler = new mentionsListHandler_yys6sy_b1a(myNode, getEditorContext());
     EditorCell_Collection editorCell = handler.createCells(new CellLayout_Indent(), false);
     editorCell.setCellId("MentionsCell");
-    editorCell.setFoldable(nodeCondition_yys6sy_a1b0());
+    editorCell.setFoldable(nodeCondition0());
     editorCell.setSRole(handler.getElementSRole());
     return editorCell;
   }
@@ -172,7 +172,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
       return editorCell;
     }
   }
-  private boolean nodeCondition_yys6sy_a1b0() {
+  private boolean nodeCondition0() {
     return ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.mentions$Vn9B)).count() > 1;
   }
   private EditorCell createConstant_1() {

@@ -66,12 +66,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createProperty_0());
     editorCell.addEditorCell(createConstant_0());
     editorCell.addEditorCell(createRefNode_0());
-    if (nodeCondition_pp9zo5_a3a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_1());
     }
     return editorCell;
   }
-  private boolean nodeCondition_pp9zo5_a3a() {
+  private boolean nodeCondition0() {
     return SPropertyOperations.getBoolean(myNode, PROPS.required$LWmw);
   }
   private EditorCell createProperty_0() {

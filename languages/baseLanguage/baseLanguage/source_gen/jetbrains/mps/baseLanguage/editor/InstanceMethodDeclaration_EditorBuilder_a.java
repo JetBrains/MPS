@@ -72,13 +72,13 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.getStyle().putAll(style);
     editorCell.addEditorCell(createComponent_0());
     editorCell.addEditorCell(createComponent_1());
-    if (nodeCondition_359zr8_a2a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_1());
     }
-    if (nodeCondition_359zr8_a3a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createComponent_3());
     }
-    if (nodeCondition_359zr8_a4a()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createComponent_4());
     }
     editorCell.addEditorCell(createRefNode_0());
@@ -87,27 +87,27 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createRefNodeList_0());
     editorCell.addEditorCell(createConstant_6());
     editorCell.addEditorCell(createComponent_6());
-    if (nodeCondition_359zr8_a11a()) {
+    if (nodeCondition3()) {
       editorCell.addEditorCell(createConstant_7());
     }
-    if (nodeCondition_359zr8_a21a()) {
+    if (nodeCondition4()) {
       editorCell.addEditorCell(createComponent_7());
     }
     return editorCell;
   }
-  private boolean nodeCondition_359zr8_a2a() {
+  private boolean nodeCondition0() {
     return (boolean) BaseMethodDeclaration__BehaviorDescriptor.hasVisibility_id1X7GQqyPHmE.invoke(myNode);
   }
-  private boolean nodeCondition_359zr8_a3a() {
+  private boolean nodeCondition1() {
     return Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.modifiers$F5MM)).isNotEmpty();
   }
-  private boolean nodeCondition_359zr8_a4a() {
+  private boolean nodeCondition2() {
     return ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.typeVariableDeclaration$Lipp)).isNotEmpty();
   }
-  private boolean nodeCondition_359zr8_a11a() {
+  private boolean nodeCondition3() {
     return !((boolean) BaseMethodDeclaration__BehaviorDescriptor.hasBody_id10BRnhak8m8.invoke(myNode));
   }
-  private boolean nodeCondition_359zr8_a21a() {
+  private boolean nodeCondition4() {
     return (boolean) BaseMethodDeclaration__BehaviorDescriptor.hasBody_id10BRnhak8m8.invoke(myNode);
   }
   private EditorCell createComponent_0() {
@@ -125,30 +125,30 @@ import org.jetbrains.mps.openapi.language.SConcept;
     style.set(StyleAttributes.SELECTABLE, false);
     editorCell.getStyle().putAll(style);
     editorCell.addEditorCell(createComponent_2());
-    if (nodeCondition_359zr8_a1c0()) {
+    if (nodeCondition5()) {
       editorCell.addEditorCell(createConstant_0());
     }
-    if (nodeCondition_359zr8_a2c0()) {
+    if (nodeCondition6()) {
       editorCell.addEditorCell(createConstant_1());
     }
-    if (nodeCondition_359zr8_a3c0()) {
+    if (nodeCondition7()) {
       editorCell.addEditorCell(createConstant_2());
     }
-    if (nodeCondition_359zr8_a4c0()) {
+    if (nodeCondition8()) {
       editorCell.addEditorCell(createConstant_3());
     }
     return editorCell;
   }
-  private boolean nodeCondition_359zr8_a1c0() {
+  private boolean nodeCondition5() {
     return SPropertyOperations.getBoolean(myNode, PROPS.isFinal$eVPk);
   }
-  private boolean nodeCondition_359zr8_a2c0() {
+  private boolean nodeCondition6() {
     return SPropertyOperations.getBoolean(myNode, PROPS.isAbstract$VtH_);
   }
-  private boolean nodeCondition_359zr8_a3c0() {
+  private boolean nodeCondition7() {
     return SPropertyOperations.getBoolean(myNode, PROPS.isSynchronized$58UL);
   }
-  private boolean nodeCondition_359zr8_a4c0() {
+  private boolean nodeCondition8() {
     return SPropertyOperations.getBoolean(myNode, PROPS.isNative$GNAF);
   }
   private EditorCell createComponent_2() {

@@ -76,12 +76,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
     Style style = new StyleImpl();
     style.set(StyleAttributes.SELECTABLE, false);
     editorCell.getStyle().putAll(style);
-    if (nodeCondition_vfuuik_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createProperty_0());
     }
     return editorCell;
   }
-  private boolean nodeCondition_vfuuik_a0a() {
+  private boolean nodeCondition0() {
     boolean var = getEditorContext() != null || myNode != null;
     return var;
   }
@@ -93,7 +93,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
       EditorCell_Property editorCell = EditorCell_Property.create(getEditorContext(), new SPropertyAccessor(myNode, property, false, false), myNode);
       editorCell.setDefaultText("<no theProperty>");
       editorCell.setCellId("idd");
-      if (nodeCondition_vfuuik_a0a_0()) {
+      if (nodeCondition1()) {
         editorCell.getStyle().set(StyleAttributes.FOCUS_POLICY, FocusPolicy.ATTRACTS_RECURSIVELY);
       }
       TestTargetActionMap.setCellActions(editorCell, myNode, getEditorContext());
@@ -112,7 +112,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
       getCellFactory().popCellContext();
     }
   }
-  private boolean nodeCondition_vfuuik_a0a_0() {
+  private boolean nodeCondition1() {
     boolean var = getEditorContext() != null || myNode != null;
     return var;
   }

@@ -141,7 +141,7 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     editorCell.getStyle().putAll(style);
     editorCell.setFoldable(true);
     editorCell.addEditorCell(createConstant_1());
-    if (nodeCondition_kr3er8_a1c0()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createRefNode_0());
     }
     editorCell.addEditorCell(createRefNodeList_0());
@@ -149,7 +149,7 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     editorCell.addEditorCell(createRefNodeList_1());
     return editorCell;
   }
-  private boolean nodeCondition_kr3er8_a1c0() {
+  private boolean nodeCondition0() {
     if (SNodeOperations.getModel(myNode).getModule() instanceof TransientModelsModule || Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.options$FDHw)).isNotEmpty()) {
       return true;
     }

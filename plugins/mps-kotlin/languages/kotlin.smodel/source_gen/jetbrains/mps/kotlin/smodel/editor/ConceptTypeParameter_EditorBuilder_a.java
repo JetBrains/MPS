@@ -65,20 +65,20 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setCellId("Collection_gvo2_a");
     editorCell.setBig(true);
     setCellContext(editorCell);
-    if (nodeCondition_gvo2_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createProperty_0());
     }
     editorCell.addEditorCell(createConstant_0());
     editorCell.addEditorCell(createProperty_1());
-    if (nodeCondition_gvo2_a3a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createCollection_1());
     }
     return editorCell;
   }
-  private boolean nodeCondition_gvo2_a0a() {
+  private boolean nodeCondition0() {
     return !(SEnumOperations.isMember(SPropertyOperations.getEnum(myNode, PROPS.variance$xP5D), 0x21e0c923289a2222L));
   }
-  private boolean nodeCondition_gvo2_a3a() {
+  private boolean nodeCondition1() {
     return (SLinkOperations.getTarget(myNode, LINKS.bound$F4AR) != null);
   }
   private EditorCell createProperty_0() {

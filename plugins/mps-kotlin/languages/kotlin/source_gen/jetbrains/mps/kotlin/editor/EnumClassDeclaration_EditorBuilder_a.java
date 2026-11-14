@@ -80,25 +80,25 @@ import org.jetbrains.mps.openapi.language.SInterfaceConcept;
     editorCell.addEditorCell(createComponent_3());
     editorCell.addEditorCell(createProperty_0());
     editorCell.addEditorCell(createComponent_4());
-    if (nodeCondition_x0yi6s_a6a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createRefNode_0());
     }
-    if (nodeCondition_x0yi6s_a7a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createComponent_5());
     }
-    if (nodeCondition_x0yi6s_a8a()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createComponent_6());
     }
     editorCell.addEditorCell(createCollection_1());
     return editorCell;
   }
-  private boolean nodeCondition_x0yi6s_a6a() {
+  private boolean nodeCondition0() {
     return (SLinkOperations.getTarget(myNode, LINKS.primaryConstructor$QvZc) != null);
   }
-  private boolean nodeCondition_x0yi6s_a7a() {
+  private boolean nodeCondition1() {
     return ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.superclasses$6CkZ)).isNotEmpty();
   }
-  private boolean nodeCondition_x0yi6s_a8a() {
+  private boolean nodeCondition2() {
     return ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.constraints$BRhr)).isNotEmpty();
   }
   private EditorCell createComponent_0() {
@@ -229,14 +229,14 @@ import org.jetbrains.mps.openapi.language.SInterfaceConcept;
     editorCell.setCellId("Collection_x0yi6s_j0");
     editorCell.addEditorCell(createConstant_0());
     editorCell.addEditorCell(createRefNodeList_0());
-    if (nodeCondition_x0yi6s_a2j0()) {
+    if (nodeCondition3()) {
       editorCell.addEditorCell(createConstant_1());
     }
     editorCell.addEditorCell(createRefNodeList_1());
     editorCell.addEditorCell(createConstant_2());
     return editorCell;
   }
-  private boolean nodeCondition_x0yi6s_a2j0() {
+  private boolean nodeCondition3() {
     return ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.members$gqdV)).isNotEmpty();
   }
   private EditorCell createConstant_0() {

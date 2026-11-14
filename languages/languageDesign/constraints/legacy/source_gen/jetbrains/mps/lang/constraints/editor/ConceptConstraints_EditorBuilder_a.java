@@ -181,13 +181,13 @@ import org.jetbrains.mps.openapi.language.SConcept;
     style.set(StyleAttributes.SELECTABLE, false);
     style.set(StyleAttributes.INDENT_LAYOUT_NEW_LINE, true);
     editorCell.getStyle().putAll(style);
-    if (nodeCondition_g00aa7_a0d0()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_2());
     }
     editorCell.addEditorCell(createConstant_4());
     editorCell.addEditorCell(createRefNode_0());
     editorCell.addEditorCell(createConstant_5());
-    if (nodeCondition_g00aa7_a4d0()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createCollection_3());
     }
     editorCell.addEditorCell(createConstant_8());
@@ -196,7 +196,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createConstant_10());
     editorCell.addEditorCell(createRefNode_3());
     editorCell.addEditorCell(createConstant_11());
-    if (nodeCondition_g00aa7_a11d0()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createCollection_4());
     }
     editorCell.addEditorCell(createRefNodeList_0());
@@ -211,13 +211,13 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createRefNodeList_2());
     return editorCell;
   }
-  private boolean nodeCondition_g00aa7_a0d0() {
+  private boolean nodeCondition0() {
     return SPropertyOperations.getBoolean(SLinkOperations.getTarget(myNode, LINKS.concept$EVpZ), PROPS.abstract$ibpT) || SNodeOperations.isInstanceOf(SLinkOperations.getTarget(myNode, LINKS.concept$EVpZ), CONCEPTS.InterfaceConceptDeclaration$CG);
   }
-  private boolean nodeCondition_g00aa7_a4d0() {
+  private boolean nodeCondition1() {
     return SNodeOperations.isInstanceOf(SLinkOperations.getTarget(myNode, LINKS.concept$EVpZ), CONCEPTS.ConceptDeclaration$gH) && SPropertyOperations.getBoolean(((SNode) SLinkOperations.getTarget(myNode, LINKS.concept$EVpZ)), PROPS.rootable$_9pz);
   }
-  private boolean nodeCondition_g00aa7_a11d0() {
+  private boolean nodeCondition2() {
     // do not show for interface concepts
     return SNodeOperations.isInstanceOf(SLinkOperations.getTarget(myNode, LINKS.concept$EVpZ), CONCEPTS.ConceptDeclaration$gH);
   }
@@ -654,13 +654,13 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.getStyle().putAll(style);
     editorCell.addEditorCell(createConstant_12());
     editorCell.addEditorCell(createRefNode_4());
-    if (nodeCondition_g00aa7_a2l3a()) {
+    if (nodeCondition3()) {
       editorCell.addEditorCell(createCollection_5());
     }
     editorCell.addEditorCell(createConstant_14());
     return editorCell;
   }
-  private boolean nodeCondition_g00aa7_a2l3a() {
+  private boolean nodeCondition3() {
     return (SLinkOperations.getTarget(myNode, LINKS.alternativeIcon$Y5ou) != null);
   }
   private EditorCell createConstant_12() {

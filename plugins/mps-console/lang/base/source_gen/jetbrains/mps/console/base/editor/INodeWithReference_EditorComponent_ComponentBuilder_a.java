@@ -58,7 +58,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
 
   private EditorCell createAlternation_0() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_clzyhh_a0();
+    alternationCondition = nodeCondition0();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createRefCell_0();
@@ -67,7 +67,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     }
     return editorCell;
   }
-  private boolean nodeCondition_clzyhh_a0() {
+  private boolean nodeCondition0() {
     return (boolean) IActionHolder__BehaviorDescriptor.canExecute_id2QdC0h7dh1h.invoke(myNode);
   }
   private EditorCell createRefCell_0() {

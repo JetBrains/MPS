@@ -45,12 +45,12 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     editorCell.setBig(true);
     setCellContext(editorCell);
     editorCell.addEditorCell(createComponent_0());
-    if (nodeCondition_8fvsfz_a1a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createRefNode_0());
     }
     return editorCell;
   }
-  private boolean nodeCondition_8fvsfz_a1a() {
+  private boolean nodeCondition0() {
     return (SLinkOperations.getTarget(myNode, LINKS.wrapped$o4hq) != null);
   }
   private EditorCell createComponent_0() {

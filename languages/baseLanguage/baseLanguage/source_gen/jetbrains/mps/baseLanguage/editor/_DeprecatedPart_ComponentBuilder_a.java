@@ -46,12 +46,12 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     Style style = new StyleImpl();
     style.set(StyleAttributes.SELECTABLE, false);
     editorCell.getStyle().putAll(style);
-    if (nodeCondition_uc5iyq_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_1());
     }
     return editorCell;
   }
-  private boolean nodeCondition_uc5iyq_a0a() {
+  private boolean nodeCondition0() {
     return SPropertyOperations.getBoolean(myNode, PROPS.isDeprecated$drG3) && (boolean) IBLDeprecatable__BehaviorDescriptor.shouldDeprecatedDocBeVisible_id7gdCoemJ2WL.invoke(myNode);
   }
   private EditorCell createCollection_1() {

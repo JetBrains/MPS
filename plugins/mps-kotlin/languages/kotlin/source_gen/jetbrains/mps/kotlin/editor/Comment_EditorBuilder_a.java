@@ -64,12 +64,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.getStyle().putAll(style);
     editorCell.addEditorCell(createReadOnlyModelAccessor_0());
     editorCell.addEditorCell(createRefNodeList_0());
-    if (nodeCondition_gt4ssm_a2a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_0());
     }
     return editorCell;
   }
-  private boolean nodeCondition_gt4ssm_a2a() {
+  private boolean nodeCondition0() {
     return ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.lines$mJPU)).count() > 1;
   }
   private EditorCell createReadOnlyModelAccessor_0() {

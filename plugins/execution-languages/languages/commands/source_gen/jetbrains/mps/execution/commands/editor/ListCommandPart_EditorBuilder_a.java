@@ -61,25 +61,25 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setBig(true);
     setCellContext(editorCell);
     editorCell.addEditorCell(createConstant_0());
-    if (nodeCondition_fty1bq_a1a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createRefNode_0());
     }
-    if (nodeCondition_fty1bq_a2a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createRefNodeList_0());
     }
-    if (nodeCondition_fty1bq_a3a()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createCollection_1());
     }
     editorCell.addEditorCell(createConstant_5());
     return editorCell;
   }
-  private boolean nodeCondition_fty1bq_a1a() {
+  private boolean nodeCondition0() {
     return ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.items$5OzF)).isEmpty();
   }
-  private boolean nodeCondition_fty1bq_a2a() {
+  private boolean nodeCondition1() {
     return (SLinkOperations.getTarget(myNode, LINKS.list$l1dd) == null);
   }
-  private boolean nodeCondition_fty1bq_a3a() {
+  private boolean nodeCondition2() {
     return Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.separator$l1se)).isNotEmpty();
   }
   private EditorCell createConstant_0() {

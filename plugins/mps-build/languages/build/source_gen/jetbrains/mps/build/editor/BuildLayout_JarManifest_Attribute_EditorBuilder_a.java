@@ -53,18 +53,18 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     editorCell.setCellId("Collection_8khnja_a");
     editorCell.setBig(true);
     setCellContext(editorCell);
-    if (nodeCondition_8khnja_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_1());
     }
-    if (nodeCondition_8khnja_a1a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createConstant_1());
     }
     return editorCell;
   }
-  private boolean nodeCondition_8khnja_a0a() {
+  private boolean nodeCondition0() {
     return Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.name$IAJz)).isNotEmpty() || Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.value$IFTT)).isNotEmpty();
   }
-  private boolean nodeCondition_8khnja_a1a() {
+  private boolean nodeCondition1() {
     return (SLinkOperations.getTarget(myNode, LINKS.name$IAJz) == null) && (SLinkOperations.getTarget(myNode, LINKS.value$IFTT) == null);
   }
   private EditorCell createCollection_1() {

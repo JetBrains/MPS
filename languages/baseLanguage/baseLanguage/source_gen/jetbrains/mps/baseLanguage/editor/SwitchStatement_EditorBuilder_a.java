@@ -77,10 +77,10 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setBig(true);
     setCellContext(editorCell);
     BigStatement_comment_action.setCellActions(editorCell, myNode, getEditorContext());
-    if (nodeCondition_nmr9ig_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_1());
     }
-    if (nodeCondition_nmr9ig_a1a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createCollection_2());
     }
     editorCell.addEditorCell(createConstant_2());
@@ -89,25 +89,25 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createConstant_4());
     editorCell.addEditorCell(createConstant_5());
     editorCell.addEditorCell(createRefNodeList_0());
-    if (nodeCondition_nmr9ig_a8a()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createConstant_7());
     }
-    if (nodeCondition_nmr9ig_a9a()) {
+    if (nodeCondition3()) {
       editorCell.addEditorCell(createCollection_3());
     }
     editorCell.addEditorCell(createConstant_10());
     return editorCell;
   }
-  private boolean nodeCondition_nmr9ig_a0a() {
+  private boolean nodeCondition0() {
     return !(SPropertyOperations.hasValue(myNode, PROPS.label$vLWZ, null));
   }
-  private boolean nodeCondition_nmr9ig_a1a() {
+  private boolean nodeCondition1() {
     return Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.switchLabel$nNiT)).isNotEmpty();
   }
-  private boolean nodeCondition_nmr9ig_a8a() {
+  private boolean nodeCondition2() {
     return (SLinkOperations.getTarget(myNode, LINKS.defaultBlock$QOu8) == null) || ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.case$8PWE)).isEmpty() || ListSequence.fromList(SLinkOperations.getChildren(SLinkOperations.getTarget(ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.case$8PWE)).last(), LINKS.body$5LhG), LINKS.statement$53DE)).isNotEmpty();
   }
-  private boolean nodeCondition_nmr9ig_a9a() {
+  private boolean nodeCondition3() {
     return (SLinkOperations.getTarget(myNode, LINKS.defaultBlock$QOu8) != null);
   }
   private EditorCell createCollection_1() {

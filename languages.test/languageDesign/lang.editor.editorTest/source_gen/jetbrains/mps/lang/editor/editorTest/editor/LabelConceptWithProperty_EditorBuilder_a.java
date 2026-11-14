@@ -77,7 +77,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
       style.set(StyleAttributes.DRAW_BRACKETS, true);
       style.set(StyleAttributes.BRACKETS_COLOR, getStyleRegistry().getSimpleColor(MPSColors.LIGHT_BLUE));
       editorCell.getStyle().putAll(style);
-      if (nodeCondition_ulii9q_a1a()) {
+      if (nodeCondition0()) {
         editorCell.getStyle().set(StyleAttributes.FOCUS_POLICY, FocusPolicy.ATTRACTS_FOCUS);
       }
       editorCell.setSubstituteInfo(new SPropertySubstituteInfo(editorCell, property));
@@ -93,7 +93,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
       getCellFactory().popCellContext();
     }
   }
-  private boolean nodeCondition_ulii9q_a1a() {
+  private boolean nodeCondition0() {
     return isEmptyString(SPropertyOperations.getString(myNode, PROPS.myProperty$yDdd));
   }
   private static boolean isEmptyString(String str) {

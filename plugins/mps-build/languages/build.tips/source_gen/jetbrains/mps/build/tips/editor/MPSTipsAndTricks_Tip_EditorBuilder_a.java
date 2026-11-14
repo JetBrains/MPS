@@ -79,10 +79,10 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     style.set(StyleAttributes.INDENT_LAYOUT_ON_NEW_LINE, true);
     style.set(StyleAttributes.INDENT_LAYOUT_INDENT, true);
     editorCell.getStyle().putAll(style);
-    if (nodeCondition_bmdp68_a0a0()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_0());
     }
-    if (nodeCondition_bmdp68_a1a0()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createConstant_1());
     }
     editorCell.addEditorCell(createConstant_2());
@@ -96,10 +96,10 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     editorCell.addEditorCell(createConstant_7());
     return editorCell;
   }
-  private boolean nodeCondition_bmdp68_a0a0() {
+  private boolean nodeCondition0() {
     return ListSequence.fromList(SLinkOperations.getChildren(SNodeOperations.cast(SNodeOperations.getParent(myNode), CONCEPTS.MPSTipsAndTricks$Kq), LINKS.tips$D4lw)).first() != myNode;
   }
-  private boolean nodeCondition_bmdp68_a1a0() {
+  private boolean nodeCondition1() {
     return ListSequence.fromList(SLinkOperations.getChildren(SNodeOperations.cast(SNodeOperations.getParent(myNode), CONCEPTS.MPSTipsAndTricks$Kq), LINKS.tips$D4lw)).first() != myNode;
   }
   private EditorCell createConstant_0() {

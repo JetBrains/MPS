@@ -65,10 +65,10 @@ import org.jetbrains.mps.openapi.language.SProperty;
     editorCell.addEditorCell(createConstant_1());
     editorCell.addEditorCell(createCollection_2());
     editorCell.addEditorCell(createConstant_6());
-    editorCell.setInitiallyCollapsed(nodeCondition_gbleq0_a1a());
+    editorCell.setInitiallyCollapsed(nodeCondition0());
     return editorCell;
   }
-  private boolean nodeCondition_gbleq0_a1a() {
+  private boolean nodeCondition0() {
     return SPropertyOperations.getBoolean(SNodeOperations.as(SNodeOperations.getParent(myNode), CONCEPTS.FoldingContainer$VC), PROPS.collapsed$OQCQ);
   }
   private EditorCell createConstant_1() {

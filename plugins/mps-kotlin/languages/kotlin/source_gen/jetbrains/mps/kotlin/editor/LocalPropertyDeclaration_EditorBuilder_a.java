@@ -60,43 +60,43 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setCellId("Collection_i7sp49_a");
     editorCell.setBig(true);
     setCellContext(editorCell);
-    if (nodeCondition_i7sp49_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_0());
     }
-    if (nodeCondition_i7sp49_a1a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createConstant_1());
     }
-    if (nodeCondition_i7sp49_a2a()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createConstant_2());
     }
-    if (nodeCondition_i7sp49_a3a()) {
+    if (nodeCondition3()) {
       editorCell.addEditorCell(createConstant_3());
     }
     editorCell.addEditorCell(createRefNodeList_0());
-    if (nodeCondition_i7sp49_a5a()) {
+    if (nodeCondition4()) {
       editorCell.addEditorCell(createConstant_4());
     }
-    if (nodeCondition_i7sp49_a6a()) {
+    if (nodeCondition5()) {
       editorCell.addEditorCell(createRefNode_0());
     }
     return editorCell;
   }
-  private boolean nodeCondition_i7sp49_a0a() {
+  private boolean nodeCondition0() {
     return SPropertyOperations.getBoolean(myNode, PROPS.isConstant$zvIz);
   }
-  private boolean nodeCondition_i7sp49_a1a() {
+  private boolean nodeCondition1() {
     return !(SPropertyOperations.getBoolean(myNode, PROPS.isReadonly$jzqd));
   }
-  private boolean nodeCondition_i7sp49_a2a() {
+  private boolean nodeCondition2() {
     return SPropertyOperations.getBoolean(myNode, PROPS.isReadonly$jzqd);
   }
-  private boolean nodeCondition_i7sp49_a3a() {
+  private boolean nodeCondition3() {
     return (boolean) IDeconstructingDeclarations__BehaviorDescriptor.isDeconstructed_id4FOkRjXxnrt.invoke(myNode);
   }
-  private boolean nodeCondition_i7sp49_a5a() {
+  private boolean nodeCondition4() {
     return (boolean) IDeconstructingDeclarations__BehaviorDescriptor.isDeconstructed_id4FOkRjXxnrt.invoke(myNode);
   }
-  private boolean nodeCondition_i7sp49_a6a() {
+  private boolean nodeCondition5() {
     return (SLinkOperations.getTarget(myNode, LINKS.assignment$nl1j) != null);
   }
   private EditorCell createConstant_0() {

@@ -78,21 +78,21 @@ import org.jetbrains.mps.openapi.language.SInterfaceConcept;
     style.set(StyleAttributes.SELECTABLE, false);
     style.set(StyleAttributes.DRAW_BORDER, true);
     editorCell.getStyle().putAll(style);
-    if (nodeCondition_72kg18_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createRefNode_0());
     }
     editorCell.addEditorCell(createComponent_0());
     editorCell.addEditorCell(createProperty_0());
     editorCell.addEditorCell(createRefNode_1());
-    if (nodeCondition_72kg18_a4a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createRefNodeList_0());
     }
     return editorCell;
   }
-  private boolean nodeCondition_72kg18_a0a() {
+  private boolean nodeCondition0() {
     return (SLinkOperations.getTarget(myNode, LINKS.fileAnnotations$Q2t4) != null);
   }
-  private boolean nodeCondition_72kg18_a4a() {
+  private boolean nodeCondition1() {
     return ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.imports$BOfg)).isNotEmpty();
   }
   private EditorCell createRefNode_0() {

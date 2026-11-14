@@ -67,12 +67,12 @@ import org.jetbrains.mps.openapi.language.SProperty;
     editorCell.setBig(true);
     setCellContext(editorCell);
     editorCell.addEditorCell(createCollection_1());
-    if (nodeCondition_tl1n57_a1a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createAlternation_4());
     }
     return editorCell;
   }
-  private boolean nodeCondition_tl1n57_a1a() {
+  private boolean nodeCondition0() {
     return (SLinkOperations.getTarget(myNode, LINKS.iconExpression$tVgU) != null);
   }
   private EditorCell createCollection_1() {
@@ -84,18 +84,18 @@ import org.jetbrains.mps.openapi.language.SProperty;
     editorCell.getStyle().putAll(style);
     editorCell.addEditorCell(createAlternation_0());
     editorCell.addEditorCell(createJComponent_0());
-    if (nodeCondition_tl1n57_a2a0()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createCollection_4());
     }
     editorCell.addEditorCell(createCollection_5());
     return editorCell;
   }
-  private boolean nodeCondition_tl1n57_a2a0() {
+  private boolean nodeCondition1() {
     return ListSequence.fromList(FileIcon__BehaviorDescriptor.getAdditionalFiles_id2NwO_B0ZkCe.invoke(myNode, SPropertyOperations.getString(myNode, PROPS.file$686H))).count() > 1;
   }
   private EditorCell createAlternation_0() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_tl1n57_a0a0();
+    alternationCondition = nodeCondition2();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createConstant_0();
@@ -104,7 +104,7 @@ import org.jetbrains.mps.openapi.language.SProperty;
     }
     return editorCell;
   }
-  private boolean nodeCondition_tl1n57_a0a0() {
+  private boolean nodeCondition2() {
     return isEmptyString(SPropertyOperations.getString(myNode, PROPS.file$686H));
   }
   private EditorCell createConstant_0() {
@@ -118,7 +118,7 @@ import org.jetbrains.mps.openapi.language.SProperty;
   }
   private EditorCell createAlternation_1() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_tl1n57_a0a0a();
+    alternationCondition = nodeCondition3();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createCollection_2();
@@ -127,7 +127,7 @@ import org.jetbrains.mps.openapi.language.SProperty;
     }
     return editorCell;
   }
-  private boolean nodeCondition_tl1n57_a0a0a() {
+  private boolean nodeCondition3() {
     return (boolean) FileIcon__BehaviorDescriptor.isValid_id7Mb2akaestJ.invoke(myNode);
   }
   private EditorCell createCollection_2() {
@@ -137,12 +137,12 @@ import org.jetbrains.mps.openapi.language.SProperty;
     style.set(StyleAttributes.SELECTABLE, false);
     editorCell.getStyle().putAll(style);
     editorCell.addEditorCell(createImage_0());
-    if (nodeCondition_tl1n57_a1a0a0a()) {
+    if (nodeCondition4()) {
       editorCell.addEditorCell(createCollection_3());
     }
     return editorCell;
   }
-  private boolean nodeCondition_tl1n57_a1a0a0a() {
+  private boolean nodeCondition4() {
     return (boolean) FileIcon__BehaviorDescriptor.isFileValid_id1$fQzw7$hd7.invoke(myNode, FileIcon__BehaviorDescriptor.getNamingConventionNewuiFileName_id1$fQzw7$wcx.invoke(myNode));
   }
   private EditorCell createImage_0() {
@@ -256,10 +256,10 @@ import org.jetbrains.mps.openapi.language.SProperty;
     editorCell.addEditorCell(createAlternation_2());
     editorCell.addEditorCell(createJComponent_1());
     editorCell.addEditorCell(createConstant_9());
-    editorCell.setInitiallyCollapsed(nodeCondition_tl1n57_a3a0());
+    editorCell.setInitiallyCollapsed(nodeCondition5());
     return editorCell;
   }
-  private boolean nodeCondition_tl1n57_a3a0() {
+  private boolean nodeCondition5() {
     return isEmptyString(SPropertyOperations.getString(myNode, PROPS.newuiFile$Eed5));
   }
   private EditorCell createConstant_5() {
@@ -281,7 +281,7 @@ import org.jetbrains.mps.openapi.language.SProperty;
   }
   private EditorCell createAlternation_2() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_tl1n57_a2d0a();
+    alternationCondition = nodeCondition6();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createConstant_7();
@@ -290,7 +290,7 @@ import org.jetbrains.mps.openapi.language.SProperty;
     }
     return editorCell;
   }
-  private boolean nodeCondition_tl1n57_a2d0a() {
+  private boolean nodeCondition6() {
     return isEmptyString(SPropertyOperations.getString(myNode, PROPS.newuiFile$Eed5));
   }
   private EditorCell createConstant_7() {
@@ -304,7 +304,7 @@ import org.jetbrains.mps.openapi.language.SProperty;
   }
   private EditorCell createAlternation_3() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_tl1n57_a0c3a0();
+    alternationCondition = nodeCondition7();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createCollection_6();
@@ -313,7 +313,7 @@ import org.jetbrains.mps.openapi.language.SProperty;
     }
     return editorCell;
   }
-  private boolean nodeCondition_tl1n57_a0c3a0() {
+  private boolean nodeCondition7() {
     return (boolean) FileIcon__BehaviorDescriptor.isExplicitNewuiFileValid_id1$fQzw7$eeH.invoke(myNode);
   }
   private EditorCell createCollection_6() {
@@ -382,7 +382,7 @@ import org.jetbrains.mps.openapi.language.SProperty;
   }
   private EditorCell createAlternation_4() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_tl1n57_a1a_0();
+    alternationCondition = nodeCondition8();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createRefNode_0();
@@ -395,7 +395,7 @@ import org.jetbrains.mps.openapi.language.SProperty;
     editorCell.getStyle().putAll(style);
     return editorCell;
   }
-  private boolean nodeCondition_tl1n57_a1a_0() {
+  private boolean nodeCondition8() {
     return (SLinkOperations.getTarget(myNode, LINKS.iconExpression$tVgU) != null);
   }
   private EditorCell createRefNode_0() {

@@ -75,22 +75,22 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     editorCell.setBig(true);
     setCellContext(editorCell);
     editorCell.addEditorCell(createComponent_0());
-    if (nodeCondition_y68cfu_a1a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createComponent_1());
     }
     editorCell.addEditorCell(createConstant_0());
     editorCell.addEditorCell(createProperty_0());
-    if (nodeCondition_y68cfu_a4a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createComponent_2());
     }
     editorCell.addEditorCell(createCollection_1());
     editorCell.addEditorCell(createCollection_2());
     return editorCell;
   }
-  private boolean nodeCondition_y68cfu_a1a() {
+  private boolean nodeCondition0() {
     return !(SNodeOperations.isInstanceOf(SNodeOperations.getParent(myNode), CONCEPTS.Interface$db));
   }
-  private boolean nodeCondition_y68cfu_a4a() {
+  private boolean nodeCondition1() {
     return ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.typeVariableDeclaration$Lipp)).isNotEmpty();
   }
   private EditorCell createComponent_0() {
@@ -121,7 +121,7 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
       Style style = new StyleImpl();
       style.set(StyleAttributes.SELECTABLE, true);
       editorCell.getStyle().putAll(style);
-      if (nodeCondition_y68cfu_a3a()) {
+      if (nodeCondition2()) {
         editorCell.getStyle().set(StyleAttributes.FOCUS_POLICY, FocusPolicy.ATTRACTS_FOCUS);
       }
       editorCell.setTransformationMenuLookup(new NamedTransformationMenuLookup(LanguageRegistry.getInstance(getEditorContext().getRepository()), CONCEPTS.EnumClass$Vk, "jetbrains.mps.baseLanguage.editor.EnumClass_ApplySideTransforms"));
@@ -138,7 +138,7 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
       getCellFactory().popCellContext();
     }
   }
-  private boolean nodeCondition_y68cfu_a3a() {
+  private boolean nodeCondition2() {
     return isEmptyString(SPropertyOperations.getString(myNode, PROPS.name$MnvL));
   }
   private EditorCell createComponent_2() {
@@ -150,18 +150,18 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
   private EditorCell createCollection_1() {
     EditorCell_Collection editorCell = new EditorCell_Collection(getEditorContext(), myNode, new CellLayout_Indent());
     editorCell.setCellId("enumImplementsCollection");
-    if (nodeCondition_y68cfu_a0f0()) {
+    if (nodeCondition3()) {
       editorCell.addEditorCell(createConstant_1());
     }
-    if (nodeCondition_y68cfu_a1f0()) {
+    if (nodeCondition4()) {
       editorCell.addEditorCell(createRefNodeList_0());
     }
     return editorCell;
   }
-  private boolean nodeCondition_y68cfu_a0f0() {
+  private boolean nodeCondition3() {
     return ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.implementedInterface$rujG)).isNotEmpty();
   }
-  private boolean nodeCondition_y68cfu_a1f0() {
+  private boolean nodeCondition4() {
     return Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.implementedInterface$rujG)).isNotEmpty();
   }
   private EditorCell createConstant_1() {
@@ -280,7 +280,7 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     Style style = new StyleImpl();
     style.set(StyleAttributes.INDENT_LAYOUT_NEW_LINE, true);
     editorCell.getStyle().putAll(style);
-    editorCell.setFoldable(nodeCondition_y68cfu_a6a());
+    editorCell.setFoldable(nodeCondition5());
     editorCell.setFoldedCell(createComponent_4());
     editorCell.addEditorCell(createConstant_3());
     editorCell.addEditorCell(createRefNodeList_1());
@@ -289,7 +289,7 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     editorCell.addEditorCell(createConstant_5());
     return editorCell;
   }
-  private boolean nodeCondition_y68cfu_a6a() {
+  private boolean nodeCondition5() {
     return (SNodeOperations.getParent(myNode) != null);
   }
   private EditorCell createConstant_3() {

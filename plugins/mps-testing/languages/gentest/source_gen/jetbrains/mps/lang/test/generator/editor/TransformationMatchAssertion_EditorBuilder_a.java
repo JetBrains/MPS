@@ -54,12 +54,12 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     editorCell.setBig(true);
     setCellContext(editorCell);
     editorCell.addEditorCell(createCollection_1());
-    if (nodeCondition_6exk9f_a1a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_2());
     }
     return editorCell;
   }
-  private boolean nodeCondition_6exk9f_a1a() {
+  private boolean nodeCondition0() {
     return SLinkOperations.getTarget(myNode, LINKS.matchOptions$gxyT) != null || Sequence.fromIterable(SNodeOperations.ofConcept(SLinkOperations.getChildren(SNodeOperations.as(SNodeOperations.getParent(myNode), CONCEPTS.GeneratorTest$C3), LINKS.arguments$cjc2), CONCEPTS.ModelMatchOptions$YF)).isNotEmpty();
   }
   private EditorCell createCollection_1() {

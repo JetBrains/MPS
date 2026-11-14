@@ -291,12 +291,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createConstant_11());
     editorCell.addEditorCell(createConstant_12());
     editorCell.addEditorCell(createRefNodeList_3());
-    if (nodeCondition_7v1nzk_a11b2a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_5());
     }
     return editorCell;
   }
-  private boolean nodeCondition_7v1nzk_a11b2a() {
+  private boolean nodeCondition0() {
     // this will be shown only when generating into a concept
     // otherwise, only concept id will be shown in inspector
     return SModelStereotype.isGeneratorModel(SNodeOperations.getModel(myNode)) || (SNodeOperations.getModel(myNode).getModule() instanceof TransientSModule);

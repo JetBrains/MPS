@@ -54,13 +54,13 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setCellId("Collection_lnae77_0");
     editorCell.setBig(true);
     setCellContext(editorCell);
-    if (nodeCondition_lnae77_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_1());
     }
     editorCell.addEditorCell(createCollection_2());
     return editorCell;
   }
-  private boolean nodeCondition_lnae77_a0a() {
+  private boolean nodeCondition0() {
     return !(IdEditorHelper.shownInEditor(myNode));
   }
   private EditorCell createCollection_1() {

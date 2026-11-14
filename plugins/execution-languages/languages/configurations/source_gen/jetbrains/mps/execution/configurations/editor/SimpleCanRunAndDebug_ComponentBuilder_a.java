@@ -79,18 +79,18 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     style.set(StyleAttributes.SELECTABLE, false);
     editorCell.getStyle().putAll(style);
     editorCell.addEditorCell(createIndentCell_0());
-    if (nodeCondition_o92gz8_a1b0()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_1());
     }
-    if (nodeCondition_o92gz8_a2b0()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createConstant_2());
     }
     return editorCell;
   }
-  private boolean nodeCondition_o92gz8_a1b0() {
+  private boolean nodeCondition0() {
     return SPropertyOperations.getBoolean(myNode, PROPS.canRun$gS0N);
   }
-  private boolean nodeCondition_o92gz8_a2b0() {
+  private boolean nodeCondition1() {
     return !(SPropertyOperations.getBoolean(myNode, PROPS.canRun$gS0N));
   }
   private EditorCell createIndentCell_0() {
@@ -177,18 +177,18 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     Style style = new StyleImpl();
     style.set(StyleAttributes.SELECTABLE, false);
     editorCell.getStyle().putAll(style);
-    if (nodeCondition_o92gz8_a0d0()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createConstant_4());
     }
-    if (nodeCondition_o92gz8_a1d0()) {
+    if (nodeCondition3()) {
       editorCell.addEditorCell(createConstant_5());
     }
     return editorCell;
   }
-  private boolean nodeCondition_o92gz8_a0d0() {
+  private boolean nodeCondition2() {
     return SPropertyOperations.getBoolean(myNode, PROPS.canDebug$cxkv);
   }
-  private boolean nodeCondition_o92gz8_a1d0() {
+  private boolean nodeCondition3() {
     return !(SPropertyOperations.getBoolean(myNode, PROPS.canDebug$cxkv));
   }
   private EditorCell createConstant_4() {

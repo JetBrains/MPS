@@ -246,13 +246,13 @@ import org.jetbrains.mps.openapi.language.SConcept;
     style.set(StyleAttributes.SELECTABLE, false);
     editorCell.getStyle().putAll(style);
     editorCell.addEditorCell(createConstant_2());
-    if (nodeCondition_o2w2pr_a1b0()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_5());
     }
     editorCell.addEditorCell(createRefNode_2());
     return editorCell;
   }
-  private boolean nodeCondition_o2w2pr_a1b0() {
+  private boolean nodeCondition0() {
     return SLinkOperations.getTarget(myNode, LINKS.labelDeclaration$8_Th) != null;
   }
   private EditorCell createConstant_2() {

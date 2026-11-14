@@ -182,7 +182,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
       if (editorCell.getSRole() == null) {
         editorCell.setSRole(LINKS.right$Uro5);
       }
-      if (nodeCondition_gxzktf_a2a()) {
+      if (nodeCondition0()) {
         editorCell.getStyle().set(StyleAttributes.FOCUS_POLICY, FocusPolicy.ATTRACTS_FOCUS);
       }
     }
@@ -203,7 +203,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     protected String getNoTargetText() {
       return "<no right>";
     }
-    private boolean nodeCondition_gxzktf_a2a() {
+    private boolean nodeCondition0() {
       return (SLinkOperations.getTarget(myNode, LINKS.left$UqF2) != null);
     }
   }

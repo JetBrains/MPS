@@ -82,25 +82,25 @@ import org.jetbrains.mps.openapi.language.SConcept;
     setCellContext(editorCell);
     editorCell.addEditorCell(createComponent_0());
     editorCell.addEditorCell(createProperty_0());
-    if (nodeCondition_ucemm3_a2a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_1());
     }
-    if (nodeCondition_ucemm3_a3a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createCollection_2());
     }
-    if (nodeCondition_ucemm3_a4a()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createCollection_3());
     }
     editorCell.addEditorCell(createConstant_10());
     return editorCell;
   }
-  private boolean nodeCondition_ucemm3_a2a() {
+  private boolean nodeCondition0() {
     return !((boolean) BuildMps_AbstractModule__BehaviorDescriptor.isCompact_id7gAtt1ju6Jy.invoke(myNode));
   }
-  private boolean nodeCondition_ucemm3_a3a() {
+  private boolean nodeCondition1() {
     return Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.path$iYKB)).isNotEmpty();
   }
-  private boolean nodeCondition_ucemm3_a4a() {
+  private boolean nodeCondition2() {
     return !((boolean) BuildMps_AbstractModule__BehaviorDescriptor.isCompact_id7gAtt1ju6Jy.invoke(myNode));
   }
   private EditorCell createComponent_0() {
@@ -283,7 +283,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.getStyle().putAll(style);
     editorCell.setFoldable(true);
     editorCell.addEditorCell(createConstant_3());
-    if (nodeCondition_ucemm3_a1e0()) {
+    if (nodeCondition3()) {
       editorCell.addEditorCell(createConstant_4());
     }
     editorCell.addEditorCell(createRefNodeList_0());
@@ -293,7 +293,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createRefNodeList_2());
     return editorCell;
   }
-  private boolean nodeCondition_ucemm3_a1e0() {
+  private boolean nodeCondition3() {
     return SPropertyOperations.getBoolean(myNode, PROPS.withKotlin$2YBL);
   }
   private EditorCell createConstant_3() {

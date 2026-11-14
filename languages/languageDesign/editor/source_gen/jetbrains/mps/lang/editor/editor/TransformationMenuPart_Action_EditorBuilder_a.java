@@ -70,7 +70,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setFoldable(true);
     editorCell.setFoldedCell(createCollection_2());
     editorCell.addEditorCell(createComponent_0());
-    if (nodeCondition_zg23bd_a1a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_1());
     }
     editorCell.addEditorCell(createConstant_3());
@@ -82,7 +82,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createRefNodeList_0());
     return editorCell;
   }
-  private boolean nodeCondition_zg23bd_a1a() {
+  private boolean nodeCondition0() {
     return (SLinkOperations.getTarget(myNode, LINKS.outputConceptReference$JTv2) != null);
   }
   private EditorCell createComponent_0() {

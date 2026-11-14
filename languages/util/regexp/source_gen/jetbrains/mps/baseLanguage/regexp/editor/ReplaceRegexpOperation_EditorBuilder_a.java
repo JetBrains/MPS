@@ -60,30 +60,30 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createConstant_1());
     editorCell.addEditorCell(createRefNodeList_0());
     editorCell.addEditorCell(createConstant_3());
-    if (nodeCondition_ldr481_a5a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_4());
     }
-    if (nodeCondition_ldr481_a6a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createConstant_5());
     }
-    if (nodeCondition_ldr481_a7a()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createConstant_6());
     }
-    if (nodeCondition_ldr481_a8a()) {
+    if (nodeCondition3()) {
       editorCell.addEditorCell(createConstant_7());
     }
     return editorCell;
   }
-  private boolean nodeCondition_ldr481_a5a() {
+  private boolean nodeCondition0() {
     return SPropertyOperations.getBoolean(myNode, PROPS.globalReplace$NEs5);
   }
-  private boolean nodeCondition_ldr481_a6a() {
+  private boolean nodeCondition1() {
     return SPropertyOperations.getBoolean(myNode, PROPS.multiLine$NDY3);
   }
-  private boolean nodeCondition_ldr481_a7a() {
+  private boolean nodeCondition2() {
     return SPropertyOperations.getBoolean(myNode, PROPS.dotAll$NDJ2);
   }
-  private boolean nodeCondition_ldr481_a8a() {
+  private boolean nodeCondition3() {
     return SPropertyOperations.getBoolean(myNode, PROPS.caseInsensitive$NEd4);
   }
   private EditorCell createConstant_0() {

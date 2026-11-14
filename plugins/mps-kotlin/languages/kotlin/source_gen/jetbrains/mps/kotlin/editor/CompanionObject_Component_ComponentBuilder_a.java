@@ -57,12 +57,12 @@ import org.jetbrains.mps.openapi.language.SInterfaceConcept;
     editorCell.setCellId("Collection_pre2k4_a");
     editorCell.addEditorCell(createComponent_0());
     editorCell.addEditorCell(createConstant_0());
-    if (nodeCondition_pre2k4_a2a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createProperty_0());
     }
     return editorCell;
   }
-  private boolean nodeCondition_pre2k4_a2a() {
+  private boolean nodeCondition0() {
     return isNotEmptyString(SPropertyOperations.getString(myNode, PROPS.customName$sUyF));
   }
   private EditorCell createComponent_0() {

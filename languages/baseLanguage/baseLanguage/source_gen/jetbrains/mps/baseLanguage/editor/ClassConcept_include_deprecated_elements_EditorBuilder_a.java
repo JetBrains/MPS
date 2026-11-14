@@ -81,51 +81,51 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     setCellContext(editorCell);
     editorCell.addEditorCell(createComponent_0());
     editorCell.addEditorCell(createComponent_1());
-    if (nodeCondition_tnjsn_a2a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createComponent_2());
     }
-    if (nodeCondition_tnjsn_a3a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createConstant_0());
     }
-    if (nodeCondition_tnjsn_a4a()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createConstant_1());
     }
-    if (nodeCondition_tnjsn_a5a()) {
+    if (nodeCondition3()) {
       editorCell.addEditorCell(createConstant_2());
     }
     editorCell.addEditorCell(createConstant_3());
     editorCell.addEditorCell(createProperty_0());
-    if (nodeCondition_tnjsn_a8a()) {
+    if (nodeCondition4()) {
       editorCell.addEditorCell(createComponent_3());
     }
-    if (nodeCondition_tnjsn_a9a()) {
+    if (nodeCondition5()) {
       editorCell.addEditorCell(createCollection_1());
     }
-    if (nodeCondition_tnjsn_a01a()) {
+    if (nodeCondition6()) {
       editorCell.addEditorCell(createCollection_2());
     }
     editorCell.addEditorCell(createCollection_3());
     return editorCell;
   }
-  private boolean nodeCondition_tnjsn_a2a() {
+  private boolean nodeCondition0() {
     return !(SNodeOperations.isInstanceOf(SNodeOperations.getParent(myNode), CONCEPTS.Interface$db));
   }
-  private boolean nodeCondition_tnjsn_a3a() {
+  private boolean nodeCondition1() {
     return (boolean) Classifier__BehaviorDescriptor.isInner_idsWroEc0xXl.invoke(myNode) && (boolean) IClassifierMember__BehaviorDescriptor.isStatic_id6r77ob2USS8.invoke(myNode) && !(SNodeOperations.isInstanceOf(SNodeOperations.getParent(myNode), CONCEPTS.Interface$db));
   }
-  private boolean nodeCondition_tnjsn_a4a() {
+  private boolean nodeCondition2() {
     return SPropertyOperations.getBoolean(myNode, PROPS.abstractClass$Ta1X);
   }
-  private boolean nodeCondition_tnjsn_a5a() {
+  private boolean nodeCondition3() {
     return SPropertyOperations.getBoolean(myNode, PROPS.isFinal$f7C_);
   }
-  private boolean nodeCondition_tnjsn_a8a() {
+  private boolean nodeCondition4() {
     return ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.typeVariableDeclaration$Lipp)).isNotEmpty();
   }
-  private boolean nodeCondition_tnjsn_a9a() {
+  private boolean nodeCondition5() {
     return Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.superclass$Mp9$)).isNotEmpty();
   }
-  private boolean nodeCondition_tnjsn_a01a() {
+  private boolean nodeCondition6() {
     return Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.implementedInterface$rujG)).isNotEmpty();
   }
   private EditorCell createComponent_0() {
@@ -199,7 +199,7 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
       Style style = new StyleImpl();
       style.set(StyleAttributes.SELECTABLE, true);
       editorCell.getStyle().putAll(style);
-      if (nodeCondition_tnjsn_a7a()) {
+      if (nodeCondition7()) {
         editorCell.getStyle().set(StyleAttributes.FOCUS_POLICY, FocusPolicy.ATTRACTS_FOCUS);
       }
       editorCell.setTransformationMenuLookup(new NamedTransformationMenuLookup(LanguageRegistry.getInstance(getEditorContext().getRepository()), CONCEPTS.ClassConcept$bK, "jetbrains.mps.baseLanguage.editor.ClassConcept_ApplySideTransforms"));
@@ -216,7 +216,7 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
       getCellFactory().popCellContext();
     }
   }
-  private boolean nodeCondition_tnjsn_a7a() {
+  private boolean nodeCondition7() {
     return isEmptyString(SPropertyOperations.getString(myNode, PROPS.name$MnvL));
   }
   private EditorCell createComponent_3() {
@@ -423,20 +423,20 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     Style style = new StyleImpl();
     style.set(StyleAttributes.INDENT_LAYOUT_NEW_LINE, true);
     editorCell.getStyle().putAll(style);
-    editorCell.setFoldable(nodeCondition_tnjsn_a11a());
+    editorCell.setFoldable(nodeCondition9());
     editorCell.setFoldedCell(createComponent_5());
     editorCell.addEditorCell(createConstant_7());
     editorCell.addEditorCell(createComponent_4());
-    if (nodeCondition_tnjsn_a2l0()) {
+    if (nodeCondition8()) {
       editorCell.addEditorCell(createCollection_4());
     }
     editorCell.addEditorCell(createConstant_24());
     return editorCell;
   }
-  private boolean nodeCondition_tnjsn_a2l0() {
+  private boolean nodeCondition8() {
     return Sequence.fromIterable(Classifier__BehaviorDescriptor.members_id1hodSy8nQmC.invoke(myNode)).subtract(ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.member$L_2d))).isNotEmpty();
   }
-  private boolean nodeCondition_tnjsn_a11a() {
+  private boolean nodeCondition9() {
     return (SNodeOperations.getParent(myNode) != null);
   }
   private EditorCell createConstant_7() {
@@ -470,14 +470,14 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     editorCell.getStyle().putAll(style);
     editorCell.addEditorCell(createConstant_8());
     editorCell.addEditorCell(createConstant_9());
-    if (nodeCondition_tnjsn_a2c11a()) {
+    if (nodeCondition10()) {
       editorCell.addEditorCell(createRefNodeList_1());
     }
     editorCell.addEditorCell(createConstant_11());
-    if (nodeCondition_tnjsn_a4c11a()) {
+    if (nodeCondition11()) {
       editorCell.addEditorCell(createCollection_5());
     }
-    if (nodeCondition_tnjsn_a5c11a()) {
+    if (nodeCondition12()) {
       editorCell.addEditorCell(createRefNode_2());
     }
     editorCell.addEditorCell(createRefNodeList_2());
@@ -485,23 +485,23 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     editorCell.addEditorCell(createRefNode_3());
     editorCell.addEditorCell(createRefNodeList_4());
     editorCell.addEditorCell(createRefNodeList_5());
-    if (nodeCondition_tnjsn_a11c11a()) {
+    if (nodeCondition13()) {
       editorCell.addEditorCell(createRefNodeList_6());
     }
     editorCell.addEditorCell(createConstant_22());
     editorCell.addEditorCell(createRefNodeList_7());
     return editorCell;
   }
-  private boolean nodeCondition_tnjsn_a2c11a() {
+  private boolean nodeCondition10() {
     return !((boolean) Classifier__BehaviorDescriptor.isInner_idsWroEc0xXl.invoke(myNode)) || (boolean) IClassifierMember__BehaviorDescriptor.isStatic_id6r77ob2USS8.invoke(myNode) || Sequence.fromIterable(Classifier__BehaviorDescriptor.staticFields_id4_LVZ3pBr7M.invoke(myNode)).isNotEmpty();
   }
-  private boolean nodeCondition_tnjsn_a4c11a() {
+  private boolean nodeCondition11() {
     return Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.staticInitializer$XWkI)).isNotEmpty();
   }
-  private boolean nodeCondition_tnjsn_a5c11a() {
+  private boolean nodeCondition12() {
     return !((boolean) Classifier__BehaviorDescriptor.isInner_idsWroEc0xXl.invoke(myNode)) || (boolean) IClassifierMember__BehaviorDescriptor.isStatic_id6r77ob2USS8.invoke(myNode) || Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.classInitializer$D0$F)).isNotEmpty();
   }
-  private boolean nodeCondition_tnjsn_a11c11a() {
+  private boolean nodeCondition13() {
     return !((boolean) Classifier__BehaviorDescriptor.isInner_idsWroEc0xXl.invoke(myNode)) || (boolean) IClassifierMember__BehaviorDescriptor.isStatic_id6r77ob2USS8.invoke(myNode) || Sequence.fromIterable(ClassConcept__BehaviorDescriptor.staticMethods_id4_LVZ3pCeXr.invoke(myNode)).isNotEmpty();
   }
   private EditorCell createConstant_8() {

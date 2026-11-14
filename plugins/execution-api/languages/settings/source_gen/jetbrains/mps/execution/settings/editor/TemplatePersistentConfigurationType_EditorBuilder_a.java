@@ -58,18 +58,18 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     editorCell.setCellId("Collection_1clvom_a");
     editorCell.setBig(true);
     setCellContext(editorCell);
-    if (nodeCondition_1clvom_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createRefCell_0());
     }
-    if (nodeCondition_1clvom_a1a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createRefCell_1());
     }
     return editorCell;
   }
-  private boolean nodeCondition_1clvom_a0a() {
+  private boolean nodeCondition0() {
     return (SLinkOperations.getTarget(myNode, LINKS.persistentConfiguration$QL_P) == null) || (new IAttributeDescriptor.NodeAttribute(CONCEPTS.DeprecatedAnnotation$xW).get(SLinkOperations.getTarget(myNode, LINKS.persistentConfiguration$QL_P)) == null);
   }
-  private boolean nodeCondition_1clvom_a1a() {
+  private boolean nodeCondition1() {
     return (SLinkOperations.getTarget(myNode, LINKS.persistentConfiguration$QL_P) != null) && (new IAttributeDescriptor.NodeAttribute(CONCEPTS.DeprecatedAnnotation$xW).get(SLinkOperations.getTarget(myNode, LINKS.persistentConfiguration$QL_P)) != null);
   }
   private EditorCell createRefCell_0() {

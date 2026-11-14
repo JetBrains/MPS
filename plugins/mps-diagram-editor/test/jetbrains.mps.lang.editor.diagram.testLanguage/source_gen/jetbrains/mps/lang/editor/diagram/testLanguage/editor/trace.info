@@ -4573,9 +4573,9 @@
       <node id="8794120090374245752" at="84,120,85,49" concept="2" />
       <node id="8794120090374245752" at="85,49,86,33" concept="2" />
       <node id="8794120090374254463" at="86,33,87,48" concept="2" />
-      <node id="8794120090374245752" at="87,48,88,65" concept="2" />
-      <node id="8794120090374245752" at="88,65,89,22" concept="8" />
-      <node id="1658153848510703426" at="91,46,92,81" concept="8" />
+      <node id="8794120090374245752" at="87,48,88,55" concept="2" />
+      <node id="8794120090374245752" at="88,55,89,22" concept="8" />
+      <node id="1658153848510703426" at="91,36,92,81" concept="8" />
       <node id="8794120090374245752" at="94,40,95,88" concept="7" />
       <node id="8794120090374245752" at="95,88,96,47" concept="2" />
       <node id="8794120090374245752" at="96,47,97,22" concept="8" />
@@ -4649,7 +4649,7 @@
       <node id="8794120090374245752" at="55,0,57,0" concept="3" trace="myNode" />
       <node id="8794120090374245752" at="147,20,149,15" concept="0" />
       <node id="8794120090374245752" at="69,0,72,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="1658153848510701770" at="91,0,94,0" concept="6" trace="nodeCondition_dbn5di_a0a#()Z" />
+      <node id="1658153848510701770" at="91,0,94,0" concept="6" trace="nodeCondition0#()Z" />
       <node id="8794120090374245752" at="134,0,137,0" concept="6" trace="createMapper#(Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/jetpad/mapper/Mapper;" />
       <node id="8794120090374245752" at="139,0,142,0" concept="6" trace="createMapper#(Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/jetpad/mapper/Mapper;" />
       <node id="8794120090374245752" at="174,0,177,0" concept="6" trace="createMapper#(Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/jetpad/mapper/Mapper;" />
@@ -4693,7 +4693,7 @@
       <node id="8794120090374245752" at="128,0,168,0" concept="6" trace="createMapper#(Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/jetpad/mapper/Mapper;" />
       <scope id="8794120090374245752" at="65,26,66,18" />
       <scope id="8794120090374245752" at="69,39,70,32" />
-      <scope id="1658153848510701771" at="91,46,92,81" />
+      <scope id="1658153848510701771" at="91,36,92,81" />
       <scope id="8794120090374245752" at="134,85,135,75" />
       <scope id="8794120090374245752" at="139,91,140,79" />
       <scope id="8794120090374245752" at="145,37,146,62" />

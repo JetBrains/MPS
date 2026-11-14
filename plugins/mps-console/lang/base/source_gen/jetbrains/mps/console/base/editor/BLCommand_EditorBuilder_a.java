@@ -49,7 +49,7 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
 
   private EditorCell createAlternation_0() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_zc016d_a0();
+    alternationCondition = nodeCondition0();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createCollection_0();
@@ -63,7 +63,7 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     }
     return editorCell;
   }
-  private boolean nodeCondition_zc016d_a0() {
+  private boolean nodeCondition0() {
     return SNodeOperations.getNodeAncestor(myNode, CONCEPTS.History$t, false, false) == null;
   }
   private EditorCell createCollection_0() {

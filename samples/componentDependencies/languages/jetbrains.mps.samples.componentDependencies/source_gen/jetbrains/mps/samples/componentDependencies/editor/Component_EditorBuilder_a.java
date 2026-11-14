@@ -67,12 +67,12 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     Style style = new StyleImpl();
     style.set(StyleAttributes.SELECTABLE, false);
     editorCell.getStyle().putAll(style);
-    if (nodeCondition_3k4y3b_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_1());
     }
     return editorCell;
   }
-  private boolean nodeCondition_3k4y3b_a0a() {
+  private boolean nodeCondition0() {
     String query = SPropertyOperations.getString(SNodeOperations.getNodeAncestor(myNode, CONCEPTS.ComponentSet$2N, false, false), PROPS.query$VVbp);
     return ((query == null || query.length() == 0) ? true : SPropertyOperations.getString(myNode, PROPS.name$MnvL).contains(query));
   }

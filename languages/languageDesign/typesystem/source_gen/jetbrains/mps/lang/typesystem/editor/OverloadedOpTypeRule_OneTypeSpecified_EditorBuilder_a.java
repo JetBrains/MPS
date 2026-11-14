@@ -192,13 +192,13 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createRefNode_0());
     editorCell.addEditorCell(createConstant_2());
     editorCell.addEditorCell(createProperty_0());
-    if (nodeCondition_38fsuu_a4b0()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_3());
     }
     editorCell.addEditorCell(createConstant_4());
     return editorCell;
   }
-  private boolean nodeCondition_38fsuu_a4b0() {
+  private boolean nodeCondition0() {
     return !(SPropertyOperations.getBoolean(myNode, PROPS.isExact$npuQ));
   }
   private EditorCell createConstant_1() {

@@ -56,12 +56,12 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     editorCell.addEditorCell(createConstant_0());
     editorCell.addEditorCell(createProperty_0());
     editorCell.addEditorCell(createComponent_0());
-    if (nodeCondition_ka3b3c_a3a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_1());
     }
     return editorCell;
   }
-  private boolean nodeCondition_ka3b3c_a3a() {
+  private boolean nodeCondition0() {
     return SNodeOperations.getNodeAncestor(myNode, CONCEPTS.InequationReplacementRule$m3, false, false) != null;
   }
   private EditorCell createConstant_0() {

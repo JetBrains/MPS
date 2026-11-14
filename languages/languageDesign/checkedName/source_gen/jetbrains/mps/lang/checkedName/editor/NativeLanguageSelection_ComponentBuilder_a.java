@@ -56,12 +56,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setCellId("Collection_t5g34e_a");
     editorCell.setGridLayout(true);
     editorCell.addEditorCell(createCollection_1());
-    if (nodeCondition_t5g34e_a1a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_2());
     }
     return editorCell;
   }
-  private boolean nodeCondition_t5g34e_a1a() {
+  private boolean nodeCondition0() {
     return SEnumOperations.isMember(SPropertyOperations.getEnum(myNode, PROPS.capitalizationStyle$TMEQ), 0x286c0523058e0322L);
   }
   private EditorCell createCollection_1() {

@@ -89,24 +89,24 @@ import org.jetbrains.mps.openapi.language.SProperty;
     editorCell.setCellId("Collection_2ojjgh_a");
     editorCell.setBig(true);
     setCellContext(editorCell);
-    if (nodeCondition_2ojjgh_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_1());
     }
-    if (nodeCondition_2ojjgh_a1a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createCollection_2());
     }
-    if (nodeCondition_2ojjgh_a2a()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createCollection_3());
     }
     return editorCell;
   }
-  private boolean nodeCondition_2ojjgh_a0a() {
+  private boolean nodeCondition0() {
     return !(SNodeOperations.isInstanceOf(SNodeOperations.getParent(myNode), CONCEPTS.NamedTupleDeclaration$aM));
   }
-  private boolean nodeCondition_2ojjgh_a1a() {
+  private boolean nodeCondition1() {
     return SNodeOperations.isInstanceOf(SNodeOperations.getParent(myNode), CONCEPTS.NamedTupleDeclaration$aM);
   }
-  private boolean nodeCondition_2ojjgh_a2a() {
+  private boolean nodeCondition2() {
     return Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.parameter$oqG$)).isNotEmpty();
   }
   private EditorCell createCollection_1() {

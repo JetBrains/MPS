@@ -96,18 +96,18 @@ import org.jetbrains.mps.openapi.language.SConcept;
     style.set(StyleAttributes.SELECTABLE, false);
     editorCell.getStyle().putAll(style);
     editorCell.addEditorCell(createIndentCell_0());
-    if (nodeCondition_2konf7_a1b0()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_1());
     }
-    if (nodeCondition_2konf7_a2b0()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createConstant_2());
     }
     return editorCell;
   }
-  private boolean nodeCondition_2konf7_a1b0() {
+  private boolean nodeCondition0() {
     return SPropertyOperations.getBoolean(myNode, PROPS.canRun$gS0N);
   }
-  private boolean nodeCondition_2konf7_a2b0() {
+  private boolean nodeCondition1() {
     return !(SPropertyOperations.getBoolean(myNode, PROPS.canRun$gS0N));
   }
   private EditorCell createIndentCell_0() {
@@ -189,18 +189,18 @@ import org.jetbrains.mps.openapi.language.SConcept;
     style.set(StyleAttributes.SELECTABLE, false);
     editorCell.getStyle().putAll(style);
     editorCell.addEditorCell(createIndentCell_1());
-    if (nodeCondition_2konf7_a1c0()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createCollection_3());
     }
-    if (nodeCondition_2konf7_a2c0()) {
+    if (nodeCondition3()) {
       editorCell.addEditorCell(createConstant_4());
     }
     return editorCell;
   }
-  private boolean nodeCondition_2konf7_a1c0() {
+  private boolean nodeCondition2() {
     return Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.debuggerConfiguration$vTxu)).isNotEmpty();
   }
-  private boolean nodeCondition_2konf7_a2c0() {
+  private boolean nodeCondition3() {
     return (SLinkOperations.getTarget(myNode, LINKS.debuggerConfiguration$vTxu) == null);
   }
   private EditorCell createIndentCell_1() {

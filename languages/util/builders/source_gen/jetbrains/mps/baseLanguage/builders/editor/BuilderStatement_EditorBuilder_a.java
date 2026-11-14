@@ -53,18 +53,18 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     editorCell.setBig(true);
     setCellContext(editorCell);
     editorCell.addEditorCell(createRefNode_0());
-    if (nodeCondition_idzzzw_a1a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_0());
     }
-    if (nodeCondition_idzzzw_a2a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createCollection_1());
     }
     return editorCell;
   }
-  private boolean nodeCondition_idzzzw_a1a() {
+  private boolean nodeCondition0() {
     return (boolean) Builder__BehaviorDescriptor.isLeaf_id67LR$5LQnln.invoke(SLinkOperations.getTarget(myNode, LINKS.builder$HP0i));
   }
-  private boolean nodeCondition_idzzzw_a2a() {
+  private boolean nodeCondition1() {
     return !((boolean) Builder__BehaviorDescriptor.isLeaf_id67LR$5LQnln.invoke(SLinkOperations.getTarget(myNode, LINKS.builder$HP0i)));
   }
   private EditorCell createRefNode_0() {

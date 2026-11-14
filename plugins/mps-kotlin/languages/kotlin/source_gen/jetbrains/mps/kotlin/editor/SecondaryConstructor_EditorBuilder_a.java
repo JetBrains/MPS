@@ -54,13 +54,13 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     editorCell.addEditorCell(createComponent_1());
     editorCell.addEditorCell(createConstant_0());
     editorCell.addEditorCell(createComponent_2());
-    if (nodeCondition_ypapyr_a4a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_1());
     }
     editorCell.addEditorCell(createComponent_3());
     return editorCell;
   }
-  private boolean nodeCondition_ypapyr_a4a() {
+  private boolean nodeCondition0() {
     return (SLinkOperations.getTarget(myNode, LINKS.delegationCall$bPqB) != null);
   }
   private EditorCell createComponent_0() {

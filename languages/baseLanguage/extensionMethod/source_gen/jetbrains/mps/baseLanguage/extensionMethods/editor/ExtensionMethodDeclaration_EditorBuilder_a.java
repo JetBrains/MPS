@@ -76,7 +76,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setBig(true);
     setCellContext(editorCell);
     editorCell.addEditorCell(createRefNode_0());
-    if (nodeCondition_1i2int_a1a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createComponent_0());
     }
     editorCell.addEditorCell(createRefNode_1());
@@ -84,23 +84,23 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createConstant_0());
     editorCell.addEditorCell(createRefNodeList_0());
     editorCell.addEditorCell(createConstant_2());
-    if (nodeCondition_1i2int_a7a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createCollection_1());
     }
-    if (nodeCondition_1i2int_a8a()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createCollection_2());
     }
     editorCell.addEditorCell(createComponent_1());
     editorCell.addEditorCell(createConstant_5());
     return editorCell;
   }
-  private boolean nodeCondition_1i2int_a1a() {
+  private boolean nodeCondition0() {
     return ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.typeVariableDeclaration$Lipp)).isNotEmpty();
   }
-  private boolean nodeCondition_1i2int_a7a() {
+  private boolean nodeCondition1() {
     return Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.throwsItem$CdW$)).isNotEmpty();
   }
-  private boolean nodeCondition_1i2int_a8a() {
+  private boolean nodeCondition2() {
     return (SNodeOperations.getNodeAncestor(myNode, CONCEPTS.SimpleExtensionMethodsContainer$j3, false, false) != null);
   }
   private EditorCell createRefNode_0() {
@@ -350,7 +350,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
       return editorCell;
     }
   }
-  private boolean nodeCondition_1i2int_a5a() {
+  private boolean nodeCondition3() {
     return Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.parameter$5xBj)).isNotEmpty();
   }
   private EditorCell createConstant_2() {
@@ -363,7 +363,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setDefaultText("");
     return editorCell;
   }
-  private boolean nodeCondition_1i2int_a6a() {
+  private boolean nodeCondition4() {
     return ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.parameter$5xBj)).isEmpty();
   }
   private EditorCell createCollection_1() {

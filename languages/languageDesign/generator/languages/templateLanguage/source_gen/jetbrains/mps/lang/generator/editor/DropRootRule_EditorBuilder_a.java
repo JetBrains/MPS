@@ -75,12 +75,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createRefCell_0());
     editorCell.addEditorCell(createConstant_0());
     editorCell.addEditorCell(createRefNode_0());
-    if (nodeCondition_fdnaen_a3a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_1());
     }
     return editorCell;
   }
-  private boolean nodeCondition_fdnaen_a3a() {
+  private boolean nodeCondition0() {
     return SLinkOperations.getTarget(myNode, LINKS.conditionFunction$1Ger) == null;
   }
   private EditorCell createRefCell_0() {

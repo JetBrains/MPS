@@ -64,12 +64,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
     setCellContext(editorCell);
     editorCell.setGridLayout(true);
     editorCell.addEditorCell(createCollection_1());
-    if (nodeCondition_70z6os_a1a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_2());
     }
     return editorCell;
   }
-  private boolean nodeCondition_70z6os_a1a() {
+  private boolean nodeCondition0() {
     return (SLinkOperations.getTarget(myNode, LINKS.moduleRef$$Lia) != null);
   }
   private EditorCell createCollection_1() {

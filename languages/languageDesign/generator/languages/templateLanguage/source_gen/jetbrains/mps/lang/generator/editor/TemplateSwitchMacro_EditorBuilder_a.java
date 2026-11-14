@@ -55,13 +55,13 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setBig(true);
     setCellContext(editorCell);
     editorCell.addEditorCell(createConstant_0());
-    if (nodeCondition_84vp13_a1a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createReadOnlyModelAccessor_0());
     }
     editorCell.addEditorCell(createComponent_0());
     return editorCell;
   }
-  private boolean nodeCondition_84vp13_a1a() {
+  private boolean nodeCondition0() {
     return (SLinkOperations.getTarget(myNode, LINKS.template$6_6) != null) && isNotEmptyString(SPropertyOperations.getString(SLinkOperations.getTarget(myNode, LINKS.template$6_6), PROPS.name$MnvL));
   }
   private EditorCell createConstant_0() {

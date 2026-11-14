@@ -87,7 +87,7 @@ import org.jetbrains.mps.openapi.language.SInterfaceConcept;
   }
   private EditorCell createAlternation_0() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_9pn6lo_a2a();
+    alternationCondition = nodeCondition0();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createReadOnlyModelAccessor_0();
@@ -96,7 +96,7 @@ import org.jetbrains.mps.openapi.language.SInterfaceConcept;
     }
     return editorCell;
   }
-  private boolean nodeCondition_9pn6lo_a2a() {
+  private boolean nodeCondition0() {
     // todo: this hack is here due to poor substitute menu language, remove it when possible
     return SNodeOperations.isInstanceOf(SLinkOperations.getTarget(myNode, LINKS.languageId$xSH1), CONCEPTS.LanguageIdentityBySourceModule$T8);
   }

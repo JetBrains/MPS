@@ -72,10 +72,10 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     editorCell.setCellId("Collection_nyg1sl_a");
     editorCell.setBig(true);
     setCellContext(editorCell);
-    if (nodeCondition_nyg1sl_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createRefCell_0());
     }
-    if (nodeCondition_nyg1sl_a1a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createRefCell_1());
     }
     editorCell.addEditorCell(createConstant_0());
@@ -83,10 +83,10 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     editorCell.addEditorCell(createConstant_1());
     return editorCell;
   }
-  private boolean nodeCondition_nyg1sl_a0a() {
+  private boolean nodeCondition0() {
     return (SLinkOperations.getTarget(myNode, LINKS.configuration$2LI7) == null) || (new IAttributeDescriptor.NodeAttribute(CONCEPTS.DeprecatedAnnotation$xW).get(SLinkOperations.getTarget(myNode, LINKS.configuration$2LI7)) == null);
   }
-  private boolean nodeCondition_nyg1sl_a1a() {
+  private boolean nodeCondition1() {
     return (SLinkOperations.getTarget(myNode, LINKS.configuration$2LI7) != null) && (new IAttributeDescriptor.NodeAttribute(CONCEPTS.DeprecatedAnnotation$xW).get(SLinkOperations.getTarget(myNode, LINKS.configuration$2LI7)) != null);
   }
   private EditorCell createRefCell_0() {

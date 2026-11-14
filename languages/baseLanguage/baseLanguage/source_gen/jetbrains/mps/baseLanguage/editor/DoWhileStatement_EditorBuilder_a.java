@@ -82,10 +82,10 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setCellId("Collection_q3zjs1_a");
     editorCell.setBig(true);
     setCellContext(editorCell);
-    if (nodeCondition_q3zjs1_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_1());
     }
-    if (nodeCondition_q3zjs1_a1a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createCollection_2());
     }
     editorCell.addEditorCell(createConstant_2());
@@ -99,10 +99,10 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createConstant_8());
     return editorCell;
   }
-  private boolean nodeCondition_q3zjs1_a0a() {
+  private boolean nodeCondition0() {
     return !(SPropertyOperations.hasValue(myNode, PROPS.label$nCHj, null));
   }
-  private boolean nodeCondition_q3zjs1_a1a() {
+  private boolean nodeCondition1() {
     return Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.loopLabel$sgvV)).isNotEmpty();
   }
   private EditorCell createCollection_1() {

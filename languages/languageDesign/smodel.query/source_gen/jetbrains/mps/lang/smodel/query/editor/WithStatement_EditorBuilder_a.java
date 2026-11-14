@@ -87,7 +87,7 @@ import org.jetbrains.mps.openapi.language.SProperty;
   }
   private EditorCell createAlternation_0() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_4f6do1_a0b0();
+    alternationCondition = nodeCondition0();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createConstant_1();
@@ -98,7 +98,7 @@ import org.jetbrains.mps.openapi.language.SProperty;
     editorCell.setSubstituteInfo(new SChildSubstituteInfo(editorCell));
     return editorCell;
   }
-  private boolean nodeCondition_4f6do1_a0b0() {
+  private boolean nodeCondition0() {
     return SPropertyOperations.getBoolean(myNode, PROPS.includeNonEditable$4$P);
   }
   private EditorCell createConstant_1() {

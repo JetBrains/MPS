@@ -71,37 +71,37 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setCellId("Collection_hpafpk_a");
     editorCell.setBig(true);
     setCellContext(editorCell);
-    if (nodeCondition_hpafpk_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createRefNode_0());
     }
-    if (nodeCondition_hpafpk_a1a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createRefNode_1());
     }
-    if (nodeCondition_hpafpk_a2a()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createConstant_0());
     }
-    if (nodeCondition_hpafpk_a3a()) {
+    if (nodeCondition3()) {
       editorCell.addEditorCell(createRefNode_2());
     }
-    if (nodeCondition_hpafpk_a4a()) {
+    if (nodeCondition4()) {
       editorCell.addEditorCell(createRefNodeList_0());
     }
     editorCell.addEditorCell(createConstant_1());
     return editorCell;
   }
-  private boolean nodeCondition_hpafpk_a0a() {
+  private boolean nodeCondition0() {
     return (SLinkOperations.getTarget(myNode, LINKS.visibility$vnSV) != null);
   }
-  private boolean nodeCondition_hpafpk_a1a() {
+  private boolean nodeCondition1() {
     return (SLinkOperations.getTarget(myNode, LINKS.inheritance$TFvr) != null);
   }
-  private boolean nodeCondition_hpafpk_a2a() {
+  private boolean nodeCondition2() {
     return SPropertyOperations.getBoolean(myNode, PROPS.isOverride$3ngh);
   }
-  private boolean nodeCondition_hpafpk_a3a() {
+  private boolean nodeCondition3() {
     return (SLinkOperations.getTarget(myNode, LINKS.classModifier$gUVP) != null);
   }
-  private boolean nodeCondition_hpafpk_a4a() {
+  private boolean nodeCondition4() {
     return ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.funModifiers$vmCQ)).isNotEmpty();
   }
   private EditorCell createRefNode_0() {

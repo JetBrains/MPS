@@ -71,12 +71,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setCellId("Collection_tl1n57_1");
     editorCell.addEditorCell(createConstant_0());
     editorCell.addEditorCell(createProperty_0());
-    if (nodeCondition_tl1n57_a2a0_0()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_2());
     }
     return editorCell;
   }
-  private boolean nodeCondition_tl1n57_a2a0_0() {
+  private boolean nodeCondition0() {
     return (boolean) FileIcon__BehaviorDescriptor.isFileValid_id1$fQzw7$hd7.invoke(myNode, FileIcon__BehaviorDescriptor.getNamingConventionNewuiFileName_id1$fQzw7$wcx.invoke(myNode));
   }
   private EditorCell createConstant_0() {

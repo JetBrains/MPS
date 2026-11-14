@@ -55,14 +55,14 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setBig(true);
     setCellContext(editorCell);
     CopyPasteLine.setCellActions(editorCell, myNode, getEditorContext());
-    if (nodeCondition_78ent8_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_0());
     }
     editorCell.addEditorCell(createRefNodeList_0());
     editorCell.addEditorCell(createConstant_2());
     return editorCell;
   }
-  private boolean nodeCondition_78ent8_a0a() {
+  private boolean nodeCondition0() {
     return !((boolean) IHoldLines__BehaviorDescriptor.enforceExternalIndentation_id4qjHlOWQ7Jg.invoke(SNodeOperations.getNodeAncestor(myNode, CONCEPTS.IHoldLines$ky, false, false)));
   }
   private EditorCell createConstant_0() {

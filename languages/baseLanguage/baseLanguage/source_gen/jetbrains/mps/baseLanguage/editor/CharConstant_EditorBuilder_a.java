@@ -73,7 +73,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
   }
   private EditorCell createAlternation_0() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_d77dl_a1a();
+    alternationCondition = nodeCondition0();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createProperty_0();
@@ -85,7 +85,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.getStyle().putAll(style);
     return editorCell;
   }
-  private boolean nodeCondition_d77dl_a1a() {
+  private boolean nodeCondition0() {
     return SPropertyOperations.hasValue(myNode, PROPS.charConstant$DOTs, null) || !(SPropertyOperations.getString(myNode, PROPS.charConstant$DOTs).startsWith("\\"));
   }
   private EditorCell createProperty_0() {

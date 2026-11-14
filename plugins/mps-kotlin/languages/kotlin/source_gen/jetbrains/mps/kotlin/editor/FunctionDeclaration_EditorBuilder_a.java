@@ -72,41 +72,41 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createComponent_0());
     editorCell.addEditorCell(createComponent_1());
     editorCell.addEditorCell(createComponent_2());
-    if (nodeCondition_en7q4l_a3a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_0());
     }
-    if (nodeCondition_en7q4l_a4a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createRefNodeList_0());
     }
     editorCell.addEditorCell(createConstant_1());
     editorCell.addEditorCell(createComponent_3());
-    if (nodeCondition_en7q4l_a7a()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createComponent_4());
     }
     editorCell.addEditorCell(createProperty_0());
     editorCell.addEditorCell(createComponent_5());
     editorCell.addEditorCell(createComponent_6());
-    if (nodeCondition_en7q4l_a11a()) {
+    if (nodeCondition3()) {
       editorCell.addEditorCell(createComponent_7());
     }
-    if (nodeCondition_en7q4l_a21a()) {
+    if (nodeCondition4()) {
       editorCell.addEditorCell(createCollection_1());
     }
     return editorCell;
   }
-  private boolean nodeCondition_en7q4l_a3a() {
+  private boolean nodeCondition0() {
     return SPropertyOperations.getBoolean(myNode, PROPS.isOverride$Gfqk);
   }
-  private boolean nodeCondition_en7q4l_a4a() {
+  private boolean nodeCondition1() {
     return ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.modifiers$XKtM)).isNotEmpty();
   }
-  private boolean nodeCondition_en7q4l_a7a() {
+  private boolean nodeCondition2() {
     return (SLinkOperations.getTarget(myNode, LINKS.receiverType$7yLT) != null);
   }
-  private boolean nodeCondition_en7q4l_a11a() {
+  private boolean nodeCondition3() {
     return ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.constraints$BRhr)).isNotEmpty();
   }
-  private boolean nodeCondition_en7q4l_a21a() {
+  private boolean nodeCondition4() {
     return !((boolean) IInheritable__BehaviorDescriptor.isAbstract_id4KPNZIZDjbY.invoke(myNode));
   }
   private EditorCell createComponent_0() {

@@ -85,7 +85,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     AbstractCellListHandler handler = new parameterListHandler_9wclje_c0(myNode, getEditorContext());
     EditorCell_Collection editorCell = handler.createCells(new CellLayout_Indent(), false);
     editorCell.setCellId("refNodeList_parameter");
-    if (nodeCondition_9wclje_a2a()) {
+    if (nodeCondition0()) {
       editorCell.getStyle().set(StyleAttributes.FOCUS_POLICY, FocusPolicy.FIRST_EDITABLE_CELL);
     }
     editorCell.setSRole(handler.getElementSRole());
@@ -181,7 +181,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
       return editorCell;
     }
   }
-  private boolean nodeCondition_9wclje_a2a() {
+  private boolean nodeCondition0() {
     return false;
   }
   private EditorCell createConstant_2() {
@@ -190,13 +190,13 @@ import org.jetbrains.mps.openapi.language.SConcept;
     Style style = new StyleImpl();
     new RightParenStyleClass(this).apply(style, editorCell);
     editorCell.getStyle().putAll(style);
-    if (nodeCondition_9wclje_a3a()) {
+    if (nodeCondition1()) {
       editorCell.getStyle().set(StyleAttributes.FOCUS_POLICY, FocusPolicy.ATTRACTS_FOCUS);
     }
     editorCell.setDefaultText("");
     return editorCell;
   }
-  private boolean nodeCondition_9wclje_a3a() {
+  private boolean nodeCondition1() {
     return false;
   }
 

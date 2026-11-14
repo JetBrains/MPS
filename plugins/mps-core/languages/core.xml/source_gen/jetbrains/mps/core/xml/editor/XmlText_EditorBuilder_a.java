@@ -57,12 +57,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
     setCellContext(editorCell);
     HandleXmlTextCollectionSplitMerge.setCellActions(editorCell, myNode, getEditorContext());
     editorCell.addEditorCell(createProperty_0());
-    if (nodeCondition_crdhdg_a1a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_0());
     }
     return editorCell;
   }
-  private boolean nodeCondition_crdhdg_a1a() {
+  private boolean nodeCondition0() {
     return (boolean) XmlPart__BehaviorDescriptor.hasNewLineAfter_id1Qs9WekVZ9E.invoke(myNode);
   }
   private EditorCell createProperty_0() {

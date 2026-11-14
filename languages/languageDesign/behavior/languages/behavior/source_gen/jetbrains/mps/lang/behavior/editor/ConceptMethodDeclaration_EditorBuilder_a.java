@@ -112,13 +112,13 @@ import org.jetbrains.mps.openapi.language.SConcept;
     style.set(StyleAttributes.SELECTABLE, false);
     editorCell.getStyle().putAll(style);
     editorCell.addEditorCell(createRefNode_0());
-    if (nodeCondition_gmtuod_a1c0()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_0());
     }
-    if (nodeCondition_gmtuod_a2c0()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createConstant_1());
     }
-    if (nodeCondition_gmtuod_a3c0()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createConstant_2());
     }
     editorCell.addEditorCell(createRefNode_1());
@@ -126,22 +126,22 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createConstant_3());
     editorCell.addEditorCell(createRefNodeList_0());
     editorCell.addEditorCell(createConstant_5());
-    if (nodeCondition_gmtuod_a9c0()) {
+    if (nodeCondition3()) {
       editorCell.addEditorCell(createCollection_2());
     }
     editorCell.addEditorCell(createAlternation_0());
     return editorCell;
   }
-  private boolean nodeCondition_gmtuod_a1c0() {
+  private boolean nodeCondition0() {
     return SPropertyOperations.getBoolean(myNode, PROPS.isStatic$JhJe);
   }
-  private boolean nodeCondition_gmtuod_a2c0() {
+  private boolean nodeCondition1() {
     return (boolean) ConceptMethodDeclaration__BehaviorDescriptor.isVirtual_id6WSEafdhbZX.invoke(myNode);
   }
-  private boolean nodeCondition_gmtuod_a3c0() {
+  private boolean nodeCondition2() {
     return SPropertyOperations.getBoolean(myNode, PROPS.isAbstract$qvtK);
   }
-  private boolean nodeCondition_gmtuod_a9c0() {
+  private boolean nodeCondition3() {
     return SLinkOperations.getTarget(myNode, LINKS.overriddenMethod$quKH) != null;
   }
   private EditorCell createRefNode_0() {
@@ -555,7 +555,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
   }
   private EditorCell createAlternation_0() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_gmtuod_a01c0();
+    alternationCondition = nodeCondition4();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createConstant_8();
@@ -564,7 +564,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     }
     return editorCell;
   }
-  private boolean nodeCondition_gmtuod_a01c0() {
+  private boolean nodeCondition4() {
     return !((boolean) BaseMethodDeclaration__BehaviorDescriptor.hasBody_id10BRnhak8m8.invoke(myNode));
   }
   private EditorCell createConstant_8() {

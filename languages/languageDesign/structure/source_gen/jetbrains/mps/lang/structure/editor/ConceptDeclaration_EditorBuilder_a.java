@@ -104,10 +104,10 @@ import org.jetbrains.mps.openapi.language.SConcept;
     Style style = new StyleImpl();
     style.set(StyleAttributes.SELECTABLE, false);
     editorCell.getStyle().putAll(style);
-    if (nodeCondition_ueqr71_a0a0()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_0());
     }
-    if (nodeCondition_ueqr71_a1a0()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createConstant_1());
     }
     editorCell.addEditorCell(createConstant_2());
@@ -115,10 +115,10 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createCollection_2());
     return editorCell;
   }
-  private boolean nodeCondition_ueqr71_a0a0() {
+  private boolean nodeCondition0() {
     return SPropertyOperations.getBoolean(myNode, PROPS.abstract$ibpT) == true;
   }
-  private boolean nodeCondition_ueqr71_a1a0() {
+  private boolean nodeCondition1() {
     return SPropertyOperations.getBoolean(myNode, PROPS.final$ic$Y) == true;
   }
   private EditorCell createConstant_0() {
@@ -437,7 +437,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.getStyle().putAll(style);
     editorCell.addEditorCell(createConstant_7());
     editorCell.addEditorCell(createProperty_1());
-    if (nodeCondition_ueqr71_a2b2a()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createCollection_7());
     }
     editorCell.addEditorCell(createConstant_9());
@@ -453,16 +453,16 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createConstant_17());
     editorCell.addEditorCell(createConstant_18());
     editorCell.addEditorCell(createRefNodeList_3());
-    if (nodeCondition_ueqr71_a61b2a()) {
+    if (nodeCondition3()) {
       editorCell.addEditorCell(createCollection_8());
     }
     return editorCell;
   }
-  private boolean nodeCondition_ueqr71_a2b2a() {
+  private boolean nodeCondition2() {
     // todo: temporary disabled, see MPS-18470
     return false;
   }
-  private boolean nodeCondition_ueqr71_a61b2a() {
+  private boolean nodeCondition3() {
     return IdEditorHelper.shownInEditor(myNode);
   }
   private EditorCell createConstant_7() {

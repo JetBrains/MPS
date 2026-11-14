@@ -59,19 +59,19 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     style.set(StyleAttributes.DRAW_BORDER, true);
     editorCell.getStyle().putAll(style);
     editorCell.addEditorCell(createComponent_0());
-    if (nodeCondition_zgm7s3_a1a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_1());
     }
-    if (nodeCondition_zgm7s3_a2a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createCollection_4());
     }
     editorCell.addEditorCell(createComponent_1());
     return editorCell;
   }
-  private boolean nodeCondition_zgm7s3_a1a() {
+  private boolean nodeCondition0() {
     return SPropertyOperations.getBoolean(myNode, PROPS.vertical$WXft);
   }
-  private boolean nodeCondition_zgm7s3_a2a() {
+  private boolean nodeCondition1() {
     return !(SPropertyOperations.getBoolean(myNode, PROPS.vertical$WXft));
   }
   private EditorCell createComponent_0() {

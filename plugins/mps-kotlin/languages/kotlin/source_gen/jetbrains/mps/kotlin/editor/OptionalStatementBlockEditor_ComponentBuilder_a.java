@@ -57,20 +57,20 @@ import org.jetbrains.mps.openapi.language.SInterfaceConcept;
     Style style = new StyleImpl();
     style.set(StyleAttributes.SELECTABLE, false);
     editorCell.getStyle().putAll(style);
-    if (nodeCondition_1dysg5_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_0());
     }
     editorCell.addEditorCell(createRefNodeList_0());
-    if (nodeCondition_1dysg5_a2a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createConstant_2());
     }
     return editorCell;
   }
-  private boolean nodeCondition_1dysg5_a0a() {
+  private boolean nodeCondition0() {
     // Optional: visible only if statements
     return ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.statements$R3pt)).isNotEmpty();
   }
-  private boolean nodeCondition_1dysg5_a2a() {
+  private boolean nodeCondition1() {
     return ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.statements$R3pt)).isNotEmpty();
   }
   private EditorCell createConstant_0() {

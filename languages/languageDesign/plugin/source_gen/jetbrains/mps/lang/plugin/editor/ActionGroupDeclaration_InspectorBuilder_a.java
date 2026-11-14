@@ -54,7 +54,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setCellId("Collection_bepn0t_0");
     editorCell.setBig(true);
     setCellContext(editorCell);
-    if (nodeCondition_bepn0t_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_1());
     }
     editorCell.addEditorCell(createCollection_2());
@@ -62,7 +62,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createComponent_0());
     return editorCell;
   }
-  private boolean nodeCondition_bepn0t_a0a() {
+  private boolean nodeCondition0() {
     return RuntimeFlags.isInternalMode();
   }
   private EditorCell createCollection_1() {

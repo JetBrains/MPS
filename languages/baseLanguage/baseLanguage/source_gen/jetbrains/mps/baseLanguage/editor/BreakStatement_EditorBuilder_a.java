@@ -80,19 +80,19 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setBig(true);
     setCellContext(editorCell);
     editorCell.addEditorCell(createConstant_0());
-    if (nodeCondition_xk0l2m_a1a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_1());
     }
-    if (nodeCondition_xk0l2m_a2a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createCollection_2());
     }
     editorCell.addEditorCell(createConstant_1());
     return editorCell;
   }
-  private boolean nodeCondition_xk0l2m_a1a() {
+  private boolean nodeCondition0() {
     return !(SPropertyOperations.hasValue(myNode, PROPS.label$pRTe, null));
   }
-  private boolean nodeCondition_xk0l2m_a2a() {
+  private boolean nodeCondition1() {
     return Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.loopLabelReference$_Wnw)).isNotEmpty();
   }
   private EditorCell createConstant_0() {

@@ -55,12 +55,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
     style.set(StyleAttributes.SELECTABLE, false);
     editorCell.getStyle().putAll(style);
     editorCell.addEditorCell(createRefNodeList_0());
-    if (nodeCondition_hdw7mg_a1a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_1());
     }
     return editorCell;
   }
-  private boolean nodeCondition_hdw7mg_a1a() {
+  private boolean nodeCondition0() {
     return !(SNodeOperations.isInstanceOf(ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.children$aMRO)).last(), CONCEPTS.BuildLayout_AbstractContainer$zG));
   }
   private EditorCell createRefNodeList_0() {

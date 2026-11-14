@@ -78,25 +78,25 @@ import org.jetbrains.mps.openapi.language.SInterfaceConcept;
     editorCell.setCellId("Collection_3vdeem_a");
     editorCell.setBig(true);
     setCellContext(editorCell);
-    if (nodeCondition_3vdeem_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_0());
     }
-    if (nodeCondition_3vdeem_a1a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createProperty_0());
     }
     editorCell.addEditorCell(createProperty_1());
-    if (nodeCondition_3vdeem_a3a()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createCollection_1());
     }
     return editorCell;
   }
-  private boolean nodeCondition_3vdeem_a0a() {
+  private boolean nodeCondition0() {
     return SPropertyOperations.getBoolean(myNode, PROPS.isReified$AAd);
   }
-  private boolean nodeCondition_3vdeem_a1a() {
+  private boolean nodeCondition1() {
     return !(SEnumOperations.isMember(SPropertyOperations.getEnum(myNode, PROPS.variance$xP5D), 0x21e0c923289a2222L));
   }
-  private boolean nodeCondition_3vdeem_a3a() {
+  private boolean nodeCondition2() {
     return (SLinkOperations.getTarget(myNode, LINKS.bound$KhhI) != null);
   }
   private EditorCell createConstant_0() {

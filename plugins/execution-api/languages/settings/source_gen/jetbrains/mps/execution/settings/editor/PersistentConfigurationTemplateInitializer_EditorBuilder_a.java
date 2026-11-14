@@ -76,10 +76,10 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     editorCell.setCellId("Collection_e5b6m9_a");
     editorCell.setBig(true);
     setCellContext(editorCell);
-    if (nodeCondition_e5b6m9_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createRefCell_0());
     }
-    if (nodeCondition_e5b6m9_a1a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createRefCell_1());
     }
     editorCell.addEditorCell(createConstant_0());
@@ -87,10 +87,10 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     editorCell.addEditorCell(createConstant_2());
     return editorCell;
   }
-  private boolean nodeCondition_e5b6m9_a0a() {
+  private boolean nodeCondition0() {
     return (SLinkOperations.getTarget(myNode, LINKS.template$YCBl) == null) || (new IAttributeDescriptor.NodeAttribute(CONCEPTS.DeprecatedAnnotation$xW).get(SLinkOperations.getTarget(myNode, LINKS.template$YCBl)) == null);
   }
-  private boolean nodeCondition_e5b6m9_a1a() {
+  private boolean nodeCondition1() {
     return (SLinkOperations.getTarget(myNode, LINKS.template$YCBl) != null) && (new IAttributeDescriptor.NodeAttribute(CONCEPTS.DeprecatedAnnotation$xW).get(SLinkOperations.getTarget(myNode, LINKS.template$YCBl)) != null);
   }
   private EditorCell createRefCell_0() {

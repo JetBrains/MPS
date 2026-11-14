@@ -105,7 +105,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setGridLayout(true);
     editorCell.addEditorCell(createCollection_2());
     editorCell.addEditorCell(createCollection_3());
-    if (nodeCondition_pyph5i_a2a0()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_4());
     }
     editorCell.addEditorCell(createConstant_4());
@@ -113,7 +113,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createRefNodeList_0());
     return editorCell;
   }
-  private boolean nodeCondition_pyph5i_a2a0() {
+  private boolean nodeCondition0() {
     return SPropertyOperations.getBoolean(myNode, PROPS.needCallSite$fSr_);
   }
   private EditorCell createCollection_2() {

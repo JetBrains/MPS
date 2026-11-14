@@ -86,12 +86,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.getStyle().putAll(style);
     editorCell.addEditorCell(createProperty_0());
     editorCell.addEditorCell(createConstant_0());
-    if (nodeCondition_ibbzj5_a2a0()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_2());
     }
     return editorCell;
   }
-  private boolean nodeCondition_ibbzj5_a2a0() {
+  private boolean nodeCondition0() {
     return (SLinkOperations.getTarget(myNode, LINKS.forkAs$K6gO) != null);
   }
   private EditorCell createProperty_0() {

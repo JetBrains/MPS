@@ -54,13 +54,13 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     editorCell.addEditorCell(createConstant_1());
     editorCell.addEditorCell(createConstant_2());
     editorCell.addEditorCell(createRefNode_0());
-    if (nodeCondition_gmlwwp_a4a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_1());
     }
     editorCell.addEditorCell(createConstant_9());
     return editorCell;
   }
-  private boolean nodeCondition_gmlwwp_a4a() {
+  private boolean nodeCondition0() {
     return Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.cellSelector$u$HA)).isNotEmpty();
   }
   private EditorCell createConstant_0() {
@@ -162,12 +162,12 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     editorCell.addEditorCell(createConstant_3());
     editorCell.addEditorCell(createConstant_4());
     editorCell.addEditorCell(createRefNode_1());
-    if (nodeCondition_gmlwwp_a3e0()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createCollection_2());
     }
     return editorCell;
   }
-  private boolean nodeCondition_gmlwwp_a3e0() {
+  private boolean nodeCondition1() {
     return Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.selectionStart$UKIJ)).isNotEmpty();
   }
   private EditorCell createConstant_3() {
@@ -257,12 +257,12 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     editorCell.addEditorCell(createConstant_5());
     editorCell.addEditorCell(createConstant_6());
     editorCell.addEditorCell(createRefNode_2());
-    if (nodeCondition_gmlwwp_a3d4a()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createCollection_3());
     }
     return editorCell;
   }
-  private boolean nodeCondition_gmlwwp_a3d4a() {
+  private boolean nodeCondition2() {
     return Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.selectionEnd$Gha3)).isNotEmpty();
   }
   private EditorCell createConstant_5() {

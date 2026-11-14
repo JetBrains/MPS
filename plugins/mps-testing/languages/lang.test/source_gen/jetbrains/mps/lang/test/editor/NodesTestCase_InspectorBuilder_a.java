@@ -76,13 +76,13 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setBig(true);
     setCellContext(editorCell);
     editorCell.addEditorCell(createCollection_1());
-    if (nodeCondition_58c6e4_a1a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_2());
     }
     editorCell.addEditorCell(createCollection_3());
     return editorCell;
   }
-  private boolean nodeCondition_58c6e4_a1a() {
+  private boolean nodeCondition0() {
     // show only if not migrated
     return SEnumOperations.isMember(SPropertyOperations.getEnum(myNode, PROPS.accessMode$uiyo), 0x4bf9938bddc2d016L);
   }

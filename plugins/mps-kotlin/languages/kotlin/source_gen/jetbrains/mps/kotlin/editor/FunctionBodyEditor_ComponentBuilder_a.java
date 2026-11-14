@@ -57,31 +57,31 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     Style style = new StyleImpl();
     style.set(StyleAttributes.SELECTABLE, false);
     editorCell.getStyle().putAll(style);
-    if (nodeCondition_3sx2ar_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_0());
     }
-    if (nodeCondition_3sx2ar_a1a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createConstant_1());
     }
     editorCell.addEditorCell(createRefNodeList_0());
-    if (nodeCondition_3sx2ar_a3a()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createConstant_3());
     }
-    if (nodeCondition_3sx2ar_a4a()) {
+    if (nodeCondition3()) {
       editorCell.addEditorCell(createConstant_4());
     }
     return editorCell;
   }
-  private boolean nodeCondition_3sx2ar_a0a() {
+  private boolean nodeCondition0() {
     return (boolean) IStatementHolder__BehaviorDescriptor.isOneLiner_idCy8Bus23OC.invoke(myNode);
   }
-  private boolean nodeCondition_3sx2ar_a1a() {
+  private boolean nodeCondition1() {
     return !((boolean) IStatementHolder__BehaviorDescriptor.isOneLiner_idCy8Bus23OC.invoke(myNode));
   }
-  private boolean nodeCondition_3sx2ar_a3a() {
+  private boolean nodeCondition2() {
     return !((boolean) IStatementHolder__BehaviorDescriptor.isOneLiner_idCy8Bus23OC.invoke(myNode));
   }
-  private boolean nodeCondition_3sx2ar_a4a() {
+  private boolean nodeCondition3() {
     return (boolean) IStatementHolder__BehaviorDescriptor.isOneLiner_idCy8Bus23OC.invoke(myNode);
   }
   private EditorCell createConstant_0() {

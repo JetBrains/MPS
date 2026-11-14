@@ -184,12 +184,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createCollection_2());
     editorCell.addEditorCell(createCollection_3());
     editorCell.addEditorCell(createCollection_4());
-    if (nodeCondition_ess7oq_a3g0()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_5());
     }
     return editorCell;
   }
-  private boolean nodeCondition_ess7oq_a3g0() {
+  private boolean nodeCondition0() {
     return SLinkOperations.getTarget(myNode, LINKS.node$Il43) == null;
   }
   private EditorCell createCollection_2() {

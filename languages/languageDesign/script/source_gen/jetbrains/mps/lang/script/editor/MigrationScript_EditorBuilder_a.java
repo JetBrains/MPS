@@ -81,26 +81,26 @@ import org.jetbrains.mps.openapi.language.SConcept;
     Style style = new StyleImpl();
     style.set(StyleAttributes.SELECTABLE, false);
     editorCell.getStyle().putAll(style);
-    if (nodeCondition_th2ud5_a0a0()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_0());
     }
-    if (nodeCondition_th2ud5_a1a0()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createConstant_1());
     }
     editorCell.addEditorCell(createConstant_2());
     editorCell.addEditorCell(createProperty_0());
-    if (nodeCondition_th2ud5_a4a0()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createCollection_2());
     }
     return editorCell;
   }
-  private boolean nodeCondition_th2ud5_a0a0() {
+  private boolean nodeCondition0() {
     return SEnumOperations.isMember(SPropertyOperations.getEnum(myNode, PROPS.type$NwlS), 0x498b4f71ee081151L);
   }
-  private boolean nodeCondition_th2ud5_a1a0() {
+  private boolean nodeCondition1() {
     return SEnumOperations.isMember(SPropertyOperations.getEnum(myNode, PROPS.type$NwlS), 0x498b4f71ee081152L);
   }
-  private boolean nodeCondition_th2ud5_a4a0() {
+  private boolean nodeCondition2() {
     return SEnumOperations.isMember(SPropertyOperations.getEnum(myNode, PROPS.type$NwlS), 0x498b4f71ee081152L);
   }
   private EditorCell createConstant_0() {

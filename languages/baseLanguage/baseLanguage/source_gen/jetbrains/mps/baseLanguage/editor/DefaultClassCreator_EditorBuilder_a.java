@@ -83,13 +83,13 @@ import org.jetbrains.mps.openapi.language.SConcept;
     style.set(StyleAttributes.PARAMETERS_INFORMATION, new BaseMethodParameterInformationQuery());
     editorCell.getStyle().putAll(style);
     editorCell.addEditorCell(createRefCell_0());
-    if (nodeCondition_27y5p7_a1a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_1());
     }
     editorCell.addEditorCell(createCollection_2());
     return editorCell;
   }
-  private boolean nodeCondition_27y5p7_a1a() {
+  private boolean nodeCondition0() {
     return (boolean) IInferredExpression__BehaviorDescriptor.needInference_idQ$FjPqwIoN.invoke(myNode) || Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.typeParameter$KPP3)).isNotEmpty();
   }
   private EditorCell createRefCell_0() {

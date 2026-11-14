@@ -58,13 +58,13 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setCellId("Collection_2949lt_a");
     editorCell.setBig(true);
     setCellContext(editorCell);
-    if (nodeCondition_2949lt_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createProperty_0());
     }
     editorCell.addEditorCell(createRefNode_0());
     return editorCell;
   }
-  private boolean nodeCondition_2949lt_a0a() {
+  private boolean nodeCondition0() {
     return !(SEnumOperations.isMember(SPropertyOperations.getEnum(myNode, PROPS.variance$9nw2), 0x21e0c923289a2222L));
   }
   private EditorCell createProperty_0() {

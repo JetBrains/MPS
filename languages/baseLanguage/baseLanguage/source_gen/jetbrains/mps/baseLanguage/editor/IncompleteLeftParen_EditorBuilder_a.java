@@ -77,7 +77,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
   }
   private EditorCell createAlternation_0() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_tlxkur_a1a();
+    alternationCondition = nodeCondition0();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createAttributedNodeCell_0();
@@ -86,7 +86,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     }
     return editorCell;
   }
-  private boolean nodeCondition_tlxkur_a1a() {
+  private boolean nodeCondition0() {
     return !(SNodeOperations.getConcept(SNodeOperations.cast(SNodeOperations.getParent(myNode), CONCEPTS.Expression$mB)).isAbstract());
   }
   private EditorCell createAttributedNodeCell_0() {

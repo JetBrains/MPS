@@ -85,20 +85,20 @@ import org.jetbrains.mps.openapi.language.SConcept;
     style.set(StyleAttributes.SELECTABLE, false);
     style.set(StyleAttributes.HORIZONTAL_ALIGN, CellAlign.CENTER);
     editorCell.getStyle().putAll(style);
-    if (nodeCondition_b0ego6_a0b0()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_2());
     }
     editorCell.addEditorCell(createReadOnlyModelAccessor_0());
     editorCell.addEditorCell(createCollection_3());
-    if (nodeCondition_b0ego6_a3b0()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createCollection_4());
     }
     return editorCell;
   }
-  private boolean nodeCondition_b0ego6_a0b0() {
+  private boolean nodeCondition0() {
     return SNodeOperations.isInstanceOf(SLinkOperations.getTarget(myNode, LINKS.var$HIsb), CONCEPTS.MathSymbolFromToIndex$yB);
   }
-  private boolean nodeCondition_b0ego6_a3b0() {
+  private boolean nodeCondition1() {
     return Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.precondition$WNRO)).isNotEmpty();
   }
   private EditorCell createCollection_2() {

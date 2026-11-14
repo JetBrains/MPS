@@ -76,11 +76,11 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setCellId("Collection_wbyfib_a");
     editorCell.setBig(true);
     setCellContext(editorCell);
-    if (nodeCondition_wbyfib_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_0());
     }
     editorCell.addEditorCell(createConstant_1());
-    if (nodeCondition_wbyfib_a2a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createCollection_1());
     }
     editorCell.addEditorCell(createRefCell_0());
@@ -90,10 +90,10 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createRefNode_0());
     return editorCell;
   }
-  private boolean nodeCondition_wbyfib_a0a() {
+  private boolean nodeCondition0() {
     return (SLinkOperations.getTarget(myNode, LINKS.condition$NUPO) != null);
   }
-  private boolean nodeCondition_wbyfib_a2a() {
+  private boolean nodeCondition1() {
     return (SLinkOperations.getTarget(myNode, LINKS.rule$zMcP) != null) && (isEmptyString(SPropertyOperations.getString(SLinkOperations.getTarget(myNode, LINKS.rule$zMcP), PROPS.tagName$Axcz)) || SPropertyOperations.getBoolean(myNode, PROPS.overrideTag$zH2v));
   }
   private EditorCell createConstant_0() {

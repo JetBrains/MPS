@@ -61,7 +61,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
 
   private EditorCell createAlternation_0() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_kpqhey_a0();
+    alternationCondition = nodeCondition0();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createCollection_0();
@@ -75,7 +75,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     }
     return editorCell;
   }
-  private boolean nodeCondition_kpqhey_a0() {
+  private boolean nodeCondition0() {
     return SLinkOperations.getTarget(myNode, LINKS.classifier$FItT) != null;
   }
   private EditorCell createCollection_0() {

@@ -69,19 +69,19 @@ import org.jetbrains.mps.openapi.language.SConcept;
     style.set(StyleAttributes.SELECTABLE, false);
     style.set(StyleAttributes.HORIZONTAL_GAP, new Padding(3, Measure.PIXELS));
     editorCell.getStyle().putAll(style);
-    if (nodeCondition_crgygw_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_1());
     }
-    if (nodeCondition_crgygw_a1a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createRefCell_0());
     }
     editorCell.addEditorCell(createAttributedNodeCell_0());
     return editorCell;
   }
-  private boolean nodeCondition_crgygw_a0a() {
+  private boolean nodeCondition0() {
     return !(Objects.equals(myNode.getContainmentLink(), LINKS.smodelAttribute$KJ43));
   }
-  private boolean nodeCondition_crgygw_a1a() {
+  private boolean nodeCondition1() {
     return SLinkOperations.getTarget(myNode, LINKS.mappingLabel$jbOO) != null;
   }
   private EditorCell createCollection_1() {

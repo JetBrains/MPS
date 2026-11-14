@@ -77,12 +77,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
     style.set(StyleAttributes.PUNCTUATION_RIGHT, true);
     editorCell.getStyle().putAll(style);
     editorCell.addEditorCell(createTooltip_0());
-    if (nodeCondition_mwjwii_a1a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_1());
     }
     return editorCell;
   }
-  private boolean nodeCondition_mwjwii_a1a() {
+  private boolean nodeCondition0() {
     return SPropertyOperations.getBoolean(myNode, PROPS.cardinalityVisible$Vfns);
   }
   private EditorCell createTooltip_0() {

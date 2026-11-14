@@ -584,20 +584,20 @@ import org.jetbrains.mps.openapi.language.SConcept;
     Style style = new StyleImpl();
     style.set(StyleAttributes.INDENT_LAYOUT_INDENT, true);
     editorCell.getStyle().putAll(style);
-    if (nodeCondition_1x254q_a0b2b0()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_7());
     }
-    if (nodeCondition_1x254q_a1b2b0()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createRefNode_6());
     }
     editorCell.addEditorCell(createConstant_12());
     editorCell.addEditorCell(createRefNode_7());
     return editorCell;
   }
-  private boolean nodeCondition_1x254q_a0b2b0() {
+  private boolean nodeCondition0() {
     return !((boolean) BuildMps_Branding__BehaviorDescriptor.isNewVersionFormat_id3AMbuf0qvWw.invoke(myNode));
   }
-  private boolean nodeCondition_1x254q_a1b2b0() {
+  private boolean nodeCondition1() {
     return (boolean) BuildMps_Branding__BehaviorDescriptor.isNewVersionFormat_id3AMbuf0qvWw.invoke(myNode);
   }
   private EditorCell createCollection_7() {
@@ -2314,10 +2314,10 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createRefNode_27());
     editorCell.addEditorCell(createConstant_43());
     editorCell.addEditorCell(createRefNode_28());
-    editorCell.setInitiallyCollapsed(nodeCondition_1x254q_a6b6b0());
+    editorCell.setInitiallyCollapsed(nodeCondition2());
     return editorCell;
   }
-  private boolean nodeCondition_1x254q_a6b6b0() {
+  private boolean nodeCondition2() {
     return (SLinkOperations.getTarget(myNode, LINKS.icon16$9V9L) == null) && (SLinkOperations.getTarget(myNode, LINKS.icon32$9UUK) == null) && (SLinkOperations.getTarget(myNode, LINKS.icon128$$$91) == null);
   }
   private EditorCell createConstant_40() {

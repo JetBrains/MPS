@@ -58,22 +58,22 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     editorCell.setCellId("Collection_23wbmd_a");
     editorCell.setBig(true);
     setCellContext(editorCell);
-    if (nodeCondition_23wbmd_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_1());
     }
     editorCell.addEditorCell(createConstant_2());
     editorCell.addEditorCell(createProperty_1());
     editorCell.addEditorCell(createConstant_3());
     editorCell.addEditorCell(createProperty_2());
-    if (nodeCondition_23wbmd_a5a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createConstant_4());
     }
     return editorCell;
   }
-  private boolean nodeCondition_23wbmd_a0a() {
+  private boolean nodeCondition0() {
     return SEnumOperations.isMember(SPropertyOperations.getEnum(SNodeOperations.cast(SNodeOperations.getParent(myNode), CONCEPTS.EnumerationDataTypeDeclaration_Old$B8), PROPS.memberIdentifierPolicy$Joen), 0x116d5fd9aa3L);
   }
-  private boolean nodeCondition_23wbmd_a5a() {
+  private boolean nodeCondition1() {
     return myNode == EnumerationDataTypeDeclaration_Old__BehaviorDescriptor.getDefaultMember_idhEwIM$p.invoke(SNodeOperations.cast(SNodeOperations.getParent(myNode), CONCEPTS.EnumerationDataTypeDeclaration_Old$B8));
   }
   private EditorCell createCollection_1() {

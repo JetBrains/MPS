@@ -41,12 +41,12 @@ import jetbrains.mps.editor.runtime.style.StyleAttributes;
     editorCell.setBig(true);
     setCellContext(editorCell);
     editorCell.addEditorCell(createConstant_0());
-    if (nodeCondition_t6mv7u_a1a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_1());
     }
     return editorCell;
   }
-  private boolean nodeCondition_t6mv7u_a1a() {
+  private boolean nodeCondition0() {
     return ConstraintsUtil.isInsideOfBehavior(myNode, true);
   }
   private EditorCell createConstant_0() {

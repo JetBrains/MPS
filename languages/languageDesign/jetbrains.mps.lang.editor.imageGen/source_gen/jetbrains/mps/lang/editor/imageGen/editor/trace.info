@@ -117,9 +117,9 @@
       <node id="2359976223560034621" at="183,40,184,51" concept="1" />
       <node id="1380214350863064439" at="184,51,185,51" concept="1" />
       <node id="1380214350863064682" at="185,51,186,51" concept="1" />
-      <node id="3245637733309853391" at="187,38,188,53" concept="1" />
+      <node id="3245637733309853391" at="187,27,188,53" concept="1" />
       <node id="2359976223560030263" at="189,5,190,22" concept="6" />
-      <node id="844086826327759322" at="192,47,193,70" concept="6" />
+      <node id="844086826327759322" at="192,36,193,70" concept="6" />
       <node id="2359976223560030263" at="195,43,196,118" concept="5" />
       <node id="2359976223560030263" at="196,118,197,50" concept="1" />
       <node id="2359976223560030263" at="197,50,198,34" concept="5" />
@@ -315,7 +315,7 @@
       <node id="2359976223560030263" at="57,0,60,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="3245637733310278071" at="151,0,154,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="3245637733309853391" at="186,51,189,5" concept="3" />
-      <node id="844086826327759248" at="192,0,195,0" concept="4" trace="nodeCondition_ess7oq_a3g0#()Z" />
+      <node id="844086826327759248" at="192,0,195,0" concept="4" trace="nodeCondition0#()Z" />
       <node id="2359976223560030263" at="46,0,50,0" concept="0" trace="ImageGenerator_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="2359976223560030263" at="126,0,130,5" concept="3" />
       <node id="2359976223560030263" at="51,0,56,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -365,8 +365,8 @@
       <scope id="2359976223560030263" at="57,39,58,32" />
       <scope id="3245637733310278071" at="151,41,152,45" />
       <scope id="3245637733310278071" at="157,28,158,20" />
-      <scope id="3245637733309853391" at="187,38,188,53" />
-      <scope id="844086826327759249" at="192,47,193,70" />
+      <scope id="3245637733309853391" at="187,27,188,53" />
+      <scope id="844086826327759249" at="192,36,193,70" />
       <scope id="2359976223560034778" at="252,15,253,40" />
       <scope id="1380214350863064445" at="303,15,304,40" />
       <scope id="1380214350863064688" at="364,15,365,40" />

@@ -65,12 +65,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createProperty_0());
     editorCell.addEditorCell(createConstant_1());
     editorCell.addEditorCell(createRefNode_0());
-    if (nodeCondition_a8ta5y_a4a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_2());
     }
     return editorCell;
   }
-  private boolean nodeCondition_a8ta5y_a4a() {
+  private boolean nodeCondition0() {
     return SPropertyOperations.getBoolean(myNode, PROPS.reexport$AjkY);
   }
   private EditorCell createConstant_0() {

@@ -83,10 +83,10 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setFoldedCell(createReadOnlyModelAccessor_0());
     editorCell.addEditorCell(createConstant_0());
     editorCell.addEditorCell(createRefNode_0());
-    editorCell.setInitiallyCollapsed(nodeCondition_b5vsyg_a1a());
+    editorCell.setInitiallyCollapsed(nodeCondition0());
     return editorCell;
   }
-  private boolean nodeCondition_b5vsyg_a1a() {
+  private boolean nodeCondition0() {
     return ConceptFunctionFoldingUtil.getSimpleString(SLinkOperations.getTarget(myNode, LINKS.textFunction$dAEa)) != null;
   }
   private EditorCell createConstant_0() {

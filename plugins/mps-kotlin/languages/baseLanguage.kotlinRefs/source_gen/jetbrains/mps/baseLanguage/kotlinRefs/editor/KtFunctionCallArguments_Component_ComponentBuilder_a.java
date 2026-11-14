@@ -81,7 +81,7 @@ import org.jetbrains.mps.openapi.language.SInterfaceConcept;
     AbstractCellListHandler handler = new actualArgumentListHandler_jxmg4a_b0(myNode, getEditorContext());
     EditorCell_Collection editorCell = handler.createCells(new CellLayout_Indent(), false);
     editorCell.setCellId("KFCAC_refNodeList_actualArgument");
-    if (nodeCondition_jxmg4a_a1a()) {
+    if (nodeCondition0()) {
       editorCell.getStyle().set(StyleAttributes.FOCUS_POLICY, FocusPolicy.FIRST_EDITABLE_CELL);
     }
     AddFirstKotlinFunctionCallArgument.setCellActions(editorCell, myNode, getEditorContext());
@@ -185,7 +185,7 @@ import org.jetbrains.mps.openapi.language.SInterfaceConcept;
       return editorCell;
     }
   }
-  private boolean nodeCondition_jxmg4a_a1a() {
+  private boolean nodeCondition0() {
     return Sequence.fromIterable(IKotlinFunctionLikeCall__BehaviorDescriptor.getFunctionParameters_idUG7NftR_2Q.invoke(myNode)).isNotEmpty();
   }
   private EditorCell createConstant_2() {
@@ -197,13 +197,13 @@ import org.jetbrains.mps.openapi.language.SInterfaceConcept;
     style.set(StyleAttributes.FONT_STYLE, MPSFonts.PLAIN);
     style.set(StyleAttributes.EDITABLE, false);
     editorCell.getStyle().putAll(style);
-    if (nodeCondition_jxmg4a_a2a()) {
+    if (nodeCondition1()) {
       editorCell.getStyle().set(StyleAttributes.FOCUS_POLICY, FocusPolicy.ATTRACTS_FOCUS);
     }
     editorCell.setDefaultText("");
     return editorCell;
   }
-  private boolean nodeCondition_jxmg4a_a2a() {
+  private boolean nodeCondition1() {
     if (SLinkOperations.getTarget(myNode, LINKS.target$7dy6) == null) {
       return false;
     }

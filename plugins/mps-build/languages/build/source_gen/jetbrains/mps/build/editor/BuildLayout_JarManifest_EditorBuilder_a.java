@@ -61,13 +61,13 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setBig(true);
     setCellContext(editorCell);
     editorCell.addEditorCell(createComponent_0());
-    if (nodeCondition_gnweac_a1a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createRefNode_0());
     }
     editorCell.addEditorCell(createCollection_1());
     return editorCell;
   }
-  private boolean nodeCondition_gnweac_a1a() {
+  private boolean nodeCondition0() {
     return !((boolean) BuildLayout_JarManifest__BehaviorDescriptor.isInJar_id5V$ev8kKReX.invoke(myNode)) || Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.name$NhdO)).isNotEmpty();
   }
   private EditorCell createComponent_0() {
@@ -137,12 +137,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
     EditorCell_Collection editorCell = new EditorCell_Collection(getEditorContext(), myNode, new CellLayout_Indent());
     editorCell.setCellId("Collection_gnweac_c0");
     editorCell.addEditorCell(createRefNodeList_0());
-    if (nodeCondition_gnweac_a1c0()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createConstant_1());
     }
     return editorCell;
   }
-  private boolean nodeCondition_gnweac_a1c0() {
+  private boolean nodeCondition1() {
     return !(SNodeOperations.isInstanceOf(ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.parts$FVx)).last(), CONCEPTS.BuildLayout_JarManifest_Section$63));
   }
   private EditorCell createRefNodeList_0() {

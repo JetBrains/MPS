@@ -194,13 +194,13 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createRefNode_0());
     editorCell.addEditorCell(createConstant_2());
     editorCell.addEditorCell(createProperty_0());
-    if (nodeCondition_xc5f9o_a4b0()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_3());
     }
     editorCell.addEditorCell(createConstant_4());
     return editorCell;
   }
-  private boolean nodeCondition_xc5f9o_a4b0() {
+  private boolean nodeCondition0() {
     return !(SPropertyOperations.getBoolean(myNode, PROPS.leftIsExact$q1p7));
   }
   private EditorCell createConstant_1() {
@@ -348,12 +348,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createRefNode_1());
     editorCell.addEditorCell(createConstant_6());
     editorCell.addEditorCell(createProperty_2());
-    if (nodeCondition_xc5f9o_a4c0()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createCollection_5());
     }
     return editorCell;
   }
-  private boolean nodeCondition_xc5f9o_a4c0() {
+  private boolean nodeCondition1() {
     return !(SPropertyOperations.getBoolean(myNode, PROPS.rightIsExact$QQ1X));
   }
   private EditorCell createConstant_5() {

@@ -46,12 +46,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setCellId("Collection_grmouy_0");
     editorCell.setBig(true);
     setCellContext(editorCell);
-    if (nodeCondition_grmouy_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createRefNode_0());
     }
     return editorCell;
   }
-  private boolean nodeCondition_grmouy_a0a() {
+  private boolean nodeCondition0() {
     return !(SNodeOperations.isInstanceOf(SLinkOperations.getTarget(myNode, LINKS.type$a1UY), CONCEPTS.PrimitiveType$sR));
   }
   private EditorCell createRefNode_0() {

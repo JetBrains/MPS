@@ -78,12 +78,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.getStyle().putAll(style);
     editorCell.addEditorCell(createCollection_1());
     editorCell.addEditorCell(createCollection_3());
-    if (nodeCondition_du6pr9_a2a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_8());
     }
     return editorCell;
   }
-  private boolean nodeCondition_du6pr9_a2a() {
+  private boolean nodeCondition0() {
     return BlockCells.useBraces();
   }
   private EditorCell createCollection_1() {
@@ -93,12 +93,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
     style.set(StyleAttributes.SELECTABLE, false);
     editorCell.getStyle().putAll(style);
     editorCell.addEditorCell(createCollection_2());
-    if (nodeCondition_du6pr9_a1a0()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createConstant_1());
     }
     return editorCell;
   }
-  private boolean nodeCondition_du6pr9_a1a0() {
+  private boolean nodeCondition1() {
     return BlockCells.useBraces();
   }
   private EditorCell createCollection_2() {

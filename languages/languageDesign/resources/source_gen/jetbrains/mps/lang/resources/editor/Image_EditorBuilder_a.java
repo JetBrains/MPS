@@ -57,7 +57,7 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
   }
   private EditorCell createAlternation_0() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_w2956w_a0a();
+    alternationCondition = nodeCondition0();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createConstant_0();
@@ -66,7 +66,7 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     }
     return editorCell;
   }
-  private boolean nodeCondition_w2956w_a0a() {
+  private boolean nodeCondition0() {
     return isEmptyString(SPropertyOperations.getString(myNode, PROPS.file$He6o));
   }
   private EditorCell createConstant_0() {
@@ -80,7 +80,7 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
   }
   private EditorCell createAlternation_1() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_w2956w_a0a0();
+    alternationCondition = nodeCondition1();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createCollection_1();
@@ -89,7 +89,7 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     }
     return editorCell;
   }
-  private boolean nodeCondition_w2956w_a0a0() {
+  private boolean nodeCondition1() {
     return (boolean) Image__BehaviorDescriptor.isValid_idIb_Fk7zRKP.invoke(myNode);
   }
   private EditorCell createCollection_1() {

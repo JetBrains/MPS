@@ -61,7 +61,7 @@ import jetbrains.mps.nodeEditor.cells.EditorCell_Constant;
   }
   private EditorCell createAlternation_0() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_vdat08_a1a();
+    alternationCondition = nodeCondition0();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createConstant_0();
@@ -73,7 +73,7 @@ import jetbrains.mps.nodeEditor.cells.EditorCell_Constant;
     editorCell.getStyle().putAll(style);
     return editorCell;
   }
-  private boolean nodeCondition_vdat08_a1a() {
+  private boolean nodeCondition0() {
     return ListSequence.fromList(new RequiredDefsCalculator().calculate(myNode)).count() == 1;
   }
   private EditorCell createConstant_0() {

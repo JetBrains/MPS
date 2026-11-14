@@ -48,12 +48,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
   private EditorCell createCollection_0() {
     EditorCell_Collection editorCell = new EditorCell_Collection(getEditorContext(), myNode, new CellLayout_Indent());
     editorCell.setCellId("Collection_3tjqio_a");
-    if (nodeCondition_3tjqio_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createRefNodeList_0());
     }
     return editorCell;
   }
-  private boolean nodeCondition_3tjqio_a0a() {
+  private boolean nodeCondition0() {
     return Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.modifiers$F5MM)).isNotEmpty();
   }
   private EditorCell createRefNodeList_0() {

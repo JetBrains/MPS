@@ -297,13 +297,13 @@ import org.jetbrains.mps.openapi.language.SConcept;
     Style style = new StyleImpl();
     new RightParenStyleClass(this).apply(style, editorCell);
     editorCell.getStyle().putAll(style);
-    if (nodeCondition_pxtadd_a6a()) {
+    if (nodeCondition0()) {
       editorCell.getStyle().set(StyleAttributes.FOCUS_POLICY, FocusPolicy.ATTRACTS_FOCUS);
     }
     editorCell.setDefaultText("");
     return editorCell;
   }
-  private boolean nodeCondition_pxtadd_a6a() {
+  private boolean nodeCondition0() {
     if (SLinkOperations.getTarget(myNode, LINKS.baseMethodDeclaration$pyYw) == null) {
       return false;
     }

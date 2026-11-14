@@ -74,20 +74,20 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createReadOnlyModelAccessor_0());
     editorCell.addEditorCell(createConstant_0());
     editorCell.addEditorCell(createRefNode_0());
-    if (nodeCondition_s4nv53_a3a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_1());
     }
     editorCell.addEditorCell(createConstant_2());
     editorCell.addEditorCell(createRefNode_2());
-    if (nodeCondition_s4nv53_a6a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createCollection_3());
     }
     return editorCell;
   }
-  private boolean nodeCondition_s4nv53_a3a() {
+  private boolean nodeCondition0() {
     return Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.keyType$Uj4M)).isNotEmpty() || Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.valueType$2EUo)).isNotEmpty();
   }
-  private boolean nodeCondition_s4nv53_a6a() {
+  private boolean nodeCondition1() {
     return Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.initSize$f8Q)).isNotEmpty();
   }
   private EditorCell createReadOnlyModelAccessor_0() {

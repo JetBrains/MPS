@@ -117,19 +117,19 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createCollection_4());
     editorCell.addEditorCell(createCollection_5());
     editorCell.addEditorCell(createCollection_6());
-    if (nodeCondition_fc8ehc_a3b1a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_7());
     }
-    if (nodeCondition_fc8ehc_a4b1a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createCollection_8());
     }
     editorCell.addEditorCell(createCollection_9());
     return editorCell;
   }
-  private boolean nodeCondition_fc8ehc_a3b1a() {
+  private boolean nodeCondition0() {
     return SEnumOperations.isMember(SPropertyOperations.getEnum(myNode, PROPS.presentation$bbNL), 0x10f3fd4377aL);
   }
-  private boolean nodeCondition_fc8ehc_a4b1a() {
+  private boolean nodeCondition1() {
     return SEnumOperations.isMember(SPropertyOperations.getEnum(myNode, PROPS.presentation$bbNL), 0x10f3fd4377aL);
   }
   private EditorCell createCollection_4() {

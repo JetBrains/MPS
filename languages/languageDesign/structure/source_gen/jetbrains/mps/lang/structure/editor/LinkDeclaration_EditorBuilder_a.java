@@ -183,37 +183,37 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.getStyle().putAll(style);
     editorCell.addEditorCell(createRefCell_0());
     editorCell.addEditorCell(createConstant_1());
-    if (nodeCondition_6h6dhy_a2c0()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createProperty_1());
     }
-    if (nodeCondition_6h6dhy_a3c0()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createReadOnlyModelAccessor_0());
     }
     editorCell.addEditorCell(createConstant_2());
-    if (nodeCondition_6h6dhy_a5c0()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createCollection_2());
     }
-    if (nodeCondition_6h6dhy_a6c0()) {
+    if (nodeCondition3()) {
       editorCell.addEditorCell(createConstant_4());
     }
-    if (nodeCondition_6h6dhy_a7c0()) {
+    if (nodeCondition4()) {
       editorCell.addEditorCell(createCollection_3());
     }
     return editorCell;
   }
-  private boolean nodeCondition_6h6dhy_a2c0() {
+  private boolean nodeCondition0() {
     return SLinkOperations.getTarget(myNode, LINKS.specializedLink$7ZCN) == null;
   }
-  private boolean nodeCondition_6h6dhy_a3c0() {
+  private boolean nodeCondition1() {
     return SLinkOperations.getTarget(myNode, LINKS.specializedLink$7ZCN) != null;
   }
-  private boolean nodeCondition_6h6dhy_a5c0() {
+  private boolean nodeCondition2() {
     return (SLinkOperations.getTarget(myNode, LINKS.specializedLink$7ZCN) != null);
   }
-  private boolean nodeCondition_6h6dhy_a6c0() {
+  private boolean nodeCondition3() {
     return SPropertyOperations.getBoolean(myNode, PROPS.unordered$UUvH);
   }
-  private boolean nodeCondition_6h6dhy_a7c0() {
+  private boolean nodeCondition4() {
     return IdEditorHelper.shownInEditor(myNode);
   }
   private EditorCell createRefCell_0() {

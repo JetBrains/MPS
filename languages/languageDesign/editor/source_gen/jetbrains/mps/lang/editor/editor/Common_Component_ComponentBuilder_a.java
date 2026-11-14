@@ -86,7 +86,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     EditorCell_Collection editorCell = new EditorCell_Collection(getEditorContext(), myNode, new CellLayout_Vertical());
     editorCell.setCellId("Collection_tf8r10_b0");
     editorCell.setGridLayout(true);
-    if (nodeCondition_tf8r10_a0b0()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_2());
     }
     editorCell.addEditorCell(createCollection_3());
@@ -94,16 +94,16 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createCollection_5());
     editorCell.addEditorCell(createCollection_6());
     editorCell.addEditorCell(createCollection_7());
-    if (nodeCondition_tf8r10_a6b0()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createCollection_8());
     }
     editorCell.addEditorCell(createCollection_9());
     return editorCell;
   }
-  private boolean nodeCondition_tf8r10_a0b0() {
+  private boolean nodeCondition0() {
     return !((boolean) EditorCellModel__BehaviorDescriptor.isCellIdInitialized_idhTuDsSD.invoke(myNode));
   }
-  private boolean nodeCondition_tf8r10_a6b0() {
+  private boolean nodeCondition1() {
     return !(SEnumOperations.isMember(SPropertyOperations.getEnum(myNode, PROPS.attractsFocus$GvXL), 0x1075079c86cL));
   }
   private EditorCell createCollection_2() {

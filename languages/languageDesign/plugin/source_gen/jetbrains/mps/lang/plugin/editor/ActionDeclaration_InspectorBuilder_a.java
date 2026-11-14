@@ -58,7 +58,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     setCellContext(editorCell);
     editorCell.setGridLayout(true);
     editorCell.addEditorCell(createCollection_1());
-    if (nodeCondition_6wnsz8_a1a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_2());
     }
     editorCell.addEditorCell(createCollection_3());
@@ -66,7 +66,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createComponent_0());
     return editorCell;
   }
-  private boolean nodeCondition_6wnsz8_a1a() {
+  private boolean nodeCondition0() {
     return isNotEmptyString(SPropertyOperations.getString(myNode, PROPS.ID$U3VJ)) || SPropertyOperations.getBoolean(myNode, PROPS.overrides$QBRP);
   }
   private EditorCell createCollection_1() {

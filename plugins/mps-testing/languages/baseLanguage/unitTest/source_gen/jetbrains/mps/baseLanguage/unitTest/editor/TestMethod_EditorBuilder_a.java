@@ -62,12 +62,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createConstant_0());
     editorCell.addEditorCell(createProperty_0());
     editorCell.addEditorCell(createComponent_2());
-    if (nodeCondition_ml6tu4_a5a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_1());
     }
     return editorCell;
   }
-  private boolean nodeCondition_ml6tu4_a5a() {
+  private boolean nodeCondition0() {
     List<SNode> nextSiblings = SNodeOperations.getNextSiblings(myNode, false);
     return ListSequence.fromList(nextSiblings).isNotEmpty();
   }

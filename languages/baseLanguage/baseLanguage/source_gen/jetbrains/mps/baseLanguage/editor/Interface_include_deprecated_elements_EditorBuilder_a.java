@@ -77,28 +77,28 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     editorCell.setBig(true);
     setCellContext(editorCell);
     editorCell.addEditorCell(createComponent_0());
-    if (nodeCondition_ahqdqr_a1a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createComponent_1());
     }
-    if (nodeCondition_ahqdqr_a2a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createConstant_0());
     }
     editorCell.addEditorCell(createConstant_1());
     editorCell.addEditorCell(createProperty_0());
-    if (nodeCondition_ahqdqr_a5a()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createComponent_2());
     }
     editorCell.addEditorCell(createCollection_1());
     editorCell.addEditorCell(createCollection_2());
     return editorCell;
   }
-  private boolean nodeCondition_ahqdqr_a1a() {
+  private boolean nodeCondition0() {
     return !(SNodeOperations.isInstanceOf(SNodeOperations.getParent(myNode), CONCEPTS.Interface$db));
   }
-  private boolean nodeCondition_ahqdqr_a2a() {
+  private boolean nodeCondition1() {
     return (boolean) Classifier__BehaviorDescriptor.isInner_idsWroEc0xXl.invoke(myNode) && !(SPropertyOperations.getBoolean(myNode, PROPS.nonStatic$aWW8)) && !(SNodeOperations.isInstanceOf(SNodeOperations.getParent(myNode), CONCEPTS.Interface$db));
   }
-  private boolean nodeCondition_ahqdqr_a5a() {
+  private boolean nodeCondition2() {
     return ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.typeVariableDeclaration$Lipp)).isNotEmpty();
   }
   private EditorCell createComponent_0() {
@@ -141,7 +141,7 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
       Style style = new StyleImpl();
       style.set(StyleAttributes.SELECTABLE, true);
       editorCell.getStyle().putAll(style);
-      if (nodeCondition_ahqdqr_a4a()) {
+      if (nodeCondition3()) {
         editorCell.getStyle().set(StyleAttributes.FOCUS_POLICY, FocusPolicy.ATTRACTS_FOCUS);
       }
       editorCell.setTransformationMenuLookup(new NamedTransformationMenuLookup(LanguageRegistry.getInstance(getEditorContext().getRepository()), CONCEPTS.Interface$db, "jetbrains.mps.baseLanguage.editor.Interface_ApplySideTransforms"));
@@ -158,7 +158,7 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
       getCellFactory().popCellContext();
     }
   }
-  private boolean nodeCondition_ahqdqr_a4a() {
+  private boolean nodeCondition3() {
     return isEmptyString(SPropertyOperations.getString(myNode, PROPS.name$MnvL));
   }
   private EditorCell createComponent_2() {
@@ -173,18 +173,18 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     Style style = new StyleImpl();
     style.set(StyleAttributes.SELECTABLE, false);
     editorCell.getStyle().putAll(style);
-    if (nodeCondition_ahqdqr_a0g0()) {
+    if (nodeCondition4()) {
       editorCell.addEditorCell(createConstant_2());
     }
-    if (nodeCondition_ahqdqr_a1g0()) {
+    if (nodeCondition5()) {
       editorCell.addEditorCell(createRefNodeList_0());
     }
     return editorCell;
   }
-  private boolean nodeCondition_ahqdqr_a0g0() {
+  private boolean nodeCondition4() {
     return ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.extendedInterface$PDVO)).isNotEmpty();
   }
-  private boolean nodeCondition_ahqdqr_a1g0() {
+  private boolean nodeCondition5() {
     return Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.extendedInterface$PDVO)).isNotEmpty();
   }
   private EditorCell createConstant_2() {
@@ -305,20 +305,20 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     Style style = new StyleImpl();
     style.set(StyleAttributes.INDENT_LAYOUT_NEW_LINE, true);
     editorCell.getStyle().putAll(style);
-    editorCell.setFoldable(nodeCondition_ahqdqr_a7a());
+    editorCell.setFoldable(nodeCondition7());
     editorCell.setFoldedCell(createComponent_4());
     editorCell.addEditorCell(createConstant_4());
     editorCell.addEditorCell(createComponent_3());
-    if (nodeCondition_ahqdqr_a2h0()) {
+    if (nodeCondition6()) {
       editorCell.addEditorCell(createCollection_3());
     }
     editorCell.addEditorCell(createConstant_12());
     return editorCell;
   }
-  private boolean nodeCondition_ahqdqr_a2h0() {
+  private boolean nodeCondition6() {
     return Sequence.fromIterable(Classifier__BehaviorDescriptor.members_id1hodSy8nQmC.invoke(myNode)).subtract(ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.member$L_2d))).isNotEmpty();
   }
-  private boolean nodeCondition_ahqdqr_a7a() {
+  private boolean nodeCondition7() {
     return (SNodeOperations.getParent(myNode) != null);
   }
   private EditorCell createConstant_4() {

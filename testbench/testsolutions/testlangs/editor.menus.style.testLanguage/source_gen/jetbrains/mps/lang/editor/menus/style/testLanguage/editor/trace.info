@@ -3236,9 +3236,9 @@
       <node id="5310043668063056845" at="44,48,45,28" concept="2" />
       <node id="5310043668063056845" at="45,28,46,31" concept="2" />
       <node id="5310043668063056849" at="46,31,47,50" concept="2" />
-      <node id="5310043668063056850" at="48,37,49,50" concept="2" />
+      <node id="5310043668063056850" at="48,27,49,50" concept="2" />
       <node id="5310043668063056845" at="50,5,51,22" concept="8" />
-      <node id="5310043668063056853" at="53,46,54,75" concept="8" />
+      <node id="5310043668063056853" at="53,36,54,75" concept="8" />
       <node id="5310043668063056849" at="56,42,57,119" concept="7" />
       <node id="5310043668063056849" at="57,119,58,22" concept="8" />
       <node id="5310043668063056845" at="60,40,61,125" concept="7" />
@@ -3267,7 +3267,7 @@
       <node id="5310043668063056845" at="65,0,67,0" concept="3" trace="myNode" />
       <node id="5310043668063056845" at="38,0,41,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="5310043668063056850" at="47,50,50,5" concept="5" />
-      <node id="5310043668063056851" at="53,0,56,0" concept="6" trace="nodeCondition_8fvsfz_a1a#()Z" />
+      <node id="5310043668063056851" at="53,0,56,0" concept="6" trace="nodeCondition0#()Z" />
       <node id="5310043668063056845" at="89,87,92,7" concept="5" />
       <node id="5310043668063056845" at="92,7,95,7" concept="5" />
       <node id="5310043668063056845" at="111,0,114,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
@@ -3284,8 +3284,8 @@
       <node id="5310043668063056845" at="97,0,111,0" concept="6" trace="createEmptyCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="5310043668063056845" at="34,26,35,18" />
       <scope id="5310043668063056845" at="38,39,39,32" />
-      <scope id="5310043668063056850" at="48,37,49,50" />
-      <scope id="5310043668063056852" at="53,46,54,75" />
+      <scope id="5310043668063056850" at="48,27,49,50" />
+      <scope id="5310043668063056852" at="53,36,54,75" />
       <scope id="5310043668063056845" at="75,28,76,20" />
       <scope id="5310043668063056845" at="90,118,91,137" />
       <scope id="5310043668063056845" at="93,42,94,48" />

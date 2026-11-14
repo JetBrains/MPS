@@ -103,12 +103,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createComponent_0());
     editorCell.addEditorCell(createComponent_1());
     editorCell.addEditorCell(createCollection_2());
-    if (nodeCondition_l06mua_a3c0()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_3());
     }
     return editorCell;
   }
-  private boolean nodeCondition_l06mua_a3c0() {
+  private boolean nodeCondition0() {
     return SPropertyOperations.getString(myNode, PROPS.counterVarName$YOXn) != null;
   }
   private EditorCell createComponent_0() {

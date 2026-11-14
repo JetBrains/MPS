@@ -149,7 +149,7 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
       if (editorCell.getSRole() == null) {
         editorCell.setSRole(LINKS.right$Uro5);
       }
-      if (nodeCondition_qrfxcf_a2a()) {
+      if (nodeCondition0()) {
         editorCell.getStyle().set(StyleAttributes.FOCUS_POLICY, FocusPolicy.ATTRACTS_FOCUS);
       }
     }
@@ -170,7 +170,7 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     protected String getNoTargetText() {
       return "<no right>";
     }
-    private boolean nodeCondition_qrfxcf_a2a() {
+    private boolean nodeCondition0() {
       return (SLinkOperations.getTarget(myNode, LINKS.left$UqF2) != null);
     }
   }

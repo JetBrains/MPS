@@ -62,18 +62,18 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createConstant_0());
     editorCell.addEditorCell(createProperty_0());
     editorCell.addEditorCell(createProperty_1());
-    if (nodeCondition_n0n6wp_a3a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_1());
     }
-    if (nodeCondition_n0n6wp_a4a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createConstant_2());
     }
     return editorCell;
   }
-  private boolean nodeCondition_n0n6wp_a3a() {
+  private boolean nodeCondition0() {
     return IdEditorHelper.shownInEditor(myNode);
   }
-  private boolean nodeCondition_n0n6wp_a4a() {
+  private boolean nodeCondition1() {
     return (boolean) EnumerationMemberDeclaration__BehaviorDescriptor.isDefault_idVFd4X$DLvk.invoke(myNode);
   }
   private EditorCell createConstant_0() {

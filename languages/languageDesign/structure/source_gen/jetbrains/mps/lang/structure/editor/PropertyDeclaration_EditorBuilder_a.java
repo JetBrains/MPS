@@ -76,12 +76,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createConstant_0());
     editorCell.addEditorCell(createRefCell_0());
     editorCell.addEditorCell(createCollection_1());
-    if (nodeCondition_lnae77_a4a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_2());
     }
     return editorCell;
   }
-  private boolean nodeCondition_lnae77_a4a() {
+  private boolean nodeCondition0() {
     return IdEditorHelper.shownInEditor(myNode);
   }
   private EditorCell createTransactionalProperty_0() {

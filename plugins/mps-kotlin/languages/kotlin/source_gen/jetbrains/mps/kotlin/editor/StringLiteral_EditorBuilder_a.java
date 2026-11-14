@@ -58,14 +58,14 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setBig(true);
     setCellContext(editorCell);
     editorCell.addEditorCell(createReadOnlyModelAccessor_0());
-    if (nodeCondition_fgt3_a1a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_0());
     }
     editorCell.addEditorCell(createRefNodeList_0());
     editorCell.addEditorCell(createReadOnlyModelAccessor_1());
     return editorCell;
   }
-  private boolean nodeCondition_fgt3_a1a() {
+  private boolean nodeCondition0() {
     return ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.lines$FNV)).count() > 1;
   }
   private EditorCell createReadOnlyModelAccessor_0() {

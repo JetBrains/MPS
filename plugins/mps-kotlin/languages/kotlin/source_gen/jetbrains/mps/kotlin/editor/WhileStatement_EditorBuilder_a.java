@@ -53,7 +53,7 @@ import org.jetbrains.mps.openapi.language.SInterfaceConcept;
     editorCell.setCellId("Collection_ou8udj_a");
     editorCell.setBig(true);
     setCellContext(editorCell);
-    if (nodeCondition_ou8udj_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createRefNode_0());
     }
     editorCell.addEditorCell(createConstant_0());
@@ -63,7 +63,7 @@ import org.jetbrains.mps.openapi.language.SInterfaceConcept;
     editorCell.addEditorCell(createComponent_0());
     return editorCell;
   }
-  private boolean nodeCondition_ou8udj_a0a() {
+  private boolean nodeCondition0() {
     return (SLinkOperations.getTarget(myNode, LINKS.label$EneV) != null);
   }
   private EditorCell createRefNode_0() {

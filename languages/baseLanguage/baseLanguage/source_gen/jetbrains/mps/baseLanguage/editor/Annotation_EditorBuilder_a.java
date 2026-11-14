@@ -71,7 +71,7 @@ import org.jetbrains.mps.openapi.language.SInterfaceConcept;
     editorCell.setBig(true);
     setCellContext(editorCell);
     editorCell.addEditorCell(createComponent_0());
-    if (nodeCondition_mr1gse_a1a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createComponent_1());
     }
     editorCell.addEditorCell(createConstant_0());
@@ -79,7 +79,7 @@ import org.jetbrains.mps.openapi.language.SInterfaceConcept;
     editorCell.addEditorCell(createCollection_1());
     return editorCell;
   }
-  private boolean nodeCondition_mr1gse_a1a() {
+  private boolean nodeCondition0() {
     return !(SNodeOperations.isInstanceOf(SNodeOperations.getParent(myNode), CONCEPTS.Interface$db));
   }
   private EditorCell createComponent_0() {
@@ -110,7 +110,7 @@ import org.jetbrains.mps.openapi.language.SInterfaceConcept;
       Style style = new StyleImpl();
       style.set(StyleAttributes.SELECTABLE, true);
       editorCell.getStyle().putAll(style);
-      if (nodeCondition_mr1gse_a3a()) {
+      if (nodeCondition1()) {
         editorCell.getStyle().set(StyleAttributes.FOCUS_POLICY, FocusPolicy.ATTRACTS_FOCUS);
       }
       editorCell.setSubstituteInfo(new SPropertySubstituteInfo(editorCell, property));
@@ -126,7 +126,7 @@ import org.jetbrains.mps.openapi.language.SInterfaceConcept;
       getCellFactory().popCellContext();
     }
   }
-  private boolean nodeCondition_mr1gse_a3a() {
+  private boolean nodeCondition1() {
     return isEmptyString(SPropertyOperations.getString(myNode, PROPS.name$MnvL));
   }
   private EditorCell createCollection_1() {
@@ -135,7 +135,7 @@ import org.jetbrains.mps.openapi.language.SInterfaceConcept;
     Style style = new StyleImpl();
     style.set(StyleAttributes.INDENT_LAYOUT_NEW_LINE, true);
     editorCell.getStyle().putAll(style);
-    editorCell.setFoldable(nodeCondition_mr1gse_a4a());
+    editorCell.setFoldable(nodeCondition2());
     editorCell.setFoldedCell(createComponent_2());
     editorCell.addEditorCell(createConstant_1());
     editorCell.addEditorCell(createRefNodeList_0());
@@ -143,7 +143,7 @@ import org.jetbrains.mps.openapi.language.SInterfaceConcept;
     editorCell.addEditorCell(createConstant_4());
     return editorCell;
   }
-  private boolean nodeCondition_mr1gse_a4a() {
+  private boolean nodeCondition2() {
     return (SNodeOperations.getParent(myNode) != null);
   }
   private EditorCell createConstant_1() {

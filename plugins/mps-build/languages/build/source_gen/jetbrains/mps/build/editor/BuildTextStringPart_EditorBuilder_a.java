@@ -52,7 +52,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
 
   private EditorCell createAlternation_0() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_zen9g6_a0();
+    alternationCondition = nodeCondition0();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createAlternation_1();
@@ -66,12 +66,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
     }
     return editorCell;
   }
-  private boolean nodeCondition_zen9g6_a0() {
+  private boolean nodeCondition0() {
     return (BuildTextStringPart__BehaviorDescriptor.getContainer_id5hFYqIiYHaE.invoke(myNode) != null) && BuildStringContainer__BehaviorDescriptor.getColorForTextPart_id5hFYqIiXWl$.invoke(BuildTextStringPart__BehaviorDescriptor.getContainer_id5hFYqIiYHaE.invoke(myNode), SNodeOperations.getParent(myNode).getContainmentLink()) != null;
   }
   private EditorCell createAlternation_1() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_zen9g6_a0a();
+    alternationCondition = nodeCondition1();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createProperty_0();
@@ -80,7 +80,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     }
     return editorCell;
   }
-  private boolean nodeCondition_zen9g6_a0a() {
+  private boolean nodeCondition1() {
     return (boolean) BuildStringPart__BehaviorDescriptor.punctuationLeft_id4qU2HB9e$4N.invoke(myNode);
   }
   private EditorCell createProperty_0() {
@@ -158,7 +158,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
   }
   private EditorCell createAlternation_2() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_zen9g6_a0a_0();
+    alternationCondition = nodeCondition2();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createProperty_2();
@@ -167,7 +167,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     }
     return editorCell;
   }
-  private boolean nodeCondition_zen9g6_a0a_0() {
+  private boolean nodeCondition2() {
     return (boolean) BuildStringPart__BehaviorDescriptor.punctuationLeft_id4qU2HB9e$4N.invoke(myNode);
   }
   private EditorCell createProperty_2() {

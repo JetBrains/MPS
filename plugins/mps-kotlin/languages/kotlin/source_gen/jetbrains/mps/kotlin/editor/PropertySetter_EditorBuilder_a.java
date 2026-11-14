@@ -55,12 +55,12 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     editorCell.addEditorCell(createComponent_0());
     editorCell.addEditorCell(createComponent_1());
     editorCell.addEditorCell(createConstant_0());
-    if (nodeCondition_e7iyzw_a3a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_1());
     }
     return editorCell;
   }
-  private boolean nodeCondition_e7iyzw_a3a() {
+  private boolean nodeCondition0() {
     return (SLinkOperations.getTarget(myNode, LINKS.parameter$J_aM) != null) || ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.statements$R3pt)).isNotEmpty();
   }
   private EditorCell createComponent_0() {

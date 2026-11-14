@@ -72,12 +72,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
     Style style = new StyleImpl();
     style.set(StyleAttributes.SELECTABLE, false);
     editorCell.getStyle().putAll(style);
-    if (nodeCondition_leuqor_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_1());
     }
     return editorCell;
   }
-  private boolean nodeCondition_leuqor_a0a() {
+  private boolean nodeCondition0() {
     return (boolean) BuildMps_AbstractModule__BehaviorDescriptor.isCompact_id7gAtt1ju6Jy.invoke(myNode);
   }
   private EditorCell createCollection_1() {
@@ -137,13 +137,13 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.getStyle().putAll(style);
     editorCell.setFoldable(true);
     editorCell.addEditorCell(createConstant_1());
-    if (nodeCondition_leuqor_a1b0a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createConstant_2());
     }
-    if (nodeCondition_leuqor_a2b0a()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createConstant_3());
     }
-    if (nodeCondition_leuqor_a3b0a()) {
+    if (nodeCondition3()) {
       editorCell.addEditorCell(createCollection_4());
     }
     editorCell.addEditorCell(createRefNodeList_0());
@@ -151,13 +151,13 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createRefNodeList_1());
     return editorCell;
   }
-  private boolean nodeCondition_leuqor_a1b0a() {
+  private boolean nodeCondition1() {
     return SPropertyOperations.getBoolean(myNode, PROPS.withKotlin$2YBL);
   }
-  private boolean nodeCondition_leuqor_a2b0a() {
+  private boolean nodeCondition2() {
     return SPropertyOperations.getBoolean(myNode, PROPS.doNotCompile$4EF);
   }
-  private boolean nodeCondition_leuqor_a3b0a() {
+  private boolean nodeCondition3() {
     return SPropertyOperations.getBoolean(myNode, PROPS.doNotCompile$4EF) == false;
   }
   private EditorCell createConstant_1() {

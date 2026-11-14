@@ -79,51 +79,51 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     setCellContext(editorCell);
     editorCell.addEditorCell(createComponent_0());
     editorCell.addEditorCell(createComponent_1());
-    if (nodeCondition_uj0cpq_a2a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createComponent_2());
     }
-    if (nodeCondition_uj0cpq_a3a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createConstant_0());
     }
-    if (nodeCondition_uj0cpq_a4a()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createConstant_1());
     }
-    if (nodeCondition_uj0cpq_a5a()) {
+    if (nodeCondition3()) {
       editorCell.addEditorCell(createConstant_2());
     }
     editorCell.addEditorCell(createConstant_3());
     editorCell.addEditorCell(createProperty_0());
-    if (nodeCondition_uj0cpq_a8a()) {
+    if (nodeCondition4()) {
       editorCell.addEditorCell(createComponent_3());
     }
-    if (nodeCondition_uj0cpq_a9a()) {
+    if (nodeCondition5()) {
       editorCell.addEditorCell(createCollection_1());
     }
-    if (nodeCondition_uj0cpq_a01a()) {
+    if (nodeCondition6()) {
       editorCell.addEditorCell(createCollection_2());
     }
     editorCell.addEditorCell(createCollection_3());
     return editorCell;
   }
-  private boolean nodeCondition_uj0cpq_a2a() {
+  private boolean nodeCondition0() {
     return !(SNodeOperations.isInstanceOf(SNodeOperations.getParent(myNode), CONCEPTS.Interface$db));
   }
-  private boolean nodeCondition_uj0cpq_a3a() {
+  private boolean nodeCondition1() {
     return (boolean) Classifier__BehaviorDescriptor.isInner_idsWroEc0xXl.invoke(myNode) && (boolean) IClassifierMember__BehaviorDescriptor.isStatic_id6r77ob2USS8.invoke(myNode) && !(SNodeOperations.isInstanceOf(SNodeOperations.getParent(myNode), CONCEPTS.Interface$db));
   }
-  private boolean nodeCondition_uj0cpq_a4a() {
+  private boolean nodeCondition2() {
     return SPropertyOperations.getBoolean(myNode, PROPS.abstractClass$Ta1X);
   }
-  private boolean nodeCondition_uj0cpq_a5a() {
+  private boolean nodeCondition3() {
     return SPropertyOperations.getBoolean(myNode, PROPS.isFinal$f7C_);
   }
-  private boolean nodeCondition_uj0cpq_a8a() {
+  private boolean nodeCondition4() {
     return ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.typeVariableDeclaration$Lipp)).isNotEmpty();
   }
-  private boolean nodeCondition_uj0cpq_a9a() {
+  private boolean nodeCondition5() {
     return Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.superclass$Mp9$)).isNotEmpty();
   }
-  private boolean nodeCondition_uj0cpq_a01a() {
+  private boolean nodeCondition6() {
     return Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.implementedInterface$rujG)).isNotEmpty();
   }
   private EditorCell createComponent_0() {
@@ -197,7 +197,7 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
       Style style = new StyleImpl();
       style.set(StyleAttributes.SELECTABLE, true);
       editorCell.getStyle().putAll(style);
-      if (nodeCondition_uj0cpq_a7a()) {
+      if (nodeCondition7()) {
         editorCell.getStyle().set(StyleAttributes.FOCUS_POLICY, FocusPolicy.ATTRACTS_FOCUS);
       }
       editorCell.setTransformationMenuLookup(new NamedTransformationMenuLookup(LanguageRegistry.getInstance(getEditorContext().getRepository()), CONCEPTS.ClassConcept$bK, "jetbrains.mps.baseLanguage.editor.ClassConcept_ApplySideTransforms"));
@@ -214,7 +214,7 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
       getCellFactory().popCellContext();
     }
   }
-  private boolean nodeCondition_uj0cpq_a7a() {
+  private boolean nodeCondition7() {
     return isEmptyString(SPropertyOperations.getString(myNode, PROPS.name$MnvL));
   }
   private EditorCell createComponent_3() {
@@ -421,14 +421,14 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     Style style = new StyleImpl();
     style.set(StyleAttributes.INDENT_LAYOUT_NEW_LINE, true);
     editorCell.getStyle().putAll(style);
-    editorCell.setFoldable(nodeCondition_uj0cpq_a11a());
+    editorCell.setFoldable(nodeCondition8());
     editorCell.setFoldedCell(createComponent_5());
     editorCell.addEditorCell(createConstant_7());
     editorCell.addEditorCell(createComponent_4());
     editorCell.addEditorCell(createConstant_8());
     return editorCell;
   }
-  private boolean nodeCondition_uj0cpq_a11a() {
+  private boolean nodeCondition8() {
     return (SNodeOperations.getParent(myNode) != null);
   }
   private EditorCell createConstant_7() {

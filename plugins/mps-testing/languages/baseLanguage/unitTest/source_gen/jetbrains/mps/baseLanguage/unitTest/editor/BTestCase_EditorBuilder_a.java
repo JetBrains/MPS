@@ -73,7 +73,7 @@ import org.jetbrains.mps.openapi.language.SInterfaceConcept;
     editorCell.setBig(true);
     setCellContext(editorCell);
     editorCell.addEditorCell(createComponent_0());
-    if (nodeCondition_lq4ak4_a1a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_0());
     }
     editorCell.addEditorCell(createConstant_1());
@@ -83,7 +83,7 @@ import org.jetbrains.mps.openapi.language.SInterfaceConcept;
     editorCell.addEditorCell(createCollection_1());
     return editorCell;
   }
-  private boolean nodeCondition_lq4ak4_a1a() {
+  private boolean nodeCondition0() {
     return SPropertyOperations.getBoolean(myNode, PROPS.abstractClass$Ta1X);
   }
   private EditorCell createComponent_0() {
@@ -199,14 +199,14 @@ import org.jetbrains.mps.openapi.language.SInterfaceConcept;
     Style style = new StyleImpl();
     style.set(StyleAttributes.INDENT_LAYOUT_NEW_LINE, true);
     editorCell.getStyle().putAll(style);
-    editorCell.setFoldable(nodeCondition_lq4ak4_a6a());
+    editorCell.setFoldable(nodeCondition1());
     editorCell.setFoldedCell(createComponent_1());
     editorCell.addEditorCell(createConstant_3());
     editorCell.addEditorCell(createCollection_2());
     editorCell.addEditorCell(createConstant_11());
     return editorCell;
   }
-  private boolean nodeCondition_lq4ak4_a6a() {
+  private boolean nodeCondition1() {
     return (SNodeOperations.getParent(myNode) != null);
   }
   private EditorCell createConstant_3() {
@@ -234,24 +234,24 @@ import org.jetbrains.mps.openapi.language.SInterfaceConcept;
     editorCell.addEditorCell(createRefNode_2());
     editorCell.addEditorCell(createConstant_7());
     editorCell.addEditorCell(createRefNode_3());
-    if (nodeCondition_lq4ak4_a7b6a()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createRefNodeList_1());
     }
-    if (nodeCondition_lq4ak4_a8b6a()) {
+    if (nodeCondition3()) {
       editorCell.addEditorCell(createRefNodeList_2());
     }
-    if (nodeCondition_lq4ak4_a9b6a()) {
+    if (nodeCondition4()) {
       editorCell.addEditorCell(createRefNodeList_3());
     }
     return editorCell;
   }
-  private boolean nodeCondition_lq4ak4_a7b6a() {
+  private boolean nodeCondition2() {
     return Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.staticField$tEFG)).isNotEmpty();
   }
-  private boolean nodeCondition_lq4ak4_a8b6a() {
+  private boolean nodeCondition3() {
     return Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.field$QWVM)).isNotEmpty();
   }
-  private boolean nodeCondition_lq4ak4_a9b6a() {
+  private boolean nodeCondition4() {
     return Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.method$_DCK)).isNotEmpty();
   }
   private EditorCell createRefNodeList_0() {

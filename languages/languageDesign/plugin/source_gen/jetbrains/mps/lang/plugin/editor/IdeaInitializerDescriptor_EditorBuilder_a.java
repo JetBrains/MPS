@@ -79,14 +79,14 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createCollection_8());
     editorCell.addEditorCell(createConstant_9());
     editorCell.addEditorCell(createCollection_10());
-    if (nodeCondition_bmlzqh_a11a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_11());
     }
     editorCell.addEditorCell(createConstant_12());
     editorCell.addEditorCell(createRefNode_0());
     return editorCell;
   }
-  private boolean nodeCondition_bmlzqh_a11a() {
+  private boolean nodeCondition0() {
     return RuntimeFlags.isInternalMode();
   }
   private EditorCell createCollection_1() {

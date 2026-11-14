@@ -86,7 +86,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     setCellContext(editorCell);
     editorCell.addEditorCell(createComponent_0());
     editorCell.addEditorCell(createRefNode_0());
-    if (nodeCondition_4bw08u_a2a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createRefNode_1());
     }
     if (SNodeAccessUtil.hasProperty(myNode, PROPS.name$MnvL)) {
@@ -94,7 +94,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     }
     return editorCell;
   }
-  private boolean nodeCondition_4bw08u_a2a() {
+  private boolean nodeCondition0() {
     return (SLinkOperations.getTarget(myNode, LINKS.expectedMessage$6o6s) != null);
   }
   private EditorCell createComponent_0() {

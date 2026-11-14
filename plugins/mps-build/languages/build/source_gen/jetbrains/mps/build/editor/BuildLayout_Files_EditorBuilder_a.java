@@ -146,7 +146,7 @@ import org.jetbrains.mps.openapi.language.SInterfaceConcept;
   }
   private EditorCell createAlternation_0() {
     boolean alternationCondition = true;
-    alternationCondition = nodeCondition_qm6fq6_a2a();
+    alternationCondition = nodeCondition0();
     EditorCell editorCell = null;
     if (alternationCondition) {
       editorCell = createRefNodeList_0();
@@ -155,7 +155,7 @@ import org.jetbrains.mps.openapi.language.SInterfaceConcept;
     }
     return editorCell;
   }
-  private boolean nodeCondition_qm6fq6_a2a() {
+  private boolean nodeCondition0() {
     return ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.parameters$WlG4)).isEmpty();
   }
   private EditorCell createRefNodeList_0() {

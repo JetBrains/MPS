@@ -68,12 +68,12 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createConstant_0());
     editorCell.addEditorCell(createProperty_0());
     editorCell.addEditorCell(createCollection_1());
-    if (nodeCondition_pilq2t_a3a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_2());
     }
     return editorCell;
   }
-  private boolean nodeCondition_pilq2t_a3a() {
+  private boolean nodeCondition0() {
     return ListSequence.fromList(SLinkOperations.getChildren(myNode, LINKS.modules$JlQo)).isEmpty() || (SNodeOperations.getNextSibling(myNode) == null);
   }
   private EditorCell createConstant_0() {

@@ -150,7 +150,7 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     style.set(StyleAttributes.LAYOUT_CONSTRAINT, "noflow");
     style.set(StyleAttributes.MATCHING_LABEL, (String) null);
     style.set(StyleAttributes.MATCHING_LABEL, "labelName");
-    style.set(StyleAttributes.MATCHING_LABEL, matchingNode_bn78ok_a77a0());
+    style.set(StyleAttributes.MATCHING_LABEL, matchingNode0());
     style.set(StyleAttributes.MAX_WIDTH, 10);
     style.set(StyleAttributes.MAX_WIDTH, _StyleParameter_QueryFunction_bn78ok_a97a0());
     style.set(StyleAttributes.NAVIGATABLE_NODE, _StyleParameter_QueryFunction_bn78ok_a08a0());
@@ -299,7 +299,7 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     boolean var = getEditorContext() != null || getNode() != null;
     return (var ? 10 : 20);
   }
-  private String matchingNode_bn78ok_a77a0() {
+  private String matchingNode0() {
     boolean var = getNode() != null;
     return (var ? "l1" : "l2");
   }

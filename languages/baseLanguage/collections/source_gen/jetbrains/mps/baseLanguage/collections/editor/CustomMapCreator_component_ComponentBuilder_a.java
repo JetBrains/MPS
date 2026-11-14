@@ -75,20 +75,20 @@ import org.jetbrains.mps.openapi.language.SConcept;
     EditorCell_Collection editorCell = new EditorCell_Collection(getEditorContext(), myNode, new CellLayout_Indent());
     editorCell.setCellId("Collection_n2wc8f_a");
     editorCell.addEditorCell(createReadOnlyModelAccessor_0());
-    if (nodeCondition_n2wc8f_a1a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_1());
     }
     editorCell.addEditorCell(createRefNode_2());
-    if (nodeCondition_n2wc8f_a3a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createCollection_3());
     }
     return editorCell;
   }
-  private boolean nodeCondition_n2wc8f_a1a() {
+  private boolean nodeCondition0() {
     // Any set, or expected
     return Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.keyType$Uj4M)).isNotEmpty() || Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.valueType$2EUo)).isNotEmpty() || ListSequence.fromList(SLinkOperations.getChildren(SLinkOperations.getTarget(myNode, LINKS.containerDeclaration$QVZa), LINKS.typeVariableDeclaration$Lipp)).isNotEmpty();
   }
-  private boolean nodeCondition_n2wc8f_a3a() {
+  private boolean nodeCondition1() {
     return Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.initSize$f8Q)).isNotEmpty();
   }
   private EditorCell createReadOnlyModelAccessor_0() {
@@ -126,33 +126,33 @@ import org.jetbrains.mps.openapi.language.SConcept;
     style.set(StyleAttributes.SELECTABLE, false);
     editorCell.getStyle().putAll(style);
     editorCell.addEditorCell(createConstant_0());
-    if (nodeCondition_n2wc8f_a1b0()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createRefNode_0());
     }
-    if (nodeCondition_n2wc8f_a2b0()) {
+    if (nodeCondition3()) {
       editorCell.addEditorCell(createConstant_1());
     }
-    if (nodeCondition_n2wc8f_a3b0()) {
+    if (nodeCondition4()) {
       editorCell.addEditorCell(createRefNode_1());
     }
     editorCell.addEditorCell(createConstant_2());
     return editorCell;
   }
-  private boolean nodeCondition_n2wc8f_a1b0() {
+  private boolean nodeCondition2() {
     // This mimics use of a list while keeping legacy behavior (see inference rule for details)
     // Only one case NOT to display it: value is set (not key) and we do not need more type arguments
     boolean oneExpectedArgButValueTypeIsAlreadySet = (SLinkOperations.getTarget(myNode, LINKS.valueType$2EUo) != null) && (SLinkOperations.getTarget(myNode, LINKS.keyType$Uj4M) == null) && ListSequence.fromList(SLinkOperations.getChildren(SLinkOperations.getTarget(myNode, LINKS.containerDeclaration$QVZa), LINKS.typeVariableDeclaration$Lipp)).count() <= 1;
 
     return !(oneExpectedArgButValueTypeIsAlreadySet);
   }
-  private boolean nodeCondition_n2wc8f_a2b0() {
+  private boolean nodeCondition3() {
     // This mimics use of a list while keeping legacy behavior (see inference rule for details)
     // Display if both are set, or we expect 2+ and one is set
     boolean keySet = (SLinkOperations.getTarget(myNode, LINKS.keyType$Uj4M) != null);
     boolean valueSet = (SLinkOperations.getTarget(myNode, LINKS.valueType$2EUo) != null);
     return (keySet && valueSet) || ListSequence.fromList(SLinkOperations.getChildren(SLinkOperations.getTarget(myNode, LINKS.containerDeclaration$QVZa), LINKS.typeVariableDeclaration$Lipp)).count() >= 2 && (keySet || valueSet);
   }
-  private boolean nodeCondition_n2wc8f_a3b0() {
+  private boolean nodeCondition4() {
     // This mimics use of a list while keeping legacy behavior (see inference rule for details)
     // Display if set, or expect 2+ parameters + one set
     return (SLinkOperations.getTarget(myNode, LINKS.valueType$2EUo) != null) || (ListSequence.fromList(SLinkOperations.getChildren(SLinkOperations.getTarget(myNode, LINKS.containerDeclaration$QVZa), LINKS.typeVariableDeclaration$Lipp)).count() >= 2 && (SLinkOperations.getTarget(myNode, LINKS.keyType$Uj4M) != null));

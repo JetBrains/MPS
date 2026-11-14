@@ -65,18 +65,18 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     style.set(StyleAttributes.SELECTABLE, false);
     editorCell.getStyle().putAll(style);
     editorCell.addEditorCell(createConstant_0());
-    if (nodeCondition_29llnk_a1a0()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createReadOnlyModelAccessor_0());
     }
-    if (nodeCondition_29llnk_a2a0()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createError_0());
     }
     return editorCell;
   }
-  private boolean nodeCondition_29llnk_a1a0() {
+  private boolean nodeCondition0() {
     return SLinkOperations.getTarget(myNode, LINKS.quotedNode$ip4) != null;
   }
-  private boolean nodeCondition_29llnk_a2a0() {
+  private boolean nodeCondition1() {
     return SLinkOperations.getTarget(myNode, LINKS.quotedNode$ip4) == null;
   }
   private EditorCell createConstant_0() {

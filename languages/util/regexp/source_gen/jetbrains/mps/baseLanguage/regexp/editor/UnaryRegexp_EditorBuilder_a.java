@@ -64,20 +64,20 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setBig(true);
     setCellContext(editorCell);
     RegexpSequenceByEnter.setCellActions(editorCell, myNode, getEditorContext());
-    if (nodeCondition_xoe8gq_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_0());
     }
     editorCell.addEditorCell(createRefNode_0());
-    if (nodeCondition_xoe8gq_a2a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createConstant_1());
     }
     editorCell.addEditorCell(createComponent_0());
     return editorCell;
   }
-  private boolean nodeCondition_xoe8gq_a0a() {
+  private boolean nodeCondition0() {
     return (boolean) UnaryRegexp__BehaviorDescriptor.inParentheses_id1b8uQvZyDW8.invoke(myNode);
   }
-  private boolean nodeCondition_xoe8gq_a2a() {
+  private boolean nodeCondition1() {
     return (boolean) UnaryRegexp__BehaviorDescriptor.inParentheses_id1b8uQvZyDW8.invoke(myNode);
   }
   private EditorCell createConstant_0() {

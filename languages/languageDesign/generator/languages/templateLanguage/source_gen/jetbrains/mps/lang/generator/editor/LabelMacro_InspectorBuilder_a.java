@@ -90,12 +90,12 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     editorCell.addEditorCell(createComponent_0());
     editorCell.addEditorCell(createComponent_1());
     editorCell.addEditorCell(createCollection_2());
-    if (nodeCondition_x0em22_a3c0()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_3());
     }
     return editorCell;
   }
-  private boolean nodeCondition_x0em22_a3c0() {
+  private boolean nodeCondition0() {
     return (SLinkOperations.getTarget(SLinkOperations.getTarget(myNode, LINKS.mappingLabel$jbOO), LINKS.sourceConcept2$sSLi) != null);
   }
   private EditorCell createComponent_0() {

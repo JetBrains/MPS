@@ -58,19 +58,19 @@ import org.jetbrains.mps.openapi.language.SConcept;
     Style style = new StyleImpl();
     new rootCellModelStyleStyleClass(this).apply(style, editorCell);
     editorCell.getStyle().putAll(style);
-    if (nodeCondition_8hdu2g_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createComponent_0());
     }
     editorCell.addEditorCell(createProperty_0());
-    if (nodeCondition_8hdu2g_a2a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createComponent_1());
     }
     return editorCell;
   }
-  private boolean nodeCondition_8hdu2g_a0a() {
+  private boolean nodeCondition0() {
     return EditorCellModel__BehaviorDescriptor.getOpeningTag_idhKxXtpm.invoke(myNode).length() > 0;
   }
-  private boolean nodeCondition_8hdu2g_a2a() {
+  private boolean nodeCondition1() {
     return EditorCellModel__BehaviorDescriptor.getClosingTag_idhKxXx_K.invoke(myNode).length() > 0;
   }
   private EditorCell createComponent_0() {

@@ -229,18 +229,18 @@ import org.jetbrains.mps.openapi.language.SConcept;
     EditorCell_Collection editorCell = new EditorCell_Collection(getEditorContext(), myNode, new CellLayout_Horizontal());
     editorCell.setCellId("Collection_g7zihj_c0");
     editorCell.addEditorCell(createIndentCell_1());
-    if (nodeCondition_g7zihj_a1c0()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createComponent_1());
     }
-    if (nodeCondition_g7zihj_a2c0()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createComponent_2());
     }
     return editorCell;
   }
-  private boolean nodeCondition_g7zihj_a1c0() {
+  private boolean nodeCondition0() {
     return !((boolean) RunConfigurationExecutor__BehaviorDescriptor.isSimple_id5pE1_aqYZtD.invoke(myNode));
   }
-  private boolean nodeCondition_g7zihj_a2c0() {
+  private boolean nodeCondition1() {
     return (boolean) RunConfigurationExecutor__BehaviorDescriptor.isSimple_id5pE1_aqYZtD.invoke(myNode);
   }
   private EditorCell createIndentCell_1() {

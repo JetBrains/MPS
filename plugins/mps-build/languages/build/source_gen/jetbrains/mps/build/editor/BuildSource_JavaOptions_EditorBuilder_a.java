@@ -133,10 +133,10 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createProperty_2());
     editorCell.addEditorCell(createConstant_3());
     editorCell.addEditorCell(createProperty_3());
-    if (nodeCondition_nphvgz_a6c0()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_4());
     }
-    if (nodeCondition_nphvgz_a7c0()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createProperty_4());
     }
     editorCell.addEditorCell(createConstant_5());
@@ -149,18 +149,18 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createProperty_8());
     editorCell.addEditorCell(createConstant_9());
     editorCell.addEditorCell(createProperty_9());
-    if (nodeCondition_nphvgz_a81c0()) {
+    if (nodeCondition2()) {
       editorCell.addEditorCell(createCollection_2());
     }
     return editorCell;
   }
-  private boolean nodeCondition_nphvgz_a6c0() {
+  private boolean nodeCondition0() {
     return SPropertyOperations.getBoolean(myNode, PROPS.fork$NhhS);
   }
-  private boolean nodeCondition_nphvgz_a7c0() {
+  private boolean nodeCondition1() {
     return SPropertyOperations.getBoolean(myNode, PROPS.fork$NhhS);
   }
-  private boolean nodeCondition_nphvgz_a81c0() {
+  private boolean nodeCondition2() {
     return SPropertyOperations.getBoolean(myNode, PROPS.copyResources$RxdV);
   }
   private EditorCell createConstant_1() {

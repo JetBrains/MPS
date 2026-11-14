@@ -66,20 +66,20 @@ import org.jetbrains.mps.openapi.language.SConcept;
     setCellContext(editorCell);
     editorCell.addEditorCell(createConstant_0());
     editorCell.addEditorCell(createRefCell_0());
-    if (nodeCondition_6ryrph_a2a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createConstant_1());
     }
-    if (nodeCondition_6ryrph_a3a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createProperty_1());
     }
     editorCell.addEditorCell(createConstant_2());
     editorCell.addEditorCell(createReadOnlyModelAccessor_0());
     return editorCell;
   }
-  private boolean nodeCondition_6ryrph_a2a() {
+  private boolean nodeCondition0() {
     return isNotEmptyString(SPropertyOperations.getString(myNode, PROPS.gentarget$lwnZ));
   }
-  private boolean nodeCondition_6ryrph_a3a() {
+  private boolean nodeCondition1() {
     return isNotEmptyString(SPropertyOperations.getString(myNode, PROPS.gentarget$lwnZ));
   }
   private EditorCell createConstant_0() {

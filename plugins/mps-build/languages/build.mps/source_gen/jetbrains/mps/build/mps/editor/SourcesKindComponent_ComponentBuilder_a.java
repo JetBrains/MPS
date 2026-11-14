@@ -71,19 +71,19 @@ import org.jetbrains.mps.openapi.language.SConcept;
     delete_sourcesKind.setCellActions(editorCell, myNode, getEditorContext());
     editorCell.setSubstituteInfo(new CompositeSubstituteInfo(getEditorContext(), new BasicCellContext(myNode), new SubstituteInfoPartExt[]{new BuildMps_Solution_generic_cellMenu_qubgco_a0a(), new SChildSubstituteInfoPartEx(editorCell)}));
     editorCell.addEditorCell(createConstant_0());
-    if (nodeCondition_qubgco_a1a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createProperty_0());
     }
-    if (nodeCondition_qubgco_a2a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createConstant_1());
     }
     editorCell.addEditorCell(createConstant_2());
     return editorCell;
   }
-  private boolean nodeCondition_qubgco_a1a() {
+  private boolean nodeCondition0() {
     return (SPropertyOperations.getEnum(myNode, PROPS.sourcesKind$cgod) != null);
   }
-  private boolean nodeCondition_qubgco_a2a() {
+  private boolean nodeCondition1() {
     return (SPropertyOperations.getEnum(myNode, PROPS.sourcesKind$cgod) == null);
   }
   public static class BuildMps_Solution_generic_cellMenu_qubgco_a0a extends AbstractCellMenuPart_Generic_Group {

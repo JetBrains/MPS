@@ -73,10 +73,10 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.setCellId("Collection_kov3ab_a");
     editorCell.setBig(true);
     setCellContext(editorCell);
-    if (nodeCondition_kov3ab_a0a()) {
+    if (nodeCondition0()) {
       editorCell.addEditorCell(createCollection_1());
     }
-    if (nodeCondition_kov3ab_a1a()) {
+    if (nodeCondition1()) {
       editorCell.addEditorCell(createCollection_2());
     }
     editorCell.addEditorCell(createConstant_2());
@@ -88,10 +88,10 @@ import org.jetbrains.mps.openapi.language.SConcept;
     editorCell.addEditorCell(createConstant_5());
     return editorCell;
   }
-  private boolean nodeCondition_kov3ab_a0a() {
+  private boolean nodeCondition0() {
     return !(SPropertyOperations.hasValue(myNode, PROPS.label$nCHj, null));
   }
-  private boolean nodeCondition_kov3ab_a1a() {
+  private boolean nodeCondition1() {
     return Sequence.fromIterable(AttributeOperations.getChildNodesAndAttributes(myNode, LINKS.loopLabel$sgvV)).isNotEmpty();
   }
   private EditorCell createCollection_1() {
@@ -328,7 +328,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
       if (editorCell.getSRole() == null) {
         editorCell.setSRole(LINKS.inputSequence$YoEF);
       }
-      if (nodeCondition_kov3ab_a5a()) {
+      if (nodeCondition2()) {
         editorCell.getStyle().set(StyleAttributes.FOCUS_POLICY, FocusPolicy.ATTRACTS_FOCUS);
       }
     }
@@ -349,7 +349,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     protected String getNoTargetText() {
       return "<no inputSequence>";
     }
-    private boolean nodeCondition_kov3ab_a5a() {
+    private boolean nodeCondition2() {
       return (SLinkOperations.getTarget(myNode, LINKS.inputSequence$YoEF) == null) || SConceptOperations.isExactly(SNodeOperations.asSConcept(SNodeOperations.getConcept(SLinkOperations.getTarget(myNode, LINKS.inputSequence$YoEF))), CONCEPTS.Expression$mB);
     }
   }
