@@ -24,7 +24,7 @@ Task: an on-call extension. Nothing in `mcp.study.alerts` or `mcp.study.alerts.t
 4. Ctrl+Alt+Shift+G with the caret on any member of a book appends an escalation to the book
    and puts the caret on its name.
 5. Test solution `mcp.study.alerts.oncall.tests`, `@tests` model using both languages, editor
-   tests for items 2 (items checked before typing, then typing), 3 (conversion; undo) and 4,
+   tests for items 2 (items checked before typing, then typing), 3 (`paged` offered, then the conversion; an undo test that checks the paged alert before its one Undo and the ordinary alert after) and 4,
    at least four tests, run configuration `oncall-tests`. Tests must run headless on CI, so they must not need IDE-only services (no CI build to set up). The six base tests must still
    pass unchanged.
 6. Rebuild both languages, run `oncall-tests` and a run configuration for the base test model. Done when: both make without errors,

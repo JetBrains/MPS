@@ -14,7 +14,8 @@ rehearsed in rounds 46–47 and are frozen since 2026-10-30. S25–S29 (language
 reviewed, built and rehearsed on 2026-10-31 and are frozen since then. S30–S35 (editor authoring and
 editing) were written and reviewed on 2026-11-01 and rehearsed with opus the same day: S31, S34 and S35 passed on the
 first run; S30 and S32 passed on rev 4 after one revision; S33 failed only on a criterion's letter and passed on
-rev 5. The sonnet rehearsal the same evening passed S33 and S35 on the first run and S30, S32, S34 (run 2) and
+rev 5 (its prompt's test list was revised on 2026-11-14 after round 51, lesson 48, and needs a sonnet + opus
+rehearsal before its results are compared with earlier rounds). The sonnet rehearsal the same evening passed S33 and S35 on the first run and S30, S32, S34 (run 2) and
 S31 (run 4, rev 8) after prompt and criteria revisions (results in
 [`../reports/assessments/editor-dynamics.md`](../reports/assessments/editor-dynamics.md)); they are frozen since then.
 S36 (a generator test from an informal description) was written, built and reviewed on 2026-11-02 and is frozen since
@@ -53,7 +54,7 @@ A pass means the worker met `done_criteria.md`. It is evidence about the skills 
 | S17 | Add six editor tests for the Recipe editor that must not pass vacuously and must run headless (typing with the caret checked, undo, redo, copy and paste, a deletion that ignores the two-step-deletion setting, an action's applicability), create a run configuration, and run them. |
 | S18 | Add three generator tests for the recipes generator (the exact output, the output in any root order, the output of an explicit plan that runs only that generator), keep the test data out of make, create a run configuration, and run them. |
 | S19 | Give the recipes models explicit generation plans: two plans with a checkpoint, a generator-module step and a conditional fork, one shipped through a DevKit and one attached to a solution; then rename the checkpoint, extract a shared plan both include, and make both modules. |
-| S20 | Greenfield tariff DSL whose generator emits an interface with one implementation class per plan: conditional and unconditional no-input roots read by label, `$COPY_SRC(L)$`, in-line templates with and without context, a pattern rule with a property variable, a labelled `$LOOP$` read by `$REF$`, `$MAP_SRC$` (null source; mapper + post-mapper), `$INSERT$`, a post-processing script. Frozen after rounds 46–47 (round 47: opus and sonnet PASS). |
+| S20 | Greenfield tariff DSL whose generator emits an interface with one implementation class per plan: conditional and unconditional no-input roots read by label, `$COPY_SRC(L)$`, in-line templates (with context forced; without recorded), a pattern rule with a property variable, a labelled `$LOOP$` read by `$REF$`, `$MAP_SRC$` (null source; mapper + post-mapper), `$INSERT$`, a post-processing script. Frozen after rounds 46–47 (round 47: opus and sonnet PASS). |
 | S21 | Greenfield shell DSL whose generator emits fluent-API classes: weaving with a stable anchor found through a shared fragment label (`get output list`), a weave template that loops and calls with unique names, `$CALL$` with arguments, `pick output`, `$VAR$`, an in-line switch, a generator warning. Frozen after rounds 46–47 (round 47: opus and sonnet PASS). |
 | S22 | Edit the recipes generator: a template switch with a parameter, an error default and a null-input message; a case for a sub-concept added by an extending language's switch (one plan step); `keepSourceRoot`; a generator-only language; a two-key label; a pre-processing script that modifies the model; a three-step plan. Frozen after rounds 46–47 (round 47: opus and sonnet PASS). |
 | S23 | Edit an observer-built flows generator (`flows-gen`): fix a wrong rule order from its symptom, add an in-line switch case, rename a label with every use, extract an in-line template into a template declaration. Frozen after round 46 (opus and sonnet PASS). |
@@ -66,7 +67,7 @@ A pass means the worker met `done_criteria.md`. It is evidence about the skills 
 | S30 | Greenfield survey DSL: static editors (shared component, alias cell, style sheet, show-if, separator, placeholder, read-only count, inspector), a substitute action, a keyword menu with Super, node factories, a wrap transform after `?`, a paste wrapper, seven editor tests. Frozen 2026-11-01. |
 | S31 | Edit the alerts editors you did not write: a model-access window cell, matching parentheses, a shared name component, a query style, a Ctrl+Alt+Shift+K keymap, a "new channel" reference action, postfix hints, select-all, a paste post-processor; six shipped tests kept. Frozen 2026-11-01. |
 | S32 | Recipes: difficulty to the Inspector, `then` typed after a step's `)` and offered in Ctrl+Space with the step's own items, a parameterized `scale` menu over one factor list on the name, a `+`/`-` keymap on minutes; four shipped tests kept. Frozen 2026-11-01. |
-| S33 | An on-call language extending alerts: a substitute-menu contribution, a transformation-menu contribution with a cross-concept factory and Undo, an editor-component override, an everyModel Ctrl+Alt+Shift+G keymap; the base untouched. Frozen 2026-11-01. |
+| S33 | An on-call language extending alerts: a substitute-menu contribution, a transformation-menu contribution with a cross-concept factory and Undo, an editor-component override, an everyModel Ctrl+Alt+Shift+G keymap; the base untouched. Frozen 2026-11-01; prompt item 5 revised 2026-11-14 (lesson 48), rehearsal pending. |
 | S34 | Write editor tests for eight specified alerts behaviours, run them red against six planted editor defects, then fix the language, not the tests. Frozen 2026-11-01. |
 | S35 | Kaja sample: a movement menu on `step`/`turnLeft`, a LEFT `comment` transform on `trace` also in Ctrl+Space, a `Trace` context-assistant item, a red count; corpus menus kept. Frozen 2026-11-01. |
 | S36 | Correct an almost-right recipes generator from an informal description of the wanted Java and capture the description as a generator test: on the intended path the test is written first, fails naming a leaked literal and a dropped step, the template is fixed, the test goes green and the samples' Java is right. |
@@ -575,6 +576,9 @@ used-language rule GP, `everyModel`, exact `modifiers`, leaf-cell rule), `mps-as
 `editor-components.md` (override GP), `mps-aspect-actions` (cross-concept `sampleNode`),
 `mps-aspect-accessories`, `mps-language-inheritance`, `mps-tests` (`$Undo`). Re-exposes E1#1/#8, E2#1, M5.
 Size 35–45. Isolation: `alerts2` ids; restart before and after, never next to another `alerts2*` copy.
+Prompt item 5 revised 2026-11-14 after round 51 (lesson 48): the test list now names `paged` offered and the undo
+test's check of the paged alert before its one Undo, which criterion 5 gates; `promptSha256` changes, so the next run
+is a rehearsal (sonnet + opus) before comparison with rounds ≤ 51.
 
 **S34 — editor tests that find planted defects.** Fixture: `alerts2-broken`
 ([`../fixtures/inputs/s34/FIXTURE.md`](../fixtures/inputs/s34/FIXTURE.md)): a missing `AddConcept`, a missing

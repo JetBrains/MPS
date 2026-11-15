@@ -1,5 +1,5 @@
 # S30 done criteria — Survey DSL: static editors, substitute action, factories, wrap transform, paste wrapper
-Status: drafted 2026-11-01 (rev. 3, three reviews); sonnet rehearsal 1 FAIL on 3c (an Enter action map instead of a factory) → prompt 3c forces creation by completion too, 3b/3d accept a named Subconcepts menu (rev 6); sonnet rehearsal 2 PASS on rev 6; frozen 2026-11-01; rehearsal 1 (opus) FAIL on 3d only, prompt 3d and criteria revised (rev. 4); rehearsal 2 (opus) PASS → rev 5 wording (3d location recorded, yes/no replacement, headless wording, observer-counted signals); prompt frozen 2026-11-01. Shared definitions: ../coverage/editor-shared-criteria.md.
+Status: drafted 2026-11-01 (rev. 3, three reviews); sonnet rehearsal 1 FAIL on 3c (an Enter action map instead of a factory) → prompt 3c forces creation by completion too, 3b/3d accept a named Subconcepts menu (rev 6); sonnet rehearsal 2 PASS on rev 6; frozen 2026-11-01; rehearsal 1 (opus) FAIL on 3d only, prompt 3d and criteria revised (rev. 4); rehearsal 2 (opus) PASS → rev 5 wording (3d location recorded, yes/no replacement, headless wording, observer-counted signals); prompt frozen 2026-11-01; 2026-11-14, after round 51: criterion 2 accepts a vertical options list rendering one option per line, indented (S30-opus-1), it only loosens, so no earlier PASS changes (lesson 45 re-read); earlier runs keep their verdicts. Shared definitions: ../coverage/editor-shared-criteria.md.
 Fixture: empty-project (synthesized). Greenfield: language mcp.study.survey, solution mcp.study.survey.tests.
 Topics forced: component + alias cell, style sheet, show-if, separators, nullText placeholder, read-only
 accessor, inspector, smart reference; default SubstituteMenu + Action; default TransformationMenu Completion
@@ -13,7 +13,9 @@ RIGHT wrap substitute menu after a constant; PasteWrapper; seven non-vacuous tes
    holding the lang.core alias component, text, a "?" constant with an EditorCellId and the "*" constant under
    renderingCondition node.required, embedded by the three editors (no own alias/text cell); a StyleSheet with
    >= 2 StyleClasses applied by parentStyleClass or ApplyStyleClass (inline items fail); options new-line-children
-   + indent (flag true); skip group under a renderingCondition on skipTo, target a CellModel_RefCell with a
+   + indent (flag true), or a CellLayout_Vertical list with IndentLayoutOnNewLine + IndentLayoutIndent when a
+   PLAIN TEXT print of a ChoiceQuestion with two or more options (a test's before/result node, or a sandbox root)
+   shows one option per line, indented (record which); skip group under a renderingCondition on skipTo, target a CellModel_RefCell with a
    readOnly inline text; questions emptyCellModel = constant with nullText (not text) + EditableStyleClassItem + id.
 3. Dynamics (editor and actions models):
    - default SubstituteMenu for Question (Subconcepts or three AddConcepts) plus one SubstituteMenuPart_Action
