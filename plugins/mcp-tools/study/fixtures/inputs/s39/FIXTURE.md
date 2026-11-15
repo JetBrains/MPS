@@ -1,6 +1,6 @@
 # S39 fixtures: `alerts3` (S39a) and `alerts3-broken` (S39b)
 
-**Status: built 2026-11-11 (opus builder, one session, MPS 261.25134 from sources, light theme); `alerts3` and `alerts3-hard` are the frozen fixtures of S39a/S39b (rehearsal 2, 2026-11-11); `alerts3-broken` is retired (rev. 3 of S39b).** Recipe
+**Status: built 2026-11-11 (opus builder, one session, MPS 261.25134 from sources, light theme); `alerts3` and `alerts3-hard` are the frozen fixtures of S39a/S39b (rehearsal 2, 2026-11-11); `alerts3-broken` is retired (rev. 3 of S39b). The `alerts3` and `alerts3-hard` root pins were re-made on recipe v2 on 2026-11-15 (A20, "roots.tsv pins" below).** Recipe
 draft: `~/MPSProjects/mcp-study/adhoc-image/S39-fixture.md` (rev. 2 + coordinator corrections of 2026-11-11). Every MPS MCP
 call is one line in [`FIXTURE.log`](FIXTURE.log). Observer aid: [`html_runs.py`](html_runs.py). sha256 of both tarballs:
 [`../../pins.md`](../../pins.md). Same `mcp.study.alerts` ids as every `alerts2*` fixture: never open two of the family
@@ -100,7 +100,8 @@ not the rendered ones, and that it shows the class items in order and `dominates
 - **W5 note** — `#` gray bold, the text gray italic (`.s3{color:#808080;font-style:italic}`). OK.
 - **W6** — PLAIN TEXT and `html_runs.py` output of Ops, Staging, Night with `[]` and `["compact"]` byte-equal to the
   alerts3 pins (12/12). Root pins: [`prints/alerts3-triage/roots.tsv`](prints/alerts3-triage/roots.tsv) differs from
-  alerts3's only in `AlertStyles`, `AlertHints` and the three new roots. OK.
+  alerts3's only in `AlertStyles`, `AlertHints` and the three new roots. OK. (That table and this comparison are recipe
+  v1, historical: not comparable with a v2 table.)
 - **W7** — `check_root_node_problems`: language 5 models / 51 roots 0 errors 0 warnings (BACKSPACE info), sandbox 0/0;
   JUnit `audit-alerts3-triage-tests` 10/10, exit 0. OK.
 - **W8 Inspector** — the inspected layout is in the deep print and in the definition PLAIN TEXT (`severity: {severity}`
@@ -137,7 +138,7 @@ info) — all six seeds are checker-silent; sandbox 0/0; JUnit `audit-alerts3-br
 and book lines identical to the reference triage runs; G2 note `#` gray bold, text gray italic; G3 the inspected layout
 of `Alert_triage_Editor` unchanged; G4 Compact PLAIN TEXT of the three books equal to the alerts3 pins (6/6).
 Root pins: [`prints/alerts3-broken/roots.tsv`](prints/alerts3-broken/roots.tsv) differs from the reference only in
-`AlertStyles` (D-C, D-E), `AlertHeader` (D-D) and `Alert_triage_Editor` (D-A, D-B, D-F).
+`AlertStyles` (D-C, D-E), `AlertHeader` (D-D) and `Alert_triage_Editor` (D-A, D-B, D-F). (Recipe v1, historical.)
 
 ### As-shipped answers (ground truth of S39b criteria 8–9; from the prints and deep JSON of `alerts3-broken`)
 
@@ -193,6 +194,9 @@ books equal to the alerts3 pins (3/3). Root pins: [`prints/alerts3-hard/roots.ts
 (67 roots) differs from the reference's in the PLAIN TEXT column only in `AlertStyles` and the two new roots; deep
 column in `AlertStyles`, `AlertHeader`, `AlertHeader_triage`, `Alert_triage_Editor`, the new roots (and every structure
 root, see the recipe). The normalized deep hashes of all other roots were equal before and after the close/reopen.
+(Those comparisons were made at build time on recipe v1. The shipped table is the v2 re-pin of 2026-11-15; on v2,
+`alerts3-hard` differs from the `alerts3` table in `AlertStyles`, `AlertHints`, `AlertHeader` (deep only: D-D) and
+the five triage roots.)
 
 Tarball `~/MPSProjects/mcp-study/fixtures/alerts3-hard.tar.gz`, sha256
 `62df2d48a48057e8214f43986119dc69c0fed614fcf25b45555a50834b438f8a`, 391 entries, top dir `alerts3-hard/`, with
@@ -230,24 +234,49 @@ because `Plus` extends `BinaryExpr` directly (generated `StructureAspectDescript
 separator of `Alert_triage_Editor`'s `%notify%` list cell, gray inherited from `Dimmed`. Q2's `when` row stays (it points
 at H1 on purpose: the tie explanation is required for Pass; signal `Q_guided`).
 
-### roots.tsv hash recipe (applies to `prints/alerts3-hard/` and `prints/alerts3-triage2/`)
+### roots.tsv pins (recipe v2, shipped script [`roots.py`](roots.py))
 
-One row per root of the sandbox, constraints, editor, structure and `tests@tests` models, in that model order and in
-the `get_project_structure` root order: `model short name` TAB `root name` TAB `concept` (short) TAB `node id` TAB
-`deep` TAB `text`, where
+`prints/alerts3/roots.tsv` and `prints/alerts3-hard/roots.tsv` are recipe v2. Every other `roots.tsv` here is recipe
+v1 (`alerts3-triage`, `alerts3-broken`, `alerts3-triage2`): historical, not comparable with v2, and no criterion reads
+it. `roots.py` holds the recipe in its docstring and is the only reader and writer. In short: one row per root of the
+sandbox, constraints, editor, structure and `tests@tests` models (model short name, root name, concept, node id,
+`deep`, `text`) after one `# recipe v2; …` line naming the plugin revision, class build times, MPS build and open
+projects. `deep` hashes the stored content of the deep JSON print: concept and node references, property values
+as printed (an unset enum's printed default left out; print after a MAKE, because a language that is not loaded
+prints enum values raw), reference targets, and children by role in stored order. `text` hashes
+the PLAIN TEXT `[]` print, ignoring trailing whitespace and trailing blank lines.
 
-- `deep` = `sha256(json.dumps(norm(data), sort_keys=True))[:16]` (Python defaults: `", "`/`": "` separators,
-  `ensure_ascii=True`) of the `data` object of `mps_mcp_print_node {deep: true, maxInlineBytes: 2000000}` (the
-  temp-file envelope resolved; `data` only, not the envelope). `norm` strips a trailing `@<hex>` from every string under
-  a `"type"` key: constrained-datatype properties (`datatypeId`, `conceptId`, …) print as
-  `…SConstrainedStringDatatypeAdapter@55637896`, a JVM identity hash that changes per MPS session. The earlier
-  `roots.tsv` files (alerts3, -triage, -broken) hashed without `norm`; their structure-root deep hashes are valid only
-  within their build session (the editor/sandbox/constraints/test roots carry no such field and compare across).
-  The deep JSON also embeds `mpsProjectBaseDirectory` of the project that owns the concept (`/Users/vaclav/work/MPS/myMPS-fix`).
-- `text` = `sha256("\n".join(line.rstrip() for line in t.split("\n")))[:16]` of the `data` string of
-  `mps_mcp_print_node {format: "PLAIN TEXT", editorHints: [], maxInlineBytes: 2000000}` (this matches the earlier files).
+Why v2 (A20): the v1 deep hash covered the whole printed record. That record carries `*ContainingProject` markers
+whenever another open project owns a concept or reference target; the v1 pins were printed with the MPS source project
+open, and the study MPS opens the cell project alone. It also carries printer metadata (property types, docs), which
+`33511502bc10` changed. The v1 text hash kept the final newline that the same commit trims. So no evaluator could
+reproduce v1 on 2026-11-14. v2 omits context and metadata by construction.
 
-Builder script (not shipped): `~/MPSProjects/mcp-study/build/s39h-tools/roots.py <projectPath> <out.tsv>`.
+**Pin procedure** (also the pre-round gate; the exact commands are in runbook step 1a):
+1. extract the sha-checked tarball to a fresh path;
+2. `mps_control.sh capture` once while MPS runs;
+3. `shutdown`, then `start <dir>` and `wait`, so the copy is open alone and no other `alerts*` copy is loaded in the
+   process;
+4. MAKE `mcp.study.alerts`, `.sandbox` and `.tests`;
+5. run `MPS_MCP_URL=$(mps_control.sh url) python3 roots.py pin|check --project <dir> prints/<copy>/roots.tsv`.
+
+The next copy's `shutdown` closes this one.
+
+Re-pinned 2026-11-15:
+- Environment: plugin `5965f2c6e715` (print path unchanged since `33511502bc10`), MPS 261.25134 from sources; each
+  fixture alone, MAKE first.
+- Validations:
+  - a second fresh session of each fixture, by runbook step 1a as written: 62/62 and 67/67 equal
+    (`live/gate-run.txt`);
+  - the round-51 S39a-opus-1 evaluator prints (`roots.py --from-dir`): 60 roots equal, with only the worker's
+    `AlertHints`/`AlertStyles` differing and its 5 roots new;
+  - the new S39a/S39b criterion commands on copies of the four round-51 worker projects: all pass, as their verdicts
+    did.
+- The shipped `<Book>-<view>.txt` and `def-*.txt` re-printed equal after trailing-whitespace normalization, and the
+  `.runs` byte-equal (`html_runs.py --merge`), so they were kept (37/37). The `alerts3-triage*` answer-key prints come
+  from kept build bases that must not be made in place: compare them only after the same normalization (round 51
+  found them equal).
+- Evidence: `~/MPSProjects/mcp-study/archive/runs/r51/A20-repro/`.
 
 ## Step 5 — `alerts3-triage2` (S39a answer key, rev. 2)
 
@@ -271,7 +300,7 @@ Checks (after MAKE of `mcp.study.alerts`, then `rebuild: true` of the three modu
   `audit-alerts3-triage2-tests` 10/10, exit 0.
 - Not covered by the data: the "inside a muted alert (then gray)" clause — no muted alert of any book holds a
   threshold reference. Completion/typing of the reference in the triage view was not checked.
-- Root pins: [`prints/alerts3-triage2/roots.tsv`](prints/alerts3-triage2/roots.tsv) (66 roots, Step 4 recipe) =
+- Root pins: [`prints/alerts3-triage2/roots.tsv`](prints/alerts3-triage2/roots.tsv) (66 roots, recipe v1, historical) =
   the reference's roots + `ThresholdRef_triage_Editor`; the PLAIN TEXT column equals the reference's for every other root.
 
 ## Reference cells in HTML (retracted defect report)
@@ -313,7 +342,7 @@ A coordinator report that reference cells (`cpuLimit`, `pager`, `chat`) lose the
 - `png_colours.py` — builder aid only (measured the pink); never a worker or evaluator step.
 - `prints/<copy>/<Book>-<view>.{txt,runs}` — PLAIN TEXT and `html_runs.py` output for Ops, Staging, Night × `default`
   (`[]`), `compact`, `triage`; `Night-triage.png` for the reference and the broken copy; `def-*.txt` PLAIN TEXT of the
-  new or seeded editor roots; `roots.tsv` = model, root name, concept, id, sha256[:16] of the deep JSON (sorted keys),
-  sha256[:16] of the PLAIN TEXT `[]`, for all 62 (alerts3) / 65 roots of the editor, structure, constraints, sandbox
-  and test models.
+  new or seeded editor roots; `roots.tsv` = the root pins of the sandbox, constraints, editor, structure and test
+  models, 62 roots (alerts3) / 67 (alerts3-hard), recipe v2 for those two copies ("roots.tsv pins" above).
+- `roots.py` — writes and checks the v2 root pins (read-only MPS access); evaluator and gate tool.
 - The answer key `~/MPSProjects/mcp-study/build/alerts3-triage` is kept (base for a re-seed).

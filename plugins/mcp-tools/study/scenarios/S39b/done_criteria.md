@@ -1,8 +1,8 @@
 # S39b done criteria — Triage view audited against its specification: eight planted causes behind seven deviations, two investigation answers
-Status: DRAFT 2026-11-11 (rev. 4, hardened after rehearsal 1 — 4/4 first-try passes on `alerts3-broken`, whose seeds each showed in one projected dump: `~/MPSProjects/mcp-study/adhoc-image/s39-rehearsal.md`; design `S39-harden.md`, probes `S39-harden-probes.md`; fixture record ../../fixtures/inputs/s39/FIXTURE.md Step 4); rev. 5 after rehearsal 2 (4/4 Pass, opus `high` and sonnet `medium`; evaluations in `s39-runs/`, summary ../../reports/assessments/editor-checking.md): criteria defects fixed, prompt unchanged. **Frozen 2026-11-11** as a regression and cost cell for the editor skills; it does not discriminate opus from sonnet (every look or seed can be read off the definitions).
+Status: DRAFT 2026-11-11 (rev. 4, hardened after rehearsal 1 — 4/4 first-try passes on `alerts3-broken`, whose seeds each showed in one projected dump: `~/MPSProjects/mcp-study/adhoc-image/s39-rehearsal.md`; design `S39-harden.md`, probes `S39-harden-probes.md`; fixture record ../../fixtures/inputs/s39/FIXTURE.md Step 4); rev. 5 after rehearsal 2 (4/4 Pass, opus `high` and sonnet `medium`; evaluations in `s39-runs/`, summary ../../reports/assessments/editor-checking.md): criteria defects fixed, prompt unchanged. **Frozen 2026-11-11** as a regression and cost cell for the editor skills; it does not discriminate opus from sonnet (every look or seed can be read off the definitions). Rev. 6 (2026-11-15, A20): criteria 1 and 5 check the recipe-v2 root pins with `roots.py`; prompt unchanged; past runs stay scored.
 Fixture: alerts3-hard (= the reference Triage view `build/alerts3-triage` + seeds H1–H5, D-C, D-D, D-F; sha256 in ../../fixtures/pins.md; answer key `~/MPSProjects/mcp-study/build/alerts3-triage`, its prints in `prints/alerts3-triage/`; the shipped prints in `prints/alerts3-hard/`). The worker changes only the editor model of `mcp.study.alerts` and writes `REPORT.md`.
 Topics forced: finding an unfamiliar view (`details.editorHints.available`); comparing a projection with a specification in the format that can show each property (PLAIN TEXT: lines and text; HTML classes: colour and weight; `editor.png`: backgrounds); which editor draws a node under a hint (fallback to the default editor; a hinted editor of an abstract superconcept; a hinted component override); where a look comes from when the definitions read correctly: style priority computed from `dominates over` (a tie: the cell's own value wins), a style reference to a same-named class of another style sheet, the order of style items on a cell and inside a class; a deviation with several causes (fixing one changes nothing visible); a rendering condition wrong for one combination of data; a style leaking through a shared component into other views; fixing in the causing definition.
-Observer tools (read-only, `projectPath` on every call; the observer never makes): `mps_mcp_print_node` of `Night`, `Ops`, `Staging` as PLAIN TEXT and HTML with `editorHints` `[]`, `["compact"]`, `["triage"]` (run `html_runs.py` from FIXTURE.md's folder on `index.html`; Read `editor.png`); deep JSON prints of the editor roots (hash recipe: FIXTURE.md Step 4); `mps_mcp_check_root_node_problems`; Read `REPORT.md`; the worker's transcript. Hex values (light theme): red `#b20000`, darkMagenta `#7c007c`, magenta `#ff00ff`, gray `#808080`, darkBlue `#000080`; pink `#ffafaf`, picture only. First check: the worker's `Night` triage prints against `prints/alerts3-triage/Night-triage.{txt,runs,png}` (PLAIN TEXT equal ⇒ 2, 4; runs equal — `html_runs.py --merge` against the shipped `.runs`, or token by token — ⇒ the triage parts of 3, 6; png equal ⇒ 7; record). Criterion 5 needs the `[]`/`["compact"]` prints.
+Observer tools (read-only, `projectPath` on every call; the observer never makes): `mps_mcp_print_node` of `Night`, `Ops`, `Staging` as PLAIN TEXT and HTML with `editorHints` `[]`, `["compact"]`, `["triage"]` (run `html_runs.py` from FIXTURE.md's folder on `index.html`; Read `editor.png`); deep JSON prints of the editor roots; `roots.py check` (read-only, criteria 1 and 5; FIXTURE.md "roots.tsv pins"); every PLAIN TEXT comparison with a shipped `.txt` is made after removing trailing whitespace from each line and trailing blank lines (the printer has dropped the final newline since `33511502bc10`; the shipped files keep it); `mps_mcp_check_root_node_problems`; Read `REPORT.md`; the worker's transcript. Hex values (light theme): red `#b20000`, darkMagenta `#7c007c`, magenta `#ff00ff`, gray `#808080`, darkBlue `#000080`; pink `#ffafaf`, picture only. First check: the worker's `Night` triage prints against `prints/alerts3-triage/Night-triage.{txt,runs,png}` (PLAIN TEXT equal ⇒ 2, 4; runs equal — `html_runs.py --merge` against the shipped `.runs`, or token by token — ⇒ the triage parts of 3, 6; png equal ⇒ 7; record). Criterion 5 needs the `[]`/`["compact"]` prints.
 
 Seeds (ids in FIXTURE.md Step 4). Each reads as a plausible definition in a dump; the column "seen by" is the format in which the symptom shows:
 | | Cause | Deviation on `Night` (shipped) | Shown by (HTML text also shows what PLAIN TEXT shows) |
@@ -17,11 +17,19 @@ Seeds (ids in FIXTURE.md Step 4). Each reads as a plausible definition in a dump
 Controls that match the specification and must stay: G1 channels, thresholds, the empty line and the book line (default
 editors); G2 the note (gray, italic text); G3 the Inspector layout of the Triage alert editor; G4 the Compact layout.
 
-1. Scope: the structure, `Ops`, `Staging`, `Night`, T1–T10 and `CompactViewTestUtil` equal the pins (PLAIN TEXT column
-   of `prints/alerts3-hard/roots.tsv` for all; deep column, recipe FIXTURE.md Step 4, for the editor roots the
-   transcript shows written — the deep JSON embeds the checkout path, so hashes compare only from the same MPS); every
-   editor root that no seed touches equals its pin (the default editors incl. `BinaryExpr_Editor`, `Alert_compact_Editor`,
-   `Threshold_compact_Editor`, the hint container, the triage Note editor). `Keyword`'s own items are unchanged (its
+1. Scope: the structure, `Ops`, `Staging`, `Night`, T1–T10 and `CompactViewTestUtil` equal the pins, and so does every
+   editor root that no seed touches (the default editors incl. `BinaryExpr_Editor`, `Alert_compact_Editor`,
+   `Threshold_compact_Editor`, the hint container, the triage Note editor). Both columns are compared.
+   - Run, with `S=$STUDY/fixtures/inputs/s39`: `MPS_MCP_URL=$(jq -r .mpsMcpUrl $RUNS/<id>.meta.json) python3
+     $S/roots.py check --project <proj> $S/prints/alerts3-hard/roots.tsv --except AlertStyles TriageStyles
+     AlertHeader_triage Comparison_triage_Editor Alert_triage_Editor AlertHeader --allow-missing TriageStyles
+     Comparison_triage_Editor AlertHeader_triage Alert_triage_Editor`.
+   - Exit 0 passes this part; 1 fails it; 2 means the check did not run, so fix the call and repeat it.
+   - The excepted roots are the seeded ones, judged by criteria 2–8; `AlertHints` is not excepted.
+   - A `missing` `AlertHeader_triage` or `Alert_triage_Editor` is a deletion, or a rewrite under a new id. Record it
+     as "rewrite" and judge it by the rewrite rule below and G3.
+   - Each `new` root is recorded. The pins are recipe v2 (FIXTURE.md "roots.tsv pins"), so they compare from any
+     MPS session. `Keyword`'s own items are unchanged (its
    seeded `dominates` record may go). Deleting the seeded roots `TriageStyles` or `Comparison_triage_Editor` is
    accepted. A new hinted editor for a concept that had none is recorded (an editor for `Less` that hides H3 is
    recorded as `masked`, not a fix of H3 — criterion 4 fails). A rewritten Triage alert editor or override is accepted
@@ -37,7 +45,10 @@ editors); G2 the note (gray, italic text); G3 the Inspector layout of the Triage
 4. X4 (PLAIN TEXT, `["triage"]`): `disk < diskFloor`, `uptime < 1`, every `>` as before. Fixed by deleting
    `Comparison_triage_Editor` or by restoring the alias in it (record which); a changed `BinaryExpr_Editor` fails 1.
 5. X6 (HTML, `[]` and `["compact"]`, on `Night` and `Ops`): the severity value plain in the default colour, as in the
-   alerts3 pins; `AlertHeader`'s deep hash equals its alerts3 pin (its PLAIN TEXT cannot show the seed); Triage keeps 3. Closes: restyling the Triage override, a hinted
+   alerts3 pins; `AlertHeader`'s deep hash equals its alerts3 pin (its PLAIN TEXT cannot show the seed:
+   `MPS_MCP_URL=$(jq -r .mpsMcpUrl $RUNS/<id>.meta.json) python3 $STUDY/fixtures/inputs/s39/roots.py check --project
+   <proj> $STUDY/fixtures/inputs/s39/prints/alerts3/roots.tsv --only AlertHeader --deep-only` exits 0);
+   Triage keeps 3. Closes: restyling the Triage override, a hinted
    compact header, or removing the Triage look.
 6. X1 (HTML, `["triage"]`): every run of `Backlog` and `Heartbeat` gray, weights kept (`over`, `min`, `muted`, `alert`,
    `when`, `notify`, `low`, `high` included); `LowDisk`'s `not`, `when`, `notify` bold darkBlue; with `[]` all

@@ -79,6 +79,33 @@ RUNS=$HOME/MPSProjects/mcp-study/runs
    The guard never modifies anything: move an offending user skill out of the skills directory
    for the round and restore it at wrap-up. Built-in `Explore` and `Task`
    agents are outside this pin and remain enabled.
+
+   **1a. S39 pin gate** (only when S39a or S39b is in the round; A20). Run this before step 2. Step 2's
+   shutdown → start then gives the first cell a fresh process.
+   1. With MPS running, run `mps_control.sh capture` once, then `mps_control.sh calllog` with no argument. The capture
+      is needed because `shutdown` refuses without one. Clearing the call-log option keeps the gate's prints out of
+      the round's `server-calllog.jsonl`; step 2 captures and sets it again.
+   2. For each of `alerts3` and then `alerts3-hard`, in one Bash call (the chain stops at the first failure,
+      including a sha mismatch):
+      ```
+      C=<copy>; T=$HOME/MPSProjects/mcp-study/fixtures/$C.tar.gz; D=$HOME/MPSProjects/mcp-study/workspace/gate-$C-$(date +%Y%m%dT%H%M)
+      W=$(grep "^| \`$C\` |" $STUDY/fixtures/pins.md | awk -F'`' '{print $4}')
+      echo "$W  $T" | shasum -a 256 -c - && mkdir -p $D && tar -xzf $T -C $D &&
+      $STUDY/scripts/mps_control.sh shutdown && $STUDY/scripts/mps_control.sh start $D/$C && $STUDY/scripts/mps_control.sh wait &&
+      export MPS_MCP_URL=$($STUDY/scripts/mps_control.sh url) &&
+      python3 $STUDY/scripts/mcp_call.py mps_mcp_alter_nodes "{\"projectPath\":\"$D/$C\",\"operation\":\"MAKE\",\"parameters\":{\"modules\":[\"mcp.study.alerts\",\"mcp.study.alerts.sandbox\",\"mcp.study.alerts.tests\"]}}" --max-chars 300 &&
+      python3 $STUDY/fixtures/inputs/s39/roots.py check --project $D/$C $STUDY/fixtures/inputs/s39/prints/$C/roots.tsv
+      ```
+      The restart before each copy keeps the two apart: they share module ids.
+
+   Exit 0 from `roots.py` means the pins hold. Exit 2 means the check did not run; fix it and repeat. Exit 1 on an
+   unchanged fixture means renderer or environment drift:
+   - hold the S39 cells;
+   - re-pin with `roots.py pin` by the same procedure, and record the reason in `FIXTURE.md` ("roots.tsv pins");
+   - leave the re-pinned files uncommitted until the user says go;
+   - the cells may run on them, and the round report says so.
+
+   About 1 minute per fixture. The `gate-*` copies are scratch; delete them at wrap-up.
 2. **Instrument** — the plugin logs one JSON line per dispatched call when MPS runs with
    `-Dmps.mcp.calllog=<file>` (`McpCallLogListener`, off by default). Turn it on without a human and
    without touching a tracked file: `mps_control.sh capture` **while MPS is still alive**, then

@@ -341,13 +341,15 @@
 
 ## From round 51 (2026-11-14; full matrix S1–S39b, opus and sonnet medium, n=1)
 
-51. **A pin of rendered output is bound to the renderer, not only to the MPS build.** The S39 `roots.tsv` hashes were
-    built on MPS 261.25134 and were stale on 261.25134 three days later, untouched roots included, because the
-    `print_node` code that renders them had moved (A20). The evaluators fell back to prints plus the call log's write
-    records, which costs about 165 calls per evaluation and is not the route the criteria name. → Record the plugin
-    revision next to the build for every printed pin, and re-pin before a round whenever `print_node` or the formats
-    it emits changed since the pins were made. Pin only what a criterion compares, and prefer a structural check
-    (the write records in `server-calllog.jsonl` or a model diff) where formatting is not the subject.
+51. **A pin of printed output is bound to the renderer and to the open-project set, not only to the MPS build.**
+    The S39 `roots.tsv` hashes were built on MPS 261.25134 and were stale on 261.25134 three days later, untouched
+    roots included (A20). Mostly this was because the pin session had the MPS source project open, so the JSON carried
+    `*ContainingProject` markers that the study MPS never prints. The rest came from a later `print_node` commit
+    (property types, the final newline). The evaluators fell back to prints plus the call log's write records, about
+    165 calls per evaluation and not the route the criteria name. → Hash a stored-content projection, not the printed
+    record. Keep rendered text only where the criterion is about text. Ship the hashing script with the pins and
+    record the plugin revision and open projects in the pin file. Gate the pins against a fresh fixture copy before
+    the round (runbook step 1a), never mid-round.
 52. **An evaluator's claim about the analysis tooling is a hypothesis too.** Five evaluators reported `families.py`
     gaps; one held (A19), and even its stated cause was wrong. The others were a column defined as `Read` calls only,
     observer-counted signals the coverage doc names as a follow-up, a count the evaluator had misread from the
