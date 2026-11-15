@@ -95,11 +95,14 @@ class McpClient:
     def notify(self, method: str, params: dict | None = None):
         self._post({"jsonrpc": "2.0", "method": method, "params": params or {}}, expect_response=False)
 
-    def initialize(self):
+    def initialize(self, client_name: str = "mps-study-tools-inventory"):
+        """MCP handshake. `client_name` is the clientInfo name the server's call log records; the
+        analysis counts `mps-study-tools-inventory` as observer/evaluator calls, so a tool with its own
+        name (e.g. the S39 `roots.py`) stays separable."""
         result = self.call("initialize", {
             "protocolVersion": "2025-03-26",
             "capabilities": {},
-            "clientInfo": {"name": "mps-study-tools-inventory", "version": "0.1"},
+            "clientInfo": {"name": client_name, "version": "0.1"},
         })
         self.notify("notifications/initialized")
         return result
