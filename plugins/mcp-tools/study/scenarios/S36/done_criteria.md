@@ -175,8 +175,9 @@ first run (the directive's "show its roots as PLAIN TEXT"); whether the worker r
 `null vs StringLiteral='Squeeze the lemons'` under Lemonade as a missing step (right) or as a failed generation
 (wrong); whether the report names the choices
 the description left open (difficulty of the test recipes, `isStatic` / modifiers); whether the
-worker made `<S>` and read the Java before the test (orientation) or only after the fix; D130
-fallbacks (`search_concepts` → `[]` → module dumps) on the way to `GeneratorTest`.
+worker made `<S>` and read the Java before the test (orientation) or only after the fix; a
+`search_concepts` → `[]` → module-dump fallback on the way to `GeneratorTest` (D130, expected only in
+a run whose meta has `allowSiblingProjects: true`).
 
 ## Process signals (`families.py` row; reported separately from the pass)
 
@@ -195,7 +196,7 @@ fallbacks (`search_concepts` → `[]` → module dumps) on the way to `Generator
 | `M_reload_all` | 0 | — |
 | `GN_template_prints` | ≥ 1 | the template was read to find the defects (expected; the trace is not forced here) |
 | `M_makes_save_transient`, `GN_transient_models`, `GN_transient_reads`, `GN_trace*` | — | the *Observe generation* directive taken on `<S>` (not on the test input: a "Do not generate" model is skipped by make) |
-| `D_skill_reads`, `X_outside_project`, `G_errors`, `F_gcd_calls` | — | navigation and D130 cost |
+| `D_skill_reads`, `X_outside_project`, `G_errors`, `F_gcd_calls` | — | navigation cost |
 
 **New columns** (`scripts/families.py`, documented with the other `GT_*` columns there):
 - `GT_red_runs_before_fix` — `execute_run_configuration` calls before the first accepted write to

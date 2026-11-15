@@ -35,9 +35,9 @@ through reflective console Java (two attempts), and had three arguments left unr
 across roots. A true tool-free baseline needs the pre-change catalog and the pre-change plugin (the
 operation lives inside `update_model`, so `DISALLOWED_TOOLS` cannot remove it).
 
-Known confound (D130): the study MPS also has the MPS source project open, so `search_concepts`
-drops every MPS language as "owned by another open project" and finds no `GeneratorTest`; a user's
-MPS has these languages as libraries. Workers must reach the concept through the skill.
+D130: with another project that has modules open (the MPS source project in the 2026-10-29
+baseline), `search_concepts` finds no `GeneratorTest`. `run_worker.sh` refuses such a launch since
+2026-11-15; a run with `allowSiblingProjects: true` in its meta still has the confound.
 
 Item 4 forces "Do not generate" on the data models: the walk showed the test Solution's make
 generating the input and the expected model into the same `source_gen/mcp/study/generated/Tea.java`.

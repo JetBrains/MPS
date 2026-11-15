@@ -59,8 +59,12 @@ RUNS=$HOME/MPSProjects/mcp-study/runs
      synthesis fails. **Every other project must be closed first** — including the developer's own
      checkout, the common case when MPS was started from the IDEA run configuration. Disjoint
      module names are not enough: with `confirmOpenNewProject2 = -1` (the default) the second open
-     raises the modal New Window / This Window prompt and blocks the round (lesson 30). Announce
-     the path you close; it is an observer action, not one to ask for.
+     raises the modal New Window / This Window prompt and blocks the round (lesson 30), and a
+     second project that has modules hides its languages from `search_concepts` (D130). Announce
+     the path you close; it is an observer action, not one to ask for. `run_worker.sh` now enforces
+     the rule before every launch except SMOKE (`check_open_projects.py`, exit 3 naming the open
+     project; the empty harness project passes); `ALLOW_SIBLING_PROJECTS=1` overrides it for a
+     deliberate two-project experiment and is recorded in the meta.
    - Is the call log on? Ask the process, not the log:
    `ps -ww -p $(pgrep -f '[j]etbrains\.mps\.Launcher') -o args= | tr ' ' '\n' | grep calllog`
    must print the option, and the file must grow after a tool call. If it is off and gate question
@@ -293,6 +297,8 @@ Run them once at preflight: a harness bug is cheaper to find there than in a rou
 Env: `RUNS` (default `~/MPSProjects/mcp-study/runs`), `CALLLOG` (default `$RUNS/server-calllog.jsonl`),
 `MAX_TURNS` (400, Claude only), `STUDY` (auto), `SKIP_SKILL_INSTALL` (0),
 `ALLOW_REUSED_PROJECT` (0 — set 1 only to rerun deliberately on a path an earlier run used),
+`ALLOW_SIBLING_PROJECTS` (0 — set 1 only for a deliberate run with another project that has modules
+open beside the run project; see below),
 `ARCHIVE_RUNS` (`$(dirname $RUNS)/archive/runs`, searched by the reuse check), `ISOLATION` (`per-round`),
 `PROJECT_SYNTHESIZED` (0 — set 1 when the project came from `new_study_project.py`),
 `EFFORT` (unset — the gate-2a level for this model, passed as `--effort`; Claude accepts
@@ -338,7 +344,12 @@ guard also runs with `SKIP_SKILL_INSTALL=1`, before any run side
 effect. Missing/empty catalogs, unrelated definitions and unrelated skills pass. Built-in
 `Explore`/`Task` are outside this pin. Do not pass `--skill-default-locations=false` until a Junie SMOKE proves project
 `.agents/skills` still load without it; user-skill isolation for the first Junie matrix is the
-preflight `~/.junie/skills` check. The meta gains
+preflight `~/.junie/skills` check. After the MCP URL is resolved and before any run file is
+written, `check_open_projects.py` (not for SMOKE, also with `SKIP_SKILL_INSTALL=1`) makes one
+`list_open_projects` call and counts the `<modulePath>` entries in each other open project's
+`.mps/modules.xml`. It exits 3, naming the project, when one has modules or no readable descriptor
+(D130); close that project with `mps_mcp_close_project`. The meta gains `otherOpenProjects`
+(`[{path, modules, verdict}]`, null for SMOKE) and `allowSiblingProjects`. The meta also gains
 `skillsSha256` (catalog fingerprint), `guidesSha256` (fingerprint of the installed `AGENTS.md` +
 `CLAUDE.md`, `absent` when either is missing) and `skillsInstalled`, plus the MPS process under measurement
 (`mpsPid`, `mpsStartTs`), `isolationLevel`, `projectSynthesized`, `relatedProjects`, and the MCP

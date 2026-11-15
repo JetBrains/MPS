@@ -162,7 +162,9 @@
     have shadowed the catalog under measurement in all four cells. → `check_user_agents.py` now
     rejects `mps-*` folders in both skill catalogs too, read-only, with the same exit 3. Anything
     the procedure calls an assertion belongs in the guard the harness already runs; prose checks
-    are only reliable on the day someone remembers them.
+    are only reliable on the day someone remembers them. **Recurred 2026-11-15 (D130):** step 1's
+    "every other project must be closed" was prose only too; `run_worker.sh` now enforces it with
+    `check_open_projects.py`.
 33. **An instrumentation step must be executable from the state the round actually starts in.**
     Step 2 said "capture preserves the VM options of the live process, so a relaunch keeps the
     call-log option" — true, and useless when MPS is running *without* the option, which is the

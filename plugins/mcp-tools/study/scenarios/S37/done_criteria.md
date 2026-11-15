@@ -127,7 +127,8 @@ after an insert with an unresolved name, how the worker found out (`fixReference
 check, the doc); whether it read the stored servings and minutes before asserting them or took 2 and
 13 from the prompt; whether it probed the rename or Find Usages itself; whether it proved the test
 non-vacuous (e.g. a red run on a wrong expected value; neither the prompt nor the criteria ask for
-it); D130 fallbacks on the way to `NodePointerExpression`; which skill files it read (`D_skill_reads`
+it); a `search_concepts` → `[]` fallback on the way to `NodePointerExpression` (D130, expected only
+in a run whose meta has `allowSiblingProjects: true`); which skill files it read (`D_skill_reads`
 and `D_skill_bash_fetch`, which misses a relative path read after a `cd` into the catalog, as in
 `S37-sonnet-1`: check the transcript), in particular
 how it reached `link-and-concept-literals.md`: through `mps-model-manipulation` (its Critical
@@ -145,7 +146,7 @@ Directive then in context), or straight from the `mps-tests` pointer without loa
 | `ET_test_runs` | 1–3 | one green; each extra run is a fix cycle or a non-vacuity probe |
 | `M_makes` | 0–2 | a make of the test solution is optional (a test run builds the `@tests` model) |
 | `M_reload_all` | 0 | — |
-| `D_skill_reads`, `X_outside_project`, `G_errors`, `F_gcd_calls` | — | navigation and D130 cost |
+| `D_skill_reads`, `X_outside_project`, `G_errors`, `F_gcd_calls` | — | navigation cost |
 
 **New columns** (`scripts/families.py`, documented with the other columns there):
 - `NP_node_ptr_writes` — accepted node writes whose input holds a `NodePointerExpression` (name or

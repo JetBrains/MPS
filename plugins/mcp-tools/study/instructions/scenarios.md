@@ -412,8 +412,8 @@ Read the process signals with `GT_generator_test_writes` (≥ 3), `GT_nodes_test
 `ET_run_configs` (1); `M_makes_save_transient` / `GN_transient_*` show the golden-master route.
 Baseline (evidence, not a cell): an opus Agent-tool worker with the old catalog passed the task by
 dumping every language module to find `GeneratorTest` and by reflective console Java for the flag.
-D130 (the source project's languages are "foreign" to `search_concepts`) confounds concept search
-in this cell.
+That baseline ran with the MPS source project open, so its `search_concepts` returned `[]` (D130);
+`run_worker.sh` refuses such a second project since 2026-11-15, so a cell does not inherit it.
 Hypotheses: H1, H2, H7.
 Isolation: the `mcp.study.recipes` module ids of S3–S7, S9, S15, S17 and S19, so restart MPS before S18
 when one of those ran in the process. Generation loads the language's generator, so a later recipes
@@ -451,7 +451,8 @@ Read the process signals with the `GP_*` columns (`GP_set_plan_calls` and `GP_de
 Baseline (evidence, not a cell): an opus Agent-tool worker with the old catalog and plugin finished
 the task in 96 tool uses through console Java for the DevKit, five guessed facet keys and a dump of
 the plan-parameter model; with the new plugin and catalog the same kind of worker needed 39–41 MCP
-calls and no workaround. D130 confounds concept search here as in S18.
+calls and no workaround. Those baselines had the MPS source project open (D130), which a cell no
+longer can, as in S18.
 Every round: the lesson-19 grep in `done_criteria.md` (the catalog must not name this cell's plans).
 Hypotheses: H1, H2, H7.
 Isolation: the `mcp.study.recipes` module ids of S3–S7, S9, S15, S17 and S18, so restart MPS before
