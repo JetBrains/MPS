@@ -1244,6 +1244,16 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
         val occupied = moveNodeToParent("""{"nodeReference":"${host.rightRef}","newParentRef":"${host.totalRef}","role":"initializer"}""")
         val occupiedError = expectErr(occupied)
         assertTrue(occupiedError, occupiedError.contains("single-valued (0..1) and already holds '${host.plusRef}'"))
+        // D142: `right` lies inside the occupant `plus`, so deleting the occupant would delete it too:
+        // the rejection names the occupant but offers no delete-then-retry recovery.
+        val occupiedDetails = JsonParser.parseString(occupied).asJsonObject.getAsJsonObject("details")
+        assertNotNull("expected details on the occupied-role rejection: $occupied", occupiedDetails)
+        val occupant = occupiedDetails.getAsJsonObject("occupant")
+        assertEquals(host.plusRef, occupant.get("reference").asString)
+        assertTrue(occupied, occupant.get("concept").asString.endsWith("PlusExpression"))
+        assertTrue(occupied, occupiedDetails.get("movedNodeInsideOccupant").asBoolean)
+        assertFalse("no recovery may delete the moved node: $occupied", occupiedDetails.has("recovery"))
+        assertTrue(occupiedError, occupiedError.contains("lies inside that node"))
 
         val badPosition = moveNodeToParent("""{"nodeReference":"${host.rightRef}","newParentRef":"${host.emptyRef}","role":"initializer","position":1}""")
         val badPositionError = expectErr(badPosition)
@@ -1262,6 +1272,44 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
         readOnRepo {
             assertEquals(host.emptyRef, PersistenceFacade.getInstance().asString(resolveNode(host.plusRef).parent!!.reference))
             assertTrue(resolveNode(host.totalRef).children.none { it.containmentLink?.name == "initializer" })
+        }
+    }
+
+    @Test
+    fun `alter_nodes MOVE_NODE_TO_PARENT occupied-role rejection carries a recovery that works as given`() {
+        // D142: follow details.recovery literally, then retry the identical move.
+        val host = createMoveHost()
+        val (totalTypeRef, emptyTypeRef) = readOnRepo {
+            val facade = PersistenceFacade.getInstance()
+            fun typeOf(ref: String) = facade.asString(resolveNode(ref).children.single { it.containmentLink?.name == "type" }.reference)
+            typeOf(host.totalRef) to typeOf(host.emptyRef)
+        }
+        val move = """{"nodeReference":"$totalTypeRef","newParentRef":"${host.emptyRef}","role":"type"}"""
+
+        val rejected = JsonParser.parseString(moveNodeToParent(move)).asJsonObject
+        assertFalse("expected error envelope: $rejected", rejected.get("ok").asBoolean)
+        val rejectedDetails = rejected.getAsJsonObject("details")
+        assertEquals(emptyTypeRef, rejectedDetails.getAsJsonObject("occupant").get("reference").asString)
+        assertFalse(rejected.toString(), rejectedDetails.has("movedNodeInsideOccupant"))
+        val recovery = rejectedDetails.getAsJsonObject("recovery")
+        assertEquals("mps_mcp_update_node", recovery.get("tool").asString)
+        assertEquals("SET", recovery.get("operation").asString)
+        assertEquals("CHILD", recovery.get("kind").asString)
+        assertEquals(emptyTypeRef, recovery.get("childNodeRef").asString)
+        assertTrue(rejected.toString(), rejected.get("error").asString.contains("childNodeRef='$emptyTypeRef'"))
+
+        val deleted = runTool(toolset) {
+            it.mps_mcp_update_node(
+                recovery.get("operation").asString, recovery.get("kind").asString,
+                childNodeRef = recovery.get("childNodeRef").asString,
+            )
+        }
+        assertTrue("expected the recovery deletion to succeed: $deleted", JsonParser.parseString(deleted).asJsonObject.get("ok").asBoolean)
+
+        expectOk(moveNodeToParent(move))
+        readOnRepo {
+            val emptyTypes = resolveNode(host.emptyRef).children.filter { it.containmentLink?.name == "type" }
+            assertEquals(listOf(totalTypeRef), emptyTypes.map { PersistenceFacade.getInstance().asString(it.reference) })
         }
     }
 
