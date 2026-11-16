@@ -159,7 +159,7 @@ public class ChangeEditorMessage extends EditorMessageWithTarget {
           drawDeletedChild(graphics, (EditorCell_Collection) cell, dmt.getNextChildIndex());
         }
       } else {
-        Rectangle bounds = (EditorCellMessageUtil.isIndirectRoot(editor, myMessageTarget, getNode()) ? getFirstPseudoLineBounds(editor) : GeometryUtil.getBounds(cell));
+        Rectangle bounds = (EditorCellMessageUtil.shouldUseFirstLineForMessage(editor, myMessageTarget, getNode(), cell) ? getFirstPseudoLineBounds(editor) : GeometryUtil.getBounds(cell));
         graphics.setColor(ChangeColors.getInstance().getDiffColor((isConflicted() ? ChangeType.CONFLICTED : ChangeType.CHANGE)));
         graphics.drawRect(bounds.x + 1, bounds.y + 1, bounds.width - 2, bounds.height - 2);
       }
@@ -332,16 +332,17 @@ __switch__:
   }
 
   public Bounds getBounds(jetbrains.mps.openapi.editor.EditorComponent editor) {
+    editor.getEditorContext().getRepository().getModelAccess().checkReadAccess();
+    EditorCell cell = getCellInBothWays(editor);
     if (!(myMessageTarget instanceof DeletedNodeMessageTarget)) {
-      if (EditorCellMessageUtil.isIndirectRoot(editor, myMessageTarget, getNode())) {
+      if (EditorCellMessageUtil.shouldUseFirstLineForMessage(editor, myMessageTarget, getNode(), cell)) {
         Rectangle r = getFirstPseudoLineBounds(editor);
         return new Bounds(r.y, r.y + r.height);
       } else {
-        return getBoundsSuper(editor);
+        return getBoundsSuper(editor, cell);
       }
     } else {
       DeletedNodeMessageTarget dmt = ((DeletedNodeMessageTarget) myMessageTarget);
-      EditorCell cell = getCellInBothWays(editor);
       if (cell == null) {
         return new Bounds(-1, -1);
       }
@@ -349,7 +350,7 @@ __switch__:
         if (EditorCellMessageUtil.cellHasChildrenWithDifferentNode(cell)) {
           return getBoundsForChild((EditorCell_Collection) cell, dmt.getNextChildIndex());
         } else {
-          Bounds bounds = getBoundsSuper(editor);
+          Bounds bounds = getBoundsSuper(editor, cell);
           if (bounds.length() > 0) {
             return bounds;
           }
@@ -382,19 +383,18 @@ __switch__:
     return new Bounds(minY, maxY);
   }
 
-  private Bounds getBoundsSuper(jetbrains.mps.openapi.editor.EditorComponent editorComponent) {
+  private Bounds getBoundsSuper(jetbrains.mps.openapi.editor.EditorComponent editorComponent, @Nullable EditorCell cell) {
     if (!(editorComponent instanceof EditorComponent)) {
       return new Bounds(-1, -1);
     }
 
-    SNode node = getNode();
-    Bounds nodeBounds = getCellInBothWaysBounds(editorComponent, myMessageTarget, node);
+    Bounds nodeBounds = getCellBounds(cell);
 
     if (myAttributedNode == null) {
       return nodeBounds;
     }
 
-    Bounds parentBounds = getCellInBothWaysBounds(editorComponent, myMessageTarget, myAttributedNode);
+    Bounds parentBounds = getCellBounds(EditorCellMessageUtil.getCellInBothWays(editorComponent, myMessageTarget, myAttributedNode));
     if ((int) nodeBounds.start() == (int) parentBounds.start() && (int) nodeBounds.end() == (int) parentBounds.end()) {
       return nodeBounds;
     }
@@ -409,10 +409,9 @@ __switch__:
     return nodeBounds;
   }
 
-  private static Bounds getCellInBothWaysBounds(jetbrains.mps.openapi.editor.EditorComponent editorComponent, MessageTarget messageTarget, SNode node) {
+  private static Bounds getCellBounds(@Nullable EditorCell cell) {
     int y = -1;
     int height = -1;
-    EditorCell cell = EditorCellMessageUtil.getCellInBothWays(editorComponent, messageTarget, node);
     if (cell != null) {
       y = cell.getY();
       height = cell.getHeight();

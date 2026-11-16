@@ -4,13 +4,25 @@
 package jetbrains.mps.vcs.changesmanager.editor;
 
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ex.ApplicationEx;
 import com.intellij.util.ui.EmptyIcon;
 import com.intellij.util.ui.update.MergingUpdateQueue;
+import jetbrains.mps.errors.messageTargets.NodeMessageTarget;
+import jetbrains.mps.errors.messageTargets.PropertyMessageTarget;
 import jetbrains.mps.nodeEditor.EditorComponent;
 import jetbrains.mps.nodeEditor.NodeEditorComponent;
+import jetbrains.mps.nodeEditor.cells.EditorCell_Collection;
+import jetbrains.mps.nodeEditor.cells.EditorCell_Constant;
+import jetbrains.mps.nodeEditor.cells.GeometryUtil;
+import jetbrains.mps.nodeEditor.inspector.InspectorEditorComponent;
 import jetbrains.mps.nodeEditor.updater.UpdaterImpl;
+import jetbrains.mps.openapi.editor.cells.EditorCell;
+import jetbrains.mps.openapi.editor.cells.EditorCellContext;
+import jetbrains.mps.openapi.editor.message.EditorMessageOwner;
+import jetbrains.mps.openapi.editor.menus.transformation.SPropertyInfo;
 import jetbrains.mps.openapi.editor.update.UpdaterListener;
 import jetbrains.mps.project.MPSProject;
+import jetbrains.mps.smodel.IllegalModelAccessError;
 import jetbrains.mps.smodel.SNode;
 import jetbrains.mps.smodel.SNodeUtil;
 import jetbrains.mps.smodel.tempmodel.TempModuleOptions;
@@ -19,14 +31,18 @@ import jetbrains.mps.testsuites.PlatformTestSuite;
 import jetbrains.mps.vcs.changesmanager.CurrentDifferenceRegistry;
 import jetbrains.mps.vcs.changesmanager.SimpleCommandQueue;
 import jetbrains.mps.vcs.changesmanager.editor.ChangeGroupTestCase.RecordingHighlighter;
+import jetbrains.mps.vcs.diff.changes.ChangeType;
 import jetbrains.mps.vcs.diff.changes.ModelChange;
+import jetbrains.mps.vcs.diff.ui.common.Bounds;
 import jetbrains.mps.vcs.diff.ui.common.ButtonsPainter;
+import jetbrains.mps.vcs.diff.ui.common.ChangeColors;
 import jetbrains.mps.vcs.diff.ui.common.ChangeEditorMessage;
 import jetbrains.mps.vcs.diff.ui.common.ChangeGroup;
 import jetbrains.mps.vcs.diff.ui.common.ChangeGroupInvalidateListener;
 import jetbrains.mps.vcs.diff.ui.common.ChangeGroupLayout;
 import jetbrains.mps.vcs.diff.ui.common.DiffChangeGroupLayout;
 import jetbrains.mps.vcs.diff.ui.common.DiffEditor;
+import jetbrains.mps.vcs.diff.ui.common.EditorCellMessageUtil;
 import jetbrains.mps.vcs.diff.ui.common.FoldingAreaButton;
 import org.jetbrains.mps.openapi.model.SModel;
 import org.junit.AfterClass;
@@ -37,10 +53,13 @@ import org.junit.runners.Suite;
 import javax.swing.SwingUtilities;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.Field;
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -65,6 +84,226 @@ public class ChangeStripsPainterTest {
   }
 
   public static class Painting extends ChangeGroupTestCase {
+    @Test
+    public void firstLineMessageForEditedRootPaintsWithoutModelAccess() throws Exception {
+      assertMessagePaintsWithoutModelAccess(true, false, false);
+    }
+
+    @Test
+    public void messageForOtherNodePaintsWholeCellWithoutModelAccess() throws Exception {
+      assertMessagePaintsWithoutModelAccess(false, false, true);
+    }
+
+    @Test
+    public void messageInInspectorPaintsWholeCellWithoutModelAccess() throws Exception {
+      assertMessagePaintsWithoutModelAccess(true, true, false);
+    }
+
+    @Test
+    public void firstLineMessageForEditedChildPaintsWithoutModelAccess() throws Exception {
+      assertMessagePaintsWithoutModelAccess(true, false, true);
+    }
+
+    private void assertMessagePaintsWithoutModelAccess(boolean isEditedNode, boolean inspector, boolean hasParent) throws Exception {
+      onEdt(() -> {
+        boolean[] painting = {false};
+        SNode parent = new SNode(SNodeUtil.concept_BaseConcept);
+        SNode delegate = new SNode(SNodeUtil.concept_BaseConcept);
+        if (hasParent) {
+          parent.addChild(SNodeUtil.link_BaseConcept_smodelAttribute, delegate);
+        }
+        org.jetbrains.mps.openapi.model.SNode node = (org.jetbrains.mps.openapi.model.SNode) Proxy.newProxyInstance(
+            org.jetbrains.mps.openapi.model.SNode.class.getClassLoader(), new Class<?>[]{org.jetbrains.mps.openapi.model.SNode.class},
+            (proxy, method, args) -> {
+              if ("getParent".equals(method.getName())) {
+                assertFalse("Painting read the node's parent", painting[0]);
+              }
+              return method.invoke(delegate, args);
+            });
+        EditorComponent editor = inspector ? new InspectorEditorComponent(myProject.getRepository()) {
+          @Override
+          public org.jetbrains.mps.openapi.model.SNode getEditedNode() {
+            return node;
+          }
+        } :
+            new NodeEditorComponent(myProject.getRepository()) {
+              @Override
+              public org.jetbrains.mps.openapi.model.SNode getEditedNode() {
+                return isEditedNode ? node : super.getEditedNode();
+              }
+
+              @Override
+              public jetbrains.mps.nodeEditor.cells.EditorCell getBigValidCellForNode(org.jetbrains.mps.openapi.model.SNode n) {
+                assertFalse("Painting looked up a node cell", painting[0]);
+                return getRootCell();
+              }
+            };
+        try {
+          myProject.getModelAccess().runReadAction(() -> {
+            EditorCell_Collection cells = EditorCell_Collection.createVertical(editor.getEditorContext(), node);
+            cells.setBig(true);
+            EditorCell_Constant firstLine = new EditorCell_Constant(editor.getEditorContext(), node, "first line");
+            cells.addEditorCell(firstLine);
+            cells.addEditorCell(new EditorCell_Constant(editor.getEditorContext(), node, "second, longer line"));
+            cells.setX(10);
+            cells.setY(20);
+            cells.relayout();
+            editor.setRootCell(cells);
+          });
+          ChangeEditorMessage message = myProject.getModelAccess().computeReadAction(() ->
+              new ChangeEditorMessage(node, new PropertyMessageTarget(SNodeUtil.property_BaseConcept_virtualPackage),
+                                      new EditorMessageOwner() { }, null, null, true) { });
+          EditorCell_Collection cells = (EditorCell_Collection) editor.getRootCell();
+          Rectangle expected = GeometryUtil.getBounds(isEditedNode && !inspector ? cells.firstCell() : cells);
+          BufferedImage image = new BufferedImage(512, 512, BufferedImage.TYPE_INT_ARGB);
+          Graphics graphics = image.createGraphics();
+          painting[0] = true;
+          try {
+            ((ApplicationEx) ApplicationManager.getApplication()).withLocksProhibited("Diff message painting must not take locks", () -> {
+              message.paint(graphics, editor, cells);
+              return null;
+            });
+          }
+          finally {
+            painting[0] = false;
+            graphics.dispose();
+          }
+          int color = ChangeColors.getInstance().getDiffColor(ChangeType.CHANGE).getRGB();
+          assertEquals("Message outline does not start at the expected cell", color, image.getRGB(expected.x + 1, expected.y + 1));
+          assertEquals("Message outline has the wrong height", color,
+                       image.getRGB(expected.x + 1, expected.y + expected.height - 1));
+          if (isEditedNode && !inspector) {
+            assertEquals("First-line message outlined the second line", 0,
+                         image.getRGB(cells.getX() + 1, cells.getY() + cells.getHeight() - 1));
+          }
+        }
+        finally {
+          editor.dispose();
+        }
+      });
+    }
+
+    @Test
+    public void firstLineDecisionDependsOnSuppliedCell() throws Exception {
+      onEdt(() -> {
+        SNode node = new SNode(SNodeUtil.concept_BaseConcept);
+        EditorComponent editor = new NodeEditorComponent(myProject.getRepository()) {
+          @Override
+          public org.jetbrains.mps.openapi.model.SNode getEditedNode() {
+            return node;
+          }
+        };
+        try {
+          EditorCell_Collection cells = EditorCell_Collection.createVertical(editor.getEditorContext(), node);
+          EditorCell_Constant directCell = new EditorCell_Constant(editor.getEditorContext(), node, "property");
+          EditorCell_Constant nameCell = new EditorCell_Constant(editor.getEditorContext(), node, "name");
+          nameCell.setCellContext(new EditorCellContext() {
+            @Override
+            public Collection<String> getHints() {
+              return Collections.emptyList();
+            }
+
+            @Override
+            public SPropertyInfo getPropertyInfo() {
+              return new SPropertyInfo(node, SNodeUtil.property_INamedConcept_name);
+            }
+          });
+          PropertyMessageTarget target = new PropertyMessageTarget(SNodeUtil.property_BaseConcept_virtualPackage);
+          assertTrue(EditorCellMessageUtil.shouldUseFirstLineForMessage(editor, target, node, null));
+          assertTrue(EditorCellMessageUtil.shouldUseFirstLineForMessage(editor, target, node, cells));
+          assertFalse(EditorCellMessageUtil.shouldUseFirstLineForMessage(editor, target, node, directCell));
+          assertTrue(EditorCellMessageUtil.shouldUseFirstLineForMessage(editor, target, node, nameCell));
+          assertFalse(EditorCellMessageUtil.shouldUseFirstLineForMessage(
+              editor, new PropertyMessageTarget(SNodeUtil.property_INamedConcept_name), node, nameCell));
+        }
+        finally {
+          editor.dispose();
+        }
+      });
+    }
+
+    @Test
+    public void firstLineMessageHasNoCellsInEmptyEditor() throws Exception {
+      onEdt(() -> {
+        SNode node = new SNode(SNodeUtil.concept_BaseConcept);
+        EditorComponent editor = new NodeEditorComponent(myProject.getRepository()) {
+          @Override
+          public org.jetbrains.mps.openapi.model.SNode getEditedNode() {
+            return node;
+          }
+
+          @Override
+          public jetbrains.mps.nodeEditor.cells.EditorCell getBigValidCellForNode(org.jetbrains.mps.openapi.model.SNode n) {
+            return getRootCell();
+          }
+        };
+        try {
+          myProject.getModelAccess().runReadAction(() -> {
+            EditorCell_Collection cells = EditorCell_Collection.createVertical(editor.getEditorContext(), node);
+            cells.setBig(true);
+            editor.setRootCell(cells);
+            PropertyMessageTarget target = new PropertyMessageTarget(SNodeUtil.property_BaseConcept_virtualPackage);
+            assertTrue("Empty editor has message cells", EditorCellMessageUtil.getCells(editor, target, node).isEmpty());
+          });
+        }
+        finally {
+          editor.dispose();
+        }
+      });
+    }
+
+    @Test
+    public void cellLookupRequiresCallerReadAccess() throws Exception {
+      onEdt(() -> {
+        SNode node = new SNode(SNodeUtil.concept_BaseConcept);
+        EditorComponent editor = new NodeEditorComponent(myProject.getRepository());
+        try {
+          assertFalse(myProject.getModelAccess().canRead());
+          NodeMessageTarget target = new NodeMessageTarget();
+          assertThrows(IllegalModelAccessError.class, () -> EditorCellMessageUtil.getCellInBothWays(editor, target, node));
+          myProject.getModelAccess().runReadAction(() -> EditorCellMessageUtil.getCellInBothWays(editor, target, node));
+        }
+        finally {
+          editor.dispose();
+        }
+      });
+    }
+
+    @Test
+    public void messageBoundsFollowResolvedCell() throws Exception {
+      onEdt(() -> {
+        SNode node = new SNode(SNodeUtil.concept_BaseConcept);
+        EditorComponent editor = new NodeEditorComponent(myProject.getRepository());
+        try {
+          EditorCell_Collection cells = EditorCell_Collection.createVertical(editor.getEditorContext(), node);
+          cells.addEditorCell(new EditorCell_Constant(editor.getEditorContext(), node, "message"));
+          cells.setY(20);
+          cells.relayout();
+          for (boolean hasCell : new boolean[]{true, false}) {
+            EditorCell resolvedCell = hasCell ? cells : null;
+            ChangeEditorMessage message = myProject.getModelAccess().computeReadAction(() -> new ChangeEditorMessage(
+                node, new PropertyMessageTarget(SNodeUtil.property_BaseConcept_virtualPackage),
+                new EditorMessageOwner() { }, null, null, true) {
+              @Override
+              public EditorCell getCell(EditorComponent component) {
+                return resolvedCell;
+              }
+            });
+            Bounds bounds = myProject.getModelAccess().computeReadAction(() -> message.getBounds(editor));
+            if (hasCell) {
+              assertEquals(cells.getY(), (int) bounds.start());
+              assertEquals(cells.getBottom(), (int) bounds.end());
+            } else {
+              assertTrue("Message without a cell has bounds", bounds.length() <= 0);
+            }
+          }
+        }
+        finally {
+          editor.dispose();
+        }
+      });
+    }
+
     @Test
     public void disposalBeforeQueuedPainterCreationDoesNotInstallPainter() throws Exception {
       SModel[] model = new SModel[1];

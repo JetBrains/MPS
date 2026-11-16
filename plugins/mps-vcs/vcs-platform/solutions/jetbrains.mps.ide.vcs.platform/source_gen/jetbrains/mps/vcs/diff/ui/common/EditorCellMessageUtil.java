@@ -15,11 +15,10 @@ import jetbrains.mps.openapi.editor.cells.EditorCell_Collection;
 import jetbrains.mps.internal.collections.runtime.ListSequence;
 import java.util.ArrayList;
 import java.util.Objects;
-import jetbrains.mps.baseLanguage.closures.runtime.Wrappers;
-import jetbrains.mps.smodel.ModelAccessHelper;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SNodeOperations;
 import org.jetbrains.mps.openapi.language.SAbstractConcept;
 import jetbrains.mps.internal.collections.runtime.Sequence;
+import org.jetbrains.annotations.Nullable;
 import jetbrains.mps.nodeEditor.inspector.InspectorEditorComponent;
 import org.jetbrains.annotations.NotNull;
 import jetbrains.mps.nodeEditor.cellLayout.CellLayout_Vertical;
@@ -28,7 +27,6 @@ import jetbrains.mps.openapi.editor.cells.EditorCellContext;
 import jetbrains.mps.openapi.editor.menus.transformation.SPropertyInfo;
 import jetbrains.mps.errors.messageTargets.NodeMessageTarget;
 import jetbrains.mps.errors.messageTargets.PropertyMessageTarget;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.mps.openapi.model.SNodeId;
 import jetbrains.mps.nodeEditor.messageTargets.CellFinder;
 import java.util.Collection;
@@ -47,7 +45,8 @@ public final class EditorCellMessageUtil {
   private EditorCellMessageUtil() {
   }
 
-  public static List<EditorCell> getCells(EditorComponent editor, MessageTarget messageTarget, final SNode node) {
+  public static List<EditorCell> getCells(EditorComponent editor, MessageTarget messageTarget, SNode node) {
+    editor.getEditorContext().getRepository().getModelAccess().checkReadAccess();
 
     if (messageTarget instanceof DeletedNodeMessageTarget) {
       DeletedNodeMessageTarget dmt = ((DeletedNodeMessageTarget) messageTarget);
@@ -73,17 +72,17 @@ public final class EditorCellMessageUtil {
       return Collections.singletonList(collection.lastCell());
     }
 
-    if (isIndirectRoot(editor, messageTarget, node)) {
+    EditorCell cell = getCellInBothWays((jetbrains.mps.nodeEditor.EditorComponent) editor, messageTarget, node);
+    if (shouldUseFirstLineForMessage(editor, messageTarget, node, cell)) {
       List<EditorCell> leafCells = ListSequence.fromList(new ArrayList<EditorCell>());
       collectCellWithDescedants(editor.getRootCell(), leafCells);
 
       if (ListSequence.fromList(leafCells).isEmpty()) {
-        Collections.emptyList();
+        return Collections.emptyList();
       }
       final int firstCellY = ListSequence.fromList(leafCells).first().getY();
       return ListSequence.fromList(leafCells).where((it) -> it.getY() == firstCellY).toList();
     } else {
-      EditorCell cell = getCellInBothWays((jetbrains.mps.nodeEditor.EditorComponent) editor, messageTarget, node);
       if (cell == null) {
         return Collections.emptyList();
       }
@@ -91,21 +90,22 @@ public final class EditorCellMessageUtil {
         return Collections.singletonList(cell);
       }
 
-      final Wrappers._T<Iterable<SNode>> descendants = new Wrappers._T<Iterable<SNode>>();
-      new ModelAccessHelper(editor.getEditorContext().getRepository()).runReadAction(() -> descendants.value = SNodeOperations.getNodeDescendants(node, null, true, new SAbstractConcept[]{}));
+      Iterable<SNode> descendants = SNodeOperations.getNodeDescendants(node, null, true, new SAbstractConcept[]{});
       List<EditorCell> attributeCells = ListSequence.fromList(new ArrayList<EditorCell>());
-      findAttributeCells(node, Sequence.fromIterable(descendants.value).select((it) -> it.getNodeId()), cell, attributeCells);
+      findAttributeCells(node, Sequence.fromIterable(descendants).select((it) -> it.getNodeId()), cell, attributeCells);
       return attributeCells;
     }
   }
 
-  public static boolean isIndirectRoot(final EditorComponent editor, final MessageTarget messageTarget, final SNode node) {
-    // XXX [artem] no idea yet what does 'indirect root' mean
-    if (editor instanceof InspectorEditorComponent) {
+  public static boolean shouldUseFirstLineForMessage(EditorComponent editor, MessageTarget messageTarget, SNode node, @Nullable EditorCell cell) {
+    // Called during painting: must not read model data or look up cells.
+    if (messageTarget instanceof DeletedNodeMessageTarget) {
       return false;
     }
-    ModelAccessHelper mah = new ModelAccessHelper(editor.getEditorContext().getRepository());
-    return mah.runReadAction(() -> check_ei82tp_a0a0a0a0d0h(node) == null && !(isDirectCell(getCellForNodeAndTargetOrByName((jetbrains.mps.nodeEditor.EditorComponent) editor, messageTarget, node), messageTarget, node)));
+    if (editor instanceof InspectorEditorComponent || node == null || editor.getEditedNode() != node) {
+      return false;
+    }
+    return !(isDirectCell(cell, messageTarget, node));
   }
 
   public static EditorCell getChildCell(@NotNull EditorCell_Collection collectionCell, int nodeIndex) {
@@ -156,18 +156,17 @@ public final class EditorCellMessageUtil {
   }
 
   @Nullable
-  public static EditorCell getCellInBothWays(EditorComponent editorComponent, final MessageTarget messageTarget, final SNode node) {
+  public static EditorCell getCellInBothWays(EditorComponent editorComponent, MessageTarget messageTarget, SNode node) {
+    editorComponent.getEditorContext().getRepository().getModelAccess().checkReadAccess();
     if (!(editorComponent instanceof jetbrains.mps.nodeEditor.EditorComponent)) {
       return null;
     }
-    final jetbrains.mps.nodeEditor.EditorComponent editor = (jetbrains.mps.nodeEditor.EditorComponent) editorComponent;
-    return new ModelAccessHelper(editor.getEditorContext().getRepository()).runReadAction(() -> {
-      EditorCell editorCell = getCellForNodeAndTargetOrByName(editor, messageTarget, node);
-      if (editorCell != null) {
-        return editorCell;
-      }
-      return getCellForParentNodeInMainEditor(editor, node);
-    });
+    jetbrains.mps.nodeEditor.EditorComponent editor = (jetbrains.mps.nodeEditor.EditorComponent) editorComponent;
+    EditorCell editorCell = getCellForNodeAndTargetOrByName(editor, messageTarget, node);
+    if (editorCell != null) {
+      return editorCell;
+    }
+    return getCellForParentNodeInMainEditor(editor, node);
   }
 
   private static void findAttributeCells(SNode node, Iterable<SNodeId> allowedNodes, EditorCell editorCell, List<EditorCell> result) {
@@ -203,20 +202,20 @@ public final class EditorCellMessageUtil {
     }
   }
 
-  public static EditorCell getCellForNodeAndTargetOrByName(final jetbrains.mps.nodeEditor.EditorComponent editor, final MessageTarget messageTarget, final SNode node) {
-    return new ModelAccessHelper(editor.getEditorContext().getRepository()).runReadAction(() -> {
-      EditorCell cell = getCellForNodeAndMessageTarget(editor, messageTarget, node);
-      if (cell != null && cell.isBig() && !(isDirectCell(cell, messageTarget, node))) {
-        if (SNodeOperations.isInstanceOf(node, CONCEPTS.INamedConcept$Kd)) {
-          cell = CellFinder.getCellForProperty(editor, node, NAME_PROPERTY);
-        }
+  public static EditorCell getCellForNodeAndTargetOrByName(jetbrains.mps.nodeEditor.EditorComponent editor, MessageTarget messageTarget, SNode node) {
+    editor.getEditorContext().getRepository().getModelAccess().checkReadAccess();
+    EditorCell cell = getCellForNodeAndMessageTarget(editor, messageTarget, node);
+    if (cell != null && cell.isBig() && !(isDirectCell(cell, messageTarget, node))) {
+      if (SNodeOperations.isInstanceOf(node, CONCEPTS.INamedConcept$Kd)) {
+        cell = CellFinder.getCellForProperty(editor, node, NAME_PROPERTY);
       }
-      return cell;
-    });
+    }
+    return cell;
   }
 
   @Nullable
   public static EditorCell getCellForNodeAndMessageTarget(jetbrains.mps.nodeEditor.EditorComponent editor, MessageTarget messageTarget, SNode node) {
+    editor.getEditorContext().getRepository().getModelAccess().checkReadAccess();
     switch (messageTarget.getTarget()) {
       case NODE:
         return getCellForNode(editor, node);
@@ -233,6 +232,7 @@ public final class EditorCellMessageUtil {
 
   @Nullable
   public static EditorCell getCellForParentNodeInMainEditor(jetbrains.mps.nodeEditor.EditorComponent editor, SNode node) {
+    editor.getEditorContext().getRepository().getModelAccess().checkReadAccess();
     if (editor instanceof InspectorEditorComponent) {
       return null;
     }
@@ -276,12 +276,6 @@ public final class EditorCellMessageUtil {
     } else {
       CollectionSequence.fromCollection(result).addElement(cell);
     }
-  }
-  private static SNode check_ei82tp_a0a0a0a0d0h(SNode checkedDotOperand) {
-    if (null != checkedDotOperand) {
-      return SNodeOperations.getParent(checkedDotOperand);
-    }
-    return null;
   }
 
   private static final class LINKS {
