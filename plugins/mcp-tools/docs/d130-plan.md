@@ -4,7 +4,7 @@ Status 2026-11-16: **P1 (harness) committed** (`957d03b01a58`). **P2 (server) co
 (`a2b722a040ca`; suite 1570/1570; P3's Kotlin descriptions landed with it). **P3 (skill docs) and the
 records** committed after review; live check done (first calls after a restart: `get_concept_details`
 miss 0.36 s, `scope:"all"` 0.29 s — no UI freeze, the search stays on `executeShortReadOnEdt`).
-Open: the first real study round (P1 item) and the YouTrack decision. The former P3 (provenance) is folded into P2: alone it
+Open: the first real study round (P1 item). No YouTrack issue (user decision). The former P3 (provenance) is folded into P2: alone it
 had no observable effect, because the current filter admits no foreign candidate to mark. Tick a box
 when the item is done *and* verified as stated.
 
@@ -523,7 +523,7 @@ surface, in the same words.
 
 ## Open decisions for the user
 
-- [ ] Product issue in YouTrack for P2/P3, or keep it as study defect D130 only?
+- [x] Product issue in YouTrack for P2/P3, or keep it as study defect D130 only? — D130 only, no YouTrack issue (user, 2026-11-16).
 
 ## Out of scope
 
