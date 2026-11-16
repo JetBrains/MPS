@@ -40,17 +40,17 @@
   </root>
   <root nodeRef="r:384ad54a-d5dd-48c0-a167-03b12e66964e(jetbrains.mps.baseLanguage.kotlinRefs.editor)/1057254320149617179">
     <file name="IKotlinFunctionLikeCall_Editor.java">
-      <node id="1057254320149617179" at="11,79,12,89" concept="8" />
+      <node id="1057254320149617179" at="11,79,12,87" concept="8" />
       <node id="1057254320149617179" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1057254320149617179" at="11,79,12,89" />
+      <scope id="1057254320149617179" at="11,79,12,87" />
       <scope id="1057254320149617179" at="11,0,14,0">
         <var name="editorContext" id="1057254320149617179" />
         <var name="node" id="1057254320149617179" />
       </scope>
       <unit id="1057254320149617179" at="10,0,15,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.IKotlinFunctionLikeCall_Editor" />
     </file>
-    <file name="IKotlinFunctionLikeCall_EditorBuilder_a.java">
-      <node id="1057254320149617179" at="16,103,17,19" concept="13" />
+    <file name="IKotlinFunctionLikeCall_EditorBuilder.java">
+      <node id="1057254320149617179" at="16,101,17,19" concept="13" />
       <node id="1057254320149617179" at="17,19,18,18" concept="2" />
       <node id="1057254320149617179" at="23,26,24,18" concept="8" />
       <node id="1057254320149617179" at="27,39,28,31" concept="8" />
@@ -61,13 +61,13 @@
       <node id="1675356390020079181" at="37,5,38,22" concept="8" />
       <node id="1057254320149617179" at="13,0,15,0" concept="3" trace="myNode" />
       <node id="1057254320149617179" at="27,0,30,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="1057254320149617179" at="16,0,20,0" concept="1" trace="IKotlinFunctionLikeCall_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1057254320149617179" at="16,0,20,0" concept="1" trace="IKotlinFunctionLikeCall_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1675356390020079181" at="33,72,37,5" concept="5" />
       <node id="1057254320149617179" at="21,0,26,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1675356390020079181" at="31,0,40,0" concept="6" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="1057254320149617179" at="23,26,24,18" />
       <scope id="1057254320149617179" at="27,39,28,31" />
-      <scope id="1057254320149617179" at="16,103,18,18" />
+      <scope id="1057254320149617179" at="16,101,18,18" />
       <scope id="1675356390020079181" at="34,26,36,30" />
       <scope id="1057254320149617179" at="27,0,30,0" />
       <scope id="1057254320149617179" at="16,0,20,0">
@@ -80,7 +80,7 @@
         <var name="editorCell" id="1675356390020079181" />
       </scope>
       <scope id="1675356390020079181" at="31,0,40,0" />
-      <unit id="1057254320149617179" at="12,0,41,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.IKotlinFunctionLikeCall_EditorBuilder_a" />
+      <unit id="1057254320149617179" at="12,0,41,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.IKotlinFunctionLikeCall_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:384ad54a-d5dd-48c0-a167-03b12e66964e(jetbrains.mps.baseLanguage.kotlinRefs.editor)/1387846870909369016">
@@ -223,17 +223,17 @@
   </root>
   <root nodeRef="r:384ad54a-d5dd-48c0-a167-03b12e66964e(jetbrains.mps.baseLanguage.kotlinRefs.editor)/1387846870919552236">
     <file name="KotlinFileClassifierType_Editor.java">
-      <node id="1387846870919552236" at="11,79,12,90" concept="8" />
+      <node id="1387846870919552236" at="11,79,12,88" concept="8" />
       <node id="1387846870919552236" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1387846870919552236" at="11,79,12,90" />
+      <scope id="1387846870919552236" at="11,79,12,88" />
       <scope id="1387846870919552236" at="11,0,14,0">
         <var name="editorContext" id="1387846870919552236" />
         <var name="node" id="1387846870919552236" />
       </scope>
       <unit id="1387846870919552236" at="10,0,15,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFileClassifierType_Editor" />
     </file>
-    <file name="KotlinFileClassifierType_EditorBuilder_a.java">
-      <node id="1387846870919552236" at="43,104,44,19" concept="13" />
+    <file name="KotlinFileClassifierType_EditorBuilder.java">
+      <node id="1387846870919552236" at="43,102,44,19" concept="13" />
       <node id="1387846870919552236" at="44,19,45,18" concept="2" />
       <node id="1387846870919552236" at="50,26,51,18" concept="8" />
       <node id="1387846870919552236" at="54,39,55,32" concept="8" />
@@ -296,7 +296,7 @@
       <node id="1387846870919552604" at="102,0,104,0" concept="3" trace="myNode" />
       <node id="1387846870919552236" at="54,0,57,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1387846870919552604" at="112,0,115,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="1387846870919552236" at="43,0,47,0" concept="1" trace="KotlinFileClassifierType_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1387846870919552236" at="43,0,47,0" concept="1" trace="KotlinFileClassifierType_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1387846870919552236" at="87,0,91,5" concept="5" />
       <node id="1387846870919552236" at="48,0,53,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1387846870919552236" at="94,205,99,22" concept="5" />
@@ -315,7 +315,7 @@
       <scope id="1387846870919552604" at="112,41,113,32" />
       <scope id="1387846870919552604" at="118,28,119,20" />
       <scope id="1387846870919553372" at="142,17,143,42" />
-      <scope id="1387846870919552236" at="43,104,45,18" />
+      <scope id="1387846870919552236" at="43,102,45,18" />
       <scope id="1387846870919552236" at="88,40,90,43" />
       <scope id="1387846870919552236" at="95,73,97,145">
         <var name="manager" id="1387846870919552236" />
@@ -370,12 +370,12 @@
         <var name="referenceLink" id="1387846870919552236" />
       </scope>
       <scope id="1387846870919552236" at="66,0,101,0" />
-      <unit id="1387846870919552236" at="148,0,151,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFileClassifierType_EditorBuilder_a$LINKS" />
-      <unit id="1387846870919552236" at="157,0,160,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFileClassifierType_EditorBuilder_a$PROPS" />
-      <unit id="1387846870919552236" at="152,0,156,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFileClassifierType_EditorBuilder_a$CONCEPTS" />
-      <unit id="1387846870919552236" at="68,42,83,5" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFileClassifierType_EditorBuilder_a$1" />
-      <unit id="1387846870919552604" at="101,0,147,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFileClassifierType_EditorBuilder_a$Inline_Builder0" />
-      <unit id="1387846870919552236" at="39,0,161,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFileClassifierType_EditorBuilder_a" />
+      <unit id="1387846870919552236" at="148,0,151,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFileClassifierType_EditorBuilder$LINKS" />
+      <unit id="1387846870919552236" at="157,0,160,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFileClassifierType_EditorBuilder$PROPS" />
+      <unit id="1387846870919552236" at="152,0,156,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFileClassifierType_EditorBuilder$CONCEPTS" />
+      <unit id="1387846870919552236" at="68,42,83,5" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFileClassifierType_EditorBuilder$1" />
+      <unit id="1387846870919552604" at="101,0,147,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFileClassifierType_EditorBuilder$Inline_Builder0" />
+      <unit id="1387846870919552236" at="39,0,161,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFileClassifierType_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:384ad54a-d5dd-48c0-a167-03b12e66964e(jetbrains.mps.baseLanguage.kotlinRefs.editor)/1387846870919553818">
@@ -458,17 +458,17 @@
   </root>
   <root nodeRef="r:384ad54a-d5dd-48c0-a167-03b12e66964e(jetbrains.mps.baseLanguage.kotlinRefs.editor)/1387846870919591581">
     <file name="KotlinFileReference_Editor.java">
-      <node id="1387846870919591581" at="11,79,12,85" concept="8" />
+      <node id="1387846870919591581" at="11,79,12,83" concept="8" />
       <node id="1387846870919591581" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1387846870919591581" at="11,79,12,85" />
+      <scope id="1387846870919591581" at="11,79,12,83" />
       <scope id="1387846870919591581" at="11,0,14,0">
         <var name="editorContext" id="1387846870919591581" />
         <var name="node" id="1387846870919591581" />
       </scope>
       <unit id="1387846870919591581" at="10,0,15,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFileReference_Editor" />
     </file>
-    <file name="KotlinFileReference_EditorBuilder_a.java">
-      <node id="1387846870919591581" at="43,99,44,19" concept="13" />
+    <file name="KotlinFileReference_EditorBuilder.java">
+      <node id="1387846870919591581" at="43,97,44,19" concept="13" />
       <node id="1387846870919591581" at="44,19,45,18" concept="2" />
       <node id="1387846870919591581" at="50,26,51,18" concept="8" />
       <node id="1387846870919591581" at="54,39,55,32" concept="8" />
@@ -521,7 +521,7 @@
       <node id="1387846870919591581" at="132,0,134,0" concept="1" trace="KotlinFileReference_file_cellMenu_qmmmcv_a0a0#()V" />
       <node id="1387846870919591581" at="54,0,57,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1387846870919591871" at="112,0,115,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="1387846870919591581" at="43,0,47,0" concept="1" trace="KotlinFileReference_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1387846870919591581" at="43,0,47,0" concept="1" trace="KotlinFileReference_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1387846870919591581" at="87,0,91,5" concept="5" />
       <node id="1387846870919591581" at="48,0,53,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1387846870919591581" at="94,205,99,22" concept="5" />
@@ -542,7 +542,7 @@
       <scope id="1387846870919591871" at="118,28,119,20" />
       <scope id="1387846870919591581" at="136,71,137,61" />
       <scope id="1387846870919591581" at="141,78,142,61" />
-      <scope id="1387846870919591581" at="43,99,45,18" />
+      <scope id="1387846870919591581" at="43,97,45,18" />
       <scope id="1387846870919591581" at="88,40,90,43" />
       <scope id="1387846870919591581" at="95,73,97,145">
         <var name="manager" id="1387846870919591581" />
@@ -593,12 +593,12 @@
         <var name="referenceLink" id="1387846870919591581" />
       </scope>
       <scope id="1387846870919591581" at="66,0,101,0" />
-      <unit id="1387846870919591581" at="146,0,149,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFileReference_EditorBuilder_a$LINKS" />
-      <unit id="1387846870919591581" at="150,0,153,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFileReference_EditorBuilder_a$CONCEPTS" />
-      <unit id="1387846870919591581" at="131,0,145,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFileReference_EditorBuilder_a$KotlinFileReference_file_cellMenu_qmmmcv_a0a0" />
-      <unit id="1387846870919591581" at="68,42,83,5" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFileReference_EditorBuilder_a$1" />
-      <unit id="1387846870919591871" at="101,0,131,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFileReference_EditorBuilder_a$Inline_Builder0" />
-      <unit id="1387846870919591581" at="39,0,154,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFileReference_EditorBuilder_a" />
+      <unit id="1387846870919591581" at="146,0,149,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFileReference_EditorBuilder$LINKS" />
+      <unit id="1387846870919591581" at="150,0,153,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFileReference_EditorBuilder$CONCEPTS" />
+      <unit id="1387846870919591581" at="131,0,145,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFileReference_EditorBuilder$KotlinFileReference_file_cellMenu_qmmmcv_a0a0" />
+      <unit id="1387846870919591581" at="68,42,83,5" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFileReference_EditorBuilder$1" />
+      <unit id="1387846870919591871" at="101,0,131,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFileReference_EditorBuilder$Inline_Builder0" />
+      <unit id="1387846870919591581" at="39,0,154,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFileReference_EditorBuilder" />
     </file>
     <file name="PresentationProviders.java">
       <node id="1387846870919696186" at="14,0,15,0" concept="11" trace="PRESENTATION_qmmmcv_a0a0a" />
@@ -606,17 +606,17 @@
   </root>
   <root nodeRef="r:384ad54a-d5dd-48c0-a167-03b12e66964e(jetbrains.mps.baseLanguage.kotlinRefs.editor)/1675356390019173312">
     <file name="KotlinFunctionArgument_Editor.java">
-      <node id="1675356390019173312" at="11,79,12,88" concept="8" />
+      <node id="1675356390019173312" at="11,79,12,86" concept="8" />
       <node id="1675356390019173312" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1675356390019173312" at="11,79,12,88" />
+      <scope id="1675356390019173312" at="11,79,12,86" />
       <scope id="1675356390019173312" at="11,0,14,0">
         <var name="editorContext" id="1675356390019173312" />
         <var name="node" id="1675356390019173312" />
       </scope>
       <unit id="1675356390019173312" at="10,0,15,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFunctionArgument_Editor" />
     </file>
-    <file name="KotlinFunctionArgument_EditorBuilder_a.java">
-      <node id="1675356390019173312" at="49,102,50,19" concept="13" />
+    <file name="KotlinFunctionArgument_EditorBuilder.java">
+      <node id="1675356390019173312" at="49,100,50,19" concept="13" />
       <node id="1675356390019173312" at="50,19,51,18" concept="2" />
       <node id="1675356390019173312" at="56,26,57,18" concept="8" />
       <node id="1675356390019173312" at="60,39,61,32" concept="8" />
@@ -717,7 +717,7 @@
       <node id="1675356390019173312" at="197,87,200,7" concept="5" />
       <node id="1675356390019173312" at="200,7,203,7" concept="5" />
       <node id="1675356390019173312" at="219,0,222,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="1675356390019173312" at="49,0,53,0" concept="1" trace="KotlinFunctionArgument_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1675356390019173312" at="49,0,53,0" concept="1" trace="KotlinFunctionArgument_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1675356390019173312" at="105,0,109,5" concept="5" />
       <node id="1675356390019173312" at="168,0,172,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1675356390019173312" at="176,0,180,0" concept="1" trace="expressionSingleRoleHandler_s2lbzv_b0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
@@ -751,7 +751,7 @@
       <scope id="1675356390019173312" at="201,42,202,51" />
       <scope id="1675356390019173312" at="215,17,216,42" />
       <scope id="1675356390019173312" at="219,40,220,31" />
-      <scope id="1675356390019173312" at="49,102,51,18" />
+      <scope id="1675356390019173312" at="49,100,51,18" />
       <scope id="1675356390019173312" at="106,40,108,48" />
       <scope id="1675356390019173312" at="113,73,115,145">
         <var name="manager" id="1675356390019173312" />
@@ -839,28 +839,28 @@
         <var name="referenceLink" id="1675356390019173312" />
       </scope>
       <scope id="1675356390019173312" at="91,0,119,0" />
-      <unit id="1675356390019173312" at="234,0,237,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFunctionArgument_EditorBuilder_a$PROPS" />
-      <unit id="1675356390019173312" at="224,0,228,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFunctionArgument_EditorBuilder_a$LINKS" />
-      <unit id="1675356390019173312" at="229,0,233,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFunctionArgument_EditorBuilder_a$CONCEPTS" />
-      <unit id="1675356390019173312" at="93,42,101,5" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFunctionArgument_EditorBuilder_a$1" />
-      <unit id="1243006380188957675" at="119,0,162,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFunctionArgument_EditorBuilder_a$Inline_Builder0" />
-      <unit id="1675356390019173312" at="172,0,223,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFunctionArgument_EditorBuilder_a$expressionSingleRoleHandler_s2lbzv_b0" />
-      <unit id="1675356390019173312" at="45,0,238,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFunctionArgument_EditorBuilder_a" />
+      <unit id="1675356390019173312" at="234,0,237,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFunctionArgument_EditorBuilder$PROPS" />
+      <unit id="1675356390019173312" at="224,0,228,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFunctionArgument_EditorBuilder$LINKS" />
+      <unit id="1675356390019173312" at="229,0,233,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFunctionArgument_EditorBuilder$CONCEPTS" />
+      <unit id="1675356390019173312" at="93,42,101,5" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFunctionArgument_EditorBuilder$1" />
+      <unit id="1243006380188957675" at="119,0,162,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFunctionArgument_EditorBuilder$Inline_Builder0" />
+      <unit id="1675356390019173312" at="172,0,223,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFunctionArgument_EditorBuilder$expressionSingleRoleHandler_s2lbzv_b0" />
+      <unit id="1675356390019173312" at="45,0,238,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFunctionArgument_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:384ad54a-d5dd-48c0-a167-03b12e66964e(jetbrains.mps.baseLanguage.kotlinRefs.editor)/1675356390019730011">
     <file name="KotlinClassifierType_Editor.java">
-      <node id="1675356390019730011" at="11,79,12,86" concept="8" />
+      <node id="1675356390019730011" at="11,79,12,84" concept="8" />
       <node id="1675356390019730011" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1675356390019730011" at="11,79,12,86" />
+      <scope id="1675356390019730011" at="11,79,12,84" />
       <scope id="1675356390019730011" at="11,0,14,0">
         <var name="editorContext" id="1675356390019730011" />
         <var name="node" id="1675356390019730011" />
       </scope>
       <unit id="1675356390019730011" at="10,0,15,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinClassifierType_Editor" />
     </file>
-    <file name="KotlinClassifierType_EditorBuilder_a.java">
-      <node id="1675356390019730011" at="56,100,57,19" concept="13" />
+    <file name="KotlinClassifierType_EditorBuilder.java">
+      <node id="1675356390019730011" at="56,98,57,19" concept="13" />
       <node id="1675356390019730011" at="57,19,58,18" concept="2" />
       <node id="1675356390019730011" at="63,26,64,18" concept="8" />
       <node id="1675356390019730011" at="67,39,68,32" concept="8" />
@@ -989,7 +989,7 @@
       <node id="4590747232508646823" at="134,0,137,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1675356390019730011" at="208,0,211,0" concept="6" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="1675356390019730011" at="211,0,214,0" concept="6" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
-      <node id="1675356390019730011" at="56,0,60,0" concept="1" trace="KotlinClassifierType_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1675356390019730011" at="56,0,60,0" concept="1" trace="KotlinClassifierType_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1675356390019730011" at="106,0,110,5" concept="5" />
       <node id="1675356390019730011" at="199,0,203,0" concept="1" trace="parameterListHandler_agwymw_b1a#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1675356390019730011" at="204,0,208,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -1035,7 +1035,7 @@
       <scope id="1675356390019730011" at="208,40,209,34" />
       <scope id="1675356390019730011" at="211,48,212,30" />
       <scope id="1675356390019730011" at="229,17,230,42" />
-      <scope id="1675356390019730011" at="56,100,58,18" />
+      <scope id="1675356390019730011" at="56,98,58,18" />
       <scope id="1675356390019730011" at="107,40,109,49" />
       <scope id="1675356390019730011" at="117,73,119,145">
         <var name="manager" id="1675356390019730011" />
@@ -1148,13 +1148,13 @@
         <var name="style" id="1675356390019730011" />
       </scope>
       <scope id="1675356390019730011" at="85,0,123,0" />
-      <unit id="1675356390019730011" at="286,0,290,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinClassifierType_EditorBuilder_a$LINKS" />
-      <unit id="1675356390019730011" at="291,0,295,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinClassifierType_EditorBuilder_a$CONCEPTS" />
-      <unit id="1675356390019730011" at="150,0,164,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinClassifierType_EditorBuilder_a$KotlinClassifierType_classifier_cellMenu_agwymw_a0a0" />
-      <unit id="1675356390019730011" at="87,42,102,5" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinClassifierType_EditorBuilder_a$1" />
-      <unit id="4590747232508646823" at="123,0,150,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinClassifierType_EditorBuilder_a$Inline_Builder0" />
-      <unit id="1675356390019730011" at="195,0,275,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinClassifierType_EditorBuilder_a$parameterListHandler_agwymw_b1a" />
-      <unit id="1675356390019730011" at="52,0,296,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinClassifierType_EditorBuilder_a" />
+      <unit id="1675356390019730011" at="286,0,290,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinClassifierType_EditorBuilder$LINKS" />
+      <unit id="1675356390019730011" at="291,0,295,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinClassifierType_EditorBuilder$CONCEPTS" />
+      <unit id="1675356390019730011" at="150,0,164,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinClassifierType_EditorBuilder$KotlinClassifierType_classifier_cellMenu_agwymw_a0a0" />
+      <unit id="1675356390019730011" at="87,42,102,5" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinClassifierType_EditorBuilder$1" />
+      <unit id="4590747232508646823" at="123,0,150,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinClassifierType_EditorBuilder$Inline_Builder0" />
+      <unit id="1675356390019730011" at="195,0,275,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinClassifierType_EditorBuilder$parameterListHandler_agwymw_b1a" />
+      <unit id="1675356390019730011" at="52,0,296,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinClassifierType_EditorBuilder" />
     </file>
     <file name="PresentationProviders.java">
       <node id="4747359941571312564" at="13,0,14,0" concept="11" trace="PRESENTATION_agwymw_a0a0a" />
@@ -1167,11 +1167,11 @@
     </file>
     <file name="KotlinFunctionCall_Component.java">
       <node id="1675356390020060415" at="15,47,16,35" concept="8" />
-      <node id="1675356390020060415" at="18,79,19,97" concept="8" />
+      <node id="1675356390020060415" at="18,79,19,95" concept="8" />
       <node id="1675356390020060415" at="18,0,21,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1675356390020060415" at="14,0,18,0" concept="6" trace="getContextHints#()Ljava/util/Collection;" />
       <scope id="1675356390020060415" at="15,47,16,35" />
-      <scope id="1675356390020060415" at="18,79,19,97" />
+      <scope id="1675356390020060415" at="18,79,19,95" />
       <scope id="1675356390020060415" at="18,0,21,0">
         <var name="editorContext" id="1675356390020060415" />
         <var name="node" id="1675356390020060415" />
@@ -1179,8 +1179,8 @@
       <scope id="1675356390020060415" at="14,0,18,0" />
       <unit id="1675356390020060415" at="13,0,22,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFunctionCall_Component" />
     </file>
-    <file name="KotlinFunctionCall_Component_ComponentBuilder_a.java">
-      <node id="1675356390020060415" at="46,111,47,19" concept="13" />
+    <file name="KotlinFunctionCall_Component_ComponentBuilder.java">
+      <node id="1675356390020060415" at="46,109,47,19" concept="13" />
       <node id="1675356390020060415" at="47,19,48,18" concept="2" />
       <node id="1675356390020060415" at="53,26,54,18" concept="8" />
       <node id="1675356390020060415" at="57,39,58,32" concept="8" />
@@ -1223,7 +1223,7 @@
       <node id="1675356390020060415" at="57,0,60,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="8345096074692626375" at="97,0,100,0" concept="6" trace="_StyleParameter_QueryFunction_rare56_a0b0#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1387846870913512397" at="103,0,106,0" concept="6" trace="getReplacementConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
-      <node id="1675356390020060415" at="46,0,50,0" concept="1" trace="KotlinFunctionCall_Component_ComponentBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1675356390020060415" at="46,0,50,0" concept="1" trace="KotlinFunctionCall_Component_ComponentBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="5494632093657658209" at="69,0,73,0" concept="6" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1387846870913512397" at="106,0,110,0" concept="6" trace="createEditorMenuDescriptor#(Ljetbrains/mps/nodeEditor/cellMenu/CellContext;Ljetbrains/mps/openapi/editor/EditorContext;)Ljetbrains/mps/openapi/editor/menus/EditorMenuDescriptor;" />
       <node id="5494632093657666115" at="111,0,115,0" concept="6" trace="createComponent_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -1239,7 +1239,7 @@
       <scope id="8345096074692626377" at="97,61,98,67" />
       <scope id="1387846870913512397" at="103,53,104,49" />
       <scope id="1387846870913512397" at="107,117,108,244" />
-      <scope id="1675356390020060415" at="46,111,48,18" />
+      <scope id="1675356390020060415" at="46,109,48,18" />
       <scope id="5494632093657658209" at="69,42,71,22">
         <var name="editorCell" id="5494632093657658209" />
       </scope>
@@ -1277,26 +1277,26 @@
       </scope>
       <scope id="1675356390020060415" at="73,41,95,5" />
       <scope id="1675356390020060415" at="73,0,97,0" />
-      <unit id="1675356390020060415" at="116,0,119,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFunctionCall_Component_ComponentBuilder_a$PROPS" />
-      <unit id="1675356390020060415" at="125,0,128,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFunctionCall_Component_ComponentBuilder_a$LINKS" />
-      <unit id="1675356390020060415" at="120,0,124,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFunctionCall_Component_ComponentBuilder_a$CONCEPTS" />
-      <unit id="1387846870913512397" at="100,0,111,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFunctionCall_Component_ComponentBuilder_a$ReplaceWith_IKotlinFunctionLikeCall_cellMenu_rare56_a0b0" />
-      <unit id="1675356390020060415" at="42,0,129,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFunctionCall_Component_ComponentBuilder_a" />
+      <unit id="1675356390020060415" at="116,0,119,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFunctionCall_Component_ComponentBuilder$PROPS" />
+      <unit id="1675356390020060415" at="125,0,128,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFunctionCall_Component_ComponentBuilder$LINKS" />
+      <unit id="1675356390020060415" at="120,0,124,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFunctionCall_Component_ComponentBuilder$CONCEPTS" />
+      <unit id="1387846870913512397" at="100,0,111,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFunctionCall_Component_ComponentBuilder$ReplaceWith_IKotlinFunctionLikeCall_cellMenu_rare56_a0b0" />
+      <unit id="1675356390020060415" at="42,0,129,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinFunctionCall_Component_ComponentBuilder" />
     </file>
   </root>
   <root nodeRef="r:384ad54a-d5dd-48c0-a167-03b12e66964e(jetbrains.mps.baseLanguage.kotlinRefs.editor)/1675356390020082341">
     <file name="KotlinClassCreator_Editor.java">
-      <node id="1675356390020082341" at="11,79,12,84" concept="8" />
+      <node id="1675356390020082341" at="11,79,12,82" concept="8" />
       <node id="1675356390020082341" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1675356390020082341" at="11,79,12,84" />
+      <scope id="1675356390020082341" at="11,79,12,82" />
       <scope id="1675356390020082341" at="11,0,14,0">
         <var name="editorContext" id="1675356390020082341" />
         <var name="node" id="1675356390020082341" />
       </scope>
       <unit id="1675356390020082341" at="10,0,15,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinClassCreator_Editor" />
     </file>
-    <file name="KotlinClassCreator_EditorBuilder_a.java">
-      <node id="1675356390020082341" at="45,98,46,19" concept="13" />
+    <file name="KotlinClassCreator_EditorBuilder.java">
+      <node id="1675356390020082341" at="45,96,46,19" concept="13" />
       <node id="1675356390020082341" at="46,19,47,18" concept="2" />
       <node id="1675356390020082341" at="52,26,53,18" concept="8" />
       <node id="1675356390020082341" at="56,39,57,32" concept="8" />
@@ -1339,7 +1339,7 @@
       <node id="5494632093657668362" at="95,0,97,0" concept="1" trace="ReplaceWith_IKotlinFunctionLikeCall_cellMenu_7btntn_a0a0#()V" />
       <node id="1675356390020082341" at="56,0,59,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="5494632093657668362" at="97,0,100,0" concept="6" trace="getReplacementConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
-      <node id="1675356390020082341" at="45,0,49,0" concept="1" trace="KotlinClassCreator_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1675356390020082341" at="45,0,49,0" concept="1" trace="KotlinClassCreator_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="5494632093657668362" at="100,0,104,0" concept="6" trace="createEditorMenuDescriptor#(Ljetbrains/mps/nodeEditor/cellMenu/CellContext;Ljetbrains/mps/openapi/editor/EditorContext;)Ljetbrains/mps/openapi/editor/menus/EditorMenuDescriptor;" />
       <node id="5494632093657668359" at="105,0,109,0" concept="6" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="5494632093657668364" at="109,0,113,0" concept="6" trace="createComponent_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -1354,7 +1354,7 @@
       <scope id="1675356390020082341" at="90,15,91,40" />
       <scope id="5494632093657668362" at="97,53,98,49" />
       <scope id="5494632093657668362" at="101,117,102,244" />
-      <scope id="1675356390020082341" at="45,98,47,18" />
+      <scope id="1675356390020082341" at="45,96,47,18" />
       <scope id="1675356390020082341" at="85,74,87,145">
         <var name="manager" id="1675356390020082341" />
       </scope>
@@ -1391,11 +1391,11 @@
       </scope>
       <scope id="1675356390020082341" at="70,41,92,5" />
       <scope id="1675356390020082341" at="70,0,94,0" />
-      <unit id="1675356390020082341" at="114,0,117,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinClassCreator_EditorBuilder_a$PROPS" />
-      <unit id="1675356390020082341" at="118,0,121,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinClassCreator_EditorBuilder_a$LINKS" />
-      <unit id="1675356390020082341" at="122,0,126,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinClassCreator_EditorBuilder_a$CONCEPTS" />
-      <unit id="5494632093657668362" at="94,0,105,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinClassCreator_EditorBuilder_a$ReplaceWith_IKotlinFunctionLikeCall_cellMenu_7btntn_a0a0" />
-      <unit id="1675356390020082341" at="41,0,127,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinClassCreator_EditorBuilder_a" />
+      <unit id="1675356390020082341" at="114,0,117,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinClassCreator_EditorBuilder$PROPS" />
+      <unit id="1675356390020082341" at="118,0,121,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinClassCreator_EditorBuilder$LINKS" />
+      <unit id="1675356390020082341" at="122,0,126,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinClassCreator_EditorBuilder$CONCEPTS" />
+      <unit id="5494632093657668362" at="94,0,105,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinClassCreator_EditorBuilder$ReplaceWith_IKotlinFunctionLikeCall_cellMenu_7btntn_a0a0" />
+      <unit id="1675356390020082341" at="41,0,127,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KotlinClassCreator_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:384ad54a-d5dd-48c0-a167-03b12e66964e(jetbrains.mps.baseLanguage.kotlinRefs.editor)/1675356390020514468">
@@ -1593,11 +1593,11 @@
     </file>
     <file name="KtFunctionCallTypeArguments_Component.java">
       <node id="5494632093657646094" at="15,47,16,35" concept="8" />
-      <node id="5494632093657646094" at="18,79,19,106" concept="8" />
+      <node id="5494632093657646094" at="18,79,19,104" concept="8" />
       <node id="5494632093657646094" at="18,0,21,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="5494632093657646094" at="14,0,18,0" concept="6" trace="getContextHints#()Ljava/util/Collection;" />
       <scope id="5494632093657646094" at="15,47,16,35" />
-      <scope id="5494632093657646094" at="18,79,19,106" />
+      <scope id="5494632093657646094" at="18,79,19,104" />
       <scope id="5494632093657646094" at="18,0,21,0">
         <var name="editorContext" id="5494632093657646094" />
         <var name="node" id="5494632093657646094" />
@@ -1605,8 +1605,8 @@
       <scope id="5494632093657646094" at="14,0,18,0" />
       <unit id="5494632093657646094" at="13,0,22,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KtFunctionCallTypeArguments_Component" />
     </file>
-    <file name="KtFunctionCallTypeArguments_Component_ComponentBuilder_a.java">
-      <node id="5494632093657646094" at="39,120,40,19" concept="13" />
+    <file name="KtFunctionCallTypeArguments_Component_ComponentBuilder.java">
+      <node id="5494632093657646094" at="39,118,40,19" concept="13" />
       <node id="5494632093657646094" at="40,19,41,18" concept="2" />
       <node id="5494632093657646094" at="46,26,47,18" concept="8" />
       <node id="5494632093657646094" at="50,39,51,32" concept="8" />
@@ -1701,7 +1701,7 @@
       <node id="4972241301747186402" at="65,0,68,0" concept="6" trace="nodeCondition0#()Z" />
       <node id="5494632093657646094" at="109,0,112,0" concept="6" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="5494632093657646094" at="112,0,115,0" concept="6" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
-      <node id="5494632093657646094" at="39,0,43,0" concept="1" trace="KtFunctionCallTypeArguments_Component_ComponentBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="5494632093657646094" at="39,0,43,0" concept="1" trace="KtFunctionCallTypeArguments_Component_ComponentBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="5494632093657646094" at="100,0,104,0" concept="1" trace="typeArgumentListHandler_ar4y6l_b0a#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="5494632093657646094" at="105,0,109,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="5494632093657646094" at="138,97,142,9" concept="5" />
@@ -1732,7 +1732,7 @@
       <scope id="5494632093657646094" at="109,40,110,37" />
       <scope id="5494632093657646094" at="112,48,113,30" />
       <scope id="5494632093657646094" at="130,17,131,42" />
-      <scope id="5494632093657646094" at="39,120,41,18" />
+      <scope id="5494632093657646094" at="39,118,41,18" />
       <scope id="5494632093657646094" at="100,87,102,25" />
       <scope id="5494632093657646094" at="139,122,141,146" />
       <scope id="5494632093657646094" at="145,34,147,142" />
@@ -1811,10 +1811,10 @@
         <var name="elementNode" id="5494632093657646094" />
         <var name="isEmptyCell" id="5494632093657646094" />
       </scope>
-      <unit id="5494632093657646094" at="199,0,202,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KtFunctionCallTypeArguments_Component_ComponentBuilder_a$LINKS" />
-      <unit id="5494632093657646094" at="203,0,206,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KtFunctionCallTypeArguments_Component_ComponentBuilder_a$CONCEPTS" />
-      <unit id="5494632093657646094" at="96,0,187,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KtFunctionCallTypeArguments_Component_ComponentBuilder_a$typeArgumentListHandler_ar4y6l_b0a" />
-      <unit id="5494632093657646094" at="35,0,207,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KtFunctionCallTypeArguments_Component_ComponentBuilder_a" />
+      <unit id="5494632093657646094" at="199,0,202,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KtFunctionCallTypeArguments_Component_ComponentBuilder$LINKS" />
+      <unit id="5494632093657646094" at="203,0,206,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KtFunctionCallTypeArguments_Component_ComponentBuilder$CONCEPTS" />
+      <unit id="5494632093657646094" at="96,0,187,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KtFunctionCallTypeArguments_Component_ComponentBuilder$typeArgumentListHandler_ar4y6l_b0a" />
+      <unit id="5494632093657646094" at="35,0,207,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KtFunctionCallTypeArguments_Component_ComponentBuilder" />
     </file>
   </root>
   <root nodeRef="r:384ad54a-d5dd-48c0-a167-03b12e66964e(jetbrains.mps.baseLanguage.kotlinRefs.editor)/5494632093657659858">
@@ -1824,11 +1824,11 @@
     </file>
     <file name="KtFunctionCallArguments_Component.java">
       <node id="5494632093657659858" at="15,47,16,35" concept="8" />
-      <node id="5494632093657659858" at="18,79,19,102" concept="8" />
+      <node id="5494632093657659858" at="18,79,19,100" concept="8" />
       <node id="5494632093657659858" at="18,0,21,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="5494632093657659858" at="14,0,18,0" concept="6" trace="getContextHints#()Ljava/util/Collection;" />
       <scope id="5494632093657659858" at="15,47,16,35" />
-      <scope id="5494632093657659858" at="18,79,19,102" />
+      <scope id="5494632093657659858" at="18,79,19,100" />
       <scope id="5494632093657659858" at="18,0,21,0">
         <var name="editorContext" id="5494632093657659858" />
         <var name="node" id="5494632093657659858" />
@@ -1836,8 +1836,8 @@
       <scope id="5494632093657659858" at="14,0,18,0" />
       <unit id="5494632093657659858" at="13,0,22,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KtFunctionCallArguments_Component" />
     </file>
-    <file name="KtFunctionCallArguments_Component_ComponentBuilder_a.java">
-      <node id="5494632093657659858" at="44,116,45,19" concept="13" />
+    <file name="KtFunctionCallArguments_Component_ComponentBuilder.java">
+      <node id="5494632093657659858" at="44,114,45,19" concept="13" />
       <node id="5494632093657659858" at="45,19,46,18" concept="2" />
       <node id="5494632093657659858" at="51,26,52,18" concept="8" />
       <node id="5494632093657659858" at="55,39,56,32" concept="8" />
@@ -1940,7 +1940,7 @@
       <node id="1225529606622" at="188,0,191,0" concept="6" trace="nodeCondition0#()Z" />
       <node id="5494632093657659858" at="199,40,202,5" concept="5" />
       <node id="1198681960152" at="206,36,209,5" concept="5" />
-      <node id="5494632093657659858" at="44,0,48,0" concept="1" trace="KtFunctionCallArguments_Component_ComponentBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="5494632093657659858" at="44,0,48,0" concept="1" trace="KtFunctionCallArguments_Component_ComponentBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="5494632093657659858" at="96,0,100,0" concept="1" trace="actualArgumentListHandler_jxmg4a_b0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="5494632093657659858" at="101,0,105,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="5494632093657659858" at="137,97,141,9" concept="5" />
@@ -1974,7 +1974,7 @@
       <scope id="1225529606623" at="188,36,189,141" />
       <scope id="5494632093657659858" at="200,27,201,90" />
       <scope id="1198681960153" at="207,71,208,19" />
-      <scope id="5494632093657659858" at="44,116,46,18" />
+      <scope id="5494632093657659858" at="44,114,46,18" />
       <scope id="5494632093657659858" at="96,88,98,25" />
       <scope id="5494632093657659858" at="138,122,140,146" />
       <scope id="5494632093657659858" at="144,34,146,142" />
@@ -2054,10 +2054,10 @@
         <var name="elementNode" id="5494632093657659858" />
         <var name="isEmptyCell" id="5494632093657659858" />
       </scope>
-      <unit id="5494632093657659858" at="213,0,217,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KtFunctionCallArguments_Component_ComponentBuilder_a$LINKS" />
-      <unit id="5494632093657659858" at="218,0,222,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KtFunctionCallArguments_Component_ComponentBuilder_a$CONCEPTS" />
-      <unit id="5494632093657659858" at="92,0,188,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KtFunctionCallArguments_Component_ComponentBuilder_a$actualArgumentListHandler_jxmg4a_b0" />
-      <unit id="5494632093657659858" at="40,0,223,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KtFunctionCallArguments_Component_ComponentBuilder_a" />
+      <unit id="5494632093657659858" at="213,0,217,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KtFunctionCallArguments_Component_ComponentBuilder$LINKS" />
+      <unit id="5494632093657659858" at="218,0,222,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KtFunctionCallArguments_Component_ComponentBuilder$CONCEPTS" />
+      <unit id="5494632093657659858" at="92,0,188,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KtFunctionCallArguments_Component_ComponentBuilder$actualArgumentListHandler_jxmg4a_b0" />
+      <unit id="5494632093657659858" at="40,0,223,0" name="jetbrains.mps.baseLanguage.kotlinRefs.editor.KtFunctionCallArguments_Component_ComponentBuilder" />
     </file>
   </root>
   <root nodeRef="r:384ad54a-d5dd-48c0-a167-03b12e66964e(jetbrains.mps.baseLanguage.kotlinRefs.editor)/5494632093663712512">

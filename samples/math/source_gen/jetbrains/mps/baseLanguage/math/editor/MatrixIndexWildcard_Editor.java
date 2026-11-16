@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class MatrixIndexWildcard_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new MatrixIndexWildcard_EditorBuilder_a(editorContext, node).createCell();
+    return new MatrixIndexWildcard_EditorBuilder(editorContext, node).createCell();
   }
 }

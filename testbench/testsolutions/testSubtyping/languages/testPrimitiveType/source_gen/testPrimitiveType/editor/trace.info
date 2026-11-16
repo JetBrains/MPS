@@ -18,17 +18,17 @@
   </root>
   <root nodeRef="r:2abc4c1d-3154-444a-a3cf-cdb6a262b101(testPrimitiveType.editor)/706089536801035960">
     <file name="TypeWithProperties_Editor.java">
-      <node id="706089536801035960" at="11,79,12,84" concept="7" />
+      <node id="706089536801035960" at="11,79,12,82" concept="7" />
       <node id="706089536801035960" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="706089536801035960" at="11,79,12,84" />
+      <scope id="706089536801035960" at="11,79,12,82" />
       <scope id="706089536801035960" at="11,0,14,0">
         <var name="editorContext" id="706089536801035960" />
         <var name="node" id="706089536801035960" />
       </scope>
       <unit id="706089536801035960" at="10,0,15,0" name="testPrimitiveType.editor.TypeWithProperties_Editor" />
     </file>
-    <file name="TypeWithProperties_EditorBuilder_a.java">
-      <node id="706089536801035960" at="48,98,49,19" concept="9" />
+    <file name="TypeWithProperties_EditorBuilder.java">
+      <node id="706089536801035960" at="48,96,49,19" concept="9" />
       <node id="706089536801035960" at="49,19,50,18" concept="2" />
       <node id="706089536801035960" at="55,26,56,18" concept="7" />
       <node id="706089536801035960" at="59,39,60,32" concept="7" />
@@ -192,7 +192,7 @@
       <node id="706089536801302468" at="264,0,267,0" concept="5" trace="nodeCondition2#()Z" />
       <node id="706089536801469045" at="312,0,315,0" concept="5" trace="handleAction#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/model/SModel;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="706089536801469045" at="315,0,318,0" concept="5" trace="getMatchingText#()Ljava/lang/String;" />
-      <node id="706089536801035960" at="48,0,52,0" concept="1" trace="TypeWithProperties_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="706089536801035960" at="48,0,52,0" concept="1" trace="TypeWithProperties_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="706089536801049191" at="81,0,85,0" concept="5" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="706089536801035960" at="53,0,58,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="706089536801035960" at="100,33,105,5" concept="4" />
@@ -256,7 +256,7 @@
       <scope id="706089536801049224" at="284,15,285,40" />
       <scope id="706089536801469045" at="312,88,313,63" />
       <scope id="706089536801469045" at="315,37,316,23" />
-      <scope id="706089536801035960" at="48,98,50,18" />
+      <scope id="706089536801035960" at="48,96,50,18" />
       <scope id="706089536801049191" at="81,42,83,22">
         <var name="editorCell" id="706089536801049191" />
       </scope>
@@ -413,15 +413,15 @@
       <scope id="706089536801049301" at="111,0,132,0" />
       <scope id="706089536801049335" at="189,0,210,0" />
       <scope id="706089536801049224" at="267,0,288,0" />
-      <unit id="706089536801035960" at="332,0,335,0" name="testPrimitiveType.editor.TypeWithProperties_EditorBuilder_a$CONCEPTS" />
-      <unit id="706089536801035960" at="326,0,331,0" name="testPrimitiveType.editor.TypeWithProperties_EditorBuilder_a$PROPS" />
-      <unit id="706089536801436718" at="145,38,152,9" name="testPrimitiveType.editor.TypeWithProperties_EditorBuilder_a$TypeWithProperties_generic_cellMenu_8yz4v0_a0a3a$1" />
-      <unit id="706089536801463444" at="223,38,230,9" name="testPrimitiveType.editor.TypeWithProperties_EditorBuilder_a$TypeWithProperties_generic_cellMenu_8yz4v0_a0a6a$1" />
-      <unit id="706089536801469045" at="301,38,308,9" name="testPrimitiveType.editor.TypeWithProperties_EditorBuilder_a$TypeWithProperties_generic_cellMenu_8yz4v0_a0a9a$1" />
-      <unit id="706089536801436718" at="139,0,163,0" name="testPrimitiveType.editor.TypeWithProperties_EditorBuilder_a$TypeWithProperties_generic_cellMenu_8yz4v0_a0a3a" />
-      <unit id="706089536801463444" at="217,0,241,0" name="testPrimitiveType.editor.TypeWithProperties_EditorBuilder_a$TypeWithProperties_generic_cellMenu_8yz4v0_a0a6a" />
-      <unit id="706089536801469045" at="295,0,319,0" name="testPrimitiveType.editor.TypeWithProperties_EditorBuilder_a$TypeWithProperties_generic_cellMenu_8yz4v0_a0a9a" />
-      <unit id="706089536801035960" at="44,0,336,0" name="testPrimitiveType.editor.TypeWithProperties_EditorBuilder_a" />
+      <unit id="706089536801035960" at="332,0,335,0" name="testPrimitiveType.editor.TypeWithProperties_EditorBuilder$CONCEPTS" />
+      <unit id="706089536801035960" at="326,0,331,0" name="testPrimitiveType.editor.TypeWithProperties_EditorBuilder$PROPS" />
+      <unit id="706089536801436718" at="145,38,152,9" name="testPrimitiveType.editor.TypeWithProperties_EditorBuilder$TypeWithProperties_generic_cellMenu_8yz4v0_a0a3a$1" />
+      <unit id="706089536801463444" at="223,38,230,9" name="testPrimitiveType.editor.TypeWithProperties_EditorBuilder$TypeWithProperties_generic_cellMenu_8yz4v0_a0a6a$1" />
+      <unit id="706089536801469045" at="301,38,308,9" name="testPrimitiveType.editor.TypeWithProperties_EditorBuilder$TypeWithProperties_generic_cellMenu_8yz4v0_a0a9a$1" />
+      <unit id="706089536801436718" at="139,0,163,0" name="testPrimitiveType.editor.TypeWithProperties_EditorBuilder$TypeWithProperties_generic_cellMenu_8yz4v0_a0a3a" />
+      <unit id="706089536801463444" at="217,0,241,0" name="testPrimitiveType.editor.TypeWithProperties_EditorBuilder$TypeWithProperties_generic_cellMenu_8yz4v0_a0a6a" />
+      <unit id="706089536801469045" at="295,0,319,0" name="testPrimitiveType.editor.TypeWithProperties_EditorBuilder$TypeWithProperties_generic_cellMenu_8yz4v0_a0a9a" />
+      <unit id="706089536801035960" at="44,0,336,0" name="testPrimitiveType.editor.TypeWithProperties_EditorBuilder" />
     </file>
   </root>
 </debug-info>

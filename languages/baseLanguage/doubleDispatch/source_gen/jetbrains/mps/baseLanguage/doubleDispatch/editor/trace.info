@@ -16,17 +16,17 @@
   </root>
   <root nodeRef="r:fc8d3ef4-4153-4861-a13a-e9c4b97a4b06(jetbrains.mps.baseLanguage.doubleDispatch.editor)/2403002034744698623">
     <file name="DispatchModifier_Editor.java">
-      <node id="2403002034744698623" at="11,79,12,82" concept="6" />
+      <node id="2403002034744698623" at="11,79,12,80" concept="6" />
       <node id="2403002034744698623" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="2403002034744698623" at="11,79,12,82" />
+      <scope id="2403002034744698623" at="11,79,12,80" />
       <scope id="2403002034744698623" at="11,0,14,0">
         <var name="editorContext" id="2403002034744698623" />
         <var name="node" id="2403002034744698623" />
       </scope>
       <unit id="2403002034744698623" at="10,0,15,0" name="jetbrains.mps.baseLanguage.doubleDispatch.editor.DispatchModifier_Editor" />
     </file>
-    <file name="DispatchModifier_EditorBuilder_a.java">
-      <node id="2403002034744698623" at="19,96,20,19" concept="8" />
+    <file name="DispatchModifier_EditorBuilder.java">
+      <node id="2403002034744698623" at="19,94,20,19" concept="8" />
       <node id="2403002034744698623" at="20,19,21,18" concept="1" />
       <node id="2403002034744698623" at="26,26,27,18" concept="6" />
       <node id="2403002034744698623" at="30,39,31,31" concept="6" />
@@ -40,13 +40,13 @@
       <node id="4448365440073934747" at="43,40,44,22" concept="6" />
       <node id="2403002034744698623" at="16,0,18,0" concept="2" trace="myNode" />
       <node id="2403002034744698623" at="30,0,33,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="2403002034744698623" at="19,0,23,0" concept="0" trace="DispatchModifier_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="2403002034744698623" at="19,0,23,0" concept="0" trace="DispatchModifier_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4448365440073934747" at="36,72,40,5" concept="3" />
       <node id="2403002034744698623" at="24,0,29,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="4448365440073934747" at="34,0,46,0" concept="4" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="2403002034744698623" at="26,26,27,18" />
       <scope id="2403002034744698623" at="30,39,31,31" />
-      <scope id="2403002034744698623" at="19,96,21,18" />
+      <scope id="2403002034744698623" at="19,94,21,18" />
       <scope id="4448365440073934747" at="37,26,39,30" />
       <scope id="2403002034744698623" at="30,0,33,0" />
       <scope id="2403002034744698623" at="19,0,23,0">
@@ -60,7 +60,7 @@
         <var name="style" id="4448365440073934747" />
       </scope>
       <scope id="4448365440073934747" at="34,0,46,0" />
-      <unit id="2403002034744698623" at="15,0,47,0" name="jetbrains.mps.baseLanguage.doubleDispatch.editor.DispatchModifier_EditorBuilder_a" />
+      <unit id="2403002034744698623" at="15,0,47,0" name="jetbrains.mps.baseLanguage.doubleDispatch.editor.DispatchModifier_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:fc8d3ef4-4153-4861-a13a-e9c4b97a4b06(jetbrains.mps.baseLanguage.doubleDispatch.editor)/8727913099382245291">

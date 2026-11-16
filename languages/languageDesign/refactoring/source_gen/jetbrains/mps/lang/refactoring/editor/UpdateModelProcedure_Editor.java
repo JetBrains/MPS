@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class UpdateModelProcedure_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new UpdateModelProcedure_EditorBuilder_a(editorContext, node).createCell();
+    return new UpdateModelProcedure_EditorBuilder(editorContext, node).createCell();
   }
 }

@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class DummyCommant_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new DummyCommant_EditorBuilder_a(editorContext, node).createCell();
+    return new DummyCommant_EditorBuilder(editorContext, node).createCell();
   }
 }

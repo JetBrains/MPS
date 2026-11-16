@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class OfTypeOperation_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new OfTypeOperation_EditorBuilder_a(editorContext, node).createCell();
+    return new OfTypeOperation_EditorBuilder(editorContext, node).createCell();
   }
 }

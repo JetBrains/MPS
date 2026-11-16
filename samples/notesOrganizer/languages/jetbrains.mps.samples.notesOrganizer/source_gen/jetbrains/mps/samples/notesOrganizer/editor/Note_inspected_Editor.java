@@ -18,9 +18,9 @@ public class Note_inspected_Editor extends DefaultNodeEditor {
     return myContextHints;
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new Note_inspected_EditorBuilder_a(editorContext, node).createCell();
+    return new Note_inspected_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new Note_inspected_InspectorBuilder_a(editorContext, node).createCell();
+    return new Note_inspected_InspectorBuilder(editorContext, node).createCell();
   }
 }

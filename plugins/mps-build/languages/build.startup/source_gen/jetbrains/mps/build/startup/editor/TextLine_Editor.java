@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class TextLine_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new TextLine_EditorBuilder_a(editorContext, node).createCell();
+    return new TextLine_EditorBuilder(editorContext, node).createCell();
   }
 }

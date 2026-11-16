@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class MapSrcListMacro_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new MapSrcListMacro_EditorBuilder_a(editorContext, node).createCell();
+    return new MapSrcListMacro_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new MapSrcListMacro_InspectorBuilder_a(editorContext, node).createCell();
+    return new MapSrcListMacro_InspectorBuilder(editorContext, node).createCell();
   }
 }

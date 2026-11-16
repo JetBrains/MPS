@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class AnonymousCellAnnotation_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new AnonymousCellAnnotation_EditorBuilder_a(editorContext, node).createCell();
+    return new AnonymousCellAnnotation_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new AnonymousCellAnnotation_InspectorBuilder_a(editorContext, node).createCell();
+    return new AnonymousCellAnnotation_InspectorBuilder(editorContext, node).createCell();
   }
 }

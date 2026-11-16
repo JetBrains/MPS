@@ -17,17 +17,17 @@
   </root>
   <root nodeRef="r:f08b1eba-d157-4242-b1d4-18f615d583e8(jetbrains.mps.samples.generator_demo.demoLang7.editor)/3618324829955893159">
     <file name="XMLDocument_Editor.java">
-      <node id="3618324829955893159" at="11,79,12,77" concept="6" />
+      <node id="3618324829955893159" at="11,79,12,75" concept="6" />
       <node id="3618324829955893159" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="3618324829955893159" at="11,79,12,77" />
+      <scope id="3618324829955893159" at="11,79,12,75" />
       <scope id="3618324829955893159" at="11,0,14,0">
         <var name="editorContext" id="3618324829955893159" />
         <var name="node" id="3618324829955893159" />
       </scope>
       <unit id="3618324829955893159" at="10,0,15,0" name="jetbrains.mps.samples.generator_demo.demoLang7.editor.XMLDocument_Editor" />
     </file>
-    <file name="XMLDocument_EditorBuilder_a.java">
-      <node id="3618324829955893159" at="33,91,34,19" concept="8" />
+    <file name="XMLDocument_EditorBuilder.java">
+      <node id="3618324829955893159" at="33,89,34,19" concept="8" />
       <node id="3618324829955893159" at="34,19,35,18" concept="1" />
       <node id="3618324829955893159" at="40,26,41,18" concept="6" />
       <node id="3618324829955893159" at="44,39,45,32" concept="6" />
@@ -86,7 +86,7 @@
       <node id="3618324829955893159" at="92,0,95,0" concept="4" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="3618324829955893159" at="95,0,98,0" concept="4" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="3618324829955893159" at="139,96,142,9" concept="3" />
-      <node id="3618324829955893159" at="33,0,37,0" concept="0" trace="XMLDocument_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="3618324829955893159" at="33,0,37,0" concept="0" trace="XMLDocument_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="3618324829955893159" at="83,0,87,0" concept="0" trace="elementListHandler_rkc9p_a1a#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="3618324829955893159" at="88,0,92,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="3618324829955893159" at="121,97,125,9" concept="3" />
@@ -112,7 +112,7 @@
       <scope id="3618324829955893159" at="95,48,96,33" />
       <scope id="3618324829955893159" at="113,17,114,42" />
       <scope id="3618324829955893159" at="140,34,141,91" />
-      <scope id="3618324829955893159" at="33,91,35,18" />
+      <scope id="3618324829955893159" at="33,89,35,18" />
       <scope id="3618324829955893159" at="83,81,85,25" />
       <scope id="3618324829955893159" at="122,122,124,146" />
       <scope id="3618324829955893159" at="128,34,130,142" />
@@ -169,10 +169,10 @@
         <var name="elementNode" id="3618324829955893159" />
         <var name="isEmptyCell" id="3618324829955893159" />
       </scope>
-      <unit id="3618324829955893159" at="147,0,150,0" name="jetbrains.mps.samples.generator_demo.demoLang7.editor.XMLDocument_EditorBuilder_a$LINKS" />
-      <unit id="3618324829955893159" at="151,0,154,0" name="jetbrains.mps.samples.generator_demo.demoLang7.editor.XMLDocument_EditorBuilder_a$CONCEPTS" />
-      <unit id="3618324829955893159" at="79,0,146,0" name="jetbrains.mps.samples.generator_demo.demoLang7.editor.XMLDocument_EditorBuilder_a$elementListHandler_rkc9p_a1a" />
-      <unit id="3618324829955893159" at="29,0,155,0" name="jetbrains.mps.samples.generator_demo.demoLang7.editor.XMLDocument_EditorBuilder_a" />
+      <unit id="3618324829955893159" at="147,0,150,0" name="jetbrains.mps.samples.generator_demo.demoLang7.editor.XMLDocument_EditorBuilder$LINKS" />
+      <unit id="3618324829955893159" at="151,0,154,0" name="jetbrains.mps.samples.generator_demo.demoLang7.editor.XMLDocument_EditorBuilder$CONCEPTS" />
+      <unit id="3618324829955893159" at="79,0,146,0" name="jetbrains.mps.samples.generator_demo.demoLang7.editor.XMLDocument_EditorBuilder$elementListHandler_rkc9p_a1a" />
+      <unit id="3618324829955893159" at="29,0,155,0" name="jetbrains.mps.samples.generator_demo.demoLang7.editor.XMLDocument_EditorBuilder" />
     </file>
   </root>
 </debug-info>

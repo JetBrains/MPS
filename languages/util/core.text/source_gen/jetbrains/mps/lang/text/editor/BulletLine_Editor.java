@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class BulletLine_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new BulletLine_EditorBuilder_a(editorContext, node).createCell();
+    return new BulletLine_EditorBuilder(editorContext, node).createCell();
   }
 }

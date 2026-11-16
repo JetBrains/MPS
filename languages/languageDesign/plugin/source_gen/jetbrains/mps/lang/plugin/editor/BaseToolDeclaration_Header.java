@@ -16,6 +16,6 @@ public class BaseToolDeclaration_Header implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new BaseToolDeclaration_Header_ComponentBuilder_a(editorContext, node).createCell();
+    return new BaseToolDeclaration_Header_ComponentBuilder(editorContext, node).createCell();
   }
 }

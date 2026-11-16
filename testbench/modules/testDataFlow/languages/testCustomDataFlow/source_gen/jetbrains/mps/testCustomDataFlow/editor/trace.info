@@ -15,17 +15,17 @@
   </root>
   <root nodeRef="r:e4c6ec9d-a3cb-4ee2-9378-5ea8b7302f79(jetbrains.mps.testCustomDataFlow.editor)/7078910619969046091">
     <file name="IntraProceduralSpecific_BuilderMode_Editor.java">
-      <node id="7078910619969046091" at="11,79,12,101" concept="6" />
+      <node id="7078910619969046091" at="11,79,12,99" concept="6" />
       <node id="7078910619969046091" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="7078910619969046091" at="11,79,12,101" />
+      <scope id="7078910619969046091" at="11,79,12,99" />
       <scope id="7078910619969046091" at="11,0,14,0">
         <var name="editorContext" id="7078910619969046091" />
         <var name="node" id="7078910619969046091" />
       </scope>
       <unit id="7078910619969046091" at="10,0,15,0" name="jetbrains.mps.testCustomDataFlow.editor.IntraProceduralSpecific_BuilderMode_Editor" />
     </file>
-    <file name="IntraProceduralSpecific_BuilderMode_EditorBuilder_a.java">
-      <node id="7078910619969046091" at="16,115,17,19" concept="7" />
+    <file name="IntraProceduralSpecific_BuilderMode_EditorBuilder.java">
+      <node id="7078910619969046091" at="16,113,17,19" concept="7" />
       <node id="7078910619969046091" at="17,19,18,18" concept="1" />
       <node id="7078910619969046091" at="23,26,24,18" concept="6" />
       <node id="7078910619969046091" at="27,39,28,31" concept="6" />
@@ -36,13 +36,13 @@
       <node id="7966224008969064153" at="37,5,38,22" concept="6" />
       <node id="7078910619969046091" at="13,0,15,0" concept="2" trace="myNode" />
       <node id="7078910619969046091" at="27,0,30,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="7078910619969046091" at="16,0,20,0" concept="0" trace="IntraProceduralSpecific_BuilderMode_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="7078910619969046091" at="16,0,20,0" concept="0" trace="IntraProceduralSpecific_BuilderMode_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="7966224008969064153" at="33,72,37,5" concept="3" />
       <node id="7078910619969046091" at="21,0,26,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="7966224008969064153" at="31,0,40,0" concept="4" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="7078910619969046091" at="23,26,24,18" />
       <scope id="7078910619969046091" at="27,39,28,31" />
-      <scope id="7078910619969046091" at="16,115,18,18" />
+      <scope id="7078910619969046091" at="16,113,18,18" />
       <scope id="7966224008969064153" at="34,26,36,30" />
       <scope id="7078910619969046091" at="27,0,30,0" />
       <scope id="7078910619969046091" at="16,0,20,0">
@@ -55,7 +55,7 @@
         <var name="editorCell" id="7966224008969064153" />
       </scope>
       <scope id="7966224008969064153" at="31,0,40,0" />
-      <unit id="7078910619969046091" at="12,0,41,0" name="jetbrains.mps.testCustomDataFlow.editor.IntraProceduralSpecific_BuilderMode_EditorBuilder_a" />
+      <unit id="7078910619969046091" at="12,0,41,0" name="jetbrains.mps.testCustomDataFlow.editor.IntraProceduralSpecific_BuilderMode_EditorBuilder" />
     </file>
   </root>
 </debug-info>

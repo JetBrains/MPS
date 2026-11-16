@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class InlineRegexpExpression_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new InlineRegexpExpression_EditorBuilder_a(editorContext, node).createCell();
+    return new InlineRegexpExpression_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new InlineRegexpExpression_InspectorBuilder_a(editorContext, node).createCell();
+    return new InlineRegexpExpression_InspectorBuilder(editorContext, node).createCell();
   }
 }

@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ActionGroupRef_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ActionGroupRef_EditorBuilder_a(editorContext, node).createCell();
+    return new ActionGroupRef_EditorBuilder(editorContext, node).createCell();
   }
 }

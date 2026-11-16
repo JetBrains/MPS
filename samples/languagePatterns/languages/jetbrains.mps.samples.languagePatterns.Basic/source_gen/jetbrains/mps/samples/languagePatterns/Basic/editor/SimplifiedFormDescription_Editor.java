@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class SimplifiedFormDescription_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new SimplifiedFormDescription_EditorBuilder_a(editorContext, node).createCell();
+    return new SimplifiedFormDescription_EditorBuilder(editorContext, node).createCell();
   }
 }

@@ -331,17 +331,17 @@
   </root>
   <root nodeRef="r:87dca7c3-9c03-4bb2-90a6-6d5e60f0974a(jetbrains.mps.baseLanguage.checkedDots.editor)/4079382982702596668">
     <file name="CheckedDotExpression_Editor.java">
-      <node id="4079382982702596668" at="11,79,12,86" concept="8" />
+      <node id="4079382982702596668" at="11,79,12,84" concept="8" />
       <node id="4079382982702596668" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4079382982702596668" at="11,79,12,86" />
+      <scope id="4079382982702596668" at="11,79,12,84" />
       <scope id="4079382982702596668" at="11,0,14,0">
         <var name="editorContext" id="4079382982702596668" />
         <var name="node" id="4079382982702596668" />
       </scope>
       <unit id="4079382982702596668" at="10,0,15,0" name="jetbrains.mps.baseLanguage.checkedDots.editor.CheckedDotExpression_Editor" />
     </file>
-    <file name="CheckedDotExpression_EditorBuilder_a.java">
-      <node id="4079382982702596668" at="34,100,35,19" concept="13" />
+    <file name="CheckedDotExpression_EditorBuilder.java">
+      <node id="4079382982702596668" at="34,98,35,19" concept="13" />
       <node id="4079382982702596668" at="35,19,36,18" concept="2" />
       <node id="4079382982702596668" at="41,26,42,18" concept="8" />
       <node id="4079382982702596668" at="45,39,46,32" concept="8" />
@@ -426,7 +426,7 @@
       <node id="4079382982702596668" at="165,7,168,7" concept="5" />
       <node id="4079382982702596668" at="168,7,171,7" concept="5" />
       <node id="4079382982702596668" at="188,0,191,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="4079382982702596668" at="34,0,38,0" concept="1" trace="CheckedDotExpression_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4079382982702596668" at="34,0,38,0" concept="1" trace="CheckedDotExpression_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4079382982702596668" at="59,0,63,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4079382982702596668" at="67,0,71,0" concept="1" trace="operandSingleRoleHandler_6ihim1_a0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="4079382982702596668" at="133,0,137,0" concept="6" trace="createRefNode_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -459,7 +459,7 @@
       <scope id="4079382982702596668" at="169,17,170,98" />
       <scope id="4079382982702596668" at="184,17,185,42" />
       <scope id="4079382982702596668" at="188,40,189,30" />
-      <scope id="4079382982702596668" at="34,100,36,18" />
+      <scope id="4079382982702596668" at="34,98,36,18" />
       <scope id="4079382982702596668" at="59,40,61,33">
         <var name="provider" id="4079382982702596668" />
       </scope>
@@ -535,11 +535,11 @@
       <scope id="4079382982702596668" at="114,0,127,0" />
       <scope id="4079382982702596668" at="96,0,110,0" />
       <scope id="4079382982702596668" at="174,0,188,0" />
-      <unit id="4079382982702596668" at="198,0,201,0" name="jetbrains.mps.baseLanguage.checkedDots.editor.CheckedDotExpression_EditorBuilder_a$PROPS" />
-      <unit id="4079382982702596668" at="193,0,197,0" name="jetbrains.mps.baseLanguage.checkedDots.editor.CheckedDotExpression_EditorBuilder_a$LINKS" />
-      <unit id="4079382982702596668" at="63,0,114,0" name="jetbrains.mps.baseLanguage.checkedDots.editor.CheckedDotExpression_EditorBuilder_a$operandSingleRoleHandler_6ihim1_a0" />
-      <unit id="4079382982702596668" at="137,0,192,0" name="jetbrains.mps.baseLanguage.checkedDots.editor.CheckedDotExpression_EditorBuilder_a$operationSingleRoleHandler_6ihim1_c0" />
-      <unit id="4079382982702596668" at="30,0,202,0" name="jetbrains.mps.baseLanguage.checkedDots.editor.CheckedDotExpression_EditorBuilder_a" />
+      <unit id="4079382982702596668" at="198,0,201,0" name="jetbrains.mps.baseLanguage.checkedDots.editor.CheckedDotExpression_EditorBuilder$PROPS" />
+      <unit id="4079382982702596668" at="193,0,197,0" name="jetbrains.mps.baseLanguage.checkedDots.editor.CheckedDotExpression_EditorBuilder$LINKS" />
+      <unit id="4079382982702596668" at="63,0,114,0" name="jetbrains.mps.baseLanguage.checkedDots.editor.CheckedDotExpression_EditorBuilder$operandSingleRoleHandler_6ihim1_a0" />
+      <unit id="4079382982702596668" at="137,0,192,0" name="jetbrains.mps.baseLanguage.checkedDots.editor.CheckedDotExpression_EditorBuilder$operationSingleRoleHandler_6ihim1_c0" />
+      <unit id="4079382982702596668" at="30,0,202,0" name="jetbrains.mps.baseLanguage.checkedDots.editor.CheckedDotExpression_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:87dca7c3-9c03-4bb2-90a6-6d5e60f0974a(jetbrains.mps.baseLanguage.checkedDots.editor)/5314141825909190989">

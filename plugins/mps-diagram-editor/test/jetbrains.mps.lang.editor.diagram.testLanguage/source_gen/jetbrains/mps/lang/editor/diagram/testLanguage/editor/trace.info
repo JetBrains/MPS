@@ -24,17 +24,17 @@
   </root>
   <root nodeRef="r:38933db7-8021-49f1-94e7-c8fed36889bf(jetbrains.mps.lang.editor.diagram.testLanguage.editor)/2278461409091581692">
     <file name="NodeWithPortQueries_Editor.java">
-      <node id="2278461409091581692" at="11,79,12,85" concept="8" />
+      <node id="2278461409091581692" at="11,79,12,83" concept="8" />
       <node id="2278461409091581692" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="2278461409091581692" at="11,79,12,85" />
+      <scope id="2278461409091581692" at="11,79,12,83" />
       <scope id="2278461409091581692" at="11,0,14,0">
         <var name="editorContext" id="2278461409091581692" />
         <var name="node" id="2278461409091581692" />
       </scope>
       <unit id="2278461409091581692" at="10,0,15,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_Editor" />
     </file>
-    <file name="NodeWithPortQueries_EditorBuilder_a.java">
-      <node id="2278461409091581692" at="51,99,52,19" concept="11" />
+    <file name="NodeWithPortQueries_EditorBuilder.java">
+      <node id="2278461409091581692" at="51,97,52,19" concept="11" />
       <node id="2278461409091581692" at="52,19,53,18" concept="2" />
       <node id="2278461409091581692" at="58,26,59,18" concept="8" />
       <node id="2278461409091581692" at="62,39,63,33" concept="8" />
@@ -199,7 +199,7 @@
       <node id="2278461409091581692" at="325,61,328,19" concept="5" />
       <node id="2278461409091581692" at="329,132,332,19" concept="5" />
       <node id="2278461409091581692" at="333,139,336,19" concept="5" />
-      <node id="2278461409091581692" at="51,0,55,0" concept="1" trace="NodeWithPortQueries_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="2278461409091581692" at="51,0,55,0" concept="1" trace="NodeWithPortQueries_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="2278461409091581692" at="216,174,220,22" concept="2" />
       <node id="2278461409091581692" at="56,0,61,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="2278461409091581692" at="161,0,166,0" concept="6" trace="set#(Ljava/lang/Boolean;)V" />
@@ -278,7 +278,7 @@
       <scope id="2278461409091581692" at="326,44,327,27" />
       <scope id="2278461409091581692" at="330,54,331,27" />
       <scope id="2278461409091581692" at="334,42,335,27" />
-      <scope id="2278461409091581692" at="51,99,53,18" />
+      <scope id="2278461409091581692" at="51,97,53,18" />
       <scope id="2278461409091581692" at="217,107,219,89" />
       <scope id="2278461409091581692" at="62,0,65,0" />
       <scope id="2278461409091582129" at="85,0,88,0" />
@@ -431,43 +431,43 @@
       </scope>
       <scope id="2278461409091581692" at="146,58,265,8" />
       <scope id="2278461409091581692" at="146,0,267,0" />
-      <unit id="2278461409091581692" at="361,0,365,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder_a$LINKS" />
-      <unit id="2278461409091581692" at="160,89,166,19" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder_a$BlockCellImpl_tny8cn_a$6$1$1$1" />
-      <unit id="2278461409091581692" at="189,89,195,19" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder_a$BlockCellImpl_tny8cn_a$6$2$1$1" />
-      <unit id="2278461409091581692" at="231,80,237,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder_a$BlockCellImpl_tny8cn_a$6$4" />
-      <unit id="2278461409091582129" at="84,38,91,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder_a$BlockCellImpl_tny8cn_a$1" />
-      <unit id="2278461409091582131" at="94,38,101,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder_a$BlockCellImpl_tny8cn_a$2" />
-      <unit id="2278461409091582133" at="104,38,111,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder_a$BlockCellImpl_tny8cn_a$3" />
-      <unit id="2278461409091582135" at="114,38,121,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder_a$BlockCellImpl_tny8cn_a$4" />
-      <unit id="2278461409091582137" at="124,38,131,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder_a$BlockCellImpl_tny8cn_a$5" />
-      <unit id="2278461409091581692" at="352,0,360,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder_a$PROPS" />
-      <unit id="2278461409091581692" at="252,79,263,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder_a$BlockCellImpl_tny8cn_a$6$6" />
-      <unit id="2278461409091581692" at="238,74,251,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder_a$BlockCellImpl_tny8cn_a$6$5" />
-      <unit id="2278461409091581692" at="153,25,169,15" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder_a$BlockCellImpl_tny8cn_a$6$1$1" />
-      <unit id="2278461409091581692" at="211,25,227,15" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder_a$BlockCellImpl_tny8cn_a$6$3$1" />
-      <unit id="2278461409091581692" at="181,25,198,15" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder_a$BlockCellImpl_tny8cn_a$6$2$1" />
-      <unit id="2278461409091581692" at="209,134,229,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder_a$BlockCellImpl_tny8cn_a$6$3" />
-      <unit id="2278461409091581692" at="296,25,317,15" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder_a$BlockCellImpl_tny8cn_a$7$1$1" />
-      <unit id="2278461409091581692" at="322,25,343,15" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder_a$BlockCellImpl_tny8cn_a$7$2$1" />
-      <unit id="2278461409091581692" at="294,131,319,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder_a$BlockCellImpl_tny8cn_a$7$1" />
-      <unit id="2278461409091581692" at="320,133,345,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder_a$BlockCellImpl_tny8cn_a$7$2" />
-      <unit id="2278461409091581692" at="151,115,178,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder_a$BlockCellImpl_tny8cn_a$6$1" />
-      <unit id="2278461409091581692" at="179,117,207,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder_a$BlockCellImpl_tny8cn_a$6$2" />
-      <unit id="2278461409091581692" at="268,17,348,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder_a$BlockCellImpl_tny8cn_a$7" />
-      <unit id="2278461409091581692" at="147,17,265,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder_a$BlockCellImpl_tny8cn_a$6" />
-      <unit id="2278461409091581692" at="74,0,351,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder_a$BlockCellImpl_tny8cn_a" />
-      <unit id="2278461409091581692" at="47,0,366,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder_a" />
+      <unit id="2278461409091581692" at="361,0,365,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder$LINKS" />
+      <unit id="2278461409091581692" at="160,89,166,19" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder$BlockCellImpl_tny8cn_a$6$1$1$1" />
+      <unit id="2278461409091581692" at="189,89,195,19" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder$BlockCellImpl_tny8cn_a$6$2$1$1" />
+      <unit id="2278461409091581692" at="231,80,237,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder$BlockCellImpl_tny8cn_a$6$4" />
+      <unit id="2278461409091582129" at="84,38,91,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder$BlockCellImpl_tny8cn_a$1" />
+      <unit id="2278461409091582131" at="94,38,101,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder$BlockCellImpl_tny8cn_a$2" />
+      <unit id="2278461409091582133" at="104,38,111,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder$BlockCellImpl_tny8cn_a$3" />
+      <unit id="2278461409091582135" at="114,38,121,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder$BlockCellImpl_tny8cn_a$4" />
+      <unit id="2278461409091582137" at="124,38,131,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder$BlockCellImpl_tny8cn_a$5" />
+      <unit id="2278461409091581692" at="352,0,360,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder$PROPS" />
+      <unit id="2278461409091581692" at="252,79,263,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder$BlockCellImpl_tny8cn_a$6$6" />
+      <unit id="2278461409091581692" at="238,74,251,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder$BlockCellImpl_tny8cn_a$6$5" />
+      <unit id="2278461409091581692" at="153,25,169,15" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder$BlockCellImpl_tny8cn_a$6$1$1" />
+      <unit id="2278461409091581692" at="211,25,227,15" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder$BlockCellImpl_tny8cn_a$6$3$1" />
+      <unit id="2278461409091581692" at="181,25,198,15" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder$BlockCellImpl_tny8cn_a$6$2$1" />
+      <unit id="2278461409091581692" at="209,134,229,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder$BlockCellImpl_tny8cn_a$6$3" />
+      <unit id="2278461409091581692" at="296,25,317,15" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder$BlockCellImpl_tny8cn_a$7$1$1" />
+      <unit id="2278461409091581692" at="322,25,343,15" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder$BlockCellImpl_tny8cn_a$7$2$1" />
+      <unit id="2278461409091581692" at="294,131,319,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder$BlockCellImpl_tny8cn_a$7$1" />
+      <unit id="2278461409091581692" at="320,133,345,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder$BlockCellImpl_tny8cn_a$7$2" />
+      <unit id="2278461409091581692" at="151,115,178,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder$BlockCellImpl_tny8cn_a$6$1" />
+      <unit id="2278461409091581692" at="179,117,207,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder$BlockCellImpl_tny8cn_a$6$2" />
+      <unit id="2278461409091581692" at="268,17,348,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder$BlockCellImpl_tny8cn_a$7" />
+      <unit id="2278461409091581692" at="147,17,265,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder$BlockCellImpl_tny8cn_a$6" />
+      <unit id="2278461409091581692" at="74,0,351,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder$BlockCellImpl_tny8cn_a" />
+      <unit id="2278461409091581692" at="47,0,366,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:38933db7-8021-49f1-94e7-c8fed36889bf(jetbrains.mps.lang.editor.diagram.testLanguage.editor)/2278461409091838986">
     <file name="NodeWithPortQueries_DiagramTestTextual_Editor.java">
       <node id="2278461409091838986" at="14,0,15,0" concept="3" trace="myContextHints" />
       <node id="2278461409091838986" at="17,47,18,26" concept="8" />
-      <node id="2278461409091838986" at="20,79,21,104" concept="8" />
+      <node id="2278461409091838986" at="20,79,21,102" concept="8" />
       <node id="2278461409091838986" at="20,0,23,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="2278461409091838986" at="15,0,20,0" concept="6" trace="getContextHints#()Ljava/util/Collection;" />
       <scope id="2278461409091838986" at="17,47,18,26" />
-      <scope id="2278461409091838986" at="20,79,21,104" />
+      <scope id="2278461409091838986" at="20,79,21,102" />
       <scope id="2278461409091838986" at="20,0,23,0">
         <var name="editorContext" id="2278461409091838986" />
         <var name="node" id="2278461409091838986" />
@@ -475,8 +475,8 @@
       <scope id="2278461409091838986" at="15,0,20,0" />
       <unit id="2278461409091838986" at="13,0,24,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_DiagramTestTextual_Editor" />
     </file>
-    <file name="NodeWithPortQueries_DiagramTestTextual_EditorBuilder_a.java">
-      <node id="2278461409091838986" at="45,118,46,19" concept="11" />
+    <file name="NodeWithPortQueries_DiagramTestTextual_EditorBuilder.java">
+      <node id="2278461409091838986" at="45,116,46,19" concept="11" />
       <node id="2278461409091838986" at="46,19,47,18" concept="2" />
       <node id="2278461409091838986" at="52,26,53,18" concept="8" />
       <node id="2278461409091838986" at="56,39,57,32" concept="8" />
@@ -803,7 +803,7 @@
       <node id="2278461409091838986" at="467,0,470,0" concept="6" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="2278461409091838986" at="470,0,473,0" concept="6" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="2278461409091838986" at="514,96,517,9" concept="5" />
-      <node id="2278461409091838986" at="45,0,49,0" concept="1" trace="NodeWithPortQueries_DiagramTestTextual_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="2278461409091838986" at="45,0,49,0" concept="1" trace="NodeWithPortQueries_DiagramTestTextual_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="2278461409091838986" at="354,0,358,0" concept="1" trace="inputsListHandler_com5ge_s2a#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="2278461409091838986" at="359,0,363,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="2278461409091838986" at="392,97,396,9" concept="5" />
@@ -886,7 +886,7 @@
       <scope id="2278461409091838986" at="470,48,471,36" />
       <scope id="2278461409091838986" at="488,17,489,42" />
       <scope id="2278461409091838986" at="515,34,516,91" />
-      <scope id="2278461409091838986" at="45,118,47,18" />
+      <scope id="2278461409091838986" at="45,116,47,18" />
       <scope id="2278461409091839000" at="148,74,150,145">
         <var name="manager" id="2278461409091839000" />
       </scope>
@@ -1125,27 +1125,27 @@
         <var name="style" id="2278461409091838986" />
       </scope>
       <scope id="2278461409091838986" at="87,0,118,0" />
-      <unit id="2278461409091838986" at="545,0,549,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_DiagramTestTextual_EditorBuilder_a$LINKS" />
-      <unit id="2278461409091838986" at="539,0,544,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_DiagramTestTextual_EditorBuilder_a$CONCEPTS" />
-      <unit id="2278461409091838986" at="531,0,538,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_DiagramTestTextual_EditorBuilder_a$PROPS" />
-      <unit id="2278461409091838986" at="350,0,417,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_DiagramTestTextual_EditorBuilder_a$inputsListHandler_com5ge_s2a" />
-      <unit id="2278461409091838986" at="454,0,521,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_DiagramTestTextual_EditorBuilder_a$outputsListHandler_com5ge_w2a" />
-      <unit id="2278461409091838986" at="41,0,550,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_DiagramTestTextual_EditorBuilder_a" />
+      <unit id="2278461409091838986" at="545,0,549,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_DiagramTestTextual_EditorBuilder$LINKS" />
+      <unit id="2278461409091838986" at="539,0,544,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_DiagramTestTextual_EditorBuilder$CONCEPTS" />
+      <unit id="2278461409091838986" at="531,0,538,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_DiagramTestTextual_EditorBuilder$PROPS" />
+      <unit id="2278461409091838986" at="350,0,417,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_DiagramTestTextual_EditorBuilder$inputsListHandler_com5ge_s2a" />
+      <unit id="2278461409091838986" at="454,0,521,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_DiagramTestTextual_EditorBuilder$outputsListHandler_com5ge_w2a" />
+      <unit id="2278461409091838986" at="41,0,550,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPortQueries_DiagramTestTextual_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:38933db7-8021-49f1-94e7-c8fed36889bf(jetbrains.mps.lang.editor.diagram.testLanguage.editor)/511002117671748040">
     <file name="Diagram1_Editor.java">
-      <node id="511002117671748040" at="11,79,12,74" concept="8" />
+      <node id="511002117671748040" at="11,79,12,72" concept="8" />
       <node id="511002117671748040" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="511002117671748040" at="11,79,12,74" />
+      <scope id="511002117671748040" at="11,79,12,72" />
       <scope id="511002117671748040" at="11,0,14,0">
         <var name="editorContext" id="511002117671748040" />
         <var name="node" id="511002117671748040" />
       </scope>
       <unit id="511002117671748040" at="10,0,15,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram1_Editor" />
     </file>
-    <file name="Diagram1_EditorBuilder_a.java">
-      <node id="511002117671748040" at="45,88,46,19" concept="11" />
+    <file name="Diagram1_EditorBuilder.java">
+      <node id="511002117671748040" at="45,86,46,19" concept="11" />
       <node id="511002117671748040" at="46,19,47,18" concept="2" />
       <node id="511002117671748040" at="52,26,53,18" concept="8" />
       <node id="511002117671748040" at="56,39,57,32" concept="8" />
@@ -1205,7 +1205,7 @@
       <node id="511002117671748040" at="114,0,117,0" concept="6" trace="createMapper#(Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/jetpad/mapper/Mapper;" />
       <node id="511002117671748040" at="149,0,152,0" concept="6" trace="createMapper#(Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/jetpad/mapper/Mapper;" />
       <node id="511002117671748040" at="154,0,157,0" concept="6" trace="createMapper#(Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/jetpad/mapper/Mapper;" />
-      <node id="511002117671748040" at="45,0,49,0" concept="1" trace="Diagram1_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="511002117671748040" at="45,0,49,0" concept="1" trace="Diagram1_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="511002117671748040" at="88,33,92,12" concept="2" />
       <node id="511002117671748040" at="96,0,100,0" concept="6" trace="createPaletteBlockSubstituteInfoPartExts#()[Ljetbrains/mps/nodeEditor/cellMenu/SubstituteInfoPartExt;" />
       <node id="511002117671748040" at="170,0,174,0" concept="6" trace="createDiagramView#()Ljetbrains/jetpad/projectional/diagram/view/DiagramView;" />
@@ -1245,7 +1245,7 @@
       <scope id="511002117671748040" at="133,83,134,56" />
       <scope id="511002117671748040" at="149,85,150,85" />
       <scope id="511002117671748040" at="154,85,155,89" />
-      <scope id="511002117671748040" at="45,88,47,18" />
+      <scope id="511002117671748040" at="45,86,47,18" />
       <scope id="4633202057941642082" at="90,0,92,0">
         <var name="node" id="4633202057941642082" />
         <var name="x" id="4633202057941642082" />
@@ -1329,34 +1329,34 @@
       <scope id="511002117671748040" at="103,0,143,0">
         <var name="node" id="511002117671748040" />
       </scope>
-      <unit id="4633202057941642082" at="89,217,92,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram1_EditorBuilder_a$DiagramCellImpl_yfdxtz_a0a$1" />
-      <unit id="511002117671748040" at="176,0,179,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram1_EditorBuilder_a$CONCEPTS" />
-      <unit id="511002117671748040" at="180,0,183,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram1_EditorBuilder_a$LINKS" />
-      <unit id="511002117671748040" at="108,114,112,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram1_EditorBuilder_a$DiagramCellImpl_yfdxtz_a0a$2$1" />
-      <unit id="511002117671748040" at="113,109,117,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram1_EditorBuilder_a$DiagramCellImpl_yfdxtz_a0a$2$2" />
-      <unit id="511002117671748040" at="148,123,152,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram1_EditorBuilder_a$DiagramCellImpl_yfdxtz_a0a$3$1" />
-      <unit id="511002117671748040" at="153,132,157,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram1_EditorBuilder_a$DiagramCellImpl_yfdxtz_a0a$3$2" />
-      <unit id="511002117671748040" at="118,83,126,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram1_EditorBuilder_a$DiagramCellImpl_yfdxtz_a0a$2$3" />
-      <unit id="511002117671748040" at="127,74,138,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram1_EditorBuilder_a$DiagramCellImpl_yfdxtz_a0a$2$4" />
-      <unit id="511002117671748040" at="144,17,159,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram1_EditorBuilder_a$DiagramCellImpl_yfdxtz_a0a$3" />
-      <unit id="511002117671748040" at="104,17,141,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram1_EditorBuilder_a$DiagramCellImpl_yfdxtz_a0a$2" />
-      <unit id="511002117671748040" at="86,0,175,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram1_EditorBuilder_a$DiagramCellImpl_yfdxtz_a0a" />
-      <unit id="511002117671748040" at="41,0,184,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram1_EditorBuilder_a" />
+      <unit id="4633202057941642082" at="89,217,92,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram1_EditorBuilder$DiagramCellImpl_yfdxtz_a0a$1" />
+      <unit id="511002117671748040" at="176,0,179,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram1_EditorBuilder$CONCEPTS" />
+      <unit id="511002117671748040" at="180,0,183,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram1_EditorBuilder$LINKS" />
+      <unit id="511002117671748040" at="108,114,112,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram1_EditorBuilder$DiagramCellImpl_yfdxtz_a0a$2$1" />
+      <unit id="511002117671748040" at="113,109,117,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram1_EditorBuilder$DiagramCellImpl_yfdxtz_a0a$2$2" />
+      <unit id="511002117671748040" at="148,123,152,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram1_EditorBuilder$DiagramCellImpl_yfdxtz_a0a$3$1" />
+      <unit id="511002117671748040" at="153,132,157,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram1_EditorBuilder$DiagramCellImpl_yfdxtz_a0a$3$2" />
+      <unit id="511002117671748040" at="118,83,126,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram1_EditorBuilder$DiagramCellImpl_yfdxtz_a0a$2$3" />
+      <unit id="511002117671748040" at="127,74,138,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram1_EditorBuilder$DiagramCellImpl_yfdxtz_a0a$2$4" />
+      <unit id="511002117671748040" at="144,17,159,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram1_EditorBuilder$DiagramCellImpl_yfdxtz_a0a$3" />
+      <unit id="511002117671748040" at="104,17,141,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram1_EditorBuilder$DiagramCellImpl_yfdxtz_a0a$2" />
+      <unit id="511002117671748040" at="86,0,175,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram1_EditorBuilder$DiagramCellImpl_yfdxtz_a0a" />
+      <unit id="511002117671748040" at="41,0,184,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram1_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:38933db7-8021-49f1-94e7-c8fed36889bf(jetbrains.mps.lang.editor.diagram.testLanguage.editor)/511002117671797278">
     <file name="RectangleNode_Editor.java">
-      <node id="511002117671797278" at="11,79,12,79" concept="8" />
+      <node id="511002117671797278" at="11,79,12,77" concept="8" />
       <node id="511002117671797278" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="511002117671797278" at="11,79,12,79" />
+      <scope id="511002117671797278" at="11,79,12,77" />
       <scope id="511002117671797278" at="11,0,14,0">
         <var name="editorContext" id="511002117671797278" />
         <var name="node" id="511002117671797278" />
       </scope>
       <unit id="511002117671797278" at="10,0,15,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.RectangleNode_Editor" />
     </file>
-    <file name="RectangleNode_EditorBuilder_a.java">
-      <node id="511002117671797278" at="29,93,30,19" concept="11" />
+    <file name="RectangleNode_EditorBuilder.java">
+      <node id="511002117671797278" at="29,91,30,19" concept="11" />
       <node id="511002117671797278" at="30,19,31,18" concept="2" />
       <node id="511002117671797278" at="36,26,37,18" concept="8" />
       <node id="511002117671797278" at="40,39,41,33" concept="8" />
@@ -1401,7 +1401,7 @@
       <node id="511002117671797278" at="100,57,103,15" concept="5" />
       <node id="511002117671797278" at="118,53,121,11" concept="5" />
       <node id="511002117671797278" at="122,72,125,11" concept="5" />
-      <node id="511002117671797278" at="29,0,33,0" concept="1" trace="RectangleNode_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="511002117671797278" at="29,0,33,0" concept="1" trace="RectangleNode_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="511002117671797278" at="53,0,57,0" concept="1" trace="BlockCellImpl_t2nwzx_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="511002117671797278" at="69,0,73,0" concept="6" trace="registerSynchronizers#(Ljetbrains/jetpad/mapper/Mapper/SynchronizersConfiguration;)V" />
       <node id="511002117671797278" at="34,0,39,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -1433,7 +1433,7 @@
       <scope id="511002117671797278" at="101,40,102,23" />
       <scope id="511002117671797278" at="119,36,120,19" />
       <scope id="511002117671797278" at="123,36,124,19" />
-      <scope id="511002117671797278" at="29,93,31,18" />
+      <scope id="511002117671797278" at="29,91,31,18" />
       <scope id="511002117671797278" at="53,83,55,20" />
       <scope id="511002117671797278" at="40,0,43,0" />
       <scope id="511002117671797278" at="57,0,60,0" />
@@ -1495,30 +1495,30 @@
       </scope>
       <scope id="511002117671797278" at="60,58,111,8" />
       <scope id="511002117671797278" at="60,0,113,0" />
-      <unit id="511002117671797278" at="68,25,73,15" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.RectangleNode_EditorBuilder_a$BlockCellImpl_t2nwzx_a$1$1$1" />
-      <unit id="511002117671797278" at="77,80,83,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.RectangleNode_EditorBuilder_a$BlockCellImpl_t2nwzx_a$1$2" />
-      <unit id="511002117671797278" at="66,134,75,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.RectangleNode_EditorBuilder_a$BlockCellImpl_t2nwzx_a$1$1" />
-      <unit id="511002117671797278" at="98,79,109,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.RectangleNode_EditorBuilder_a$BlockCellImpl_t2nwzx_a$1$4" />
-      <unit id="511002117671797278" at="84,74,97,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.RectangleNode_EditorBuilder_a$BlockCellImpl_t2nwzx_a$1$3" />
-      <unit id="511002117671797278" at="114,17,132,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.RectangleNode_EditorBuilder_a$BlockCellImpl_t2nwzx_a$2" />
-      <unit id="511002117671797278" at="61,17,111,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.RectangleNode_EditorBuilder_a$BlockCellImpl_t2nwzx_a$1" />
-      <unit id="511002117671797278" at="52,0,135,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.RectangleNode_EditorBuilder_a$BlockCellImpl_t2nwzx_a" />
-      <unit id="511002117671797278" at="25,0,136,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.RectangleNode_EditorBuilder_a" />
+      <unit id="511002117671797278" at="68,25,73,15" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.RectangleNode_EditorBuilder$BlockCellImpl_t2nwzx_a$1$1$1" />
+      <unit id="511002117671797278" at="77,80,83,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.RectangleNode_EditorBuilder$BlockCellImpl_t2nwzx_a$1$2" />
+      <unit id="511002117671797278" at="66,134,75,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.RectangleNode_EditorBuilder$BlockCellImpl_t2nwzx_a$1$1" />
+      <unit id="511002117671797278" at="98,79,109,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.RectangleNode_EditorBuilder$BlockCellImpl_t2nwzx_a$1$4" />
+      <unit id="511002117671797278" at="84,74,97,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.RectangleNode_EditorBuilder$BlockCellImpl_t2nwzx_a$1$3" />
+      <unit id="511002117671797278" at="114,17,132,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.RectangleNode_EditorBuilder$BlockCellImpl_t2nwzx_a$2" />
+      <unit id="511002117671797278" at="61,17,111,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.RectangleNode_EditorBuilder$BlockCellImpl_t2nwzx_a$1" />
+      <unit id="511002117671797278" at="52,0,135,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.RectangleNode_EditorBuilder$BlockCellImpl_t2nwzx_a" />
+      <unit id="511002117671797278" at="25,0,136,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.RectangleNode_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:38933db7-8021-49f1-94e7-c8fed36889bf(jetbrains.mps.lang.editor.diagram.testLanguage.editor)/5540569706413451971">
     <file name="OutputToInputPortConnector_Editor.java">
-      <node id="5540569706413451971" at="11,79,12,92" concept="8" />
+      <node id="5540569706413451971" at="11,79,12,90" concept="8" />
       <node id="5540569706413451971" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="5540569706413451971" at="11,79,12,92" />
+      <scope id="5540569706413451971" at="11,79,12,90" />
       <scope id="5540569706413451971" at="11,0,14,0">
         <var name="editorContext" id="5540569706413451971" />
         <var name="node" id="5540569706413451971" />
       </scope>
       <unit id="5540569706413451971" at="10,0,15,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputToInputPortConnector_Editor" />
     </file>
-    <file name="OutputToInputPortConnector_EditorBuilder_a.java">
-      <node id="5540569706413451971" at="35,106,36,19" concept="11" />
+    <file name="OutputToInputPortConnector_EditorBuilder.java">
+      <node id="5540569706413451971" at="35,104,36,19" concept="11" />
       <node id="5540569706413451971" at="36,19,37,18" concept="2" />
       <node id="5540569706413451971" at="42,26,43,18" concept="8" />
       <node id="5540569706413451971" at="46,39,47,38" concept="8" />
@@ -1592,7 +1592,7 @@
       <node id="5540569706413451971" at="146,125,149,11" concept="5" />
       <node id="5540569706413451971" at="160,49,163,7" concept="5" />
       <node id="5540569706413451971" at="164,115,167,7" concept="5" />
-      <node id="5540569706413451971" at="35,0,39,0" concept="1" trace="OutputToInputPortConnector_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="5540569706413451971" at="35,0,39,0" concept="1" trace="OutputToInputPortConnector_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="5540569706413451971" at="61,0,65,0" concept="1" trace="ConnectorCellImpl_87pg9j_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="5540569706413451971" at="85,62,89,15" concept="5" />
       <node id="5540569706413451971" at="173,0,177,0" concept="6" trace="synchronize#()V" />
@@ -1632,7 +1632,7 @@
       <scope id="5540569706413451971" at="147,41,148,19" />
       <scope id="5540569706413451971" at="161,32,162,38" />
       <scope id="5540569706413451971" at="165,37,166,38" />
-      <scope id="5540569706413451971" at="35,106,37,18" />
+      <scope id="5540569706413451971" at="35,104,37,18" />
       <scope id="5540569706413451971" at="61,81,63,20" />
       <scope id="5540569706413451971" at="86,95,88,47" />
       <scope id="5540569706413451971" at="173,31,175,102" />
@@ -1717,31 +1717,31 @@
       </scope>
       <scope id="5540569706413451971" at="65,61,134,8" />
       <scope id="5540569706413451971" at="65,0,136,0" />
-      <unit id="5540569706413451971" at="187,0,191,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputToInputPortConnector_EditorBuilder_a$LINKS" />
-      <unit id="5540569706413451971" at="100,80,106,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputToInputPortConnector_EditorBuilder_a$ConnectorCellImpl_87pg9j_a$1$3" />
-      <unit id="5540569706413451971" at="71,71,82,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputToInputPortConnector_EditorBuilder_a$ConnectorCellImpl_87pg9j_a$1$1" />
-      <unit id="5540569706413451971" at="121,79,132,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputToInputPortConnector_EditorBuilder_a$ConnectorCellImpl_87pg9j_a$1$5" />
-      <unit id="5540569706413451971" at="107,74,120,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputToInputPortConnector_EditorBuilder_a$ConnectorCellImpl_87pg9j_a$1$4" />
-      <unit id="5540569706413451971" at="83,72,98,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputToInputPortConnector_EditorBuilder_a$ConnectorCellImpl_87pg9j_a$1$2" />
-      <unit id="5540569706413451971" at="138,17,156,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputToInputPortConnector_EditorBuilder_a$ConnectorCellImpl_87pg9j_a$2" />
-      <unit id="5540569706413451971" at="66,17,134,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputToInputPortConnector_EditorBuilder_a$ConnectorCellImpl_87pg9j_a$1" />
-      <unit id="5540569706413451971" at="58,0,186,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputToInputPortConnector_EditorBuilder_a$ConnectorCellImpl_87pg9j_a" />
-      <unit id="5540569706413451971" at="31,0,192,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputToInputPortConnector_EditorBuilder_a" />
+      <unit id="5540569706413451971" at="187,0,191,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputToInputPortConnector_EditorBuilder$LINKS" />
+      <unit id="5540569706413451971" at="100,80,106,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputToInputPortConnector_EditorBuilder$ConnectorCellImpl_87pg9j_a$1$3" />
+      <unit id="5540569706413451971" at="71,71,82,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputToInputPortConnector_EditorBuilder$ConnectorCellImpl_87pg9j_a$1$1" />
+      <unit id="5540569706413451971" at="121,79,132,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputToInputPortConnector_EditorBuilder$ConnectorCellImpl_87pg9j_a$1$5" />
+      <unit id="5540569706413451971" at="107,74,120,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputToInputPortConnector_EditorBuilder$ConnectorCellImpl_87pg9j_a$1$4" />
+      <unit id="5540569706413451971" at="83,72,98,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputToInputPortConnector_EditorBuilder$ConnectorCellImpl_87pg9j_a$1$2" />
+      <unit id="5540569706413451971" at="138,17,156,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputToInputPortConnector_EditorBuilder$ConnectorCellImpl_87pg9j_a$2" />
+      <unit id="5540569706413451971" at="66,17,134,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputToInputPortConnector_EditorBuilder$ConnectorCellImpl_87pg9j_a$1" />
+      <unit id="5540569706413451971" at="58,0,186,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputToInputPortConnector_EditorBuilder$ConnectorCellImpl_87pg9j_a" />
+      <unit id="5540569706413451971" at="31,0,192,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputToInputPortConnector_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:38933db7-8021-49f1-94e7-c8fed36889bf(jetbrains.mps.lang.editor.diagram.testLanguage.editor)/5540569706414444284">
     <file name="NodeWithPorts_Editor.java">
-      <node id="5540569706414444284" at="11,79,12,79" concept="8" />
+      <node id="5540569706414444284" at="11,79,12,77" concept="8" />
       <node id="5540569706414444284" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="5540569706414444284" at="11,79,12,79" />
+      <scope id="5540569706414444284" at="11,79,12,77" />
       <scope id="5540569706414444284" at="11,0,14,0">
         <var name="editorContext" id="5540569706414444284" />
         <var name="node" id="5540569706414444284" />
       </scope>
       <unit id="5540569706414444284" at="10,0,15,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_Editor" />
     </file>
-    <file name="NodeWithPorts_EditorBuilder_a.java">
-      <node id="5540569706414444284" at="47,93,48,19" concept="11" />
+    <file name="NodeWithPorts_EditorBuilder.java">
+      <node id="5540569706414444284" at="47,91,48,19" concept="11" />
       <node id="5540569706414444284" at="48,19,49,18" concept="2" />
       <node id="5540569706414444284" at="54,26,55,18" concept="8" />
       <node id="5540569706414444284" at="58,39,59,33" concept="8" />
@@ -1860,7 +1860,7 @@
       <node id="5540569706414444284" at="234,101,237,13" concept="5" />
       <node id="5540569706414444284" at="244,0,247,0" concept="6" trace="createMapper#(Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/jetpad/mapper/Mapper;" />
       <node id="5540569706414444284" at="249,0,252,0" concept="6" trace="createMapper#(Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/jetpad/mapper/Mapper;" />
-      <node id="5540569706414444284" at="47,0,51,0" concept="1" trace="NodeWithPorts_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="5540569706414444284" at="47,0,51,0" concept="1" trace="NodeWithPorts_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="5540569706414444284" at="165,174,169,22" concept="2" />
       <node id="5540569706414444284" at="52,0,57,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="5540569706414444284" at="146,53,151,14" concept="2" />
@@ -1917,7 +1917,7 @@
       <scope id="5540569706414444284" at="235,32,236,21" />
       <scope id="5540569706414444284" at="244,102,245,88" />
       <scope id="5540569706414444284" at="249,102,250,88" />
-      <scope id="5540569706414444284" at="47,93,49,18" />
+      <scope id="5540569706414444284" at="47,91,49,18" />
       <scope id="5540569706414444284" at="166,107,168,89" />
       <scope id="5540569706414444284" at="58,0,61,0" />
       <scope id="5540569706414444478" at="81,0,84,0" />
@@ -2018,37 +2018,37 @@
       </scope>
       <scope id="5540569706414444284" at="142,58,214,8" />
       <scope id="5540569706414444284" at="142,0,216,0" />
-      <unit id="5540569706414444284" at="147,115,151,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_EditorBuilder_a$BlockCellImpl_t9c2f5_a$6$1" />
-      <unit id="5540569706414444284" at="152,117,156,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_EditorBuilder_a$BlockCellImpl_t9c2f5_a$6$2" />
-      <unit id="5540569706414444284" at="243,131,247,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_EditorBuilder_a$BlockCellImpl_t9c2f5_a$7$1" />
-      <unit id="5540569706414444284" at="248,133,252,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_EditorBuilder_a$BlockCellImpl_t9c2f5_a$7$2" />
-      <unit id="5540569706414444284" at="267,0,271,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_EditorBuilder_a$LINKS" />
-      <unit id="5540569706414444284" at="180,80,186,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_EditorBuilder_a$BlockCellImpl_t9c2f5_a$6$4" />
-      <unit id="5540569706414444478" at="80,38,87,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_EditorBuilder_a$BlockCellImpl_t9c2f5_a$1" />
-      <unit id="5540569706414444480" at="90,38,97,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_EditorBuilder_a$BlockCellImpl_t9c2f5_a$2" />
-      <unit id="5540569706414444482" at="100,38,107,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_EditorBuilder_a$BlockCellImpl_t9c2f5_a$3" />
-      <unit id="5540569706414444484" at="110,38,117,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_EditorBuilder_a$BlockCellImpl_t9c2f5_a$4" />
-      <unit id="5540569706414634224" at="120,38,127,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_EditorBuilder_a$BlockCellImpl_t9c2f5_a$5" />
-      <unit id="5540569706414444284" at="259,0,266,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_EditorBuilder_a$PROPS" />
-      <unit id="5540569706414444284" at="201,79,212,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_EditorBuilder_a$BlockCellImpl_t9c2f5_a$6$6" />
-      <unit id="5540569706414444284" at="187,74,200,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_EditorBuilder_a$BlockCellImpl_t9c2f5_a$6$5" />
-      <unit id="5540569706414444284" at="160,25,176,15" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_EditorBuilder_a$BlockCellImpl_t9c2f5_a$6$3$1" />
-      <unit id="5540569706414444284" at="158,134,178,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_EditorBuilder_a$BlockCellImpl_t9c2f5_a$6$3" />
-      <unit id="5540569706414444284" at="217,17,255,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_EditorBuilder_a$BlockCellImpl_t9c2f5_a$7" />
-      <unit id="5540569706414444284" at="143,17,214,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_EditorBuilder_a$BlockCellImpl_t9c2f5_a$6" />
-      <unit id="5540569706414444284" at="70,0,258,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_EditorBuilder_a$BlockCellImpl_t9c2f5_a" />
-      <unit id="5540569706414444284" at="43,0,272,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_EditorBuilder_a" />
+      <unit id="5540569706414444284" at="147,115,151,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_EditorBuilder$BlockCellImpl_t9c2f5_a$6$1" />
+      <unit id="5540569706414444284" at="152,117,156,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_EditorBuilder$BlockCellImpl_t9c2f5_a$6$2" />
+      <unit id="5540569706414444284" at="243,131,247,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_EditorBuilder$BlockCellImpl_t9c2f5_a$7$1" />
+      <unit id="5540569706414444284" at="248,133,252,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_EditorBuilder$BlockCellImpl_t9c2f5_a$7$2" />
+      <unit id="5540569706414444284" at="267,0,271,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_EditorBuilder$LINKS" />
+      <unit id="5540569706414444284" at="180,80,186,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_EditorBuilder$BlockCellImpl_t9c2f5_a$6$4" />
+      <unit id="5540569706414444478" at="80,38,87,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_EditorBuilder$BlockCellImpl_t9c2f5_a$1" />
+      <unit id="5540569706414444480" at="90,38,97,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_EditorBuilder$BlockCellImpl_t9c2f5_a$2" />
+      <unit id="5540569706414444482" at="100,38,107,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_EditorBuilder$BlockCellImpl_t9c2f5_a$3" />
+      <unit id="5540569706414444484" at="110,38,117,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_EditorBuilder$BlockCellImpl_t9c2f5_a$4" />
+      <unit id="5540569706414634224" at="120,38,127,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_EditorBuilder$BlockCellImpl_t9c2f5_a$5" />
+      <unit id="5540569706414444284" at="259,0,266,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_EditorBuilder$PROPS" />
+      <unit id="5540569706414444284" at="201,79,212,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_EditorBuilder$BlockCellImpl_t9c2f5_a$6$6" />
+      <unit id="5540569706414444284" at="187,74,200,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_EditorBuilder$BlockCellImpl_t9c2f5_a$6$5" />
+      <unit id="5540569706414444284" at="160,25,176,15" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_EditorBuilder$BlockCellImpl_t9c2f5_a$6$3$1" />
+      <unit id="5540569706414444284" at="158,134,178,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_EditorBuilder$BlockCellImpl_t9c2f5_a$6$3" />
+      <unit id="5540569706414444284" at="217,17,255,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_EditorBuilder$BlockCellImpl_t9c2f5_a$7" />
+      <unit id="5540569706414444284" at="143,17,214,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_EditorBuilder$BlockCellImpl_t9c2f5_a$6" />
+      <unit id="5540569706414444284" at="70,0,258,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_EditorBuilder$BlockCellImpl_t9c2f5_a" />
+      <unit id="5540569706414444284" at="43,0,272,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:38933db7-8021-49f1-94e7-c8fed36889bf(jetbrains.mps.lang.editor.diagram.testLanguage.editor)/5540569706414786118">
     <file name="NodeWithPorts_DiagramTestTextual_Editor.java">
       <node id="5540569706414786118" at="14,0,15,0" concept="3" trace="myContextHints" />
       <node id="5540569706414786118" at="17,47,18,26" concept="8" />
-      <node id="5540569706414786118" at="20,79,21,98" concept="8" />
+      <node id="5540569706414786118" at="20,79,21,96" concept="8" />
       <node id="5540569706414786118" at="20,0,23,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="5540569706414786118" at="15,0,20,0" concept="6" trace="getContextHints#()Ljava/util/Collection;" />
       <scope id="5540569706414786118" at="17,47,18,26" />
-      <scope id="5540569706414786118" at="20,79,21,98" />
+      <scope id="5540569706414786118" at="20,79,21,96" />
       <scope id="5540569706414786118" at="20,0,23,0">
         <var name="editorContext" id="5540569706414786118" />
         <var name="node" id="5540569706414786118" />
@@ -2056,8 +2056,8 @@
       <scope id="5540569706414786118" at="15,0,20,0" />
       <unit id="5540569706414786118" at="13,0,24,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_DiagramTestTextual_Editor" />
     </file>
-    <file name="NodeWithPorts_DiagramTestTextual_EditorBuilder_a.java">
-      <node id="5540569706414786118" at="45,112,46,19" concept="11" />
+    <file name="NodeWithPorts_DiagramTestTextual_EditorBuilder.java">
+      <node id="5540569706414786118" at="45,110,46,19" concept="11" />
       <node id="5540569706414786118" at="46,19,47,18" concept="2" />
       <node id="5540569706414786118" at="52,26,53,18" concept="8" />
       <node id="5540569706414786118" at="56,39,57,32" concept="8" />
@@ -2384,7 +2384,7 @@
       <node id="5540569706414786118" at="467,0,470,0" concept="6" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="5540569706414786118" at="470,0,473,0" concept="6" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="5540569706414786118" at="514,96,517,9" concept="5" />
-      <node id="5540569706414786118" at="45,0,49,0" concept="1" trace="NodeWithPorts_DiagramTestTextual_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="5540569706414786118" at="45,0,49,0" concept="1" trace="NodeWithPorts_DiagramTestTextual_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="5540569706414786118" at="354,0,358,0" concept="1" trace="inputsListHandler_7dyddg_s2a#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="5540569706414786118" at="359,0,363,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="5540569706414786118" at="392,97,396,9" concept="5" />
@@ -2467,7 +2467,7 @@
       <scope id="5540569706414786118" at="470,48,471,36" />
       <scope id="5540569706414786118" at="488,17,489,42" />
       <scope id="5540569706414786118" at="515,34,516,91" />
-      <scope id="5540569706414786118" at="45,112,47,18" />
+      <scope id="5540569706414786118" at="45,110,47,18" />
       <scope id="5540569706414786755" at="148,74,150,145">
         <var name="manager" id="5540569706414786755" />
       </scope>
@@ -2706,27 +2706,27 @@
         <var name="style" id="5540569706414786118" />
       </scope>
       <scope id="5540569706414786118" at="87,0,118,0" />
-      <unit id="5540569706414786118" at="545,0,549,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_DiagramTestTextual_EditorBuilder_a$LINKS" />
-      <unit id="5540569706414786118" at="539,0,544,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_DiagramTestTextual_EditorBuilder_a$CONCEPTS" />
-      <unit id="5540569706414786118" at="531,0,538,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_DiagramTestTextual_EditorBuilder_a$PROPS" />
-      <unit id="5540569706414786118" at="350,0,417,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_DiagramTestTextual_EditorBuilder_a$inputsListHandler_7dyddg_s2a" />
-      <unit id="5540569706414786118" at="454,0,521,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_DiagramTestTextual_EditorBuilder_a$outputsListHandler_7dyddg_w2a" />
-      <unit id="5540569706414786118" at="41,0,550,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_DiagramTestTextual_EditorBuilder_a" />
+      <unit id="5540569706414786118" at="545,0,549,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_DiagramTestTextual_EditorBuilder$LINKS" />
+      <unit id="5540569706414786118" at="539,0,544,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_DiagramTestTextual_EditorBuilder$CONCEPTS" />
+      <unit id="5540569706414786118" at="531,0,538,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_DiagramTestTextual_EditorBuilder$PROPS" />
+      <unit id="5540569706414786118" at="350,0,417,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_DiagramTestTextual_EditorBuilder$inputsListHandler_7dyddg_s2a" />
+      <unit id="5540569706414786118" at="454,0,521,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_DiagramTestTextual_EditorBuilder$outputsListHandler_7dyddg_w2a" />
+      <unit id="5540569706414786118" at="41,0,550,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithPorts_DiagramTestTextual_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:38933db7-8021-49f1-94e7-c8fed36889bf(jetbrains.mps.lang.editor.diagram.testLanguage.editor)/5540569706414968554">
     <file name="InputPort_Editor.java">
-      <node id="5540569706414968554" at="11,79,12,75" concept="8" />
+      <node id="5540569706414968554" at="11,79,12,73" concept="8" />
       <node id="5540569706414968554" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="5540569706414968554" at="11,79,12,75" />
+      <scope id="5540569706414968554" at="11,79,12,73" />
       <scope id="5540569706414968554" at="11,0,14,0">
         <var name="editorContext" id="5540569706414968554" />
         <var name="node" id="5540569706414968554" />
       </scope>
       <unit id="5540569706414968554" at="10,0,15,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.InputPort_Editor" />
     </file>
-    <file name="InputPort_EditorBuilder_a.java">
-      <node id="5540569706414968554" at="30,89,31,19" concept="11" />
+    <file name="InputPort_EditorBuilder.java">
+      <node id="5540569706414968554" at="30,87,31,19" concept="11" />
       <node id="5540569706414968554" at="31,19,32,18" concept="2" />
       <node id="5540569706414968554" at="37,26,38,18" concept="8" />
       <node id="5540569706414968554" at="41,39,42,33" concept="8" />
@@ -2777,7 +2777,7 @@
       <node id="5540569706414968554" at="90,57,93,15" concept="5" />
       <node id="5540569706414968554" at="118,53,121,11" concept="5" />
       <node id="5540569706414968554" at="122,125,125,11" concept="5" />
-      <node id="5540569706414968554" at="30,0,34,0" concept="1" trace="InputPort_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="5540569706414968554" at="30,0,34,0" concept="1" trace="InputPort_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="5540569706414968554" at="53,0,57,0" concept="1" trace="PortCellImpl_w1m4cg_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="5540569706414968554" at="35,0,40,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="5540569706414968554" at="68,0,73,0" concept="6" trace="set#(Ljava/lang/Boolean;)V" />
@@ -2806,7 +2806,7 @@
       <scope id="5540569706414968554" at="91,40,92,23" />
       <scope id="5540569706414968554" at="119,36,120,19" />
       <scope id="5540569706414968554" at="123,41,124,19" />
-      <scope id="5540569706414968554" at="30,89,32,18" />
+      <scope id="5540569706414968554" at="30,87,32,18" />
       <scope id="5540569706414968554" at="53,76,55,20" />
       <scope id="5540569706414968554" at="103,0,105,0" />
       <scope id="5540569706414968554" at="41,0,44,0" />
@@ -2866,28 +2866,28 @@
       </scope>
       <scope id="5540569706414968554" at="57,51,101,8" />
       <scope id="5540569706414968554" at="57,0,103,0" />
-      <unit id="5540569706414968554" at="67,80,73,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.InputPort_EditorBuilder_a$PortCellImpl_w1m4cg_a$1$1" />
-      <unit id="5540569706414968554" at="88,79,99,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.InputPort_EditorBuilder_a$PortCellImpl_w1m4cg_a$1$3" />
-      <unit id="5540569706414968554" at="74,74,87,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.InputPort_EditorBuilder_a$PortCellImpl_w1m4cg_a$1$2" />
-      <unit id="5540569706414968554" at="114,17,135,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.InputPort_EditorBuilder_a$PortCellImpl_w1m4cg_a$2" />
-      <unit id="5540569706414968554" at="58,17,101,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.InputPort_EditorBuilder_a$PortCellImpl_w1m4cg_a$1" />
-      <unit id="5540569706414968554" at="52,0,139,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.InputPort_EditorBuilder_a$PortCellImpl_w1m4cg_a" />
-      <unit id="5540569706414968554" at="26,0,140,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.InputPort_EditorBuilder_a" />
+      <unit id="5540569706414968554" at="67,80,73,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.InputPort_EditorBuilder$PortCellImpl_w1m4cg_a$1$1" />
+      <unit id="5540569706414968554" at="88,79,99,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.InputPort_EditorBuilder$PortCellImpl_w1m4cg_a$1$3" />
+      <unit id="5540569706414968554" at="74,74,87,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.InputPort_EditorBuilder$PortCellImpl_w1m4cg_a$1$2" />
+      <unit id="5540569706414968554" at="114,17,135,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.InputPort_EditorBuilder$PortCellImpl_w1m4cg_a$2" />
+      <unit id="5540569706414968554" at="58,17,101,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.InputPort_EditorBuilder$PortCellImpl_w1m4cg_a$1" />
+      <unit id="5540569706414968554" at="52,0,139,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.InputPort_EditorBuilder$PortCellImpl_w1m4cg_a" />
+      <unit id="5540569706414968554" at="26,0,140,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.InputPort_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:38933db7-8021-49f1-94e7-c8fed36889bf(jetbrains.mps.lang.editor.diagram.testLanguage.editor)/5540569706414969097">
     <file name="OutputPort_Editor.java">
-      <node id="5540569706414969097" at="11,79,12,76" concept="8" />
+      <node id="5540569706414969097" at="11,79,12,74" concept="8" />
       <node id="5540569706414969097" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="5540569706414969097" at="11,79,12,76" />
+      <scope id="5540569706414969097" at="11,79,12,74" />
       <scope id="5540569706414969097" at="11,0,14,0">
         <var name="editorContext" id="5540569706414969097" />
         <var name="node" id="5540569706414969097" />
       </scope>
       <unit id="5540569706414969097" at="10,0,15,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputPort_Editor" />
     </file>
-    <file name="OutputPort_EditorBuilder_a.java">
-      <node id="5540569706414969097" at="30,90,31,19" concept="11" />
+    <file name="OutputPort_EditorBuilder.java">
+      <node id="5540569706414969097" at="30,88,31,19" concept="11" />
       <node id="5540569706414969097" at="31,19,32,18" concept="2" />
       <node id="5540569706414969097" at="37,26,38,18" concept="8" />
       <node id="5540569706414969097" at="41,39,42,33" concept="8" />
@@ -2938,7 +2938,7 @@
       <node id="5540569706414969097" at="90,57,93,15" concept="5" />
       <node id="5540569706414969097" at="118,53,121,11" concept="5" />
       <node id="5540569706414969097" at="122,125,125,11" concept="5" />
-      <node id="5540569706414969097" at="30,0,34,0" concept="1" trace="OutputPort_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="5540569706414969097" at="30,0,34,0" concept="1" trace="OutputPort_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="5540569706414969097" at="53,0,57,0" concept="1" trace="PortCellImpl_nt468l_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="5540569706414969097" at="35,0,40,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="5540569706414969097" at="68,0,73,0" concept="6" trace="set#(Ljava/lang/Boolean;)V" />
@@ -2967,7 +2967,7 @@
       <scope id="5540569706414969097" at="91,40,92,23" />
       <scope id="5540569706414969097" at="119,36,120,19" />
       <scope id="5540569706414969097" at="123,41,124,19" />
-      <scope id="5540569706414969097" at="30,90,32,18" />
+      <scope id="5540569706414969097" at="30,88,32,18" />
       <scope id="5540569706414969097" at="53,76,55,20" />
       <scope id="5540569706414969097" at="103,0,105,0" />
       <scope id="5540569706414969097" at="41,0,44,0" />
@@ -3027,24 +3027,24 @@
       </scope>
       <scope id="5540569706414969097" at="57,51,101,8" />
       <scope id="5540569706414969097" at="57,0,103,0" />
-      <unit id="5540569706414969097" at="67,80,73,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputPort_EditorBuilder_a$PortCellImpl_nt468l_a$1$1" />
-      <unit id="5540569706414969097" at="88,79,99,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputPort_EditorBuilder_a$PortCellImpl_nt468l_a$1$3" />
-      <unit id="5540569706414969097" at="74,74,87,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputPort_EditorBuilder_a$PortCellImpl_nt468l_a$1$2" />
-      <unit id="5540569706414969097" at="114,17,135,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputPort_EditorBuilder_a$PortCellImpl_nt468l_a$2" />
-      <unit id="5540569706414969097" at="58,17,101,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputPort_EditorBuilder_a$PortCellImpl_nt468l_a$1" />
-      <unit id="5540569706414969097" at="52,0,139,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputPort_EditorBuilder_a$PortCellImpl_nt468l_a" />
-      <unit id="5540569706414969097" at="26,0,140,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputPort_EditorBuilder_a" />
+      <unit id="5540569706414969097" at="67,80,73,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputPort_EditorBuilder$PortCellImpl_nt468l_a$1$1" />
+      <unit id="5540569706414969097" at="88,79,99,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputPort_EditorBuilder$PortCellImpl_nt468l_a$1$3" />
+      <unit id="5540569706414969097" at="74,74,87,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputPort_EditorBuilder$PortCellImpl_nt468l_a$1$2" />
+      <unit id="5540569706414969097" at="114,17,135,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputPort_EditorBuilder$PortCellImpl_nt468l_a$2" />
+      <unit id="5540569706414969097" at="58,17,101,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputPort_EditorBuilder$PortCellImpl_nt468l_a$1" />
+      <unit id="5540569706414969097" at="52,0,139,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputPort_EditorBuilder$PortCellImpl_nt468l_a" />
+      <unit id="5540569706414969097" at="26,0,140,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputPort_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:38933db7-8021-49f1-94e7-c8fed36889bf(jetbrains.mps.lang.editor.diagram.testLanguage.editor)/5540569706415162758">
     <file name="InputPort_DiagramTestTextual_Editor.java">
       <node id="5540569706415162758" at="14,0,15,0" concept="3" trace="myContextHints" />
       <node id="5540569706415162758" at="17,47,18,26" concept="8" />
-      <node id="5540569706415162758" at="20,79,21,94" concept="8" />
+      <node id="5540569706415162758" at="20,79,21,92" concept="8" />
       <node id="5540569706415162758" at="20,0,23,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="5540569706415162758" at="15,0,20,0" concept="6" trace="getContextHints#()Ljava/util/Collection;" />
       <scope id="5540569706415162758" at="17,47,18,26" />
-      <scope id="5540569706415162758" at="20,79,21,94" />
+      <scope id="5540569706415162758" at="20,79,21,92" />
       <scope id="5540569706415162758" at="20,0,23,0">
         <var name="editorContext" id="5540569706415162758" />
         <var name="node" id="5540569706415162758" />
@@ -3052,8 +3052,8 @@
       <scope id="5540569706415162758" at="15,0,20,0" />
       <unit id="5540569706415162758" at="13,0,24,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.InputPort_DiagramTestTextual_Editor" />
     </file>
-    <file name="InputPort_DiagramTestTextual_EditorBuilder_a.java">
-      <node id="5540569706415162758" at="35,108,36,19" concept="11" />
+    <file name="InputPort_DiagramTestTextual_EditorBuilder.java">
+      <node id="5540569706415162758" at="35,106,36,19" concept="11" />
       <node id="5540569706415162758" at="36,19,37,18" concept="2" />
       <node id="5540569706415162758" at="42,26,43,18" concept="8" />
       <node id="5540569706415162758" at="46,39,47,32" concept="8" />
@@ -3094,7 +3094,7 @@
       <node id="5540569706415162758" at="102,0,103,0" concept="10" trace="PropertyAttribute$Gb" />
       <node id="5540569706415162758" at="32,0,34,0" concept="3" trace="myNode" />
       <node id="5540569706415162758" at="46,0,49,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="5540569706415162758" at="35,0,39,0" concept="1" trace="InputPort_DiagramTestTextual_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="5540569706415162758" at="35,0,39,0" concept="1" trace="InputPort_DiagramTestTextual_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="5540569706415162758" at="40,0,45,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="822550549812185557" at="77,208,82,24" concept="5" />
       <node id="822550549812185556" at="60,0,66,0" concept="6" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -3105,7 +3105,7 @@
       <scope id="5540569706415162758" at="42,26,43,18" />
       <scope id="5540569706415162758" at="46,39,47,32" />
       <scope id="822550549812185557" at="83,15,84,40" />
-      <scope id="5540569706415162758" at="35,108,37,18" />
+      <scope id="5540569706415162758" at="35,106,37,18" />
       <scope id="822550549812185557" at="78,74,80,145">
         <var name="manager" id="822550549812185557" />
       </scope>
@@ -3136,20 +3136,20 @@
       </scope>
       <scope id="822550549812185557" at="66,41,85,5" />
       <scope id="822550549812185557" at="66,0,87,0" />
-      <unit id="5540569706415162758" at="97,0,100,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.InputPort_DiagramTestTextual_EditorBuilder_a$PROPS" />
-      <unit id="5540569706415162758" at="101,0,104,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.InputPort_DiagramTestTextual_EditorBuilder_a$CONCEPTS" />
-      <unit id="5540569706415162758" at="31,0,105,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.InputPort_DiagramTestTextual_EditorBuilder_a" />
+      <unit id="5540569706415162758" at="97,0,100,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.InputPort_DiagramTestTextual_EditorBuilder$PROPS" />
+      <unit id="5540569706415162758" at="101,0,104,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.InputPort_DiagramTestTextual_EditorBuilder$CONCEPTS" />
+      <unit id="5540569706415162758" at="31,0,105,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.InputPort_DiagramTestTextual_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:38933db7-8021-49f1-94e7-c8fed36889bf(jetbrains.mps.lang.editor.diagram.testLanguage.editor)/5540569706415163095">
     <file name="OutputPort_DiagramTestTextual_Editor.java">
       <node id="5540569706415163095" at="14,0,15,0" concept="3" trace="myContextHints" />
       <node id="5540569706415163095" at="17,47,18,26" concept="8" />
-      <node id="5540569706415163095" at="20,79,21,95" concept="8" />
+      <node id="5540569706415163095" at="20,79,21,93" concept="8" />
       <node id="5540569706415163095" at="20,0,23,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="5540569706415163095" at="15,0,20,0" concept="6" trace="getContextHints#()Ljava/util/Collection;" />
       <scope id="5540569706415163095" at="17,47,18,26" />
-      <scope id="5540569706415163095" at="20,79,21,95" />
+      <scope id="5540569706415163095" at="20,79,21,93" />
       <scope id="5540569706415163095" at="20,0,23,0">
         <var name="editorContext" id="5540569706415163095" />
         <var name="node" id="5540569706415163095" />
@@ -3157,8 +3157,8 @@
       <scope id="5540569706415163095" at="15,0,20,0" />
       <unit id="5540569706415163095" at="13,0,24,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputPort_DiagramTestTextual_Editor" />
     </file>
-    <file name="OutputPort_DiagramTestTextual_EditorBuilder_a.java">
-      <node id="5540569706415163095" at="35,109,36,19" concept="11" />
+    <file name="OutputPort_DiagramTestTextual_EditorBuilder.java">
+      <node id="5540569706415163095" at="35,107,36,19" concept="11" />
       <node id="5540569706415163095" at="36,19,37,18" concept="2" />
       <node id="5540569706415163095" at="42,26,43,18" concept="8" />
       <node id="5540569706415163095" at="46,39,47,32" concept="8" />
@@ -3199,7 +3199,7 @@
       <node id="5540569706415163095" at="102,0,103,0" concept="10" trace="PropertyAttribute$Gb" />
       <node id="5540569706415163095" at="32,0,34,0" concept="3" trace="myNode" />
       <node id="5540569706415163095" at="46,0,49,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="5540569706415163095" at="35,0,39,0" concept="1" trace="OutputPort_DiagramTestTextual_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="5540569706415163095" at="35,0,39,0" concept="1" trace="OutputPort_DiagramTestTextual_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="5540569706415163095" at="40,0,45,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="822550549812186312" at="77,208,82,24" concept="5" />
       <node id="822550549812186311" at="60,0,66,0" concept="6" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -3210,7 +3210,7 @@
       <scope id="5540569706415163095" at="42,26,43,18" />
       <scope id="5540569706415163095" at="46,39,47,32" />
       <scope id="822550549812186312" at="83,15,84,40" />
-      <scope id="5540569706415163095" at="35,109,37,18" />
+      <scope id="5540569706415163095" at="35,107,37,18" />
       <scope id="822550549812186312" at="78,74,80,145">
         <var name="manager" id="822550549812186312" />
       </scope>
@@ -3241,20 +3241,20 @@
       </scope>
       <scope id="822550549812186312" at="66,41,85,5" />
       <scope id="822550549812186312" at="66,0,87,0" />
-      <unit id="5540569706415163095" at="97,0,100,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputPort_DiagramTestTextual_EditorBuilder_a$PROPS" />
-      <unit id="5540569706415163095" at="101,0,104,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputPort_DiagramTestTextual_EditorBuilder_a$CONCEPTS" />
-      <unit id="5540569706415163095" at="31,0,105,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputPort_DiagramTestTextual_EditorBuilder_a" />
+      <unit id="5540569706415163095" at="97,0,100,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputPort_DiagramTestTextual_EditorBuilder$PROPS" />
+      <unit id="5540569706415163095" at="101,0,104,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputPort_DiagramTestTextual_EditorBuilder$CONCEPTS" />
+      <unit id="5540569706415163095" at="31,0,105,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputPort_DiagramTestTextual_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:38933db7-8021-49f1-94e7-c8fed36889bf(jetbrains.mps.lang.editor.diagram.testLanguage.editor)/604142159147841026">
     <file name="Diagram1_DiagramTestTextual_Editor.java">
       <node id="604142159147841026" at="14,0,15,0" concept="3" trace="myContextHints" />
       <node id="604142159147841026" at="17,47,18,26" concept="8" />
-      <node id="604142159147841026" at="20,79,21,93" concept="8" />
+      <node id="604142159147841026" at="20,79,21,91" concept="8" />
       <node id="604142159147841026" at="20,0,23,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="604142159147841026" at="15,0,20,0" concept="6" trace="getContextHints#()Ljava/util/Collection;" />
       <scope id="604142159147841026" at="17,47,18,26" />
-      <scope id="604142159147841026" at="20,79,21,93" />
+      <scope id="604142159147841026" at="20,79,21,91" />
       <scope id="604142159147841026" at="20,0,23,0">
         <var name="editorContext" id="604142159147841026" />
         <var name="node" id="604142159147841026" />
@@ -3262,8 +3262,8 @@
       <scope id="604142159147841026" at="15,0,20,0" />
       <unit id="604142159147841026" at="13,0,24,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram1_DiagramTestTextual_Editor" />
     </file>
-    <file name="Diagram1_DiagramTestTextual_EditorBuilder_a.java">
-      <node id="604142159147841026" at="33,107,34,19" concept="11" />
+    <file name="Diagram1_DiagramTestTextual_EditorBuilder.java">
+      <node id="604142159147841026" at="33,105,34,19" concept="11" />
       <node id="604142159147841026" at="34,19,35,18" concept="2" />
       <node id="604142159147841026" at="40,26,41,18" concept="8" />
       <node id="604142159147841026" at="44,39,45,32" concept="8" />
@@ -3358,7 +3358,7 @@
       <node id="604142159147841026" at="127,0,130,0" concept="6" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="604142159147841026" at="130,0,133,0" concept="6" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="604142159147841026" at="174,96,177,9" concept="5" />
-      <node id="604142159147841026" at="33,0,37,0" concept="1" trace="Diagram1_DiagramTestTextual_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="604142159147841026" at="33,0,37,0" concept="1" trace="Diagram1_DiagramTestTextual_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="604142159147841026" at="118,0,122,0" concept="1" trace="rectanglesListHandler_35xpgu_c2a#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="604142159147841026" at="123,0,127,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="604142159147841026" at="156,97,160,9" concept="5" />
@@ -3388,7 +3388,7 @@
       <scope id="604142159147841026" at="130,48,131,39" />
       <scope id="604142159147841026" at="148,17,149,42" />
       <scope id="604142159147841026" at="175,34,176,91" />
-      <scope id="604142159147841026" at="33,107,35,18" />
+      <scope id="604142159147841026" at="33,105,35,18" />
       <scope id="604142159147841026" at="118,85,120,25" />
       <scope id="604142159147841026" at="157,122,159,146" />
       <scope id="604142159147841026" at="163,34,165,142" />
@@ -3465,21 +3465,21 @@
         <var name="elementNode" id="604142159147841026" />
         <var name="isEmptyCell" id="604142159147841026" />
       </scope>
-      <unit id="604142159147841026" at="191,0,194,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram1_DiagramTestTextual_EditorBuilder_a$LINKS" />
-      <unit id="604142159147841026" at="195,0,198,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram1_DiagramTestTextual_EditorBuilder_a$CONCEPTS" />
-      <unit id="604142159147841026" at="114,0,181,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram1_DiagramTestTextual_EditorBuilder_a$rectanglesListHandler_35xpgu_c2a" />
-      <unit id="604142159147841026" at="29,0,199,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram1_DiagramTestTextual_EditorBuilder_a" />
+      <unit id="604142159147841026" at="191,0,194,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram1_DiagramTestTextual_EditorBuilder$LINKS" />
+      <unit id="604142159147841026" at="195,0,198,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram1_DiagramTestTextual_EditorBuilder$CONCEPTS" />
+      <unit id="604142159147841026" at="114,0,181,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram1_DiagramTestTextual_EditorBuilder$rectanglesListHandler_35xpgu_c2a" />
+      <unit id="604142159147841026" at="29,0,199,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram1_DiagramTestTextual_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:38933db7-8021-49f1-94e7-c8fed36889bf(jetbrains.mps.lang.editor.diagram.testLanguage.editor)/604142159147841939">
     <file name="RectangleNode_DiagramTestTextual_Editor.java">
       <node id="604142159147841939" at="14,0,15,0" concept="3" trace="myContextHints" />
       <node id="604142159147841939" at="17,47,18,26" concept="8" />
-      <node id="604142159147841939" at="20,79,21,98" concept="8" />
+      <node id="604142159147841939" at="20,79,21,96" concept="8" />
       <node id="604142159147841939" at="20,0,23,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="604142159147841939" at="15,0,20,0" concept="6" trace="getContextHints#()Ljava/util/Collection;" />
       <scope id="604142159147841939" at="17,47,18,26" />
-      <scope id="604142159147841939" at="20,79,21,98" />
+      <scope id="604142159147841939" at="20,79,21,96" />
       <scope id="604142159147841939" at="20,0,23,0">
         <var name="editorContext" id="604142159147841939" />
         <var name="node" id="604142159147841939" />
@@ -3487,8 +3487,8 @@
       <scope id="604142159147841939" at="15,0,20,0" />
       <unit id="604142159147841939" at="13,0,24,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.RectangleNode_DiagramTestTextual_Editor" />
     </file>
-    <file name="RectangleNode_DiagramTestTextual_EditorBuilder_a.java">
-      <node id="604142159147841939" at="21,112,22,19" concept="11" />
+    <file name="RectangleNode_DiagramTestTextual_EditorBuilder.java">
+      <node id="604142159147841939" at="21,110,22,19" concept="11" />
       <node id="604142159147841939" at="22,19,23,18" concept="2" />
       <node id="604142159147841939" at="28,26,29,18" concept="8" />
       <node id="604142159147841939" at="32,39,33,32" concept="8" />
@@ -3512,14 +3512,14 @@
       <node id="604142159147841982" at="57,34,58,22" concept="8" />
       <node id="604142159147841939" at="18,0,20,0" concept="3" trace="myNode" />
       <node id="604142159147841939" at="32,0,35,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="604142159147841939" at="21,0,25,0" concept="1" trace="RectangleNode_DiagramTestTextual_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="604142159147841939" at="21,0,25,0" concept="1" trace="RectangleNode_DiagramTestTextual_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="604142159147841939" at="26,0,31,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="604142159147841981" at="45,0,51,0" concept="6" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="604142159147841939" at="36,0,45,0" concept="6" trace="createCollection_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="604142159147841982" at="51,0,60,0" concept="6" trace="createConstant_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="604142159147841939" at="28,26,29,18" />
       <scope id="604142159147841939" at="32,39,33,32" />
-      <scope id="604142159147841939" at="21,112,23,18" />
+      <scope id="604142159147841939" at="21,110,23,18" />
       <scope id="604142159147841939" at="32,0,35,0" />
       <scope id="604142159147841939" at="21,0,25,0">
         <var name="context" id="604142159147841939" />
@@ -3539,18 +3539,18 @@
       </scope>
       <scope id="604142159147841939" at="36,0,45,0" />
       <scope id="604142159147841982" at="51,0,60,0" />
-      <unit id="604142159147841939" at="17,0,61,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.RectangleNode_DiagramTestTextual_EditorBuilder_a" />
+      <unit id="604142159147841939" at="17,0,61,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.RectangleNode_DiagramTestTextual_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:38933db7-8021-49f1-94e7-c8fed36889bf(jetbrains.mps.lang.editor.diagram.testLanguage.editor)/822550549812184922">
     <file name="OutputToInputPortConnector_DiagramTestTextual_Editor.java">
       <node id="822550549812184922" at="14,0,15,0" concept="3" trace="myContextHints" />
       <node id="822550549812184922" at="17,47,18,26" concept="8" />
-      <node id="822550549812184922" at="20,79,21,111" concept="8" />
+      <node id="822550549812184922" at="20,79,21,109" concept="8" />
       <node id="822550549812184922" at="20,0,23,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="822550549812184922" at="15,0,20,0" concept="6" trace="getContextHints#()Ljava/util/Collection;" />
       <scope id="822550549812184922" at="17,47,18,26" />
-      <scope id="822550549812184922" at="20,79,21,111" />
+      <scope id="822550549812184922" at="20,79,21,109" />
       <scope id="822550549812184922" at="20,0,23,0">
         <var name="editorContext" id="822550549812184922" />
         <var name="node" id="822550549812184922" />
@@ -3558,8 +3558,8 @@
       <scope id="822550549812184922" at="15,0,20,0" />
       <unit id="822550549812184922" at="13,0,24,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputToInputPortConnector_DiagramTestTextual_Editor" />
     </file>
-    <file name="OutputToInputPortConnector_DiagramTestTextual_EditorBuilder_a.java">
-      <node id="822550549812184922" at="40,125,41,19" concept="11" />
+    <file name="OutputToInputPortConnector_DiagramTestTextual_EditorBuilder.java">
+      <node id="822550549812184922" at="40,123,41,19" concept="11" />
       <node id="822550549812184922" at="41,19,42,18" concept="2" />
       <node id="822550549812184922" at="47,26,48,18" concept="8" />
       <node id="822550549812184922" at="51,39,52,32" concept="8" />
@@ -3680,7 +3680,7 @@
       <node id="822550549812184922" at="51,0,54,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="822550549812186714" at="119,0,122,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="822550549812186721" at="196,0,199,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="822550549812184922" at="40,0,44,0" concept="1" trace="OutputToInputPortConnector_DiagramTestTextual_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="822550549812184922" at="40,0,44,0" concept="1" trace="OutputToInputPortConnector_DiagramTestTextual_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="822550549812184922" at="94,0,98,5" concept="5" />
       <node id="822550549812184922" at="171,0,175,5" concept="5" />
       <node id="822550549812184922" at="45,0,50,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -3715,7 +3715,7 @@
       <scope id="822550549812186721" at="196,41,197,32" />
       <scope id="822550549812186721" at="202,28,203,20" />
       <scope id="822550549812186723" at="223,17,224,42" />
-      <scope id="822550549812184922" at="40,125,42,18" />
+      <scope id="822550549812184922" at="40,123,42,18" />
       <scope id="822550549812184922" at="95,40,97,42" />
       <scope id="822550549812184922" at="102,73,104,145">
         <var name="manager" id="822550549812184922" />
@@ -3817,29 +3817,29 @@
       </scope>
       <scope id="822550549812184922" at="80,0,108,0" />
       <scope id="822550549812184922" at="157,0,185,0" />
-      <unit id="822550549812184922" at="248,0,251,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputToInputPortConnector_DiagramTestTextual_EditorBuilder_a$PROPS" />
-      <unit id="822550549812184922" at="238,0,242,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputToInputPortConnector_DiagramTestTextual_EditorBuilder_a$LINKS" />
-      <unit id="822550549812184922" at="243,0,247,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputToInputPortConnector_DiagramTestTextual_EditorBuilder_a$CONCEPTS" />
-      <unit id="822550549812184922" at="82,42,90,5" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputToInputPortConnector_DiagramTestTextual_EditorBuilder_a$1" />
-      <unit id="822550549812184922" at="159,42,167,5" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputToInputPortConnector_DiagramTestTextual_EditorBuilder_a$2" />
-      <unit id="822550549812186714" at="108,0,151,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputToInputPortConnector_DiagramTestTextual_EditorBuilder_a$Inline_Builder0" />
-      <unit id="822550549812186721" at="185,0,228,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputToInputPortConnector_DiagramTestTextual_EditorBuilder_a$Inline_Builder1" />
-      <unit id="822550549812184922" at="36,0,252,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputToInputPortConnector_DiagramTestTextual_EditorBuilder_a" />
+      <unit id="822550549812184922" at="248,0,251,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputToInputPortConnector_DiagramTestTextual_EditorBuilder$PROPS" />
+      <unit id="822550549812184922" at="238,0,242,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputToInputPortConnector_DiagramTestTextual_EditorBuilder$LINKS" />
+      <unit id="822550549812184922" at="243,0,247,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputToInputPortConnector_DiagramTestTextual_EditorBuilder$CONCEPTS" />
+      <unit id="822550549812184922" at="82,42,90,5" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputToInputPortConnector_DiagramTestTextual_EditorBuilder$1" />
+      <unit id="822550549812184922" at="159,42,167,5" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputToInputPortConnector_DiagramTestTextual_EditorBuilder$2" />
+      <unit id="822550549812186714" at="108,0,151,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputToInputPortConnector_DiagramTestTextual_EditorBuilder$Inline_Builder0" />
+      <unit id="822550549812186721" at="185,0,228,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputToInputPortConnector_DiagramTestTextual_EditorBuilder$Inline_Builder1" />
+      <unit id="822550549812184922" at="36,0,252,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.OutputToInputPortConnector_DiagramTestTextual_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:38933db7-8021-49f1-94e7-c8fed36889bf(jetbrains.mps.lang.editor.diagram.testLanguage.editor)/822550549814794755">
     <file name="NodeWithName_Editor.java">
-      <node id="822550549814794755" at="11,79,12,78" concept="8" />
+      <node id="822550549814794755" at="11,79,12,76" concept="8" />
       <node id="822550549814794755" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="822550549814794755" at="11,79,12,78" />
+      <scope id="822550549814794755" at="11,79,12,76" />
       <scope id="822550549814794755" at="11,0,14,0">
         <var name="editorContext" id="822550549814794755" />
         <var name="node" id="822550549814794755" />
       </scope>
       <unit id="822550549814794755" at="10,0,15,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithName_Editor" />
     </file>
-    <file name="NodeWithName_EditorBuilder_a.java">
-      <node id="822550549814794755" at="40,92,41,19" concept="11" />
+    <file name="NodeWithName_EditorBuilder.java">
+      <node id="822550549814794755" at="40,90,41,19" concept="11" />
       <node id="822550549814794755" at="41,19,42,18" concept="2" />
       <node id="822550549814794755" at="47,26,48,18" concept="8" />
       <node id="822550549814794755" at="51,39,52,33" concept="8" />
@@ -3954,7 +3954,7 @@
       <node id="822550549814794755" at="213,53,216,11" concept="5" />
       <node id="822550549814794755" at="217,78,220,11" concept="5" />
       <node id="822550549814794755" at="226,101,229,13" concept="5" />
-      <node id="822550549814794755" at="40,0,44,0" concept="1" trace="NodeWithName_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="822550549814794755" at="40,0,44,0" concept="1" trace="NodeWithName_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="822550549814794755" at="156,174,160,22" concept="2" />
       <node id="822550549814794755" at="45,0,50,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="822550549814794755" at="173,0,178,0" concept="6" trace="set#(Ljava/lang/Boolean;)V" />
@@ -4006,7 +4006,7 @@
       <scope id="822550549814794755" at="214,36,215,19" />
       <scope id="822550549814794755" at="218,36,219,19" />
       <scope id="822550549814794755" at="227,32,228,21" />
-      <scope id="822550549814794755" at="40,92,42,18" />
+      <scope id="822550549814794755" at="40,90,42,18" />
       <scope id="822550549814794755" at="157,107,159,89" />
       <scope id="822550549814794755" at="51,0,54,0" />
       <scope id="822550549814825676" at="73,0,76,0" />
@@ -4099,33 +4099,33 @@
         <var name="node" id="822550549814794755" />
       </scope>
       <scope id="822550549814794755" at="143,0,208,0" />
-      <unit id="822550549814794755" at="172,80,178,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithName_EditorBuilder_a$BlockCellImpl_x378ek_a$7$2" />
-      <unit id="822550549814825676" at="72,38,79,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithName_EditorBuilder_a$BlockCellImpl_x378ek_a$1" />
-      <unit id="822550549814825678" at="82,38,89,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithName_EditorBuilder_a$BlockCellImpl_x378ek_a$2" />
-      <unit id="822550549814825680" at="92,38,99,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithName_EditorBuilder_a$BlockCellImpl_x378ek_a$3" />
-      <unit id="822550549814825682" at="102,38,109,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithName_EditorBuilder_a$BlockCellImpl_x378ek_a$4" />
-      <unit id="822550549814830451" at="112,38,119,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithName_EditorBuilder_a$BlockCellImpl_x378ek_a$5" />
-      <unit id="2303280755028061100" at="122,38,129,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithName_EditorBuilder_a$BlockCellImpl_x378ek_a$6" />
-      <unit id="822550549814794755" at="241,0,249,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithName_EditorBuilder_a$PROPS" />
-      <unit id="822550549814794755" at="193,79,204,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithName_EditorBuilder_a$BlockCellImpl_x378ek_a$7$4" />
-      <unit id="822550549814794755" at="179,74,192,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithName_EditorBuilder_a$BlockCellImpl_x378ek_a$7$3" />
-      <unit id="822550549814794755" at="151,25,168,15" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithName_EditorBuilder_a$BlockCellImpl_x378ek_a$7$1$1" />
-      <unit id="822550549814794755" at="149,134,170,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithName_EditorBuilder_a$BlockCellImpl_x378ek_a$7$1" />
-      <unit id="822550549814794755" at="209,17,237,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithName_EditorBuilder_a$BlockCellImpl_x378ek_a$8" />
-      <unit id="822550549814794755" at="144,17,206,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithName_EditorBuilder_a$BlockCellImpl_x378ek_a$7" />
-      <unit id="822550549814794755" at="63,0,240,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithName_EditorBuilder_a$BlockCellImpl_x378ek_a" />
-      <unit id="822550549814794755" at="36,0,250,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithName_EditorBuilder_a" />
+      <unit id="822550549814794755" at="172,80,178,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithName_EditorBuilder$BlockCellImpl_x378ek_a$7$2" />
+      <unit id="822550549814825676" at="72,38,79,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithName_EditorBuilder$BlockCellImpl_x378ek_a$1" />
+      <unit id="822550549814825678" at="82,38,89,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithName_EditorBuilder$BlockCellImpl_x378ek_a$2" />
+      <unit id="822550549814825680" at="92,38,99,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithName_EditorBuilder$BlockCellImpl_x378ek_a$3" />
+      <unit id="822550549814825682" at="102,38,109,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithName_EditorBuilder$BlockCellImpl_x378ek_a$4" />
+      <unit id="822550549814830451" at="112,38,119,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithName_EditorBuilder$BlockCellImpl_x378ek_a$5" />
+      <unit id="2303280755028061100" at="122,38,129,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithName_EditorBuilder$BlockCellImpl_x378ek_a$6" />
+      <unit id="822550549814794755" at="241,0,249,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithName_EditorBuilder$PROPS" />
+      <unit id="822550549814794755" at="193,79,204,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithName_EditorBuilder$BlockCellImpl_x378ek_a$7$4" />
+      <unit id="822550549814794755" at="179,74,192,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithName_EditorBuilder$BlockCellImpl_x378ek_a$7$3" />
+      <unit id="822550549814794755" at="151,25,168,15" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithName_EditorBuilder$BlockCellImpl_x378ek_a$7$1$1" />
+      <unit id="822550549814794755" at="149,134,170,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithName_EditorBuilder$BlockCellImpl_x378ek_a$7$1" />
+      <unit id="822550549814794755" at="209,17,237,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithName_EditorBuilder$BlockCellImpl_x378ek_a$8" />
+      <unit id="822550549814794755" at="144,17,206,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithName_EditorBuilder$BlockCellImpl_x378ek_a$7" />
+      <unit id="822550549814794755" at="63,0,240,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithName_EditorBuilder$BlockCellImpl_x378ek_a" />
+      <unit id="822550549814794755" at="36,0,250,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithName_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:38933db7-8021-49f1-94e7-c8fed36889bf(jetbrains.mps.lang.editor.diagram.testLanguage.editor)/822550549814795145">
     <file name="NodeWithName_DiagramTestTextual_Editor.java">
       <node id="822550549814795145" at="14,0,15,0" concept="3" trace="myContextHints" />
       <node id="822550549814795145" at="17,47,18,26" concept="8" />
-      <node id="822550549814795145" at="20,79,21,97" concept="8" />
+      <node id="822550549814795145" at="20,79,21,95" concept="8" />
       <node id="822550549814795145" at="20,0,23,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="822550549814795145" at="15,0,20,0" concept="6" trace="getContextHints#()Ljava/util/Collection;" />
       <scope id="822550549814795145" at="17,47,18,26" />
-      <scope id="822550549814795145" at="20,79,21,97" />
+      <scope id="822550549814795145" at="20,79,21,95" />
       <scope id="822550549814795145" at="20,0,23,0">
         <var name="editorContext" id="822550549814795145" />
         <var name="node" id="822550549814795145" />
@@ -4133,8 +4133,8 @@
       <scope id="822550549814795145" at="15,0,20,0" />
       <unit id="822550549814795145" at="13,0,24,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithName_DiagramTestTextual_Editor" />
     </file>
-    <file name="NodeWithName_DiagramTestTextual_EditorBuilder_a.java">
-      <node id="822550549814795145" at="35,111,36,19" concept="11" />
+    <file name="NodeWithName_DiagramTestTextual_EditorBuilder.java">
+      <node id="822550549814795145" at="35,109,36,19" concept="11" />
       <node id="822550549814795145" at="36,19,37,18" concept="2" />
       <node id="822550549814795145" at="42,26,43,18" concept="8" />
       <node id="822550549814795145" at="46,39,47,32" concept="8" />
@@ -4351,7 +4351,7 @@
       <node id="822550549814795145" at="337,0,338,0" concept="10" trace="PropertyAttribute$Gb" />
       <node id="822550549814795145" at="32,0,34,0" concept="3" trace="myNode" />
       <node id="822550549814795145" at="46,0,49,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="822550549814795145" at="35,0,39,0" concept="1" trace="NodeWithName_DiagramTestTextual_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="822550549814795145" at="35,0,39,0" concept="1" trace="NodeWithName_DiagramTestTextual_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="822550549814795145" at="40,0,45,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="822550549814829219" at="79,208,84,24" concept="5" />
       <node id="822550549814829229" at="151,208,156,24" concept="5" />
@@ -4394,7 +4394,7 @@
       <scope id="822550549814829239" at="235,15,236,40" />
       <scope id="822550549814829244" at="274,15,275,40" />
       <scope id="822550549814829249" at="313,15,314,40" />
-      <scope id="822550549814795145" at="35,111,37,18" />
+      <scope id="822550549814795145" at="35,109,37,18" />
       <scope id="822550549814829219" at="80,74,82,145">
         <var name="manager" id="822550549814829219" />
       </scope>
@@ -4540,24 +4540,24 @@
       <scope id="822550549814829239" at="215,0,239,0" />
       <scope id="822550549814829244" at="254,0,278,0" />
       <scope id="822550549814829249" at="293,0,317,0" />
-      <unit id="822550549814795145" at="336,0,339,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithName_DiagramTestTextual_EditorBuilder_a$CONCEPTS" />
-      <unit id="822550549814795145" at="327,0,335,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithName_DiagramTestTextual_EditorBuilder_a$PROPS" />
-      <unit id="822550549814795145" at="31,0,340,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithName_DiagramTestTextual_EditorBuilder_a" />
+      <unit id="822550549814795145" at="336,0,339,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithName_DiagramTestTextual_EditorBuilder$CONCEPTS" />
+      <unit id="822550549814795145" at="327,0,335,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithName_DiagramTestTextual_EditorBuilder$PROPS" />
+      <unit id="822550549814795145" at="31,0,340,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithName_DiagramTestTextual_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:38933db7-8021-49f1-94e7-c8fed36889bf(jetbrains.mps.lang.editor.diagram.testLanguage.editor)/8794120090374245752">
     <file name="Diagram2_Editor.java">
-      <node id="8794120090374245752" at="11,79,12,74" concept="8" />
+      <node id="8794120090374245752" at="11,79,12,72" concept="8" />
       <node id="8794120090374245752" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="8794120090374245752" at="11,79,12,74" />
+      <scope id="8794120090374245752" at="11,79,12,72" />
       <scope id="8794120090374245752" at="11,0,14,0">
         <var name="editorContext" id="8794120090374245752" />
         <var name="node" id="8794120090374245752" />
       </scope>
       <unit id="8794120090374245752" at="10,0,15,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram2_Editor" />
     </file>
-    <file name="Diagram2_EditorBuilder_a.java">
-      <node id="8794120090374245752" at="58,88,59,19" concept="11" />
+    <file name="Diagram2_EditorBuilder.java">
+      <node id="8794120090374245752" at="58,86,59,19" concept="11" />
       <node id="8794120090374245752" at="59,19,60,18" concept="2" />
       <node id="8794120090374245752" at="65,26,66,18" concept="8" />
       <node id="8794120090374245752" at="69,39,70,32" concept="8" />
@@ -4654,7 +4654,7 @@
       <node id="8794120090374245752" at="139,0,142,0" concept="6" trace="createMapper#(Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/jetpad/mapper/Mapper;" />
       <node id="8794120090374245752" at="174,0,177,0" concept="6" trace="createMapper#(Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/jetpad/mapper/Mapper;" />
       <node id="8794120090374245752" at="179,0,182,0" concept="6" trace="createMapper#(Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/jetpad/mapper/Mapper;" />
-      <node id="8794120090374245752" at="58,0,62,0" concept="1" trace="Diagram2_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8794120090374245752" at="58,0,62,0" concept="1" trace="Diagram2_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8794120090374256321" at="103,0,107,0" concept="6" trace="invoke#(Lorg/jetbrains/mps/openapi/model/SNode;Ljava/lang/Integer;Ljava/lang/Integer;)V" />
       <node id="5540569706413846293" at="108,0,112,0" concept="6" trace="invoke#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/model/SNode;Ljava/lang/Object;Lorg/jetbrains/mps/openapi/model/SNode;Ljava/lang/Object;)V" />
       <node id="8794120090374245752" at="116,82,120,10" concept="8" />
@@ -4703,7 +4703,7 @@
       <scope id="8794120090374245752" at="174,85,175,85" />
       <scope id="8794120090374245752" at="179,85,180,89" />
       <scope id="1658153848510813025" at="231,15,232,40" />
-      <scope id="8794120090374245752" at="58,88,60,18" />
+      <scope id="8794120090374245752" at="58,86,60,18" />
       <scope id="8794120090374256323" at="103,62,105,60" />
       <scope id="5540569706413846297" at="108,90,110,107" />
       <scope id="8794120090374256323" at="117,160,119,58" />
@@ -4817,32 +4817,32 @@
       <scope id="8794120090374245752" at="128,0,168,0">
         <var name="node" id="8794120090374245752" />
       </scope>
-      <unit id="8794120090374245752" at="133,114,137,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram2_EditorBuilder_a$DiagramCellImpl_dbn5di_a0a$3$1" />
-      <unit id="8794120090374245752" at="138,109,142,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram2_EditorBuilder_a$DiagramCellImpl_dbn5di_a0a$3$2" />
-      <unit id="8794120090374245752" at="173,123,177,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram2_EditorBuilder_a$DiagramCellImpl_dbn5di_a0a$4$1" />
-      <unit id="8794120090374245752" at="178,132,182,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram2_EditorBuilder_a$DiagramCellImpl_dbn5di_a0a$4$2" />
-      <unit id="8794120090374256321" at="102,207,107,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram2_EditorBuilder_a$DiagramCellImpl_dbn5di_a0a$1" />
-      <unit id="5540569706413846293" at="107,299,112,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram2_EditorBuilder_a$DiagramCellImpl_dbn5di_a0a$2" />
-      <unit id="8794120090374245752" at="236,0,241,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram2_EditorBuilder_a$PROPS" />
-      <unit id="8794120090374245752" at="250,0,256,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram2_EditorBuilder_a$LINKS" />
-      <unit id="8794120090374245752" at="242,0,249,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram2_EditorBuilder_a$CONCEPTS" />
-      <unit id="8794120090374245752" at="143,83,151,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram2_EditorBuilder_a$DiagramCellImpl_dbn5di_a0a$3$3" />
-      <unit id="8794120090374245752" at="152,74,163,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram2_EditorBuilder_a$DiagramCellImpl_dbn5di_a0a$3$4" />
-      <unit id="8794120090374245752" at="169,17,184,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram2_EditorBuilder_a$DiagramCellImpl_dbn5di_a0a$4" />
-      <unit id="8794120090374245752" at="129,17,166,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram2_EditorBuilder_a$DiagramCellImpl_dbn5di_a0a$3" />
-      <unit id="8794120090374245752" at="99,0,201,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram2_EditorBuilder_a$DiagramCellImpl_dbn5di_a0a" />
-      <unit id="8794120090374245752" at="54,0,257,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram2_EditorBuilder_a" />
+      <unit id="8794120090374245752" at="133,114,137,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram2_EditorBuilder$DiagramCellImpl_dbn5di_a0a$3$1" />
+      <unit id="8794120090374245752" at="138,109,142,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram2_EditorBuilder$DiagramCellImpl_dbn5di_a0a$3$2" />
+      <unit id="8794120090374245752" at="173,123,177,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram2_EditorBuilder$DiagramCellImpl_dbn5di_a0a$4$1" />
+      <unit id="8794120090374245752" at="178,132,182,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram2_EditorBuilder$DiagramCellImpl_dbn5di_a0a$4$2" />
+      <unit id="8794120090374256321" at="102,207,107,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram2_EditorBuilder$DiagramCellImpl_dbn5di_a0a$1" />
+      <unit id="5540569706413846293" at="107,299,112,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram2_EditorBuilder$DiagramCellImpl_dbn5di_a0a$2" />
+      <unit id="8794120090374245752" at="236,0,241,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram2_EditorBuilder$PROPS" />
+      <unit id="8794120090374245752" at="250,0,256,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram2_EditorBuilder$LINKS" />
+      <unit id="8794120090374245752" at="242,0,249,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram2_EditorBuilder$CONCEPTS" />
+      <unit id="8794120090374245752" at="143,83,151,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram2_EditorBuilder$DiagramCellImpl_dbn5di_a0a$3$3" />
+      <unit id="8794120090374245752" at="152,74,163,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram2_EditorBuilder$DiagramCellImpl_dbn5di_a0a$3$4" />
+      <unit id="8794120090374245752" at="169,17,184,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram2_EditorBuilder$DiagramCellImpl_dbn5di_a0a$4" />
+      <unit id="8794120090374245752" at="129,17,166,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram2_EditorBuilder$DiagramCellImpl_dbn5di_a0a$3" />
+      <unit id="8794120090374245752" at="99,0,201,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram2_EditorBuilder$DiagramCellImpl_dbn5di_a0a" />
+      <unit id="8794120090374245752" at="54,0,257,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram2_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:38933db7-8021-49f1-94e7-c8fed36889bf(jetbrains.mps.lang.editor.diagram.testLanguage.editor)/8794120090374351700">
     <file name="Diagram2_DiagramTestTextual_Editor.java">
       <node id="8794120090374351700" at="14,0,15,0" concept="3" trace="myContextHints" />
       <node id="8794120090374351700" at="17,47,18,26" concept="8" />
-      <node id="8794120090374351700" at="20,79,21,93" concept="8" />
+      <node id="8794120090374351700" at="20,79,21,91" concept="8" />
       <node id="8794120090374351700" at="20,0,23,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="8794120090374351700" at="15,0,20,0" concept="6" trace="getContextHints#()Ljava/util/Collection;" />
       <scope id="8794120090374351700" at="17,47,18,26" />
-      <scope id="8794120090374351700" at="20,79,21,93" />
+      <scope id="8794120090374351700" at="20,79,21,91" />
       <scope id="8794120090374351700" at="20,0,23,0">
         <var name="editorContext" id="8794120090374351700" />
         <var name="node" id="8794120090374351700" />
@@ -4850,8 +4850,8 @@
       <scope id="8794120090374351700" at="15,0,20,0" />
       <unit id="8794120090374351700" at="13,0,24,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram2_DiagramTestTextual_Editor" />
     </file>
-    <file name="Diagram2_DiagramTestTextual_EditorBuilder_a.java">
-      <node id="8794120090374351700" at="33,107,34,19" concept="11" />
+    <file name="Diagram2_DiagramTestTextual_EditorBuilder.java">
+      <node id="8794120090374351700" at="33,105,34,19" concept="11" />
       <node id="8794120090374351700" at="34,19,35,18" concept="2" />
       <node id="8794120090374351700" at="40,26,41,18" concept="8" />
       <node id="8794120090374351700" at="44,39,45,32" concept="8" />
@@ -5009,7 +5009,7 @@
       <node id="8794120090374351700" at="235,0,238,0" concept="6" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="8794120090374351700" at="238,0,241,0" concept="6" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="8794120090374351700" at="282,96,285,9" concept="5" />
-      <node id="8794120090374351700" at="33,0,37,0" concept="1" trace="Diagram2_DiagramTestTextual_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8794120090374351700" at="33,0,37,0" concept="1" trace="Diagram2_DiagramTestTextual_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8794120090374351700" at="122,0,126,0" concept="1" trace="mainNodesListHandler_b472j3_c2a#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="8794120090374351700" at="127,0,131,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="8794120090374351700" at="160,97,164,9" concept="5" />
@@ -5061,7 +5061,7 @@
       <scope id="8794120090374351700" at="238,48,239,52" />
       <scope id="8794120090374351700" at="256,17,257,42" />
       <scope id="8794120090374351700" at="283,34,284,91" />
-      <scope id="8794120090374351700" at="33,107,35,18" />
+      <scope id="8794120090374351700" at="33,105,35,18" />
       <scope id="8794120090374351700" at="122,84,124,25" />
       <scope id="8794120090374351700" at="161,122,163,146" />
       <scope id="8794120090374351700" at="167,34,169,142" />
@@ -5190,26 +5190,26 @@
         <var name="elementNode" id="8794120090374351700" />
         <var name="isEmptyCell" id="8794120090374351700" />
       </scope>
-      <unit id="8794120090374351700" at="299,0,303,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram2_DiagramTestTextual_EditorBuilder_a$LINKS" />
-      <unit id="8794120090374351700" at="304,0,308,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram2_DiagramTestTextual_EditorBuilder_a$CONCEPTS" />
-      <unit id="8794120090374351700" at="118,0,185,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram2_DiagramTestTextual_EditorBuilder_a$mainNodesListHandler_b472j3_c2a" />
-      <unit id="8794120090374351700" at="222,0,289,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram2_DiagramTestTextual_EditorBuilder_a$nodeConnectorsListHandler_b472j3_g2a" />
-      <unit id="8794120090374351700" at="29,0,309,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram2_DiagramTestTextual_EditorBuilder_a" />
+      <unit id="8794120090374351700" at="299,0,303,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram2_DiagramTestTextual_EditorBuilder$LINKS" />
+      <unit id="8794120090374351700" at="304,0,308,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram2_DiagramTestTextual_EditorBuilder$CONCEPTS" />
+      <unit id="8794120090374351700" at="118,0,185,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram2_DiagramTestTextual_EditorBuilder$mainNodesListHandler_b472j3_c2a" />
+      <unit id="8794120090374351700" at="222,0,289,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram2_DiagramTestTextual_EditorBuilder$nodeConnectorsListHandler_b472j3_g2a" />
+      <unit id="8794120090374351700" at="29,0,309,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Diagram2_DiagramTestTextual_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:38933db7-8021-49f1-94e7-c8fed36889bf(jetbrains.mps.lang.editor.diagram.testLanguage.editor)/8794120090374394951">
     <file name="Node_Editor.java">
-      <node id="8794120090374394951" at="11,79,12,70" concept="8" />
+      <node id="8794120090374394951" at="11,79,12,68" concept="8" />
       <node id="8794120090374394951" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="8794120090374394951" at="11,79,12,70" />
+      <scope id="8794120090374394951" at="11,79,12,68" />
       <scope id="8794120090374394951" at="11,0,14,0">
         <var name="editorContext" id="8794120090374394951" />
         <var name="node" id="8794120090374394951" />
       </scope>
       <unit id="8794120090374394951" at="10,0,15,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Node_Editor" />
     </file>
-    <file name="Node_EditorBuilder_a.java">
-      <node id="8794120090374394951" at="40,84,41,19" concept="11" />
+    <file name="Node_EditorBuilder.java">
+      <node id="8794120090374394951" at="40,82,41,19" concept="11" />
       <node id="8794120090374394951" at="41,19,42,18" concept="2" />
       <node id="8794120090374394951" at="47,26,48,18" concept="8" />
       <node id="8794120090374394951" at="51,39,52,33" concept="8" />
@@ -5284,7 +5284,7 @@
       <node id="8794120090374394951" at="161,53,164,11" concept="5" />
       <node id="8794120090374394951" at="165,78,168,11" concept="5" />
       <node id="8794120090374394951" at="174,101,177,13" concept="5" />
-      <node id="8794120090374394951" at="40,0,44,0" concept="1" trace="Node_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8794120090374394951" at="40,0,44,0" concept="1" trace="Node_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8794120090374394951" at="108,174,112,22" concept="2" />
       <node id="8794120090374394951" at="45,0,50,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="8794120090374394951" at="90,0,95,0" concept="6" trace="synchronize#()V" />
@@ -5324,7 +5324,7 @@
       <scope id="8794120090374394951" at="162,36,163,19" />
       <scope id="8794120090374394951" at="166,36,167,19" />
       <scope id="8794120090374394951" at="175,32,176,21" />
-      <scope id="8794120090374394951" at="40,84,42,18" />
+      <scope id="8794120090374394951" at="40,82,42,18" />
       <scope id="8794120090374394951" at="109,107,111,89" />
       <scope id="8794120090374394951" at="51,0,54,0" />
       <scope id="8794120090375437802" at="69,0,72,0" />
@@ -5401,29 +5401,29 @@
       </scope>
       <scope id="8794120090374394951" at="95,58,154,8" />
       <scope id="8794120090374394951" at="95,0,156,0" />
-      <unit id="8794120090374394951" at="189,0,193,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Node_EditorBuilder_a$PROPS" />
-      <unit id="8794120090374394951" at="120,80,126,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Node_EditorBuilder_a$BlockCellImpl_aofvvp_a$3$2" />
-      <unit id="8794120090375437802" at="68,38,75,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Node_EditorBuilder_a$BlockCellImpl_aofvvp_a$1" />
-      <unit id="8794120090375437953" at="78,38,85,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Node_EditorBuilder_a$BlockCellImpl_aofvvp_a$2" />
-      <unit id="8794120090374394951" at="141,79,152,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Node_EditorBuilder_a$BlockCellImpl_aofvvp_a$3$4" />
-      <unit id="8794120090374394951" at="103,25,116,15" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Node_EditorBuilder_a$BlockCellImpl_aofvvp_a$3$1$1" />
-      <unit id="8794120090374394951" at="127,74,140,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Node_EditorBuilder_a$BlockCellImpl_aofvvp_a$3$3" />
-      <unit id="8794120090374394951" at="101,134,118,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Node_EditorBuilder_a$BlockCellImpl_aofvvp_a$3$1" />
-      <unit id="8794120090374394951" at="157,17,185,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Node_EditorBuilder_a$BlockCellImpl_aofvvp_a$4" />
-      <unit id="8794120090374394951" at="96,17,154,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Node_EditorBuilder_a$BlockCellImpl_aofvvp_a$3" />
-      <unit id="8794120090374394951" at="63,0,188,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Node_EditorBuilder_a$BlockCellImpl_aofvvp_a" />
-      <unit id="8794120090374394951" at="36,0,194,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Node_EditorBuilder_a" />
+      <unit id="8794120090374394951" at="189,0,193,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Node_EditorBuilder$PROPS" />
+      <unit id="8794120090374394951" at="120,80,126,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Node_EditorBuilder$BlockCellImpl_aofvvp_a$3$2" />
+      <unit id="8794120090375437802" at="68,38,75,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Node_EditorBuilder$BlockCellImpl_aofvvp_a$1" />
+      <unit id="8794120090375437953" at="78,38,85,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Node_EditorBuilder$BlockCellImpl_aofvvp_a$2" />
+      <unit id="8794120090374394951" at="141,79,152,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Node_EditorBuilder$BlockCellImpl_aofvvp_a$3$4" />
+      <unit id="8794120090374394951" at="103,25,116,15" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Node_EditorBuilder$BlockCellImpl_aofvvp_a$3$1$1" />
+      <unit id="8794120090374394951" at="127,74,140,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Node_EditorBuilder$BlockCellImpl_aofvvp_a$3$3" />
+      <unit id="8794120090374394951" at="101,134,118,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Node_EditorBuilder$BlockCellImpl_aofvvp_a$3$1" />
+      <unit id="8794120090374394951" at="157,17,185,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Node_EditorBuilder$BlockCellImpl_aofvvp_a$4" />
+      <unit id="8794120090374394951" at="96,17,154,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Node_EditorBuilder$BlockCellImpl_aofvvp_a$3" />
+      <unit id="8794120090374394951" at="63,0,188,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Node_EditorBuilder$BlockCellImpl_aofvvp_a" />
+      <unit id="8794120090374394951" at="36,0,194,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Node_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:38933db7-8021-49f1-94e7-c8fed36889bf(jetbrains.mps.lang.editor.diagram.testLanguage.editor)/8794120090375983405">
     <file name="Node_DiagramTestTextual_Editor.java">
       <node id="8794120090375983405" at="14,0,15,0" concept="3" trace="myContextHints" />
       <node id="8794120090375983405" at="17,47,18,26" concept="8" />
-      <node id="8794120090375983405" at="20,79,21,89" concept="8" />
+      <node id="8794120090375983405" at="20,79,21,87" concept="8" />
       <node id="8794120090375983405" at="20,0,23,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="8794120090375983405" at="15,0,20,0" concept="6" trace="getContextHints#()Ljava/util/Collection;" />
       <scope id="8794120090375983405" at="17,47,18,26" />
-      <scope id="8794120090375983405" at="20,79,21,89" />
+      <scope id="8794120090375983405" at="20,79,21,87" />
       <scope id="8794120090375983405" at="20,0,23,0">
         <var name="editorContext" id="8794120090375983405" />
         <var name="node" id="8794120090375983405" />
@@ -5431,8 +5431,8 @@
       <scope id="8794120090375983405" at="15,0,20,0" />
       <unit id="8794120090375983405" at="13,0,24,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Node_DiagramTestTextual_Editor" />
     </file>
-    <file name="Node_DiagramTestTextual_EditorBuilder_a.java">
-      <node id="8794120090375983405" at="35,103,36,19" concept="11" />
+    <file name="Node_DiagramTestTextual_EditorBuilder.java">
+      <node id="8794120090375983405" at="35,101,36,19" concept="11" />
       <node id="8794120090375983405" at="36,19,37,18" concept="2" />
       <node id="8794120090375983405" at="42,26,43,18" concept="8" />
       <node id="8794120090375983405" at="46,39,47,32" concept="8" />
@@ -5534,7 +5534,7 @@
       <node id="8794120090375983405" at="182,0,183,0" concept="10" trace="PropertyAttribute$Gb" />
       <node id="8794120090375983405" at="32,0,34,0" concept="3" trace="myNode" />
       <node id="8794120090375983405" at="46,0,49,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="8794120090375983405" at="35,0,39,0" concept="1" trace="Node_DiagramTestTextual_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8794120090375983405" at="35,0,39,0" concept="1" trace="Node_DiagramTestTextual_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8794120090375983405" at="40,0,45,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="8794120090375983517" at="110,208,115,24" concept="5" />
       <node id="8794120090375983523" at="155,208,160,24" concept="5" />
@@ -5555,7 +5555,7 @@
       <scope id="8794120090375983405" at="46,39,47,32" />
       <scope id="8794120090375983517" at="116,15,117,40" />
       <scope id="8794120090375983523" at="161,15,162,40" />
-      <scope id="8794120090375983405" at="35,103,37,18" />
+      <scope id="8794120090375983405" at="35,101,37,18" />
       <scope id="8794120090375983517" at="111,74,113,145">
         <var name="manager" id="8794120090375983517" />
       </scope>
@@ -5625,24 +5625,24 @@
       <scope id="8794120090375983523" at="144,41,163,5" />
       <scope id="8794120090375983517" at="99,0,120,0" />
       <scope id="8794120090375983523" at="144,0,165,0" />
-      <unit id="8794120090375983405" at="181,0,184,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Node_DiagramTestTextual_EditorBuilder_a$CONCEPTS" />
-      <unit id="8794120090375983405" at="176,0,180,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Node_DiagramTestTextual_EditorBuilder_a$PROPS" />
-      <unit id="8794120090375983405" at="31,0,185,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Node_DiagramTestTextual_EditorBuilder_a" />
+      <unit id="8794120090375983405" at="181,0,184,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Node_DiagramTestTextual_EditorBuilder$CONCEPTS" />
+      <unit id="8794120090375983405" at="176,0,180,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Node_DiagramTestTextual_EditorBuilder$PROPS" />
+      <unit id="8794120090375983405" at="31,0,185,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.Node_DiagramTestTextual_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:38933db7-8021-49f1-94e7-c8fed36889bf(jetbrains.mps.lang.editor.diagram.testLanguage.editor)/8794120090377706519">
     <file name="NodeWithSize_Editor.java">
-      <node id="8794120090377706519" at="11,79,12,78" concept="8" />
+      <node id="8794120090377706519" at="11,79,12,76" concept="8" />
       <node id="8794120090377706519" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="8794120090377706519" at="11,79,12,78" />
+      <scope id="8794120090377706519" at="11,79,12,76" />
       <scope id="8794120090377706519" at="11,0,14,0">
         <var name="editorContext" id="8794120090377706519" />
         <var name="node" id="8794120090377706519" />
       </scope>
       <unit id="8794120090377706519" at="10,0,15,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithSize_Editor" />
     </file>
-    <file name="NodeWithSize_EditorBuilder_a.java">
-      <node id="8794120090377706519" at="40,92,41,19" concept="11" />
+    <file name="NodeWithSize_EditorBuilder.java">
+      <node id="8794120090377706519" at="40,90,41,19" concept="11" />
       <node id="8794120090377706519" at="41,19,42,18" concept="2" />
       <node id="8794120090377706519" at="47,26,48,18" concept="8" />
       <node id="8794120090377706519" at="51,39,52,33" concept="8" />
@@ -5737,7 +5737,7 @@
       <node id="8794120090377706519" at="187,53,190,11" concept="5" />
       <node id="8794120090377706519" at="191,78,194,11" concept="5" />
       <node id="8794120090377706519" at="200,101,203,13" concept="5" />
-      <node id="8794120090377706519" at="40,0,44,0" concept="1" trace="NodeWithSize_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8794120090377706519" at="40,0,44,0" concept="1" trace="NodeWithSize_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8794120090377706519" at="132,174,136,22" concept="2" />
       <node id="8794120090377706519" at="45,0,50,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="8794120090377706519" at="147,0,152,0" concept="6" trace="set#(Ljava/lang/Boolean;)V" />
@@ -5783,7 +5783,7 @@
       <scope id="8794120090377706519" at="188,36,189,19" />
       <scope id="8794120090377706519" at="192,36,193,19" />
       <scope id="8794120090377706519" at="201,32,202,21" />
-      <scope id="8794120090377706519" at="40,92,42,18" />
+      <scope id="8794120090377706519" at="40,90,42,18" />
       <scope id="8794120090377706519" at="133,107,135,89" />
       <scope id="8794120090377706519" at="51,0,54,0" />
       <scope id="8794120090377706905" at="71,0,74,0" />
@@ -5868,31 +5868,31 @@
       </scope>
       <scope id="8794120090377706519" at="119,58,180,8" />
       <scope id="8794120090377706519" at="119,0,182,0" />
-      <unit id="8794120090377706519" at="146,80,152,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithSize_EditorBuilder_a$BlockCellImpl_3q5o1_a$5$2" />
-      <unit id="8794120090377706519" at="215,0,221,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithSize_EditorBuilder_a$PROPS" />
-      <unit id="8794120090377706905" at="70,37,77,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithSize_EditorBuilder_a$BlockCellImpl_3q5o1_a$1" />
-      <unit id="8794120090377907679" at="80,37,87,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithSize_EditorBuilder_a$BlockCellImpl_3q5o1_a$2" />
-      <unit id="8794120090377707368" at="90,37,97,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithSize_EditorBuilder_a$BlockCellImpl_3q5o1_a$3" />
-      <unit id="8794120090377707641" at="100,37,107,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithSize_EditorBuilder_a$BlockCellImpl_3q5o1_a$4" />
-      <unit id="8794120090377706519" at="167,79,178,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithSize_EditorBuilder_a$BlockCellImpl_3q5o1_a$5$4" />
-      <unit id="8794120090377706519" at="153,74,166,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithSize_EditorBuilder_a$BlockCellImpl_3q5o1_a$5$3" />
-      <unit id="8794120090377706519" at="127,25,142,15" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithSize_EditorBuilder_a$BlockCellImpl_3q5o1_a$5$1$1" />
-      <unit id="8794120090377706519" at="125,134,144,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithSize_EditorBuilder_a$BlockCellImpl_3q5o1_a$5$1" />
-      <unit id="8794120090377706519" at="183,17,211,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithSize_EditorBuilder_a$BlockCellImpl_3q5o1_a$6" />
-      <unit id="8794120090377706519" at="120,17,180,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithSize_EditorBuilder_a$BlockCellImpl_3q5o1_a$5" />
-      <unit id="8794120090377706519" at="63,0,214,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithSize_EditorBuilder_a$BlockCellImpl_3q5o1_a" />
-      <unit id="8794120090377706519" at="36,0,222,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithSize_EditorBuilder_a" />
+      <unit id="8794120090377706519" at="146,80,152,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithSize_EditorBuilder$BlockCellImpl_3q5o1_a$5$2" />
+      <unit id="8794120090377706519" at="215,0,221,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithSize_EditorBuilder$PROPS" />
+      <unit id="8794120090377706905" at="70,37,77,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithSize_EditorBuilder$BlockCellImpl_3q5o1_a$1" />
+      <unit id="8794120090377907679" at="80,37,87,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithSize_EditorBuilder$BlockCellImpl_3q5o1_a$2" />
+      <unit id="8794120090377707368" at="90,37,97,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithSize_EditorBuilder$BlockCellImpl_3q5o1_a$3" />
+      <unit id="8794120090377707641" at="100,37,107,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithSize_EditorBuilder$BlockCellImpl_3q5o1_a$4" />
+      <unit id="8794120090377706519" at="167,79,178,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithSize_EditorBuilder$BlockCellImpl_3q5o1_a$5$4" />
+      <unit id="8794120090377706519" at="153,74,166,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithSize_EditorBuilder$BlockCellImpl_3q5o1_a$5$3" />
+      <unit id="8794120090377706519" at="127,25,142,15" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithSize_EditorBuilder$BlockCellImpl_3q5o1_a$5$1$1" />
+      <unit id="8794120090377706519" at="125,134,144,11" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithSize_EditorBuilder$BlockCellImpl_3q5o1_a$5$1" />
+      <unit id="8794120090377706519" at="183,17,211,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithSize_EditorBuilder$BlockCellImpl_3q5o1_a$6" />
+      <unit id="8794120090377706519" at="120,17,180,7" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithSize_EditorBuilder$BlockCellImpl_3q5o1_a$5" />
+      <unit id="8794120090377706519" at="63,0,214,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithSize_EditorBuilder$BlockCellImpl_3q5o1_a" />
+      <unit id="8794120090377706519" at="36,0,222,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithSize_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:38933db7-8021-49f1-94e7-c8fed36889bf(jetbrains.mps.lang.editor.diagram.testLanguage.editor)/8794120090377808517">
     <file name="NodeWithSize_DiagramTestTextual_Editor.java">
       <node id="8794120090377808517" at="14,0,15,0" concept="3" trace="myContextHints" />
       <node id="8794120090377808517" at="17,47,18,26" concept="8" />
-      <node id="8794120090377808517" at="20,79,21,97" concept="8" />
+      <node id="8794120090377808517" at="20,79,21,95" concept="8" />
       <node id="8794120090377808517" at="20,0,23,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="8794120090377808517" at="15,0,20,0" concept="6" trace="getContextHints#()Ljava/util/Collection;" />
       <scope id="8794120090377808517" at="17,47,18,26" />
-      <scope id="8794120090377808517" at="20,79,21,97" />
+      <scope id="8794120090377808517" at="20,79,21,95" />
       <scope id="8794120090377808517" at="20,0,23,0">
         <var name="editorContext" id="8794120090377808517" />
         <var name="node" id="8794120090377808517" />
@@ -5900,8 +5900,8 @@
       <scope id="8794120090377808517" at="15,0,20,0" />
       <unit id="8794120090377808517" at="13,0,24,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithSize_DiagramTestTextual_Editor" />
     </file>
-    <file name="NodeWithSize_DiagramTestTextual_EditorBuilder_a.java">
-      <node id="8794120090377808517" at="35,111,36,19" concept="11" />
+    <file name="NodeWithSize_DiagramTestTextual_EditorBuilder.java">
+      <node id="8794120090377808517" at="35,109,36,19" concept="11" />
       <node id="8794120090377808517" at="36,19,37,18" concept="2" />
       <node id="8794120090377808517" at="42,26,43,18" concept="8" />
       <node id="8794120090377808517" at="46,39,47,32" concept="8" />
@@ -6077,7 +6077,7 @@
       <node id="8794120090377808517" at="282,0,283,0" concept="10" trace="PropertyAttribute$Gb" />
       <node id="8794120090377808517" at="32,0,34,0" concept="3" trace="myNode" />
       <node id="8794120090377808517" at="46,0,49,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="8794120090377808517" at="35,0,39,0" concept="1" trace="NodeWithSize_DiagramTestTextual_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8794120090377808517" at="35,0,39,0" concept="1" trace="NodeWithSize_DiagramTestTextual_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8794120090377808517" at="40,0,45,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="8794120090377808531" at="118,208,123,24" concept="5" />
       <node id="8794120090377808537" at="163,208,168,24" concept="5" />
@@ -6112,7 +6112,7 @@
       <scope id="8794120090377808537" at="169,15,170,40" />
       <scope id="8794120090377808543" at="214,15,215,40" />
       <scope id="8794120090377808549" at="259,15,260,40" />
-      <scope id="8794120090377808517" at="35,111,37,18" />
+      <scope id="8794120090377808517" at="35,109,37,18" />
       <scope id="8794120090377808531" at="119,74,121,145">
         <var name="manager" id="8794120090377808531" />
       </scope>
@@ -6232,9 +6232,9 @@
         <var name="editorCell" id="8794120090377808517" />
       </scope>
       <scope id="8794120090377808517" at="50,0,75,0" />
-      <unit id="8794120090377808517" at="281,0,284,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithSize_DiagramTestTextual_EditorBuilder_a$CONCEPTS" />
-      <unit id="8794120090377808517" at="274,0,280,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithSize_DiagramTestTextual_EditorBuilder_a$PROPS" />
-      <unit id="8794120090377808517" at="31,0,285,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithSize_DiagramTestTextual_EditorBuilder_a" />
+      <unit id="8794120090377808517" at="281,0,284,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithSize_DiagramTestTextual_EditorBuilder$CONCEPTS" />
+      <unit id="8794120090377808517" at="274,0,280,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithSize_DiagramTestTextual_EditorBuilder$PROPS" />
+      <unit id="8794120090377808517" at="31,0,285,0" name="jetbrains.mps.lang.editor.diagram.testLanguage.editor.NodeWithSize_DiagramTestTextual_EditorBuilder" />
     </file>
   </root>
 </debug-info>

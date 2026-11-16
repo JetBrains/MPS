@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="3orlly664b5ej8ltrtzveels1x0i90d">
-  <files names="ClassPathItem_Editor.java:ClassPathItem_EditorBuilder_a.java:EditorAspectDescriptorImpl.java:MpsStartupScript_Editor.java:MpsStartupScript_EditorBuilder_a.java:MpsStartupScript_InspectorBuilder_a.java:SimpleVmOptions_Editor.java:SimpleVmOptions_EditorBuilder_a.java:SimpleVmOptions_InspectorBuilder_a.java:TextFile_Editor.java:TextFile_EditorBuilder_a.java:TextLine_Editor.java:TextLine_EditorBuilder_a.java" />
+  <files names="ClassPathItem_Editor.java:ClassPathItem_EditorBuilder.java:EditorAspectDescriptorImpl.java:MpsStartupScript_Editor.java:MpsStartupScript_EditorBuilder.java:MpsStartupScript_InspectorBuilder.java:SimpleVmOptions_Editor.java:SimpleVmOptions_EditorBuilder.java:SimpleVmOptions_InspectorBuilder.java:TextFile_Editor.java:TextFile_EditorBuilder.java:TextLine_Editor.java:TextLine_EditorBuilder.java" />
 </product>
 

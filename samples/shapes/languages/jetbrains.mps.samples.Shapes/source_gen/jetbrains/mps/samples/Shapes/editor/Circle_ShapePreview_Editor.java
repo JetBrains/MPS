@@ -18,6 +18,6 @@ public class Circle_ShapePreview_Editor extends DefaultNodeEditor {
     return myContextHints;
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new Circle_ShapePreview_EditorBuilder_a(editorContext, node).createCell();
+    return new Circle_ShapePreview_EditorBuilder(editorContext, node).createCell();
   }
 }

@@ -163,17 +163,17 @@
   </root>
   <root nodeRef="r:563c5369-4649-4929-a845-37c7045ffecd(jetbrains.mps.samples.ChemMastery.editor)/3123291046850546419">
     <file name="ExplicitBond_Editor.java">
-      <node id="3123291046850546419" at="11,79,12,78" concept="9" />
+      <node id="3123291046850546419" at="11,79,12,76" concept="9" />
       <node id="3123291046850546419" at="11,0,14,0" concept="7" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="3123291046850546419" at="11,79,12,78" />
+      <scope id="3123291046850546419" at="11,79,12,76" />
       <scope id="3123291046850546419" at="11,0,14,0">
         <var name="editorContext" id="3123291046850546419" />
         <var name="node" id="3123291046850546419" />
       </scope>
       <unit id="3123291046850546419" at="10,0,15,0" name="jetbrains.mps.samples.ChemMastery.editor.ExplicitBond_Editor" />
     </file>
-    <file name="ExplicitBond_EditorBuilder_a.java">
-      <node id="3123291046850546419" at="16,92,17,19" concept="14" />
+    <file name="ExplicitBond_EditorBuilder.java">
+      <node id="3123291046850546419" at="16,90,17,19" concept="14" />
       <node id="3123291046850546419" at="17,19,18,18" concept="2" />
       <node id="3123291046850546419" at="23,26,24,18" concept="9" />
       <node id="3123291046850546419" at="27,39,28,30" concept="9" />
@@ -186,12 +186,12 @@
       <node id="3123291046850546421" at="37,34,38,22" concept="9" />
       <node id="3123291046850546419" at="13,0,15,0" concept="3" trace="myNode" />
       <node id="3123291046850546419" at="27,0,30,0" concept="7" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="3123291046850546419" at="16,0,20,0" concept="1" trace="ExplicitBond_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="3123291046850546419" at="16,0,20,0" concept="1" trace="ExplicitBond_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="3123291046850546419" at="21,0,26,0" concept="7" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="3123291046850546421" at="31,0,40,0" concept="7" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="3123291046850546419" at="23,26,24,18" />
       <scope id="3123291046850546419" at="27,39,28,30" />
-      <scope id="3123291046850546419" at="16,92,18,18" />
+      <scope id="3123291046850546419" at="16,90,18,18" />
       <scope id="3123291046850546419" at="27,0,30,0" />
       <scope id="3123291046850546419" at="16,0,20,0">
         <var name="context" id="3123291046850546419" />
@@ -202,22 +202,22 @@
         <var name="editorCell" id="3123291046850546421" />
       </scope>
       <scope id="3123291046850546421" at="31,0,40,0" />
-      <unit id="3123291046850546419" at="12,0,41,0" name="jetbrains.mps.samples.ChemMastery.editor.ExplicitBond_EditorBuilder_a" />
+      <unit id="3123291046850546419" at="12,0,41,0" name="jetbrains.mps.samples.ChemMastery.editor.ExplicitBond_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:563c5369-4649-4929-a845-37c7045ffecd(jetbrains.mps.samples.ChemMastery.editor)/3123291046850634980">
     <file name="Parens_Editor.java">
-      <node id="3123291046850634980" at="11,79,12,72" concept="9" />
+      <node id="3123291046850634980" at="11,79,12,70" concept="9" />
       <node id="3123291046850634980" at="11,0,14,0" concept="7" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="3123291046850634980" at="11,79,12,72" />
+      <scope id="3123291046850634980" at="11,79,12,70" />
       <scope id="3123291046850634980" at="11,0,14,0">
         <var name="editorContext" id="3123291046850634980" />
         <var name="node" id="3123291046850634980" />
       </scope>
       <unit id="3123291046850634980" at="10,0,15,0" name="jetbrains.mps.samples.ChemMastery.editor.Parens_Editor" />
     </file>
-    <file name="Parens_EditorBuilder_a.java">
-      <node id="3123291046850634980" at="53,86,54,19" concept="14" />
+    <file name="Parens_EditorBuilder.java">
+      <node id="3123291046850634980" at="53,84,54,19" concept="14" />
       <node id="3123291046850634980" at="54,19,55,18" concept="2" />
       <node id="3123291046850634980" at="60,26,61,18" concept="9" />
       <node id="3123291046850634980" at="64,39,65,32" concept="9" />
@@ -374,7 +374,7 @@
       <node id="3123291046850634980" at="126,0,129,0" concept="7" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="3123291046852550516" at="201,0,204,0" concept="7" trace="_StyleParameter_QueryFunction_lznsv5_a0a1a#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/model/SNode;)I" />
       <node id="3123291046851840585" at="229,0,232,0" concept="7" trace="_StyleParameter_QueryFunction_lznsv5_a2d0#()I" />
-      <node id="3123291046850634980" at="53,0,57,0" concept="1" trace="Parens_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="3123291046850634980" at="53,0,57,0" concept="1" trace="Parens_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="3123291046850634980" at="114,0,118,0" concept="1" trace="elementsListHandler_lznsv5_b0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="3123291046850634980" at="119,0,123,0" concept="7" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="3123291046850634980" at="152,97,156,9" concept="6" />
@@ -414,7 +414,7 @@
       <scope id="3123291046852550517" at="201,92,202,60" />
       <scope id="3123291046851840586" at="229,59,230,62" />
       <scope id="3123291046851840604" at="281,15,282,40" />
-      <scope id="3123291046850634980" at="53,86,55,18" />
+      <scope id="3123291046850634980" at="53,84,55,18" />
       <scope id="3123291046850634980" at="114,82,116,25" />
       <scope id="3123291046850634980" at="153,122,155,146" />
       <scope id="3123291046850634980" at="159,34,161,142" />
@@ -525,11 +525,11 @@
         <var name="elementNode" id="3123291046850634980" />
         <var name="isEmptyCell" id="3123291046850634980" />
       </scope>
-      <unit id="3123291046850634980" at="297,0,300,0" name="jetbrains.mps.samples.ChemMastery.editor.Parens_EditorBuilder_a$LINKS" />
-      <unit id="3123291046850634980" at="286,0,290,0" name="jetbrains.mps.samples.ChemMastery.editor.Parens_EditorBuilder_a$PROPS" />
-      <unit id="3123291046850634980" at="291,0,296,0" name="jetbrains.mps.samples.ChemMastery.editor.Parens_EditorBuilder_a$CONCEPTS" />
-      <unit id="3123291046850634980" at="110,0,205,0" name="jetbrains.mps.samples.ChemMastery.editor.Parens_EditorBuilder_a$elementsListHandler_lznsv5_b0" />
-      <unit id="3123291046850634980" at="49,0,301,0" name="jetbrains.mps.samples.ChemMastery.editor.Parens_EditorBuilder_a" />
+      <unit id="3123291046850634980" at="297,0,300,0" name="jetbrains.mps.samples.ChemMastery.editor.Parens_EditorBuilder$LINKS" />
+      <unit id="3123291046850634980" at="286,0,290,0" name="jetbrains.mps.samples.ChemMastery.editor.Parens_EditorBuilder$PROPS" />
+      <unit id="3123291046850634980" at="291,0,296,0" name="jetbrains.mps.samples.ChemMastery.editor.Parens_EditorBuilder$CONCEPTS" />
+      <unit id="3123291046850634980" at="110,0,205,0" name="jetbrains.mps.samples.ChemMastery.editor.Parens_EditorBuilder$elementsListHandler_lznsv5_b0" />
+      <unit id="3123291046850634980" at="49,0,301,0" name="jetbrains.mps.samples.ChemMastery.editor.Parens_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:563c5369-4649-4929-a845-37c7045ffecd(jetbrains.mps.samples.ChemMastery.editor)/3123291046851062707">
@@ -1380,17 +1380,17 @@
   </root>
   <root nodeRef="r:563c5369-4649-4929-a845-37c7045ffecd(jetbrains.mps.samples.ChemMastery.editor)/6567999678834231800">
     <file name="Energy_Editor.java">
-      <node id="6567999678834231800" at="11,79,12,72" concept="9" />
+      <node id="6567999678834231800" at="11,79,12,70" concept="9" />
       <node id="6567999678834231800" at="11,0,14,0" concept="7" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="6567999678834231800" at="11,79,12,72" />
+      <scope id="6567999678834231800" at="11,79,12,70" />
       <scope id="6567999678834231800" at="11,0,14,0">
         <var name="editorContext" id="6567999678834231800" />
         <var name="node" id="6567999678834231800" />
       </scope>
       <unit id="6567999678834231800" at="10,0,15,0" name="jetbrains.mps.samples.ChemMastery.editor.Energy_Editor" />
     </file>
-    <file name="Energy_EditorBuilder_a.java">
-      <node id="6567999678834231800" at="23,86,24,19" concept="14" />
+    <file name="Energy_EditorBuilder.java">
+      <node id="6567999678834231800" at="23,84,24,19" concept="14" />
       <node id="6567999678834231800" at="24,19,25,18" concept="2" />
       <node id="6567999678834231800" at="30,26,31,18" concept="9" />
       <node id="6567999678834231800" at="34,39,35,32" concept="9" />
@@ -1411,13 +1411,13 @@
       <node id="6567999678834231802" at="54,34,55,22" concept="9" />
       <node id="6567999678834231800" at="20,0,22,0" concept="3" trace="myNode" />
       <node id="6567999678834231800" at="34,0,37,0" concept="7" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="6567999678834231800" at="23,0,27,0" concept="1" trace="Energy_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="6567999678834231800" at="23,0,27,0" concept="1" trace="Energy_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="6567999678834231800" at="28,0,33,0" concept="7" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="6567999678834231800" at="38,0,46,0" concept="7" trace="createCollection_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="6567999678834231802" at="46,0,57,0" concept="7" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="6567999678834231800" at="30,26,31,18" />
       <scope id="6567999678834231800" at="34,39,35,32" />
-      <scope id="6567999678834231800" at="23,86,25,18" />
+      <scope id="6567999678834231800" at="23,84,25,18" />
       <scope id="6567999678834231800" at="34,0,37,0" />
       <scope id="6567999678834231800" at="23,0,27,0">
         <var name="context" id="6567999678834231800" />
@@ -1433,22 +1433,22 @@
         <var name="style" id="6567999678834231802" />
       </scope>
       <scope id="6567999678834231802" at="46,0,57,0" />
-      <unit id="6567999678834231800" at="19,0,58,0" name="jetbrains.mps.samples.ChemMastery.editor.Energy_EditorBuilder_a" />
+      <unit id="6567999678834231800" at="19,0,58,0" name="jetbrains.mps.samples.ChemMastery.editor.Energy_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:563c5369-4649-4929-a845-37c7045ffecd(jetbrains.mps.samples.ChemMastery.editor)/6567999678835491426">
     <file name="EquationComponent_Editor.java">
-      <node id="6567999678835491426" at="11,79,12,83" concept="9" />
+      <node id="6567999678835491426" at="11,79,12,81" concept="9" />
       <node id="6567999678835491426" at="11,0,14,0" concept="7" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="6567999678835491426" at="11,79,12,83" />
+      <scope id="6567999678835491426" at="11,79,12,81" />
       <scope id="6567999678835491426" at="11,0,14,0">
         <var name="editorContext" id="6567999678835491426" />
         <var name="node" id="6567999678835491426" />
       </scope>
       <unit id="6567999678835491426" at="10,0,15,0" name="jetbrains.mps.samples.ChemMastery.editor.EquationComponent_Editor" />
     </file>
-    <file name="EquationComponent_EditorBuilder_a.java">
-      <node id="6567999678835491426" at="19,97,20,19" concept="14" />
+    <file name="EquationComponent_EditorBuilder.java">
+      <node id="6567999678835491426" at="19,95,20,19" concept="14" />
       <node id="6567999678835491426" at="20,19,21,18" concept="2" />
       <node id="6567999678835491426" at="26,26,27,18" concept="9" />
       <node id="6567999678835491426" at="30,39,31,30" concept="9" />
@@ -1463,12 +1463,12 @@
       <node id="6567999678835491428" at="42,34,43,22" concept="9" />
       <node id="6567999678835491426" at="16,0,18,0" concept="3" trace="myNode" />
       <node id="6567999678835491426" at="30,0,33,0" concept="7" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="6567999678835491426" at="19,0,23,0" concept="1" trace="EquationComponent_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="6567999678835491426" at="19,0,23,0" concept="1" trace="EquationComponent_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="6567999678835491426" at="24,0,29,0" concept="7" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="6567999678835491428" at="34,0,45,0" concept="7" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="6567999678835491426" at="26,26,27,18" />
       <scope id="6567999678835491426" at="30,39,31,30" />
-      <scope id="6567999678835491426" at="19,97,21,18" />
+      <scope id="6567999678835491426" at="19,95,21,18" />
       <scope id="6567999678835491426" at="30,0,33,0" />
       <scope id="6567999678835491426" at="19,0,23,0">
         <var name="context" id="6567999678835491426" />
@@ -1480,7 +1480,7 @@
         <var name="style" id="6567999678835491428" />
       </scope>
       <scope id="6567999678835491428" at="34,0,45,0" />
-      <unit id="6567999678835491426" at="15,0,46,0" name="jetbrains.mps.samples.ChemMastery.editor.EquationComponent_EditorBuilder_a" />
+      <unit id="6567999678835491426" at="15,0,46,0" name="jetbrains.mps.samples.ChemMastery.editor.EquationComponent_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:563c5369-4649-4929-a845-37c7045ffecd(jetbrains.mps.samples.ChemMastery.editor)/6567999678835491460">
@@ -1837,17 +1837,17 @@
   </root>
   <root nodeRef="r:563c5369-4649-4929-a845-37c7045ffecd(jetbrains.mps.samples.ChemMastery.editor)/7995886393880421637">
     <file name="SheetEntry_Editor.java">
-      <node id="7995886393880421637" at="11,79,12,76" concept="9" />
+      <node id="7995886393880421637" at="11,79,12,74" concept="9" />
       <node id="7995886393880421637" at="11,0,14,0" concept="7" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="7995886393880421637" at="11,79,12,76" />
+      <scope id="7995886393880421637" at="11,79,12,74" />
       <scope id="7995886393880421637" at="11,0,14,0">
         <var name="editorContext" id="7995886393880421637" />
         <var name="node" id="7995886393880421637" />
       </scope>
       <unit id="7995886393880421637" at="10,0,15,0" name="jetbrains.mps.samples.ChemMastery.editor.SheetEntry_Editor" />
     </file>
-    <file name="SheetEntry_EditorBuilder_a.java">
-      <node id="7995886393880421637" at="41,90,42,19" concept="14" />
+    <file name="SheetEntry_EditorBuilder.java">
+      <node id="7995886393880421637" at="41,88,42,19" concept="14" />
       <node id="7995886393880421637" at="42,19,43,18" concept="2" />
       <node id="7995886393880421637" at="48,26,49,18" concept="9" />
       <node id="7995886393880421637" at="52,39,53,32" concept="9" />
@@ -1977,7 +1977,7 @@
       <node id="6567999678832620193" at="183,0,186,0" concept="7" trace="_QueryFunction_JComponent_ekbrl8_a0b1c0#()Ljavax/swing/JComponent;" />
       <node id="6567999678832620985" at="200,0,203,0" concept="7" trace="_QueryFunction_JComponent_ekbrl8_a0c1c0#()Ljavax/swing/JComponent;" />
       <node id="6567999678831909703" at="217,0,220,0" concept="7" trace="_QueryFunction_JComponent_ekbrl8_a0d1c0#()Ljavax/swing/JComponent;" />
-      <node id="7995886393880421637" at="41,0,45,0" concept="1" trace="SheetEntry_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="7995886393880421637" at="41,0,45,0" concept="1" trace="SheetEntry_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="7995886393880421646" at="97,0,101,0" concept="7" trace="getText#()Ljava/lang/String;" />
       <node id="7995886393880421637" at="46,0,51,0" concept="7" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="7995886393880421637" at="161,0,166,0" concept="7" trace="createJComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -2009,7 +2009,7 @@
       <scope id="6567999678832620194" at="183,64,184,78" />
       <scope id="6567999678832620986" at="200,64,201,72" />
       <scope id="6567999678831909705" at="217,64,218,74" />
-      <scope id="7995886393880421637" at="41,90,43,18" />
+      <scope id="7995886393880421637" at="41,88,43,18" />
       <scope id="7995886393880421652" at="97,31,99,88">
         <var name="entries" id="3123291046854112914" />
       </scope>
@@ -2100,21 +2100,21 @@
       <scope id="7995886393880421637" at="56,0,71,0" />
       <scope id="7995886393880421637" at="134,0,149,0" />
       <scope id="7995886393880421646" at="95,0,111,0" />
-      <unit id="7995886393880421637" at="228,0,231,0" name="jetbrains.mps.samples.ChemMastery.editor.SheetEntry_EditorBuilder_a$PROPS" />
-      <unit id="7995886393880421637" at="232,0,235,0" name="jetbrains.mps.samples.ChemMastery.editor.SheetEntry_EditorBuilder_a$LINKS" />
-      <unit id="7995886393880421646" at="96,88,101,5" name="jetbrains.mps.samples.ChemMastery.editor.SheetEntry_EditorBuilder_a$1" />
-      <unit id="7995886393880421637" at="221,0,227,0" name="jetbrains.mps.samples.ChemMastery.editor.SheetEntry_EditorBuilder_a$CONCEPTS" />
-      <unit id="7995886393880421637" at="37,0,236,0" name="jetbrains.mps.samples.ChemMastery.editor.SheetEntry_EditorBuilder_a" />
+      <unit id="7995886393880421637" at="228,0,231,0" name="jetbrains.mps.samples.ChemMastery.editor.SheetEntry_EditorBuilder$PROPS" />
+      <unit id="7995886393880421637" at="232,0,235,0" name="jetbrains.mps.samples.ChemMastery.editor.SheetEntry_EditorBuilder$LINKS" />
+      <unit id="7995886393880421646" at="96,88,101,5" name="jetbrains.mps.samples.ChemMastery.editor.SheetEntry_EditorBuilder$1" />
+      <unit id="7995886393880421637" at="221,0,227,0" name="jetbrains.mps.samples.ChemMastery.editor.SheetEntry_EditorBuilder$CONCEPTS" />
+      <unit id="7995886393880421637" at="37,0,236,0" name="jetbrains.mps.samples.ChemMastery.editor.SheetEntry_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:563c5369-4649-4929-a845-37c7045ffecd(jetbrains.mps.samples.ChemMastery.editor)/7995886393880455644">
     <file name="SheetEntryContent.java">
       <node id="7995886393880455644" at="15,47,16,35" concept="9" />
-      <node id="7995886393880455644" at="18,79,19,86" concept="9" />
+      <node id="7995886393880455644" at="18,79,19,84" concept="9" />
       <node id="7995886393880455644" at="18,0,21,0" concept="7" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="7995886393880455644" at="14,0,18,0" concept="7" trace="getContextHints#()Ljava/util/Collection;" />
       <scope id="7995886393880455644" at="15,47,16,35" />
-      <scope id="7995886393880455644" at="18,79,19,86" />
+      <scope id="7995886393880455644" at="18,79,19,84" />
       <scope id="7995886393880455644" at="18,0,21,0">
         <var name="editorContext" id="7995886393880455644" />
         <var name="node" id="7995886393880455644" />
@@ -2122,8 +2122,8 @@
       <scope id="7995886393880455644" at="14,0,18,0" />
       <unit id="7995886393880455644" at="13,0,22,0" name="jetbrains.mps.samples.ChemMastery.editor.SheetEntryContent" />
     </file>
-    <file name="SheetEntryContent_ComponentBuilder_a.java">
-      <node id="7995886393880455644" at="27,100,28,19" concept="14" />
+    <file name="SheetEntryContent_ComponentBuilder.java">
+      <node id="7995886393880455644" at="27,98,28,19" concept="14" />
       <node id="7995886393880455644" at="28,19,29,18" concept="2" />
       <node id="7995886393880455644" at="34,26,35,18" concept="9" />
       <node id="7995886393880455644" at="38,39,39,32" concept="9" />
@@ -2155,14 +2155,14 @@
       <node id="7995886393880455644" at="75,0,76,0" concept="12" trace="SheetEntry$3$" />
       <node id="7995886393880455644" at="24,0,26,0" concept="3" trace="myNode" />
       <node id="7995886393880455644" at="38,0,41,0" concept="7" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="7995886393880455644" at="27,0,31,0" concept="1" trace="SheetEntryContent_ComponentBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="7995886393880455644" at="27,0,31,0" concept="1" trace="SheetEntryContent_ComponentBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="7995886393880455644" at="32,0,37,0" concept="7" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="7995886393882498416" at="52,0,61,0" concept="7" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="7995886393880455644" at="42,0,52,0" concept="7" trace="createCollection_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="7995886393880455646" at="61,0,73,0" concept="7" trace="createConstant_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="7995886393880455644" at="34,26,35,18" />
       <scope id="7995886393880455644" at="38,39,39,32" />
-      <scope id="7995886393880455644" at="27,100,29,18" />
+      <scope id="7995886393880455644" at="27,98,29,18" />
       <scope id="7995886393880455644" at="38,0,41,0" />
       <scope id="7995886393880455644" at="27,0,31,0">
         <var name="context" id="7995886393880455644" />
@@ -2184,18 +2184,18 @@
         <var name="style" id="7995886393880455646" />
       </scope>
       <scope id="7995886393880455646" at="61,0,73,0" />
-      <unit id="7995886393880455644" at="74,0,77,0" name="jetbrains.mps.samples.ChemMastery.editor.SheetEntryContent_ComponentBuilder_a$CONCEPTS" />
-      <unit id="7995886393880455644" at="23,0,78,0" name="jetbrains.mps.samples.ChemMastery.editor.SheetEntryContent_ComponentBuilder_a" />
+      <unit id="7995886393880455644" at="74,0,77,0" name="jetbrains.mps.samples.ChemMastery.editor.SheetEntryContent_ComponentBuilder$CONCEPTS" />
+      <unit id="7995886393880455644" at="23,0,78,0" name="jetbrains.mps.samples.ChemMastery.editor.SheetEntryContent_ComponentBuilder" />
     </file>
   </root>
   <root nodeRef="r:563c5369-4649-4929-a845-37c7045ffecd(jetbrains.mps.samples.ChemMastery.editor)/7995886393880455678">
     <file name="DocumentationEntryContent.java">
       <node id="7995886393880455678" at="15,47,16,35" concept="9" />
-      <node id="7995886393880455678" at="18,79,19,94" concept="9" />
+      <node id="7995886393880455678" at="18,79,19,92" concept="9" />
       <node id="7995886393880455678" at="18,0,21,0" concept="7" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="7995886393880455678" at="14,0,18,0" concept="7" trace="getContextHints#()Ljava/util/Collection;" />
       <scope id="7995886393880455678" at="15,47,16,35" />
-      <scope id="7995886393880455678" at="18,79,19,94" />
+      <scope id="7995886393880455678" at="18,79,19,92" />
       <scope id="7995886393880455678" at="18,0,21,0">
         <var name="editorContext" id="7995886393880455678" />
         <var name="node" id="7995886393880455678" />
@@ -2203,8 +2203,8 @@
       <scope id="7995886393880455678" at="14,0,18,0" />
       <unit id="7995886393880455678" at="13,0,22,0" name="jetbrains.mps.samples.ChemMastery.editor.DocumentationEntryContent" />
     </file>
-    <file name="DocumentationEntryContent_ComponentBuilder_a.java">
-      <node id="7995886393880455678" at="30,108,31,19" concept="14" />
+    <file name="DocumentationEntryContent_ComponentBuilder.java">
+      <node id="7995886393880455678" at="30,106,31,19" concept="14" />
       <node id="7995886393880455678" at="31,19,32,18" concept="2" />
       <node id="7995886393880455678" at="37,26,38,18" concept="9" />
       <node id="7995886393880455678" at="41,39,42,32" concept="9" />
@@ -2254,7 +2254,7 @@
       <node id="7995886393880455678" at="93,87,96,7" concept="6" />
       <node id="7995886393880455678" at="96,7,99,7" concept="6" />
       <node id="7995886393880455678" at="118,0,121,0" concept="7" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="7995886393880455678" at="30,0,34,0" concept="1" trace="DocumentationEntryContent_ComponentBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="7995886393880455678" at="30,0,34,0" concept="1" trace="DocumentationEntryContent_ComponentBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="7995886393880455678" at="64,0,68,0" concept="7" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="7995886393880455678" at="72,0,76,0" concept="1" trace="textSingleRoleHandler_9r13n4_b0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="7995886393880455678" at="35,0,40,0" concept="7" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -2272,7 +2272,7 @@
       <scope id="7995886393880455678" at="97,42,98,45" />
       <scope id="7995886393880455678" at="114,17,115,42" />
       <scope id="7995886393880455678" at="118,40,119,25" />
-      <scope id="7995886393880455678" at="30,108,32,18" />
+      <scope id="7995886393880455678" at="30,106,32,18" />
       <scope id="7995886393880455678" at="64,40,66,33">
         <var name="provider" id="7995886393880455678" />
       </scope>
@@ -2320,19 +2320,19 @@
       </scope>
       <scope id="7995886393880455678" at="105,44,116,7" />
       <scope id="7995886393880455678" at="104,0,118,0" />
-      <unit id="7995886393880455678" at="123,0,126,0" name="jetbrains.mps.samples.ChemMastery.editor.DocumentationEntryContent_ComponentBuilder_a$LINKS" />
-      <unit id="7995886393880455678" at="68,0,122,0" name="jetbrains.mps.samples.ChemMastery.editor.DocumentationEntryContent_ComponentBuilder_a$textSingleRoleHandler_9r13n4_b0" />
-      <unit id="7995886393880455678" at="26,0,127,0" name="jetbrains.mps.samples.ChemMastery.editor.DocumentationEntryContent_ComponentBuilder_a" />
+      <unit id="7995886393880455678" at="123,0,126,0" name="jetbrains.mps.samples.ChemMastery.editor.DocumentationEntryContent_ComponentBuilder$LINKS" />
+      <unit id="7995886393880455678" at="68,0,122,0" name="jetbrains.mps.samples.ChemMastery.editor.DocumentationEntryContent_ComponentBuilder$textSingleRoleHandler_9r13n4_b0" />
+      <unit id="7995886393880455678" at="26,0,127,0" name="jetbrains.mps.samples.ChemMastery.editor.DocumentationEntryContent_ComponentBuilder" />
     </file>
   </root>
   <root nodeRef="r:563c5369-4649-4929-a845-37c7045ffecd(jetbrains.mps.samples.ChemMastery.editor)/7995886393880455712">
     <file name="EquationEntryContent.java">
       <node id="7995886393880455712" at="15,47,16,35" concept="9" />
-      <node id="7995886393880455712" at="18,79,19,89" concept="9" />
+      <node id="7995886393880455712" at="18,79,19,87" concept="9" />
       <node id="7995886393880455712" at="18,0,21,0" concept="7" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="7995886393880455712" at="14,0,18,0" concept="7" trace="getContextHints#()Ljava/util/Collection;" />
       <scope id="7995886393880455712" at="15,47,16,35" />
-      <scope id="7995886393880455712" at="18,79,19,89" />
+      <scope id="7995886393880455712" at="18,79,19,87" />
       <scope id="7995886393880455712" at="18,0,21,0">
         <var name="editorContext" id="7995886393880455712" />
         <var name="node" id="7995886393880455712" />
@@ -2340,8 +2340,8 @@
       <scope id="7995886393880455712" at="14,0,18,0" />
       <unit id="7995886393880455712" at="13,0,22,0" name="jetbrains.mps.samples.ChemMastery.editor.EquationEntryContent" />
     </file>
-    <file name="EquationEntryContent_ComponentBuilder_a.java">
-      <node id="7995886393880455712" at="26,103,27,19" concept="14" />
+    <file name="EquationEntryContent_ComponentBuilder.java">
+      <node id="7995886393880455712" at="26,101,27,19" concept="14" />
       <node id="7995886393880455712" at="27,19,28,18" concept="2" />
       <node id="7995886393880455712" at="33,26,34,18" concept="9" />
       <node id="7995886393880455712" at="37,39,38,32" concept="9" />
@@ -2377,7 +2377,7 @@
       <node id="7995886393880455712" at="76,87,79,7" concept="6" />
       <node id="7995886393880455712" at="79,7,82,7" concept="6" />
       <node id="7995886393880455712" at="98,0,101,0" concept="7" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="7995886393880455712" at="26,0,30,0" concept="1" trace="EquationEntryContent_ComponentBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="7995886393880455712" at="26,0,30,0" concept="1" trace="EquationEntryContent_ComponentBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="7995886393880455712" at="47,0,51,0" concept="7" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="7995886393880455712" at="55,0,59,0" concept="1" trace="equationSingleRoleHandler_kmm4k9_a0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="7995886393880455712" at="31,0,36,0" concept="7" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -2394,7 +2394,7 @@
       <scope id="7995886393880455712" at="80,42,81,49" />
       <scope id="7995886393880455712" at="94,17,95,42" />
       <scope id="7995886393880455712" at="98,40,99,29" />
-      <scope id="7995886393880455712" at="26,103,28,18" />
+      <scope id="7995886393880455712" at="26,101,28,18" />
       <scope id="7995886393880455712" at="47,40,49,33">
         <var name="provider" id="7995886393880455712" />
       </scope>
@@ -2434,24 +2434,24 @@
       </scope>
       <scope id="7995886393880455712" at="85,44,96,7" />
       <scope id="7995886393880455712" at="84,0,98,0" />
-      <unit id="7995886393880455712" at="103,0,106,0" name="jetbrains.mps.samples.ChemMastery.editor.EquationEntryContent_ComponentBuilder_a$LINKS" />
-      <unit id="7995886393880455712" at="51,0,102,0" name="jetbrains.mps.samples.ChemMastery.editor.EquationEntryContent_ComponentBuilder_a$equationSingleRoleHandler_kmm4k9_a0" />
-      <unit id="7995886393880455712" at="22,0,107,0" name="jetbrains.mps.samples.ChemMastery.editor.EquationEntryContent_ComponentBuilder_a" />
+      <unit id="7995886393880455712" at="103,0,106,0" name="jetbrains.mps.samples.ChemMastery.editor.EquationEntryContent_ComponentBuilder$LINKS" />
+      <unit id="7995886393880455712" at="51,0,102,0" name="jetbrains.mps.samples.ChemMastery.editor.EquationEntryContent_ComponentBuilder$equationSingleRoleHandler_kmm4k9_a0" />
+      <unit id="7995886393880455712" at="22,0,107,0" name="jetbrains.mps.samples.ChemMastery.editor.EquationEntryContent_ComponentBuilder" />
     </file>
   </root>
   <root nodeRef="r:563c5369-4649-4929-a845-37c7045ffecd(jetbrains.mps.samples.ChemMastery.editor)/7995886393880455752">
     <file name="ChemEquation_Editor.java">
-      <node id="7995886393880455752" at="11,79,12,78" concept="9" />
+      <node id="7995886393880455752" at="11,79,12,76" concept="9" />
       <node id="7995886393880455752" at="11,0,14,0" concept="7" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="7995886393880455752" at="11,79,12,78" />
+      <scope id="7995886393880455752" at="11,79,12,76" />
       <scope id="7995886393880455752" at="11,0,14,0">
         <var name="editorContext" id="7995886393880455752" />
         <var name="node" id="7995886393880455752" />
       </scope>
       <unit id="7995886393880455752" at="10,0,15,0" name="jetbrains.mps.samples.ChemMastery.editor.ChemEquation_Editor" />
     </file>
-    <file name="ChemEquation_EditorBuilder_a.java">
-      <node id="7995886393880455752" at="61,92,62,19" concept="14" />
+    <file name="ChemEquation_EditorBuilder.java">
+      <node id="7995886393880455752" at="61,90,62,19" concept="14" />
       <node id="7995886393880455752" at="62,19,63,18" concept="2" />
       <node id="7995886393880455752" at="68,26,69,18" concept="9" />
       <node id="7995886393880455752" at="72,39,73,32" concept="9" />
@@ -2645,7 +2645,7 @@
       <node id="7995886393880455752" at="128,0,131,0" concept="7" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="7995886393880455752" at="307,0,310,0" concept="7" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="7995886393880455752" at="310,0,313,0" concept="7" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
-      <node id="7995886393880455752" at="61,0,65,0" concept="1" trace="ChemEquation_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="7995886393880455752" at="61,0,65,0" concept="1" trace="ChemEquation_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="7995886393880455752" at="116,0,120,0" concept="1" trace="leftListHandler_388849_b0a#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="7995886393880455752" at="121,0,125,0" concept="7" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="7995886393880455752" at="154,97,158,9" concept="6" />
@@ -2707,7 +2707,7 @@
       <scope id="7995886393880455752" at="307,40,308,30" />
       <scope id="7995886393880455752" at="310,48,311,42" />
       <scope id="7995886393880455752" at="328,17,329,42" />
-      <scope id="7995886393880455752" at="61,92,63,18" />
+      <scope id="7995886393880455752" at="61,90,63,18" />
       <scope id="7995886393880455752" at="116,79,118,25" />
       <scope id="7995886393880455752" at="155,122,157,146" />
       <scope id="7995886393880455752" at="161,34,163,142" />
@@ -2876,13 +2876,13 @@
         <var name="elementNode" id="7995886393880455752" />
         <var name="isEmptyCell" id="7995886393880455752" />
       </scope>
-      <unit id="7995886393880455752" at="396,0,399,0" name="jetbrains.mps.samples.ChemMastery.editor.ChemEquation_EditorBuilder_a$PROPS" />
-      <unit id="7995886393880455752" at="386,0,390,0" name="jetbrains.mps.samples.ChemMastery.editor.ChemEquation_EditorBuilder_a$LINKS" />
-      <unit id="7995886393880455752" at="391,0,395,0" name="jetbrains.mps.samples.ChemMastery.editor.ChemEquation_EditorBuilder_a$CONCEPTS" />
-      <unit id="2866053023718814251" at="243,23,261,5" name="jetbrains.mps.samples.ChemMastery.editor.ChemEquation_EditorBuilder_a$1" />
-      <unit id="7995886393880455752" at="112,0,203,0" name="jetbrains.mps.samples.ChemMastery.editor.ChemEquation_EditorBuilder_a$leftListHandler_388849_b0a" />
-      <unit id="7995886393880455752" at="294,0,385,0" name="jetbrains.mps.samples.ChemMastery.editor.ChemEquation_EditorBuilder_a$rightListHandler_388849_b2a" />
-      <unit id="7995886393880455752" at="57,0,400,0" name="jetbrains.mps.samples.ChemMastery.editor.ChemEquation_EditorBuilder_a" />
+      <unit id="7995886393880455752" at="396,0,399,0" name="jetbrains.mps.samples.ChemMastery.editor.ChemEquation_EditorBuilder$PROPS" />
+      <unit id="7995886393880455752" at="386,0,390,0" name="jetbrains.mps.samples.ChemMastery.editor.ChemEquation_EditorBuilder$LINKS" />
+      <unit id="7995886393880455752" at="391,0,395,0" name="jetbrains.mps.samples.ChemMastery.editor.ChemEquation_EditorBuilder$CONCEPTS" />
+      <unit id="2866053023718814251" at="243,23,261,5" name="jetbrains.mps.samples.ChemMastery.editor.ChemEquation_EditorBuilder$1" />
+      <unit id="7995886393880455752" at="112,0,203,0" name="jetbrains.mps.samples.ChemMastery.editor.ChemEquation_EditorBuilder$leftListHandler_388849_b0a" />
+      <unit id="7995886393880455752" at="294,0,385,0" name="jetbrains.mps.samples.ChemMastery.editor.ChemEquation_EditorBuilder$rightListHandler_388849_b2a" />
+      <unit id="7995886393880455752" at="57,0,400,0" name="jetbrains.mps.samples.ChemMastery.editor.ChemEquation_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:563c5369-4649-4929-a845-37c7045ffecd(jetbrains.mps.samples.ChemMastery.editor)/7995886393880455780">
@@ -3043,17 +3043,17 @@
       <unit id="6567999678833422595" at="14,0,57,0" name="jetbrains.mps.samples.ChemMastery.editor.Checkbox_KeyMap_8qm7p9_d0" />
     </file>
     <file name="ChemSheet_Editor.java">
-      <node id="7995886393880455780" at="11,79,12,75" concept="9" />
+      <node id="7995886393880455780" at="11,79,12,73" concept="9" />
       <node id="7995886393880455780" at="11,0,14,0" concept="7" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="7995886393880455780" at="11,79,12,75" />
+      <scope id="7995886393880455780" at="11,79,12,73" />
       <scope id="7995886393880455780" at="11,0,14,0">
         <var name="editorContext" id="7995886393880455780" />
         <var name="node" id="7995886393880455780" />
       </scope>
       <unit id="7995886393880455780" at="10,0,15,0" name="jetbrains.mps.samples.ChemMastery.editor.ChemSheet_Editor" />
     </file>
-    <file name="ChemSheet_EditorBuilder_a.java">
-      <node id="7995886393880455780" at="63,89,64,19" concept="14" />
+    <file name="ChemSheet_EditorBuilder.java">
+      <node id="7995886393880455780" at="63,87,64,19" concept="14" />
       <node id="7995886393880455780" at="64,19,65,18" concept="2" />
       <node id="7995886393880455780" at="70,26,71,18" concept="9" />
       <node id="7995886393880455780" at="74,39,75,32" concept="9" />
@@ -3222,7 +3222,7 @@
       <node id="7995886393880455780" at="297,0,300,0" concept="7" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="7995886393880455780" at="300,0,303,0" concept="7" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="7995886393880455780" at="344,96,347,9" concept="6" />
-      <node id="7995886393880455780" at="63,0,67,0" concept="1" trace="ChemSheet_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="7995886393880455780" at="63,0,67,0" concept="1" trace="ChemSheet_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="7995886393880455780" at="122,0,126,0" concept="7" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="7995886393880455780" at="130,0,134,0" concept="1" trace="descriptionSingleRoleHandler_8qm7p9_c0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="7995886393880455780" at="213,0,217,0" concept="7" trace="fromImageCellProvider0#()Ljetbrains/mps/nodeEditor/cells/EditorCell_Image;" />
@@ -3282,7 +3282,7 @@
       <scope id="7995886393880455780" at="300,48,301,36" />
       <scope id="7995886393880455780" at="318,17,319,42" />
       <scope id="7995886393880455780" at="345,34,346,91" />
-      <scope id="7995886393880455780" at="63,89,65,18" />
+      <scope id="7995886393880455780" at="63,87,65,18" />
       <scope id="7995886393880455799" at="113,74,115,145">
         <var name="manager" id="7995886393880455799" />
       </scope>
@@ -3434,13 +3434,13 @@
         <var name="elementNode" id="7995886393880455780" />
         <var name="isEmptyCell" id="7995886393880455780" />
       </scope>
-      <unit id="7995886393880455780" at="352,0,356,0" name="jetbrains.mps.samples.ChemMastery.editor.ChemSheet_EditorBuilder_a$PROPS" />
-      <unit id="7995886393880455780" at="357,0,361,0" name="jetbrains.mps.samples.ChemMastery.editor.ChemSheet_EditorBuilder_a$CONCEPTS" />
-      <unit id="7995886393880455780" at="362,0,366,0" name="jetbrains.mps.samples.ChemMastery.editor.ChemSheet_EditorBuilder_a$LINKS" />
-      <unit id="8825279038967860056" at="251,23,266,5" name="jetbrains.mps.samples.ChemMastery.editor.ChemSheet_EditorBuilder_a$1" />
-      <unit id="7995886393880455780" at="126,0,180,0" name="jetbrains.mps.samples.ChemMastery.editor.ChemSheet_EditorBuilder_a$descriptionSingleRoleHandler_8qm7p9_c0" />
-      <unit id="7995886393880455780" at="284,0,351,0" name="jetbrains.mps.samples.ChemMastery.editor.ChemSheet_EditorBuilder_a$entriesListHandler_8qm7p9_g0" />
-      <unit id="7995886393880455780" at="59,0,367,0" name="jetbrains.mps.samples.ChemMastery.editor.ChemSheet_EditorBuilder_a" />
+      <unit id="7995886393880455780" at="352,0,356,0" name="jetbrains.mps.samples.ChemMastery.editor.ChemSheet_EditorBuilder$PROPS" />
+      <unit id="7995886393880455780" at="357,0,361,0" name="jetbrains.mps.samples.ChemMastery.editor.ChemSheet_EditorBuilder$CONCEPTS" />
+      <unit id="7995886393880455780" at="362,0,366,0" name="jetbrains.mps.samples.ChemMastery.editor.ChemSheet_EditorBuilder$LINKS" />
+      <unit id="8825279038967860056" at="251,23,266,5" name="jetbrains.mps.samples.ChemMastery.editor.ChemSheet_EditorBuilder$1" />
+      <unit id="7995886393880455780" at="126,0,180,0" name="jetbrains.mps.samples.ChemMastery.editor.ChemSheet_EditorBuilder$descriptionSingleRoleHandler_8qm7p9_c0" />
+      <unit id="7995886393880455780" at="284,0,351,0" name="jetbrains.mps.samples.ChemMastery.editor.ChemSheet_EditorBuilder$entriesListHandler_8qm7p9_g0" />
+      <unit id="7995886393880455780" at="59,0,367,0" name="jetbrains.mps.samples.ChemMastery.editor.ChemSheet_EditorBuilder" />
     </file>
     <file name="ToggleCheckboxAction_8qm7p9_d0.java">
       <node id="6567999678833422595" at="15,0,16,0" concept="3" trace="myNode" />
@@ -3582,17 +3582,17 @@
   </root>
   <root nodeRef="r:563c5369-4649-4929-a845-37c7045ffecd(jetbrains.mps.samples.ChemMastery.editor)/7995886393880820118">
     <file name="ElementList_Editor.java">
-      <node id="7995886393880820118" at="11,79,12,77" concept="9" />
+      <node id="7995886393880820118" at="11,79,12,75" concept="9" />
       <node id="7995886393880820118" at="11,0,14,0" concept="7" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="7995886393880820118" at="11,79,12,77" />
+      <scope id="7995886393880820118" at="11,79,12,75" />
       <scope id="7995886393880820118" at="11,0,14,0">
         <var name="editorContext" id="7995886393880820118" />
         <var name="node" id="7995886393880820118" />
       </scope>
       <unit id="7995886393880820118" at="10,0,15,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementList_Editor" />
     </file>
-    <file name="ElementList_EditorBuilder_a.java">
-      <node id="7995886393880820118" at="46,91,47,19" concept="14" />
+    <file name="ElementList_EditorBuilder.java">
+      <node id="7995886393880820118" at="46,89,47,19" concept="14" />
       <node id="7995886393880820118" at="47,19,48,18" concept="2" />
       <node id="7995886393880820118" at="53,26,54,18" concept="9" />
       <node id="7995886393880820118" at="57,39,58,32" concept="9" />
@@ -3673,7 +3673,7 @@
       <node id="7995886393880820118" at="132,0,135,0" concept="7" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="7995886393880820118" at="135,0,138,0" concept="7" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="7995886393880820118" at="179,96,182,9" concept="6" />
-      <node id="7995886393880820118" at="46,0,50,0" concept="1" trace="ElementList_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="7995886393880820118" at="46,0,50,0" concept="1" trace="ElementList_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="7995886393880820118" at="123,0,127,0" concept="1" trace="elementsListHandler_izue3t_d0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="7995886393880820118" at="128,0,132,0" concept="7" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="7995886393880820118" at="161,97,165,9" concept="6" />
@@ -3703,7 +3703,7 @@
       <scope id="7995886393880820118" at="135,48,136,33" />
       <scope id="7995886393880820118" at="153,17,154,42" />
       <scope id="7995886393880820118" at="180,34,181,91" />
-      <scope id="7995886393880820118" at="46,91,48,18" />
+      <scope id="7995886393880820118" at="46,89,48,18" />
       <scope id="7995886393880820137" at="93,74,95,145">
         <var name="manager" id="7995886393880820137" />
       </scope>
@@ -3772,26 +3772,26 @@
         <var name="elementNode" id="7995886393880820118" />
         <var name="isEmptyCell" id="7995886393880820118" />
       </scope>
-      <unit id="7995886393880820118" at="187,0,190,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementList_EditorBuilder_a$PROPS" />
-      <unit id="7995886393880820118" at="196,0,199,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementList_EditorBuilder_a$LINKS" />
-      <unit id="7995886393880820118" at="191,0,195,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementList_EditorBuilder_a$CONCEPTS" />
-      <unit id="7995886393880820118" at="119,0,186,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementList_EditorBuilder_a$elementsListHandler_izue3t_d0" />
-      <unit id="7995886393880820118" at="42,0,200,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementList_EditorBuilder_a" />
+      <unit id="7995886393880820118" at="187,0,190,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementList_EditorBuilder$PROPS" />
+      <unit id="7995886393880820118" at="196,0,199,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementList_EditorBuilder$LINKS" />
+      <unit id="7995886393880820118" at="191,0,195,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementList_EditorBuilder$CONCEPTS" />
+      <unit id="7995886393880820118" at="119,0,186,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementList_EditorBuilder$elementsListHandler_izue3t_d0" />
+      <unit id="7995886393880820118" at="42,0,200,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementList_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:563c5369-4649-4929-a845-37c7045ffecd(jetbrains.mps.samples.ChemMastery.editor)/7995886393880820202">
     <file name="Element_Editor.java">
-      <node id="7995886393880820202" at="11,79,12,73" concept="9" />
+      <node id="7995886393880820202" at="11,79,12,71" concept="9" />
       <node id="7995886393880820202" at="11,0,14,0" concept="7" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="7995886393880820202" at="11,79,12,73" />
+      <scope id="7995886393880820202" at="11,79,12,71" />
       <scope id="7995886393880820202" at="11,0,14,0">
         <var name="editorContext" id="7995886393880820202" />
         <var name="node" id="7995886393880820202" />
       </scope>
       <unit id="7995886393880820202" at="10,0,15,0" name="jetbrains.mps.samples.ChemMastery.editor.Element_Editor" />
     </file>
-    <file name="Element_EditorBuilder_a.java">
-      <node id="7995886393880820202" at="35,87,36,19" concept="14" />
+    <file name="Element_EditorBuilder.java">
+      <node id="7995886393880820202" at="35,85,36,19" concept="14" />
       <node id="7995886393880820202" at="36,19,37,18" concept="2" />
       <node id="7995886393880820202" at="42,26,43,18" concept="9" />
       <node id="7995886393880820202" at="46,39,47,32" concept="9" />
@@ -3859,7 +3859,7 @@
       <node id="7995886393880820202" at="141,0,142,0" concept="12" trace="PropertyAttribute$Gb" />
       <node id="7995886393880820202" at="32,0,34,0" concept="3" trace="myNode" />
       <node id="7995886393880820202" at="46,0,49,0" concept="7" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="7995886393880820202" at="35,0,39,0" concept="1" trace="Element_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="7995886393880820202" at="35,0,39,0" concept="1" trace="Element_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="7995886393880820202" at="40,0,45,0" concept="7" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="6567999678834407404" at="72,208,77,24" concept="6" />
       <node id="7995886393880833790" at="93,208,98,24" concept="6" />
@@ -3877,7 +3877,7 @@
       <scope id="6567999678834407404" at="78,15,79,40" />
       <scope id="7995886393880833790" at="99,15,100,40" />
       <scope id="7995886393880833860" at="129,15,130,40" />
-      <scope id="7995886393880820202" at="35,87,37,18" />
+      <scope id="7995886393880820202" at="35,85,37,18" />
       <scope id="6567999678834407404" at="73,74,75,145">
         <var name="manager" id="6567999678834407404" />
       </scope>
@@ -3926,19 +3926,19 @@
       <scope id="6567999678834407404" at="61,0,82,0" />
       <scope id="7995886393880833790" at="82,0,103,0" />
       <scope id="7995886393880833860" at="112,0,133,0" />
-      <unit id="7995886393880820202" at="140,0,143,0" name="jetbrains.mps.samples.ChemMastery.editor.Element_EditorBuilder_a$CONCEPTS" />
-      <unit id="7995886393880820202" at="134,0,139,0" name="jetbrains.mps.samples.ChemMastery.editor.Element_EditorBuilder_a$PROPS" />
-      <unit id="7995886393880820202" at="31,0,144,0" name="jetbrains.mps.samples.ChemMastery.editor.Element_EditorBuilder_a" />
+      <unit id="7995886393880820202" at="140,0,143,0" name="jetbrains.mps.samples.ChemMastery.editor.Element_EditorBuilder$CONCEPTS" />
+      <unit id="7995886393880820202" at="134,0,139,0" name="jetbrains.mps.samples.ChemMastery.editor.Element_EditorBuilder$PROPS" />
+      <unit id="7995886393880820202" at="31,0,144,0" name="jetbrains.mps.samples.ChemMastery.editor.Element_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:563c5369-4649-4929-a845-37c7045ffecd(jetbrains.mps.samples.ChemMastery.editor)/7995886393880889815">
     <file name="ElementRef_Editor.java">
-      <node id="7995886393880889815" at="11,79,12,76" concept="9" />
-      <node id="7995886393880889815" at="14,82,15,79" concept="9" />
+      <node id="7995886393880889815" at="11,79,12,74" concept="9" />
+      <node id="7995886393880889815" at="14,82,15,77" concept="9" />
       <node id="7995886393880889815" at="11,0,14,0" concept="7" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="7995886393880889815" at="14,0,17,0" concept="7" trace="createInspectedCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="7995886393880889815" at="11,79,12,76" />
-      <scope id="7995886393880889815" at="14,82,15,79" />
+      <scope id="7995886393880889815" at="11,79,12,74" />
+      <scope id="7995886393880889815" at="14,82,15,77" />
       <scope id="7995886393880889815" at="11,0,14,0">
         <var name="editorContext" id="7995886393880889815" />
         <var name="node" id="7995886393880889815" />
@@ -3949,8 +3949,8 @@
       </scope>
       <unit id="7995886393880889815" at="10,0,18,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_Editor" />
     </file>
-    <file name="ElementRef_EditorBuilder_a.java">
-      <node id="7995886393880889815" at="55,90,56,19" concept="14" />
+    <file name="ElementRef_EditorBuilder.java">
+      <node id="7995886393880889815" at="55,88,56,19" concept="14" />
       <node id="7995886393880889815" at="56,19,57,18" concept="2" />
       <node id="7995886393880889815" at="62,26,63,18" concept="9" />
       <node id="7995886393880889815" at="66,39,67,32" concept="9" />
@@ -4092,7 +4092,7 @@
       <node id="7995886393880889830" at="147,0,150,0" concept="7" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="7995886393880889837" at="167,44,170,9" concept="6" />
       <node id="7995886393880889870" at="199,0,202,0" concept="7" trace="_StyleParameter_QueryFunction_mwjwii_a2b0#()I" />
-      <node id="7995886393880889815" at="55,0,59,0" concept="1" trace="ElementRef_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="7995886393880889815" at="55,0,59,0" concept="1" trace="ElementRef_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="7995886393880889815" at="117,0,121,5" concept="6" />
       <node id="7995886393880889815" at="60,0,65,0" concept="7" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="7995886393880889815" at="129,205,134,22" concept="6" />
@@ -4124,7 +4124,7 @@
       <scope id="7995886393880889837" at="182,17,183,42" />
       <scope id="7995886393880889871" at="199,59,200,62" />
       <scope id="7995886393880889861" at="251,15,252,40" />
-      <scope id="7995886393880889815" at="55,90,57,18" />
+      <scope id="7995886393880889815" at="55,88,57,18" />
       <scope id="7995886393880889815" at="118,40,120,46" />
       <scope id="7995886393880889815" at="130,73,132,145">
         <var name="manager" id="7995886393880889815" />
@@ -4220,15 +4220,15 @@
         <var name="style" id="7995886393880889815" />
       </scope>
       <scope id="7995886393880889815" at="96,0,136,0" />
-      <unit id="7995886393880889815" at="262,0,265,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_EditorBuilder_a$LINKS" />
-      <unit id="7995886393880889815" at="256,0,261,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_EditorBuilder_a$PROPS" />
-      <unit id="7995886393880889815" at="266,0,272,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_EditorBuilder_a$CONCEPTS" />
-      <unit id="7995886393880889815" at="98,42,113,5" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_EditorBuilder_a$1" />
-      <unit id="7995886393880889830" at="136,0,187,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_EditorBuilder_a$Inline_Builder0" />
-      <unit id="7995886393880889815" at="51,0,273,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_EditorBuilder_a" />
+      <unit id="7995886393880889815" at="262,0,265,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_EditorBuilder$LINKS" />
+      <unit id="7995886393880889815" at="256,0,261,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_EditorBuilder$PROPS" />
+      <unit id="7995886393880889815" at="266,0,272,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_EditorBuilder$CONCEPTS" />
+      <unit id="7995886393880889815" at="98,42,113,5" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_EditorBuilder$1" />
+      <unit id="7995886393880889830" at="136,0,187,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_EditorBuilder$Inline_Builder0" />
+      <unit id="7995886393880889815" at="51,0,273,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_EditorBuilder" />
     </file>
-    <file name="ElementRef_InspectorBuilder_a.java">
-      <node id="7995886393880889815" at="46,93,47,19" concept="14" />
+    <file name="ElementRef_InspectorBuilder.java">
+      <node id="7995886393880889815" at="46,91,47,19" concept="14" />
       <node id="7995886393880889815" at="47,19,48,18" concept="2" />
       <node id="7995886393880889815" at="53,26,54,18" concept="9" />
       <node id="7995886393880889815" at="57,39,58,32" concept="9" />
@@ -4477,7 +4477,7 @@
       <node id="3123291046853691284" at="235,0,238,0" concept="7" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="3123291046853691363" at="325,0,328,0" concept="7" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="3123291046853913253" at="418,0,421,0" concept="7" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="7995886393880889815" at="46,0,50,0" concept="1" trace="ElementRef_InspectorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="7995886393880889815" at="46,0,50,0" concept="1" trace="ElementRef_InspectorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="7995886393880889815" at="117,0,121,5" concept="6" />
       <node id="7995886393880889815" at="207,0,211,5" concept="6" />
       <node id="7995886393880889815" at="297,0,301,5" concept="6" />
@@ -4542,7 +4542,7 @@
       <scope id="3123291046853691386" at="352,17,353,42" />
       <scope id="3123291046853913253" at="418,41,419,27" />
       <scope id="3123291046853913253" at="424,28,425,20" />
-      <scope id="7995886393880889815" at="46,93,48,18" />
+      <scope id="7995886393880889815" at="46,91,48,18" />
       <scope id="7995886393880889815" at="118,40,120,46" />
       <scope id="7995886393880889815" at="128,73,130,145">
         <var name="manager" id="7995886393880889815" />
@@ -4755,27 +4755,27 @@
       <scope id="7995886393880889815" at="96,0,134,0" />
       <scope id="7995886393880889815" at="186,0,224,0" />
       <scope id="7995886393880889815" at="276,0,314,0" />
-      <unit id="7995886393880889815" at="445,0,448,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_InspectorBuilder_a$LINKS" />
-      <unit id="7995886393880889815" at="449,0,453,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_InspectorBuilder_a$CONCEPTS" />
-      <unit id="7995886393880889815" at="454,0,460,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_InspectorBuilder_a$PROPS" />
-      <unit id="7995886393880889815" at="98,42,113,5" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_InspectorBuilder_a$1" />
-      <unit id="7995886393880889815" at="188,42,203,5" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_InspectorBuilder_a$2" />
-      <unit id="7995886393880889815" at="278,42,293,5" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_InspectorBuilder_a$3" />
-      <unit id="7995886393880889815" at="374,42,389,5" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_InspectorBuilder_a$4" />
-      <unit id="3123291046853913253" at="407,0,444,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_InspectorBuilder_a$Inline_Builder3" />
-      <unit id="3123291046853691215" at="134,0,177,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_InspectorBuilder_a$Inline_Builder0" />
-      <unit id="3123291046853691284" at="224,0,267,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_InspectorBuilder_a$Inline_Builder1" />
-      <unit id="3123291046853691363" at="314,0,357,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_InspectorBuilder_a$Inline_Builder2" />
-      <unit id="7995886393880889815" at="42,0,461,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_InspectorBuilder_a" />
+      <unit id="7995886393880889815" at="445,0,448,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_InspectorBuilder$LINKS" />
+      <unit id="7995886393880889815" at="449,0,453,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_InspectorBuilder$CONCEPTS" />
+      <unit id="7995886393880889815" at="454,0,460,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_InspectorBuilder$PROPS" />
+      <unit id="7995886393880889815" at="98,42,113,5" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_InspectorBuilder$1" />
+      <unit id="7995886393880889815" at="188,42,203,5" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_InspectorBuilder$2" />
+      <unit id="7995886393880889815" at="278,42,293,5" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_InspectorBuilder$3" />
+      <unit id="7995886393880889815" at="374,42,389,5" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_InspectorBuilder$4" />
+      <unit id="3123291046853913253" at="407,0,444,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_InspectorBuilder$Inline_Builder3" />
+      <unit id="3123291046853691215" at="134,0,177,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_InspectorBuilder$Inline_Builder0" />
+      <unit id="3123291046853691284" at="224,0,267,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_InspectorBuilder$Inline_Builder1" />
+      <unit id="3123291046853691363" at="314,0,357,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_InspectorBuilder$Inline_Builder2" />
+      <unit id="7995886393880889815" at="42,0,461,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_InspectorBuilder" />
     </file>
     <file name="ElementRef_tooltipHint_mwjwii_a0_Editor.java">
       <node id="3123291046853796179" at="14,0,15,0" concept="3" trace="myContextHints" />
       <node id="3123291046853796179" at="17,47,18,26" concept="9" />
-      <node id="3123291046853796179" at="20,79,21,98" concept="9" />
+      <node id="3123291046853796179" at="20,79,21,96" concept="9" />
       <node id="3123291046853796179" at="20,0,23,0" concept="7" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="3123291046853796179" at="15,0,20,0" concept="7" trace="getContextHints#()Ljava/util/Collection;" />
       <scope id="3123291046853796179" at="17,47,18,26" />
-      <scope id="3123291046853796179" at="20,79,21,98" />
+      <scope id="3123291046853796179" at="20,79,21,96" />
       <scope id="3123291046853796179" at="20,0,23,0">
         <var name="editorContext" id="3123291046853796179" />
         <var name="node" id="3123291046853796179" />
@@ -4783,8 +4783,8 @@
       <scope id="3123291046853796179" at="15,0,20,0" />
       <unit id="3123291046853796179" at="13,0,24,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_tooltipHint_mwjwii_a0_Editor" />
     </file>
-    <file name="ElementRef_tooltipHint_mwjwii_a0_EditorBuilder_a.java">
-      <node id="3123291046853796179" at="47,112,48,19" concept="14" />
+    <file name="ElementRef_tooltipHint_mwjwii_a0_EditorBuilder.java">
+      <node id="3123291046853796179" at="47,110,48,19" concept="14" />
       <node id="3123291046853796179" at="48,19,49,18" concept="2" />
       <node id="3123291046853796179" at="54,26,55,18" concept="9" />
       <node id="3123291046853796179" at="58,39,59,32" concept="9" />
@@ -5040,7 +5040,7 @@
       <node id="3123291046853796192" at="249,0,252,0" concept="7" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="3123291046853796198" at="339,0,342,0" concept="7" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="3123291046854483646" at="432,0,435,0" concept="7" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="3123291046853796179" at="47,0,51,0" concept="1" trace="ElementRef_tooltipHint_mwjwii_a0_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="3123291046853796179" at="47,0,51,0" concept="1" trace="ElementRef_tooltipHint_mwjwii_a0_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="3123291046853796179" at="131,0,135,5" concept="6" />
       <node id="3123291046853796179" at="221,0,225,5" concept="6" />
       <node id="3123291046853796179" at="311,0,315,5" concept="6" />
@@ -5108,7 +5108,7 @@
       <scope id="3123291046853796199" at="366,17,367,42" />
       <scope id="3123291046854483646" at="432,41,433,27" />
       <scope id="3123291046854483646" at="438,28,439,20" />
-      <scope id="3123291046853796179" at="47,112,49,18" />
+      <scope id="3123291046853796179" at="47,110,49,18" />
       <scope id="3123291046853796179" at="132,40,134,46" />
       <scope id="3123291046853796179" at="142,73,144,145">
         <var name="manager" id="3123291046853796179" />
@@ -5326,33 +5326,33 @@
       <scope id="3123291046853796179" at="110,0,148,0" />
       <scope id="3123291046853796179" at="200,0,238,0" />
       <scope id="3123291046853796179" at="290,0,328,0" />
-      <unit id="3123291046853796179" at="458,0,461,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_tooltipHint_mwjwii_a0_EditorBuilder_a$LINKS" />
-      <unit id="3123291046853796179" at="462,0,466,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_tooltipHint_mwjwii_a0_EditorBuilder_a$CONCEPTS" />
-      <unit id="3123291046853796179" at="467,0,473,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_tooltipHint_mwjwii_a0_EditorBuilder_a$PROPS" />
-      <unit id="3123291046853796179" at="112,42,127,5" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_tooltipHint_mwjwii_a0_EditorBuilder_a$1" />
-      <unit id="3123291046853796179" at="202,42,217,5" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_tooltipHint_mwjwii_a0_EditorBuilder_a$2" />
-      <unit id="3123291046853796179" at="292,42,307,5" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_tooltipHint_mwjwii_a0_EditorBuilder_a$3" />
-      <unit id="3123291046853796179" at="388,42,403,5" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_tooltipHint_mwjwii_a0_EditorBuilder_a$4" />
-      <unit id="3123291046854483646" at="421,0,457,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_tooltipHint_mwjwii_a0_EditorBuilder_a$Inline_Builder3" />
-      <unit id="3123291046853796186" at="148,0,191,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_tooltipHint_mwjwii_a0_EditorBuilder_a$Inline_Builder0" />
-      <unit id="3123291046853796192" at="238,0,281,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_tooltipHint_mwjwii_a0_EditorBuilder_a$Inline_Builder1" />
-      <unit id="3123291046853796198" at="328,0,371,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_tooltipHint_mwjwii_a0_EditorBuilder_a$Inline_Builder2" />
-      <unit id="3123291046853796179" at="43,0,474,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_tooltipHint_mwjwii_a0_EditorBuilder_a" />
+      <unit id="3123291046853796179" at="458,0,461,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_tooltipHint_mwjwii_a0_EditorBuilder$LINKS" />
+      <unit id="3123291046853796179" at="462,0,466,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_tooltipHint_mwjwii_a0_EditorBuilder$CONCEPTS" />
+      <unit id="3123291046853796179" at="467,0,473,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_tooltipHint_mwjwii_a0_EditorBuilder$PROPS" />
+      <unit id="3123291046853796179" at="112,42,127,5" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_tooltipHint_mwjwii_a0_EditorBuilder$1" />
+      <unit id="3123291046853796179" at="202,42,217,5" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_tooltipHint_mwjwii_a0_EditorBuilder$2" />
+      <unit id="3123291046853796179" at="292,42,307,5" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_tooltipHint_mwjwii_a0_EditorBuilder$3" />
+      <unit id="3123291046853796179" at="388,42,403,5" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_tooltipHint_mwjwii_a0_EditorBuilder$4" />
+      <unit id="3123291046854483646" at="421,0,457,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_tooltipHint_mwjwii_a0_EditorBuilder$Inline_Builder3" />
+      <unit id="3123291046853796186" at="148,0,191,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_tooltipHint_mwjwii_a0_EditorBuilder$Inline_Builder0" />
+      <unit id="3123291046853796192" at="238,0,281,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_tooltipHint_mwjwii_a0_EditorBuilder$Inline_Builder1" />
+      <unit id="3123291046853796198" at="328,0,371,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_tooltipHint_mwjwii_a0_EditorBuilder$Inline_Builder2" />
+      <unit id="3123291046853796179" at="43,0,474,0" name="jetbrains.mps.samples.ChemMastery.editor.ElementRef_tooltipHint_mwjwii_a0_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:563c5369-4649-4929-a845-37c7045ffecd(jetbrains.mps.samples.ChemMastery.editor)/7995886393880929216">
     <file name="Compound_Editor.java">
-      <node id="7995886393880929216" at="11,79,12,74" concept="9" />
+      <node id="7995886393880929216" at="11,79,12,72" concept="9" />
       <node id="7995886393880929216" at="11,0,14,0" concept="7" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="7995886393880929216" at="11,79,12,74" />
+      <scope id="7995886393880929216" at="11,79,12,72" />
       <scope id="7995886393880929216" at="11,0,14,0">
         <var name="editorContext" id="7995886393880929216" />
         <var name="node" id="7995886393880929216" />
       </scope>
       <unit id="7995886393880929216" at="10,0,15,0" name="jetbrains.mps.samples.ChemMastery.editor.Compound_Editor" />
     </file>
-    <file name="Compound_EditorBuilder_a.java">
-      <node id="7995886393880929216" at="51,88,52,19" concept="14" />
+    <file name="Compound_EditorBuilder.java">
+      <node id="7995886393880929216" at="51,86,52,19" concept="14" />
       <node id="7995886393880929216" at="52,19,53,18" concept="2" />
       <node id="7995886393880929216" at="58,26,59,18" concept="9" />
       <node id="7995886393880929216" at="62,39,63,32" concept="9" />
@@ -5454,7 +5454,7 @@
       <node id="7995886393880929216" at="130,0,133,0" concept="7" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="7995886393880929216" at="133,0,136,0" concept="7" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="7995886393882760254" at="211,0,214,0" concept="7" trace="_StyleParameter_QueryFunction_yoxrgg_a0a1a#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/model/SNode;)I" />
-      <node id="7995886393880929216" at="51,0,55,0" concept="1" trace="Compound_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="7995886393880929216" at="51,0,55,0" concept="1" trace="Compound_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="7995886393880929216" at="121,0,125,0" concept="1" trace="elementsListHandler_yoxrgg_b0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="7995886393880929216" at="126,0,130,0" concept="7" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="7995886393880929216" at="159,97,163,9" concept="6" />
@@ -5487,7 +5487,7 @@
       <scope id="7995886393880929216" at="133,48,134,43" />
       <scope id="7995886393880929216" at="151,17,152,42" />
       <scope id="7995886393882760255" at="211,92,212,60" />
-      <scope id="7995886393880929216" at="51,88,53,18" />
+      <scope id="7995886393880929216" at="51,86,53,18" />
       <scope id="7995886393880929225" at="98,74,100,145">
         <var name="manager" id="7995886393880929225" />
       </scope>
@@ -5567,11 +5567,11 @@
         <var name="elementNode" id="7995886393880929216" />
         <var name="isEmptyCell" id="7995886393880929216" />
       </scope>
-      <unit id="7995886393880929216" at="227,0,230,0" name="jetbrains.mps.samples.ChemMastery.editor.Compound_EditorBuilder_a$LINKS" />
-      <unit id="7995886393880929216" at="222,0,226,0" name="jetbrains.mps.samples.ChemMastery.editor.Compound_EditorBuilder_a$PROPS" />
-      <unit id="7995886393880929216" at="216,0,221,0" name="jetbrains.mps.samples.ChemMastery.editor.Compound_EditorBuilder_a$CONCEPTS" />
-      <unit id="7995886393880929216" at="117,0,215,0" name="jetbrains.mps.samples.ChemMastery.editor.Compound_EditorBuilder_a$elementsListHandler_yoxrgg_b0" />
-      <unit id="7995886393880929216" at="47,0,231,0" name="jetbrains.mps.samples.ChemMastery.editor.Compound_EditorBuilder_a" />
+      <unit id="7995886393880929216" at="227,0,230,0" name="jetbrains.mps.samples.ChemMastery.editor.Compound_EditorBuilder$LINKS" />
+      <unit id="7995886393880929216" at="222,0,226,0" name="jetbrains.mps.samples.ChemMastery.editor.Compound_EditorBuilder$PROPS" />
+      <unit id="7995886393880929216" at="216,0,221,0" name="jetbrains.mps.samples.ChemMastery.editor.Compound_EditorBuilder$CONCEPTS" />
+      <unit id="7995886393880929216" at="117,0,215,0" name="jetbrains.mps.samples.ChemMastery.editor.Compound_EditorBuilder$elementsListHandler_yoxrgg_b0" />
+      <unit id="7995886393880929216" at="47,0,231,0" name="jetbrains.mps.samples.ChemMastery.editor.Compound_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:563c5369-4649-4929-a845-37c7045ffecd(jetbrains.mps.samples.ChemMastery.editor)/7995886393883075688">

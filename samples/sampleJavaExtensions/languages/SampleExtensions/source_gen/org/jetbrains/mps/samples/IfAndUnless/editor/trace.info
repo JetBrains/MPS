@@ -17,17 +17,17 @@
   </root>
   <root nodeRef="r:619da97d-f387-4d46-8414-92a0443bdc0b(org.jetbrains.mps.samples.IfAndUnless.editor)/393299394024627231">
     <file name="UnlessStatement_Editor.java">
-      <node id="393299394024627231" at="11,79,12,81" concept="6" />
+      <node id="393299394024627231" at="11,79,12,79" concept="6" />
       <node id="393299394024627231" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="393299394024627231" at="11,79,12,81" />
+      <scope id="393299394024627231" at="11,79,12,79" />
       <scope id="393299394024627231" at="11,0,14,0">
         <var name="editorContext" id="393299394024627231" />
         <var name="node" id="393299394024627231" />
       </scope>
       <unit id="393299394024627231" at="10,0,15,0" name="org.jetbrains.mps.samples.IfAndUnless.editor.UnlessStatement_Editor" />
     </file>
-    <file name="UnlessStatement_EditorBuilder_a.java">
-      <node id="393299394024627231" at="35,95,36,19" concept="8" />
+    <file name="UnlessStatement_EditorBuilder.java">
+      <node id="393299394024627231" at="35,93,36,19" concept="8" />
       <node id="393299394024627231" at="36,19,37,18" concept="1" />
       <node id="393299394024627231" at="42,26,43,18" concept="6" />
       <node id="393299394024627231" at="46,39,47,32" concept="6" />
@@ -136,7 +136,7 @@
       <node id="393299394024627231" at="185,87,188,7" concept="3" />
       <node id="393299394024627231" at="188,7,191,7" concept="3" />
       <node id="393299394024627231" at="210,0,213,0" concept="4" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="393299394024627231" at="35,0,39,0" concept="0" trace="UnlessStatement_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="393299394024627231" at="35,0,39,0" concept="0" trace="UnlessStatement_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="393299394024627231" at="82,0,86,0" concept="4" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="393299394024627231" at="90,0,94,0" concept="0" trace="conditionSingleRoleHandler_ogpjjb_c0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="393299394024627231" at="156,0,160,0" concept="4" trace="createRefNode_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -170,7 +170,7 @@
       <scope id="393299394024627231" at="189,42,190,45" />
       <scope id="393299394024627231" at="206,17,207,42" />
       <scope id="393299394024627231" at="210,40,211,25" />
-      <scope id="393299394024627231" at="35,95,37,18" />
+      <scope id="393299394024627231" at="35,93,37,18" />
       <scope id="393299394024627231" at="82,40,84,33">
         <var name="provider" id="393299394024627231" />
       </scope>
@@ -266,25 +266,25 @@
       <scope id="393299394024627231" at="50,0,64,0" />
       <scope id="393299394024627231" at="119,0,133,0" />
       <scope id="393299394024627231" at="196,0,210,0" />
-      <unit id="393299394024627231" at="224,0,228,0" name="org.jetbrains.mps.samples.IfAndUnless.editor.UnlessStatement_EditorBuilder_a$LINKS" />
-      <unit id="393299394024627231" at="86,0,137,0" name="org.jetbrains.mps.samples.IfAndUnless.editor.UnlessStatement_EditorBuilder_a$conditionSingleRoleHandler_ogpjjb_c0" />
-      <unit id="393299394024627231" at="160,0,214,0" name="org.jetbrains.mps.samples.IfAndUnless.editor.UnlessStatement_EditorBuilder_a$bodySingleRoleHandler_ogpjjb_f0" />
-      <unit id="393299394024627231" at="31,0,229,0" name="org.jetbrains.mps.samples.IfAndUnless.editor.UnlessStatement_EditorBuilder_a" />
+      <unit id="393299394024627231" at="224,0,228,0" name="org.jetbrains.mps.samples.IfAndUnless.editor.UnlessStatement_EditorBuilder$LINKS" />
+      <unit id="393299394024627231" at="86,0,137,0" name="org.jetbrains.mps.samples.IfAndUnless.editor.UnlessStatement_EditorBuilder$conditionSingleRoleHandler_ogpjjb_c0" />
+      <unit id="393299394024627231" at="160,0,214,0" name="org.jetbrains.mps.samples.IfAndUnless.editor.UnlessStatement_EditorBuilder$bodySingleRoleHandler_ogpjjb_f0" />
+      <unit id="393299394024627231" at="31,0,229,0" name="org.jetbrains.mps.samples.IfAndUnless.editor.UnlessStatement_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:619da97d-f387-4d46-8414-92a0443bdc0b(org.jetbrains.mps.samples.IfAndUnless.editor)/954830572075948207">
     <file name="MyIfStatement_Editor.java">
-      <node id="954830572075948207" at="11,79,12,79" concept="6" />
+      <node id="954830572075948207" at="11,79,12,77" concept="6" />
       <node id="954830572075948207" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="954830572075948207" at="11,79,12,79" />
+      <scope id="954830572075948207" at="11,79,12,77" />
       <scope id="954830572075948207" at="11,0,14,0">
         <var name="editorContext" id="954830572075948207" />
         <var name="node" id="954830572075948207" />
       </scope>
       <unit id="954830572075948207" at="10,0,15,0" name="org.jetbrains.mps.samples.IfAndUnless.editor.MyIfStatement_Editor" />
     </file>
-    <file name="MyIfStatement_EditorBuilder_a.java">
-      <node id="954830572075948207" at="34,93,35,19" concept="8" />
+    <file name="MyIfStatement_EditorBuilder.java">
+      <node id="954830572075948207" at="34,91,35,19" concept="8" />
       <node id="954830572075948207" at="35,19,36,18" concept="1" />
       <node id="954830572075948207" at="41,26,42,18" concept="6" />
       <node id="954830572075948207" at="45,39,46,32" concept="6" />
@@ -410,7 +410,7 @@
       <node id="954830572075948207" at="245,87,248,7" concept="3" />
       <node id="954830572075948207" at="248,7,251,7" concept="3" />
       <node id="954830572075948207" at="267,0,270,0" concept="4" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="954830572075948207" at="34,0,38,0" concept="0" trace="MyIfStatement_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="954830572075948207" at="34,0,38,0" concept="0" trace="MyIfStatement_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="954830572075948207" at="74,0,78,0" concept="4" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="954830572075948207" at="82,0,86,0" concept="0" trace="conditionSingleRoleHandler_a1fgw3_b0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="954830572075948207" at="135,0,139,0" concept="4" trace="createRefNode_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -458,7 +458,7 @@
       <scope id="954830572075948207" at="249,42,250,52" />
       <scope id="954830572075948207" at="263,17,264,42" />
       <scope id="954830572075948207" at="267,40,268,32" />
-      <scope id="954830572075948207" at="34,93,36,18" />
+      <scope id="954830572075948207" at="34,91,36,18" />
       <scope id="954830572075948207" at="74,40,76,33">
         <var name="provider" id="954830572075948207" />
       </scope>
@@ -586,26 +586,26 @@
       <scope id="954830572075948207" at="176,0,190,0" />
       <scope id="954830572075948207" at="253,0,267,0" />
       <scope id="954830572075948207" at="49,0,65,0" />
-      <unit id="954830572075948207" at="272,0,277,0" name="org.jetbrains.mps.samples.IfAndUnless.editor.MyIfStatement_EditorBuilder_a$LINKS" />
-      <unit id="954830572075948207" at="220,0,271,0" name="org.jetbrains.mps.samples.IfAndUnless.editor.MyIfStatement_EditorBuilder_a$alternativeSingleRoleHandler_a1fgw3_i0" />
-      <unit id="954830572075948207" at="139,0,194,0" name="org.jetbrains.mps.samples.IfAndUnless.editor.MyIfStatement_EditorBuilder_a$bodySingleRoleHandler_a1fgw3_c0" />
-      <unit id="954830572075948207" at="78,0,135,0" name="org.jetbrains.mps.samples.IfAndUnless.editor.MyIfStatement_EditorBuilder_a$conditionSingleRoleHandler_a1fgw3_b0" />
-      <unit id="954830572075948207" at="30,0,278,0" name="org.jetbrains.mps.samples.IfAndUnless.editor.MyIfStatement_EditorBuilder_a" />
+      <unit id="954830572075948207" at="272,0,277,0" name="org.jetbrains.mps.samples.IfAndUnless.editor.MyIfStatement_EditorBuilder$LINKS" />
+      <unit id="954830572075948207" at="220,0,271,0" name="org.jetbrains.mps.samples.IfAndUnless.editor.MyIfStatement_EditorBuilder$alternativeSingleRoleHandler_a1fgw3_i0" />
+      <unit id="954830572075948207" at="139,0,194,0" name="org.jetbrains.mps.samples.IfAndUnless.editor.MyIfStatement_EditorBuilder$bodySingleRoleHandler_a1fgw3_c0" />
+      <unit id="954830572075948207" at="78,0,135,0" name="org.jetbrains.mps.samples.IfAndUnless.editor.MyIfStatement_EditorBuilder$conditionSingleRoleHandler_a1fgw3_b0" />
+      <unit id="954830572075948207" at="30,0,278,0" name="org.jetbrains.mps.samples.IfAndUnless.editor.MyIfStatement_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:619da97d-f387-4d46-8414-92a0443bdc0b(org.jetbrains.mps.samples.IfAndUnless.editor)/954830572075974239">
     <file name="Flow_Editor.java">
-      <node id="954830572075974239" at="11,79,12,70" concept="6" />
+      <node id="954830572075974239" at="11,79,12,68" concept="6" />
       <node id="954830572075974239" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="954830572075974239" at="11,79,12,70" />
+      <scope id="954830572075974239" at="11,79,12,68" />
       <scope id="954830572075974239" at="11,0,14,0">
         <var name="editorContext" id="954830572075974239" />
         <var name="node" id="954830572075974239" />
       </scope>
       <unit id="954830572075974239" at="10,0,15,0" name="org.jetbrains.mps.samples.IfAndUnless.editor.Flow_Editor" />
     </file>
-    <file name="Flow_EditorBuilder_a.java">
-      <node id="954830572075974239" at="40,84,41,19" concept="8" />
+    <file name="Flow_EditorBuilder.java">
+      <node id="954830572075974239" at="40,82,41,19" concept="8" />
       <node id="954830572075974239" at="41,19,42,18" concept="1" />
       <node id="954830572075974239" at="47,26,48,18" concept="6" />
       <node id="954830572075974239" at="51,39,52,32" concept="6" />
@@ -666,7 +666,7 @@
       <node id="954830572075974239" at="103,0,106,0" concept="4" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="954830572075974239" at="106,0,109,0" concept="4" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="954830572075974239" at="150,96,153,9" concept="3" />
-      <node id="954830572075974239" at="40,0,44,0" concept="0" trace="Flow_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="954830572075974239" at="40,0,44,0" concept="0" trace="Flow_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="954830572075974239" at="94,0,98,0" concept="0" trace="statementListHandler_gc1fin_b0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="954830572075974239" at="99,0,103,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="954830572075974239" at="132,97,136,9" concept="3" />
@@ -694,7 +694,7 @@
       <scope id="954830572075974239" at="106,48,107,35" />
       <scope id="954830572075974239" at="124,17,125,42" />
       <scope id="954830572075974239" at="151,34,152,91" />
-      <scope id="954830572075974239" at="40,84,42,18" />
+      <scope id="954830572075974239" at="40,82,42,18" />
       <scope id="954830572075974239" at="94,83,96,25" />
       <scope id="954830572075974239" at="133,122,135,146" />
       <scope id="954830572075974239" at="139,34,141,142" />
@@ -749,11 +749,11 @@
         <var name="elementNode" id="954830572075974239" />
         <var name="isEmptyCell" id="954830572075974239" />
       </scope>
-      <unit id="954830572075974239" at="158,0,161,0" name="org.jetbrains.mps.samples.IfAndUnless.editor.Flow_EditorBuilder_a$LINKS" />
-      <unit id="954830572075974239" at="162,0,165,0" name="org.jetbrains.mps.samples.IfAndUnless.editor.Flow_EditorBuilder_a$CONCEPTS" />
-      <unit id="954830572075974239" at="65,88,69,5" name="org.jetbrains.mps.samples.IfAndUnless.editor.Flow_EditorBuilder_a$1" />
-      <unit id="954830572075974239" at="90,0,157,0" name="org.jetbrains.mps.samples.IfAndUnless.editor.Flow_EditorBuilder_a$statementListHandler_gc1fin_b0" />
-      <unit id="954830572075974239" at="36,0,166,0" name="org.jetbrains.mps.samples.IfAndUnless.editor.Flow_EditorBuilder_a" />
+      <unit id="954830572075974239" at="158,0,161,0" name="org.jetbrains.mps.samples.IfAndUnless.editor.Flow_EditorBuilder$LINKS" />
+      <unit id="954830572075974239" at="162,0,165,0" name="org.jetbrains.mps.samples.IfAndUnless.editor.Flow_EditorBuilder$CONCEPTS" />
+      <unit id="954830572075974239" at="65,88,69,5" name="org.jetbrains.mps.samples.IfAndUnless.editor.Flow_EditorBuilder$1" />
+      <unit id="954830572075974239" at="90,0,157,0" name="org.jetbrains.mps.samples.IfAndUnless.editor.Flow_EditorBuilder$statementListHandler_gc1fin_b0" />
+      <unit id="954830572075974239" at="36,0,166,0" name="org.jetbrains.mps.samples.IfAndUnless.editor.Flow_EditorBuilder" />
     </file>
   </root>
 </debug-info>

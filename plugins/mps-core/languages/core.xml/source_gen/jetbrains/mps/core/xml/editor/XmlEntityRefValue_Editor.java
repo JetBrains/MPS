@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class XmlEntityRefValue_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new XmlEntityRefValue_EditorBuilder_a(editorContext, node).createCell();
+    return new XmlEntityRefValue_EditorBuilder(editorContext, node).createCell();
   }
 }

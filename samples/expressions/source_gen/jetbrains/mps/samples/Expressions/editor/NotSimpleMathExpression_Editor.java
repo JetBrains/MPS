@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class NotSimpleMathExpression_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new NotSimpleMathExpression_EditorBuilder_a(editorContext, node).createCell();
+    return new NotSimpleMathExpression_EditorBuilder(editorContext, node).createCell();
   }
 }

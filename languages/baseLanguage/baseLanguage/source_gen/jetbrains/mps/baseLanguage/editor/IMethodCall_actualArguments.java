@@ -16,6 +16,6 @@ public class IMethodCall_actualArguments implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new IMethodCall_actualArguments_ComponentBuilder_a(editorContext, node).createCell();
+    return new IMethodCall_actualArguments_ComponentBuilder(editorContext, node).createCell();
   }
 }

@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class IsActionApplicableExpression_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new IsActionApplicableExpression_EditorBuilder_a(editorContext, node).createCell();
+    return new IsActionApplicableExpression_EditorBuilder(editorContext, node).createCell();
   }
 }

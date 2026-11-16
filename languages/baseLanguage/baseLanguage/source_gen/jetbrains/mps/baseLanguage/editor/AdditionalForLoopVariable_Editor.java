@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class AdditionalForLoopVariable_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new AdditionalForLoopVariable_EditorBuilder_a(editorContext, node).createCell();
+    return new AdditionalForLoopVariable_EditorBuilder(editorContext, node).createCell();
   }
 }

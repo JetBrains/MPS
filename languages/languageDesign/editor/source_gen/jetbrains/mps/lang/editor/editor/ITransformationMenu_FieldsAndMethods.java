@@ -16,6 +16,6 @@ public class ITransformationMenu_FieldsAndMethods implements ConceptEditorCompon
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ITransformationMenu_FieldsAndMethods_ComponentBuilder_a(editorContext, node).createCell();
+    return new ITransformationMenu_FieldsAndMethods_ComponentBuilder(editorContext, node).createCell();
   }
 }

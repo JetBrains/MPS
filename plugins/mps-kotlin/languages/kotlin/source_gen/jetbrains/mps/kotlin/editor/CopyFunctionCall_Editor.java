@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class CopyFunctionCall_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new CopyFunctionCall_EditorBuilder_a(editorContext, node).createCell();
+    return new CopyFunctionCall_EditorBuilder(editorContext, node).createCell();
   }
 }

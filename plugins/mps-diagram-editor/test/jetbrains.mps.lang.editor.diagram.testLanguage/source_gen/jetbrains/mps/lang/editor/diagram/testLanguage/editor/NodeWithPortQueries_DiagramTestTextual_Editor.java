@@ -18,6 +18,6 @@ public class NodeWithPortQueries_DiagramTestTextual_Editor extends DefaultNodeEd
     return myContextHints;
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new NodeWithPortQueries_DiagramTestTextual_EditorBuilder_a(editorContext, node).createCell();
+    return new NodeWithPortQueries_DiagramTestTextual_EditorBuilder(editorContext, node).createCell();
   }
 }

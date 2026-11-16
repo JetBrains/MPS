@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="-esfaiga2gr4snib7dsczv95te1mm3aq">
-  <files names="Conversation_Editor.java:Conversation_EditorBuilder_a.java:EditorAspectDescriptorImpl.java:Message_Editor.java:Message_EditorBuilder_a.java:Message_SubstituteMenu.java:Participant_Editor.java:Participant_EditorBuilder_a.java" />
+  <files names="Conversation_Editor.java:Conversation_EditorBuilder.java:EditorAspectDescriptorImpl.java:Message_Editor.java:Message_EditorBuilder.java:Message_SubstituteMenu.java:Participant_Editor.java:Participant_EditorBuilder.java" />
 </product>
 

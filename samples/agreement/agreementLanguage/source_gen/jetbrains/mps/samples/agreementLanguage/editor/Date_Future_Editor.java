@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class Date_Future_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new Date_Future_EditorBuilder_a(editorContext, node).createCell();
+    return new Date_Future_EditorBuilder(editorContext, node).createCell();
   }
 }

@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class MigrateManuallyAnnotation_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new MigrateManuallyAnnotation_EditorBuilder_a(editorContext, node).createCell();
+    return new MigrateManuallyAnnotation_EditorBuilder(editorContext, node).createCell();
   }
 }

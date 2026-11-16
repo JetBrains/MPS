@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class BuildCompositePath_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new BuildCompositePath_EditorBuilder_a(editorContext, node).createCell();
+    return new BuildCompositePath_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new BuildCompositePath_InspectorBuilder_a(editorContext, node).createCell();
+    return new BuildCompositePath_InspectorBuilder(editorContext, node).createCell();
   }
 }

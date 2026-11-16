@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class SubstituteAnnotation_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new SubstituteAnnotation_EditorBuilder_a(editorContext, node).createCell();
+    return new SubstituteAnnotation_EditorBuilder(editorContext, node).createCell();
   }
 }

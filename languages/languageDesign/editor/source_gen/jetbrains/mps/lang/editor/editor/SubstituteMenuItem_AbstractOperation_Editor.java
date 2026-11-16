@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class SubstituteMenuItem_AbstractOperation_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new SubstituteMenuItem_AbstractOperation_EditorBuilder_a(editorContext, node).createCell();
+    return new SubstituteMenuItem_AbstractOperation_EditorBuilder(editorContext, node).createCell();
   }
 }

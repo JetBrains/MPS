@@ -16,6 +16,6 @@ public class HandlersComponent implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new HandlersComponent_ComponentBuilder_a(editorContext, node).createCell();
+    return new HandlersComponent_ComponentBuilder(editorContext, node).createCell();
   }
 }

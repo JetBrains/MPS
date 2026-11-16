@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class HtmlLineWithoutSpaces_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new HtmlLineWithoutSpaces_EditorBuilder_a(editorContext, node).createCell();
+    return new HtmlLineWithoutSpaces_EditorBuilder(editorContext, node).createCell();
   }
 }

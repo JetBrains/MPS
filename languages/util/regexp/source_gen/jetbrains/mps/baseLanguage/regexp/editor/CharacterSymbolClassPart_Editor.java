@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class CharacterSymbolClassPart_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new CharacterSymbolClassPart_EditorBuilder_a(editorContext, node).createCell();
+    return new CharacterSymbolClassPart_EditorBuilder(editorContext, node).createCell();
   }
 }

@@ -17,17 +17,17 @@
   </root>
   <root nodeRef="r:a5e67830-5e22-4e0a-a1be-c7135a49a7a5(testAnnotatedType.editor)/1470921783545323255">
     <file name="PrimNumConstant_Editor.java">
-      <node id="1470921783545323255" at="11,79,12,81" concept="6" />
+      <node id="1470921783545323255" at="11,79,12,79" concept="6" />
       <node id="1470921783545323255" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1470921783545323255" at="11,79,12,81" />
+      <scope id="1470921783545323255" at="11,79,12,79" />
       <scope id="1470921783545323255" at="11,0,14,0">
         <var name="editorContext" id="1470921783545323255" />
         <var name="node" id="1470921783545323255" />
       </scope>
       <unit id="1470921783545323255" at="10,0,15,0" name="testAnnotatedType.editor.PrimNumConstant_Editor" />
     </file>
-    <file name="PrimNumConstant_EditorBuilder_a.java">
-      <node id="1470921783545323255" at="36,95,37,19" concept="8" />
+    <file name="PrimNumConstant_EditorBuilder.java">
+      <node id="1470921783545323255" at="36,93,37,19" concept="8" />
       <node id="1470921783545323255" at="37,19,38,18" concept="1" />
       <node id="1470921783545323255" at="43,26,44,18" concept="6" />
       <node id="1470921783545323255" at="47,39,48,32" concept="6" />
@@ -124,7 +124,7 @@
       <node id="1470921783545323255" at="172,0,173,0" concept="7" trace="PropertyAttribute$Gb" />
       <node id="1470921783545323255" at="33,0,35,0" concept="2" trace="myNode" />
       <node id="1470921783545323255" at="47,0,50,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="1470921783545323255" at="36,0,40,0" concept="0" trace="PrimNumConstant_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1470921783545323255" at="36,0,40,0" concept="0" trace="PrimNumConstant_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1470921783545323255" at="41,0,46,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1470921783545419446" at="90,208,95,24" concept="3" />
       <node id="1470921783545323264" at="133,208,138,24" concept="3" />
@@ -142,7 +142,7 @@
       <scope id="1470921783545323255" at="47,39,48,32" />
       <scope id="1470921783545419446" at="96,15,97,40" />
       <scope id="1470921783545323264" at="139,15,140,40" />
-      <scope id="1470921783545323255" at="36,95,38,18" />
+      <scope id="1470921783545323255" at="36,93,38,18" />
       <scope id="1470921783545419446" at="91,74,93,145">
         <var name="manager" id="1470921783545419446" />
       </scope>
@@ -202,24 +202,24 @@
       <scope id="1470921783545323264" at="119,41,141,5" />
       <scope id="1470921783545419446" at="76,0,100,0" />
       <scope id="1470921783545323264" at="119,0,143,0" />
-      <unit id="1470921783545323255" at="171,0,174,0" name="testAnnotatedType.editor.PrimNumConstant_EditorBuilder_a$CONCEPTS" />
-      <unit id="1470921783545323255" at="166,0,170,0" name="testAnnotatedType.editor.PrimNumConstant_EditorBuilder_a$PROPS" />
-      <unit id="1470921783545323255" at="32,0,175,0" name="testAnnotatedType.editor.PrimNumConstant_EditorBuilder_a" />
+      <unit id="1470921783545323255" at="171,0,174,0" name="testAnnotatedType.editor.PrimNumConstant_EditorBuilder$CONCEPTS" />
+      <unit id="1470921783545323255" at="166,0,170,0" name="testAnnotatedType.editor.PrimNumConstant_EditorBuilder$PROPS" />
+      <unit id="1470921783545323255" at="32,0,175,0" name="testAnnotatedType.editor.PrimNumConstant_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:a5e67830-5e22-4e0a-a1be-c7135a49a7a5(testAnnotatedType.editor)/6405009306797650329">
     <file name="SubstituteAnnotation_Editor.java">
-      <node id="6405009306797650329" at="11,79,12,86" concept="6" />
+      <node id="6405009306797650329" at="11,79,12,84" concept="6" />
       <node id="6405009306797650329" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="6405009306797650329" at="11,79,12,86" />
+      <scope id="6405009306797650329" at="11,79,12,84" />
       <scope id="6405009306797650329" at="11,0,14,0">
         <var name="editorContext" id="6405009306797650329" />
         <var name="node" id="6405009306797650329" />
       </scope>
       <unit id="6405009306797650329" at="10,0,15,0" name="testAnnotatedType.editor.SubstituteAnnotation_Editor" />
     </file>
-    <file name="SubstituteAnnotation_EditorBuilder_a.java">
-      <node id="6405009306797650329" at="34,100,35,19" concept="8" />
+    <file name="SubstituteAnnotation_EditorBuilder.java">
+      <node id="6405009306797650329" at="34,98,35,19" concept="8" />
       <node id="6405009306797650329" at="35,19,36,18" concept="1" />
       <node id="6405009306797650329" at="41,26,42,18" concept="6" />
       <node id="6405009306797650329" at="45,39,46,32" concept="6" />
@@ -313,7 +313,7 @@
       <node id="6405009306797650329" at="170,87,173,7" concept="3" />
       <node id="6405009306797650329" at="173,7,176,7" concept="3" />
       <node id="6405009306797650329" at="192,0,195,0" concept="4" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="6405009306797650329" at="34,0,38,0" concept="0" trace="SubstituteAnnotation_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="6405009306797650329" at="34,0,38,0" concept="0" trace="SubstituteAnnotation_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="6405009306797650329" at="76,0,80,0" concept="4" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="6405009306797650329" at="84,0,88,0" concept="0" trace="conditionSingleRoleHandler_z4bce9_c0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="6405009306797650329" at="141,0,145,0" concept="4" trace="createRefNode_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -346,7 +346,7 @@
       <scope id="6405009306797650329" at="174,42,175,51" />
       <scope id="6405009306797650329" at="188,17,189,42" />
       <scope id="6405009306797650329" at="192,40,193,31" />
-      <scope id="6405009306797650329" at="34,100,36,18" />
+      <scope id="6405009306797650329" at="34,98,36,18" />
       <scope id="6405009306797650329" at="76,40,78,33">
         <var name="provider" id="6405009306797650329" />
       </scope>
@@ -435,25 +435,25 @@
       <scope id="6405009306797650329" at="49,0,62,0" />
       <scope id="6405009306797650329" at="113,0,127,0" />
       <scope id="6405009306797650329" at="178,0,192,0" />
-      <unit id="6405009306797650329" at="206,0,210,0" name="testAnnotatedType.editor.SubstituteAnnotation_EditorBuilder_a$LINKS" />
-      <unit id="6405009306797650329" at="80,0,131,0" name="testAnnotatedType.editor.SubstituteAnnotation_EditorBuilder_a$conditionSingleRoleHandler_z4bce9_c0" />
-      <unit id="6405009306797650329" at="145,0,196,0" name="testAnnotatedType.editor.SubstituteAnnotation_EditorBuilder_a$substituteSingleRoleHandler_z4bce9_e0" />
-      <unit id="6405009306797650329" at="30,0,211,0" name="testAnnotatedType.editor.SubstituteAnnotation_EditorBuilder_a" />
+      <unit id="6405009306797650329" at="206,0,210,0" name="testAnnotatedType.editor.SubstituteAnnotation_EditorBuilder$LINKS" />
+      <unit id="6405009306797650329" at="80,0,131,0" name="testAnnotatedType.editor.SubstituteAnnotation_EditorBuilder$conditionSingleRoleHandler_z4bce9_c0" />
+      <unit id="6405009306797650329" at="145,0,196,0" name="testAnnotatedType.editor.SubstituteAnnotation_EditorBuilder$substituteSingleRoleHandler_z4bce9_e0" />
+      <unit id="6405009306797650329" at="30,0,211,0" name="testAnnotatedType.editor.SubstituteAnnotation_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:a5e67830-5e22-4e0a-a1be-c7135a49a7a5(testAnnotatedType.editor)/6405009306797650383">
     <file name="PresenceCondition_Editor.java">
-      <node id="6405009306797650383" at="11,79,12,83" concept="6" />
+      <node id="6405009306797650383" at="11,79,12,81" concept="6" />
       <node id="6405009306797650383" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="6405009306797650383" at="11,79,12,83" />
+      <scope id="6405009306797650383" at="11,79,12,81" />
       <scope id="6405009306797650383" at="11,0,14,0">
         <var name="editorContext" id="6405009306797650383" />
         <var name="node" id="6405009306797650383" />
       </scope>
       <unit id="6405009306797650383" at="10,0,15,0" name="testAnnotatedType.editor.PresenceCondition_Editor" />
     </file>
-    <file name="PresenceCondition_EditorBuilder_a.java">
-      <node id="6405009306797650383" at="31,97,32,19" concept="8" />
+    <file name="PresenceCondition_EditorBuilder.java">
+      <node id="6405009306797650383" at="31,95,32,19" concept="8" />
       <node id="6405009306797650383" at="32,19,33,18" concept="1" />
       <node id="6405009306797650383" at="38,26,39,18" concept="6" />
       <node id="6405009306797650383" at="42,39,43,32" concept="6" />
@@ -481,7 +481,7 @@
       <node id="6405009306797650383" at="81,0,82,0" concept="7" trace="PropertyAttribute$Gb" />
       <node id="6405009306797650383" at="28,0,30,0" concept="2" trace="myNode" />
       <node id="6405009306797650383" at="42,0,45,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="6405009306797650383" at="31,0,35,0" concept="0" trace="PresenceCondition_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="6405009306797650383" at="31,0,35,0" concept="0" trace="PresenceCondition_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="6405009306797650383" at="36,0,41,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="6405009306797650392" at="65,208,70,24" concept="3" />
       <node id="6405009306797650383" at="46,0,54,0" concept="4" trace="createCollection_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -490,7 +490,7 @@
       <scope id="6405009306797650383" at="38,26,39,18" />
       <scope id="6405009306797650383" at="42,39,43,32" />
       <scope id="6405009306797650392" at="71,15,72,40" />
-      <scope id="6405009306797650383" at="31,97,33,18" />
+      <scope id="6405009306797650383" at="31,95,33,18" />
       <scope id="6405009306797650392" at="66,74,68,145">
         <var name="manager" id="6405009306797650392" />
       </scope>
@@ -512,24 +512,24 @@
       </scope>
       <scope id="6405009306797650392" at="54,41,73,5" />
       <scope id="6405009306797650392" at="54,0,75,0" />
-      <unit id="6405009306797650383" at="76,0,79,0" name="testAnnotatedType.editor.PresenceCondition_EditorBuilder_a$PROPS" />
-      <unit id="6405009306797650383" at="80,0,83,0" name="testAnnotatedType.editor.PresenceCondition_EditorBuilder_a$CONCEPTS" />
-      <unit id="6405009306797650383" at="27,0,84,0" name="testAnnotatedType.editor.PresenceCondition_EditorBuilder_a" />
+      <unit id="6405009306797650383" at="76,0,79,0" name="testAnnotatedType.editor.PresenceCondition_EditorBuilder$PROPS" />
+      <unit id="6405009306797650383" at="80,0,83,0" name="testAnnotatedType.editor.PresenceCondition_EditorBuilder$CONCEPTS" />
+      <unit id="6405009306797650383" at="27,0,84,0" name="testAnnotatedType.editor.PresenceCondition_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:a5e67830-5e22-4e0a-a1be-c7135a49a7a5(testAnnotatedType.editor)/8675420879155410157">
     <file name="PrimType_Editor.java">
-      <node id="8675420879155410157" at="11,79,12,74" concept="6" />
+      <node id="8675420879155410157" at="11,79,12,72" concept="6" />
       <node id="8675420879155410157" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="8675420879155410157" at="11,79,12,74" />
+      <scope id="8675420879155410157" at="11,79,12,72" />
       <scope id="8675420879155410157" at="11,0,14,0">
         <var name="editorContext" id="8675420879155410157" />
         <var name="node" id="8675420879155410157" />
       </scope>
       <unit id="8675420879155410157" at="10,0,15,0" name="testAnnotatedType.editor.PrimType_Editor" />
     </file>
-    <file name="PrimType_EditorBuilder_a.java">
-      <node id="8675420879155410157" at="17,88,18,19" concept="8" />
+    <file name="PrimType_EditorBuilder.java">
+      <node id="8675420879155410157" at="17,86,18,19" concept="8" />
       <node id="8675420879155410157" at="18,19,19,18" concept="1" />
       <node id="8675420879155410157" at="24,26,25,18" concept="6" />
       <node id="8675420879155410157" at="28,39,29,32" concept="6" />
@@ -543,13 +543,13 @@
       <node id="8675420879155410160" at="41,119,42,22" concept="6" />
       <node id="8675420879155410157" at="14,0,16,0" concept="2" trace="myNode" />
       <node id="8675420879155410157" at="28,0,31,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="8675420879155410157" at="17,0,21,0" concept="0" trace="PrimType_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8675420879155410157" at="17,0,21,0" concept="0" trace="PrimType_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8675420879155410160" at="40,0,44,0" concept="4" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="8675420879155410157" at="22,0,27,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="8675420879155410157" at="32,0,40,0" concept="4" trace="createCollection_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="8675420879155410157" at="24,26,25,18" />
       <scope id="8675420879155410157" at="28,39,29,32" />
-      <scope id="8675420879155410157" at="17,88,19,18" />
+      <scope id="8675420879155410157" at="17,86,19,18" />
       <scope id="8675420879155410160" at="40,42,42,22">
         <var name="editorCell" id="8675420879155410160" />
       </scope>
@@ -564,7 +564,7 @@
         <var name="editorCell" id="8675420879155410157" />
       </scope>
       <scope id="8675420879155410157" at="32,0,40,0" />
-      <unit id="8675420879155410157" at="13,0,45,0" name="testAnnotatedType.editor.PrimType_EditorBuilder_a" />
+      <unit id="8675420879155410157" at="13,0,45,0" name="testAnnotatedType.editor.PrimType_EditorBuilder" />
     </file>
   </root>
 </debug-info>

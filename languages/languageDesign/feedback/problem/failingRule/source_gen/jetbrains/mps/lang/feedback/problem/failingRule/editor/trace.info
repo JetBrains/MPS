@@ -105,17 +105,17 @@
   </root>
   <root nodeRef="r:15aa514c-a662-491f-a410-60c8f072e1ce(jetbrains.mps.lang.feedback.problem.failingRule.editor)/6285588811486150258">
     <file name="FailingRuleProblem_Editor.java">
-      <node id="6285588811486150258" at="11,79,12,84" concept="6" />
+      <node id="6285588811486150258" at="11,79,12,82" concept="6" />
       <node id="6285588811486150258" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="6285588811486150258" at="11,79,12,84" />
+      <scope id="6285588811486150258" at="11,79,12,82" />
       <scope id="6285588811486150258" at="11,0,14,0">
         <var name="editorContext" id="6285588811486150258" />
         <var name="node" id="6285588811486150258" />
       </scope>
       <unit id="6285588811486150258" at="10,0,15,0" name="jetbrains.mps.lang.feedback.problem.failingRule.editor.FailingRuleProblem_Editor" />
     </file>
-    <file name="FailingRuleProblem_EditorBuilder_a.java">
-      <node id="6285588811486150258" at="41,98,42,19" concept="11" />
+    <file name="FailingRuleProblem_EditorBuilder.java">
+      <node id="6285588811486150258" at="41,96,42,19" concept="11" />
       <node id="6285588811486150258" at="42,19,43,18" concept="1" />
       <node id="6285588811486150258" at="48,26,49,18" concept="6" />
       <node id="6285588811486150258" at="52,39,53,32" concept="6" />
@@ -188,7 +188,7 @@
       <node id="5258059200641869328" at="105,0,107,0" concept="2" trace="myNode" />
       <node id="6285588811486150258" at="52,0,55,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="5258059200641869328" at="115,0,118,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="6285588811486150258" at="41,0,45,0" concept="0" trace="FailingRuleProblem_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="6285588811486150258" at="41,0,45,0" concept="0" trace="FailingRuleProblem_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="6285588811486150258" at="86,0,90,5" concept="3" />
       <node id="6285588811486150258" at="46,0,51,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="6285588811486150258" at="97,205,102,22" concept="3" />
@@ -208,7 +208,7 @@
       <scope id="5258059200641869328" at="115,41,116,32" />
       <scope id="5258059200641869328" at="121,28,122,20" />
       <scope id="5258059200641869338" at="145,17,146,42" />
-      <scope id="6285588811486150258" at="41,98,43,18" />
+      <scope id="6285588811486150258" at="41,96,43,18" />
       <scope id="6285588811486150258" at="87,40,89,43" />
       <scope id="6285588811486150258" at="98,73,100,145">
         <var name="manager" id="6285588811486150258" />
@@ -266,12 +266,12 @@
         <var name="style" id="6285588811486150258" />
       </scope>
       <scope id="6285588811486150258" at="72,0,104,0" />
-      <unit id="6285588811486150258" at="157,0,160,0" name="jetbrains.mps.lang.feedback.problem.failingRule.editor.FailingRuleProblem_EditorBuilder_a$LINKS" />
-      <unit id="6285588811486150258" at="166,0,169,0" name="jetbrains.mps.lang.feedback.problem.failingRule.editor.FailingRuleProblem_EditorBuilder_a$PROPS" />
-      <unit id="6285588811486150258" at="161,0,165,0" name="jetbrains.mps.lang.feedback.problem.failingRule.editor.FailingRuleProblem_EditorBuilder_a$CONCEPTS" />
-      <unit id="6285588811486150258" at="74,42,82,5" name="jetbrains.mps.lang.feedback.problem.failingRule.editor.FailingRuleProblem_EditorBuilder_a$1" />
-      <unit id="5258059200641869328" at="104,0,150,0" name="jetbrains.mps.lang.feedback.problem.failingRule.editor.FailingRuleProblem_EditorBuilder_a$Inline_Builder0" />
-      <unit id="6285588811486150258" at="37,0,170,0" name="jetbrains.mps.lang.feedback.problem.failingRule.editor.FailingRuleProblem_EditorBuilder_a" />
+      <unit id="6285588811486150258" at="157,0,160,0" name="jetbrains.mps.lang.feedback.problem.failingRule.editor.FailingRuleProblem_EditorBuilder$LINKS" />
+      <unit id="6285588811486150258" at="166,0,169,0" name="jetbrains.mps.lang.feedback.problem.failingRule.editor.FailingRuleProblem_EditorBuilder$PROPS" />
+      <unit id="6285588811486150258" at="161,0,165,0" name="jetbrains.mps.lang.feedback.problem.failingRule.editor.FailingRuleProblem_EditorBuilder$CONCEPTS" />
+      <unit id="6285588811486150258" at="74,42,82,5" name="jetbrains.mps.lang.feedback.problem.failingRule.editor.FailingRuleProblem_EditorBuilder$1" />
+      <unit id="5258059200641869328" at="104,0,150,0" name="jetbrains.mps.lang.feedback.problem.failingRule.editor.FailingRuleProblem_EditorBuilder$Inline_Builder0" />
+      <unit id="6285588811486150258" at="37,0,170,0" name="jetbrains.mps.lang.feedback.problem.failingRule.editor.FailingRuleProblem_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:15aa514c-a662-491f-a410-60c8f072e1ce(jetbrains.mps.lang.feedback.problem.failingRule.editor)/7716791493893610133">

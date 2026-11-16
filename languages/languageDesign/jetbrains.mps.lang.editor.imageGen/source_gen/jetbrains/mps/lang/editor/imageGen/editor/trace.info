@@ -18,17 +18,17 @@
   </root>
   <root nodeRef="r:d306cf2d-7a9b-45e7-845a-141e46480d21(jetbrains.mps.lang.editor.imageGen.editor)/2359976223560030263">
     <file name="ImageGenerator_Editor.java">
-      <node id="2359976223560030263" at="11,79,12,80" concept="6" />
+      <node id="2359976223560030263" at="11,79,12,78" concept="6" />
       <node id="2359976223560030263" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="2359976223560030263" at="11,79,12,80" />
+      <scope id="2359976223560030263" at="11,79,12,78" />
       <scope id="2359976223560030263" at="11,0,14,0">
         <var name="editorContext" id="2359976223560030263" />
         <var name="node" id="2359976223560030263" />
       </scope>
       <unit id="2359976223560030263" at="10,0,15,0" name="jetbrains.mps.lang.editor.imageGen.editor.ImageGenerator_Editor" />
     </file>
-    <file name="ImageGenerator_EditorBuilder_a.java">
-      <node id="2359976223560030263" at="46,94,47,19" concept="9" />
+    <file name="ImageGenerator_EditorBuilder.java">
+      <node id="2359976223560030263" at="46,92,47,19" concept="9" />
       <node id="2359976223560030263" at="47,19,48,18" concept="1" />
       <node id="2359976223560030263" at="53,26,54,18" concept="6" />
       <node id="2359976223560030263" at="57,39,58,32" concept="6" />
@@ -316,7 +316,7 @@
       <node id="3245637733310278071" at="151,0,154,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="3245637733309853391" at="186,51,189,5" concept="3" />
       <node id="844086826327759248" at="192,0,195,0" concept="4" trace="nodeCondition0#()Z" />
-      <node id="2359976223560030263" at="46,0,50,0" concept="0" trace="ImageGenerator_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="2359976223560030263" at="46,0,50,0" concept="0" trace="ImageGenerator_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="2359976223560030263" at="126,0,130,5" concept="3" />
       <node id="2359976223560030263" at="51,0,56,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="2359976223560030263" at="133,205,138,22" concept="3" />
@@ -371,7 +371,7 @@
       <scope id="1380214350863064445" at="303,15,304,40" />
       <scope id="1380214350863064688" at="364,15,365,40" />
       <scope id="3245637733309853559" at="425,15,426,40" />
-      <scope id="2359976223560030263" at="46,94,48,18" />
+      <scope id="2359976223560030263" at="46,92,48,18" />
       <scope id="2359976223560030263" at="127,40,129,43" />
       <scope id="2359976223560030263" at="134,73,136,145">
         <var name="manager" id="2359976223560030263" />
@@ -567,12 +567,12 @@
         <var name="referenceLink" id="2359976223560030263" />
       </scope>
       <scope id="2359976223560030263" at="112,0,140,0" />
-      <unit id="2359976223560030263" at="439,0,442,0" name="jetbrains.mps.lang.editor.imageGen.editor.ImageGenerator_EditorBuilder_a$LINKS" />
-      <unit id="2359976223560030263" at="443,0,447,0" name="jetbrains.mps.lang.editor.imageGen.editor.ImageGenerator_EditorBuilder_a$CONCEPTS" />
-      <unit id="2359976223560030263" at="448,0,454,0" name="jetbrains.mps.lang.editor.imageGen.editor.ImageGenerator_EditorBuilder_a$PROPS" />
-      <unit id="2359976223560030263" at="114,42,122,5" name="jetbrains.mps.lang.editor.imageGen.editor.ImageGenerator_EditorBuilder_a$1" />
-      <unit id="3245637733310278071" at="140,0,167,0" name="jetbrains.mps.lang.editor.imageGen.editor.ImageGenerator_EditorBuilder_a$Inline_Builder0" />
-      <unit id="2359976223560030263" at="42,0,455,0" name="jetbrains.mps.lang.editor.imageGen.editor.ImageGenerator_EditorBuilder_a" />
+      <unit id="2359976223560030263" at="439,0,442,0" name="jetbrains.mps.lang.editor.imageGen.editor.ImageGenerator_EditorBuilder$LINKS" />
+      <unit id="2359976223560030263" at="443,0,447,0" name="jetbrains.mps.lang.editor.imageGen.editor.ImageGenerator_EditorBuilder$CONCEPTS" />
+      <unit id="2359976223560030263" at="448,0,454,0" name="jetbrains.mps.lang.editor.imageGen.editor.ImageGenerator_EditorBuilder$PROPS" />
+      <unit id="2359976223560030263" at="114,42,122,5" name="jetbrains.mps.lang.editor.imageGen.editor.ImageGenerator_EditorBuilder$1" />
+      <unit id="3245637733310278071" at="140,0,167,0" name="jetbrains.mps.lang.editor.imageGen.editor.ImageGenerator_EditorBuilder$Inline_Builder0" />
+      <unit id="2359976223560030263" at="42,0,455,0" name="jetbrains.mps.lang.editor.imageGen.editor.ImageGenerator_EditorBuilder" />
     </file>
   </root>
 </debug-info>

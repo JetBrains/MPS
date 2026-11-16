@@ -41,17 +41,17 @@
   </root>
   <root nodeRef="r:6f104b69-0cfd-4b06-895f-bc1a1b43170f(jetbrains.mps.build.mps.tests.editor)/4005526075820601542">
     <file name="BuildModuleTestsPlugin_Editor.java">
-      <node id="4005526075820601542" at="11,79,12,88" concept="6" />
+      <node id="4005526075820601542" at="11,79,12,86" concept="6" />
       <node id="4005526075820601542" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4005526075820601542" at="11,79,12,88" />
+      <scope id="4005526075820601542" at="11,79,12,86" />
       <scope id="4005526075820601542" at="11,0,14,0">
         <var name="editorContext" id="4005526075820601542" />
         <var name="node" id="4005526075820601542" />
       </scope>
       <unit id="4005526075820601542" at="10,0,15,0" name="jetbrains.mps.build.mps.tests.editor.BuildModuleTestsPlugin_Editor" />
     </file>
-    <file name="BuildModuleTestsPlugin_EditorBuilder_a.java">
-      <node id="4005526075820601542" at="21,102,22,19" concept="11" />
+    <file name="BuildModuleTestsPlugin_EditorBuilder.java">
+      <node id="4005526075820601542" at="21,100,22,19" concept="11" />
       <node id="4005526075820601542" at="22,19,23,18" concept="1" />
       <node id="4005526075820601542" at="28,26,29,18" concept="6" />
       <node id="4005526075820601542" at="32,39,33,32" concept="6" />
@@ -70,13 +70,13 @@
       <node id="6647099934206700655" at="50,34,51,22" concept="6" />
       <node id="4005526075820601542" at="18,0,20,0" concept="2" trace="myNode" />
       <node id="4005526075820601542" at="32,0,35,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="4005526075820601542" at="21,0,25,0" concept="0" trace="BuildModuleTestsPlugin_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4005526075820601542" at="21,0,25,0" concept="0" trace="BuildModuleTestsPlugin_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4005526075820601542" at="26,0,31,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="4005526075820601542" at="36,0,44,0" concept="4" trace="createCollection_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="6647099934206700655" at="44,0,53,0" concept="4" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="4005526075820601542" at="28,26,29,18" />
       <scope id="4005526075820601542" at="32,39,33,32" />
-      <scope id="4005526075820601542" at="21,102,23,18" />
+      <scope id="4005526075820601542" at="21,100,23,18" />
       <scope id="4005526075820601542" at="32,0,35,0" />
       <scope id="4005526075820601542" at="21,0,25,0">
         <var name="context" id="4005526075820601542" />
@@ -92,22 +92,22 @@
       </scope>
       <scope id="4005526075820601542" at="36,0,44,0" />
       <scope id="6647099934206700655" at="44,0,53,0" />
-      <unit id="4005526075820601542" at="17,0,54,0" name="jetbrains.mps.build.mps.tests.editor.BuildModuleTestsPlugin_EditorBuilder_a" />
+      <unit id="4005526075820601542" at="17,0,54,0" name="jetbrains.mps.build.mps.tests.editor.BuildModuleTestsPlugin_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:6f104b69-0cfd-4b06-895f-bc1a1b43170f(jetbrains.mps.build.mps.tests.editor)/4560297596904469714">
     <file name="BuildMps_TestModule_Editor.java">
-      <node id="4560297596904469714" at="11,79,12,85" concept="6" />
+      <node id="4560297596904469714" at="11,79,12,83" concept="6" />
       <node id="4560297596904469714" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4560297596904469714" at="11,79,12,85" />
+      <scope id="4560297596904469714" at="11,79,12,83" />
       <scope id="4560297596904469714" at="11,0,14,0">
         <var name="editorContext" id="4560297596904469714" />
         <var name="node" id="4560297596904469714" />
       </scope>
       <unit id="4560297596904469714" at="10,0,15,0" name="jetbrains.mps.build.mps.tests.editor.BuildMps_TestModule_Editor" />
     </file>
-    <file name="BuildMps_TestModule_EditorBuilder_a.java">
-      <node id="4560297596904469714" at="40,99,41,19" concept="11" />
+    <file name="BuildMps_TestModule_EditorBuilder.java">
+      <node id="4560297596904469714" at="40,97,41,19" concept="11" />
       <node id="4560297596904469714" at="41,19,42,18" concept="1" />
       <node id="4560297596904469714" at="47,26,48,18" concept="6" />
       <node id="4560297596904469714" at="51,39,52,32" concept="6" />
@@ -157,7 +157,7 @@
       <node id="4560297596904469717" at="99,0,101,0" concept="2" trace="myNode" />
       <node id="4560297596904469714" at="51,0,54,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4560297596904469717" at="109,0,112,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="4560297596904469714" at="40,0,44,0" concept="0" trace="BuildMps_TestModule_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4560297596904469714" at="40,0,44,0" concept="0" trace="BuildMps_TestModule_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4560297596904469714" at="84,0,88,5" concept="3" />
       <node id="4560297596904469714" at="45,0,50,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="4560297596904469714" at="91,205,96,22" concept="3" />
@@ -173,7 +173,7 @@
       <scope id="4560297596904469714" at="51,39,52,32" />
       <scope id="4560297596904469717" at="109,41,110,45" />
       <scope id="4560297596904469717" at="115,28,116,20" />
-      <scope id="4560297596904469714" at="40,99,42,18" />
+      <scope id="4560297596904469714" at="40,97,42,18" />
       <scope id="4560297596904469714" at="85,40,87,45" />
       <scope id="4560297596904469714" at="92,73,94,145">
         <var name="manager" id="4560297596904469714" />
@@ -221,26 +221,26 @@
         <var name="referenceLink" id="4560297596904469714" />
       </scope>
       <scope id="4560297596904469714" at="63,0,98,0" />
-      <unit id="4560297596904469714" at="129,0,132,0" name="jetbrains.mps.build.mps.tests.editor.BuildMps_TestModule_EditorBuilder_a$LINKS" />
-      <unit id="4560297596904469714" at="133,0,136,0" name="jetbrains.mps.build.mps.tests.editor.BuildMps_TestModule_EditorBuilder_a$CONCEPTS" />
-      <unit id="4560297596904469714" at="65,42,80,5" name="jetbrains.mps.build.mps.tests.editor.BuildMps_TestModule_EditorBuilder_a$1" />
-      <unit id="4560297596904469717" at="98,0,128,0" name="jetbrains.mps.build.mps.tests.editor.BuildMps_TestModule_EditorBuilder_a$Inline_Builder0" />
-      <unit id="4560297596904469714" at="36,0,137,0" name="jetbrains.mps.build.mps.tests.editor.BuildMps_TestModule_EditorBuilder_a" />
+      <unit id="4560297596904469714" at="129,0,132,0" name="jetbrains.mps.build.mps.tests.editor.BuildMps_TestModule_EditorBuilder$LINKS" />
+      <unit id="4560297596904469714" at="133,0,136,0" name="jetbrains.mps.build.mps.tests.editor.BuildMps_TestModule_EditorBuilder$CONCEPTS" />
+      <unit id="4560297596904469714" at="65,42,80,5" name="jetbrains.mps.build.mps.tests.editor.BuildMps_TestModule_EditorBuilder$1" />
+      <unit id="4560297596904469717" at="98,0,128,0" name="jetbrains.mps.build.mps.tests.editor.BuildMps_TestModule_EditorBuilder$Inline_Builder0" />
+      <unit id="4560297596904469714" at="36,0,137,0" name="jetbrains.mps.build.mps.tests.editor.BuildMps_TestModule_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:6f104b69-0cfd-4b06-895f-bc1a1b43170f(jetbrains.mps.build.mps.tests.editor)/4560297596904469720">
     <file name="BuildAspect_MpsTestModules_Editor.java">
-      <node id="4560297596904469720" at="11,79,12,92" concept="6" />
+      <node id="4560297596904469720" at="11,79,12,90" concept="6" />
       <node id="4560297596904469720" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4560297596904469720" at="11,79,12,92" />
+      <scope id="4560297596904469720" at="11,79,12,90" />
       <scope id="4560297596904469720" at="11,0,14,0">
         <var name="editorContext" id="4560297596904469720" />
         <var name="node" id="4560297596904469720" />
       </scope>
       <unit id="4560297596904469720" at="10,0,15,0" name="jetbrains.mps.build.mps.tests.editor.BuildAspect_MpsTestModules_Editor" />
     </file>
-    <file name="BuildAspect_MpsTestModules_EditorBuilder_a.java">
-      <node id="4560297596904469720" at="49,106,50,19" concept="11" />
+    <file name="BuildAspect_MpsTestModules_EditorBuilder.java">
+      <node id="4560297596904469720" at="49,104,50,19" concept="11" />
       <node id="4560297596904469720" at="50,19,51,18" concept="1" />
       <node id="4560297596904469720" at="56,26,57,18" concept="6" />
       <node id="4560297596904469720" at="60,39,61,32" concept="6" />
@@ -369,7 +369,7 @@
       <node id="4560297596904469720" at="243,87,246,7" concept="3" />
       <node id="4560297596904469720" at="246,7,249,7" concept="3" />
       <node id="4560297596904469720" at="266,0,269,0" concept="4" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="4560297596904469720" at="49,0,53,0" concept="0" trace="BuildAspect_MpsTestModules_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4560297596904469720" at="49,0,53,0" concept="0" trace="BuildAspect_MpsTestModules_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4560297596904469720" at="151,0,155,0" concept="0" trace="modulesListHandler_5plagn_a1c0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="4560297596904469720" at="156,0,160,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="4560297596904469720" at="189,97,193,9" concept="3" />
@@ -413,7 +413,7 @@
       <scope id="4560297596904469720" at="247,42,248,48" />
       <scope id="4560297596904469720" at="262,17,263,42" />
       <scope id="4560297596904469720" at="266,40,267,28" />
-      <scope id="4560297596904469720" at="49,106,51,18" />
+      <scope id="4560297596904469720" at="49,104,51,18" />
       <scope id="8574011380878860401" at="86,74,88,145">
         <var name="manager" id="8574011380878860401" />
       </scope>
@@ -522,27 +522,27 @@
         <var name="elementNode" id="4560297596904469720" />
         <var name="isEmptyCell" id="4560297596904469720" />
       </scope>
-      <unit id="4560297596904469720" at="271,0,274,0" name="jetbrains.mps.build.mps.tests.editor.BuildAspect_MpsTestModules_EditorBuilder_a$PROPS" />
-      <unit id="4560297596904469720" at="275,0,279,0" name="jetbrains.mps.build.mps.tests.editor.BuildAspect_MpsTestModules_EditorBuilder_a$CONCEPTS" />
-      <unit id="4560297596904469720" at="280,0,284,0" name="jetbrains.mps.build.mps.tests.editor.BuildAspect_MpsTestModules_EditorBuilder_a$LINKS" />
-      <unit id="4560297596904469720" at="218,0,270,0" name="jetbrains.mps.build.mps.tests.editor.BuildAspect_MpsTestModules_EditorBuilder_a$optionsSingleRoleHandler_5plagn_c2a" />
-      <unit id="4560297596904469720" at="147,0,214,0" name="jetbrains.mps.build.mps.tests.editor.BuildAspect_MpsTestModules_EditorBuilder_a$modulesListHandler_5plagn_a1c0" />
-      <unit id="4560297596904469720" at="45,0,285,0" name="jetbrains.mps.build.mps.tests.editor.BuildAspect_MpsTestModules_EditorBuilder_a" />
+      <unit id="4560297596904469720" at="271,0,274,0" name="jetbrains.mps.build.mps.tests.editor.BuildAspect_MpsTestModules_EditorBuilder$PROPS" />
+      <unit id="4560297596904469720" at="275,0,279,0" name="jetbrains.mps.build.mps.tests.editor.BuildAspect_MpsTestModules_EditorBuilder$CONCEPTS" />
+      <unit id="4560297596904469720" at="280,0,284,0" name="jetbrains.mps.build.mps.tests.editor.BuildAspect_MpsTestModules_EditorBuilder$LINKS" />
+      <unit id="4560297596904469720" at="218,0,270,0" name="jetbrains.mps.build.mps.tests.editor.BuildAspect_MpsTestModules_EditorBuilder$optionsSingleRoleHandler_5plagn_c2a" />
+      <unit id="4560297596904469720" at="147,0,214,0" name="jetbrains.mps.build.mps.tests.editor.BuildAspect_MpsTestModules_EditorBuilder$modulesListHandler_5plagn_a1c0" />
+      <unit id="4560297596904469720" at="45,0,285,0" name="jetbrains.mps.build.mps.tests.editor.BuildAspect_MpsTestModules_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:6f104b69-0cfd-4b06-895f-bc1a1b43170f(jetbrains.mps.build.mps.tests.editor)/4560297596904469733">
     <file name="BuildMps_TestModuleGroup_Editor.java">
-      <node id="4560297596904469733" at="11,79,12,90" concept="6" />
+      <node id="4560297596904469733" at="11,79,12,88" concept="6" />
       <node id="4560297596904469733" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4560297596904469733" at="11,79,12,90" />
+      <scope id="4560297596904469733" at="11,79,12,88" />
       <scope id="4560297596904469733" at="11,0,14,0">
         <var name="editorContext" id="4560297596904469733" />
         <var name="node" id="4560297596904469733" />
       </scope>
       <unit id="4560297596904469733" at="10,0,15,0" name="jetbrains.mps.build.mps.tests.editor.BuildMps_TestModuleGroup_Editor" />
     </file>
-    <file name="BuildMps_TestModuleGroup_EditorBuilder_a.java">
-      <node id="4560297596904469733" at="40,104,41,19" concept="11" />
+    <file name="BuildMps_TestModuleGroup_EditorBuilder.java">
+      <node id="4560297596904469733" at="40,102,41,19" concept="11" />
       <node id="4560297596904469733" at="41,19,42,18" concept="1" />
       <node id="4560297596904469733" at="47,26,48,18" concept="6" />
       <node id="4560297596904469733" at="51,39,52,32" concept="6" />
@@ -592,7 +592,7 @@
       <node id="4560297596904469736" at="99,0,101,0" concept="2" trace="myNode" />
       <node id="4560297596904469733" at="51,0,54,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4560297596904469736" at="109,0,112,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="4560297596904469733" at="40,0,44,0" concept="0" trace="BuildMps_TestModuleGroup_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4560297596904469733" at="40,0,44,0" concept="0" trace="BuildMps_TestModuleGroup_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4560297596904469733" at="84,0,88,5" concept="3" />
       <node id="4560297596904469733" at="45,0,50,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="4560297596904469733" at="91,205,96,22" concept="3" />
@@ -608,7 +608,7 @@
       <scope id="4560297596904469733" at="51,39,52,32" />
       <scope id="4560297596904469736" at="109,41,110,45" />
       <scope id="4560297596904469736" at="115,28,116,20" />
-      <scope id="4560297596904469733" at="40,104,42,18" />
+      <scope id="4560297596904469733" at="40,102,42,18" />
       <scope id="4560297596904469733" at="85,40,87,44" />
       <scope id="4560297596904469733" at="92,73,94,145">
         <var name="manager" id="4560297596904469733" />
@@ -656,11 +656,11 @@
         <var name="referenceLink" id="4560297596904469733" />
       </scope>
       <scope id="4560297596904469733" at="63,0,98,0" />
-      <unit id="4560297596904469733" at="129,0,132,0" name="jetbrains.mps.build.mps.tests.editor.BuildMps_TestModuleGroup_EditorBuilder_a$LINKS" />
-      <unit id="4560297596904469733" at="133,0,136,0" name="jetbrains.mps.build.mps.tests.editor.BuildMps_TestModuleGroup_EditorBuilder_a$CONCEPTS" />
-      <unit id="4560297596904469733" at="65,42,80,5" name="jetbrains.mps.build.mps.tests.editor.BuildMps_TestModuleGroup_EditorBuilder_a$1" />
-      <unit id="4560297596904469736" at="98,0,128,0" name="jetbrains.mps.build.mps.tests.editor.BuildMps_TestModuleGroup_EditorBuilder_a$Inline_Builder0" />
-      <unit id="4560297596904469733" at="36,0,137,0" name="jetbrains.mps.build.mps.tests.editor.BuildMps_TestModuleGroup_EditorBuilder_a" />
+      <unit id="4560297596904469733" at="129,0,132,0" name="jetbrains.mps.build.mps.tests.editor.BuildMps_TestModuleGroup_EditorBuilder$LINKS" />
+      <unit id="4560297596904469733" at="133,0,136,0" name="jetbrains.mps.build.mps.tests.editor.BuildMps_TestModuleGroup_EditorBuilder$CONCEPTS" />
+      <unit id="4560297596904469733" at="65,42,80,5" name="jetbrains.mps.build.mps.tests.editor.BuildMps_TestModuleGroup_EditorBuilder$1" />
+      <unit id="4560297596904469736" at="98,0,128,0" name="jetbrains.mps.build.mps.tests.editor.BuildMps_TestModuleGroup_EditorBuilder$Inline_Builder0" />
+      <unit id="4560297596904469733" at="36,0,137,0" name="jetbrains.mps.build.mps.tests.editor.BuildMps_TestModuleGroup_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:6f104b69-0cfd-4b06-895f-bc1a1b43170f(jetbrains.mps.build.mps.tests.editor)/5237525577377603371">
@@ -832,17 +832,17 @@
   </root>
   <root nodeRef="r:6f104b69-0cfd-4b06-895f-bc1a1b43170f(jetbrains.mps.build.mps.tests.editor)/6593674873635909122">
     <file name="RequiredPlugin_Editor.java">
-      <node id="6593674873635909122" at="11,79,12,80" concept="6" />
+      <node id="6593674873635909122" at="11,79,12,78" concept="6" />
       <node id="6593674873635909122" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="6593674873635909122" at="11,79,12,80" />
+      <scope id="6593674873635909122" at="11,79,12,78" />
       <scope id="6593674873635909122" at="11,0,14,0">
         <var name="editorContext" id="6593674873635909122" />
         <var name="node" id="6593674873635909122" />
       </scope>
       <unit id="6593674873635909122" at="10,0,15,0" name="jetbrains.mps.build.mps.tests.editor.RequiredPlugin_Editor" />
     </file>
-    <file name="RequiredPlugin_EditorBuilder_a.java">
-      <node id="6593674873635909122" at="43,94,44,19" concept="11" />
+    <file name="RequiredPlugin_EditorBuilder.java">
+      <node id="6593674873635909122" at="43,92,44,19" concept="11" />
       <node id="6593674873635909122" at="44,19,45,18" concept="1" />
       <node id="6593674873635909122" at="50,26,51,18" concept="6" />
       <node id="6593674873635909122" at="54,39,55,32" concept="6" />
@@ -905,7 +905,7 @@
       <node id="6592112598314499075" at="102,0,104,0" concept="2" trace="myNode" />
       <node id="6593674873635909122" at="54,0,57,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="6592112598314499075" at="112,0,115,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="6593674873635909122" at="43,0,47,0" concept="0" trace="RequiredPlugin_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="6593674873635909122" at="43,0,47,0" concept="0" trace="RequiredPlugin_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="6593674873635909122" at="87,0,91,5" concept="3" />
       <node id="6593674873635909122" at="48,0,53,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="6593674873635909122" at="94,205,99,22" concept="3" />
@@ -924,7 +924,7 @@
       <scope id="6592112598314499075" at="112,41,113,32" />
       <scope id="6592112598314499075" at="118,28,119,20" />
       <scope id="6592112598314499077" at="142,17,143,42" />
-      <scope id="6593674873635909122" at="43,94,45,18" />
+      <scope id="6593674873635909122" at="43,92,45,18" />
       <scope id="6593674873635909122" at="88,40,90,45" />
       <scope id="6593674873635909122" at="95,73,97,145">
         <var name="manager" id="6593674873635909122" />
@@ -979,27 +979,27 @@
         <var name="referenceLink" id="6593674873635909122" />
       </scope>
       <scope id="6593674873635909122" at="66,0,101,0" />
-      <unit id="6593674873635909122" at="148,0,151,0" name="jetbrains.mps.build.mps.tests.editor.RequiredPlugin_EditorBuilder_a$LINKS" />
-      <unit id="6593674873635909122" at="157,0,160,0" name="jetbrains.mps.build.mps.tests.editor.RequiredPlugin_EditorBuilder_a$PROPS" />
-      <unit id="6593674873635909122" at="152,0,156,0" name="jetbrains.mps.build.mps.tests.editor.RequiredPlugin_EditorBuilder_a$CONCEPTS" />
-      <unit id="6593674873635909122" at="68,42,83,5" name="jetbrains.mps.build.mps.tests.editor.RequiredPlugin_EditorBuilder_a$1" />
-      <unit id="6592112598314499075" at="101,0,147,0" name="jetbrains.mps.build.mps.tests.editor.RequiredPlugin_EditorBuilder_a$Inline_Builder0" />
-      <unit id="6593674873635909122" at="39,0,161,0" name="jetbrains.mps.build.mps.tests.editor.RequiredPlugin_EditorBuilder_a" />
+      <unit id="6593674873635909122" at="148,0,151,0" name="jetbrains.mps.build.mps.tests.editor.RequiredPlugin_EditorBuilder$LINKS" />
+      <unit id="6593674873635909122" at="157,0,160,0" name="jetbrains.mps.build.mps.tests.editor.RequiredPlugin_EditorBuilder$PROPS" />
+      <unit id="6593674873635909122" at="152,0,156,0" name="jetbrains.mps.build.mps.tests.editor.RequiredPlugin_EditorBuilder$CONCEPTS" />
+      <unit id="6593674873635909122" at="68,42,83,5" name="jetbrains.mps.build.mps.tests.editor.RequiredPlugin_EditorBuilder$1" />
+      <unit id="6592112598314499075" at="101,0,147,0" name="jetbrains.mps.build.mps.tests.editor.RequiredPlugin_EditorBuilder$Inline_Builder0" />
+      <unit id="6593674873635909122" at="39,0,161,0" name="jetbrains.mps.build.mps.tests.editor.RequiredPlugin_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:6f104b69-0cfd-4b06-895f-bc1a1b43170f(jetbrains.mps.build.mps.tests.editor)/6593674873639474426">
     <file name="BuildMps_TestModules_Options_Editor.java">
-      <node id="6593674873639474426" at="11,79,12,94" concept="6" />
+      <node id="6593674873639474426" at="11,79,12,92" concept="6" />
       <node id="6593674873639474426" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="6593674873639474426" at="11,79,12,94" />
+      <scope id="6593674873639474426" at="11,79,12,92" />
       <scope id="6593674873639474426" at="11,0,14,0">
         <var name="editorContext" id="6593674873639474426" />
         <var name="node" id="6593674873639474426" />
       </scope>
       <unit id="6593674873639474426" at="10,0,15,0" name="jetbrains.mps.build.mps.tests.editor.BuildMps_TestModules_Options_Editor" />
     </file>
-    <file name="BuildMps_TestModules_Options_EditorBuilder_a.java">
-      <node id="6593674873639474426" at="38,108,39,19" concept="11" />
+    <file name="BuildMps_TestModules_Options_EditorBuilder.java">
+      <node id="6593674873639474426" at="38,106,39,19" concept="11" />
       <node id="6593674873639474426" at="39,19,40,18" concept="1" />
       <node id="6593674873639474426" at="45,26,46,18" concept="6" />
       <node id="6593674873639474426" at="49,39,50,32" concept="6" />
@@ -1316,7 +1316,7 @@
       <node id="6593674873639474426" at="574,87,577,7" concept="3" />
       <node id="6593674873639474426" at="577,7,580,7" concept="3" />
       <node id="6593674873639474426" at="599,0,602,0" concept="4" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="6593674873639474426" at="38,0,42,0" concept="0" trace="BuildMps_TestModules_Options_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="6593674873639474426" at="38,0,42,0" concept="0" trace="BuildMps_TestModules_Options_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="6593674873639474426" at="109,0,113,0" concept="4" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="6593674873639474426" at="117,0,121,0" concept="0" trace="haltonfailureSingleRoleHandler_tu51wq_b1a#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="6593674873639474426" at="177,0,181,0" concept="4" trace="createRefNode_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -1424,7 +1424,7 @@
       <scope id="6593674873639474426" at="578,42,579,52" />
       <scope id="6593674873639474426" at="595,17,596,42" />
       <scope id="6593674873639474426" at="599,40,600,27" />
-      <scope id="6593674873639474426" at="38,108,40,18" />
+      <scope id="6593674873639474426" at="38,106,40,18" />
       <scope id="6593674873639474426" at="109,40,111,33">
         <var name="provider" id="6593674873639474426" />
       </scope>
@@ -1714,16 +1714,16 @@
         <var name="elementNode" id="6593674873639474426" />
         <var name="isEmptyCell" id="6593674873639474426" />
       </scope>
-      <unit id="6593674873639474426" at="614,0,617,0" name="jetbrains.mps.build.mps.tests.editor.BuildMps_TestModules_Options_EditorBuilder_a$CONCEPTS" />
-      <unit id="6593674873639474426" at="604,0,613,0" name="jetbrains.mps.build.mps.tests.editor.BuildMps_TestModules_Options_EditorBuilder_a$LINKS" />
-      <unit id="6593674873639474426" at="113,0,167,0" name="jetbrains.mps.build.mps.tests.editor.BuildMps_TestModules_Options_EditorBuilder_a$haltonfailureSingleRoleHandler_tu51wq_b1a" />
-      <unit id="6593674873639474426" at="181,0,235,0" name="jetbrains.mps.build.mps.tests.editor.BuildMps_TestModules_Options_EditorBuilder_a$compressArgsSingleRoleHandler_tu51wq_d1a" />
-      <unit id="6593674873639474426" at="248,0,302,0" name="jetbrains.mps.build.mps.tests.editor.BuildMps_TestModules_Options_EditorBuilder_a$reportsDirSingleRoleHandler_tu51wq_f1a" />
-      <unit id="6593674873639474426" at="315,0,369,0" name="jetbrains.mps.build.mps.tests.editor.BuildMps_TestModules_Options_EditorBuilder_a$openTestReportSingleRoleHandler_tu51wq_h1a" />
-      <unit id="6593674873639474426" at="482,0,536,0" name="jetbrains.mps.build.mps.tests.editor.BuildMps_TestModules_Options_EditorBuilder_a$jvmArgsSingleRoleHandler_tu51wq_l1a" />
-      <unit id="6593674873639474426" at="549,0,603,0" name="jetbrains.mps.build.mps.tests.editor.BuildMps_TestModules_Options_EditorBuilder_a$projectPathSingleRoleHandler_tu51wq_n1a" />
-      <unit id="6593674873639474426" at="389,0,469,0" name="jetbrains.mps.build.mps.tests.editor.BuildMps_TestModules_Options_EditorBuilder_a$requiredPluginsListHandler_tu51wq_j1a" />
-      <unit id="6593674873639474426" at="34,0,618,0" name="jetbrains.mps.build.mps.tests.editor.BuildMps_TestModules_Options_EditorBuilder_a" />
+      <unit id="6593674873639474426" at="614,0,617,0" name="jetbrains.mps.build.mps.tests.editor.BuildMps_TestModules_Options_EditorBuilder$CONCEPTS" />
+      <unit id="6593674873639474426" at="604,0,613,0" name="jetbrains.mps.build.mps.tests.editor.BuildMps_TestModules_Options_EditorBuilder$LINKS" />
+      <unit id="6593674873639474426" at="113,0,167,0" name="jetbrains.mps.build.mps.tests.editor.BuildMps_TestModules_Options_EditorBuilder$haltonfailureSingleRoleHandler_tu51wq_b1a" />
+      <unit id="6593674873639474426" at="181,0,235,0" name="jetbrains.mps.build.mps.tests.editor.BuildMps_TestModules_Options_EditorBuilder$compressArgsSingleRoleHandler_tu51wq_d1a" />
+      <unit id="6593674873639474426" at="248,0,302,0" name="jetbrains.mps.build.mps.tests.editor.BuildMps_TestModules_Options_EditorBuilder$reportsDirSingleRoleHandler_tu51wq_f1a" />
+      <unit id="6593674873639474426" at="315,0,369,0" name="jetbrains.mps.build.mps.tests.editor.BuildMps_TestModules_Options_EditorBuilder$openTestReportSingleRoleHandler_tu51wq_h1a" />
+      <unit id="6593674873639474426" at="482,0,536,0" name="jetbrains.mps.build.mps.tests.editor.BuildMps_TestModules_Options_EditorBuilder$jvmArgsSingleRoleHandler_tu51wq_l1a" />
+      <unit id="6593674873639474426" at="549,0,603,0" name="jetbrains.mps.build.mps.tests.editor.BuildMps_TestModules_Options_EditorBuilder$projectPathSingleRoleHandler_tu51wq_n1a" />
+      <unit id="6593674873639474426" at="389,0,469,0" name="jetbrains.mps.build.mps.tests.editor.BuildMps_TestModules_Options_EditorBuilder$requiredPluginsListHandler_tu51wq_j1a" />
+      <unit id="6593674873639474426" at="34,0,618,0" name="jetbrains.mps.build.mps.tests.editor.BuildMps_TestModules_Options_EditorBuilder" />
     </file>
   </root>
 </debug-info>

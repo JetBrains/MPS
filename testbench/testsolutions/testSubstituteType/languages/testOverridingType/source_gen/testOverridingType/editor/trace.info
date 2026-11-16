@@ -17,17 +17,17 @@
   </root>
   <root nodeRef="r:5cfe4d05-11f0-44dd-9581-f90ebc971306(testOverridingType.editor)/1870027727456321192">
     <file name="UnconditionalOverrideAnnotation_Editor.java">
-      <node id="1870027727456321192" at="11,79,12,97" concept="6" />
+      <node id="1870027727456321192" at="11,79,12,95" concept="6" />
       <node id="1870027727456321192" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1870027727456321192" at="11,79,12,97" />
+      <scope id="1870027727456321192" at="11,79,12,95" />
       <scope id="1870027727456321192" at="11,0,14,0">
         <var name="editorContext" id="1870027727456321192" />
         <var name="node" id="1870027727456321192" />
       </scope>
       <unit id="1870027727456321192" at="10,0,15,0" name="testOverridingType.editor.UnconditionalOverrideAnnotation_Editor" />
     </file>
-    <file name="UnconditionalOverrideAnnotation_EditorBuilder_a.java">
-      <node id="1870027727456321192" at="35,111,36,19" concept="8" />
+    <file name="UnconditionalOverrideAnnotation_EditorBuilder.java">
+      <node id="1870027727456321192" at="35,109,36,19" concept="8" />
       <node id="1870027727456321192" at="36,19,37,18" concept="1" />
       <node id="1870027727456321192" at="42,26,43,18" concept="6" />
       <node id="1870027727456321192" at="46,39,47,32" concept="6" />
@@ -129,7 +129,7 @@
       <node id="1870027727456321192" at="181,87,184,7" concept="3" />
       <node id="1870027727456321192" at="184,7,187,7" concept="3" />
       <node id="1870027727456321192" at="203,0,206,0" concept="4" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="1870027727456321192" at="35,0,39,0" concept="0" trace="UnconditionalOverrideAnnotation_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1870027727456321192" at="35,0,39,0" concept="0" trace="UnconditionalOverrideAnnotation_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1870027727456321192" at="87,0,91,0" concept="4" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1870027727456321192" at="95,0,99,0" concept="0" trace="conditionSingleRoleHandler_hs6qma_d0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1870027727456321192" at="152,0,156,0" concept="4" trace="createRefNode_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -163,7 +163,7 @@
       <scope id="1870027727456321192" at="185,42,186,51" />
       <scope id="1870027727456321192" at="199,17,200,42" />
       <scope id="1870027727456321192" at="203,40,204,31" />
-      <scope id="1870027727456321192" at="35,111,37,18" />
+      <scope id="1870027727456321192" at="35,109,37,18" />
       <scope id="1870027727456321192" at="87,40,89,33">
         <var name="provider" id="1870027727456321192" />
       </scope>
@@ -257,25 +257,25 @@
       <scope id="1870027727456321192" at="50,0,64,0" />
       <scope id="1870027727456321192" at="124,0,138,0" />
       <scope id="1870027727456321192" at="189,0,203,0" />
-      <unit id="1870027727456321192" at="217,0,221,0" name="testOverridingType.editor.UnconditionalOverrideAnnotation_EditorBuilder_a$LINKS" />
-      <unit id="1870027727456321192" at="91,0,142,0" name="testOverridingType.editor.UnconditionalOverrideAnnotation_EditorBuilder_a$conditionSingleRoleHandler_hs6qma_d0" />
-      <unit id="1870027727456321192" at="156,0,207,0" name="testOverridingType.editor.UnconditionalOverrideAnnotation_EditorBuilder_a$substituteSingleRoleHandler_hs6qma_f0" />
-      <unit id="1870027727456321192" at="31,0,222,0" name="testOverridingType.editor.UnconditionalOverrideAnnotation_EditorBuilder_a" />
+      <unit id="1870027727456321192" at="217,0,221,0" name="testOverridingType.editor.UnconditionalOverrideAnnotation_EditorBuilder$LINKS" />
+      <unit id="1870027727456321192" at="91,0,142,0" name="testOverridingType.editor.UnconditionalOverrideAnnotation_EditorBuilder$conditionSingleRoleHandler_hs6qma_d0" />
+      <unit id="1870027727456321192" at="156,0,207,0" name="testOverridingType.editor.UnconditionalOverrideAnnotation_EditorBuilder$substituteSingleRoleHandler_hs6qma_f0" />
+      <unit id="1870027727456321192" at="31,0,222,0" name="testOverridingType.editor.UnconditionalOverrideAnnotation_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:5cfe4d05-11f0-44dd-9581-f90ebc971306(testOverridingType.editor)/1870027727456337734">
     <file name="ErrorType_Editor.java">
-      <node id="1870027727456337734" at="11,79,12,75" concept="6" />
+      <node id="1870027727456337734" at="11,79,12,73" concept="6" />
       <node id="1870027727456337734" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1870027727456337734" at="11,79,12,75" />
+      <scope id="1870027727456337734" at="11,79,12,73" />
       <scope id="1870027727456337734" at="11,0,14,0">
         <var name="editorContext" id="1870027727456337734" />
         <var name="node" id="1870027727456337734" />
       </scope>
       <unit id="1870027727456337734" at="10,0,15,0" name="testOverridingType.editor.ErrorType_Editor" />
     </file>
-    <file name="ErrorType_EditorBuilder_a.java">
-      <node id="1870027727456337734" at="17,89,18,19" concept="8" />
+    <file name="ErrorType_EditorBuilder.java">
+      <node id="1870027727456337734" at="17,87,18,19" concept="8" />
       <node id="1870027727456337734" at="18,19,19,18" concept="1" />
       <node id="1870027727456337734" at="24,26,25,18" concept="6" />
       <node id="1870027727456337734" at="28,39,29,32" concept="6" />
@@ -289,13 +289,13 @@
       <node id="1870027727456337746" at="41,119,42,22" concept="6" />
       <node id="1870027727456337734" at="14,0,16,0" concept="2" trace="myNode" />
       <node id="1870027727456337734" at="28,0,31,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="1870027727456337734" at="17,0,21,0" concept="0" trace="ErrorType_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1870027727456337734" at="17,0,21,0" concept="0" trace="ErrorType_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1870027727456337746" at="40,0,44,0" concept="4" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1870027727456337734" at="22,0,27,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1870027727456337734" at="32,0,40,0" concept="4" trace="createCollection_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="1870027727456337734" at="24,26,25,18" />
       <scope id="1870027727456337734" at="28,39,29,32" />
-      <scope id="1870027727456337734" at="17,89,19,18" />
+      <scope id="1870027727456337734" at="17,87,19,18" />
       <scope id="1870027727456337746" at="40,42,42,22">
         <var name="editorCell" id="1870027727456337746" />
       </scope>
@@ -310,22 +310,22 @@
         <var name="editorCell" id="1870027727456337734" />
       </scope>
       <scope id="1870027727456337734" at="32,0,40,0" />
-      <unit id="1870027727456337734" at="13,0,45,0" name="testOverridingType.editor.ErrorType_EditorBuilder_a" />
+      <unit id="1870027727456337734" at="13,0,45,0" name="testOverridingType.editor.ErrorType_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:5cfe4d05-11f0-44dd-9581-f90ebc971306(testOverridingType.editor)/4113274076525496040">
     <file name="OverrideAnnotation_Editor.java">
-      <node id="4113274076525496040" at="11,79,12,84" concept="6" />
+      <node id="4113274076525496040" at="11,79,12,82" concept="6" />
       <node id="4113274076525496040" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4113274076525496040" at="11,79,12,84" />
+      <scope id="4113274076525496040" at="11,79,12,82" />
       <scope id="4113274076525496040" at="11,0,14,0">
         <var name="editorContext" id="4113274076525496040" />
         <var name="node" id="4113274076525496040" />
       </scope>
       <unit id="4113274076525496040" at="10,0,15,0" name="testOverridingType.editor.OverrideAnnotation_Editor" />
     </file>
-    <file name="OverrideAnnotation_EditorBuilder_a.java">
-      <node id="4113274076525496040" at="34,98,35,19" concept="8" />
+    <file name="OverrideAnnotation_EditorBuilder.java">
+      <node id="4113274076525496040" at="34,96,35,19" concept="8" />
       <node id="4113274076525496040" at="35,19,36,18" concept="1" />
       <node id="4113274076525496040" at="41,26,42,18" concept="6" />
       <node id="4113274076525496040" at="45,39,46,32" concept="6" />
@@ -419,7 +419,7 @@
       <node id="4113274076525496040" at="170,87,173,7" concept="3" />
       <node id="4113274076525496040" at="173,7,176,7" concept="3" />
       <node id="4113274076525496040" at="192,0,195,0" concept="4" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="4113274076525496040" at="34,0,38,0" concept="0" trace="OverrideAnnotation_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4113274076525496040" at="34,0,38,0" concept="0" trace="OverrideAnnotation_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4113274076525496040" at="76,0,80,0" concept="4" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4113274076525496040" at="84,0,88,0" concept="0" trace="conditionSingleRoleHandler_9raxvs_c0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="4113274076525496040" at="141,0,145,0" concept="4" trace="createRefNode_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -452,7 +452,7 @@
       <scope id="4113274076525496040" at="174,42,175,51" />
       <scope id="4113274076525496040" at="188,17,189,42" />
       <scope id="4113274076525496040" at="192,40,193,31" />
-      <scope id="4113274076525496040" at="34,98,36,18" />
+      <scope id="4113274076525496040" at="34,96,36,18" />
       <scope id="4113274076525496040" at="76,40,78,33">
         <var name="provider" id="4113274076525496040" />
       </scope>
@@ -541,25 +541,25 @@
       <scope id="4113274076525496040" at="49,0,62,0" />
       <scope id="4113274076525496040" at="113,0,127,0" />
       <scope id="4113274076525496040" at="178,0,192,0" />
-      <unit id="4113274076525496040" at="206,0,210,0" name="testOverridingType.editor.OverrideAnnotation_EditorBuilder_a$LINKS" />
-      <unit id="4113274076525496040" at="80,0,131,0" name="testOverridingType.editor.OverrideAnnotation_EditorBuilder_a$conditionSingleRoleHandler_9raxvs_c0" />
-      <unit id="4113274076525496040" at="145,0,196,0" name="testOverridingType.editor.OverrideAnnotation_EditorBuilder_a$substituteSingleRoleHandler_9raxvs_e0" />
-      <unit id="4113274076525496040" at="30,0,211,0" name="testOverridingType.editor.OverrideAnnotation_EditorBuilder_a" />
+      <unit id="4113274076525496040" at="206,0,210,0" name="testOverridingType.editor.OverrideAnnotation_EditorBuilder$LINKS" />
+      <unit id="4113274076525496040" at="80,0,131,0" name="testOverridingType.editor.OverrideAnnotation_EditorBuilder$conditionSingleRoleHandler_9raxvs_c0" />
+      <unit id="4113274076525496040" at="145,0,196,0" name="testOverridingType.editor.OverrideAnnotation_EditorBuilder$substituteSingleRoleHandler_9raxvs_e0" />
+      <unit id="4113274076525496040" at="30,0,211,0" name="testOverridingType.editor.OverrideAnnotation_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:5cfe4d05-11f0-44dd-9581-f90ebc971306(testOverridingType.editor)/6572489169071278331">
     <file name="OverridingPrimNumConstant_Editor.java">
-      <node id="6572489169071278331" at="11,79,12,91" concept="6" />
+      <node id="6572489169071278331" at="11,79,12,89" concept="6" />
       <node id="6572489169071278331" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="6572489169071278331" at="11,79,12,91" />
+      <scope id="6572489169071278331" at="11,79,12,89" />
       <scope id="6572489169071278331" at="11,0,14,0">
         <var name="editorContext" id="6572489169071278331" />
         <var name="node" id="6572489169071278331" />
       </scope>
       <unit id="6572489169071278331" at="10,0,15,0" name="testOverridingType.editor.OverridingPrimNumConstant_Editor" />
     </file>
-    <file name="OverridingPrimNumConstant_EditorBuilder_a.java">
-      <node id="6572489169071278331" at="36,105,37,19" concept="8" />
+    <file name="OverridingPrimNumConstant_EditorBuilder.java">
+      <node id="6572489169071278331" at="36,103,37,19" concept="8" />
       <node id="6572489169071278331" at="37,19,38,18" concept="1" />
       <node id="6572489169071278331" at="43,26,44,18" concept="6" />
       <node id="6572489169071278331" at="47,39,48,32" concept="6" />
@@ -692,7 +692,7 @@
       <node id="6572489169071278331" at="219,0,220,0" concept="7" trace="PropertyAttribute$Gb" />
       <node id="6572489169071278331" at="33,0,35,0" concept="2" trace="myNode" />
       <node id="6572489169071278331" at="47,0,50,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="6572489169071278331" at="36,0,40,0" concept="0" trace="OverridingPrimNumConstant_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="6572489169071278331" at="36,0,40,0" concept="0" trace="OverridingPrimNumConstant_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="6572489169071278331" at="41,0,46,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1470921783545419446" at="93,208,98,24" concept="3" />
       <node id="1470921783545323264" at="136,208,141,24" concept="3" />
@@ -716,7 +716,7 @@
       <scope id="1470921783545419446" at="99,15,100,40" />
       <scope id="1470921783545323264" at="142,15,143,40" />
       <scope id="6572489169071278373" at="185,15,186,40" />
-      <scope id="6572489169071278331" at="36,105,38,18" />
+      <scope id="6572489169071278331" at="36,103,38,18" />
       <scope id="1470921783545419446" at="94,74,96,145">
         <var name="manager" id="1470921783545419446" />
       </scope>
@@ -798,9 +798,9 @@
       <scope id="1470921783545419446" at="79,0,103,0" />
       <scope id="1470921783545323264" at="122,0,146,0" />
       <scope id="6572489169071278373" at="165,0,189,0" />
-      <unit id="6572489169071278331" at="218,0,221,0" name="testOverridingType.editor.OverridingPrimNumConstant_EditorBuilder_a$CONCEPTS" />
-      <unit id="6572489169071278331" at="212,0,217,0" name="testOverridingType.editor.OverridingPrimNumConstant_EditorBuilder_a$PROPS" />
-      <unit id="6572489169071278331" at="32,0,222,0" name="testOverridingType.editor.OverridingPrimNumConstant_EditorBuilder_a" />
+      <unit id="6572489169071278331" at="218,0,221,0" name="testOverridingType.editor.OverridingPrimNumConstant_EditorBuilder$CONCEPTS" />
+      <unit id="6572489169071278331" at="212,0,217,0" name="testOverridingType.editor.OverridingPrimNumConstant_EditorBuilder$PROPS" />
+      <unit id="6572489169071278331" at="32,0,222,0" name="testOverridingType.editor.OverridingPrimNumConstant_EditorBuilder" />
     </file>
   </root>
 </debug-info>

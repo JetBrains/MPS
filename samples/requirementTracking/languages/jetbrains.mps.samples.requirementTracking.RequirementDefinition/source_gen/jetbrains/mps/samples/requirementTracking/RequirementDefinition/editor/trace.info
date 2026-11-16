@@ -17,17 +17,17 @@
   </root>
   <root nodeRef="r:368a49ed-c658-4d73-bae6-9fe8c02cea68(jetbrains.mps.samples.requirementTracking.RequirementDefinition.editor)/4174052498195750005">
     <file name="Entry_Editor.java">
-      <node id="4174052498195750005" at="11,79,12,71" concept="6" />
+      <node id="4174052498195750005" at="11,79,12,69" concept="6" />
       <node id="4174052498195750005" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4174052498195750005" at="11,79,12,71" />
+      <scope id="4174052498195750005" at="11,79,12,69" />
       <scope id="4174052498195750005" at="11,0,14,0">
         <var name="editorContext" id="4174052498195750005" />
         <var name="node" id="4174052498195750005" />
       </scope>
       <unit id="4174052498195750005" at="10,0,15,0" name="jetbrains.mps.samples.requirementTracking.RequirementDefinition.editor.Entry_Editor" />
     </file>
-    <file name="Entry_EditorBuilder_a.java">
-      <node id="4174052498195750005" at="47,85,48,19" concept="8" />
+    <file name="Entry_EditorBuilder.java">
+      <node id="4174052498195750005" at="47,83,48,19" concept="8" />
       <node id="4174052498195750005" at="48,19,49,18" concept="1" />
       <node id="4174052498195750005" at="54,26,55,18" concept="6" />
       <node id="4174052498195750005" at="58,39,59,32" concept="6" />
@@ -138,7 +138,7 @@
       <node id="4174052498195750005" at="188,87,191,7" concept="3" />
       <node id="4174052498195750005" at="191,7,194,7" concept="3" />
       <node id="4174052498195750005" at="214,0,217,0" concept="4" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="4174052498195750005" at="47,0,51,0" concept="0" trace="Entry_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4174052498195750005" at="47,0,51,0" concept="0" trace="Entry_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4174052498195750005" at="159,0,163,0" concept="4" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4174052498195750005" at="167,0,171,0" concept="0" trace="descriptionSingleRoleHandler_yun6z1_b0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="4174052498195750005" at="52,0,57,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -171,7 +171,7 @@
       <scope id="4174052498195750005" at="192,42,193,52" />
       <scope id="4174052498195750005" at="210,17,211,42" />
       <scope id="4174052498195750005" at="214,40,215,32" />
-      <scope id="4174052498195750005" at="47,85,49,18" />
+      <scope id="4174052498195750005" at="47,83,49,18" />
       <scope id="4174052498195779546" at="116,74,118,145">
         <var name="manager" id="4174052498195779546" />
       </scope>
@@ -262,27 +262,27 @@
       <scope id="4174052498195783008" at="138,41,157,5" />
       <scope id="4174052498195779546" at="104,0,125,0" />
       <scope id="4174052498195783008" at="138,0,159,0" />
-      <unit id="4174052498195750005" at="230,0,233,0" name="jetbrains.mps.samples.requirementTracking.RequirementDefinition.editor.Entry_EditorBuilder_a$CONCEPTS" />
-      <unit id="4174052498195750005" at="234,0,237,0" name="jetbrains.mps.samples.requirementTracking.RequirementDefinition.editor.Entry_EditorBuilder_a$LINKS" />
-      <unit id="4174052498195750017" at="91,88,95,5" name="jetbrains.mps.samples.requirementTracking.RequirementDefinition.editor.Entry_EditorBuilder_a$1" />
-      <unit id="4174052498195750005" at="225,0,229,0" name="jetbrains.mps.samples.requirementTracking.RequirementDefinition.editor.Entry_EditorBuilder_a$PROPS" />
-      <unit id="4174052498195750005" at="163,0,218,0" name="jetbrains.mps.samples.requirementTracking.RequirementDefinition.editor.Entry_EditorBuilder_a$descriptionSingleRoleHandler_yun6z1_b0" />
-      <unit id="4174052498195750005" at="43,0,238,0" name="jetbrains.mps.samples.requirementTracking.RequirementDefinition.editor.Entry_EditorBuilder_a" />
+      <unit id="4174052498195750005" at="230,0,233,0" name="jetbrains.mps.samples.requirementTracking.RequirementDefinition.editor.Entry_EditorBuilder$CONCEPTS" />
+      <unit id="4174052498195750005" at="234,0,237,0" name="jetbrains.mps.samples.requirementTracking.RequirementDefinition.editor.Entry_EditorBuilder$LINKS" />
+      <unit id="4174052498195750017" at="91,88,95,5" name="jetbrains.mps.samples.requirementTracking.RequirementDefinition.editor.Entry_EditorBuilder$1" />
+      <unit id="4174052498195750005" at="225,0,229,0" name="jetbrains.mps.samples.requirementTracking.RequirementDefinition.editor.Entry_EditorBuilder$PROPS" />
+      <unit id="4174052498195750005" at="163,0,218,0" name="jetbrains.mps.samples.requirementTracking.RequirementDefinition.editor.Entry_EditorBuilder$descriptionSingleRoleHandler_yun6z1_b0" />
+      <unit id="4174052498195750005" at="43,0,238,0" name="jetbrains.mps.samples.requirementTracking.RequirementDefinition.editor.Entry_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:368a49ed-c658-4d73-bae6-9fe8c02cea68(jetbrains.mps.samples.requirementTracking.RequirementDefinition.editor)/4174052498195794421">
     <file name="Specification_Editor.java">
-      <node id="4174052498195794421" at="11,79,12,79" concept="6" />
+      <node id="4174052498195794421" at="11,79,12,77" concept="6" />
       <node id="4174052498195794421" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4174052498195794421" at="11,79,12,79" />
+      <scope id="4174052498195794421" at="11,79,12,77" />
       <scope id="4174052498195794421" at="11,0,14,0">
         <var name="editorContext" id="4174052498195794421" />
         <var name="node" id="4174052498195794421" />
       </scope>
       <unit id="4174052498195794421" at="10,0,15,0" name="jetbrains.mps.samples.requirementTracking.RequirementDefinition.editor.Specification_Editor" />
     </file>
-    <file name="Specification_EditorBuilder_a.java">
-      <node id="4174052498195794421" at="45,93,46,19" concept="8" />
+    <file name="Specification_EditorBuilder.java">
+      <node id="4174052498195794421" at="45,91,46,19" concept="8" />
       <node id="4174052498195794421" at="46,19,47,18" concept="1" />
       <node id="4174052498195794421" at="52,26,53,18" concept="6" />
       <node id="4174052498195794421" at="56,39,57,32" concept="6" />
@@ -365,7 +365,7 @@
       <node id="4174052498195794421" at="133,0,136,0" concept="4" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="4174052498195794421" at="136,0,139,0" concept="4" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="4174052498195794421" at="180,96,183,9" concept="3" />
-      <node id="4174052498195794421" at="45,0,49,0" concept="0" trace="Specification_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4174052498195794421" at="45,0,49,0" concept="0" trace="Specification_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4174052498195794421" at="124,0,128,0" concept="0" trace="entriesListHandler_monw38_d0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="4174052498195794421" at="129,0,133,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="4174052498195794421" at="162,97,166,9" concept="3" />
@@ -395,7 +395,7 @@
       <scope id="4174052498195794421" at="136,48,137,31" />
       <scope id="4174052498195794421" at="154,17,155,42" />
       <scope id="4174052498195794421" at="181,34,182,91" />
-      <scope id="4174052498195794421" at="45,93,47,18" />
+      <scope id="4174052498195794421" at="45,91,47,18" />
       <scope id="4174052498195794442" at="92,74,94,145">
         <var name="manager" id="4174052498195794442" />
       </scope>
@@ -465,11 +465,11 @@
         <var name="elementNode" id="4174052498195794421" />
         <var name="isEmptyCell" id="4174052498195794421" />
       </scope>
-      <unit id="4174052498195794421" at="188,0,191,0" name="jetbrains.mps.samples.requirementTracking.RequirementDefinition.editor.Specification_EditorBuilder_a$PROPS" />
-      <unit id="4174052498195794421" at="197,0,200,0" name="jetbrains.mps.samples.requirementTracking.RequirementDefinition.editor.Specification_EditorBuilder_a$LINKS" />
-      <unit id="4174052498195794421" at="192,0,196,0" name="jetbrains.mps.samples.requirementTracking.RequirementDefinition.editor.Specification_EditorBuilder_a$CONCEPTS" />
-      <unit id="4174052498195794421" at="120,0,187,0" name="jetbrains.mps.samples.requirementTracking.RequirementDefinition.editor.Specification_EditorBuilder_a$entriesListHandler_monw38_d0" />
-      <unit id="4174052498195794421" at="41,0,201,0" name="jetbrains.mps.samples.requirementTracking.RequirementDefinition.editor.Specification_EditorBuilder_a" />
+      <unit id="4174052498195794421" at="188,0,191,0" name="jetbrains.mps.samples.requirementTracking.RequirementDefinition.editor.Specification_EditorBuilder$PROPS" />
+      <unit id="4174052498195794421" at="197,0,200,0" name="jetbrains.mps.samples.requirementTracking.RequirementDefinition.editor.Specification_EditorBuilder$LINKS" />
+      <unit id="4174052498195794421" at="192,0,196,0" name="jetbrains.mps.samples.requirementTracking.RequirementDefinition.editor.Specification_EditorBuilder$CONCEPTS" />
+      <unit id="4174052498195794421" at="120,0,187,0" name="jetbrains.mps.samples.requirementTracking.RequirementDefinition.editor.Specification_EditorBuilder$entriesListHandler_monw38_d0" />
+      <unit id="4174052498195794421" at="41,0,201,0" name="jetbrains.mps.samples.requirementTracking.RequirementDefinition.editor.Specification_EditorBuilder" />
     </file>
   </root>
 </debug-info>

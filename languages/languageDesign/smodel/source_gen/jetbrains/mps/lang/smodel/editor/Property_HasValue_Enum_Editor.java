@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class Property_HasValue_Enum_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new Property_HasValue_Enum_EditorBuilder_a(editorContext, node).createCell();
+    return new Property_HasValue_Enum_EditorBuilder(editorContext, node).createCell();
   }
 }

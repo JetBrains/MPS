@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class XmlCharRefValue_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new XmlCharRefValue_EditorBuilder_a(editorContext, node).createCell();
+    return new XmlCharRefValue_EditorBuilder(editorContext, node).createCell();
   }
 }

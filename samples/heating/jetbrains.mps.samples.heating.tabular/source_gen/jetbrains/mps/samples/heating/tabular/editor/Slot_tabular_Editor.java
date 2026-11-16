@@ -18,6 +18,6 @@ public class Slot_tabular_Editor extends DefaultNodeEditor {
     return myContextHints;
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new Slot_tabular_EditorBuilder_a(editorContext, node).createCell();
+    return new Slot_tabular_EditorBuilder(editorContext, node).createCell();
   }
 }

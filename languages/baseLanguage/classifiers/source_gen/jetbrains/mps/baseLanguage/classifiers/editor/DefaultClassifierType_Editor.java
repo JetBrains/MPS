@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class DefaultClassifierType_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new DefaultClassifierType_EditorBuilder_a(editorContext, node).createCell();
+    return new DefaultClassifierType_EditorBuilder(editorContext, node).createCell();
   }
 }

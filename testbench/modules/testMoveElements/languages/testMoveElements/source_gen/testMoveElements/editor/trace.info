@@ -17,17 +17,17 @@
   </root>
   <root nodeRef="r:2de9cc1a-057f-4953-afea-1abb5cfe7f56(testMoveElements.editor)/3386991982400352769">
     <file name="ManyStatementsContainer_Editor.java">
-      <node id="3386991982400352769" at="11,79,12,89" concept="6" />
+      <node id="3386991982400352769" at="11,79,12,87" concept="6" />
       <node id="3386991982400352769" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="3386991982400352769" at="11,79,12,89" />
+      <scope id="3386991982400352769" at="11,79,12,87" />
       <scope id="3386991982400352769" at="11,0,14,0">
         <var name="editorContext" id="3386991982400352769" />
         <var name="node" id="3386991982400352769" />
       </scope>
       <unit id="3386991982400352769" at="10,0,15,0" name="testMoveElements.editor.ManyStatementsContainer_Editor" />
     </file>
-    <file name="ManyStatementsContainer_EditorBuilder_a.java">
-      <node id="3386991982400352769" at="30,103,31,19" concept="8" />
+    <file name="ManyStatementsContainer_EditorBuilder.java">
+      <node id="3386991982400352769" at="30,101,31,19" concept="8" />
       <node id="3386991982400352769" at="31,19,32,18" concept="1" />
       <node id="3386991982400352769" at="37,26,38,18" concept="6" />
       <node id="3386991982400352769" at="41,39,42,32" concept="6" />
@@ -165,7 +165,7 @@
       <node id="3386991982400352769" at="216,87,219,7" concept="3" />
       <node id="3386991982400352769" at="219,7,222,7" concept="3" />
       <node id="3386991982400352769" at="242,0,245,0" concept="4" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="3386991982400352769" at="30,0,34,0" concept="0" trace="ManyStatementsContainer_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="3386991982400352769" at="30,0,34,0" concept="0" trace="ManyStatementsContainer_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="3386991982400352769" at="103,0,107,0" concept="4" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="3386991982400352769" at="111,0,115,0" concept="0" trace="firstSingleRoleHandler_grwik7_c2a#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="3386991982400352769" at="187,0,191,0" concept="4" trace="createRefNode_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -203,7 +203,7 @@
       <scope id="3386991982400352769" at="220,42,221,47" />
       <scope id="3386991982400352769" at="238,17,239,42" />
       <scope id="3386991982400352769" at="242,40,243,27" />
-      <scope id="3386991982400352769" at="30,103,32,18" />
+      <scope id="3386991982400352769" at="30,101,32,18" />
       <scope id="3386991982400352769" at="103,40,105,33">
         <var name="provider" id="3386991982400352769" />
       </scope>
@@ -318,25 +318,25 @@
       <scope id="3386991982400352769" at="144,0,158,0" />
       <scope id="3386991982400352769" at="228,0,242,0" />
       <scope id="3386991982400352769" at="72,0,87,0" />
-      <unit id="3386991982400352769" at="256,0,260,0" name="testMoveElements.editor.ManyStatementsContainer_EditorBuilder_a$LINKS" />
-      <unit id="3386991982400352769" at="107,0,162,0" name="testMoveElements.editor.ManyStatementsContainer_EditorBuilder_a$firstSingleRoleHandler_grwik7_c2a" />
-      <unit id="3386991982400352769" at="191,0,246,0" name="testMoveElements.editor.ManyStatementsContainer_EditorBuilder_a$secondSingleRoleHandler_grwik7_g2a" />
-      <unit id="3386991982400352769" at="26,0,261,0" name="testMoveElements.editor.ManyStatementsContainer_EditorBuilder_a" />
+      <unit id="3386991982400352769" at="256,0,260,0" name="testMoveElements.editor.ManyStatementsContainer_EditorBuilder$LINKS" />
+      <unit id="3386991982400352769" at="107,0,162,0" name="testMoveElements.editor.ManyStatementsContainer_EditorBuilder$firstSingleRoleHandler_grwik7_c2a" />
+      <unit id="3386991982400352769" at="191,0,246,0" name="testMoveElements.editor.ManyStatementsContainer_EditorBuilder$secondSingleRoleHandler_grwik7_g2a" />
+      <unit id="3386991982400352769" at="26,0,261,0" name="testMoveElements.editor.ManyStatementsContainer_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:2de9cc1a-057f-4953-afea-1abb5cfe7f56(testMoveElements.editor)/7130462290291946673">
     <file name="ManyStatements_Editor.java">
-      <node id="7130462290291946673" at="11,79,12,80" concept="6" />
+      <node id="7130462290291946673" at="11,79,12,78" concept="6" />
       <node id="7130462290291946673" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="7130462290291946673" at="11,79,12,80" />
+      <scope id="7130462290291946673" at="11,79,12,78" />
       <scope id="7130462290291946673" at="11,0,14,0">
         <var name="editorContext" id="7130462290291946673" />
         <var name="node" id="7130462290291946673" />
       </scope>
       <unit id="7130462290291946673" at="10,0,15,0" name="testMoveElements.editor.ManyStatements_Editor" />
     </file>
-    <file name="ManyStatements_EditorBuilder_a.java">
-      <node id="7130462290291946673" at="35,94,36,19" concept="8" />
+    <file name="ManyStatements_EditorBuilder.java">
+      <node id="7130462290291946673" at="35,92,36,19" concept="8" />
       <node id="7130462290291946673" at="36,19,37,18" concept="1" />
       <node id="7130462290291946673" at="42,26,43,18" concept="6" />
       <node id="7130462290291946673" at="46,39,47,32" concept="6" />
@@ -594,7 +594,7 @@
       <node id="7130462290291946673" at="414,87,417,7" concept="3" />
       <node id="7130462290291946673" at="417,7,420,7" concept="3" />
       <node id="7130462290291946673" at="440,0,443,0" concept="4" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="7130462290291946673" at="35,0,39,0" concept="0" trace="ManyStatements_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="7130462290291946673" at="35,0,39,0" concept="0" trace="ManyStatements_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="7130462290291946673" at="114,0,118,0" concept="4" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="7130462290291946673" at="122,0,126,0" concept="0" trace="listSingleRoleHandler_mtcnr8_c2a#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="7130462290291946673" at="222,0,226,0" concept="0" trace="statementListHandler_mtcnr8_c4c0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
@@ -670,7 +670,7 @@
       <scope id="7130462290291946673" at="418,42,419,46" />
       <scope id="7130462290291946673" at="436,17,437,42" />
       <scope id="7130462290291946673" at="440,40,441,26" />
-      <scope id="7130462290291946673" at="35,94,37,18" />
+      <scope id="7130462290291946673" at="35,92,37,18" />
       <scope id="7130462290291946673" at="114,40,116,33">
         <var name="provider" id="7130462290291946673" />
       </scope>
@@ -886,28 +886,28 @@
         <var name="elementNode" id="7130462290291946673" />
         <var name="isEmptyCell" id="7130462290291946673" />
       </scope>
-      <unit id="7130462290291946673" at="470,0,473,0" name="testMoveElements.editor.ManyStatements_EditorBuilder_a$CONCEPTS" />
-      <unit id="7130462290291946673" at="463,0,469,0" name="testMoveElements.editor.ManyStatements_EditorBuilder_a$LINKS" />
-      <unit id="7130462290291946673" at="118,0,173,0" name="testMoveElements.editor.ManyStatements_EditorBuilder_a$listSingleRoleHandler_mtcnr8_c2a" />
-      <unit id="7130462290291946673" at="305,0,360,0" name="testMoveElements.editor.ManyStatements_EditorBuilder_a$list1SingleRoleHandler_mtcnr8_h2a" />
-      <unit id="7130462290291946673" at="389,0,444,0" name="testMoveElements.editor.ManyStatements_EditorBuilder_a$list2SingleRoleHandler_mtcnr8_l2a" />
-      <unit id="7130462290291946673" at="218,0,285,0" name="testMoveElements.editor.ManyStatements_EditorBuilder_a$statementListHandler_mtcnr8_c4c0" />
-      <unit id="7130462290291946673" at="31,0,474,0" name="testMoveElements.editor.ManyStatements_EditorBuilder_a" />
+      <unit id="7130462290291946673" at="470,0,473,0" name="testMoveElements.editor.ManyStatements_EditorBuilder$CONCEPTS" />
+      <unit id="7130462290291946673" at="463,0,469,0" name="testMoveElements.editor.ManyStatements_EditorBuilder$LINKS" />
+      <unit id="7130462290291946673" at="118,0,173,0" name="testMoveElements.editor.ManyStatements_EditorBuilder$listSingleRoleHandler_mtcnr8_c2a" />
+      <unit id="7130462290291946673" at="305,0,360,0" name="testMoveElements.editor.ManyStatements_EditorBuilder$list1SingleRoleHandler_mtcnr8_h2a" />
+      <unit id="7130462290291946673" at="389,0,444,0" name="testMoveElements.editor.ManyStatements_EditorBuilder$list2SingleRoleHandler_mtcnr8_l2a" />
+      <unit id="7130462290291946673" at="218,0,285,0" name="testMoveElements.editor.ManyStatements_EditorBuilder$statementListHandler_mtcnr8_c4c0" />
+      <unit id="7130462290291946673" at="31,0,474,0" name="testMoveElements.editor.ManyStatements_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:2de9cc1a-057f-4953-afea-1abb5cfe7f56(testMoveElements.editor)/7465696304914830836">
     <file name="DummyBlock_Editor.java">
-      <node id="7465696304914830836" at="11,79,12,76" concept="6" />
+      <node id="7465696304914830836" at="11,79,12,74" concept="6" />
       <node id="7465696304914830836" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="7465696304914830836" at="11,79,12,76" />
+      <scope id="7465696304914830836" at="11,79,12,74" />
       <scope id="7465696304914830836" at="11,0,14,0">
         <var name="editorContext" id="7465696304914830836" />
         <var name="node" id="7465696304914830836" />
       </scope>
       <unit id="7465696304914830836" at="10,0,15,0" name="testMoveElements.editor.DummyBlock_Editor" />
     </file>
-    <file name="DummyBlock_EditorBuilder_a.java">
-      <node id="7465696304914830836" at="16,90,17,19" concept="8" />
+    <file name="DummyBlock_EditorBuilder.java">
+      <node id="7465696304914830836" at="16,88,17,19" concept="8" />
       <node id="7465696304914830836" at="17,19,18,18" concept="1" />
       <node id="7465696304914830836" at="23,26,24,18" concept="6" />
       <node id="7465696304914830836" at="27,39,28,30" concept="6" />
@@ -919,12 +919,12 @@
       <node id="7465696304914831246" at="36,34,37,22" concept="6" />
       <node id="7465696304914830836" at="13,0,15,0" concept="2" trace="myNode" />
       <node id="7465696304914830836" at="27,0,30,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="7465696304914830836" at="16,0,20,0" concept="0" trace="DummyBlock_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="7465696304914830836" at="16,0,20,0" concept="0" trace="DummyBlock_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="7465696304914830836" at="21,0,26,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="7465696304914831246" at="31,0,39,0" concept="4" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="7465696304914830836" at="23,26,24,18" />
       <scope id="7465696304914830836" at="27,39,28,30" />
-      <scope id="7465696304914830836" at="16,90,18,18" />
+      <scope id="7465696304914830836" at="16,88,18,18" />
       <scope id="7465696304914830836" at="27,0,30,0" />
       <scope id="7465696304914830836" at="16,0,20,0">
         <var name="context" id="7465696304914830836" />
@@ -935,7 +935,7 @@
         <var name="editorCell" id="7465696304914831246" />
       </scope>
       <scope id="7465696304914831246" at="31,0,39,0" />
-      <unit id="7465696304914830836" at="12,0,40,0" name="testMoveElements.editor.DummyBlock_EditorBuilder_a" />
+      <unit id="7465696304914830836" at="12,0,40,0" name="testMoveElements.editor.DummyBlock_EditorBuilder" />
     </file>
   </root>
 </debug-info>

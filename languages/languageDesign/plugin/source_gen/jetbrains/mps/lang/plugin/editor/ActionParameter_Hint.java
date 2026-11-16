@@ -16,6 +16,6 @@ public class ActionParameter_Hint implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ActionParameter_Hint_ComponentBuilder_a(editorContext, node).createCell();
+    return new ActionParameter_Hint_ComponentBuilder(editorContext, node).createCell();
   }
 }

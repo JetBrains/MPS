@@ -18,17 +18,17 @@
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c895903f5(jetbrains.mps.baseLanguage.money.editor)/1186667875272">
     <file name="MoneyLiteral_Editor.java">
-      <node id="1186667875272" at="11,79,12,78" concept="7" />
+      <node id="1186667875272" at="11,79,12,76" concept="7" />
       <node id="1186667875272" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1186667875272" at="11,79,12,78" />
+      <scope id="1186667875272" at="11,79,12,76" />
       <scope id="1186667875272" at="11,0,14,0">
         <var name="editorContext" id="1186667875272" />
         <var name="node" id="1186667875272" />
       </scope>
       <unit id="1186667875272" at="10,0,15,0" name="jetbrains.mps.baseLanguage.money.editor.MoneyLiteral_Editor" />
     </file>
-    <file name="MoneyLiteral_EditorBuilder_a.java">
-      <node id="1186667875272" at="31,92,32,19" concept="9" />
+    <file name="MoneyLiteral_EditorBuilder.java">
+      <node id="1186667875272" at="31,90,32,19" concept="9" />
       <node id="1186667875272" at="32,19,33,18" concept="1" />
       <node id="1186667875272" at="38,26,39,18" concept="7" />
       <node id="1186667875272" at="42,39,43,32" concept="7" />
@@ -72,7 +72,7 @@
       <node id="1186667875272" at="104,0,105,0" concept="8" trace="PropertyAttribute$Gb" />
       <node id="1186667875272" at="28,0,30,0" concept="2" trace="myNode" />
       <node id="1186667875272" at="42,0,45,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="1186667875272" at="31,0,35,0" concept="0" trace="MoneyLiteral_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1186667875272" at="31,0,35,0" concept="0" trace="MoneyLiteral_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1186667875272" at="36,0,41,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1186668023743" at="66,208,71,24" concept="4" />
       <node id="1186668032201" at="87,208,92,24" concept="4" />
@@ -85,7 +85,7 @@
       <scope id="1186667875272" at="42,39,43,32" />
       <scope id="1186668023743" at="72,15,73,40" />
       <scope id="1186668032201" at="93,15,94,40" />
-      <scope id="1186667875272" at="31,92,33,18" />
+      <scope id="1186667875272" at="31,90,33,18" />
       <scope id="1186668023743" at="67,74,69,145">
         <var name="manager" id="1186668023743" />
       </scope>
@@ -118,24 +118,24 @@
       <scope id="1186668032201" at="76,41,95,5" />
       <scope id="1186668023743" at="55,0,76,0" />
       <scope id="1186668032201" at="76,0,97,0" />
-      <unit id="1186667875272" at="103,0,106,0" name="jetbrains.mps.baseLanguage.money.editor.MoneyLiteral_EditorBuilder_a$CONCEPTS" />
-      <unit id="1186667875272" at="98,0,102,0" name="jetbrains.mps.baseLanguage.money.editor.MoneyLiteral_EditorBuilder_a$PROPS" />
-      <unit id="1186667875272" at="27,0,107,0" name="jetbrains.mps.baseLanguage.money.editor.MoneyLiteral_EditorBuilder_a" />
+      <unit id="1186667875272" at="103,0,106,0" name="jetbrains.mps.baseLanguage.money.editor.MoneyLiteral_EditorBuilder$CONCEPTS" />
+      <unit id="1186667875272" at="98,0,102,0" name="jetbrains.mps.baseLanguage.money.editor.MoneyLiteral_EditorBuilder$PROPS" />
+      <unit id="1186667875272" at="27,0,107,0" name="jetbrains.mps.baseLanguage.money.editor.MoneyLiteral_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c895903f5(jetbrains.mps.baseLanguage.money.editor)/1187343582397">
     <file name="MoneyCreator_Editor.java">
-      <node id="1187343582397" at="11,79,12,78" concept="7" />
+      <node id="1187343582397" at="11,79,12,76" concept="7" />
       <node id="1187343582397" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1187343582397" at="11,79,12,78" />
+      <scope id="1187343582397" at="11,79,12,76" />
       <scope id="1187343582397" at="11,0,14,0">
         <var name="editorContext" id="1187343582397" />
         <var name="node" id="1187343582397" />
       </scope>
       <unit id="1187343582397" at="10,0,15,0" name="jetbrains.mps.baseLanguage.money.editor.MoneyCreator_Editor" />
     </file>
-    <file name="MoneyCreator_EditorBuilder_a.java">
-      <node id="1187343582397" at="30,92,31,19" concept="9" />
+    <file name="MoneyCreator_EditorBuilder.java">
+      <node id="1187343582397" at="30,90,31,19" concept="9" />
       <node id="1187343582397" at="31,19,32,18" concept="1" />
       <node id="1187343582397" at="37,26,38,18" concept="7" />
       <node id="1187343582397" at="41,39,42,32" concept="7" />
@@ -226,7 +226,7 @@
       <node id="1187343582397" at="163,87,166,7" concept="4" />
       <node id="1187343582397" at="166,7,169,7" concept="4" />
       <node id="1187343582397" at="185,0,188,0" concept="5" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="1187343582397" at="30,0,34,0" concept="0" trace="MoneyCreator_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1187343582397" at="30,0,34,0" concept="0" trace="MoneyCreator_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1187343582397" at="73,0,77,0" concept="5" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1187343582397" at="81,0,85,0" concept="0" trace="amountSingleRoleHandler_ccfkrk_c0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1187343582397" at="134,0,138,0" concept="5" trace="createRefNode_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -259,7 +259,7 @@
       <scope id="1187343582397" at="167,42,168,49" />
       <scope id="1187343582397" at="181,17,182,42" />
       <scope id="1187343582397" at="185,40,186,29" />
-      <scope id="1187343582397" at="30,92,32,18" />
+      <scope id="1187343582397" at="30,90,32,18" />
       <scope id="1187343582397" at="73,40,75,33">
         <var name="provider" id="1187343582397" />
       </scope>
@@ -346,25 +346,25 @@
       <scope id="1187343582397" at="45,0,58,0" />
       <scope id="1187343582397" at="110,0,124,0" />
       <scope id="1187343582397" at="171,0,185,0" />
-      <unit id="1187343582397" at="199,0,203,0" name="jetbrains.mps.baseLanguage.money.editor.MoneyCreator_EditorBuilder_a$LINKS" />
-      <unit id="1187343582397" at="77,0,128,0" name="jetbrains.mps.baseLanguage.money.editor.MoneyCreator_EditorBuilder_a$amountSingleRoleHandler_ccfkrk_c0" />
-      <unit id="1187343582397" at="138,0,189,0" name="jetbrains.mps.baseLanguage.money.editor.MoneyCreator_EditorBuilder_a$currencySingleRoleHandler_ccfkrk_e0" />
-      <unit id="1187343582397" at="26,0,204,0" name="jetbrains.mps.baseLanguage.money.editor.MoneyCreator_EditorBuilder_a" />
+      <unit id="1187343582397" at="199,0,203,0" name="jetbrains.mps.baseLanguage.money.editor.MoneyCreator_EditorBuilder$LINKS" />
+      <unit id="1187343582397" at="77,0,128,0" name="jetbrains.mps.baseLanguage.money.editor.MoneyCreator_EditorBuilder$amountSingleRoleHandler_ccfkrk_c0" />
+      <unit id="1187343582397" at="138,0,189,0" name="jetbrains.mps.baseLanguage.money.editor.MoneyCreator_EditorBuilder$currencySingleRoleHandler_ccfkrk_e0" />
+      <unit id="1187343582397" at="26,0,204,0" name="jetbrains.mps.baseLanguage.money.editor.MoneyCreator_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c895903f5(jetbrains.mps.baseLanguage.money.editor)/1187703306349">
     <file name="MoneyMethodCall_Editor.java">
-      <node id="1187703306349" at="11,79,12,81" concept="7" />
+      <node id="1187703306349" at="11,79,12,79" concept="7" />
       <node id="1187703306349" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1187703306349" at="11,79,12,81" />
+      <scope id="1187703306349" at="11,79,12,79" />
       <scope id="1187703306349" at="11,0,14,0">
         <var name="editorContext" id="1187703306349" />
         <var name="node" id="1187703306349" />
       </scope>
       <unit id="1187703306349" at="10,0,15,0" name="jetbrains.mps.baseLanguage.money.editor.MoneyMethodCall_Editor" />
     </file>
-    <file name="MoneyMethodCall_EditorBuilder_a.java">
-      <node id="1187703306349" at="29,95,30,19" concept="9" />
+    <file name="MoneyMethodCall_EditorBuilder.java">
+      <node id="1187703306349" at="29,93,30,19" concept="9" />
       <node id="1187703306349" at="30,19,31,18" concept="1" />
       <node id="1187703306349" at="36,26,37,18" concept="7" />
       <node id="1187703306349" at="40,39,41,32" concept="7" />
@@ -408,7 +408,7 @@
       <node id="1187703306349" at="82,87,85,7" concept="4" />
       <node id="1187703306349" at="85,7,88,7" concept="4" />
       <node id="1187703306349" at="104,0,107,0" concept="5" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="1187703306349" at="29,0,33,0" concept="0" trace="MoneyMethodCall_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1187703306349" at="29,0,33,0" concept="0" trace="MoneyMethodCall_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1187703306349" at="53,0,57,0" concept="5" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1187703306349" at="61,0,65,0" concept="0" trace="instanceSingleRoleHandler_o0ayvq_a0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1187703306349" at="34,0,39,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -426,7 +426,7 @@
       <scope id="1187703306349" at="86,42,87,49" />
       <scope id="1187703306349" at="100,17,101,42" />
       <scope id="1187703306349" at="104,40,105,29" />
-      <scope id="1187703306349" at="29,95,31,18" />
+      <scope id="1187703306349" at="29,93,31,18" />
       <scope id="1187703306349" at="53,40,55,33">
         <var name="provider" id="1187703306349" />
       </scope>
@@ -471,9 +471,9 @@
       <scope id="1187703306349" at="44,0,53,0" />
       <scope id="1187703306349" at="91,44,102,7" />
       <scope id="1187703306349" at="90,0,104,0" />
-      <unit id="1187703306349" at="116,0,119,0" name="jetbrains.mps.baseLanguage.money.editor.MoneyMethodCall_EditorBuilder_a$LINKS" />
-      <unit id="1187703306349" at="57,0,108,0" name="jetbrains.mps.baseLanguage.money.editor.MoneyMethodCall_EditorBuilder_a$instanceSingleRoleHandler_o0ayvq_a0" />
-      <unit id="1187703306349" at="25,0,120,0" name="jetbrains.mps.baseLanguage.money.editor.MoneyMethodCall_EditorBuilder_a" />
+      <unit id="1187703306349" at="116,0,119,0" name="jetbrains.mps.baseLanguage.money.editor.MoneyMethodCall_EditorBuilder$LINKS" />
+      <unit id="1187703306349" at="57,0,108,0" name="jetbrains.mps.baseLanguage.money.editor.MoneyMethodCall_EditorBuilder$instanceSingleRoleHandler_o0ayvq_a0" />
+      <unit id="1187703306349" at="25,0,120,0" name="jetbrains.mps.baseLanguage.money.editor.MoneyMethodCall_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c895903f5(jetbrains.mps.baseLanguage.money.editor)/1741258697587199953">

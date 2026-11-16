@@ -14,12 +14,12 @@
   </root>
   <root nodeRef="r:47fb83ef-18e7-455f-b015-55278dfb7c1f(jetbrains.mps.samples.nodeuid.lang.editor)/4806188623786726281">
     <file name="ExpressionWithId_Editor.java">
-      <node id="4806188623786726281" at="11,79,12,82" concept="5" />
-      <node id="4806188623786726281" at="14,82,15,85" concept="5" />
+      <node id="4806188623786726281" at="11,79,12,80" concept="5" />
+      <node id="4806188623786726281" at="14,82,15,83" concept="5" />
       <node id="4806188623786726281" at="11,0,14,0" concept="3" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4806188623786726281" at="14,0,17,0" concept="3" trace="createInspectedCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4806188623786726281" at="11,79,12,82" />
-      <scope id="4806188623786726281" at="14,82,15,85" />
+      <scope id="4806188623786726281" at="11,79,12,80" />
+      <scope id="4806188623786726281" at="14,82,15,83" />
       <scope id="4806188623786726281" at="11,0,14,0">
         <var name="editorContext" id="4806188623786726281" />
         <var name="node" id="4806188623786726281" />
@@ -30,8 +30,8 @@
       </scope>
       <unit id="4806188623786726281" at="10,0,18,0" name="jetbrains.mps.samples.nodeuid.lang.editor.ExpressionWithId_Editor" />
     </file>
-    <file name="ExpressionWithId_EditorBuilder_a.java">
-      <node id="4806188623786726281" at="16,96,17,19" concept="6" />
+    <file name="ExpressionWithId_EditorBuilder.java">
+      <node id="4806188623786726281" at="16,94,17,19" concept="6" />
       <node id="4806188623786726281" at="17,19,18,18" concept="1" />
       <node id="4806188623786726281" at="23,26,24,18" concept="5" />
       <node id="4806188623786726281" at="27,39,28,30" concept="5" />
@@ -43,12 +43,12 @@
       <node id="4806188623786726283" at="36,34,37,22" concept="5" />
       <node id="4806188623786726281" at="13,0,15,0" concept="2" trace="myNode" />
       <node id="4806188623786726281" at="27,0,30,0" concept="3" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="4806188623786726281" at="16,0,20,0" concept="0" trace="ExpressionWithId_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4806188623786726281" at="16,0,20,0" concept="0" trace="ExpressionWithId_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4806188623786726281" at="21,0,26,0" concept="3" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="4806188623786726283" at="31,0,39,0" concept="3" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="4806188623786726281" at="23,26,24,18" />
       <scope id="4806188623786726281" at="27,39,28,30" />
-      <scope id="4806188623786726281" at="16,96,18,18" />
+      <scope id="4806188623786726281" at="16,94,18,18" />
       <scope id="4806188623786726281" at="27,0,30,0" />
       <scope id="4806188623786726281" at="16,0,20,0">
         <var name="context" id="4806188623786726281" />
@@ -59,10 +59,10 @@
         <var name="editorCell" id="4806188623786726283" />
       </scope>
       <scope id="4806188623786726283" at="31,0,39,0" />
-      <unit id="4806188623786726281" at="12,0,40,0" name="jetbrains.mps.samples.nodeuid.lang.editor.ExpressionWithId_EditorBuilder_a" />
+      <unit id="4806188623786726281" at="12,0,40,0" name="jetbrains.mps.samples.nodeuid.lang.editor.ExpressionWithId_EditorBuilder" />
     </file>
-    <file name="ExpressionWithId_InspectorBuilder_a.java">
-      <node id="4806188623786726281" at="26,99,27,19" concept="6" />
+    <file name="ExpressionWithId_InspectorBuilder.java">
+      <node id="4806188623786726281" at="26,97,27,19" concept="6" />
       <node id="4806188623786726281" at="27,19,28,18" concept="1" />
       <node id="4806188623786726281" at="33,26,34,18" concept="5" />
       <node id="4806188623786726281" at="37,39,38,32" concept="5" />
@@ -88,7 +88,7 @@
       <node id="4806188623786726281" at="23,0,25,0" concept="2" trace="myNode" />
       <node id="4806188623786726281" at="37,0,40,0" concept="3" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4806188623786751838" at="58,0,61,0" concept="3" trace="getText#()Ljava/lang/String;" />
-      <node id="4806188623786726281" at="26,0,30,0" concept="0" trace="ExpressionWithId_InspectorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4806188623786726281" at="26,0,30,0" concept="0" trace="ExpressionWithId_InspectorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4806188623786726281" at="31,0,36,0" concept="3" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="4806188623786751838" at="56,54,61,15" concept="4" />
       <node id="4806188623786726285" at="50,0,56,0" concept="3" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -97,7 +97,7 @@
       <scope id="4806188623786726281" at="33,26,34,18" />
       <scope id="4806188623786726281" at="37,39,38,32" />
       <scope id="4806188623786751844" at="58,31,59,47" />
-      <scope id="4806188623786726281" at="26,99,28,18" />
+      <scope id="4806188623786726281" at="26,97,28,18" />
       <scope id="4806188623786726281" at="37,0,40,0" />
       <scope id="4806188623786751838" at="58,0,61,0" />
       <scope id="4806188623786726281" at="26,0,30,0">
@@ -118,8 +118,8 @@
         <var name="style" id="4806188623786751838" />
       </scope>
       <scope id="4806188623786751838" at="56,0,70,0" />
-      <unit id="4806188623786751838" at="57,88,61,5" name="jetbrains.mps.samples.nodeuid.lang.editor.ExpressionWithId_InspectorBuilder_a$1" />
-      <unit id="4806188623786726281" at="22,0,71,0" name="jetbrains.mps.samples.nodeuid.lang.editor.ExpressionWithId_InspectorBuilder_a" />
+      <unit id="4806188623786751838" at="57,88,61,5" name="jetbrains.mps.samples.nodeuid.lang.editor.ExpressionWithId_InspectorBuilder$1" />
+      <unit id="4806188623786726281" at="22,0,71,0" name="jetbrains.mps.samples.nodeuid.lang.editor.ExpressionWithId_InspectorBuilder" />
     </file>
   </root>
 </debug-info>

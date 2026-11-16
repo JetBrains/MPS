@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class DebuggerType_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new DebuggerType_EditorBuilder_a(editorContext, node).createCell();
+    return new DebuggerType_EditorBuilder(editorContext, node).createCell();
   }
 }

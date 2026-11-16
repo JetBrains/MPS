@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class NullSafeDotExpression_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new NullSafeDotExpression_EditorBuilder_a(editorContext, node).createCell();
+    return new NullSafeDotExpression_EditorBuilder(editorContext, node).createCell();
   }
 }

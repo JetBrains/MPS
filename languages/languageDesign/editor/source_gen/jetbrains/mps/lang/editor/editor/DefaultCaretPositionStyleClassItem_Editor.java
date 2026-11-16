@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class DefaultCaretPositionStyleClassItem_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new DefaultCaretPositionStyleClassItem_EditorBuilder_a(editorContext, node).createCell();
+    return new DefaultCaretPositionStyleClassItem_EditorBuilder(editorContext, node).createCell();
   }
 }

@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class MigrationScriptPart_Instance_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new MigrationScriptPart_Instance_EditorBuilder_a(editorContext, node).createCell();
+    return new MigrationScriptPart_Instance_EditorBuilder(editorContext, node).createCell();
   }
 }

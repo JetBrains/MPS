@@ -16,6 +16,6 @@ public class MathContextEditorPart implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new MathContextEditorPart_ComponentBuilder_a(editorContext, node).createCell();
+    return new MathContextEditorPart_ComponentBuilder(editorContext, node).createCell();
   }
 }

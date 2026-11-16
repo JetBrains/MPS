@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class OutputToInputPortConnector_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new OutputToInputPortConnector_EditorBuilder_a(editorContext, node).createCell();
+    return new OutputToInputPortConnector_EditorBuilder(editorContext, node).createCell();
   }
 }

@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ColorReference_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ColorReference_EditorBuilder_a(editorContext, node).createCell();
+    return new ColorReference_EditorBuilder(editorContext, node).createCell();
   }
 }

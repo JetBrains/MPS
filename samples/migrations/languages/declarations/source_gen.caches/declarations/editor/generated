@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="-2yj4qxy71msrzundsust20347ylbfyv">
-  <files names="EditorAspectDescriptorImpl.java:NewComponent_Editor.java:NewComponent_EditorBuilder_a.java:OldComponent_Editor.java:OldComponent_EditorBuilder_a.java" />
+  <files names="EditorAspectDescriptorImpl.java:NewComponent_Editor.java:NewComponent_EditorBuilder.java:OldComponent_Editor.java:OldComponent_EditorBuilder.java" />
 </product>
 

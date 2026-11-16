@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class AbstractInequationStatement_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new AbstractInequationStatement_EditorBuilder_a(editorContext, node).createCell();
+    return new AbstractInequationStatement_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new AbstractInequationStatement_InspectorBuilder_a(editorContext, node).createCell();
+    return new AbstractInequationStatement_InspectorBuilder(editorContext, node).createCell();
   }
 }

@@ -17,17 +17,17 @@
   </root>
   <root nodeRef="r:555c5eca-89b6-44df-8803-9042f8e901cc(testmaterial.moveConcept.SourceLanguage.editor)/4662087456932171659">
     <file name="MoveConcept_CompletionTest_Editor.java">
-      <node id="4662087456932171659" at="11,79,12,92" concept="6" />
+      <node id="4662087456932171659" at="11,79,12,90" concept="6" />
       <node id="4662087456932171659" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4662087456932171659" at="11,79,12,92" />
+      <scope id="4662087456932171659" at="11,79,12,90" />
       <scope id="4662087456932171659" at="11,0,14,0">
         <var name="editorContext" id="4662087456932171659" />
         <var name="node" id="4662087456932171659" />
       </scope>
       <unit id="4662087456932171659" at="10,0,15,0" name="testmaterial.moveConcept.SourceLanguage.editor.MoveConcept_CompletionTest_Editor" />
     </file>
-    <file name="MoveConcept_CompletionTest_EditorBuilder_a.java">
-      <node id="4662087456932171659" at="45,106,46,19" concept="8" />
+    <file name="MoveConcept_CompletionTest_EditorBuilder.java">
+      <node id="4662087456932171659" at="45,104,46,19" concept="8" />
       <node id="4662087456932171659" at="46,19,47,18" concept="1" />
       <node id="4662087456932171659" at="52,26,53,18" concept="6" />
       <node id="4662087456932171659" at="56,39,57,32" concept="6" />
@@ -112,7 +112,7 @@
       <node id="4662087456932171659" at="131,0,134,0" concept="4" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="4662087456932171659" at="134,0,137,0" concept="4" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="4662087456932171659" at="178,96,181,9" concept="3" />
-      <node id="4662087456932171659" at="45,0,49,0" concept="0" trace="MoveConcept_CompletionTest_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4662087456932171659" at="45,0,49,0" concept="0" trace="MoveConcept_CompletionTest_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4662087456932171670" at="72,0,76,0" concept="4" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4662087456932171659" at="122,0,126,0" concept="0" trace="childListHandler_qkb63f_d0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="4662087456932171659" at="127,0,131,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -143,7 +143,7 @@
       <scope id="4662087456932171659" at="134,48,135,60" />
       <scope id="4662087456932171659" at="152,17,153,42" />
       <scope id="4662087456932171659" at="179,34,180,91" />
-      <scope id="4662087456932171659" at="45,106,47,18" />
+      <scope id="4662087456932171659" at="45,104,47,18" />
       <scope id="4662087456932171670" at="72,42,74,22">
         <var name="editorCell" id="4662087456932171670" />
       </scope>
@@ -216,11 +216,11 @@
         <var name="elementNode" id="4662087456932171659" />
         <var name="isEmptyCell" id="4662087456932171659" />
       </scope>
-      <unit id="4662087456932171659" at="192,0,195,0" name="testmaterial.moveConcept.SourceLanguage.editor.MoveConcept_CompletionTest_EditorBuilder_a$PROPS" />
-      <unit id="4662087456932171659" at="201,0,204,0" name="testmaterial.moveConcept.SourceLanguage.editor.MoveConcept_CompletionTest_EditorBuilder_a$LINKS" />
-      <unit id="4662087456932171659" at="196,0,200,0" name="testmaterial.moveConcept.SourceLanguage.editor.MoveConcept_CompletionTest_EditorBuilder_a$CONCEPTS" />
-      <unit id="4662087456932171659" at="118,0,185,0" name="testmaterial.moveConcept.SourceLanguage.editor.MoveConcept_CompletionTest_EditorBuilder_a$childListHandler_qkb63f_d0" />
-      <unit id="4662087456932171659" at="41,0,205,0" name="testmaterial.moveConcept.SourceLanguage.editor.MoveConcept_CompletionTest_EditorBuilder_a" />
+      <unit id="4662087456932171659" at="192,0,195,0" name="testmaterial.moveConcept.SourceLanguage.editor.MoveConcept_CompletionTest_EditorBuilder$PROPS" />
+      <unit id="4662087456932171659" at="201,0,204,0" name="testmaterial.moveConcept.SourceLanguage.editor.MoveConcept_CompletionTest_EditorBuilder$LINKS" />
+      <unit id="4662087456932171659" at="196,0,200,0" name="testmaterial.moveConcept.SourceLanguage.editor.MoveConcept_CompletionTest_EditorBuilder$CONCEPTS" />
+      <unit id="4662087456932171659" at="118,0,185,0" name="testmaterial.moveConcept.SourceLanguage.editor.MoveConcept_CompletionTest_EditorBuilder$childListHandler_qkb63f_d0" />
+      <unit id="4662087456932171659" at="41,0,205,0" name="testmaterial.moveConcept.SourceLanguage.editor.MoveConcept_CompletionTest_EditorBuilder" />
     </file>
   </root>
 </debug-info>

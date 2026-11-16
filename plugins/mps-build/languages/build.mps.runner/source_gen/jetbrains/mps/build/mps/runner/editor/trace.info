@@ -25,17 +25,17 @@
   </root>
   <root nodeRef="r:a874629d-0982-4f95-a5f4-d979f0120bd1(jetbrains.mps.build.mps.runner.editor)/3639941018584596222">
     <file name="RequiredPlugin_Editor.java">
-      <node id="3639941018584596222" at="11,79,12,80" concept="6" />
+      <node id="3639941018584596222" at="11,79,12,78" concept="6" />
       <node id="3639941018584596222" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="3639941018584596222" at="11,79,12,80" />
+      <scope id="3639941018584596222" at="11,79,12,78" />
       <scope id="3639941018584596222" at="11,0,14,0">
         <var name="editorContext" id="3639941018584596222" />
         <var name="node" id="3639941018584596222" />
       </scope>
       <unit id="3639941018584596222" at="10,0,15,0" name="jetbrains.mps.build.mps.runner.editor.RequiredPlugin_Editor" />
     </file>
-    <file name="RequiredPlugin_EditorBuilder_a.java">
-      <node id="3639941018584596222" at="43,94,44,19" concept="9" />
+    <file name="RequiredPlugin_EditorBuilder.java">
+      <node id="3639941018584596222" at="43,92,44,19" concept="9" />
       <node id="3639941018584596222" at="44,19,45,18" concept="1" />
       <node id="3639941018584596222" at="50,26,51,18" concept="6" />
       <node id="3639941018584596222" at="54,39,55,32" concept="6" />
@@ -98,7 +98,7 @@
       <node id="6592112598314499075" at="102,0,104,0" concept="2" trace="myNode" />
       <node id="3639941018584596222" at="54,0,57,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="6592112598314499075" at="112,0,115,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="3639941018584596222" at="43,0,47,0" concept="0" trace="RequiredPlugin_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="3639941018584596222" at="43,0,47,0" concept="0" trace="RequiredPlugin_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="3639941018584596222" at="87,0,91,5" concept="3" />
       <node id="3639941018584596222" at="48,0,53,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="3639941018584596222" at="94,205,99,22" concept="3" />
@@ -117,7 +117,7 @@
       <scope id="6592112598314499075" at="112,41,113,32" />
       <scope id="6592112598314499075" at="118,28,119,20" />
       <scope id="6592112598314499077" at="142,17,143,42" />
-      <scope id="3639941018584596222" at="43,94,45,18" />
+      <scope id="3639941018584596222" at="43,92,45,18" />
       <scope id="3639941018584596222" at="88,40,90,45" />
       <scope id="3639941018584596222" at="95,73,97,145">
         <var name="manager" id="3639941018584596222" />
@@ -172,27 +172,27 @@
         <var name="referenceLink" id="3639941018584596222" />
       </scope>
       <scope id="3639941018584596222" at="66,0,101,0" />
-      <unit id="3639941018584596222" at="148,0,151,0" name="jetbrains.mps.build.mps.runner.editor.RequiredPlugin_EditorBuilder_a$LINKS" />
-      <unit id="3639941018584596222" at="157,0,160,0" name="jetbrains.mps.build.mps.runner.editor.RequiredPlugin_EditorBuilder_a$PROPS" />
-      <unit id="3639941018584596222" at="152,0,156,0" name="jetbrains.mps.build.mps.runner.editor.RequiredPlugin_EditorBuilder_a$CONCEPTS" />
-      <unit id="3639941018584596222" at="68,42,83,5" name="jetbrains.mps.build.mps.runner.editor.RequiredPlugin_EditorBuilder_a$1" />
-      <unit id="6592112598314499075" at="101,0,147,0" name="jetbrains.mps.build.mps.runner.editor.RequiredPlugin_EditorBuilder_a$Inline_Builder0" />
-      <unit id="3639941018584596222" at="39,0,161,0" name="jetbrains.mps.build.mps.runner.editor.RequiredPlugin_EditorBuilder_a" />
+      <unit id="3639941018584596222" at="148,0,151,0" name="jetbrains.mps.build.mps.runner.editor.RequiredPlugin_EditorBuilder$LINKS" />
+      <unit id="3639941018584596222" at="157,0,160,0" name="jetbrains.mps.build.mps.runner.editor.RequiredPlugin_EditorBuilder$PROPS" />
+      <unit id="3639941018584596222" at="152,0,156,0" name="jetbrains.mps.build.mps.runner.editor.RequiredPlugin_EditorBuilder$CONCEPTS" />
+      <unit id="3639941018584596222" at="68,42,83,5" name="jetbrains.mps.build.mps.runner.editor.RequiredPlugin_EditorBuilder$1" />
+      <unit id="6592112598314499075" at="101,0,147,0" name="jetbrains.mps.build.mps.runner.editor.RequiredPlugin_EditorBuilder$Inline_Builder0" />
+      <unit id="3639941018584596222" at="39,0,161,0" name="jetbrains.mps.build.mps.runner.editor.RequiredPlugin_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:a874629d-0982-4f95-a5f4-d979f0120bd1(jetbrains.mps.build.mps.runner.editor)/4173297143638848800">
     <file name="BuildSolutionRunnerPlugin_Editor.java">
-      <node id="4173297143638848800" at="11,79,12,91" concept="6" />
+      <node id="4173297143638848800" at="11,79,12,89" concept="6" />
       <node id="4173297143638848800" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4173297143638848800" at="11,79,12,91" />
+      <scope id="4173297143638848800" at="11,79,12,89" />
       <scope id="4173297143638848800" at="11,0,14,0">
         <var name="editorContext" id="4173297143638848800" />
         <var name="node" id="4173297143638848800" />
       </scope>
       <unit id="4173297143638848800" at="10,0,15,0" name="jetbrains.mps.build.mps.runner.editor.BuildSolutionRunnerPlugin_Editor" />
     </file>
-    <file name="BuildSolutionRunnerPlugin_EditorBuilder_a.java">
-      <node id="4173297143638848800" at="20,105,21,19" concept="9" />
+    <file name="BuildSolutionRunnerPlugin_EditorBuilder.java">
+      <node id="4173297143638848800" at="20,103,21,19" concept="9" />
       <node id="4173297143638848800" at="21,19,22,18" concept="1" />
       <node id="4173297143638848800" at="27,26,28,18" concept="6" />
       <node id="4173297143638848800" at="31,39,32,32" concept="6" />
@@ -209,13 +209,13 @@
       <node id="4173297143638851391" at="47,40,48,22" concept="6" />
       <node id="4173297143638848800" at="17,0,19,0" concept="2" trace="myNode" />
       <node id="4173297143638848800" at="31,0,34,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="4173297143638848800" at="20,0,24,0" concept="0" trace="BuildSolutionRunnerPlugin_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4173297143638848800" at="20,0,24,0" concept="0" trace="BuildSolutionRunnerPlugin_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4173297143638848800" at="25,0,30,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="4173297143638851391" at="43,0,50,0" concept="4" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4173297143638848800" at="35,0,43,0" concept="4" trace="createCollection_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="4173297143638848800" at="27,26,28,18" />
       <scope id="4173297143638848800" at="31,39,32,32" />
-      <scope id="4173297143638848800" at="20,105,22,18" />
+      <scope id="4173297143638848800" at="20,103,22,18" />
       <scope id="4173297143638848800" at="31,0,34,0" />
       <scope id="4173297143638848800" at="20,0,24,0">
         <var name="context" id="4173297143638848800" />
@@ -231,17 +231,17 @@
       </scope>
       <scope id="4173297143638851391" at="43,0,50,0" />
       <scope id="4173297143638848800" at="35,0,43,0" />
-      <unit id="4173297143638848800" at="16,0,51,0" name="jetbrains.mps.build.mps.runner.editor.BuildSolutionRunnerPlugin_EditorBuilder_a" />
+      <unit id="4173297143638848800" at="16,0,51,0" name="jetbrains.mps.build.mps.runner.editor.BuildSolutionRunnerPlugin_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:a874629d-0982-4f95-a5f4-d979f0120bd1(jetbrains.mps.build.mps.runner.editor)/4173297143638951535">
     <file name="BuildSolutionRunnerAspect_Editor.java">
-      <node id="4173297143638951535" at="11,79,12,91" concept="6" />
-      <node id="4173297143638951535" at="14,82,15,94" concept="6" />
+      <node id="4173297143638951535" at="11,79,12,89" concept="6" />
+      <node id="4173297143638951535" at="14,82,15,92" concept="6" />
       <node id="4173297143638951535" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4173297143638951535" at="14,0,17,0" concept="4" trace="createInspectedCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4173297143638951535" at="11,79,12,91" />
-      <scope id="4173297143638951535" at="14,82,15,94" />
+      <scope id="4173297143638951535" at="11,79,12,89" />
+      <scope id="4173297143638951535" at="14,82,15,92" />
       <scope id="4173297143638951535" at="11,0,14,0">
         <var name="editorContext" id="4173297143638951535" />
         <var name="node" id="4173297143638951535" />
@@ -252,8 +252,8 @@
       </scope>
       <unit id="4173297143638951535" at="10,0,18,0" name="jetbrains.mps.build.mps.runner.editor.BuildSolutionRunnerAspect_Editor" />
     </file>
-    <file name="BuildSolutionRunnerAspect_EditorBuilder_a.java">
-      <node id="4173297143638951535" at="56,105,57,19" concept="9" />
+    <file name="BuildSolutionRunnerAspect_EditorBuilder.java">
+      <node id="4173297143638951535" at="56,103,57,19" concept="9" />
       <node id="4173297143638951535" at="57,19,58,18" concept="1" />
       <node id="4173297143638951535" at="63,26,64,18" concept="6" />
       <node id="4173297143638951535" at="67,39,68,32" concept="6" />
@@ -379,7 +379,7 @@
       <node id="7415565752188585891" at="159,0,162,0" concept="4" trace="getText#()Ljava/lang/String;" />
       <node id="4173297143638951535" at="206,0,209,0" concept="4" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="4173297143638951535" at="209,0,212,0" concept="4" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
-      <node id="4173297143638951535" at="56,0,60,0" concept="0" trace="BuildSolutionRunnerAspect_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4173297143638951535" at="56,0,60,0" concept="0" trace="BuildSolutionRunnerAspect_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4173297143638951535" at="116,0,120,5" concept="3" />
       <node id="3639941018584758772" at="173,0,177,0" concept="4" trace="createIndentCell_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4173297143638951535" at="197,0,201,0" concept="0" trace="requiredPluginListHandler_xi87ym_e0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
@@ -421,7 +421,7 @@
       <scope id="4173297143638951535" at="206,40,207,39" />
       <scope id="4173297143638951535" at="209,48,210,40" />
       <scope id="4173297143638951535" at="227,17,228,42" />
-      <scope id="4173297143638951535" at="56,105,58,18" />
+      <scope id="4173297143638951535" at="56,103,58,18" />
       <scope id="4173297143638951535" at="117,40,119,47" />
       <scope id="4173297143638951535" at="124,73,126,145">
         <var name="manager" id="4173297143638951535" />
@@ -533,16 +533,16 @@
         <var name="isEmptyCell" id="4173297143638951535" />
       </scope>
       <scope id="4173297143638951535" at="102,0,130,0" />
-      <unit id="7415565752188585891" at="158,88,162,5" name="jetbrains.mps.build.mps.runner.editor.BuildSolutionRunnerAspect_EditorBuilder_a$2" />
-      <unit id="4173297143638951535" at="274,0,278,0" name="jetbrains.mps.build.mps.runner.editor.BuildSolutionRunnerAspect_EditorBuilder_a$LINKS" />
-      <unit id="4173297143638951535" at="279,0,283,0" name="jetbrains.mps.build.mps.runner.editor.BuildSolutionRunnerAspect_EditorBuilder_a$CONCEPTS" />
-      <unit id="4173297143638951535" at="104,42,112,5" name="jetbrains.mps.build.mps.runner.editor.BuildSolutionRunnerAspect_EditorBuilder_a$1" />
-      <unit id="6102524510011687131" at="130,0,157,0" name="jetbrains.mps.build.mps.runner.editor.BuildSolutionRunnerAspect_EditorBuilder_a$Inline_Builder0" />
-      <unit id="4173297143638951535" at="193,0,273,0" name="jetbrains.mps.build.mps.runner.editor.BuildSolutionRunnerAspect_EditorBuilder_a$requiredPluginListHandler_xi87ym_e0" />
-      <unit id="4173297143638951535" at="52,0,284,0" name="jetbrains.mps.build.mps.runner.editor.BuildSolutionRunnerAspect_EditorBuilder_a" />
+      <unit id="7415565752188585891" at="158,88,162,5" name="jetbrains.mps.build.mps.runner.editor.BuildSolutionRunnerAspect_EditorBuilder$2" />
+      <unit id="4173297143638951535" at="274,0,278,0" name="jetbrains.mps.build.mps.runner.editor.BuildSolutionRunnerAspect_EditorBuilder$LINKS" />
+      <unit id="4173297143638951535" at="279,0,283,0" name="jetbrains.mps.build.mps.runner.editor.BuildSolutionRunnerAspect_EditorBuilder$CONCEPTS" />
+      <unit id="4173297143638951535" at="104,42,112,5" name="jetbrains.mps.build.mps.runner.editor.BuildSolutionRunnerAspect_EditorBuilder$1" />
+      <unit id="6102524510011687131" at="130,0,157,0" name="jetbrains.mps.build.mps.runner.editor.BuildSolutionRunnerAspect_EditorBuilder$Inline_Builder0" />
+      <unit id="4173297143638951535" at="193,0,273,0" name="jetbrains.mps.build.mps.runner.editor.BuildSolutionRunnerAspect_EditorBuilder$requiredPluginListHandler_xi87ym_e0" />
+      <unit id="4173297143638951535" at="52,0,284,0" name="jetbrains.mps.build.mps.runner.editor.BuildSolutionRunnerAspect_EditorBuilder" />
     </file>
-    <file name="BuildSolutionRunnerAspect_InspectorBuilder_a.java">
-      <node id="4173297143638951535" at="48,108,49,19" concept="9" />
+    <file name="BuildSolutionRunnerAspect_InspectorBuilder.java">
+      <node id="4173297143638951535" at="48,106,49,19" concept="9" />
       <node id="4173297143638951535" at="49,19,50,18" concept="1" />
       <node id="4173297143638951535" at="55,26,56,18" concept="6" />
       <node id="4173297143638951535" at="59,39,60,32" concept="6" />
@@ -697,7 +697,7 @@
       <node id="7415565752189773683" at="113,0,116,0" concept="4" trace="getText#()Ljava/lang/String;" />
       <node id="6102524510011687182" at="170,0,173,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="6102524510011687225" at="247,0,250,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="4173297143638951535" at="48,0,52,0" concept="0" trace="BuildSolutionRunnerAspect_InspectorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4173297143638951535" at="48,0,52,0" concept="0" trace="BuildSolutionRunnerAspect_InspectorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4173297143638951535" at="145,0,149,5" concept="3" />
       <node id="4173297143638951535" at="222,0,226,5" concept="3" />
       <node id="4173297143638951535" at="53,0,58,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -742,7 +742,7 @@
       <scope id="6102524510011687225" at="247,41,248,45" />
       <scope id="6102524510011687225" at="253,28,254,20" />
       <scope id="2265409456634488873" at="293,15,294,40" />
-      <scope id="4173297143638951535" at="48,108,50,18" />
+      <scope id="4173297143638951535" at="48,106,50,18" />
       <scope id="4173297143638951535" at="146,40,148,47" />
       <scope id="4173297143638951535" at="153,73,155,145">
         <var name="manager" id="4173297143638951535" />
@@ -871,16 +871,16 @@
       </scope>
       <scope id="4173297143638951535" at="131,0,159,0" />
       <scope id="4173297143638951535" at="208,0,236,0" />
-      <unit id="4173297143638951535" at="298,0,301,0" name="jetbrains.mps.build.mps.runner.editor.BuildSolutionRunnerAspect_InspectorBuilder_a$LINKS" />
-      <unit id="7415565752189770481" at="92,88,96,5" name="jetbrains.mps.build.mps.runner.editor.BuildSolutionRunnerAspect_InspectorBuilder_a$1" />
-      <unit id="7415565752189773683" at="112,88,116,5" name="jetbrains.mps.build.mps.runner.editor.BuildSolutionRunnerAspect_InspectorBuilder_a$2" />
-      <unit id="4173297143638951535" at="302,0,306,0" name="jetbrains.mps.build.mps.runner.editor.BuildSolutionRunnerAspect_InspectorBuilder_a$CONCEPTS" />
-      <unit id="4173297143638951535" at="307,0,311,0" name="jetbrains.mps.build.mps.runner.editor.BuildSolutionRunnerAspect_InspectorBuilder_a$PROPS" />
-      <unit id="4173297143638951535" at="133,42,141,5" name="jetbrains.mps.build.mps.runner.editor.BuildSolutionRunnerAspect_InspectorBuilder_a$3" />
-      <unit id="4173297143638951535" at="210,42,218,5" name="jetbrains.mps.build.mps.runner.editor.BuildSolutionRunnerAspect_InspectorBuilder_a$4" />
-      <unit id="6102524510011687225" at="236,0,263,0" name="jetbrains.mps.build.mps.runner.editor.BuildSolutionRunnerAspect_InspectorBuilder_a$Inline_Builder1" />
-      <unit id="6102524510011687182" at="159,0,202,0" name="jetbrains.mps.build.mps.runner.editor.BuildSolutionRunnerAspect_InspectorBuilder_a$Inline_Builder0" />
-      <unit id="4173297143638951535" at="44,0,312,0" name="jetbrains.mps.build.mps.runner.editor.BuildSolutionRunnerAspect_InspectorBuilder_a" />
+      <unit id="4173297143638951535" at="298,0,301,0" name="jetbrains.mps.build.mps.runner.editor.BuildSolutionRunnerAspect_InspectorBuilder$LINKS" />
+      <unit id="7415565752189770481" at="92,88,96,5" name="jetbrains.mps.build.mps.runner.editor.BuildSolutionRunnerAspect_InspectorBuilder$1" />
+      <unit id="7415565752189773683" at="112,88,116,5" name="jetbrains.mps.build.mps.runner.editor.BuildSolutionRunnerAspect_InspectorBuilder$2" />
+      <unit id="4173297143638951535" at="302,0,306,0" name="jetbrains.mps.build.mps.runner.editor.BuildSolutionRunnerAspect_InspectorBuilder$CONCEPTS" />
+      <unit id="4173297143638951535" at="307,0,311,0" name="jetbrains.mps.build.mps.runner.editor.BuildSolutionRunnerAspect_InspectorBuilder$PROPS" />
+      <unit id="4173297143638951535" at="133,42,141,5" name="jetbrains.mps.build.mps.runner.editor.BuildSolutionRunnerAspect_InspectorBuilder$3" />
+      <unit id="4173297143638951535" at="210,42,218,5" name="jetbrains.mps.build.mps.runner.editor.BuildSolutionRunnerAspect_InspectorBuilder$4" />
+      <unit id="6102524510011687225" at="236,0,263,0" name="jetbrains.mps.build.mps.runner.editor.BuildSolutionRunnerAspect_InspectorBuilder$Inline_Builder1" />
+      <unit id="6102524510011687182" at="159,0,202,0" name="jetbrains.mps.build.mps.runner.editor.BuildSolutionRunnerAspect_InspectorBuilder$Inline_Builder0" />
+      <unit id="4173297143638951535" at="44,0,312,0" name="jetbrains.mps.build.mps.runner.editor.BuildSolutionRunnerAspect_InspectorBuilder" />
     </file>
   </root>
 </debug-info>

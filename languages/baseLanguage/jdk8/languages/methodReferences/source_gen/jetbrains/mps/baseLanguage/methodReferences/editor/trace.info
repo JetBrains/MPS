@@ -22,17 +22,17 @@
   </root>
   <root nodeRef="r:4cdf4bee-5b50-4ccb-8bec-50fada7c094a(jetbrains.mps.baseLanguage.methodReferences.editor)/237887375562511544">
     <file name="MethodReference_Editor.java">
-      <node id="237887375562511544" at="11,79,12,81" concept="8" />
+      <node id="237887375562511544" at="11,79,12,79" concept="8" />
       <node id="237887375562511544" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="237887375562511544" at="11,79,12,81" />
+      <scope id="237887375562511544" at="11,79,12,79" />
       <scope id="237887375562511544" at="11,0,14,0">
         <var name="editorContext" id="237887375562511544" />
         <var name="node" id="237887375562511544" />
       </scope>
       <unit id="237887375562511544" at="10,0,15,0" name="jetbrains.mps.baseLanguage.methodReferences.editor.MethodReference_Editor" />
     </file>
-    <file name="MethodReference_EditorBuilder_a.java">
-      <node id="237887375562511544" at="61,95,62,19" concept="13" />
+    <file name="MethodReference_EditorBuilder.java">
+      <node id="237887375562511544" at="61,93,62,19" concept="13" />
       <node id="237887375562511544" at="62,19,63,18" concept="2" />
       <node id="237887375562511544" at="68,26,69,18" concept="8" />
       <node id="237887375562511544" at="72,39,73,32" concept="8" />
@@ -256,7 +256,7 @@
       <node id="237887375562511544" at="213,0,216,0" concept="6" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="6514227258507575577" at="342,0,345,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="6514227258507383972" at="422,0,425,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="237887375562511544" at="61,0,65,0" concept="1" trace="MethodReference_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="237887375562511544" at="61,0,65,0" concept="1" trace="MethodReference_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="237887375562511544" at="103,0,107,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="237887375562511544" at="111,0,115,0" concept="1" trace="targetSingleRoleHandler_1tpes1_a0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="237887375562511544" at="201,0,205,0" concept="1" trace="typeParametersListHandler_1tpes1_b2a#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
@@ -329,7 +329,7 @@
       <scope id="6514227258507402986" at="369,17,370,42" />
       <scope id="6514227258507383972" at="422,41,423,32" />
       <scope id="6514227258507383972" at="428,28,429,20" />
-      <scope id="237887375562511544" at="61,95,63,18" />
+      <scope id="237887375562511544" at="61,93,63,18" />
       <scope id="237887375562511544" at="103,40,105,33">
         <var name="provider" id="237887375562511544" />
       </scope>
@@ -522,16 +522,16 @@
       </scope>
       <scope id="237887375562511544" at="294,0,331,0" />
       <scope id="237887375562511544" at="374,0,411,0" />
-      <unit id="237887375562511544" at="456,0,459,0" name="jetbrains.mps.baseLanguage.methodReferences.editor.MethodReference_EditorBuilder_a$PROPS" />
-      <unit id="237887375562511544" at="443,0,448,0" name="jetbrains.mps.baseLanguage.methodReferences.editor.MethodReference_EditorBuilder_a$LINKS" />
-      <unit id="237887375562511544" at="449,0,455,0" name="jetbrains.mps.baseLanguage.methodReferences.editor.MethodReference_EditorBuilder_a$CONCEPTS" />
-      <unit id="237887375562511544" at="296,42,311,5" name="jetbrains.mps.baseLanguage.methodReferences.editor.MethodReference_EditorBuilder_a$1" />
-      <unit id="237887375562511544" at="376,42,391,5" name="jetbrains.mps.baseLanguage.methodReferences.editor.MethodReference_EditorBuilder_a$2" />
-      <unit id="6514227258507383972" at="411,0,442,0" name="jetbrains.mps.baseLanguage.methodReferences.editor.MethodReference_EditorBuilder_a$Inline_Builder1" />
-      <unit id="6514227258507575577" at="331,0,374,0" name="jetbrains.mps.baseLanguage.methodReferences.editor.MethodReference_EditorBuilder_a$Inline_Builder0" />
-      <unit id="237887375562511544" at="107,0,158,0" name="jetbrains.mps.baseLanguage.methodReferences.editor.MethodReference_EditorBuilder_a$targetSingleRoleHandler_1tpes1_a0" />
-      <unit id="237887375562511544" at="197,0,283,0" name="jetbrains.mps.baseLanguage.methodReferences.editor.MethodReference_EditorBuilder_a$typeParametersListHandler_1tpes1_b2a" />
-      <unit id="237887375562511544" at="57,0,460,0" name="jetbrains.mps.baseLanguage.methodReferences.editor.MethodReference_EditorBuilder_a" />
+      <unit id="237887375562511544" at="456,0,459,0" name="jetbrains.mps.baseLanguage.methodReferences.editor.MethodReference_EditorBuilder$PROPS" />
+      <unit id="237887375562511544" at="443,0,448,0" name="jetbrains.mps.baseLanguage.methodReferences.editor.MethodReference_EditorBuilder$LINKS" />
+      <unit id="237887375562511544" at="449,0,455,0" name="jetbrains.mps.baseLanguage.methodReferences.editor.MethodReference_EditorBuilder$CONCEPTS" />
+      <unit id="237887375562511544" at="296,42,311,5" name="jetbrains.mps.baseLanguage.methodReferences.editor.MethodReference_EditorBuilder$1" />
+      <unit id="237887375562511544" at="376,42,391,5" name="jetbrains.mps.baseLanguage.methodReferences.editor.MethodReference_EditorBuilder$2" />
+      <unit id="6514227258507383972" at="411,0,442,0" name="jetbrains.mps.baseLanguage.methodReferences.editor.MethodReference_EditorBuilder$Inline_Builder1" />
+      <unit id="6514227258507575577" at="331,0,374,0" name="jetbrains.mps.baseLanguage.methodReferences.editor.MethodReference_EditorBuilder$Inline_Builder0" />
+      <unit id="237887375562511544" at="107,0,158,0" name="jetbrains.mps.baseLanguage.methodReferences.editor.MethodReference_EditorBuilder$targetSingleRoleHandler_1tpes1_a0" />
+      <unit id="237887375562511544" at="197,0,283,0" name="jetbrains.mps.baseLanguage.methodReferences.editor.MethodReference_EditorBuilder$typeParametersListHandler_1tpes1_b2a" />
+      <unit id="237887375562511544" at="57,0,460,0" name="jetbrains.mps.baseLanguage.methodReferences.editor.MethodReference_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:4cdf4bee-5b50-4ccb-8bec-50fada7c094a(jetbrains.mps.baseLanguage.methodReferences.editor)/237887375562570365">
@@ -950,17 +950,17 @@
   </root>
   <root nodeRef="r:4cdf4bee-5b50-4ccb-8bec-50fada7c094a(jetbrains.mps.baseLanguage.methodReferences.editor)/3427250980008952342">
     <file name="MethodReferenceSuperExpression_Editor.java">
-      <node id="3427250980008952342" at="11,79,12,96" concept="8" />
+      <node id="3427250980008952342" at="11,79,12,94" concept="8" />
       <node id="3427250980008952342" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="3427250980008952342" at="11,79,12,96" />
+      <scope id="3427250980008952342" at="11,79,12,94" />
       <scope id="3427250980008952342" at="11,0,14,0">
         <var name="editorContext" id="3427250980008952342" />
         <var name="node" id="3427250980008952342" />
       </scope>
       <unit id="3427250980008952342" at="10,0,15,0" name="jetbrains.mps.baseLanguage.methodReferences.editor.MethodReferenceSuperExpression_Editor" />
     </file>
-    <file name="MethodReferenceSuperExpression_EditorBuilder_a.java">
-      <node id="3427250980008952342" at="19,110,20,19" concept="13" />
+    <file name="MethodReferenceSuperExpression_EditorBuilder.java">
+      <node id="3427250980008952342" at="19,108,20,19" concept="13" />
       <node id="3427250980008952342" at="20,19,21,18" concept="2" />
       <node id="3427250980008952342" at="26,26,27,18" concept="8" />
       <node id="3427250980008952342" at="30,39,31,30" concept="8" />
@@ -975,12 +975,12 @@
       <node id="3427250980008952344" at="42,34,43,22" concept="8" />
       <node id="3427250980008952342" at="16,0,18,0" concept="3" trace="myNode" />
       <node id="3427250980008952342" at="30,0,33,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="3427250980008952342" at="19,0,23,0" concept="1" trace="MethodReferenceSuperExpression_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="3427250980008952342" at="19,0,23,0" concept="1" trace="MethodReferenceSuperExpression_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="3427250980008952342" at="24,0,29,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="3427250980008952344" at="34,0,45,0" concept="6" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="3427250980008952342" at="26,26,27,18" />
       <scope id="3427250980008952342" at="30,39,31,30" />
-      <scope id="3427250980008952342" at="19,110,21,18" />
+      <scope id="3427250980008952342" at="19,108,21,18" />
       <scope id="3427250980008952342" at="30,0,33,0" />
       <scope id="3427250980008952342" at="19,0,23,0">
         <var name="context" id="3427250980008952342" />
@@ -992,7 +992,7 @@
         <var name="style" id="3427250980008952344" />
       </scope>
       <scope id="3427250980008952344" at="34,0,45,0" />
-      <unit id="3427250980008952342" at="15,0,46,0" name="jetbrains.mps.baseLanguage.methodReferences.editor.MethodReferenceSuperExpression_EditorBuilder_a" />
+      <unit id="3427250980008952342" at="15,0,46,0" name="jetbrains.mps.baseLanguage.methodReferences.editor.MethodReferenceSuperExpression_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:4cdf4bee-5b50-4ccb-8bec-50fada7c094a(jetbrains.mps.baseLanguage.methodReferences.editor)/3748798472489545274">
@@ -1006,17 +1006,17 @@
   </root>
   <root nodeRef="r:4cdf4bee-5b50-4ccb-8bec-50fada7c094a(jetbrains.mps.baseLanguage.methodReferences.editor)/5419065806664197578">
     <file name="UnknownMethodReference_Editor.java">
-      <node id="5419065806664197578" at="11,79,12,88" concept="8" />
+      <node id="5419065806664197578" at="11,79,12,86" concept="8" />
       <node id="5419065806664197578" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="5419065806664197578" at="11,79,12,88" />
+      <scope id="5419065806664197578" at="11,79,12,86" />
       <scope id="5419065806664197578" at="11,0,14,0">
         <var name="editorContext" id="5419065806664197578" />
         <var name="node" id="5419065806664197578" />
       </scope>
       <unit id="5419065806664197578" at="10,0,15,0" name="jetbrains.mps.baseLanguage.methodReferences.editor.UnknownMethodReference_Editor" />
     </file>
-    <file name="UnknownMethodReference_EditorBuilder_a.java">
-      <node id="5419065806664197578" at="46,102,47,19" concept="13" />
+    <file name="UnknownMethodReference_EditorBuilder.java">
+      <node id="5419065806664197578" at="46,100,47,19" concept="13" />
       <node id="5419065806664197578" at="47,19,48,18" concept="2" />
       <node id="5419065806664197578" at="53,26,54,18" concept="8" />
       <node id="5419065806664197578" at="57,39,58,32" concept="8" />
@@ -1090,7 +1090,7 @@
       <node id="5419065806664197578" at="111,87,114,7" concept="5" />
       <node id="5419065806664197578" at="114,7,117,7" concept="5" />
       <node id="5419065806664197578" at="133,0,136,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="5419065806664197578" at="46,0,50,0" concept="1" trace="UnknownMethodReference_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="5419065806664197578" at="46,0,50,0" concept="1" trace="UnknownMethodReference_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="5419065806664197578" at="82,0,86,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="5419065806664197578" at="90,0,94,0" concept="1" trace="targetSingleRoleHandler_bw8fhi_a0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="7625227064472446887" at="137,0,141,0" concept="6" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -1117,7 +1117,7 @@
       <scope id="5419065806664197578" at="129,17,130,42" />
       <scope id="5419065806664197578" at="133,40,134,27" />
       <scope id="7625227064472446893" at="168,15,169,40" />
-      <scope id="5419065806664197578" at="46,102,48,18" />
+      <scope id="5419065806664197578" at="46,100,48,18" />
       <scope id="5419065806664197578" at="82,40,84,33">
         <var name="provider" id="5419065806664197578" />
       </scope>
@@ -1179,11 +1179,11 @@
       </scope>
       <scope id="7625227064472446893" at="147,41,170,5" />
       <scope id="7625227064472446893" at="147,0,172,0" />
-      <unit id="5419065806664197578" at="178,0,181,0" name="jetbrains.mps.baseLanguage.methodReferences.editor.UnknownMethodReference_EditorBuilder_a$LINKS" />
-      <unit id="5419065806664197578" at="182,0,185,0" name="jetbrains.mps.baseLanguage.methodReferences.editor.UnknownMethodReference_EditorBuilder_a$CONCEPTS" />
-      <unit id="5419065806664197578" at="173,0,177,0" name="jetbrains.mps.baseLanguage.methodReferences.editor.UnknownMethodReference_EditorBuilder_a$PROPS" />
-      <unit id="5419065806664197578" at="86,0,137,0" name="jetbrains.mps.baseLanguage.methodReferences.editor.UnknownMethodReference_EditorBuilder_a$targetSingleRoleHandler_bw8fhi_a0" />
-      <unit id="5419065806664197578" at="42,0,186,0" name="jetbrains.mps.baseLanguage.methodReferences.editor.UnknownMethodReference_EditorBuilder_a" />
+      <unit id="5419065806664197578" at="178,0,181,0" name="jetbrains.mps.baseLanguage.methodReferences.editor.UnknownMethodReference_EditorBuilder$LINKS" />
+      <unit id="5419065806664197578" at="182,0,185,0" name="jetbrains.mps.baseLanguage.methodReferences.editor.UnknownMethodReference_EditorBuilder$CONCEPTS" />
+      <unit id="5419065806664197578" at="173,0,177,0" name="jetbrains.mps.baseLanguage.methodReferences.editor.UnknownMethodReference_EditorBuilder$PROPS" />
+      <unit id="5419065806664197578" at="86,0,137,0" name="jetbrains.mps.baseLanguage.methodReferences.editor.UnknownMethodReference_EditorBuilder$targetSingleRoleHandler_bw8fhi_a0" />
+      <unit id="5419065806664197578" at="42,0,186,0" name="jetbrains.mps.baseLanguage.methodReferences.editor.UnknownMethodReference_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:4cdf4bee-5b50-4ccb-8bec-50fada7c094a(jetbrains.mps.baseLanguage.methodReferences.editor)/5419065806664197743">
@@ -1292,17 +1292,17 @@
   </root>
   <root nodeRef="r:4cdf4bee-5b50-4ccb-8bec-50fada7c094a(jetbrains.mps.baseLanguage.methodReferences.editor)/7915009415671755925">
     <file name="MethodReferenceTypeTargetExpression_Editor.java">
-      <node id="7915009415671755925" at="11,79,12,101" concept="8" />
+      <node id="7915009415671755925" at="11,79,12,99" concept="8" />
       <node id="7915009415671755925" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="7915009415671755925" at="11,79,12,101" />
+      <scope id="7915009415671755925" at="11,79,12,99" />
       <scope id="7915009415671755925" at="11,0,14,0">
         <var name="editorContext" id="7915009415671755925" />
         <var name="node" id="7915009415671755925" />
       </scope>
       <unit id="7915009415671755925" at="10,0,15,0" name="jetbrains.mps.baseLanguage.methodReferences.editor.MethodReferenceTypeTargetExpression_Editor" />
     </file>
-    <file name="MethodReferenceTypeTargetExpression_EditorBuilder_a.java">
-      <node id="7915009415671755925" at="26,115,27,19" concept="13" />
+    <file name="MethodReferenceTypeTargetExpression_EditorBuilder.java">
+      <node id="7915009415671755925" at="26,113,27,19" concept="13" />
       <node id="7915009415671755925" at="27,19,28,18" concept="2" />
       <node id="7915009415671755925" at="33,26,34,18" concept="8" />
       <node id="7915009415671755925" at="37,39,38,32" concept="8" />
@@ -1340,7 +1340,7 @@
       <node id="7915009415671755925" at="78,87,81,7" concept="5" />
       <node id="7915009415671755925" at="81,7,84,7" concept="5" />
       <node id="7915009415671755925" at="100,0,103,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="7915009415671755925" at="26,0,30,0" concept="1" trace="MethodReferenceTypeTargetExpression_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="7915009415671755925" at="26,0,30,0" concept="1" trace="MethodReferenceTypeTargetExpression_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="7915009415671755925" at="49,0,53,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="7915009415671755925" at="57,0,61,0" concept="1" trace="typeSingleRoleHandler_mms9r_a0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="7915009415671755925" at="31,0,36,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -1357,7 +1357,7 @@
       <scope id="7915009415671755925" at="82,42,83,45" />
       <scope id="7915009415671755925" at="96,17,97,42" />
       <scope id="7915009415671755925" at="100,40,101,25" />
-      <scope id="7915009415671755925" at="26,115,28,18" />
+      <scope id="7915009415671755925" at="26,113,28,18" />
       <scope id="7915009415671755925" at="49,40,51,33">
         <var name="provider" id="7915009415671755925" />
       </scope>
@@ -1397,9 +1397,9 @@
       </scope>
       <scope id="7915009415671755925" at="87,44,98,7" />
       <scope id="7915009415671755925" at="86,0,100,0" />
-      <unit id="7915009415671755925" at="105,0,108,0" name="jetbrains.mps.baseLanguage.methodReferences.editor.MethodReferenceTypeTargetExpression_EditorBuilder_a$LINKS" />
-      <unit id="7915009415671755925" at="53,0,104,0" name="jetbrains.mps.baseLanguage.methodReferences.editor.MethodReferenceTypeTargetExpression_EditorBuilder_a$typeSingleRoleHandler_mms9r_a0" />
-      <unit id="7915009415671755925" at="22,0,109,0" name="jetbrains.mps.baseLanguage.methodReferences.editor.MethodReferenceTypeTargetExpression_EditorBuilder_a" />
+      <unit id="7915009415671755925" at="105,0,108,0" name="jetbrains.mps.baseLanguage.methodReferences.editor.MethodReferenceTypeTargetExpression_EditorBuilder$LINKS" />
+      <unit id="7915009415671755925" at="53,0,104,0" name="jetbrains.mps.baseLanguage.methodReferences.editor.MethodReferenceTypeTargetExpression_EditorBuilder$typeSingleRoleHandler_mms9r_a0" />
+      <unit id="7915009415671755925" at="22,0,109,0" name="jetbrains.mps.baseLanguage.methodReferences.editor.MethodReferenceTypeTargetExpression_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:4cdf4bee-5b50-4ccb-8bec-50fada7c094a(jetbrains.mps.baseLanguage.methodReferences.editor)/7915009415671756010">
@@ -1493,17 +1493,17 @@
   </root>
   <root nodeRef="r:4cdf4bee-5b50-4ccb-8bec-50fada7c094a(jetbrains.mps.baseLanguage.methodReferences.editor)/8014486391912127309">
     <file name="MethodReferenceType_Editor.java">
-      <node id="8014486391912127309" at="11,79,12,85" concept="8" />
+      <node id="8014486391912127309" at="11,79,12,83" concept="8" />
       <node id="8014486391912127309" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="8014486391912127309" at="11,79,12,85" />
+      <scope id="8014486391912127309" at="11,79,12,83" />
       <scope id="8014486391912127309" at="11,0,14,0">
         <var name="editorContext" id="8014486391912127309" />
         <var name="node" id="8014486391912127309" />
       </scope>
       <unit id="8014486391912127309" at="10,0,15,0" name="jetbrains.mps.baseLanguage.methodReferences.editor.MethodReferenceType_Editor" />
     </file>
-    <file name="MethodReferenceType_EditorBuilder_a.java">
-      <node id="8014486391912127309" at="30,99,31,19" concept="13" />
+    <file name="MethodReferenceType_EditorBuilder.java">
+      <node id="8014486391912127309" at="30,97,31,19" concept="13" />
       <node id="8014486391912127309" at="31,19,32,18" concept="2" />
       <node id="8014486391912127309" at="37,26,38,18" concept="8" />
       <node id="8014486391912127309" at="41,39,42,32" concept="8" />
@@ -1549,7 +1549,7 @@
       <node id="8014486391912127309" at="92,87,95,7" concept="5" />
       <node id="8014486391912127309" at="95,7,98,7" concept="5" />
       <node id="8014486391912127309" at="114,0,117,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="8014486391912127309" at="30,0,34,0" concept="1" trace="MethodReferenceType_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8014486391912127309" at="30,0,34,0" concept="1" trace="MethodReferenceType_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8014486391912127309" at="63,0,67,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="8014486391912127309" at="71,0,75,0" concept="1" trace="targetTypeSingleRoleHandler_9vmkhw_b0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="8014486391912127309" at="35,0,40,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -1567,7 +1567,7 @@
       <scope id="8014486391912127309" at="96,42,97,51" />
       <scope id="8014486391912127309" at="110,17,111,42" />
       <scope id="8014486391912127309" at="114,40,115,31" />
-      <scope id="8014486391912127309" at="30,99,32,18" />
+      <scope id="8014486391912127309" at="30,97,32,18" />
       <scope id="8014486391912127309" at="63,40,65,33">
         <var name="provider" id="8014486391912127309" />
       </scope>
@@ -1612,9 +1612,9 @@
       <scope id="8014486391912127318" at="54,0,63,0" />
       <scope id="8014486391912127309" at="101,44,112,7" />
       <scope id="8014486391912127309" at="100,0,114,0" />
-      <unit id="8014486391912127309" at="119,0,122,0" name="jetbrains.mps.baseLanguage.methodReferences.editor.MethodReferenceType_EditorBuilder_a$LINKS" />
-      <unit id="8014486391912127309" at="67,0,118,0" name="jetbrains.mps.baseLanguage.methodReferences.editor.MethodReferenceType_EditorBuilder_a$targetTypeSingleRoleHandler_9vmkhw_b0" />
-      <unit id="8014486391912127309" at="26,0,123,0" name="jetbrains.mps.baseLanguage.methodReferences.editor.MethodReferenceType_EditorBuilder_a" />
+      <unit id="8014486391912127309" at="119,0,122,0" name="jetbrains.mps.baseLanguage.methodReferences.editor.MethodReferenceType_EditorBuilder$LINKS" />
+      <unit id="8014486391912127309" at="67,0,118,0" name="jetbrains.mps.baseLanguage.methodReferences.editor.MethodReferenceType_EditorBuilder$targetTypeSingleRoleHandler_9vmkhw_b0" />
+      <unit id="8014486391912127309" at="26,0,123,0" name="jetbrains.mps.baseLanguage.methodReferences.editor.MethodReferenceType_EditorBuilder" />
     </file>
   </root>
 </debug-info>

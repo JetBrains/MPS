@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ConstantFieldIcon_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ConstantFieldIcon_EditorBuilder_a(editorContext, node).createCell();
+    return new ConstantFieldIcon_EditorBuilder(editorContext, node).createCell();
   }
 }

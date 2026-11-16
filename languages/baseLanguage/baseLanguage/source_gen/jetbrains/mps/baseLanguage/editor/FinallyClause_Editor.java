@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class FinallyClause_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new FinallyClause_EditorBuilder_a(editorContext, node).createCell();
+    return new FinallyClause_EditorBuilder(editorContext, node).createCell();
   }
 }

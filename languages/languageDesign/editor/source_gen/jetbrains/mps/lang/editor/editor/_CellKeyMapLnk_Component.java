@@ -16,6 +16,6 @@ public class _CellKeyMapLnk_Component implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new _CellKeyMapLnk_Component_ComponentBuilder_a(editorContext, node).createCell();
+    return new _CellKeyMapLnk_Component_ComponentBuilder(editorContext, node).createCell();
   }
 }

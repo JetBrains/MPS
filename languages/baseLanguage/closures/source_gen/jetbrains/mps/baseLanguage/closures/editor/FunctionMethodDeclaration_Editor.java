@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class FunctionMethodDeclaration_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new FunctionMethodDeclaration_EditorBuilder_a(editorContext, node).createCell();
+    return new FunctionMethodDeclaration_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new FunctionMethodDeclaration_InspectorBuilder_a(editorContext, node).createCell();
+    return new FunctionMethodDeclaration_InspectorBuilder(editorContext, node).createCell();
   }
 }

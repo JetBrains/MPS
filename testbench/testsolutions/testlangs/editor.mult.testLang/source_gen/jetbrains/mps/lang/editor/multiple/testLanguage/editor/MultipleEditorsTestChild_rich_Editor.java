@@ -18,9 +18,9 @@ public class MultipleEditorsTestChild_rich_Editor extends DefaultNodeEditor {
     return myContextHints;
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new MultipleEditorsTestChild_rich_EditorBuilder_a(editorContext, node).createCell();
+    return new MultipleEditorsTestChild_rich_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new MultipleEditorsTestChild_rich_InspectorBuilder_a(editorContext, node).createCell();
+    return new MultipleEditorsTestChild_rich_InspectorBuilder(editorContext, node).createCell();
   }
 }

@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class CrossinslineParameterModifier_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new CrossinslineParameterModifier_EditorBuilder_a(editorContext, node).createCell();
+    return new CrossinslineParameterModifier_EditorBuilder(editorContext, node).createCell();
   }
 }

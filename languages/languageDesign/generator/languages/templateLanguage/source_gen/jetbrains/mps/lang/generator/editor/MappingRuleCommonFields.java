@@ -16,6 +16,6 @@ public class MappingRuleCommonFields implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new MappingRuleCommonFields_ComponentBuilder_a(editorContext, node).createCell();
+    return new MappingRuleCommonFields_ComponentBuilder(editorContext, node).createCell();
   }
 }

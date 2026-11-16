@@ -16,6 +16,6 @@ public class AbsEqAlias implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new AbsEqAlias_ComponentBuilder_a(editorContext, node).createCell();
+    return new AbsEqAlias_ComponentBuilder(editorContext, node).createCell();
   }
 }

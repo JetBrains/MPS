@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class CellKeyMapDeclaration_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new CellKeyMapDeclaration_EditorBuilder_a(editorContext, node).createCell();
+    return new CellKeyMapDeclaration_EditorBuilder(editorContext, node).createCell();
   }
 }

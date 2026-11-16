@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class PlaceholderParent_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new PlaceholderParent_EditorBuilder_a(editorContext, node).createCell();
+    return new PlaceholderParent_EditorBuilder(editorContext, node).createCell();
   }
 }

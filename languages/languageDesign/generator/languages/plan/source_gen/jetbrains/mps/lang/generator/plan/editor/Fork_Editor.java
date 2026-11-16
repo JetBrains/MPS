@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class Fork_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new Fork_EditorBuilder_a(editorContext, node).createCell();
+    return new Fork_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new Fork_InspectorBuilder_a(editorContext, node).createCell();
+    return new Fork_InspectorBuilder(editorContext, node).createCell();
   }
 }

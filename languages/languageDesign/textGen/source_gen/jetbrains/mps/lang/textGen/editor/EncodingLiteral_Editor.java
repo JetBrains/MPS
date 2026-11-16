@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class EncodingLiteral_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new EncodingLiteral_EditorBuilder_a(editorContext, node).createCell();
+    return new EncodingLiteral_EditorBuilder(editorContext, node).createCell();
   }
 }

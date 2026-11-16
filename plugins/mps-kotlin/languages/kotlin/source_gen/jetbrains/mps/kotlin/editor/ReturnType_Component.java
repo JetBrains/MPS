@@ -16,6 +16,6 @@ public class ReturnType_Component implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ReturnType_Component_ComponentBuilder_a(editorContext, node).createCell();
+    return new ReturnType_Component_ComponentBuilder(editorContext, node).createCell();
   }
 }

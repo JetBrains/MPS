@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="-3b3d2osallsole2ryi64rzgs0fhl5da">
-  <files names="EditorAspectDescriptorImpl.java:ShowMessage_Editor.java:ShowMessage_EditorBuilder_a.java:ShowMessage_SubstituteMenu.java" />
+  <files names="EditorAspectDescriptorImpl.java:ShowMessage_Editor.java:ShowMessage_EditorBuilder.java:ShowMessage_SubstituteMenu.java" />
 </product>
 

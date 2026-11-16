@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class LinkDeclaration_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new LinkDeclaration_EditorBuilder_a(editorContext, node).createCell();
+    return new LinkDeclaration_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new LinkDeclaration_InspectorBuilder_a(editorContext, node).createCell();
+    return new LinkDeclaration_InspectorBuilder(editorContext, node).createCell();
   }
 }

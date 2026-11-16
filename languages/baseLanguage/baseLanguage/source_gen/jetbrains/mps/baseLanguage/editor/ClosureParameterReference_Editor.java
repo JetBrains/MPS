@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ClosureParameterReference_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ClosureParameterReference_EditorBuilder_a(editorContext, node).createCell();
+    return new ClosureParameterReference_EditorBuilder(editorContext, node).createCell();
   }
 }

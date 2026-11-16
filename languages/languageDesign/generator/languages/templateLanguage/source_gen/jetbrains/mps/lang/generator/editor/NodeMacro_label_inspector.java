@@ -16,6 +16,6 @@ public class NodeMacro_label_inspector implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new NodeMacro_label_inspector_ComponentBuilder_a(editorContext, node).createCell();
+    return new NodeMacro_label_inspector_ComponentBuilder(editorContext, node).createCell();
   }
 }

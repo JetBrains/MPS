@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class StringExpressionEvaluation_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new StringExpressionEvaluation_EditorBuilder_a(editorContext, node).createCell();
+    return new StringExpressionEvaluation_EditorBuilder(editorContext, node).createCell();
   }
 }

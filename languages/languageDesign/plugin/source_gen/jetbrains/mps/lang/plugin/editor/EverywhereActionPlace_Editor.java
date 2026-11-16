@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class EverywhereActionPlace_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new EverywhereActionPlace_EditorBuilder_a(editorContext, node).createCell();
+    return new EverywhereActionPlace_EditorBuilder(editorContext, node).createCell();
   }
 }

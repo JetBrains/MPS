@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class AutodeletableChild_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new AutodeletableChild_EditorBuilder_a(editorContext, node).createCell();
+    return new AutodeletableChild_EditorBuilder(editorContext, node).createCell();
   }
 }

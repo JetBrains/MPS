@@ -16,6 +16,6 @@ public class ConnectorCreationHandlers_EditorComponent implements ConceptEditorC
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ConnectorCreationHandlers_EditorComponent_ComponentBuilder_a(editorContext, node).createCell();
+    return new ConnectorCreationHandlers_EditorComponent_ComponentBuilder(editorContext, node).createCell();
   }
 }

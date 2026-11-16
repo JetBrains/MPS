@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class BuildExternalLayoutDependency_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new BuildExternalLayoutDependency_EditorBuilder_a(editorContext, node).createCell();
+    return new BuildExternalLayoutDependency_EditorBuilder(editorContext, node).createCell();
   }
 }

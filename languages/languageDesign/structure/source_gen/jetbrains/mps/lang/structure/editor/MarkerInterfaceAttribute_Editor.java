@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class MarkerInterfaceAttribute_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new MarkerInterfaceAttribute_EditorBuilder_a(editorContext, node).createCell();
+    return new MarkerInterfaceAttribute_EditorBuilder(editorContext, node).createCell();
   }
 }

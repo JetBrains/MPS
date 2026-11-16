@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class InternalStaticMethodCall_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new InternalStaticMethodCall_EditorBuilder_a(editorContext, node).createCell();
+    return new InternalStaticMethodCall_EditorBuilder(editorContext, node).createCell();
   }
 }

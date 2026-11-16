@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="6s54zbn1wqdq3pqiu2yj8d88g1bmelw">
-  <files names="EditorAspectDescriptorImpl.java:Event_Editor.java:Event_EditorBuilder_a.java:HandleEvent_Editor.java:HandleEvent_EditorBuilder_a.java:HandleEvent_SubstituteMenu.java:StateMachineTestMethod_Editor.java:StateMachineTestMethod_EditorBuilder_a.java:StateMachineTestMethod_SubstituteMenu.java:StateMachineTest_Editor.java:StateMachineTest_EditorBuilder_a.java:StateMachineTest_SubstituteMenu.java:StateMachine_Editor.java:StateMachine_EditorBuilder_a.java:StateMachine_SubstituteMenu.java:State_Editor.java:State_EditorBuilder_a.java:Transition_Editor.java:Transition_EditorBuilder_a.java" />
+  <files names="EditorAspectDescriptorImpl.java:Event_Editor.java:Event_EditorBuilder.java:HandleEvent_Editor.java:HandleEvent_EditorBuilder.java:HandleEvent_SubstituteMenu.java:StateMachineTestMethod_Editor.java:StateMachineTestMethod_EditorBuilder.java:StateMachineTestMethod_SubstituteMenu.java:StateMachineTest_Editor.java:StateMachineTest_EditorBuilder.java:StateMachineTest_SubstituteMenu.java:StateMachine_Editor.java:StateMachine_EditorBuilder.java:StateMachine_SubstituteMenu.java:State_Editor.java:State_EditorBuilder.java:Transition_Editor.java:Transition_EditorBuilder.java" />
 </product>
 

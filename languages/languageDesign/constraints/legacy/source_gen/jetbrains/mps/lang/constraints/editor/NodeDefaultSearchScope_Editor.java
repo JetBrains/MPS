@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class NodeDefaultSearchScope_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new NodeDefaultSearchScope_EditorBuilder_a(editorContext, node).createCell();
+    return new NodeDefaultSearchScope_EditorBuilder(editorContext, node).createCell();
   }
 }

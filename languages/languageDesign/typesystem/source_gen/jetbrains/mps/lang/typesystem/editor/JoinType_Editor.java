@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class JoinType_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new JoinType_EditorBuilder_a(editorContext, node).createCell();
+    return new JoinType_EditorBuilder(editorContext, node).createCell();
   }
 }

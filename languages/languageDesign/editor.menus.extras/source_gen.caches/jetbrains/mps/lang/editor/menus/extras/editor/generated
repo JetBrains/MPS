@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="-c10pqpvejnz4w7jg5qb0oz9mli4zeto">
-  <files names="EditorAspectDescriptorImpl.java:TransformationMenuPart_Intention_Editor.java:TransformationMenuPart_Intention_EditorBuilder_a.java:TransformationMenuPart_PluginAction_Editor.java:TransformationMenuPart_PluginAction_EditorBuilder_a.java:TransformationMenuPart_Refactoring_Editor.java:TransformationMenuPart_Refactoring_EditorBuilder_a.java" />
+  <files names="EditorAspectDescriptorImpl.java:TransformationMenuPart_Intention_Editor.java:TransformationMenuPart_Intention_EditorBuilder.java:TransformationMenuPart_PluginAction_Editor.java:TransformationMenuPart_PluginAction_EditorBuilder.java:TransformationMenuPart_Refactoring_Editor.java:TransformationMenuPart_Refactoring_EditorBuilder.java" />
 </product>
 

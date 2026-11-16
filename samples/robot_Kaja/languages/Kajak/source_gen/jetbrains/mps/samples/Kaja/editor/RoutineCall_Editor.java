@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class RoutineCall_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new RoutineCall_EditorBuilder_a(editorContext, node).createCell();
+    return new RoutineCall_EditorBuilder(editorContext, node).createCell();
   }
 }

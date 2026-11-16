@@ -16,6 +16,6 @@ public class SourcesKindComponent implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new SourcesKindComponent_ComponentBuilder_a(editorContext, node).createCell();
+    return new SourcesKindComponent_ComponentBuilder(editorContext, node).createCell();
   }
 }

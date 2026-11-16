@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="ejzl7p7ycd7z8452e20874xx5rl8iuu">
-  <files names="BaseExecuteCommandStatement_Editor.java:BaseExecuteCommandStatement_EditorBuilder_a.java:CommandClosureLiteral_Editor.java:CommandClosureLiteral_EditorBuilder_a.java:EditorAspectDescriptorImpl.java" />
+  <files names="BaseExecuteCommandStatement_Editor.java:BaseExecuteCommandStatement_EditorBuilder.java:CommandClosureLiteral_Editor.java:CommandClosureLiteral_EditorBuilder.java:EditorAspectDescriptorImpl.java" />
 </product>
 

@@ -16,6 +16,6 @@ public class ClassifierMembersAdvanced_Component implements ConceptEditorCompone
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ClassifierMembersAdvanced_Component_ComponentBuilder_a(editorContext, node).createCell();
+    return new ClassifierMembersAdvanced_Component_ComponentBuilder(editorContext, node).createCell();
   }
 }

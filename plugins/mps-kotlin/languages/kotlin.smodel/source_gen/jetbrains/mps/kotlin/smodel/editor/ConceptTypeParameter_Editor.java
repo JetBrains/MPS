@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ConceptTypeParameter_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ConceptTypeParameter_EditorBuilder_a(editorContext, node).createCell();
+    return new ConceptTypeParameter_EditorBuilder(editorContext, node).createCell();
   }
 }

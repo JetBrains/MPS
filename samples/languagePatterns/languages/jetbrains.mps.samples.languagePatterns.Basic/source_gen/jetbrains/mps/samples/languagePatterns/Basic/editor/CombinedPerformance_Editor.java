@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class CombinedPerformance_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new CombinedPerformance_EditorBuilder_a(editorContext, node).createCell();
+    return new CombinedPerformance_EditorBuilder(editorContext, node).createCell();
   }
 }

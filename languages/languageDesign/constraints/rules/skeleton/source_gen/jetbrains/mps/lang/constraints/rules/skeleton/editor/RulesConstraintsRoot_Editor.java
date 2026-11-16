@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class RulesConstraintsRoot_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new RulesConstraintsRoot_EditorBuilder_a(editorContext, node).createCell();
+    return new RulesConstraintsRoot_EditorBuilder(editorContext, node).createCell();
   }
 }

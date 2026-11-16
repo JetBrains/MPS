@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class RegexpDeclarationReferenceRegexp_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new RegexpDeclarationReferenceRegexp_EditorBuilder_a(editorContext, node).createCell();
+    return new RegexpDeclarationReferenceRegexp_EditorBuilder(editorContext, node).createCell();
   }
 }

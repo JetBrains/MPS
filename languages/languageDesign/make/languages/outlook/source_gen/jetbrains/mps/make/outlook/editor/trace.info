@@ -17,17 +17,17 @@
   </root>
   <root nodeRef="r:6df9b1ec-2a82-4a17-9636-f155e1db2678(jetbrains.mps.make.outlook.editor)/5608160002100058532">
     <file name="Outlook_Editor.java">
-      <node id="5608160002100058532" at="11,79,12,73" concept="6" />
+      <node id="5608160002100058532" at="11,79,12,71" concept="6" />
       <node id="5608160002100058532" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="5608160002100058532" at="11,79,12,73" />
+      <scope id="5608160002100058532" at="11,79,12,71" />
       <scope id="5608160002100058532" at="11,0,14,0">
         <var name="editorContext" id="5608160002100058532" />
         <var name="node" id="5608160002100058532" />
       </scope>
       <unit id="5608160002100058532" at="10,0,15,0" name="jetbrains.mps.make.outlook.editor.Outlook_Editor" />
     </file>
-    <file name="Outlook_EditorBuilder_a.java">
-      <node id="5608160002100058532" at="47,87,48,19" concept="8" />
+    <file name="Outlook_EditorBuilder.java">
+      <node id="5608160002100058532" at="47,85,48,19" concept="8" />
       <node id="5608160002100058532" at="48,19,49,18" concept="1" />
       <node id="5608160002100058532" at="54,26,55,18" concept="6" />
       <node id="5608160002100058532" at="58,39,59,32" concept="6" />
@@ -122,7 +122,7 @@
       <node id="5608160002100058532" at="149,0,152,0" concept="4" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="5608160002100058532" at="152,0,155,0" concept="4" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="5608160002100058532" at="196,96,199,9" concept="3" />
-      <node id="5608160002100058532" at="47,0,51,0" concept="0" trace="Outlook_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="5608160002100058532" at="47,0,51,0" concept="0" trace="Outlook_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="5608160002100058547" at="125,0,129,0" concept="4" trace="createIndentCell_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="5608160002100058532" at="140,0,144,0" concept="0" trace="facetListHandler_qlzo2n_b1a#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="5608160002100058532" at="145,0,149,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -156,7 +156,7 @@
       <scope id="5608160002100058532" at="152,48,153,40" />
       <scope id="5608160002100058532" at="170,17,171,42" />
       <scope id="5608160002100058532" at="197,34,198,91" />
-      <scope id="5608160002100058532" at="47,87,49,18" />
+      <scope id="5608160002100058532" at="47,85,49,18" />
       <scope id="5608160002100105975" at="100,74,102,145">
         <var name="manager" id="5608160002100105975" />
       </scope>
@@ -241,11 +241,11 @@
         <var name="elementNode" id="5608160002100058532" />
         <var name="isEmptyCell" id="5608160002100058532" />
       </scope>
-      <unit id="5608160002100058532" at="210,0,213,0" name="jetbrains.mps.make.outlook.editor.Outlook_EditorBuilder_a$PROPS" />
-      <unit id="5608160002100058532" at="219,0,222,0" name="jetbrains.mps.make.outlook.editor.Outlook_EditorBuilder_a$LINKS" />
-      <unit id="5608160002100058532" at="214,0,218,0" name="jetbrains.mps.make.outlook.editor.Outlook_EditorBuilder_a$CONCEPTS" />
-      <unit id="5608160002100058532" at="136,0,209,0" name="jetbrains.mps.make.outlook.editor.Outlook_EditorBuilder_a$facetListHandler_qlzo2n_b1a" />
-      <unit id="5608160002100058532" at="43,0,223,0" name="jetbrains.mps.make.outlook.editor.Outlook_EditorBuilder_a" />
+      <unit id="5608160002100058532" at="210,0,213,0" name="jetbrains.mps.make.outlook.editor.Outlook_EditorBuilder$PROPS" />
+      <unit id="5608160002100058532" at="219,0,222,0" name="jetbrains.mps.make.outlook.editor.Outlook_EditorBuilder$LINKS" />
+      <unit id="5608160002100058532" at="214,0,218,0" name="jetbrains.mps.make.outlook.editor.Outlook_EditorBuilder$CONCEPTS" />
+      <unit id="5608160002100058532" at="136,0,209,0" name="jetbrains.mps.make.outlook.editor.Outlook_EditorBuilder$facetListHandler_qlzo2n_b1a" />
+      <unit id="5608160002100058532" at="43,0,223,0" name="jetbrains.mps.make.outlook.editor.Outlook_EditorBuilder" />
     </file>
   </root>
 </debug-info>

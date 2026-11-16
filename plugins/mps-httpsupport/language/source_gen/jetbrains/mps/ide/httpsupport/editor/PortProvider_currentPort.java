@@ -16,6 +16,6 @@ public class PortProvider_currentPort implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new PortProvider_currentPort_ComponentBuilder_a(editorContext, node).createCell();
+    return new PortProvider_currentPort_ComponentBuilder(editorContext, node).createCell();
   }
 }

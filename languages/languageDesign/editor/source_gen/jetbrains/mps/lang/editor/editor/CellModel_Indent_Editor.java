@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class CellModel_Indent_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new CellModel_Indent_EditorBuilder_a(editorContext, node).createCell();
+    return new CellModel_Indent_EditorBuilder(editorContext, node).createCell();
   }
 }

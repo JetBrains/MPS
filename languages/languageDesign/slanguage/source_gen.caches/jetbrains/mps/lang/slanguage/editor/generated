@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="a7s3qiy7v288ctwvziyoxhwj6seq6ya">
-  <files names="AspectModelRefExpression_Editor.java:AspectModelRefExpression_EditorBuilder_a.java:AspectName_StyleSheet.java:EditorAspectDescriptorImpl.java:Model_IsAspectOperation_Editor.java:Model_IsAspectOperation_EditorBuilder_a.java:OfAspectOperation_Editor.java:OfAspectOperation_EditorBuilder_a.java:OfAspectOperation_SubstituteMenu.java" />
+  <files names="AspectModelRefExpression_Editor.java:AspectModelRefExpression_EditorBuilder.java:AspectName_StyleSheet.java:EditorAspectDescriptorImpl.java:Model_IsAspectOperation_Editor.java:Model_IsAspectOperation_EditorBuilder.java:OfAspectOperation_Editor.java:OfAspectOperation_EditorBuilder.java:OfAspectOperation_SubstituteMenu.java" />
 </product>
 

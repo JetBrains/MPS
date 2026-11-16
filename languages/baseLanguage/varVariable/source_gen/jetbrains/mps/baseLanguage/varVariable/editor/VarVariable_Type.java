@@ -16,6 +16,6 @@ public class VarVariable_Type implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new VarVariable_Type_ComponentBuilder_a(editorContext, node).createCell();
+    return new VarVariable_Type_ComponentBuilder(editorContext, node).createCell();
   }
 }

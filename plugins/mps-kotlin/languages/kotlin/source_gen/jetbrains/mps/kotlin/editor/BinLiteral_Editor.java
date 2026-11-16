@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class BinLiteral_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new BinLiteral_EditorBuilder_a(editorContext, node).createCell();
+    return new BinLiteral_EditorBuilder(editorContext, node).createCell();
   }
 }

@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class SuperInterfaceMethodCall_old_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new SuperInterfaceMethodCall_old_EditorBuilder_a(editorContext, node).createCell();
+    return new SuperInterfaceMethodCall_old_EditorBuilder(editorContext, node).createCell();
   }
 }

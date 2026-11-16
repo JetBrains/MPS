@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class SimpleMathAssignment_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new SimpleMathAssignment_EditorBuilder_a(editorContext, node).createCell();
+    return new SimpleMathAssignment_EditorBuilder(editorContext, node).createCell();
   }
 }

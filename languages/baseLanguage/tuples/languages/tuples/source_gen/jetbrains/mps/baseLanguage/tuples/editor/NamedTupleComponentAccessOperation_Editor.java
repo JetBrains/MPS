@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class NamedTupleComponentAccessOperation_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new NamedTupleComponentAccessOperation_EditorBuilder_a(editorContext, node).createCell();
+    return new NamedTupleComponentAccessOperation_EditorBuilder(editorContext, node).createCell();
   }
 }

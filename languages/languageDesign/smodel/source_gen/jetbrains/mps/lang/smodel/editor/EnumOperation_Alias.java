@@ -16,6 +16,6 @@ public class EnumOperation_Alias implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new EnumOperation_Alias_ComponentBuilder_a(editorContext, node).createCell();
+    return new EnumOperation_Alias_ComponentBuilder(editorContext, node).createCell();
   }
 }

@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ForeachStatement_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ForeachStatement_EditorBuilder_a(editorContext, node).createCell();
+    return new ForeachStatement_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new ForeachStatement_InspectorBuilder_a(editorContext, node).createCell();
+    return new ForeachStatement_InspectorBuilder(editorContext, node).createCell();
   }
 }

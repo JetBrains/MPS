@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class UnlessStatement_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new UnlessStatement_EditorBuilder_a(editorContext, node).createCell();
+    return new UnlessStatement_EditorBuilder(editorContext, node).createCell();
   }
 }

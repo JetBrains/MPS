@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class LiteralReplacement_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new LiteralReplacement_EditorBuilder_a(editorContext, node).createCell();
+    return new LiteralReplacement_EditorBuilder(editorContext, node).createCell();
   }
 }

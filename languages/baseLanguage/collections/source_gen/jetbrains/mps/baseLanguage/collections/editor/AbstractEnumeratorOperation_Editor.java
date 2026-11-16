@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class AbstractEnumeratorOperation_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new AbstractEnumeratorOperation_EditorBuilder_a(editorContext, node).createCell();
+    return new AbstractEnumeratorOperation_EditorBuilder(editorContext, node).createCell();
   }
 }

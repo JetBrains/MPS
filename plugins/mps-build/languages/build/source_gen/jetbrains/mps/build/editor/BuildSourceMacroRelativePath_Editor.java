@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class BuildSourceMacroRelativePath_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new BuildSourceMacroRelativePath_EditorBuilder_a(editorContext, node).createCell();
+    return new BuildSourceMacroRelativePath_EditorBuilder(editorContext, node).createCell();
   }
 }

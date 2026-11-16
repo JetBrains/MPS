@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class GeneratorInternal_PropertyDescriptor_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new GeneratorInternal_PropertyDescriptor_EditorBuilder_a(editorContext, node).createCell();
+    return new GeneratorInternal_PropertyDescriptor_EditorBuilder(editorContext, node).createCell();
   }
 }

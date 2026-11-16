@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class TernaryOperatorExpression_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new TernaryOperatorExpression_EditorBuilder_a(editorContext, node).createCell();
+    return new TernaryOperatorExpression_EditorBuilder(editorContext, node).createCell();
   }
 }

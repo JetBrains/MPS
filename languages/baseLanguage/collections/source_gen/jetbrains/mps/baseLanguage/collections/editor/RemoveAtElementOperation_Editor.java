@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class RemoveAtElementOperation_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new RemoveAtElementOperation_EditorBuilder_a(editorContext, node).createCell();
+    return new RemoveAtElementOperation_EditorBuilder(editorContext, node).createCell();
   }
 }

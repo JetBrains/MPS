@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class LocalParametersExpression_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new LocalParametersExpression_EditorBuilder_a(editorContext, node).createCell();
+    return new LocalParametersExpression_EditorBuilder(editorContext, node).createCell();
   }
 }

@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class VisibilityModifier_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new VisibilityModifier_EditorBuilder_a(editorContext, node).createCell();
+    return new VisibilityModifier_EditorBuilder(editorContext, node).createCell();
   }
 }

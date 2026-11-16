@@ -18,17 +18,17 @@
   </root>
   <root nodeRef="r:eed912a6-16e8-466b-b48a-0e82310c46dd(jetbrains.mps.lang.editor.tooltips.editor)/3877544518697325392">
     <file name="AuxEditorCellWithRefToGeneratedHint_Editor.java">
-      <node id="3877544518697325392" at="11,79,12,101" concept="6" />
+      <node id="3877544518697325392" at="11,79,12,99" concept="6" />
       <node id="3877544518697325392" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="3877544518697325392" at="11,79,12,101" />
+      <scope id="3877544518697325392" at="11,79,12,99" />
       <scope id="3877544518697325392" at="11,0,14,0">
         <var name="editorContext" id="3877544518697325392" />
         <var name="node" id="3877544518697325392" />
       </scope>
       <unit id="3877544518697325392" at="10,0,15,0" name="jetbrains.mps.lang.editor.tooltips.editor.AuxEditorCellWithRefToGeneratedHint_Editor" />
     </file>
-    <file name="AuxEditorCellWithRefToGeneratedHint_EditorBuilder_a.java">
-      <node id="3877544518697325392" at="45,115,46,19" concept="9" />
+    <file name="AuxEditorCellWithRefToGeneratedHint_EditorBuilder.java">
+      <node id="3877544518697325392" at="45,113,46,19" concept="9" />
       <node id="3877544518697325392" at="46,19,47,18" concept="1" />
       <node id="3877544518697325392" at="52,26,53,18" concept="6" />
       <node id="3877544518697325392" at="56,39,57,32" concept="6" />
@@ -121,7 +121,7 @@
       <node id="3877544518697325392" at="183,87,186,7" concept="3" />
       <node id="3877544518697325392" at="186,7,189,7" concept="3" />
       <node id="3877544518697325392" at="205,0,208,0" concept="4" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="3877544518697325392" at="45,0,49,0" concept="0" trace="AuxEditorCellWithRefToGeneratedHint_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="3877544518697325392" at="45,0,49,0" concept="0" trace="AuxEditorCellWithRefToGeneratedHint_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="3877544518697325392" at="91,0,95,5" concept="3" />
       <node id="3877544518697325392" at="154,0,158,0" concept="4" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="3877544518697325392" at="162,0,166,0" concept="0" trace="tooltipSingleRoleHandler_jebv6d_d0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
@@ -153,7 +153,7 @@
       <scope id="3877544518697325392" at="187,42,188,48" />
       <scope id="3877544518697325392" at="201,17,202,42" />
       <scope id="3877544518697325392" at="205,40,206,28" />
-      <scope id="3877544518697325392" at="45,115,47,18" />
+      <scope id="3877544518697325392" at="45,113,47,18" />
       <scope id="3877544518697325392" at="92,40,94,43" />
       <scope id="3877544518697325392" at="99,73,101,145">
         <var name="manager" id="3877544518697325392" />
@@ -238,13 +238,13 @@
         <var name="referenceLink" id="3877544518697325392" />
       </scope>
       <scope id="3877544518697325392" at="77,0,105,0" />
-      <unit id="3877544518697325392" at="220,0,223,0" name="jetbrains.mps.lang.editor.tooltips.editor.AuxEditorCellWithRefToGeneratedHint_EditorBuilder_a$PROPS" />
-      <unit id="3877544518697325392" at="210,0,214,0" name="jetbrains.mps.lang.editor.tooltips.editor.AuxEditorCellWithRefToGeneratedHint_EditorBuilder_a$LINKS" />
-      <unit id="3877544518697325392" at="215,0,219,0" name="jetbrains.mps.lang.editor.tooltips.editor.AuxEditorCellWithRefToGeneratedHint_EditorBuilder_a$CONCEPTS" />
-      <unit id="3877544518697325392" at="79,42,87,5" name="jetbrains.mps.lang.editor.tooltips.editor.AuxEditorCellWithRefToGeneratedHint_EditorBuilder_a$1" />
-      <unit id="3877544518697376304" at="105,0,148,0" name="jetbrains.mps.lang.editor.tooltips.editor.AuxEditorCellWithRefToGeneratedHint_EditorBuilder_a$Inline_Builder0" />
-      <unit id="3877544518697325392" at="158,0,209,0" name="jetbrains.mps.lang.editor.tooltips.editor.AuxEditorCellWithRefToGeneratedHint_EditorBuilder_a$tooltipSingleRoleHandler_jebv6d_d0" />
-      <unit id="3877544518697325392" at="41,0,224,0" name="jetbrains.mps.lang.editor.tooltips.editor.AuxEditorCellWithRefToGeneratedHint_EditorBuilder_a" />
+      <unit id="3877544518697325392" at="220,0,223,0" name="jetbrains.mps.lang.editor.tooltips.editor.AuxEditorCellWithRefToGeneratedHint_EditorBuilder$PROPS" />
+      <unit id="3877544518697325392" at="210,0,214,0" name="jetbrains.mps.lang.editor.tooltips.editor.AuxEditorCellWithRefToGeneratedHint_EditorBuilder$LINKS" />
+      <unit id="3877544518697325392" at="215,0,219,0" name="jetbrains.mps.lang.editor.tooltips.editor.AuxEditorCellWithRefToGeneratedHint_EditorBuilder$CONCEPTS" />
+      <unit id="3877544518697325392" at="79,42,87,5" name="jetbrains.mps.lang.editor.tooltips.editor.AuxEditorCellWithRefToGeneratedHint_EditorBuilder$1" />
+      <unit id="3877544518697376304" at="105,0,148,0" name="jetbrains.mps.lang.editor.tooltips.editor.AuxEditorCellWithRefToGeneratedHint_EditorBuilder$Inline_Builder0" />
+      <unit id="3877544518697325392" at="158,0,209,0" name="jetbrains.mps.lang.editor.tooltips.editor.AuxEditorCellWithRefToGeneratedHint_EditorBuilder$tooltipSingleRoleHandler_jebv6d_d0" />
+      <unit id="3877544518697325392" at="41,0,224,0" name="jetbrains.mps.lang.editor.tooltips.editor.AuxEditorCellWithRefToGeneratedHint_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:eed912a6-16e8-466b-b48a-0e82310c46dd(jetbrains.mps.lang.editor.tooltips.editor)/430077727056735136">
@@ -258,12 +258,12 @@
   </root>
   <root nodeRef="r:eed912a6-16e8-466b-b48a-0e82310c46dd(jetbrains.mps.lang.editor.tooltips.editor)/9185659875393569207">
     <file name="CellModel_Tooltip_Editor.java">
-      <node id="9185659875393569207" at="11,79,12,83" concept="6" />
-      <node id="9185659875393569207" at="14,82,15,86" concept="6" />
+      <node id="9185659875393569207" at="11,79,12,81" concept="6" />
+      <node id="9185659875393569207" at="14,82,15,84" concept="6" />
       <node id="9185659875393569207" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="9185659875393569207" at="14,0,17,0" concept="4" trace="createInspectedCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="9185659875393569207" at="11,79,12,83" />
-      <scope id="9185659875393569207" at="14,82,15,86" />
+      <scope id="9185659875393569207" at="11,79,12,81" />
+      <scope id="9185659875393569207" at="14,82,15,84" />
       <scope id="9185659875393569207" at="11,0,14,0">
         <var name="editorContext" id="9185659875393569207" />
         <var name="node" id="9185659875393569207" />
@@ -274,8 +274,8 @@
       </scope>
       <unit id="9185659875393569207" at="10,0,18,0" name="jetbrains.mps.lang.editor.tooltips.editor.CellModel_Tooltip_Editor" />
     </file>
-    <file name="CellModel_Tooltip_EditorBuilder_a.java">
-      <node id="9185659875393569207" at="33,97,34,19" concept="9" />
+    <file name="CellModel_Tooltip_EditorBuilder.java">
+      <node id="9185659875393569207" at="33,95,34,19" concept="9" />
       <node id="9185659875393569207" at="34,19,35,18" concept="1" />
       <node id="9185659875393569207" at="40,26,41,18" concept="6" />
       <node id="9185659875393569207" at="44,39,45,32" concept="6" />
@@ -353,7 +353,7 @@
       <node id="9185659875393569207" at="156,87,159,7" concept="3" />
       <node id="9185659875393569207" at="159,7,162,7" concept="3" />
       <node id="9185659875393569207" at="178,0,181,0" concept="4" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="9185659875393569207" at="33,0,37,0" concept="0" trace="CellModel_Tooltip_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="9185659875393569207" at="33,0,37,0" concept="0" trace="CellModel_Tooltip_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="9185659875393569207" at="61,0,65,0" concept="4" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="9185659875393569207" at="69,0,73,0" concept="0" trace="visibleCellSingleRoleHandler_1dj3k_a0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="9185659875393569207" at="127,0,131,0" concept="4" trace="createRefNode_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -383,7 +383,7 @@
       <scope id="9185659875393569207" at="160,42,161,52" />
       <scope id="9185659875393569207" at="174,17,175,42" />
       <scope id="9185659875393569207" at="178,40,179,32" />
-      <scope id="9185659875393569207" at="33,97,35,18" />
+      <scope id="9185659875393569207" at="33,95,35,18" />
       <scope id="9185659875393569207" at="61,40,63,33">
         <var name="provider" id="9185659875393569207" />
       </scope>
@@ -458,13 +458,13 @@
       <scope id="9185659875393569207" at="48,0,61,0" />
       <scope id="9185659875393569207" at="98,0,112,0" />
       <scope id="9185659875393569207" at="164,0,178,0" />
-      <unit id="9185659875393569207" at="183,0,187,0" name="jetbrains.mps.lang.editor.tooltips.editor.CellModel_Tooltip_EditorBuilder_a$LINKS" />
-      <unit id="9185659875393569207" at="65,0,116,0" name="jetbrains.mps.lang.editor.tooltips.editor.CellModel_Tooltip_EditorBuilder_a$visibleCellSingleRoleHandler_1dj3k_a0" />
-      <unit id="9185659875393569207" at="131,0,182,0" name="jetbrains.mps.lang.editor.tooltips.editor.CellModel_Tooltip_EditorBuilder_a$tooltipCellSingleRoleHandler_1dj3k_c0" />
-      <unit id="9185659875393569207" at="29,0,188,0" name="jetbrains.mps.lang.editor.tooltips.editor.CellModel_Tooltip_EditorBuilder_a" />
+      <unit id="9185659875393569207" at="183,0,187,0" name="jetbrains.mps.lang.editor.tooltips.editor.CellModel_Tooltip_EditorBuilder$LINKS" />
+      <unit id="9185659875393569207" at="65,0,116,0" name="jetbrains.mps.lang.editor.tooltips.editor.CellModel_Tooltip_EditorBuilder$visibleCellSingleRoleHandler_1dj3k_a0" />
+      <unit id="9185659875393569207" at="131,0,182,0" name="jetbrains.mps.lang.editor.tooltips.editor.CellModel_Tooltip_EditorBuilder$tooltipCellSingleRoleHandler_1dj3k_c0" />
+      <unit id="9185659875393569207" at="29,0,188,0" name="jetbrains.mps.lang.editor.tooltips.editor.CellModel_Tooltip_EditorBuilder" />
     </file>
-    <file name="CellModel_Tooltip_InspectorBuilder_a.java">
-      <node id="9185659875393569207" at="39,100,40,19" concept="9" />
+    <file name="CellModel_Tooltip_InspectorBuilder.java">
+      <node id="9185659875393569207" at="39,98,40,19" concept="9" />
       <node id="9185659875393569207" at="40,19,41,18" concept="1" />
       <node id="9185659875393569207" at="46,26,47,18" concept="6" />
       <node id="9185659875393569207" at="50,39,51,32" concept="6" />
@@ -539,7 +539,7 @@
       <node id="9185659875393569207" at="150,0,151,0" concept="8" trace="PropertyAttribute$Gb" />
       <node id="9185659875393569207" at="36,0,38,0" concept="2" trace="myNode" />
       <node id="9185659875393569207" at="50,0,53,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="9185659875393569207" at="39,0,43,0" concept="0" trace="CellModel_Tooltip_InspectorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="9185659875393569207" at="39,0,43,0" concept="0" trace="CellModel_Tooltip_InspectorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1214479415172" at="66,0,70,0" concept="4" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="9185659875393569207" at="44,0,49,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="3767670707232315144" at="125,208,130,24" concept="3" />
@@ -555,7 +555,7 @@
       <scope id="9185659875393569207" at="46,26,47,18" />
       <scope id="9185659875393569207" at="50,39,51,32" />
       <scope id="3767670707232315144" at="131,15,132,40" />
-      <scope id="9185659875393569207" at="39,100,41,18" />
+      <scope id="9185659875393569207" at="39,98,41,18" />
       <scope id="1214479415172" at="66,42,68,22">
         <var name="editorCell" id="1214479415172" />
       </scope>
@@ -610,9 +610,9 @@
       </scope>
       <scope id="3767670707232315144" at="111,41,133,5" />
       <scope id="3767670707232315144" at="111,0,135,0" />
-      <unit id="9185659875393569207" at="145,0,148,0" name="jetbrains.mps.lang.editor.tooltips.editor.CellModel_Tooltip_InspectorBuilder_a$PROPS" />
-      <unit id="9185659875393569207" at="149,0,152,0" name="jetbrains.mps.lang.editor.tooltips.editor.CellModel_Tooltip_InspectorBuilder_a$CONCEPTS" />
-      <unit id="9185659875393569207" at="35,0,153,0" name="jetbrains.mps.lang.editor.tooltips.editor.CellModel_Tooltip_InspectorBuilder_a" />
+      <unit id="9185659875393569207" at="145,0,148,0" name="jetbrains.mps.lang.editor.tooltips.editor.CellModel_Tooltip_InspectorBuilder$PROPS" />
+      <unit id="9185659875393569207" at="149,0,152,0" name="jetbrains.mps.lang.editor.tooltips.editor.CellModel_Tooltip_InspectorBuilder$CONCEPTS" />
+      <unit id="9185659875393569207" at="35,0,153,0" name="jetbrains.mps.lang.editor.tooltips.editor.CellModel_Tooltip_InspectorBuilder" />
     </file>
   </root>
 </debug-info>

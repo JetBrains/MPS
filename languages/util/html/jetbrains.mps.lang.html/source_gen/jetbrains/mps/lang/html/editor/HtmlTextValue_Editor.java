@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class HtmlTextValue_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new HtmlTextValue_EditorBuilder_a(editorContext, node).createCell();
+    return new HtmlTextValue_EditorBuilder(editorContext, node).createCell();
   }
 }

@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class FacetReferenceExpression_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new FacetReferenceExpression_EditorBuilder_a(editorContext, node).createCell();
+    return new FacetReferenceExpression_EditorBuilder(editorContext, node).createCell();
   }
 }

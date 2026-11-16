@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class BuildLayout_EchoProperties_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new BuildLayout_EchoProperties_EditorBuilder_a(editorContext, node).createCell();
+    return new BuildLayout_EchoProperties_EditorBuilder(editorContext, node).createCell();
   }
 }

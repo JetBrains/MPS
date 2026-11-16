@@ -16,6 +16,6 @@ public class StatementBlockEditor implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new StatementBlockEditor_ComponentBuilder_a(editorContext, node).createCell();
+    return new StatementBlockEditor_ComponentBuilder(editorContext, node).createCell();
   }
 }

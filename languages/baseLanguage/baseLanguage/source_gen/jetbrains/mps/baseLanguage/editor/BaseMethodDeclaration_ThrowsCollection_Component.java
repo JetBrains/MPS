@@ -16,6 +16,6 @@ public class BaseMethodDeclaration_ThrowsCollection_Component implements Concept
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new BaseMethodDeclaration_ThrowsCollection_Component_ComponentBuilder_a(editorContext, node).createCell();
+    return new BaseMethodDeclaration_ThrowsCollection_Component_ComponentBuilder(editorContext, node).createCell();
   }
 }

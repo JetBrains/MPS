@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ArrayAccessExpression_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ArrayAccessExpression_EditorBuilder_a(editorContext, node).createCell();
+    return new ArrayAccessExpression_EditorBuilder(editorContext, node).createCell();
   }
 }

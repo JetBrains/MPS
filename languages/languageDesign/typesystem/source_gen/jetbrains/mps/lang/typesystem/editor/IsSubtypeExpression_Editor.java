@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class IsSubtypeExpression_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new IsSubtypeExpression_EditorBuilder_a(editorContext, node).createCell();
+    return new IsSubtypeExpression_EditorBuilder(editorContext, node).createCell();
   }
 }

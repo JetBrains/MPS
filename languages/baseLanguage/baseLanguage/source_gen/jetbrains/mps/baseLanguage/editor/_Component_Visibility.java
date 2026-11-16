@@ -16,6 +16,6 @@ public class _Component_Visibility implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new _Component_Visibility_ComponentBuilder_a(editorContext, node).createCell();
+    return new _Component_Visibility_ComponentBuilder(editorContext, node).createCell();
   }
 }

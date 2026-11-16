@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class RequestHandler_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new RequestHandler_EditorBuilder_a(editorContext, node).createCell();
+    return new RequestHandler_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new RequestHandler_InspectorBuilder_a(editorContext, node).createCell();
+    return new RequestHandler_InspectorBuilder(editorContext, node).createCell();
   }
 }

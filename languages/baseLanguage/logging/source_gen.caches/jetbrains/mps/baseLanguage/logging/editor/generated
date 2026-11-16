@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="-c4fu82zrakpnmu5iyzw7crp1nwed5nz">
-  <files names="EditorAspectDescriptorImpl.java:LogLowFirstCell.java:LogLowLevelStatement_Editor.java:LogLowLevelStatement_EditorBuilder_a.java:LogLowLevelStatement_SubstituteMenu.java:MsgFirstCell.java:MsgStatement_Editor.java:MsgStatement_EditorBuilder_a.java:MsgStatement_SubstituteMenu.java:PrintStatement_Editor.java:PrintStatement_EditorBuilder_a.java:ReplaceLogWithMessage.java:ReplaceMessageWithLog.java:loggingLowLevel_nodeSubstitute_Contribution.java:loggingMsg_nodeSubstitute_Contribution.java" />
+  <files names="EditorAspectDescriptorImpl.java:LogLowFirstCell.java:LogLowLevelStatement_Editor.java:LogLowLevelStatement_EditorBuilder.java:LogLowLevelStatement_SubstituteMenu.java:MsgFirstCell.java:MsgStatement_Editor.java:MsgStatement_EditorBuilder.java:MsgStatement_SubstituteMenu.java:PrintStatement_Editor.java:PrintStatement_EditorBuilder.java:ReplaceLogWithMessage.java:ReplaceMessageWithLog.java:loggingLowLevel_nodeSubstitute_Contribution.java:loggingMsg_nodeSubstitute_Contribution.java" />
 </product>
 

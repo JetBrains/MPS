@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="-b8z0vm6efiiw5wod3faztl2pwgz3a40">
-  <files names="EditorAspectDescriptorImpl.java:Event_hidden_Editor.java:Event_hidden_EditorBuilder_a.java:StateMachineSubstituteInfo.java:StateMachineTableModel.java:StateMachine_tabular_Editor.java:StateMachine_tabular_EditorBuilder_a.java:State_hidden_Editor.java:State_hidden_EditorBuilder_a.java:Transition_tabular_Editor.java:Transition_tabular_EditorBuilder_a.java" />
+  <files names="EditorAspectDescriptorImpl.java:Event_hidden_Editor.java:Event_hidden_EditorBuilder.java:StateMachineSubstituteInfo.java:StateMachineTableModel.java:StateMachine_tabular_Editor.java:StateMachine_tabular_EditorBuilder.java:State_hidden_Editor.java:State_hidden_EditorBuilder.java:Transition_tabular_Editor.java:Transition_tabular_EditorBuilder.java" />
 </product>
 

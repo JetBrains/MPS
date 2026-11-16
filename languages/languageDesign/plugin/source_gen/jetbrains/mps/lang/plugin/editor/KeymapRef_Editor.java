@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class KeymapRef_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new KeymapRef_EditorBuilder_a(editorContext, node).createCell();
+    return new KeymapRef_EditorBuilder(editorContext, node).createCell();
   }
 }

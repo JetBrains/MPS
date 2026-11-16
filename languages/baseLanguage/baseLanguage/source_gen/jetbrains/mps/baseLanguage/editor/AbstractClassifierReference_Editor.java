@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class AbstractClassifierReference_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new AbstractClassifierReference_EditorBuilder_a(editorContext, node).createCell();
+    return new AbstractClassifierReference_EditorBuilder(editorContext, node).createCell();
   }
 }

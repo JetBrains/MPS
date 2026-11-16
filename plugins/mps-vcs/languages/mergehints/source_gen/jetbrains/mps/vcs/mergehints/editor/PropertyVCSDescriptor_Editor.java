@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class PropertyVCSDescriptor_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new PropertyVCSDescriptor_EditorBuilder_a(editorContext, node).createCell();
+    return new PropertyVCSDescriptor_EditorBuilder(editorContext, node).createCell();
   }
 }

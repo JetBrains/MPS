@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class DeleteLineTestChild_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new DeleteLineTestChild_EditorBuilder_a(editorContext, node).createCell();
+    return new DeleteLineTestChild_EditorBuilder(editorContext, node).createCell();
   }
 }

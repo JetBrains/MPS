@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="7jne1l7qicets03bftsw7yzd9gbnqkq">
-  <files names="DocText_DELETE.java:DocText_Editor.java:DocText_EditorBuilder_a.java:DocText_SubstituteMenuContribution.java:DocText_createEmptyLine.java:EditorAspectDescriptorImpl.java" />
+  <files names="DocText_DELETE.java:DocText_Editor.java:DocText_EditorBuilder.java:DocText_SubstituteMenuContribution.java:DocText_createEmptyLine.java:EditorAspectDescriptorImpl.java" />
 </product>
 

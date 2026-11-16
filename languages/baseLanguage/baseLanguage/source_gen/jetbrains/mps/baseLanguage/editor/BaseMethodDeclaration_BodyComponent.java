@@ -16,6 +16,6 @@ public class BaseMethodDeclaration_BodyComponent implements ConceptEditorCompone
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new BaseMethodDeclaration_BodyComponent_ComponentBuilder_a(editorContext, node).createCell();
+    return new BaseMethodDeclaration_BodyComponent_ComponentBuilder(editorContext, node).createCell();
   }
 }

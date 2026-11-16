@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class AbandonInput_RuleConsequence_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new AbandonInput_RuleConsequence_EditorBuilder_a(editorContext, node).createCell();
+    return new AbandonInput_RuleConsequence_EditorBuilder(editorContext, node).createCell();
   }
 }

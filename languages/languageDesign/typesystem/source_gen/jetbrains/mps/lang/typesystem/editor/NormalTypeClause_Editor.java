@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class NormalTypeClause_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new NormalTypeClause_EditorBuilder_a(editorContext, node).createCell();
+    return new NormalTypeClause_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new NormalTypeClause_InspectorBuilder_a(editorContext, node).createCell();
+    return new NormalTypeClause_InspectorBuilder(editorContext, node).createCell();
   }
 }

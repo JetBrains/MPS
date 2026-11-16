@@ -38,17 +38,17 @@
   </root>
   <root nodeRef="r:f7558de1-c673-4688-b6e9-c5672dde2290(jetbrains.mps.samples.xmlLiterals.editor)/9152904044274328780">
     <file name="XmlLiteral_Editor.java">
-      <node id="9152904044274328780" at="11,79,12,76" concept="6" />
+      <node id="9152904044274328780" at="11,79,12,74" concept="6" />
       <node id="9152904044274328780" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="9152904044274328780" at="11,79,12,76" />
+      <scope id="9152904044274328780" at="11,79,12,74" />
       <scope id="9152904044274328780" at="11,0,14,0">
         <var name="editorContext" id="9152904044274328780" />
         <var name="node" id="9152904044274328780" />
       </scope>
       <unit id="9152904044274328780" at="10,0,15,0" name="jetbrains.mps.samples.xmlLiterals.editor.XmlLiteral_Editor" />
     </file>
-    <file name="XmlLiteral_EditorBuilder_a.java">
-      <node id="9152904044274328780" at="30,90,31,19" concept="8" />
+    <file name="XmlLiteral_EditorBuilder.java">
+      <node id="9152904044274328780" at="30,88,31,19" concept="8" />
       <node id="9152904044274328780" at="31,19,32,18" concept="1" />
       <node id="9152904044274328780" at="37,26,38,18" concept="6" />
       <node id="9152904044274328780" at="41,39,42,32" concept="6" />
@@ -103,7 +103,7 @@
       <node id="9152904044274328780" at="93,87,96,7" concept="3" />
       <node id="9152904044274328780" at="96,7,99,7" concept="3" />
       <node id="9152904044274328780" at="119,0,122,0" concept="4" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="9152904044274328780" at="30,0,34,0" concept="0" trace="XmlLiteral_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="9152904044274328780" at="30,0,34,0" concept="0" trace="XmlLiteral_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="9152904044274328780" at="64,0,68,0" concept="4" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="9152904044274328780" at="72,0,76,0" concept="0" trace="elementSingleRoleHandler_ojezqy_b0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="9152904044274328780" at="35,0,40,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -122,7 +122,7 @@
       <scope id="9152904044274328780" at="97,42,98,48" />
       <scope id="9152904044274328780" at="115,17,116,42" />
       <scope id="9152904044274328780" at="119,40,120,28" />
-      <scope id="9152904044274328780" at="30,90,32,18" />
+      <scope id="9152904044274328780" at="30,88,32,18" />
       <scope id="9152904044274328780" at="64,40,66,33">
         <var name="provider" id="9152904044274328780" />
       </scope>
@@ -173,24 +173,24 @@
         <var name="isEmpty" id="9152904044274328780" />
       </scope>
       <scope id="9152904044274328780" at="105,0,119,0" />
-      <unit id="9152904044274328780" at="130,0,133,0" name="jetbrains.mps.samples.xmlLiterals.editor.XmlLiteral_EditorBuilder_a$LINKS" />
-      <unit id="9152904044274328780" at="68,0,123,0" name="jetbrains.mps.samples.xmlLiterals.editor.XmlLiteral_EditorBuilder_a$elementSingleRoleHandler_ojezqy_b0" />
-      <unit id="9152904044274328780" at="26,0,134,0" name="jetbrains.mps.samples.xmlLiterals.editor.XmlLiteral_EditorBuilder_a" />
+      <unit id="9152904044274328780" at="130,0,133,0" name="jetbrains.mps.samples.xmlLiterals.editor.XmlLiteral_EditorBuilder$LINKS" />
+      <unit id="9152904044274328780" at="68,0,123,0" name="jetbrains.mps.samples.xmlLiterals.editor.XmlLiteral_EditorBuilder$elementSingleRoleHandler_ojezqy_b0" />
+      <unit id="9152904044274328780" at="26,0,134,0" name="jetbrains.mps.samples.xmlLiterals.editor.XmlLiteral_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:f7558de1-c673-4688-b6e9-c5672dde2290(jetbrains.mps.samples.xmlLiterals.editor)/9152904044274469603">
     <file name="TextMacro_Editor.java">
-      <node id="9152904044274469603" at="11,79,12,75" concept="6" />
+      <node id="9152904044274469603" at="11,79,12,73" concept="6" />
       <node id="9152904044274469603" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="9152904044274469603" at="11,79,12,75" />
+      <scope id="9152904044274469603" at="11,79,12,73" />
       <scope id="9152904044274469603" at="11,0,14,0">
         <var name="editorContext" id="9152904044274469603" />
         <var name="node" id="9152904044274469603" />
       </scope>
       <unit id="9152904044274469603" at="10,0,15,0" name="jetbrains.mps.samples.xmlLiterals.editor.TextMacro_Editor" />
     </file>
-    <file name="TextMacro_EditorBuilder_a.java">
-      <node id="9152904044274469603" at="27,89,28,19" concept="8" />
+    <file name="TextMacro_EditorBuilder.java">
+      <node id="9152904044274469603" at="27,87,28,19" concept="8" />
       <node id="9152904044274469603" at="28,19,29,18" concept="1" />
       <node id="9152904044274469603" at="34,26,35,18" concept="6" />
       <node id="9152904044274469603" at="38,39,39,32" concept="6" />
@@ -238,7 +238,7 @@
       <node id="9152904044274469603" at="87,87,90,7" concept="3" />
       <node id="9152904044274469603" at="90,7,93,7" concept="3" />
       <node id="9152904044274469603" at="109,0,112,0" concept="4" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="9152904044274469603" at="27,0,31,0" concept="0" trace="TextMacro_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="9152904044274469603" at="27,0,31,0" concept="0" trace="TextMacro_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="9152904044274469603" at="58,0,62,0" concept="4" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="9152904044274469603" at="66,0,70,0" concept="0" trace="expressionSingleRoleHandler_sc1nl2_b0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="9152904044274469603" at="32,0,37,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -257,7 +257,7 @@
       <scope id="9152904044274469603" at="91,42,92,51" />
       <scope id="9152904044274469603" at="105,17,106,42" />
       <scope id="9152904044274469603" at="109,40,110,31" />
-      <scope id="9152904044274469603" at="27,89,29,18" />
+      <scope id="9152904044274469603" at="27,87,29,18" />
       <scope id="9152904044274469603" at="58,40,60,33">
         <var name="provider" id="9152904044274469603" />
       </scope>
@@ -305,24 +305,24 @@
       <scope id="9152904044274469603" at="42,0,52,0" />
       <scope id="9152904044274469603" at="96,44,107,7" />
       <scope id="9152904044274469603" at="95,0,109,0" />
-      <unit id="9152904044274469603" at="120,0,123,0" name="jetbrains.mps.samples.xmlLiterals.editor.TextMacro_EditorBuilder_a$LINKS" />
-      <unit id="9152904044274469603" at="62,0,113,0" name="jetbrains.mps.samples.xmlLiterals.editor.TextMacro_EditorBuilder_a$expressionSingleRoleHandler_sc1nl2_b0" />
-      <unit id="9152904044274469603" at="23,0,124,0" name="jetbrains.mps.samples.xmlLiterals.editor.TextMacro_EditorBuilder_a" />
+      <unit id="9152904044274469603" at="120,0,123,0" name="jetbrains.mps.samples.xmlLiterals.editor.TextMacro_EditorBuilder$LINKS" />
+      <unit id="9152904044274469603" at="62,0,113,0" name="jetbrains.mps.samples.xmlLiterals.editor.TextMacro_EditorBuilder$expressionSingleRoleHandler_sc1nl2_b0" />
+      <unit id="9152904044274469603" at="23,0,124,0" name="jetbrains.mps.samples.xmlLiterals.editor.TextMacro_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:f7558de1-c673-4688-b6e9-c5672dde2290(jetbrains.mps.samples.xmlLiterals.editor)/9152904044274518129">
     <file name="ElementMacro_Editor.java">
-      <node id="9152904044274518129" at="11,79,12,78" concept="6" />
+      <node id="9152904044274518129" at="11,79,12,76" concept="6" />
       <node id="9152904044274518129" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="9152904044274518129" at="11,79,12,78" />
+      <scope id="9152904044274518129" at="11,79,12,76" />
       <scope id="9152904044274518129" at="11,0,14,0">
         <var name="editorContext" id="9152904044274518129" />
         <var name="node" id="9152904044274518129" />
       </scope>
       <unit id="9152904044274518129" at="10,0,15,0" name="jetbrains.mps.samples.xmlLiterals.editor.ElementMacro_Editor" />
     </file>
-    <file name="ElementMacro_EditorBuilder_a.java">
-      <node id="9152904044274518129" at="27,92,28,19" concept="8" />
+    <file name="ElementMacro_EditorBuilder.java">
+      <node id="9152904044274518129" at="27,90,28,19" concept="8" />
       <node id="9152904044274518129" at="28,19,29,18" concept="1" />
       <node id="9152904044274518129" at="34,26,35,18" concept="6" />
       <node id="9152904044274518129" at="38,39,39,32" concept="6" />
@@ -370,7 +370,7 @@
       <node id="9152904044274518129" at="87,87,90,7" concept="3" />
       <node id="9152904044274518129" at="90,7,93,7" concept="3" />
       <node id="9152904044274518129" at="109,0,112,0" concept="4" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="9152904044274518129" at="27,0,31,0" concept="0" trace="ElementMacro_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="9152904044274518129" at="27,0,31,0" concept="0" trace="ElementMacro_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="9152904044274518129" at="58,0,62,0" concept="4" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="9152904044274518129" at="66,0,70,0" concept="0" trace="expressionSingleRoleHandler_6p9cmm_b0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="9152904044274518129" at="32,0,37,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -389,7 +389,7 @@
       <scope id="9152904044274518129" at="91,42,92,51" />
       <scope id="9152904044274518129" at="105,17,106,42" />
       <scope id="9152904044274518129" at="109,40,110,31" />
-      <scope id="9152904044274518129" at="27,92,29,18" />
+      <scope id="9152904044274518129" at="27,90,29,18" />
       <scope id="9152904044274518129" at="58,40,60,33">
         <var name="provider" id="9152904044274518129" />
       </scope>
@@ -437,9 +437,9 @@
       <scope id="9152904044274518129" at="42,0,52,0" />
       <scope id="9152904044274518129" at="96,44,107,7" />
       <scope id="9152904044274518129" at="95,0,109,0" />
-      <unit id="9152904044274518129" at="120,0,123,0" name="jetbrains.mps.samples.xmlLiterals.editor.ElementMacro_EditorBuilder_a$LINKS" />
-      <unit id="9152904044274518129" at="62,0,113,0" name="jetbrains.mps.samples.xmlLiterals.editor.ElementMacro_EditorBuilder_a$expressionSingleRoleHandler_6p9cmm_b0" />
-      <unit id="9152904044274518129" at="23,0,124,0" name="jetbrains.mps.samples.xmlLiterals.editor.ElementMacro_EditorBuilder_a" />
+      <unit id="9152904044274518129" at="120,0,123,0" name="jetbrains.mps.samples.xmlLiterals.editor.ElementMacro_EditorBuilder$LINKS" />
+      <unit id="9152904044274518129" at="62,0,113,0" name="jetbrains.mps.samples.xmlLiterals.editor.ElementMacro_EditorBuilder$expressionSingleRoleHandler_6p9cmm_b0" />
+      <unit id="9152904044274518129" at="23,0,124,0" name="jetbrains.mps.samples.xmlLiterals.editor.ElementMacro_EditorBuilder" />
     </file>
   </root>
 </debug-info>

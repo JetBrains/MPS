@@ -20,17 +20,17 @@
   </root>
   <root nodeRef="r:f2fc442e-c0f0-467d-ac9f-8f38c8182f6f(jetbrains.mps.samples.StateChart.editor)/1480846759627756654">
     <file name="Event_Editor.java">
-      <node id="1480846759627756654" at="11,79,12,71" concept="8" />
+      <node id="1480846759627756654" at="11,79,12,69" concept="8" />
       <node id="1480846759627756654" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1480846759627756654" at="11,79,12,71" />
+      <scope id="1480846759627756654" at="11,79,12,69" />
       <scope id="1480846759627756654" at="11,0,14,0">
         <var name="editorContext" id="1480846759627756654" />
         <var name="node" id="1480846759627756654" />
       </scope>
       <unit id="1480846759627756654" at="10,0,15,0" name="jetbrains.mps.samples.StateChart.editor.Event_Editor" />
     </file>
-    <file name="Event_EditorBuilder_a.java">
-      <node id="1480846759627756654" at="29,85,30,19" concept="11" />
+    <file name="Event_EditorBuilder.java">
+      <node id="1480846759627756654" at="29,83,30,19" concept="11" />
       <node id="1480846759627756654" at="30,19,31,18" concept="2" />
       <node id="1480846759627756654" at="36,26,37,18" concept="8" />
       <node id="1480846759627756654" at="40,39,41,30" concept="8" />
@@ -54,7 +54,7 @@
       <node id="1480846759627756654" at="73,0,74,0" concept="10" trace="PropertyAttribute$Gb" />
       <node id="1480846759627756654" at="26,0,28,0" concept="3" trace="myNode" />
       <node id="1480846759627756654" at="40,0,43,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="1480846759627756654" at="29,0,33,0" concept="1" trace="Event_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1480846759627756654" at="29,0,33,0" concept="1" trace="Event_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1480846759627756654" at="34,0,39,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="3314463010038759881" at="57,208,62,24" concept="5" />
       <node id="3314463010038759881" at="45,39,65,5" concept="12" />
@@ -62,7 +62,7 @@
       <scope id="1480846759627756654" at="36,26,37,18" />
       <scope id="1480846759627756654" at="40,39,41,30" />
       <scope id="3314463010038759881" at="63,15,64,40" />
-      <scope id="1480846759627756654" at="29,85,31,18" />
+      <scope id="1480846759627756654" at="29,83,31,18" />
       <scope id="3314463010038759881" at="58,74,60,145">
         <var name="manager" id="3314463010038759881" />
       </scope>
@@ -80,24 +80,24 @@
       </scope>
       <scope id="3314463010038759881" at="44,41,65,5" />
       <scope id="3314463010038759881" at="44,0,67,0" />
-      <unit id="1480846759627756654" at="68,0,71,0" name="jetbrains.mps.samples.StateChart.editor.Event_EditorBuilder_a$PROPS" />
-      <unit id="1480846759627756654" at="72,0,75,0" name="jetbrains.mps.samples.StateChart.editor.Event_EditorBuilder_a$CONCEPTS" />
-      <unit id="1480846759627756654" at="25,0,76,0" name="jetbrains.mps.samples.StateChart.editor.Event_EditorBuilder_a" />
+      <unit id="1480846759627756654" at="68,0,71,0" name="jetbrains.mps.samples.StateChart.editor.Event_EditorBuilder$PROPS" />
+      <unit id="1480846759627756654" at="72,0,75,0" name="jetbrains.mps.samples.StateChart.editor.Event_EditorBuilder$CONCEPTS" />
+      <unit id="1480846759627756654" at="25,0,76,0" name="jetbrains.mps.samples.StateChart.editor.Event_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:f2fc442e-c0f0-467d-ac9f-8f38c8182f6f(jetbrains.mps.samples.StateChart.editor)/1480846759627776060">
     <file name="Transition_Editor.java">
-      <node id="1480846759627776060" at="11,79,12,76" concept="8" />
+      <node id="1480846759627776060" at="11,79,12,74" concept="8" />
       <node id="1480846759627776060" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1480846759627776060" at="11,79,12,76" />
+      <scope id="1480846759627776060" at="11,79,12,74" />
       <scope id="1480846759627776060" at="11,0,14,0">
         <var name="editorContext" id="1480846759627776060" />
         <var name="node" id="1480846759627776060" />
       </scope>
       <unit id="1480846759627776060" at="10,0,15,0" name="jetbrains.mps.samples.StateChart.editor.Transition_Editor" />
     </file>
-    <file name="Transition_EditorBuilder_a.java">
-      <node id="1480846759627776060" at="50,90,51,19" concept="11" />
+    <file name="Transition_EditorBuilder.java">
+      <node id="1480846759627776060" at="50,88,51,19" concept="11" />
       <node id="1480846759627776060" at="51,19,52,18" concept="2" />
       <node id="1480846759627776060" at="57,26,58,18" concept="8" />
       <node id="1480846759627776060" at="61,39,62,32" concept="8" />
@@ -263,7 +263,7 @@
       <node id="1480846759627776060" at="286,87,289,7" concept="5" />
       <node id="1480846759627776060" at="289,7,292,7" concept="5" />
       <node id="1480846759627776060" at="311,0,314,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="1480846759627776060" at="50,0,54,0" concept="1" trace="Transition_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1480846759627776060" at="50,0,54,0" concept="1" trace="Transition_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1480846759627776060" at="102,0,106,5" concept="5" />
       <node id="1480846759627776060" at="179,0,183,5" concept="5" />
       <node id="1480846759627776060" at="257,0,261,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -313,7 +313,7 @@
       <scope id="1480846759627776060" at="290,42,291,50" />
       <scope id="1480846759627776060" at="307,17,308,42" />
       <scope id="1480846759627776060" at="311,40,312,30" />
-      <scope id="1480846759627776060" at="50,90,52,18" />
+      <scope id="1480846759627776060" at="50,88,52,18" />
       <scope id="1480846759627776060" at="103,40,105,45" />
       <scope id="1480846759627776060" at="110,73,112,145">
         <var name="manager" id="1480846759627776060" />
@@ -453,30 +453,30 @@
       </scope>
       <scope id="1480846759627776060" at="88,0,116,0" />
       <scope id="1480846759627776060" at="165,0,193,0" />
-      <unit id="1480846759627776060" at="337,0,340,0" name="jetbrains.mps.samples.StateChart.editor.Transition_EditorBuilder_a$PROPS" />
-      <unit id="1480846759627776060" at="332,0,336,0" name="jetbrains.mps.samples.StateChart.editor.Transition_EditorBuilder_a$CONCEPTS" />
-      <unit id="1480846759627776060" at="325,0,331,0" name="jetbrains.mps.samples.StateChart.editor.Transition_EditorBuilder_a$LINKS" />
-      <unit id="1480846759627776060" at="90,42,98,5" name="jetbrains.mps.samples.StateChart.editor.Transition_EditorBuilder_a$1" />
-      <unit id="1480846759627776060" at="167,42,175,5" name="jetbrains.mps.samples.StateChart.editor.Transition_EditorBuilder_a$2" />
-      <unit id="1480846759627776077" at="116,0,159,0" name="jetbrains.mps.samples.StateChart.editor.Transition_EditorBuilder_a$Inline_Builder0" />
-      <unit id="1480846759627776110" at="193,0,236,0" name="jetbrains.mps.samples.StateChart.editor.Transition_EditorBuilder_a$Inline_Builder1" />
-      <unit id="1480846759627776060" at="261,0,315,0" name="jetbrains.mps.samples.StateChart.editor.Transition_EditorBuilder_a$onTransitSingleRoleHandler_jj4qz_b4a" />
-      <unit id="1480846759627776060" at="46,0,341,0" name="jetbrains.mps.samples.StateChart.editor.Transition_EditorBuilder_a" />
+      <unit id="1480846759627776060" at="337,0,340,0" name="jetbrains.mps.samples.StateChart.editor.Transition_EditorBuilder$PROPS" />
+      <unit id="1480846759627776060" at="332,0,336,0" name="jetbrains.mps.samples.StateChart.editor.Transition_EditorBuilder$CONCEPTS" />
+      <unit id="1480846759627776060" at="325,0,331,0" name="jetbrains.mps.samples.StateChart.editor.Transition_EditorBuilder$LINKS" />
+      <unit id="1480846759627776060" at="90,42,98,5" name="jetbrains.mps.samples.StateChart.editor.Transition_EditorBuilder$1" />
+      <unit id="1480846759627776060" at="167,42,175,5" name="jetbrains.mps.samples.StateChart.editor.Transition_EditorBuilder$2" />
+      <unit id="1480846759627776077" at="116,0,159,0" name="jetbrains.mps.samples.StateChart.editor.Transition_EditorBuilder$Inline_Builder0" />
+      <unit id="1480846759627776110" at="193,0,236,0" name="jetbrains.mps.samples.StateChart.editor.Transition_EditorBuilder$Inline_Builder1" />
+      <unit id="1480846759627776060" at="261,0,315,0" name="jetbrains.mps.samples.StateChart.editor.Transition_EditorBuilder$onTransitSingleRoleHandler_jj4qz_b4a" />
+      <unit id="1480846759627776060" at="46,0,341,0" name="jetbrains.mps.samples.StateChart.editor.Transition_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:f2fc442e-c0f0-467d-ac9f-8f38c8182f6f(jetbrains.mps.samples.StateChart.editor)/1480846759627784098">
     <file name="State_Editor.java">
-      <node id="1480846759627784098" at="11,79,12,71" concept="8" />
+      <node id="1480846759627784098" at="11,79,12,69" concept="8" />
       <node id="1480846759627784098" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1480846759627784098" at="11,79,12,71" />
+      <scope id="1480846759627784098" at="11,79,12,69" />
       <scope id="1480846759627784098" at="11,0,14,0">
         <var name="editorContext" id="1480846759627784098" />
         <var name="node" id="1480846759627784098" />
       </scope>
       <unit id="1480846759627784098" at="10,0,15,0" name="jetbrains.mps.samples.StateChart.editor.State_Editor" />
     </file>
-    <file name="State_EditorBuilder_a.java">
-      <node id="1480846759627784098" at="56,85,57,19" concept="11" />
+    <file name="State_EditorBuilder.java">
+      <node id="1480846759627784098" at="56,83,57,19" concept="11" />
       <node id="1480846759627784098" at="57,19,58,18" concept="2" />
       <node id="1480846759627784098" at="63,26,64,18" concept="8" />
       <node id="1480846759627784098" at="67,39,68,32" concept="8" />
@@ -836,7 +836,7 @@
       <node id="6216326891663405860" at="475,0,478,0" concept="6" trace="nodeCondition2#()Z" />
       <node id="6216326891663703021" at="493,0,496,0" concept="6" trace="getText#()Ljava/lang/String;" />
       <node id="6216326891663724147" at="565,0,568,0" concept="6" trace="getText#()Ljava/lang/String;" />
-      <node id="1480846759627784098" at="56,0,60,0" concept="1" trace="State_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1480846759627784098" at="56,0,60,0" concept="1" trace="State_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1480846759627784098" at="211,0,215,0" concept="1" trace="transitionsListHandler_sjqidp_g0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1480846759627784098" at="216,0,220,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1480846759627784098" at="249,97,253,9" concept="5" />
@@ -935,7 +935,7 @@
       <scope id="6216326891663724151" at="565,31,566,70" />
       <scope id="2477378150715736572" at="582,102,583,44" />
       <scope id="2477378150715781079" at="584,16,585,135" />
-      <scope id="1480846759627784098" at="56,85,58,18" />
+      <scope id="1480846759627784098" at="56,83,58,18" />
       <scope id="1480846759627784113" at="121,74,123,145">
         <var name="manager" id="1480846759627784113" />
       </scope>
@@ -1205,31 +1205,31 @@
         <var name="elementNode" id="1480846759627784098" />
         <var name="isEmptyCell" id="1480846759627784098" />
       </scope>
-      <unit id="6216326891663703021" at="492,88,496,5" name="jetbrains.mps.samples.StateChart.editor.State_EditorBuilder_a$1" />
-      <unit id="6216326891663724147" at="564,88,568,5" name="jetbrains.mps.samples.StateChart.editor.State_EditorBuilder_a$2" />
-      <unit id="1480846759627784098" at="621,0,625,0" name="jetbrains.mps.samples.StateChart.editor.State_EditorBuilder_a$CONCEPTS" />
-      <unit id="1480846759627784098" at="615,0,620,0" name="jetbrains.mps.samples.StateChart.editor.State_EditorBuilder_a$PROPS" />
-      <unit id="2477378150715735229" at="580,88,588,5" name="jetbrains.mps.samples.StateChart.editor.State_EditorBuilder_a$3" />
-      <unit id="1480846759627784098" at="606,0,614,0" name="jetbrains.mps.samples.StateChart.editor.State_EditorBuilder_a$LINKS" />
-      <unit id="1480846759627784098" at="299,0,353,0" name="jetbrains.mps.samples.StateChart.editor.State_EditorBuilder_a$onEntrySingleRoleHandler_sjqidp_b7a" />
-      <unit id="1480846759627784098" at="387,0,441,0" name="jetbrains.mps.samples.StateChart.editor.State_EditorBuilder_a$onExitSingleRoleHandler_sjqidp_b8a" />
-      <unit id="1480846759627784098" at="207,0,274,0" name="jetbrains.mps.samples.StateChart.editor.State_EditorBuilder_a$transitionsListHandler_sjqidp_g0" />
-      <unit id="1480846759627784098" at="52,0,626,0" name="jetbrains.mps.samples.StateChart.editor.State_EditorBuilder_a" />
+      <unit id="6216326891663703021" at="492,88,496,5" name="jetbrains.mps.samples.StateChart.editor.State_EditorBuilder$1" />
+      <unit id="6216326891663724147" at="564,88,568,5" name="jetbrains.mps.samples.StateChart.editor.State_EditorBuilder$2" />
+      <unit id="1480846759627784098" at="621,0,625,0" name="jetbrains.mps.samples.StateChart.editor.State_EditorBuilder$CONCEPTS" />
+      <unit id="1480846759627784098" at="615,0,620,0" name="jetbrains.mps.samples.StateChart.editor.State_EditorBuilder$PROPS" />
+      <unit id="2477378150715735229" at="580,88,588,5" name="jetbrains.mps.samples.StateChart.editor.State_EditorBuilder$3" />
+      <unit id="1480846759627784098" at="606,0,614,0" name="jetbrains.mps.samples.StateChart.editor.State_EditorBuilder$LINKS" />
+      <unit id="1480846759627784098" at="299,0,353,0" name="jetbrains.mps.samples.StateChart.editor.State_EditorBuilder$onEntrySingleRoleHandler_sjqidp_b7a" />
+      <unit id="1480846759627784098" at="387,0,441,0" name="jetbrains.mps.samples.StateChart.editor.State_EditorBuilder$onExitSingleRoleHandler_sjqidp_b8a" />
+      <unit id="1480846759627784098" at="207,0,274,0" name="jetbrains.mps.samples.StateChart.editor.State_EditorBuilder$transitionsListHandler_sjqidp_g0" />
+      <unit id="1480846759627784098" at="52,0,626,0" name="jetbrains.mps.samples.StateChart.editor.State_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:f2fc442e-c0f0-467d-ac9f-8f38c8182f6f(jetbrains.mps.samples.StateChart.editor)/1480846759627803705">
     <file name="StateChart_Editor.java">
-      <node id="1480846759627803705" at="11,79,12,76" concept="8" />
+      <node id="1480846759627803705" at="11,79,12,74" concept="8" />
       <node id="1480846759627803705" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1480846759627803705" at="11,79,12,76" />
+      <scope id="1480846759627803705" at="11,79,12,74" />
       <scope id="1480846759627803705" at="11,0,14,0">
         <var name="editorContext" id="1480846759627803705" />
         <var name="node" id="1480846759627803705" />
       </scope>
       <unit id="1480846759627803705" at="10,0,15,0" name="jetbrains.mps.samples.StateChart.editor.StateChart_Editor" />
     </file>
-    <file name="StateChart_EditorBuilder_a.java">
-      <node id="1480846759627803705" at="35,90,36,19" concept="11" />
+    <file name="StateChart_EditorBuilder.java">
+      <node id="1480846759627803705" at="35,88,36,19" concept="11" />
       <node id="1480846759627803705" at="36,19,37,18" concept="2" />
       <node id="1480846759627803705" at="42,26,43,18" concept="8" />
       <node id="1480846759627803705" at="46,39,47,32" concept="8" />
@@ -1301,7 +1301,7 @@
       <node id="1480846759627803705" at="141,0,142,0" concept="10" trace="PropertyAttribute$Gb" />
       <node id="1480846759627803705" at="32,0,34,0" concept="3" trace="myNode" />
       <node id="1480846759627803705" at="46,0,49,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="1480846759627803705" at="35,0,39,0" concept="1" trace="StateChart_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1480846759627803705" at="35,0,39,0" concept="1" trace="StateChart_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1480846759627803705" at="40,0,45,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1480846759627803724" at="84,208,89,24" concept="5" />
       <node id="1480846759627803714" at="64,0,70,0" concept="6" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -1316,7 +1316,7 @@
       <scope id="1480846759627803705" at="42,26,43,18" />
       <scope id="1480846759627803705" at="46,39,47,32" />
       <scope id="1480846759627803724" at="90,15,91,40" />
-      <scope id="1480846759627803705" at="35,90,37,18" />
+      <scope id="1480846759627803705" at="35,88,37,18" />
       <scope id="1480846759627803724" at="85,74,87,145">
         <var name="manager" id="1480846759627803724" />
       </scope>
@@ -1368,9 +1368,9 @@
       </scope>
       <scope id="1480846759627803724" at="70,41,92,5" />
       <scope id="1480846759627803724" at="70,0,94,0" />
-      <unit id="1480846759627803705" at="136,0,139,0" name="jetbrains.mps.samples.StateChart.editor.StateChart_EditorBuilder_a$PROPS" />
-      <unit id="1480846759627803705" at="140,0,143,0" name="jetbrains.mps.samples.StateChart.editor.StateChart_EditorBuilder_a$CONCEPTS" />
-      <unit id="1480846759627803705" at="31,0,144,0" name="jetbrains.mps.samples.StateChart.editor.StateChart_EditorBuilder_a" />
+      <unit id="1480846759627803705" at="136,0,139,0" name="jetbrains.mps.samples.StateChart.editor.StateChart_EditorBuilder$PROPS" />
+      <unit id="1480846759627803705" at="140,0,143,0" name="jetbrains.mps.samples.StateChart.editor.StateChart_EditorBuilder$CONCEPTS" />
+      <unit id="1480846759627803705" at="31,0,144,0" name="jetbrains.mps.samples.StateChart.editor.StateChart_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:f2fc442e-c0f0-467d-ac9f-8f38c8182f6f(jetbrains.mps.samples.StateChart.editor)/6216326891663378496">
@@ -1380,11 +1380,11 @@
     </file>
     <file name="StateTriggers.java">
       <node id="6216326891663378496" at="15,47,16,35" concept="8" />
-      <node id="6216326891663378496" at="18,79,19,82" concept="8" />
+      <node id="6216326891663378496" at="18,79,19,80" concept="8" />
       <node id="6216326891663378496" at="18,0,21,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="6216326891663378496" at="14,0,18,0" concept="6" trace="getContextHints#()Ljava/util/Collection;" />
       <scope id="6216326891663378496" at="15,47,16,35" />
-      <scope id="6216326891663378496" at="18,79,19,82" />
+      <scope id="6216326891663378496" at="18,79,19,80" />
       <scope id="6216326891663378496" at="18,0,21,0">
         <var name="editorContext" id="6216326891663378496" />
         <var name="node" id="6216326891663378496" />
@@ -1392,8 +1392,8 @@
       <scope id="6216326891663378496" at="14,0,18,0" />
       <unit id="6216326891663378496" at="13,0,22,0" name="jetbrains.mps.samples.StateChart.editor.StateTriggers" />
     </file>
-    <file name="StateTriggers_ComponentBuilder_a.java">
-      <node id="6216326891663378496" at="30,96,31,19" concept="11" />
+    <file name="StateTriggers_ComponentBuilder.java">
+      <node id="6216326891663378496" at="30,94,31,19" concept="11" />
       <node id="6216326891663378496" at="31,19,32,18" concept="2" />
       <node id="6216326891663378496" at="37,26,38,18" concept="8" />
       <node id="6216326891663378496" at="41,39,42,32" concept="8" />
@@ -1438,7 +1438,7 @@
       <node id="6216326891663378496" at="71,0,74,0" concept="6" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="6216326891663378496" at="74,0,77,0" concept="6" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="6216326891663378496" at="118,96,121,9" concept="5" />
-      <node id="6216326891663378496" at="30,0,34,0" concept="1" trace="StateTriggers_ComponentBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="6216326891663378496" at="30,0,34,0" concept="1" trace="StateTriggers_ComponentBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="6216326891663378496" at="62,0,66,0" concept="1" trace="availableTriggersListHandler_rxmtnq_a0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="6216326891663378496" at="67,0,71,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="6216326891663378496" at="100,97,104,9" concept="5" />
@@ -1462,7 +1462,7 @@
       <scope id="6216326891663378496" at="74,48,75,31" />
       <scope id="6216326891663378496" at="92,17,93,42" />
       <scope id="6216326891663378496" at="119,34,120,91" />
-      <scope id="6216326891663378496" at="30,96,32,18" />
+      <scope id="6216326891663378496" at="30,94,32,18" />
       <scope id="6216326891663378496" at="62,91,64,25" />
       <scope id="6216326891663378496" at="101,122,103,146" />
       <scope id="6216326891663378496" at="107,34,109,142" />
@@ -1510,20 +1510,20 @@
         <var name="elementNode" id="6216326891663378496" />
         <var name="isEmptyCell" id="6216326891663378496" />
       </scope>
-      <unit id="6216326891663378496" at="126,0,129,0" name="jetbrains.mps.samples.StateChart.editor.StateTriggers_ComponentBuilder_a$LINKS" />
-      <unit id="6216326891663378496" at="130,0,133,0" name="jetbrains.mps.samples.StateChart.editor.StateTriggers_ComponentBuilder_a$CONCEPTS" />
-      <unit id="6216326891663378496" at="58,0,125,0" name="jetbrains.mps.samples.StateChart.editor.StateTriggers_ComponentBuilder_a$availableTriggersListHandler_rxmtnq_a0" />
-      <unit id="6216326891663378496" at="26,0,134,0" name="jetbrains.mps.samples.StateChart.editor.StateTriggers_ComponentBuilder_a" />
+      <unit id="6216326891663378496" at="126,0,129,0" name="jetbrains.mps.samples.StateChart.editor.StateTriggers_ComponentBuilder$LINKS" />
+      <unit id="6216326891663378496" at="130,0,133,0" name="jetbrains.mps.samples.StateChart.editor.StateTriggers_ComponentBuilder$CONCEPTS" />
+      <unit id="6216326891663378496" at="58,0,125,0" name="jetbrains.mps.samples.StateChart.editor.StateTriggers_ComponentBuilder$availableTriggersListHandler_rxmtnq_a0" />
+      <unit id="6216326891663378496" at="26,0,134,0" name="jetbrains.mps.samples.StateChart.editor.StateTriggers_ComponentBuilder" />
     </file>
   </root>
   <root nodeRef="r:f2fc442e-c0f0-467d-ac9f-8f38c8182f6f(jetbrains.mps.samples.StateChart.editor)/6216326891663378586">
     <file name="StateTransitions.java">
       <node id="6216326891663378586" at="15,47,16,35" concept="8" />
-      <node id="6216326891663378586" at="18,79,19,85" concept="8" />
+      <node id="6216326891663378586" at="18,79,19,83" concept="8" />
       <node id="6216326891663378586" at="18,0,21,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="6216326891663378586" at="14,0,18,0" concept="6" trace="getContextHints#()Ljava/util/Collection;" />
       <scope id="6216326891663378586" at="15,47,16,35" />
-      <scope id="6216326891663378586" at="18,79,19,85" />
+      <scope id="6216326891663378586" at="18,79,19,83" />
       <scope id="6216326891663378586" at="18,0,21,0">
         <var name="editorContext" id="6216326891663378586" />
         <var name="node" id="6216326891663378586" />
@@ -1531,8 +1531,8 @@
       <scope id="6216326891663378586" at="14,0,18,0" />
       <unit id="6216326891663378586" at="13,0,22,0" name="jetbrains.mps.samples.StateChart.editor.StateTransitions" />
     </file>
-    <file name="StateTransitions_ComponentBuilder_a.java">
-      <node id="6216326891663378586" at="30,99,31,19" concept="11" />
+    <file name="StateTransitions_ComponentBuilder.java">
+      <node id="6216326891663378586" at="30,97,31,19" concept="11" />
       <node id="6216326891663378586" at="31,19,32,18" concept="2" />
       <node id="6216326891663378586" at="37,26,38,18" concept="8" />
       <node id="6216326891663378586" at="41,39,42,32" concept="8" />
@@ -1577,7 +1577,7 @@
       <node id="6216326891663378586" at="71,0,74,0" concept="6" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="6216326891663378586" at="74,0,77,0" concept="6" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="6216326891663378586" at="118,96,121,9" concept="5" />
-      <node id="6216326891663378586" at="30,0,34,0" concept="1" trace="StateTransitions_ComponentBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="6216326891663378586" at="30,0,34,0" concept="1" trace="StateTransitions_ComponentBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="6216326891663378586" at="62,0,66,0" concept="1" trace="transitionsListHandler_hbe0cm_a0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="6216326891663378586" at="67,0,71,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="6216326891663378586" at="100,97,104,9" concept="5" />
@@ -1601,7 +1601,7 @@
       <scope id="6216326891663378586" at="74,48,75,36" />
       <scope id="6216326891663378586" at="92,17,93,42" />
       <scope id="6216326891663378586" at="119,34,120,91" />
-      <scope id="6216326891663378586" at="30,99,32,18" />
+      <scope id="6216326891663378586" at="30,97,32,18" />
       <scope id="6216326891663378586" at="62,85,64,25" />
       <scope id="6216326891663378586" at="101,122,103,146" />
       <scope id="6216326891663378586" at="107,34,109,142" />
@@ -1649,10 +1649,10 @@
         <var name="elementNode" id="6216326891663378586" />
         <var name="isEmptyCell" id="6216326891663378586" />
       </scope>
-      <unit id="6216326891663378586" at="126,0,129,0" name="jetbrains.mps.samples.StateChart.editor.StateTransitions_ComponentBuilder_a$LINKS" />
-      <unit id="6216326891663378586" at="130,0,133,0" name="jetbrains.mps.samples.StateChart.editor.StateTransitions_ComponentBuilder_a$CONCEPTS" />
-      <unit id="6216326891663378586" at="58,0,125,0" name="jetbrains.mps.samples.StateChart.editor.StateTransitions_ComponentBuilder_a$transitionsListHandler_hbe0cm_a0" />
-      <unit id="6216326891663378586" at="26,0,134,0" name="jetbrains.mps.samples.StateChart.editor.StateTransitions_ComponentBuilder_a" />
+      <unit id="6216326891663378586" at="126,0,129,0" name="jetbrains.mps.samples.StateChart.editor.StateTransitions_ComponentBuilder$LINKS" />
+      <unit id="6216326891663378586" at="130,0,133,0" name="jetbrains.mps.samples.StateChart.editor.StateTransitions_ComponentBuilder$CONCEPTS" />
+      <unit id="6216326891663378586" at="58,0,125,0" name="jetbrains.mps.samples.StateChart.editor.StateTransitions_ComponentBuilder$transitionsListHandler_hbe0cm_a0" />
+      <unit id="6216326891663378586" at="26,0,134,0" name="jetbrains.mps.samples.StateChart.editor.StateTransitions_ComponentBuilder" />
     </file>
   </root>
   <root nodeRef="r:f2fc442e-c0f0-467d-ac9f-8f38c8182f6f(jetbrains.mps.samples.StateChart.editor)/6216326891663389714">
@@ -1662,11 +1662,11 @@
     </file>
     <file name="StateStates.java">
       <node id="6216326891663389714" at="15,47,16,35" concept="8" />
-      <node id="6216326891663389714" at="18,79,19,80" concept="8" />
+      <node id="6216326891663389714" at="18,79,19,78" concept="8" />
       <node id="6216326891663389714" at="18,0,21,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="6216326891663389714" at="14,0,18,0" concept="6" trace="getContextHints#()Ljava/util/Collection;" />
       <scope id="6216326891663389714" at="15,47,16,35" />
-      <scope id="6216326891663389714" at="18,79,19,80" />
+      <scope id="6216326891663389714" at="18,79,19,78" />
       <scope id="6216326891663389714" at="18,0,21,0">
         <var name="editorContext" id="6216326891663389714" />
         <var name="node" id="6216326891663389714" />
@@ -1674,8 +1674,8 @@
       <scope id="6216326891663389714" at="14,0,18,0" />
       <unit id="6216326891663389714" at="13,0,22,0" name="jetbrains.mps.samples.StateChart.editor.StateStates" />
     </file>
-    <file name="StateStates_ComponentBuilder_a.java">
-      <node id="6216326891663389714" at="30,94,31,19" concept="11" />
+    <file name="StateStates_ComponentBuilder.java">
+      <node id="6216326891663389714" at="30,92,31,19" concept="11" />
       <node id="6216326891663389714" at="31,19,32,18" concept="2" />
       <node id="6216326891663389714" at="37,26,38,18" concept="8" />
       <node id="6216326891663389714" at="41,39,42,32" concept="8" />
@@ -1720,7 +1720,7 @@
       <node id="6216326891663389714" at="71,0,74,0" concept="6" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="6216326891663389714" at="74,0,77,0" concept="6" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="6216326891663389714" at="118,96,121,9" concept="5" />
-      <node id="6216326891663389714" at="30,0,34,0" concept="1" trace="StateStates_ComponentBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="6216326891663389714" at="30,0,34,0" concept="1" trace="StateStates_ComponentBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="6216326891663389714" at="62,0,66,0" concept="1" trace="statesListHandler_nn54vd_a0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="6216326891663389714" at="67,0,71,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="6216326891663389714" at="100,97,104,9" concept="5" />
@@ -1744,7 +1744,7 @@
       <scope id="6216326891663389714" at="74,48,75,31" />
       <scope id="6216326891663389714" at="92,17,93,42" />
       <scope id="6216326891663389714" at="119,34,120,91" />
-      <scope id="6216326891663389714" at="30,94,32,18" />
+      <scope id="6216326891663389714" at="30,92,32,18" />
       <scope id="6216326891663389714" at="62,80,64,25" />
       <scope id="6216326891663389714" at="101,122,103,146" />
       <scope id="6216326891663389714" at="107,34,109,142" />
@@ -1792,25 +1792,25 @@
         <var name="elementNode" id="6216326891663389714" />
         <var name="isEmptyCell" id="6216326891663389714" />
       </scope>
-      <unit id="6216326891663389714" at="126,0,129,0" name="jetbrains.mps.samples.StateChart.editor.StateStates_ComponentBuilder_a$LINKS" />
-      <unit id="6216326891663389714" at="130,0,133,0" name="jetbrains.mps.samples.StateChart.editor.StateStates_ComponentBuilder_a$CONCEPTS" />
-      <unit id="6216326891663389714" at="58,0,125,0" name="jetbrains.mps.samples.StateChart.editor.StateStates_ComponentBuilder_a$statesListHandler_nn54vd_a0" />
-      <unit id="6216326891663389714" at="26,0,134,0" name="jetbrains.mps.samples.StateChart.editor.StateStates_ComponentBuilder_a" />
+      <unit id="6216326891663389714" at="126,0,129,0" name="jetbrains.mps.samples.StateChart.editor.StateStates_ComponentBuilder$LINKS" />
+      <unit id="6216326891663389714" at="130,0,133,0" name="jetbrains.mps.samples.StateChart.editor.StateStates_ComponentBuilder$CONCEPTS" />
+      <unit id="6216326891663389714" at="58,0,125,0" name="jetbrains.mps.samples.StateChart.editor.StateStates_ComponentBuilder$statesListHandler_nn54vd_a0" />
+      <unit id="6216326891663389714" at="26,0,134,0" name="jetbrains.mps.samples.StateChart.editor.StateStates_ComponentBuilder" />
     </file>
   </root>
   <root nodeRef="r:f2fc442e-c0f0-467d-ac9f-8f38c8182f6f(jetbrains.mps.samples.StateChart.editor)/6813679070097861235">
     <file name="Raise_Editor.java">
-      <node id="6813679070097861235" at="11,79,12,71" concept="8" />
+      <node id="6813679070097861235" at="11,79,12,69" concept="8" />
       <node id="6813679070097861235" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="6813679070097861235" at="11,79,12,71" />
+      <scope id="6813679070097861235" at="11,79,12,69" />
       <scope id="6813679070097861235" at="11,0,14,0">
         <var name="editorContext" id="6813679070097861235" />
         <var name="node" id="6813679070097861235" />
       </scope>
       <unit id="6813679070097861235" at="10,0,15,0" name="jetbrains.mps.samples.StateChart.editor.Raise_Editor" />
     </file>
-    <file name="Raise_EditorBuilder_a.java">
-      <node id="6813679070097861235" at="37,85,38,19" concept="11" />
+    <file name="Raise_EditorBuilder.java">
+      <node id="6813679070097861235" at="37,83,38,19" concept="11" />
       <node id="6813679070097861235" at="38,19,39,18" concept="2" />
       <node id="6813679070097861235" at="44,26,45,18" concept="8" />
       <node id="6813679070097861235" at="48,39,49,32" concept="8" />
@@ -1871,7 +1871,7 @@
       <node id="6813679070097861252" at="96,0,98,0" concept="3" trace="myNode" />
       <node id="6813679070097861235" at="48,0,51,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="6813679070097861252" at="106,0,109,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="6813679070097861235" at="37,0,41,0" concept="1" trace="Raise_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="6813679070097861235" at="37,0,41,0" concept="1" trace="Raise_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="6813679070097861235" at="81,0,85,5" concept="5" />
       <node id="6813679070097861235" at="42,0,47,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="6813679070097861235" at="88,205,93,22" concept="5" />
@@ -1890,7 +1890,7 @@
       <scope id="6813679070097861252" at="106,41,107,32" />
       <scope id="6813679070097861252" at="112,28,113,20" />
       <scope id="6813679070097861263" at="133,17,134,42" />
-      <scope id="6813679070097861235" at="37,85,39,18" />
+      <scope id="6813679070097861235" at="37,83,39,18" />
       <scope id="6813679070097861235" at="82,40,84,44" />
       <scope id="6813679070097861235" at="89,73,91,145">
         <var name="manager" id="6813679070097861235" />
@@ -1942,27 +1942,27 @@
         <var name="referenceLink" id="6813679070097861235" />
       </scope>
       <scope id="6813679070097861235" at="67,0,95,0" />
-      <unit id="6813679070097861235" at="139,0,142,0" name="jetbrains.mps.samples.StateChart.editor.Raise_EditorBuilder_a$LINKS" />
-      <unit id="6813679070097861235" at="148,0,151,0" name="jetbrains.mps.samples.StateChart.editor.Raise_EditorBuilder_a$PROPS" />
-      <unit id="6813679070097861235" at="143,0,147,0" name="jetbrains.mps.samples.StateChart.editor.Raise_EditorBuilder_a$CONCEPTS" />
-      <unit id="6813679070097861235" at="69,42,77,5" name="jetbrains.mps.samples.StateChart.editor.Raise_EditorBuilder_a$1" />
-      <unit id="6813679070097861252" at="95,0,138,0" name="jetbrains.mps.samples.StateChart.editor.Raise_EditorBuilder_a$Inline_Builder0" />
-      <unit id="6813679070097861235" at="33,0,152,0" name="jetbrains.mps.samples.StateChart.editor.Raise_EditorBuilder_a" />
+      <unit id="6813679070097861235" at="139,0,142,0" name="jetbrains.mps.samples.StateChart.editor.Raise_EditorBuilder$LINKS" />
+      <unit id="6813679070097861235" at="148,0,151,0" name="jetbrains.mps.samples.StateChart.editor.Raise_EditorBuilder$PROPS" />
+      <unit id="6813679070097861235" at="143,0,147,0" name="jetbrains.mps.samples.StateChart.editor.Raise_EditorBuilder$CONCEPTS" />
+      <unit id="6813679070097861235" at="69,42,77,5" name="jetbrains.mps.samples.StateChart.editor.Raise_EditorBuilder$1" />
+      <unit id="6813679070097861252" at="95,0,138,0" name="jetbrains.mps.samples.StateChart.editor.Raise_EditorBuilder$Inline_Builder0" />
+      <unit id="6813679070097861235" at="33,0,152,0" name="jetbrains.mps.samples.StateChart.editor.Raise_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:f2fc442e-c0f0-467d-ac9f-8f38c8182f6f(jetbrains.mps.samples.StateChart.editor)/6813679070097861294">
     <file name="Log_Editor.java">
-      <node id="6813679070097861294" at="11,79,12,69" concept="8" />
+      <node id="6813679070097861294" at="11,79,12,67" concept="8" />
       <node id="6813679070097861294" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="6813679070097861294" at="11,79,12,69" />
+      <scope id="6813679070097861294" at="11,79,12,67" />
       <scope id="6813679070097861294" at="11,0,14,0">
         <var name="editorContext" id="6813679070097861294" />
         <var name="node" id="6813679070097861294" />
       </scope>
       <unit id="6813679070097861294" at="10,0,15,0" name="jetbrains.mps.samples.StateChart.editor.Log_Editor" />
     </file>
-    <file name="Log_EditorBuilder_a.java">
-      <node id="6813679070097861294" at="32,83,33,19" concept="11" />
+    <file name="Log_EditorBuilder.java">
+      <node id="6813679070097861294" at="32,81,33,19" concept="11" />
       <node id="6813679070097861294" at="33,19,34,18" concept="2" />
       <node id="6813679070097861294" at="39,26,40,18" concept="8" />
       <node id="6813679070097861294" at="43,39,44,32" concept="8" />
@@ -1995,7 +1995,7 @@
       <node id="6813679070097861294" at="89,0,90,0" concept="10" trace="PropertyAttribute$Gb" />
       <node id="6813679070097861294" at="29,0,31,0" concept="3" trace="myNode" />
       <node id="6813679070097861294" at="43,0,46,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="6813679070097861294" at="32,0,36,0" concept="1" trace="Log_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="6813679070097861294" at="32,0,36,0" concept="1" trace="Log_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="6813679070097861294" at="37,0,42,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="6813679070097861309" at="73,208,78,24" concept="5" />
       <node id="6813679070097861303" at="56,0,62,0" concept="6" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -2005,7 +2005,7 @@
       <scope id="6813679070097861294" at="39,26,40,18" />
       <scope id="6813679070097861294" at="43,39,44,32" />
       <scope id="6813679070097861309" at="79,15,80,40" />
-      <scope id="6813679070097861294" at="32,83,34,18" />
+      <scope id="6813679070097861294" at="32,81,34,18" />
       <scope id="6813679070097861309" at="74,74,76,145">
         <var name="manager" id="6813679070097861309" />
       </scope>
@@ -2031,24 +2031,24 @@
       </scope>
       <scope id="6813679070097861309" at="62,41,81,5" />
       <scope id="6813679070097861309" at="62,0,83,0" />
-      <unit id="6813679070097861294" at="84,0,87,0" name="jetbrains.mps.samples.StateChart.editor.Log_EditorBuilder_a$PROPS" />
-      <unit id="6813679070097861294" at="88,0,91,0" name="jetbrains.mps.samples.StateChart.editor.Log_EditorBuilder_a$CONCEPTS" />
-      <unit id="6813679070097861294" at="28,0,92,0" name="jetbrains.mps.samples.StateChart.editor.Log_EditorBuilder_a" />
+      <unit id="6813679070097861294" at="84,0,87,0" name="jetbrains.mps.samples.StateChart.editor.Log_EditorBuilder$PROPS" />
+      <unit id="6813679070097861294" at="88,0,91,0" name="jetbrains.mps.samples.StateChart.editor.Log_EditorBuilder$CONCEPTS" />
+      <unit id="6813679070097861294" at="28,0,92,0" name="jetbrains.mps.samples.StateChart.editor.Log_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:f2fc442e-c0f0-467d-ac9f-8f38c8182f6f(jetbrains.mps.samples.StateChart.editor)/6813679070097861341">
     <file name="OperationsList_Editor.java">
-      <node id="6813679070097861341" at="11,79,12,80" concept="8" />
+      <node id="6813679070097861341" at="11,79,12,78" concept="8" />
       <node id="6813679070097861341" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="6813679070097861341" at="11,79,12,80" />
+      <scope id="6813679070097861341" at="11,79,12,78" />
       <scope id="6813679070097861341" at="11,0,14,0">
         <var name="editorContext" id="6813679070097861341" />
         <var name="node" id="6813679070097861341" />
       </scope>
       <unit id="6813679070097861341" at="10,0,15,0" name="jetbrains.mps.samples.StateChart.editor.OperationsList_Editor" />
     </file>
-    <file name="OperationsList_EditorBuilder_a.java">
-      <node id="6813679070097861341" at="30,94,31,19" concept="11" />
+    <file name="OperationsList_EditorBuilder.java">
+      <node id="6813679070097861341" at="30,92,31,19" concept="11" />
       <node id="6813679070097861341" at="31,19,32,18" concept="2" />
       <node id="6813679070097861341" at="37,26,38,18" concept="8" />
       <node id="6813679070097861341" at="41,39,42,32" concept="8" />
@@ -2095,7 +2095,7 @@
       <node id="6813679070097861341" at="73,0,76,0" concept="6" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="6813679070097861341" at="76,0,79,0" concept="6" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="6813679070097861341" at="120,96,123,9" concept="5" />
-      <node id="6813679070097861341" at="30,0,34,0" concept="1" trace="OperationsList_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="6813679070097861341" at="30,0,34,0" concept="1" trace="OperationsList_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="6813679070097861341" at="64,0,68,0" concept="1" trace="operationsListHandler_l61ys1_a0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="6813679070097861341" at="69,0,73,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="6813679070097861341" at="102,97,106,9" concept="5" />
@@ -2119,7 +2119,7 @@
       <scope id="6813679070097861341" at="76,48,77,40" />
       <scope id="6813679070097861341" at="94,17,95,42" />
       <scope id="6813679070097861341" at="121,34,122,91" />
-      <scope id="6813679070097861341" at="30,94,32,18" />
+      <scope id="6813679070097861341" at="30,92,32,18" />
       <scope id="6813679070097861341" at="64,84,66,25" />
       <scope id="6813679070097861341" at="103,122,105,146" />
       <scope id="6813679070097861341" at="109,34,111,142" />
@@ -2167,10 +2167,10 @@
         <var name="elementNode" id="6813679070097861341" />
         <var name="isEmptyCell" id="6813679070097861341" />
       </scope>
-      <unit id="6813679070097861341" at="128,0,131,0" name="jetbrains.mps.samples.StateChart.editor.OperationsList_EditorBuilder_a$LINKS" />
-      <unit id="6813679070097861341" at="132,0,135,0" name="jetbrains.mps.samples.StateChart.editor.OperationsList_EditorBuilder_a$CONCEPTS" />
-      <unit id="6813679070097861341" at="60,0,127,0" name="jetbrains.mps.samples.StateChart.editor.OperationsList_EditorBuilder_a$operationsListHandler_l61ys1_a0" />
-      <unit id="6813679070097861341" at="26,0,136,0" name="jetbrains.mps.samples.StateChart.editor.OperationsList_EditorBuilder_a" />
+      <unit id="6813679070097861341" at="128,0,131,0" name="jetbrains.mps.samples.StateChart.editor.OperationsList_EditorBuilder$LINKS" />
+      <unit id="6813679070097861341" at="132,0,135,0" name="jetbrains.mps.samples.StateChart.editor.OperationsList_EditorBuilder$CONCEPTS" />
+      <unit id="6813679070097861341" at="60,0,127,0" name="jetbrains.mps.samples.StateChart.editor.OperationsList_EditorBuilder$operationsListHandler_l61ys1_a0" />
+      <unit id="6813679070097861341" at="26,0,136,0" name="jetbrains.mps.samples.StateChart.editor.OperationsList_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:f2fc442e-c0f0-467d-ac9f-8f38c8182f6f(jetbrains.mps.samples.StateChart.editor)/6813679070097861382">
@@ -2184,17 +2184,17 @@
   </root>
   <root nodeRef="r:f2fc442e-c0f0-467d-ac9f-8f38c8182f6f(jetbrains.mps.samples.StateChart.editor)/6813679070097861408">
     <file name="EmptyOperation_Editor.java">
-      <node id="6813679070097861408" at="11,79,12,80" concept="8" />
+      <node id="6813679070097861408" at="11,79,12,78" concept="8" />
       <node id="6813679070097861408" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="6813679070097861408" at="11,79,12,80" />
+      <scope id="6813679070097861408" at="11,79,12,78" />
       <scope id="6813679070097861408" at="11,0,14,0">
         <var name="editorContext" id="6813679070097861408" />
         <var name="node" id="6813679070097861408" />
       </scope>
       <unit id="6813679070097861408" at="10,0,15,0" name="jetbrains.mps.samples.StateChart.editor.EmptyOperation_Editor" />
     </file>
-    <file name="EmptyOperation_EditorBuilder_a.java">
-      <node id="6813679070097861408" at="19,94,20,19" concept="11" />
+    <file name="EmptyOperation_EditorBuilder.java">
+      <node id="6813679070097861408" at="19,92,20,19" concept="11" />
       <node id="6813679070097861408" at="20,19,21,18" concept="2" />
       <node id="6813679070097861408" at="26,26,27,18" concept="8" />
       <node id="6813679070097861408" at="30,39,31,30" concept="8" />
@@ -2209,12 +2209,12 @@
       <node id="6813679070097861410" at="42,34,43,22" concept="8" />
       <node id="6813679070097861408" at="16,0,18,0" concept="3" trace="myNode" />
       <node id="6813679070097861408" at="30,0,33,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="6813679070097861408" at="19,0,23,0" concept="1" trace="EmptyOperation_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="6813679070097861408" at="19,0,23,0" concept="1" trace="EmptyOperation_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="6813679070097861408" at="24,0,29,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="6813679070097861410" at="34,0,45,0" concept="6" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="6813679070097861408" at="26,26,27,18" />
       <scope id="6813679070097861408" at="30,39,31,30" />
-      <scope id="6813679070097861408" at="19,94,21,18" />
+      <scope id="6813679070097861408" at="19,92,21,18" />
       <scope id="6813679070097861408" at="30,0,33,0" />
       <scope id="6813679070097861408" at="19,0,23,0">
         <var name="context" id="6813679070097861408" />
@@ -2226,7 +2226,7 @@
         <var name="style" id="6813679070097861410" />
       </scope>
       <scope id="6813679070097861410" at="34,0,45,0" />
-      <unit id="6813679070097861408" at="15,0,46,0" name="jetbrains.mps.samples.StateChart.editor.EmptyOperation_EditorBuilder_a" />
+      <unit id="6813679070097861408" at="15,0,46,0" name="jetbrains.mps.samples.StateChart.editor.EmptyOperation_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:f2fc442e-c0f0-467d-ac9f-8f38c8182f6f(jetbrains.mps.samples.StateChart.editor)/6813679070098004640">
@@ -2316,11 +2316,11 @@
     </file>
     <file name="StateChartContents.java">
       <node id="6813679070099252300" at="15,47,16,35" concept="8" />
-      <node id="6813679070099252300" at="18,79,19,87" concept="8" />
+      <node id="6813679070099252300" at="18,79,19,85" concept="8" />
       <node id="6813679070099252300" at="18,0,21,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="6813679070099252300" at="14,0,18,0" concept="6" trace="getContextHints#()Ljava/util/Collection;" />
       <scope id="6813679070099252300" at="15,47,16,35" />
-      <scope id="6813679070099252300" at="18,79,19,87" />
+      <scope id="6813679070099252300" at="18,79,19,85" />
       <scope id="6813679070099252300" at="18,0,21,0">
         <var name="editorContext" id="6813679070099252300" />
         <var name="node" id="6813679070099252300" />
@@ -2328,8 +2328,8 @@
       <scope id="6813679070099252300" at="14,0,18,0" />
       <unit id="6813679070099252300" at="13,0,22,0" name="jetbrains.mps.samples.StateChart.editor.StateChartContents" />
     </file>
-    <file name="StateChartContents_ComponentBuilder_a.java">
-      <node id="6813679070099252300" at="34,101,35,19" concept="11" />
+    <file name="StateChartContents_ComponentBuilder.java">
+      <node id="6813679070099252300" at="34,99,35,19" concept="11" />
       <node id="6813679070099252300" at="35,19,36,18" concept="2" />
       <node id="6813679070099252300" at="41,26,42,18" concept="8" />
       <node id="6813679070099252300" at="45,39,46,32" concept="8" />
@@ -2429,7 +2429,7 @@
       <node id="6813679070099252300" at="173,0,176,0" concept="6" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="6813679070099252300" at="176,0,179,0" concept="6" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="6813679070099252300" at="220,96,223,9" concept="5" />
-      <node id="6813679070099252300" at="34,0,38,0" concept="1" trace="StateChartContents_ComponentBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="6813679070099252300" at="34,0,38,0" concept="1" trace="StateChartContents_ComponentBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="6813679070099252300" at="81,0,85,0" concept="1" trace="availableTriggersListHandler_e22zgz_b0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="6813679070099252300" at="86,0,90,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="6813679070099252300" at="119,97,123,9" concept="5" />
@@ -2474,7 +2474,7 @@
       <scope id="6813679070099252300" at="176,48,177,31" />
       <scope id="6813679070099252300" at="194,17,195,42" />
       <scope id="6813679070099252300" at="221,34,222,91" />
-      <scope id="6813679070099252300" at="34,101,36,18" />
+      <scope id="6813679070099252300" at="34,99,36,18" />
       <scope id="6813679070099252300" at="81,91,83,25" />
       <scope id="6813679070099252300" at="120,122,122,146" />
       <scope id="6813679070099252300" at="126,34,128,142" />
@@ -2570,11 +2570,11 @@
         <var name="elementNode" id="6813679070099252300" />
         <var name="isEmptyCell" id="6813679070099252300" />
       </scope>
-      <unit id="6813679070099252300" at="228,0,232,0" name="jetbrains.mps.samples.StateChart.editor.StateChartContents_ComponentBuilder_a$LINKS" />
-      <unit id="6813679070099252300" at="233,0,237,0" name="jetbrains.mps.samples.StateChart.editor.StateChartContents_ComponentBuilder_a$CONCEPTS" />
-      <unit id="6813679070099252300" at="77,0,144,0" name="jetbrains.mps.samples.StateChart.editor.StateChartContents_ComponentBuilder_a$availableTriggersListHandler_e22zgz_b0" />
-      <unit id="6813679070099252300" at="160,0,227,0" name="jetbrains.mps.samples.StateChart.editor.StateChartContents_ComponentBuilder_a$statesListHandler_e22zgz_d0" />
-      <unit id="6813679070099252300" at="30,0,238,0" name="jetbrains.mps.samples.StateChart.editor.StateChartContents_ComponentBuilder_a" />
+      <unit id="6813679070099252300" at="228,0,232,0" name="jetbrains.mps.samples.StateChart.editor.StateChartContents_ComponentBuilder$LINKS" />
+      <unit id="6813679070099252300" at="233,0,237,0" name="jetbrains.mps.samples.StateChart.editor.StateChartContents_ComponentBuilder$CONCEPTS" />
+      <unit id="6813679070099252300" at="77,0,144,0" name="jetbrains.mps.samples.StateChart.editor.StateChartContents_ComponentBuilder$availableTriggersListHandler_e22zgz_b0" />
+      <unit id="6813679070099252300" at="160,0,227,0" name="jetbrains.mps.samples.StateChart.editor.StateChartContents_ComponentBuilder$statesListHandler_e22zgz_d0" />
+      <unit id="6813679070099252300" at="30,0,238,0" name="jetbrains.mps.samples.StateChart.editor.StateChartContents_ComponentBuilder" />
     </file>
   </root>
 </debug-info>

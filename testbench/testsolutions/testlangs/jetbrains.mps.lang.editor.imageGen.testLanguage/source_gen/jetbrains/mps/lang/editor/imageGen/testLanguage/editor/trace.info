@@ -14,17 +14,17 @@
   </root>
   <root nodeRef="r:86a7d44e-9a70-4684-a879-515e86917544(jetbrains.mps.lang.editor.imageGen.testLanguage.editor)/2442780630506669141">
     <file name="ExportAsImage_Editor.java">
-      <node id="2442780630506669141" at="11,79,12,79" concept="5" />
+      <node id="2442780630506669141" at="11,79,12,77" concept="5" />
       <node id="2442780630506669141" at="11,0,14,0" concept="3" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="2442780630506669141" at="11,79,12,79" />
+      <scope id="2442780630506669141" at="11,79,12,77" />
       <scope id="2442780630506669141" at="11,0,14,0">
         <var name="editorContext" id="2442780630506669141" />
         <var name="node" id="2442780630506669141" />
       </scope>
       <unit id="2442780630506669141" at="10,0,15,0" name="jetbrains.mps.lang.editor.imageGen.testLanguage.editor.ExportAsImage_Editor" />
     </file>
-    <file name="ExportAsImage_EditorBuilder_a.java">
-      <node id="2442780630506669141" at="24,93,25,19" concept="6" />
+    <file name="ExportAsImage_EditorBuilder.java">
+      <node id="2442780630506669141" at="24,91,25,19" concept="6" />
       <node id="2442780630506669141" at="25,19,26,18" concept="1" />
       <node id="2442780630506669141" at="31,26,32,18" concept="5" />
       <node id="2442780630506669141" at="35,39,36,32" concept="5" />
@@ -48,14 +48,14 @@
       <node id="2442780630506669407" at="60,93,61,22" concept="5" />
       <node id="2442780630506669141" at="21,0,23,0" concept="2" trace="myNode" />
       <node id="2442780630506669141" at="35,0,38,0" concept="3" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="2442780630506669141" at="24,0,28,0" concept="0" trace="ExportAsImage_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="2442780630506669141" at="24,0,28,0" concept="0" trace="ExportAsImage_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="2442780630506669141" at="29,0,34,0" concept="3" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="2442780630506669407" at="58,0,63,0" concept="3" trace="createAttributedNodeCell_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="2442780630506669141" at="39,0,48,0" concept="3" trace="createCollection_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="2442780630506669289" at="48,0,58,0" concept="3" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="2442780630506669141" at="31,26,32,18" />
       <scope id="2442780630506669141" at="35,39,36,32" />
-      <scope id="2442780630506669141" at="24,93,26,18" />
+      <scope id="2442780630506669141" at="24,91,26,18" />
       <scope id="2442780630506669141" at="35,0,38,0" />
       <scope id="2442780630506669407" at="58,51,61,22">
         <var name="editorCell" id="2442780630506669407" />
@@ -76,7 +76,7 @@
       </scope>
       <scope id="2442780630506669141" at="39,0,48,0" />
       <scope id="2442780630506669289" at="48,0,58,0" />
-      <unit id="2442780630506669141" at="20,0,64,0" name="jetbrains.mps.lang.editor.imageGen.testLanguage.editor.ExportAsImage_EditorBuilder_a" />
+      <unit id="2442780630506669141" at="20,0,64,0" name="jetbrains.mps.lang.editor.imageGen.testLanguage.editor.ExportAsImage_EditorBuilder" />
     </file>
   </root>
 </debug-info>

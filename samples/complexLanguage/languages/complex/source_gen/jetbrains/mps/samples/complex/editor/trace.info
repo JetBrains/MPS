@@ -18,17 +18,17 @@
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c89590423(jetbrains.mps.samples.complex.editor)/1196264073663">
     <file name="SingleComplexExpression_Editor.java">
-      <node id="1196264073663" at="11,79,12,89" concept="7" />
+      <node id="1196264073663" at="11,79,12,87" concept="7" />
       <node id="1196264073663" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1196264073663" at="11,79,12,89" />
+      <scope id="1196264073663" at="11,79,12,87" />
       <scope id="1196264073663" at="11,0,14,0">
         <var name="editorContext" id="1196264073663" />
         <var name="node" id="1196264073663" />
       </scope>
       <unit id="1196264073663" at="10,0,15,0" name="jetbrains.mps.samples.complex.editor.SingleComplexExpression_Editor" />
     </file>
-    <file name="SingleComplexExpression_EditorBuilder_a.java">
-      <node id="1196264073663" at="32,103,33,19" concept="9" />
+    <file name="SingleComplexExpression_EditorBuilder.java">
+      <node id="1196264073663" at="32,101,33,19" concept="9" />
       <node id="1196264073663" at="33,19,34,18" concept="1" />
       <node id="1196264073663" at="39,26,40,18" concept="7" />
       <node id="1196264073663" at="43,39,44,32" concept="7" />
@@ -88,7 +88,7 @@
       <node id="1196264073663" at="103,87,106,7" concept="4" />
       <node id="1196264073663" at="106,7,109,7" concept="4" />
       <node id="1196264073663" at="125,0,128,0" concept="5" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="1196264073663" at="32,0,36,0" concept="0" trace="SingleComplexExpression_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1196264073663" at="32,0,36,0" concept="0" trace="SingleComplexExpression_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1196264073663" at="74,0,78,0" concept="5" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1196264073663" at="82,0,86,0" concept="0" trace="complexExpressionSingleRoleHandler_l3wwva_c0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1196264073663" at="37,0,42,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -108,7 +108,7 @@
       <scope id="1196264073663" at="107,42,108,58" />
       <scope id="1196264073663" at="121,17,122,42" />
       <scope id="1196264073663" at="125,40,126,38" />
-      <scope id="1196264073663" at="32,103,34,18" />
+      <scope id="1196264073663" at="32,101,34,18" />
       <scope id="1196264073663" at="74,40,76,33">
         <var name="provider" id="1196264073663" />
       </scope>
@@ -163,24 +163,24 @@
       <scope id="1196264073663" at="47,0,58,0" />
       <scope id="1196264073663" at="112,44,123,7" />
       <scope id="1196264073663" at="111,0,125,0" />
-      <unit id="1196264073663" at="139,0,142,0" name="jetbrains.mps.samples.complex.editor.SingleComplexExpression_EditorBuilder_a$LINKS" />
-      <unit id="1196264073663" at="78,0,129,0" name="jetbrains.mps.samples.complex.editor.SingleComplexExpression_EditorBuilder_a$complexExpressionSingleRoleHandler_l3wwva_c0" />
-      <unit id="1196264073663" at="28,0,143,0" name="jetbrains.mps.samples.complex.editor.SingleComplexExpression_EditorBuilder_a" />
+      <unit id="1196264073663" at="139,0,142,0" name="jetbrains.mps.samples.complex.editor.SingleComplexExpression_EditorBuilder$LINKS" />
+      <unit id="1196264073663" at="78,0,129,0" name="jetbrains.mps.samples.complex.editor.SingleComplexExpression_EditorBuilder$complexExpressionSingleRoleHandler_l3wwva_c0" />
+      <unit id="1196264073663" at="28,0,143,0" name="jetbrains.mps.samples.complex.editor.SingleComplexExpression_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c89590423(jetbrains.mps.samples.complex.editor)/1196422134243">
     <file name="DegreeComplexExpression_Editor.java">
-      <node id="1196422134243" at="11,79,12,89" concept="7" />
+      <node id="1196422134243" at="11,79,12,87" concept="7" />
       <node id="1196422134243" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1196422134243" at="11,79,12,89" />
+      <scope id="1196422134243" at="11,79,12,87" />
       <scope id="1196422134243" at="11,0,14,0">
         <var name="editorContext" id="1196422134243" />
         <var name="node" id="1196422134243" />
       </scope>
       <unit id="1196422134243" at="10,0,15,0" name="jetbrains.mps.samples.complex.editor.DegreeComplexExpression_Editor" />
     </file>
-    <file name="DegreeComplexExpression_EditorBuilder_a.java">
-      <node id="1196422134243" at="27,103,28,19" concept="9" />
+    <file name="DegreeComplexExpression_EditorBuilder.java">
+      <node id="1196422134243" at="27,101,28,19" concept="9" />
       <node id="1196422134243" at="28,19,29,18" concept="1" />
       <node id="1196422134243" at="34,26,35,18" concept="7" />
       <node id="1196422134243" at="38,39,39,32" concept="7" />
@@ -260,7 +260,7 @@
       <node id="1196422134243" at="156,87,159,7" concept="4" />
       <node id="1196422134243" at="159,7,162,7" concept="4" />
       <node id="1196422134243" at="178,0,181,0" concept="5" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="1196422134243" at="27,0,31,0" concept="0" trace="DegreeComplexExpression_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1196422134243" at="27,0,31,0" concept="0" trace="DegreeComplexExpression_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1196422134243" at="60,0,64,0" concept="5" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1196422134243" at="68,0,72,0" concept="0" trace="complexExpressionSingleRoleHandler_q607mw_b0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1196422134243" at="127,0,131,0" concept="5" trace="createRefNode_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -292,7 +292,7 @@
       <scope id="1196422134243" at="160,42,161,47" />
       <scope id="1196422134243" at="174,17,175,42" />
       <scope id="1196422134243" at="178,40,179,27" />
-      <scope id="1196422134243" at="27,103,29,18" />
+      <scope id="1196422134243" at="27,101,29,18" />
       <scope id="1196422134243" at="60,40,62,33">
         <var name="provider" id="1196422134243" />
       </scope>
@@ -373,25 +373,25 @@
       <scope id="1196422134243" at="42,0,54,0" />
       <scope id="1196422134243" at="97,0,111,0" />
       <scope id="1196422134243" at="164,0,178,0" />
-      <unit id="1196422134243" at="183,0,187,0" name="jetbrains.mps.samples.complex.editor.DegreeComplexExpression_EditorBuilder_a$LINKS" />
-      <unit id="1196422134243" at="64,0,115,0" name="jetbrains.mps.samples.complex.editor.DegreeComplexExpression_EditorBuilder_a$complexExpressionSingleRoleHandler_q607mw_b0" />
-      <unit id="1196422134243" at="131,0,182,0" name="jetbrains.mps.samples.complex.editor.DegreeComplexExpression_EditorBuilder_a$degreeSingleRoleHandler_q607mw_e0" />
-      <unit id="1196422134243" at="23,0,188,0" name="jetbrains.mps.samples.complex.editor.DegreeComplexExpression_EditorBuilder_a" />
+      <unit id="1196422134243" at="183,0,187,0" name="jetbrains.mps.samples.complex.editor.DegreeComplexExpression_EditorBuilder$LINKS" />
+      <unit id="1196422134243" at="64,0,115,0" name="jetbrains.mps.samples.complex.editor.DegreeComplexExpression_EditorBuilder$complexExpressionSingleRoleHandler_q607mw_b0" />
+      <unit id="1196422134243" at="131,0,182,0" name="jetbrains.mps.samples.complex.editor.DegreeComplexExpression_EditorBuilder$degreeSingleRoleHandler_q607mw_e0" />
+      <unit id="1196422134243" at="23,0,188,0" name="jetbrains.mps.samples.complex.editor.DegreeComplexExpression_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c89590423(jetbrains.mps.samples.complex.editor)/1196434294865">
     <file name="ImaginaryUnit_Editor.java">
-      <node id="1196434294865" at="11,79,12,79" concept="7" />
+      <node id="1196434294865" at="11,79,12,77" concept="7" />
       <node id="1196434294865" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1196434294865" at="11,79,12,79" />
+      <scope id="1196434294865" at="11,79,12,77" />
       <scope id="1196434294865" at="11,0,14,0">
         <var name="editorContext" id="1196434294865" />
         <var name="node" id="1196434294865" />
       </scope>
       <unit id="1196434294865" at="10,0,15,0" name="jetbrains.mps.samples.complex.editor.ImaginaryUnit_Editor" />
     </file>
-    <file name="ImaginaryUnit_EditorBuilder_a.java">
-      <node id="1196434294865" at="16,93,17,19" concept="9" />
+    <file name="ImaginaryUnit_EditorBuilder.java">
+      <node id="1196434294865" at="16,91,17,19" concept="9" />
       <node id="1196434294865" at="17,19,18,18" concept="1" />
       <node id="1196434294865" at="23,26,24,18" concept="7" />
       <node id="1196434294865" at="27,39,28,30" concept="7" />
@@ -403,12 +403,12 @@
       <node id="1196434300883" at="36,34,37,22" concept="7" />
       <node id="1196434294865" at="13,0,15,0" concept="2" trace="myNode" />
       <node id="1196434294865" at="27,0,30,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="1196434294865" at="16,0,20,0" concept="0" trace="ImaginaryUnit_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1196434294865" at="16,0,20,0" concept="0" trace="ImaginaryUnit_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1196434294865" at="21,0,26,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1196434300883" at="31,0,39,0" concept="5" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="1196434294865" at="23,26,24,18" />
       <scope id="1196434294865" at="27,39,28,30" />
-      <scope id="1196434294865" at="16,93,18,18" />
+      <scope id="1196434294865" at="16,91,18,18" />
       <scope id="1196434294865" at="27,0,30,0" />
       <scope id="1196434294865" at="16,0,20,0">
         <var name="context" id="1196434294865" />
@@ -419,7 +419,7 @@
         <var name="editorCell" id="1196434300883" />
       </scope>
       <scope id="1196434300883" at="31,0,39,0" />
-      <unit id="1196434294865" at="12,0,40,0" name="jetbrains.mps.samples.complex.editor.ImaginaryUnit_EditorBuilder_a" />
+      <unit id="1196434294865" at="12,0,40,0" name="jetbrains.mps.samples.complex.editor.ImaginaryUnit_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c89590423(jetbrains.mps.samples.complex.editor)/1741258697587183534">

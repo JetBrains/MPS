@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class OverloadedOperatorContainer_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new OverloadedOperatorContainer_EditorBuilder_a(editorContext, node).createCell();
+    return new OverloadedOperatorContainer_EditorBuilder(editorContext, node).createCell();
   }
 }

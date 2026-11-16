@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class CheckpointSynchronization_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new CheckpointSynchronization_EditorBuilder_a(editorContext, node).createCell();
+    return new CheckpointSynchronization_EditorBuilder(editorContext, node).createCell();
   }
 }

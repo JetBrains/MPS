@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class FileIcon_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new FileIcon_EditorBuilder_a(editorContext, node).createCell();
+    return new FileIcon_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new FileIcon_InspectorBuilder_a(editorContext, node).createCell();
+    return new FileIcon_InspectorBuilder(editorContext, node).createCell();
   }
 }

@@ -16,6 +16,6 @@ public class _GenericDeclaration_TypeVariables_Component implements ConceptEdito
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new _GenericDeclaration_TypeVariables_Component_ComponentBuilder_a(editorContext, node).createCell();
+    return new _GenericDeclaration_TypeVariables_Component_ComponentBuilder(editorContext, node).createCell();
   }
 }

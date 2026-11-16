@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class DrawRect_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new DrawRect_EditorBuilder_a(editorContext, node).createCell();
+    return new DrawRect_EditorBuilder(editorContext, node).createCell();
   }
 }

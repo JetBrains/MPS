@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="7up45fsopr51780lfx4z680swl3a0qy">
-  <files names="BuildSolutionRunnerAspect_Editor.java:BuildSolutionRunnerAspect_EditorBuilder_a.java:BuildSolutionRunnerAspect_InspectorBuilder_a.java:BuildSolutionRunnerPlugin_Editor.java:BuildSolutionRunnerPlugin_EditorBuilder_a.java:EditorAspectDescriptorImpl.java:RequiredPlugin_Editor.java:RequiredPlugin_EditorBuilder_a.java:RequiredPlugin_SubstituteMenu.java" />
+  <files names="BuildSolutionRunnerAspect_Editor.java:BuildSolutionRunnerAspect_EditorBuilder.java:BuildSolutionRunnerAspect_InspectorBuilder.java:BuildSolutionRunnerPlugin_Editor.java:BuildSolutionRunnerPlugin_EditorBuilder.java:EditorAspectDescriptorImpl.java:RequiredPlugin_Editor.java:RequiredPlugin_EditorBuilder.java:RequiredPlugin_SubstituteMenu.java" />
 </product>
 

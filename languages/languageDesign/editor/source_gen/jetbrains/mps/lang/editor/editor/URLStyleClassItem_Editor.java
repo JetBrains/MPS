@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class URLStyleClassItem_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new URLStyleClassItem_EditorBuilder_a(editorContext, node).createCell();
+    return new URLStyleClassItem_EditorBuilder(editorContext, node).createCell();
   }
 }

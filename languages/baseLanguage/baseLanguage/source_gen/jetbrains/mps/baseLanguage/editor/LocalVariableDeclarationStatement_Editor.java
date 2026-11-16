@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class LocalVariableDeclarationStatement_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new LocalVariableDeclarationStatement_EditorBuilder_a(editorContext, node).createCell();
+    return new LocalVariableDeclarationStatement_EditorBuilder(editorContext, node).createCell();
   }
 }

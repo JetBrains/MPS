@@ -17,17 +17,17 @@
   </root>
   <root nodeRef="r:1e861091-fdeb-4a6c-af9e-2a43f8775320(jetbrains.mps.samples.customizedDebugger.Bottomline.editor)/567241428659643906">
     <file name="MessageSequence_Editor.java">
-      <node id="567241428659643906" at="11,79,12,81" concept="6" />
+      <node id="567241428659643906" at="11,79,12,79" concept="6" />
       <node id="567241428659643906" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="567241428659643906" at="11,79,12,81" />
+      <scope id="567241428659643906" at="11,79,12,79" />
       <scope id="567241428659643906" at="11,0,14,0">
         <var name="editorContext" id="567241428659643906" />
         <var name="node" id="567241428659643906" />
       </scope>
       <unit id="567241428659643906" at="10,0,15,0" name="jetbrains.mps.samples.customizedDebugger.Bottomline.editor.MessageSequence_Editor" />
     </file>
-    <file name="MessageSequence_EditorBuilder_a.java">
-      <node id="567241428659643906" at="46,95,47,19" concept="8" />
+    <file name="MessageSequence_EditorBuilder.java">
+      <node id="567241428659643906" at="46,93,47,19" concept="8" />
       <node id="567241428659643906" at="47,19,48,18" concept="1" />
       <node id="567241428659643906" at="53,26,54,18" concept="6" />
       <node id="567241428659643906" at="57,39,58,32" concept="6" />
@@ -102,7 +102,7 @@
       <node id="567241428659643906" at="124,0,127,0" concept="4" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="567241428659643906" at="127,0,130,0" concept="4" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="567241428659643906" at="171,96,174,9" concept="3" />
-      <node id="567241428659643906" at="46,0,50,0" concept="0" trace="MessageSequence_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="567241428659643906" at="46,0,50,0" concept="0" trace="MessageSequence_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="567241428659643906" at="115,0,119,0" concept="0" trace="messagesListHandler_z6mw6q_c0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="567241428659643906" at="120,0,124,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="567241428659643906" at="153,97,157,9" concept="3" />
@@ -131,7 +131,7 @@
       <scope id="567241428659643906" at="127,48,128,39" />
       <scope id="567241428659643906" at="145,17,146,42" />
       <scope id="567241428659643906" at="172,34,173,91" />
-      <scope id="567241428659643906" at="46,95,48,18" />
+      <scope id="567241428659643906" at="46,93,48,18" />
       <scope id="567241428659643921" at="92,74,94,145">
         <var name="manager" id="567241428659643921" />
       </scope>
@@ -196,26 +196,26 @@
         <var name="elementNode" id="567241428659643906" />
         <var name="isEmptyCell" id="567241428659643906" />
       </scope>
-      <unit id="567241428659643906" at="179,0,182,0" name="jetbrains.mps.samples.customizedDebugger.Bottomline.editor.MessageSequence_EditorBuilder_a$PROPS" />
-      <unit id="567241428659643906" at="188,0,191,0" name="jetbrains.mps.samples.customizedDebugger.Bottomline.editor.MessageSequence_EditorBuilder_a$LINKS" />
-      <unit id="567241428659643906" at="183,0,187,0" name="jetbrains.mps.samples.customizedDebugger.Bottomline.editor.MessageSequence_EditorBuilder_a$CONCEPTS" />
-      <unit id="567241428659643906" at="111,0,178,0" name="jetbrains.mps.samples.customizedDebugger.Bottomline.editor.MessageSequence_EditorBuilder_a$messagesListHandler_z6mw6q_c0" />
-      <unit id="567241428659643906" at="42,0,192,0" name="jetbrains.mps.samples.customizedDebugger.Bottomline.editor.MessageSequence_EditorBuilder_a" />
+      <unit id="567241428659643906" at="179,0,182,0" name="jetbrains.mps.samples.customizedDebugger.Bottomline.editor.MessageSequence_EditorBuilder$PROPS" />
+      <unit id="567241428659643906" at="188,0,191,0" name="jetbrains.mps.samples.customizedDebugger.Bottomline.editor.MessageSequence_EditorBuilder$LINKS" />
+      <unit id="567241428659643906" at="183,0,187,0" name="jetbrains.mps.samples.customizedDebugger.Bottomline.editor.MessageSequence_EditorBuilder$CONCEPTS" />
+      <unit id="567241428659643906" at="111,0,178,0" name="jetbrains.mps.samples.customizedDebugger.Bottomline.editor.MessageSequence_EditorBuilder$messagesListHandler_z6mw6q_c0" />
+      <unit id="567241428659643906" at="42,0,192,0" name="jetbrains.mps.samples.customizedDebugger.Bottomline.editor.MessageSequence_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:1e861091-fdeb-4a6c-af9e-2a43f8775320(jetbrains.mps.samples.customizedDebugger.Bottomline.editor)/567241428659643972">
     <file name="OutputMessage_Editor.java">
-      <node id="567241428659643972" at="11,79,12,79" concept="6" />
+      <node id="567241428659643972" at="11,79,12,77" concept="6" />
       <node id="567241428659643972" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="567241428659643972" at="11,79,12,79" />
+      <scope id="567241428659643972" at="11,79,12,77" />
       <scope id="567241428659643972" at="11,0,14,0">
         <var name="editorContext" id="567241428659643972" />
         <var name="node" id="567241428659643972" />
       </scope>
       <unit id="567241428659643972" at="10,0,15,0" name="jetbrains.mps.samples.customizedDebugger.Bottomline.editor.OutputMessage_Editor" />
     </file>
-    <file name="OutputMessage_EditorBuilder_a.java">
-      <node id="567241428659643972" at="32,93,33,19" concept="8" />
+    <file name="OutputMessage_EditorBuilder.java">
+      <node id="567241428659643972" at="32,91,33,19" concept="8" />
       <node id="567241428659643972" at="33,19,34,18" concept="1" />
       <node id="567241428659643972" at="39,26,40,18" concept="6" />
       <node id="567241428659643972" at="43,39,44,32" concept="6" />
@@ -248,7 +248,7 @@
       <node id="567241428659643972" at="89,0,90,0" concept="7" trace="PropertyAttribute$Gb" />
       <node id="567241428659643972" at="29,0,31,0" concept="2" trace="myNode" />
       <node id="567241428659643972" at="43,0,46,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="567241428659643972" at="32,0,36,0" concept="0" trace="OutputMessage_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="567241428659643972" at="32,0,36,0" concept="0" trace="OutputMessage_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="567241428659643972" at="37,0,42,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="567241428659643987" at="73,208,78,24" concept="3" />
       <node id="567241428659643981" at="56,0,62,0" concept="4" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -258,7 +258,7 @@
       <scope id="567241428659643972" at="39,26,40,18" />
       <scope id="567241428659643972" at="43,39,44,32" />
       <scope id="567241428659643987" at="79,15,80,40" />
-      <scope id="567241428659643972" at="32,93,34,18" />
+      <scope id="567241428659643972" at="32,91,34,18" />
       <scope id="567241428659643987" at="74,74,76,145">
         <var name="manager" id="567241428659643987" />
       </scope>
@@ -284,9 +284,9 @@
       </scope>
       <scope id="567241428659643987" at="62,41,81,5" />
       <scope id="567241428659643987" at="62,0,83,0" />
-      <unit id="567241428659643972" at="84,0,87,0" name="jetbrains.mps.samples.customizedDebugger.Bottomline.editor.OutputMessage_EditorBuilder_a$PROPS" />
-      <unit id="567241428659643972" at="88,0,91,0" name="jetbrains.mps.samples.customizedDebugger.Bottomline.editor.OutputMessage_EditorBuilder_a$CONCEPTS" />
-      <unit id="567241428659643972" at="28,0,92,0" name="jetbrains.mps.samples.customizedDebugger.Bottomline.editor.OutputMessage_EditorBuilder_a" />
+      <unit id="567241428659643972" at="84,0,87,0" name="jetbrains.mps.samples.customizedDebugger.Bottomline.editor.OutputMessage_EditorBuilder$PROPS" />
+      <unit id="567241428659643972" at="88,0,91,0" name="jetbrains.mps.samples.customizedDebugger.Bottomline.editor.OutputMessage_EditorBuilder$CONCEPTS" />
+      <unit id="567241428659643972" at="28,0,92,0" name="jetbrains.mps.samples.customizedDebugger.Bottomline.editor.OutputMessage_EditorBuilder" />
     </file>
   </root>
 </debug-info>

@@ -166,17 +166,17 @@
       <node id="4747359941571314103" at="9,0,10,0" concept="8" trace="PRESENTATION_62ivzp_a0a0a0" />
     </file>
     <file name="PrivateStaticFieldReference_Editor.java">
-      <node id="5619723216767159054" at="11,79,12,93" concept="6" />
+      <node id="5619723216767159054" at="11,79,12,91" concept="6" />
       <node id="5619723216767159054" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="5619723216767159054" at="11,79,12,93" />
+      <scope id="5619723216767159054" at="11,79,12,91" />
       <scope id="5619723216767159054" at="11,0,14,0">
         <var name="editorContext" id="5619723216767159054" />
         <var name="node" id="5619723216767159054" />
       </scope>
       <unit id="5619723216767159054" at="10,0,15,0" name="jetbrains.mps.debugger.java.privateMembers.editor.PrivateStaticFieldReference_Editor" />
     </file>
-    <file name="PrivateStaticFieldReference_EditorBuilder_a.java">
-      <node id="5619723216767159054" at="71,107,72,19" concept="9" />
+    <file name="PrivateStaticFieldReference_EditorBuilder.java">
+      <node id="5619723216767159054" at="71,105,72,19" concept="9" />
       <node id="5619723216767159054" at="72,19,73,18" concept="1" />
       <node id="5619723216767159054" at="78,26,79,18" concept="6" />
       <node id="5619723216767159054" at="82,39,83,32" concept="6" />
@@ -330,7 +330,7 @@
       <node id="5619723216767159063" at="246,0,249,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="5619723216767159064" at="266,44,269,9" concept="3" />
       <node id="5619723216767159066" at="306,0,309,0" concept="4" trace="getMatchingText#()Ljava/lang/String;" />
-      <node id="5619723216767159054" at="71,0,75,0" concept="0" trace="PrivateStaticFieldReference_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="5619723216767159054" at="71,0,75,0" concept="0" trace="PrivateStaticFieldReference_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="5619723216767159054" at="116,0,120,5" concept="3" />
       <node id="5619723216767159054" at="219,0,223,5" concept="3" />
       <node id="5619723216767159089" at="317,0,321,0" concept="4" trace="createParameterObjects#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)Ljava/util/List;" />
@@ -384,7 +384,7 @@
       <scope id="5619723216767159064" at="279,17,280,42" />
       <scope id="5619723216767159066" at="306,37,307,21" />
       <scope id="5619723216767159089" at="331,84,332,303" />
-      <scope id="5619723216767159054" at="71,107,73,18" />
+      <scope id="5619723216767159054" at="71,105,73,18" />
       <scope id="5619723216767159054" at="117,40,119,49" />
       <scope id="5619723216767159054" at="125,73,127,145">
         <var name="manager" id="5619723216767159054" />
@@ -530,19 +530,19 @@
         <var name="referenceLink" id="5619723216767159054" />
       </scope>
       <scope id="5619723216767159054" at="204,0,235,0" />
-      <unit id="5619723216767159054" at="355,0,358,0" name="jetbrains.mps.debugger.java.privateMembers.editor.PrivateStaticFieldReference_EditorBuilder_a$PROPS" />
-      <unit id="5619723216767159088" at="310,0,314,0" name="jetbrains.mps.debugger.java.privateMembers.editor.PrivateStaticFieldReference_EditorBuilder_a$PrivateStaticFieldReference_staticFieldDeclaration_cellMenu_62ivzp_b0a2a" />
-      <unit id="5619723216767159054" at="337,0,343,0" name="jetbrains.mps.debugger.java.privateMembers.editor.PrivateStaticFieldReference_EditorBuilder_a$LINKS" />
-      <unit id="5619723216767159066" at="290,38,297,9" name="jetbrains.mps.debugger.java.privateMembers.editor.PrivateStaticFieldReference_EditorBuilder_a$PrivateStaticFieldReference_generic_cellMenu_62ivzp_a0a2a$1" />
-      <unit id="5619723216767159054" at="104,42,112,5" name="jetbrains.mps.debugger.java.privateMembers.editor.PrivateStaticFieldReference_EditorBuilder_a$1" />
-      <unit id="5619723216767159054" at="206,42,214,5" name="jetbrains.mps.debugger.java.privateMembers.editor.PrivateStaticFieldReference_EditorBuilder_a$2" />
-      <unit id="5619723216767159054" at="344,0,354,0" name="jetbrains.mps.debugger.java.privateMembers.editor.PrivateStaticFieldReference_EditorBuilder_a$CONCEPTS" />
-      <unit id="4747359941571314101" at="174,0,188,0" name="jetbrains.mps.debugger.java.privateMembers.editor.PrivateStaticFieldReference_EditorBuilder_a$PrivateStaticFieldReference_classifier_cellMenu_62ivzp_a0a0a" />
-      <unit id="5619723216767159089" at="314,0,336,0" name="jetbrains.mps.debugger.java.privateMembers.editor.PrivateStaticFieldReference_EditorBuilder_a$PrivateStaticFieldReference_customReplace_cellMenu_62ivzp_c0a2a" />
-      <unit id="5619723216767159066" at="284,0,310,0" name="jetbrains.mps.debugger.java.privateMembers.editor.PrivateStaticFieldReference_EditorBuilder_a$PrivateStaticFieldReference_generic_cellMenu_62ivzp_a0a2a" />
-      <unit id="5619723216767159059" at="131,0,174,0" name="jetbrains.mps.debugger.java.privateMembers.editor.PrivateStaticFieldReference_EditorBuilder_a$Inline_Builder0" />
-      <unit id="5619723216767159063" at="235,0,284,0" name="jetbrains.mps.debugger.java.privateMembers.editor.PrivateStaticFieldReference_EditorBuilder_a$Inline_Builder1" />
-      <unit id="5619723216767159054" at="67,0,359,0" name="jetbrains.mps.debugger.java.privateMembers.editor.PrivateStaticFieldReference_EditorBuilder_a" />
+      <unit id="5619723216767159054" at="355,0,358,0" name="jetbrains.mps.debugger.java.privateMembers.editor.PrivateStaticFieldReference_EditorBuilder$PROPS" />
+      <unit id="5619723216767159088" at="310,0,314,0" name="jetbrains.mps.debugger.java.privateMembers.editor.PrivateStaticFieldReference_EditorBuilder$PrivateStaticFieldReference_staticFieldDeclaration_cellMenu_62ivzp_b0a2a" />
+      <unit id="5619723216767159054" at="337,0,343,0" name="jetbrains.mps.debugger.java.privateMembers.editor.PrivateStaticFieldReference_EditorBuilder$LINKS" />
+      <unit id="5619723216767159066" at="290,38,297,9" name="jetbrains.mps.debugger.java.privateMembers.editor.PrivateStaticFieldReference_EditorBuilder$PrivateStaticFieldReference_generic_cellMenu_62ivzp_a0a2a$1" />
+      <unit id="5619723216767159054" at="104,42,112,5" name="jetbrains.mps.debugger.java.privateMembers.editor.PrivateStaticFieldReference_EditorBuilder$1" />
+      <unit id="5619723216767159054" at="206,42,214,5" name="jetbrains.mps.debugger.java.privateMembers.editor.PrivateStaticFieldReference_EditorBuilder$2" />
+      <unit id="5619723216767159054" at="344,0,354,0" name="jetbrains.mps.debugger.java.privateMembers.editor.PrivateStaticFieldReference_EditorBuilder$CONCEPTS" />
+      <unit id="4747359941571314101" at="174,0,188,0" name="jetbrains.mps.debugger.java.privateMembers.editor.PrivateStaticFieldReference_EditorBuilder$PrivateStaticFieldReference_classifier_cellMenu_62ivzp_a0a0a" />
+      <unit id="5619723216767159089" at="314,0,336,0" name="jetbrains.mps.debugger.java.privateMembers.editor.PrivateStaticFieldReference_EditorBuilder$PrivateStaticFieldReference_customReplace_cellMenu_62ivzp_c0a2a" />
+      <unit id="5619723216767159066" at="284,0,310,0" name="jetbrains.mps.debugger.java.privateMembers.editor.PrivateStaticFieldReference_EditorBuilder$PrivateStaticFieldReference_generic_cellMenu_62ivzp_a0a2a" />
+      <unit id="5619723216767159059" at="131,0,174,0" name="jetbrains.mps.debugger.java.privateMembers.editor.PrivateStaticFieldReference_EditorBuilder$Inline_Builder0" />
+      <unit id="5619723216767159063" at="235,0,284,0" name="jetbrains.mps.debugger.java.privateMembers.editor.PrivateStaticFieldReference_EditorBuilder$Inline_Builder1" />
+      <unit id="5619723216767159054" at="67,0,359,0" name="jetbrains.mps.debugger.java.privateMembers.editor.PrivateStaticFieldReference_EditorBuilder" />
     </file>
   </root>
 </debug-info>

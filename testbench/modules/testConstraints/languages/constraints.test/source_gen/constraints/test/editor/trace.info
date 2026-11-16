@@ -50,17 +50,17 @@
   </root>
   <root nodeRef="r:bee9faef-191f-4f4b-92c1-526d4adeb343(constraints.test.editor)/2614955748379717746">
     <file name="TestRefConstraints_Target_Editor.java">
-      <node id="2614955748379717746" at="11,79,12,91" concept="6" />
+      <node id="2614955748379717746" at="11,79,12,89" concept="6" />
       <node id="2614955748379717746" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="2614955748379717746" at="11,79,12,91" />
+      <scope id="2614955748379717746" at="11,79,12,89" />
       <scope id="2614955748379717746" at="11,0,14,0">
         <var name="editorContext" id="2614955748379717746" />
         <var name="node" id="2614955748379717746" />
       </scope>
       <unit id="2614955748379717746" at="10,0,15,0" name="constraints.test.editor.TestRefConstraints_Target_Editor" />
     </file>
-    <file name="TestRefConstraints_Target_EditorBuilder_a.java">
-      <node id="2614955748379717746" at="35,105,36,19" concept="9" />
+    <file name="TestRefConstraints_Target_EditorBuilder.java">
+      <node id="2614955748379717746" at="35,103,36,19" concept="9" />
       <node id="2614955748379717746" at="36,19,37,18" concept="1" />
       <node id="2614955748379717746" at="42,26,43,18" concept="6" />
       <node id="2614955748379717746" at="46,39,47,32" concept="6" />
@@ -215,7 +215,7 @@
       <node id="2614955748379717746" at="255,0,256,0" concept="8" trace="PropertyAttribute$Gb" />
       <node id="2614955748379717746" at="32,0,34,0" concept="2" trace="myNode" />
       <node id="2614955748379717746" at="46,0,49,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="2614955748379717746" at="35,0,39,0" concept="0" trace="TestRefConstraints_Target_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="2614955748379717746" at="35,0,39,0" concept="0" trace="TestRefConstraints_Target_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="2614955748379717746" at="40,0,45,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="2614955748379717973" at="89,208,94,24" concept="3" />
       <node id="2614955748379717981" at="136,208,141,24" concept="3" />
@@ -247,7 +247,7 @@
       <scope id="2614955748379717981" at="142,15,143,40" />
       <scope id="2614955748379717987" at="187,15,188,40" />
       <scope id="2614955748379717993" at="232,15,233,40" />
-      <scope id="2614955748379717746" at="35,105,37,18" />
+      <scope id="2614955748379717746" at="35,103,37,18" />
       <scope id="2614955748379717973" at="90,74,92,145">
         <var name="manager" id="2614955748379717973" />
       </scope>
@@ -353,24 +353,24 @@
       <scope id="2614955748379717987" at="170,0,191,0" />
       <scope id="2614955748379717993" at="215,0,236,0" />
       <scope id="2614955748379717746" at="50,0,72,0" />
-      <unit id="2614955748379717746" at="254,0,257,0" name="constraints.test.editor.TestRefConstraints_Target_EditorBuilder_a$CONCEPTS" />
-      <unit id="2614955748379717746" at="247,0,253,0" name="constraints.test.editor.TestRefConstraints_Target_EditorBuilder_a$PROPS" />
-      <unit id="2614955748379717746" at="31,0,258,0" name="constraints.test.editor.TestRefConstraints_Target_EditorBuilder_a" />
+      <unit id="2614955748379717746" at="254,0,257,0" name="constraints.test.editor.TestRefConstraints_Target_EditorBuilder$CONCEPTS" />
+      <unit id="2614955748379717746" at="247,0,253,0" name="constraints.test.editor.TestRefConstraints_Target_EditorBuilder$PROPS" />
+      <unit id="2614955748379717746" at="31,0,258,0" name="constraints.test.editor.TestRefConstraints_Target_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:bee9faef-191f-4f4b-92c1-526d4adeb343(constraints.test.editor)/2614955748379718087">
     <file name="TestRefConstraints_SubReference_ScopingSuperScoping_Editor.java">
-      <node id="2614955748379718087" at="11,79,12,117" concept="6" />
+      <node id="2614955748379718087" at="11,79,12,115" concept="6" />
       <node id="2614955748379718087" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="2614955748379718087" at="11,79,12,117" />
+      <scope id="2614955748379718087" at="11,79,12,115" />
       <scope id="2614955748379718087" at="11,0,14,0">
         <var name="editorContext" id="2614955748379718087" />
         <var name="node" id="2614955748379718087" />
       </scope>
       <unit id="2614955748379718087" at="10,0,15,0" name="constraints.test.editor.TestRefConstraints_SubReference_ScopingSuperScoping_Editor" />
     </file>
-    <file name="TestRefConstraints_SubReference_ScopingSuperScoping_EditorBuilder_a.java">
-      <node id="2614955748379718087" at="41,131,42,19" concept="9" />
+    <file name="TestRefConstraints_SubReference_ScopingSuperScoping_EditorBuilder.java">
+      <node id="2614955748379718087" at="41,129,42,19" concept="9" />
       <node id="2614955748379718087" at="42,19,43,18" concept="1" />
       <node id="2614955748379718087" at="48,26,49,18" concept="6" />
       <node id="2614955748379718087" at="52,39,53,32" concept="6" />
@@ -435,7 +435,7 @@
       <node id="2614955748379718318" at="107,0,109,0" concept="2" trace="myNode" />
       <node id="2614955748379718087" at="52,0,55,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="2614955748379718318" at="117,0,120,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="2614955748379718087" at="41,0,45,0" concept="0" trace="TestRefConstraints_SubReference_ScopingSuperScoping_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="2614955748379718087" at="41,0,45,0" concept="0" trace="TestRefConstraints_SubReference_ScopingSuperScoping_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="2614955748379718087" at="92,0,96,5" concept="3" />
       <node id="2614955748379718087" at="46,0,51,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="2614955748379718087" at="99,205,104,22" concept="3" />
@@ -455,7 +455,7 @@
       <scope id="2614955748379718318" at="117,41,118,32" />
       <scope id="2614955748379718318" at="123,28,124,20" />
       <scope id="2614955748379718320" at="144,17,145,42" />
-      <scope id="2614955748379718087" at="41,131,43,18" />
+      <scope id="2614955748379718087" at="41,129,43,18" />
       <scope id="2614955748379718087" at="93,40,95,45" />
       <scope id="2614955748379718087" at="100,73,102,145">
         <var name="manager" id="2614955748379718087" />
@@ -513,27 +513,27 @@
         <var name="referenceLink" id="2614955748379718087" />
       </scope>
       <scope id="2614955748379718087" at="71,0,106,0" />
-      <unit id="2614955748379718087" at="150,0,153,0" name="constraints.test.editor.TestRefConstraints_SubReference_ScopingSuperScoping_EditorBuilder_a$LINKS" />
-      <unit id="2614955748379718087" at="159,0,162,0" name="constraints.test.editor.TestRefConstraints_SubReference_ScopingSuperScoping_EditorBuilder_a$PROPS" />
-      <unit id="2614955748379718087" at="154,0,158,0" name="constraints.test.editor.TestRefConstraints_SubReference_ScopingSuperScoping_EditorBuilder_a$CONCEPTS" />
-      <unit id="2614955748379718087" at="73,42,88,5" name="constraints.test.editor.TestRefConstraints_SubReference_ScopingSuperScoping_EditorBuilder_a$1" />
-      <unit id="2614955748379718318" at="106,0,149,0" name="constraints.test.editor.TestRefConstraints_SubReference_ScopingSuperScoping_EditorBuilder_a$Inline_Builder0" />
-      <unit id="2614955748379718087" at="37,0,163,0" name="constraints.test.editor.TestRefConstraints_SubReference_ScopingSuperScoping_EditorBuilder_a" />
+      <unit id="2614955748379718087" at="150,0,153,0" name="constraints.test.editor.TestRefConstraints_SubReference_ScopingSuperScoping_EditorBuilder$LINKS" />
+      <unit id="2614955748379718087" at="159,0,162,0" name="constraints.test.editor.TestRefConstraints_SubReference_ScopingSuperScoping_EditorBuilder$PROPS" />
+      <unit id="2614955748379718087" at="154,0,158,0" name="constraints.test.editor.TestRefConstraints_SubReference_ScopingSuperScoping_EditorBuilder$CONCEPTS" />
+      <unit id="2614955748379718087" at="73,42,88,5" name="constraints.test.editor.TestRefConstraints_SubReference_ScopingSuperScoping_EditorBuilder$1" />
+      <unit id="2614955748379718318" at="106,0,149,0" name="constraints.test.editor.TestRefConstraints_SubReference_ScopingSuperScoping_EditorBuilder$Inline_Builder0" />
+      <unit id="2614955748379718087" at="37,0,163,0" name="constraints.test.editor.TestRefConstraints_SubReference_ScopingSuperScoping_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:bee9faef-191f-4f4b-92c1-526d4adeb343(constraints.test.editor)/2614955748379718395">
     <file name="TestRefConstraints_SubReference_HandlerSuperScoping_Editor.java">
-      <node id="2614955748379718395" at="11,79,12,117" concept="6" />
+      <node id="2614955748379718395" at="11,79,12,115" concept="6" />
       <node id="2614955748379718395" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="2614955748379718395" at="11,79,12,117" />
+      <scope id="2614955748379718395" at="11,79,12,115" />
       <scope id="2614955748379718395" at="11,0,14,0">
         <var name="editorContext" id="2614955748379718395" />
         <var name="node" id="2614955748379718395" />
       </scope>
       <unit id="2614955748379718395" at="10,0,15,0" name="constraints.test.editor.TestRefConstraints_SubReference_HandlerSuperScoping_Editor" />
     </file>
-    <file name="TestRefConstraints_SubReference_HandlerSuperScoping_EditorBuilder_a.java">
-      <node id="2614955748379718395" at="41,131,42,19" concept="9" />
+    <file name="TestRefConstraints_SubReference_HandlerSuperScoping_EditorBuilder.java">
+      <node id="2614955748379718395" at="41,129,42,19" concept="9" />
       <node id="2614955748379718395" at="42,19,43,18" concept="1" />
       <node id="2614955748379718395" at="48,26,49,18" concept="6" />
       <node id="2614955748379718395" at="52,39,53,32" concept="6" />
@@ -598,7 +598,7 @@
       <node id="2614955748379718634" at="107,0,109,0" concept="2" trace="myNode" />
       <node id="2614955748379718395" at="52,0,55,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="2614955748379718634" at="117,0,120,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="2614955748379718395" at="41,0,45,0" concept="0" trace="TestRefConstraints_SubReference_HandlerSuperScoping_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="2614955748379718395" at="41,0,45,0" concept="0" trace="TestRefConstraints_SubReference_HandlerSuperScoping_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="2614955748379718395" at="92,0,96,5" concept="3" />
       <node id="2614955748379718395" at="46,0,51,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="2614955748379718395" at="99,205,104,22" concept="3" />
@@ -618,7 +618,7 @@
       <scope id="2614955748379718634" at="117,41,118,32" />
       <scope id="2614955748379718634" at="123,28,124,20" />
       <scope id="2614955748379718642" at="144,17,145,42" />
-      <scope id="2614955748379718395" at="41,131,43,18" />
+      <scope id="2614955748379718395" at="41,129,43,18" />
       <scope id="2614955748379718395" at="93,40,95,45" />
       <scope id="2614955748379718395" at="100,73,102,145">
         <var name="manager" id="2614955748379718395" />
@@ -676,27 +676,27 @@
         <var name="referenceLink" id="2614955748379718395" />
       </scope>
       <scope id="2614955748379718395" at="71,0,106,0" />
-      <unit id="2614955748379718395" at="150,0,153,0" name="constraints.test.editor.TestRefConstraints_SubReference_HandlerSuperScoping_EditorBuilder_a$LINKS" />
-      <unit id="2614955748379718395" at="159,0,162,0" name="constraints.test.editor.TestRefConstraints_SubReference_HandlerSuperScoping_EditorBuilder_a$PROPS" />
-      <unit id="2614955748379718395" at="154,0,158,0" name="constraints.test.editor.TestRefConstraints_SubReference_HandlerSuperScoping_EditorBuilder_a$CONCEPTS" />
-      <unit id="2614955748379718395" at="73,42,88,5" name="constraints.test.editor.TestRefConstraints_SubReference_HandlerSuperScoping_EditorBuilder_a$1" />
-      <unit id="2614955748379718634" at="106,0,149,0" name="constraints.test.editor.TestRefConstraints_SubReference_HandlerSuperScoping_EditorBuilder_a$Inline_Builder0" />
-      <unit id="2614955748379718395" at="37,0,163,0" name="constraints.test.editor.TestRefConstraints_SubReference_HandlerSuperScoping_EditorBuilder_a" />
+      <unit id="2614955748379718395" at="150,0,153,0" name="constraints.test.editor.TestRefConstraints_SubReference_HandlerSuperScoping_EditorBuilder$LINKS" />
+      <unit id="2614955748379718395" at="159,0,162,0" name="constraints.test.editor.TestRefConstraints_SubReference_HandlerSuperScoping_EditorBuilder$PROPS" />
+      <unit id="2614955748379718395" at="154,0,158,0" name="constraints.test.editor.TestRefConstraints_SubReference_HandlerSuperScoping_EditorBuilder$CONCEPTS" />
+      <unit id="2614955748379718395" at="73,42,88,5" name="constraints.test.editor.TestRefConstraints_SubReference_HandlerSuperScoping_EditorBuilder$1" />
+      <unit id="2614955748379718634" at="106,0,149,0" name="constraints.test.editor.TestRefConstraints_SubReference_HandlerSuperScoping_EditorBuilder$Inline_Builder0" />
+      <unit id="2614955748379718395" at="37,0,163,0" name="constraints.test.editor.TestRefConstraints_SubReference_HandlerSuperScoping_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:bee9faef-191f-4f4b-92c1-526d4adeb343(constraints.test.editor)/2614955748379807236">
     <file name="TestRefConstraints_Container_Editor.java">
-      <node id="2614955748379807236" at="11,79,12,94" concept="6" />
+      <node id="2614955748379807236" at="11,79,12,92" concept="6" />
       <node id="2614955748379807236" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="2614955748379807236" at="11,79,12,94" />
+      <scope id="2614955748379807236" at="11,79,12,92" />
       <scope id="2614955748379807236" at="11,0,14,0">
         <var name="editorContext" id="2614955748379807236" />
         <var name="node" id="2614955748379807236" />
       </scope>
       <unit id="2614955748379807236" at="10,0,15,0" name="constraints.test.editor.TestRefConstraints_Container_Editor" />
     </file>
-    <file name="TestRefConstraints_Container_EditorBuilder_a.java">
-      <node id="2614955748379807236" at="33,108,34,19" concept="9" />
+    <file name="TestRefConstraints_Container_EditorBuilder.java">
+      <node id="2614955748379807236" at="33,106,34,19" concept="9" />
       <node id="2614955748379807236" at="34,19,35,18" concept="1" />
       <node id="2614955748379807236" at="40,26,41,18" concept="6" />
       <node id="2614955748379807236" at="44,39,45,32" concept="6" />
@@ -899,7 +899,7 @@
       <node id="2614955748379807236" at="321,0,324,0" concept="4" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="2614955748379807236" at="324,0,327,0" concept="4" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="2614955748379807236" at="368,96,371,9" concept="3" />
-      <node id="2614955748379807236" at="33,0,37,0" concept="0" trace="TestRefConstraints_Container_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="2614955748379807236" at="33,0,37,0" concept="0" trace="TestRefConstraints_Container_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="2614955748379807236" at="123,0,127,0" concept="0" trace="references_scopingListHandler_u9s8t6_c2a#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="2614955748379807236" at="128,0,132,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="2614955748379807236" at="161,97,165,9" concept="3" />
@@ -971,7 +971,7 @@
       <scope id="2614955748379807236" at="324,48,325,51" />
       <scope id="2614955748379807236" at="342,17,343,42" />
       <scope id="2614955748379807236" at="369,34,370,91" />
-      <scope id="2614955748379807236" at="33,108,35,18" />
+      <scope id="2614955748379807236" at="33,106,35,18" />
       <scope id="2614955748379807236" at="123,93,125,25" />
       <scope id="2614955748379807236" at="162,122,164,146" />
       <scope id="2614955748379807236" at="168,34,170,142" />
@@ -1142,27 +1142,27 @@
         <var name="elementNode" id="2614955748379807236" />
         <var name="isEmptyCell" id="2614955748379807236" />
       </scope>
-      <unit id="2614955748379807236" at="385,0,390,0" name="constraints.test.editor.TestRefConstraints_Container_EditorBuilder_a$LINKS" />
-      <unit id="2614955748379807236" at="391,0,396,0" name="constraints.test.editor.TestRefConstraints_Container_EditorBuilder_a$CONCEPTS" />
-      <unit id="2614955748379807236" at="119,0,186,0" name="constraints.test.editor.TestRefConstraints_Container_EditorBuilder_a$references_scopingListHandler_u9s8t6_c2a" />
-      <unit id="2614955748379807236" at="213,0,280,0" name="constraints.test.editor.TestRefConstraints_Container_EditorBuilder_a$references_handlerListHandler_u9s8t6_f2a" />
-      <unit id="2614955748379807236" at="308,0,375,0" name="constraints.test.editor.TestRefConstraints_Container_EditorBuilder_a$targetsListHandler_u9s8t6_i2a" />
-      <unit id="2614955748379807236" at="29,0,397,0" name="constraints.test.editor.TestRefConstraints_Container_EditorBuilder_a" />
+      <unit id="2614955748379807236" at="385,0,390,0" name="constraints.test.editor.TestRefConstraints_Container_EditorBuilder$LINKS" />
+      <unit id="2614955748379807236" at="391,0,396,0" name="constraints.test.editor.TestRefConstraints_Container_EditorBuilder$CONCEPTS" />
+      <unit id="2614955748379807236" at="119,0,186,0" name="constraints.test.editor.TestRefConstraints_Container_EditorBuilder$references_scopingListHandler_u9s8t6_c2a" />
+      <unit id="2614955748379807236" at="213,0,280,0" name="constraints.test.editor.TestRefConstraints_Container_EditorBuilder$references_handlerListHandler_u9s8t6_f2a" />
+      <unit id="2614955748379807236" at="308,0,375,0" name="constraints.test.editor.TestRefConstraints_Container_EditorBuilder$targetsListHandler_u9s8t6_i2a" />
+      <unit id="2614955748379807236" at="29,0,397,0" name="constraints.test.editor.TestRefConstraints_Container_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:bee9faef-191f-4f4b-92c1-526d4adeb343(constraints.test.editor)/2614955748379967667">
     <file name="TestRefConstraints_SubReference_ScopingSuperHandler_Editor.java">
-      <node id="2614955748379967667" at="11,79,12,117" concept="6" />
+      <node id="2614955748379967667" at="11,79,12,115" concept="6" />
       <node id="2614955748379967667" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="2614955748379967667" at="11,79,12,117" />
+      <scope id="2614955748379967667" at="11,79,12,115" />
       <scope id="2614955748379967667" at="11,0,14,0">
         <var name="editorContext" id="2614955748379967667" />
         <var name="node" id="2614955748379967667" />
       </scope>
       <unit id="2614955748379967667" at="10,0,15,0" name="constraints.test.editor.TestRefConstraints_SubReference_ScopingSuperHandler_Editor" />
     </file>
-    <file name="TestRefConstraints_SubReference_ScopingSuperHandler_EditorBuilder_a.java">
-      <node id="2614955748379967667" at="41,131,42,19" concept="9" />
+    <file name="TestRefConstraints_SubReference_ScopingSuperHandler_EditorBuilder.java">
+      <node id="2614955748379967667" at="41,129,42,19" concept="9" />
       <node id="2614955748379967667" at="42,19,43,18" concept="1" />
       <node id="2614955748379967667" at="48,26,49,18" concept="6" />
       <node id="2614955748379967667" at="52,39,53,32" concept="6" />
@@ -1227,7 +1227,7 @@
       <node id="2614955748379967684" at="107,0,109,0" concept="2" trace="myNode" />
       <node id="2614955748379967667" at="52,0,55,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="2614955748379967684" at="117,0,120,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="2614955748379967667" at="41,0,45,0" concept="0" trace="TestRefConstraints_SubReference_ScopingSuperHandler_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="2614955748379967667" at="41,0,45,0" concept="0" trace="TestRefConstraints_SubReference_ScopingSuperHandler_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="2614955748379967667" at="92,0,96,5" concept="3" />
       <node id="2614955748379967667" at="46,0,51,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="2614955748379967667" at="99,205,104,22" concept="3" />
@@ -1247,7 +1247,7 @@
       <scope id="2614955748379967684" at="117,41,118,32" />
       <scope id="2614955748379967684" at="123,28,124,20" />
       <scope id="2614955748379967692" at="144,17,145,42" />
-      <scope id="2614955748379967667" at="41,131,43,18" />
+      <scope id="2614955748379967667" at="41,129,43,18" />
       <scope id="2614955748379967667" at="93,40,95,45" />
       <scope id="2614955748379967667" at="100,73,102,145">
         <var name="manager" id="2614955748379967667" />
@@ -1305,27 +1305,27 @@
         <var name="referenceLink" id="2614955748379967667" />
       </scope>
       <scope id="2614955748379967667" at="71,0,106,0" />
-      <unit id="2614955748379967667" at="150,0,153,0" name="constraints.test.editor.TestRefConstraints_SubReference_ScopingSuperHandler_EditorBuilder_a$LINKS" />
-      <unit id="2614955748379967667" at="159,0,162,0" name="constraints.test.editor.TestRefConstraints_SubReference_ScopingSuperHandler_EditorBuilder_a$PROPS" />
-      <unit id="2614955748379967667" at="154,0,158,0" name="constraints.test.editor.TestRefConstraints_SubReference_ScopingSuperHandler_EditorBuilder_a$CONCEPTS" />
-      <unit id="2614955748379967667" at="73,42,88,5" name="constraints.test.editor.TestRefConstraints_SubReference_ScopingSuperHandler_EditorBuilder_a$1" />
-      <unit id="2614955748379967684" at="106,0,149,0" name="constraints.test.editor.TestRefConstraints_SubReference_ScopingSuperHandler_EditorBuilder_a$Inline_Builder0" />
-      <unit id="2614955748379967667" at="37,0,163,0" name="constraints.test.editor.TestRefConstraints_SubReference_ScopingSuperHandler_EditorBuilder_a" />
+      <unit id="2614955748379967667" at="150,0,153,0" name="constraints.test.editor.TestRefConstraints_SubReference_ScopingSuperHandler_EditorBuilder$LINKS" />
+      <unit id="2614955748379967667" at="159,0,162,0" name="constraints.test.editor.TestRefConstraints_SubReference_ScopingSuperHandler_EditorBuilder$PROPS" />
+      <unit id="2614955748379967667" at="154,0,158,0" name="constraints.test.editor.TestRefConstraints_SubReference_ScopingSuperHandler_EditorBuilder$CONCEPTS" />
+      <unit id="2614955748379967667" at="73,42,88,5" name="constraints.test.editor.TestRefConstraints_SubReference_ScopingSuperHandler_EditorBuilder$1" />
+      <unit id="2614955748379967684" at="106,0,149,0" name="constraints.test.editor.TestRefConstraints_SubReference_ScopingSuperHandler_EditorBuilder$Inline_Builder0" />
+      <unit id="2614955748379967667" at="37,0,163,0" name="constraints.test.editor.TestRefConstraints_SubReference_ScopingSuperHandler_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:bee9faef-191f-4f4b-92c1-526d4adeb343(constraints.test.editor)/2614955748379967720">
     <file name="TestRefConstraints_SubReference_HandlerSuperHandler_Editor.java">
-      <node id="2614955748379967720" at="11,79,12,117" concept="6" />
+      <node id="2614955748379967720" at="11,79,12,115" concept="6" />
       <node id="2614955748379967720" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="2614955748379967720" at="11,79,12,117" />
+      <scope id="2614955748379967720" at="11,79,12,115" />
       <scope id="2614955748379967720" at="11,0,14,0">
         <var name="editorContext" id="2614955748379967720" />
         <var name="node" id="2614955748379967720" />
       </scope>
       <unit id="2614955748379967720" at="10,0,15,0" name="constraints.test.editor.TestRefConstraints_SubReference_HandlerSuperHandler_Editor" />
     </file>
-    <file name="TestRefConstraints_SubReference_HandlerSuperHandler_EditorBuilder_a.java">
-      <node id="2614955748379967720" at="41,131,42,19" concept="9" />
+    <file name="TestRefConstraints_SubReference_HandlerSuperHandler_EditorBuilder.java">
+      <node id="2614955748379967720" at="41,129,42,19" concept="9" />
       <node id="2614955748379967720" at="42,19,43,18" concept="1" />
       <node id="2614955748379967720" at="48,26,49,18" concept="6" />
       <node id="2614955748379967720" at="52,39,53,32" concept="6" />
@@ -1390,7 +1390,7 @@
       <node id="2614955748379967737" at="107,0,109,0" concept="2" trace="myNode" />
       <node id="2614955748379967720" at="52,0,55,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="2614955748379967737" at="117,0,120,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="2614955748379967720" at="41,0,45,0" concept="0" trace="TestRefConstraints_SubReference_HandlerSuperHandler_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="2614955748379967720" at="41,0,45,0" concept="0" trace="TestRefConstraints_SubReference_HandlerSuperHandler_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="2614955748379967720" at="92,0,96,5" concept="3" />
       <node id="2614955748379967720" at="46,0,51,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="2614955748379967720" at="99,205,104,22" concept="3" />
@@ -1410,7 +1410,7 @@
       <scope id="2614955748379967737" at="117,41,118,32" />
       <scope id="2614955748379967737" at="123,28,124,20" />
       <scope id="2614955748379967745" at="144,17,145,42" />
-      <scope id="2614955748379967720" at="41,131,43,18" />
+      <scope id="2614955748379967720" at="41,129,43,18" />
       <scope id="2614955748379967720" at="93,40,95,45" />
       <scope id="2614955748379967720" at="100,73,102,145">
         <var name="manager" id="2614955748379967720" />
@@ -1468,27 +1468,27 @@
         <var name="referenceLink" id="2614955748379967720" />
       </scope>
       <scope id="2614955748379967720" at="71,0,106,0" />
-      <unit id="2614955748379967720" at="150,0,153,0" name="constraints.test.editor.TestRefConstraints_SubReference_HandlerSuperHandler_EditorBuilder_a$LINKS" />
-      <unit id="2614955748379967720" at="159,0,162,0" name="constraints.test.editor.TestRefConstraints_SubReference_HandlerSuperHandler_EditorBuilder_a$PROPS" />
-      <unit id="2614955748379967720" at="154,0,158,0" name="constraints.test.editor.TestRefConstraints_SubReference_HandlerSuperHandler_EditorBuilder_a$CONCEPTS" />
-      <unit id="2614955748379967720" at="73,42,88,5" name="constraints.test.editor.TestRefConstraints_SubReference_HandlerSuperHandler_EditorBuilder_a$1" />
-      <unit id="2614955748379967737" at="106,0,149,0" name="constraints.test.editor.TestRefConstraints_SubReference_HandlerSuperHandler_EditorBuilder_a$Inline_Builder0" />
-      <unit id="2614955748379967720" at="37,0,163,0" name="constraints.test.editor.TestRefConstraints_SubReference_HandlerSuperHandler_EditorBuilder_a" />
+      <unit id="2614955748379967720" at="150,0,153,0" name="constraints.test.editor.TestRefConstraints_SubReference_HandlerSuperHandler_EditorBuilder$LINKS" />
+      <unit id="2614955748379967720" at="159,0,162,0" name="constraints.test.editor.TestRefConstraints_SubReference_HandlerSuperHandler_EditorBuilder$PROPS" />
+      <unit id="2614955748379967720" at="154,0,158,0" name="constraints.test.editor.TestRefConstraints_SubReference_HandlerSuperHandler_EditorBuilder$CONCEPTS" />
+      <unit id="2614955748379967720" at="73,42,88,5" name="constraints.test.editor.TestRefConstraints_SubReference_HandlerSuperHandler_EditorBuilder$1" />
+      <unit id="2614955748379967737" at="106,0,149,0" name="constraints.test.editor.TestRefConstraints_SubReference_HandlerSuperHandler_EditorBuilder$Inline_Builder0" />
+      <unit id="2614955748379967720" at="37,0,163,0" name="constraints.test.editor.TestRefConstraints_SubReference_HandlerSuperHandler_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:bee9faef-191f-4f4b-92c1-526d4adeb343(constraints.test.editor)/5816870305080488241">
     <file name="TestConstraintsInheritance_Container_Editor.java">
-      <node id="5816870305080488241" at="11,79,12,102" concept="6" />
+      <node id="5816870305080488241" at="11,79,12,100" concept="6" />
       <node id="5816870305080488241" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="5816870305080488241" at="11,79,12,102" />
+      <scope id="5816870305080488241" at="11,79,12,100" />
       <scope id="5816870305080488241" at="11,0,14,0">
         <var name="editorContext" id="5816870305080488241" />
         <var name="node" id="5816870305080488241" />
       </scope>
       <unit id="5816870305080488241" at="10,0,15,0" name="constraints.test.editor.TestConstraintsInheritance_Container_Editor" />
     </file>
-    <file name="TestConstraintsInheritance_Container_EditorBuilder_a.java">
-      <node id="5816870305080488241" at="43,116,44,19" concept="9" />
+    <file name="TestConstraintsInheritance_Container_EditorBuilder.java">
+      <node id="5816870305080488241" at="43,114,44,19" concept="9" />
       <node id="5816870305080488241" at="44,19,45,18" concept="1" />
       <node id="5816870305080488241" at="50,26,51,18" concept="6" />
       <node id="5816870305080488241" at="54,39,55,32" concept="6" />
@@ -1678,7 +1678,7 @@
       <node id="5816870305080488241" at="277,87,280,7" concept="3" />
       <node id="5816870305080488241" at="280,7,283,7" concept="3" />
       <node id="5816870305080488241" at="303,0,306,0" concept="4" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="5816870305080488241" at="43,0,47,0" concept="0" trace="TestConstraintsInheritance_Container_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="5816870305080488241" at="43,0,47,0" concept="0" trace="TestConstraintsInheritance_Container_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="5816870305080488241" at="248,0,252,0" concept="4" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="5816870305080488241" at="256,0,260,0" concept="0" trace="nodeSingleRoleHandler_jiybky_m2a#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="5816870305080488241" at="48,0,53,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -1720,7 +1720,7 @@
       <scope id="5816870305080488241" at="281,42,282,45" />
       <scope id="5816870305080488241" at="299,17,300,42" />
       <scope id="5816870305080488241" at="303,40,304,25" />
-      <scope id="5816870305080488241" at="43,116,45,18" />
+      <scope id="5816870305080488241" at="43,114,45,18" />
       <scope id="5816870305080488255" at="136,74,138,145">
         <var name="manager" id="5816870305080488255" />
       </scope>
@@ -1858,11 +1858,11 @@
       <scope id="5816870305080488255" at="121,0,145,0" />
       <scope id="5816870305080488260" at="160,0,184,0" />
       <scope id="5816870305080488265" at="199,0,223,0" />
-      <unit id="5816870305080488241" at="323,0,326,0" name="constraints.test.editor.TestConstraintsInheritance_Container_EditorBuilder_a$CONCEPTS" />
-      <unit id="5816870305080488241" at="327,0,330,0" name="constraints.test.editor.TestConstraintsInheritance_Container_EditorBuilder_a$LINKS" />
-      <unit id="5816870305080488241" at="317,0,322,0" name="constraints.test.editor.TestConstraintsInheritance_Container_EditorBuilder_a$PROPS" />
-      <unit id="5816870305080488241" at="252,0,307,0" name="constraints.test.editor.TestConstraintsInheritance_Container_EditorBuilder_a$nodeSingleRoleHandler_jiybky_m2a" />
-      <unit id="5816870305080488241" at="39,0,331,0" name="constraints.test.editor.TestConstraintsInheritance_Container_EditorBuilder_a" />
+      <unit id="5816870305080488241" at="323,0,326,0" name="constraints.test.editor.TestConstraintsInheritance_Container_EditorBuilder$CONCEPTS" />
+      <unit id="5816870305080488241" at="327,0,330,0" name="constraints.test.editor.TestConstraintsInheritance_Container_EditorBuilder$LINKS" />
+      <unit id="5816870305080488241" at="317,0,322,0" name="constraints.test.editor.TestConstraintsInheritance_Container_EditorBuilder$PROPS" />
+      <unit id="5816870305080488241" at="252,0,307,0" name="constraints.test.editor.TestConstraintsInheritance_Container_EditorBuilder$nodeSingleRoleHandler_jiybky_m2a" />
+      <unit id="5816870305080488241" at="39,0,331,0" name="constraints.test.editor.TestConstraintsInheritance_Container_EditorBuilder" />
     </file>
   </root>
 </debug-info>

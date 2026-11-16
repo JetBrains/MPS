@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class CheckingRuleReference_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new CheckingRuleReference_EditorBuilder_a(editorContext, node).createCell();
+    return new CheckingRuleReference_EditorBuilder(editorContext, node).createCell();
   }
 }

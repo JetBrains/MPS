@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class IncompleteDeclaration_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new IncompleteDeclaration_EditorBuilder_a(editorContext, node).createCell();
+    return new IncompleteDeclaration_EditorBuilder(editorContext, node).createCell();
   }
 }

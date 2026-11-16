@@ -28,11 +28,11 @@
     <file name="ConnectorInstance_diagram_Editor.java">
       <node id="1220375669566228856" at="14,0,15,0" concept="3" trace="myContextHints" />
       <node id="1220375669566228856" at="17,47,18,26" concept="8" />
-      <node id="1220375669566228856" at="20,79,21,91" concept="8" />
+      <node id="1220375669566228856" at="20,79,21,89" concept="8" />
       <node id="1220375669566228856" at="20,0,23,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1220375669566228856" at="15,0,20,0" concept="6" trace="getContextHints#()Ljava/util/Collection;" />
       <scope id="1220375669566228856" at="17,47,18,26" />
-      <scope id="1220375669566228856" at="20,79,21,91" />
+      <scope id="1220375669566228856" at="20,79,21,89" />
       <scope id="1220375669566228856" at="20,0,23,0">
         <var name="editorContext" id="1220375669566228856" />
         <var name="node" id="1220375669566228856" />
@@ -40,8 +40,8 @@
       <scope id="1220375669566228856" at="15,0,20,0" />
       <unit id="1220375669566228856" at="13,0,24,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.ConnectorInstance_diagram_Editor" />
     </file>
-    <file name="ConnectorInstance_diagram_EditorBuilder_a.java">
-      <node id="1220375669566228856" at="37,105,38,19" concept="13" />
+    <file name="ConnectorInstance_diagram_EditorBuilder.java">
+      <node id="1220375669566228856" at="37,103,38,19" concept="13" />
       <node id="1220375669566228856" at="38,19,39,18" concept="2" />
       <node id="1220375669566228856" at="44,26,45,18" concept="8" />
       <node id="1220375669566228856" at="48,39,49,38" concept="8" />
@@ -123,7 +123,7 @@
       <node id="1220375669566228856" at="156,125,159,11" concept="5" />
       <node id="1220375669566228856" at="170,49,173,7" concept="5" />
       <node id="1220375669566228856" at="174,115,177,7" concept="5" />
-      <node id="1220375669566228856" at="37,0,41,0" concept="1" trace="ConnectorInstance_diagram_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1220375669566228856" at="37,0,41,0" concept="1" trace="ConnectorInstance_diagram_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1220375669566228856" at="63,0,67,0" concept="1" trace="ConnectorCellImpl_z1vupn_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1220375669566228856" at="91,62,95,15" concept="5" />
       <node id="1220375669566228856" at="183,0,187,0" concept="6" trace="synchronize#()V" />
@@ -165,7 +165,7 @@
       <scope id="1220375669566228856" at="157,41,158,19" />
       <scope id="1220375669566228856" at="171,32,172,38" />
       <scope id="1220375669566228856" at="175,37,176,38" />
-      <scope id="1220375669566228856" at="37,105,39,18" />
+      <scope id="1220375669566228856" at="37,103,39,18" />
       <scope id="1220375669566228856" at="63,81,65,20" />
       <scope id="1220375669566228856" at="92,95,94,47" />
       <scope id="1220375669566228856" at="183,31,185,262" />
@@ -252,27 +252,27 @@
       </scope>
       <scope id="1220375669566228856" at="67,61,144,8" />
       <scope id="1220375669566228856" at="67,0,146,0" />
-      <unit id="1220375669566228856" at="110,80,116,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.ConnectorInstance_diagram_EditorBuilder_a$ConnectorCellImpl_z1vupn_a$1$3" />
-      <unit id="1220375669566228856" at="197,0,203,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.ConnectorInstance_diagram_EditorBuilder_a$LINKS" />
-      <unit id="1220375669566228856" at="131,79,142,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.ConnectorInstance_diagram_EditorBuilder_a$ConnectorCellImpl_z1vupn_a$1$5" />
-      <unit id="1220375669566228856" at="117,74,130,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.ConnectorInstance_diagram_EditorBuilder_a$ConnectorCellImpl_z1vupn_a$1$4" />
-      <unit id="1220375669566228856" at="73,71,88,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.ConnectorInstance_diagram_EditorBuilder_a$ConnectorCellImpl_z1vupn_a$1$1" />
-      <unit id="1220375669566228856" at="148,17,166,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.ConnectorInstance_diagram_EditorBuilder_a$ConnectorCellImpl_z1vupn_a$2" />
-      <unit id="1220375669566228856" at="89,72,108,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.ConnectorInstance_diagram_EditorBuilder_a$ConnectorCellImpl_z1vupn_a$1$2" />
-      <unit id="1220375669566228856" at="68,17,144,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.ConnectorInstance_diagram_EditorBuilder_a$ConnectorCellImpl_z1vupn_a$1" />
-      <unit id="1220375669566228856" at="60,0,196,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.ConnectorInstance_diagram_EditorBuilder_a$ConnectorCellImpl_z1vupn_a" />
-      <unit id="1220375669566228856" at="33,0,204,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.ConnectorInstance_diagram_EditorBuilder_a" />
+      <unit id="1220375669566228856" at="110,80,116,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.ConnectorInstance_diagram_EditorBuilder$ConnectorCellImpl_z1vupn_a$1$3" />
+      <unit id="1220375669566228856" at="197,0,203,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.ConnectorInstance_diagram_EditorBuilder$LINKS" />
+      <unit id="1220375669566228856" at="131,79,142,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.ConnectorInstance_diagram_EditorBuilder$ConnectorCellImpl_z1vupn_a$1$5" />
+      <unit id="1220375669566228856" at="117,74,130,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.ConnectorInstance_diagram_EditorBuilder$ConnectorCellImpl_z1vupn_a$1$4" />
+      <unit id="1220375669566228856" at="73,71,88,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.ConnectorInstance_diagram_EditorBuilder$ConnectorCellImpl_z1vupn_a$1$1" />
+      <unit id="1220375669566228856" at="148,17,166,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.ConnectorInstance_diagram_EditorBuilder$ConnectorCellImpl_z1vupn_a$2" />
+      <unit id="1220375669566228856" at="89,72,108,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.ConnectorInstance_diagram_EditorBuilder$ConnectorCellImpl_z1vupn_a$1$2" />
+      <unit id="1220375669566228856" at="68,17,144,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.ConnectorInstance_diagram_EditorBuilder$ConnectorCellImpl_z1vupn_a$1" />
+      <unit id="1220375669566228856" at="60,0,196,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.ConnectorInstance_diagram_EditorBuilder$ConnectorCellImpl_z1vupn_a" />
+      <unit id="1220375669566228856" at="33,0,204,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.ConnectorInstance_diagram_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:71352b9e-a946-4771-b87e-4431430937ee(jetbrains.mps.testHybridEditor.diagram.generated.editor)/1793245865110344037">
     <file name="Block_diagram_Editor.java">
       <node id="1793245865110344037" at="14,0,15,0" concept="3" trace="myContextHints" />
       <node id="1793245865110344037" at="17,47,18,26" concept="8" />
-      <node id="1793245865110344037" at="20,79,21,79" concept="8" />
+      <node id="1793245865110344037" at="20,79,21,77" concept="8" />
       <node id="1793245865110344037" at="20,0,23,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1793245865110344037" at="15,0,20,0" concept="6" trace="getContextHints#()Ljava/util/Collection;" />
       <scope id="1793245865110344037" at="17,47,18,26" />
-      <scope id="1793245865110344037" at="20,79,21,79" />
+      <scope id="1793245865110344037" at="20,79,21,77" />
       <scope id="1793245865110344037" at="20,0,23,0">
         <var name="editorContext" id="1793245865110344037" />
         <var name="node" id="1793245865110344037" />
@@ -280,8 +280,8 @@
       <scope id="1793245865110344037" at="15,0,20,0" />
       <unit id="1793245865110344037" at="13,0,24,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Block_diagram_Editor" />
     </file>
-    <file name="Block_diagram_EditorBuilder_a.java">
-      <node id="1793245865110344037" at="44,93,45,19" concept="13" />
+    <file name="Block_diagram_EditorBuilder.java">
+      <node id="1793245865110344037" at="44,91,45,19" concept="13" />
       <node id="1793245865110344037" at="45,19,46,18" concept="2" />
       <node id="1793245865110344037" at="51,26,52,18" concept="8" />
       <node id="1793245865110344037" at="55,39,56,33" concept="8" />
@@ -383,7 +383,7 @@
       <node id="1793245865110344037" at="209,72,212,11" concept="5" />
       <node id="1793245865110344037" at="218,0,221,0" concept="6" trace="createMapper#(Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/jetpad/mapper/Mapper;" />
       <node id="1793245865110344037" at="223,0,226,0" concept="6" trace="createMapper#(Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/jetpad/mapper/Mapper;" />
-      <node id="1793245865110344037" at="44,0,48,0" concept="1" trace="Block_diagram_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1793245865110344037" at="44,0,48,0" concept="1" trace="Block_diagram_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1793245865110344037" at="150,174,154,22" concept="2" />
       <node id="1793245865110344037" at="49,0,54,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1793245865110344037" at="131,53,136,14" concept="2" />
@@ -435,7 +435,7 @@
       <scope id="1793245865110344037" at="210,36,211,19" />
       <scope id="1793245865110344037" at="218,102,219,88" />
       <scope id="1793245865110344037" at="223,102,224,88" />
-      <scope id="1793245865110344037" at="44,93,46,18" />
+      <scope id="1793245865110344037" at="44,91,46,18" />
       <scope id="1793245865110344037" at="151,107,153,89" />
       <scope id="1793245865110344037" at="55,0,58,0" />
       <scope id="984069744394626191" at="77,0,80,0" />
@@ -528,25 +528,25 @@
       </scope>
       <scope id="1793245865110344037" at="127,58,198,8" />
       <scope id="1793245865110344037" at="127,0,200,0" />
-      <unit id="1793245865110344037" at="132,115,136,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Block_diagram_EditorBuilder_a$BlockCellImpl_pj4dhh_a$5$1" />
-      <unit id="1793245865110344037" at="137,117,141,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Block_diagram_EditorBuilder_a$BlockCellImpl_pj4dhh_a$5$2" />
-      <unit id="1793245865110344037" at="217,131,221,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Block_diagram_EditorBuilder_a$BlockCellImpl_pj4dhh_a$6$1" />
-      <unit id="1793245865110344037" at="222,133,226,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Block_diagram_EditorBuilder_a$BlockCellImpl_pj4dhh_a$6$2" />
-      <unit id="1793245865110344037" at="240,0,244,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Block_diagram_EditorBuilder_a$LINKS" />
-      <unit id="1793245865110344037" at="164,80,170,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Block_diagram_EditorBuilder_a$BlockCellImpl_pj4dhh_a$5$4" />
-      <unit id="1793245865110344037" at="233,0,239,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Block_diagram_EditorBuilder_a$PROPS" />
-      <unit id="984069744394626191" at="76,38,83,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Block_diagram_EditorBuilder_a$BlockCellImpl_pj4dhh_a$1" />
-      <unit id="984069744394626301" at="86,38,93,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Block_diagram_EditorBuilder_a$BlockCellImpl_pj4dhh_a$2" />
-      <unit id="984069744394626452" at="96,38,103,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Block_diagram_EditorBuilder_a$BlockCellImpl_pj4dhh_a$3" />
-      <unit id="984069744394626547" at="106,38,113,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Block_diagram_EditorBuilder_a$BlockCellImpl_pj4dhh_a$4" />
-      <unit id="1793245865110344037" at="185,79,196,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Block_diagram_EditorBuilder_a$BlockCellImpl_pj4dhh_a$5$6" />
-      <unit id="1793245865110344037" at="171,74,184,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Block_diagram_EditorBuilder_a$BlockCellImpl_pj4dhh_a$5$5" />
-      <unit id="1793245865110344037" at="145,25,160,15" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Block_diagram_EditorBuilder_a$BlockCellImpl_pj4dhh_a$5$3$1" />
-      <unit id="1793245865110344037" at="143,134,162,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Block_diagram_EditorBuilder_a$BlockCellImpl_pj4dhh_a$5$3" />
-      <unit id="1793245865110344037" at="201,17,229,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Block_diagram_EditorBuilder_a$BlockCellImpl_pj4dhh_a$6" />
-      <unit id="1793245865110344037" at="128,17,198,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Block_diagram_EditorBuilder_a$BlockCellImpl_pj4dhh_a$5" />
-      <unit id="1793245865110344037" at="67,0,232,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Block_diagram_EditorBuilder_a$BlockCellImpl_pj4dhh_a" />
-      <unit id="1793245865110344037" at="40,0,245,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Block_diagram_EditorBuilder_a" />
+      <unit id="1793245865110344037" at="132,115,136,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Block_diagram_EditorBuilder$BlockCellImpl_pj4dhh_a$5$1" />
+      <unit id="1793245865110344037" at="137,117,141,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Block_diagram_EditorBuilder$BlockCellImpl_pj4dhh_a$5$2" />
+      <unit id="1793245865110344037" at="217,131,221,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Block_diagram_EditorBuilder$BlockCellImpl_pj4dhh_a$6$1" />
+      <unit id="1793245865110344037" at="222,133,226,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Block_diagram_EditorBuilder$BlockCellImpl_pj4dhh_a$6$2" />
+      <unit id="1793245865110344037" at="240,0,244,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Block_diagram_EditorBuilder$LINKS" />
+      <unit id="1793245865110344037" at="164,80,170,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Block_diagram_EditorBuilder$BlockCellImpl_pj4dhh_a$5$4" />
+      <unit id="1793245865110344037" at="233,0,239,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Block_diagram_EditorBuilder$PROPS" />
+      <unit id="984069744394626191" at="76,38,83,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Block_diagram_EditorBuilder$BlockCellImpl_pj4dhh_a$1" />
+      <unit id="984069744394626301" at="86,38,93,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Block_diagram_EditorBuilder$BlockCellImpl_pj4dhh_a$2" />
+      <unit id="984069744394626452" at="96,38,103,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Block_diagram_EditorBuilder$BlockCellImpl_pj4dhh_a$3" />
+      <unit id="984069744394626547" at="106,38,113,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Block_diagram_EditorBuilder$BlockCellImpl_pj4dhh_a$4" />
+      <unit id="1793245865110344037" at="185,79,196,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Block_diagram_EditorBuilder$BlockCellImpl_pj4dhh_a$5$6" />
+      <unit id="1793245865110344037" at="171,74,184,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Block_diagram_EditorBuilder$BlockCellImpl_pj4dhh_a$5$5" />
+      <unit id="1793245865110344037" at="145,25,160,15" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Block_diagram_EditorBuilder$BlockCellImpl_pj4dhh_a$5$3$1" />
+      <unit id="1793245865110344037" at="143,134,162,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Block_diagram_EditorBuilder$BlockCellImpl_pj4dhh_a$5$3" />
+      <unit id="1793245865110344037" at="201,17,229,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Block_diagram_EditorBuilder$BlockCellImpl_pj4dhh_a$6" />
+      <unit id="1793245865110344037" at="128,17,198,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Block_diagram_EditorBuilder$BlockCellImpl_pj4dhh_a$5" />
+      <unit id="1793245865110344037" at="67,0,232,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Block_diagram_EditorBuilder$BlockCellImpl_pj4dhh_a" />
+      <unit id="1793245865110344037" at="40,0,245,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Block_diagram_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:71352b9e-a946-4771-b87e-4431430937ee(jetbrains.mps.testHybridEditor.diagram.generated.editor)/2336278055261474786">
@@ -610,11 +610,11 @@
     <file name="BlockInstance_diagram_Editor.java">
       <node id="2353136177975278085" at="14,0,15,0" concept="3" trace="myContextHints" />
       <node id="2353136177975278085" at="17,47,18,26" concept="8" />
-      <node id="2353136177975278085" at="20,79,21,87" concept="8" />
+      <node id="2353136177975278085" at="20,79,21,85" concept="8" />
       <node id="2353136177975278085" at="20,0,23,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="2353136177975278085" at="15,0,20,0" concept="6" trace="getContextHints#()Ljava/util/Collection;" />
       <scope id="2353136177975278085" at="17,47,18,26" />
-      <scope id="2353136177975278085" at="20,79,21,87" />
+      <scope id="2353136177975278085" at="20,79,21,85" />
       <scope id="2353136177975278085" at="20,0,23,0">
         <var name="editorContext" id="2353136177975278085" />
         <var name="node" id="2353136177975278085" />
@@ -622,8 +622,8 @@
       <scope id="2353136177975278085" at="15,0,20,0" />
       <unit id="2353136177975278085" at="13,0,24,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_Editor" />
     </file>
-    <file name="BlockInstance_diagram_EditorBuilder_a.java">
-      <node id="2353136177975278085" at="52,101,53,19" concept="13" />
+    <file name="BlockInstance_diagram_EditorBuilder.java">
+      <node id="2353136177975278085" at="52,99,53,19" concept="13" />
       <node id="2353136177975278085" at="53,19,54,18" concept="2" />
       <node id="2353136177975278085" at="59,26,60,18" concept="8" />
       <node id="2353136177975278085" at="63,39,64,33" concept="8" />
@@ -793,7 +793,7 @@
       <node id="2353136177975278085" at="334,61,337,19" concept="5" />
       <node id="2353136177975278085" at="338,132,341,19" concept="5" />
       <node id="2353136177975278085" at="342,138,345,19" concept="5" />
-      <node id="2353136177975278085" at="52,0,56,0" concept="1" trace="BlockInstance_diagram_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="2353136177975278085" at="52,0,56,0" concept="1" trace="BlockInstance_diagram_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="2353136177975278085" at="224,174,228,22" concept="2" />
       <node id="2353136177975278085" at="57,0,62,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="984069744394892428" at="95,209,100,15" concept="2" />
@@ -874,7 +874,7 @@
       <scope id="2353136177975278085" at="335,44,336,27" />
       <scope id="2353136177975278085" at="339,54,340,27" />
       <scope id="2353136177975278085" at="343,42,344,27" />
-      <scope id="2353136177975278085" at="52,101,54,18" />
+      <scope id="2353136177975278085" at="52,99,54,18" />
       <scope id="2353136177975278085" at="225,107,227,89" />
       <scope id="2353136177975278085" at="63,0,66,0" />
       <scope id="984069744394712651" at="87,0,90,0" />
@@ -1028,33 +1028,33 @@
       </scope>
       <scope id="2353136177975278085" at="154,58,274,8" />
       <scope id="2353136177975278085" at="154,0,276,0" />
-      <unit id="984069744394892428" at="96,34,100,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder_a$BlockCellImpl_79747v_a$2" />
-      <unit id="2353136177975278085" at="369,0,374,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder_a$LINKS" />
-      <unit id="2353136177975278085" at="168,89,174,19" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder_a$BlockCellImpl_79747v_a$7$1$1$1" />
-      <unit id="2353136177975278085" at="197,89,203,19" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder_a$BlockCellImpl_79747v_a$7$2$1$1" />
-      <unit id="2353136177975278085" at="240,80,246,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder_a$BlockCellImpl_79747v_a$7$4" />
-      <unit id="984069744394712651" at="86,38,93,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder_a$BlockCellImpl_79747v_a$1" />
-      <unit id="984069744394988843" at="102,38,109,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder_a$BlockCellImpl_79747v_a$3" />
-      <unit id="984069744394990383" at="112,38,119,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder_a$BlockCellImpl_79747v_a$4" />
-      <unit id="984069744394994628" at="122,38,129,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder_a$BlockCellImpl_79747v_a$5" />
-      <unit id="984069744394995997" at="132,38,139,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder_a$BlockCellImpl_79747v_a$6" />
-      <unit id="2353136177975278085" at="361,0,368,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder_a$PROPS" />
-      <unit id="2353136177975278085" at="261,79,272,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder_a$BlockCellImpl_79747v_a$7$6" />
-      <unit id="2353136177975278085" at="247,74,260,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder_a$BlockCellImpl_79747v_a$7$5" />
-      <unit id="2353136177975278085" at="161,25,177,15" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder_a$BlockCellImpl_79747v_a$7$1$1" />
-      <unit id="2353136177975278085" at="189,25,206,15" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder_a$BlockCellImpl_79747v_a$7$2$1" />
-      <unit id="2353136177975278085" at="219,25,236,15" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder_a$BlockCellImpl_79747v_a$7$3$1" />
-      <unit id="2353136177975278085" at="217,134,238,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder_a$BlockCellImpl_79747v_a$7$3" />
-      <unit id="2353136177975278085" at="305,25,326,15" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder_a$BlockCellImpl_79747v_a$8$1$1" />
-      <unit id="2353136177975278085" at="331,25,352,15" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder_a$BlockCellImpl_79747v_a$8$2$1" />
-      <unit id="2353136177975278085" at="303,131,328,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder_a$BlockCellImpl_79747v_a$8$1" />
-      <unit id="2353136177975278085" at="329,133,354,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder_a$BlockCellImpl_79747v_a$8$2" />
-      <unit id="2353136177975278085" at="159,115,186,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder_a$BlockCellImpl_79747v_a$7$1" />
-      <unit id="2353136177975278085" at="187,117,215,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder_a$BlockCellImpl_79747v_a$7$2" />
-      <unit id="2353136177975278085" at="277,17,357,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder_a$BlockCellImpl_79747v_a$8" />
-      <unit id="2353136177975278085" at="155,17,274,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder_a$BlockCellImpl_79747v_a$7" />
-      <unit id="2353136177975278085" at="75,0,360,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder_a$BlockCellImpl_79747v_a" />
-      <unit id="2353136177975278085" at="48,0,375,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder_a" />
+      <unit id="984069744394892428" at="96,34,100,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder$BlockCellImpl_79747v_a$2" />
+      <unit id="2353136177975278085" at="369,0,374,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder$LINKS" />
+      <unit id="2353136177975278085" at="168,89,174,19" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder$BlockCellImpl_79747v_a$7$1$1$1" />
+      <unit id="2353136177975278085" at="197,89,203,19" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder$BlockCellImpl_79747v_a$7$2$1$1" />
+      <unit id="2353136177975278085" at="240,80,246,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder$BlockCellImpl_79747v_a$7$4" />
+      <unit id="984069744394712651" at="86,38,93,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder$BlockCellImpl_79747v_a$1" />
+      <unit id="984069744394988843" at="102,38,109,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder$BlockCellImpl_79747v_a$3" />
+      <unit id="984069744394990383" at="112,38,119,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder$BlockCellImpl_79747v_a$4" />
+      <unit id="984069744394994628" at="122,38,129,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder$BlockCellImpl_79747v_a$5" />
+      <unit id="984069744394995997" at="132,38,139,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder$BlockCellImpl_79747v_a$6" />
+      <unit id="2353136177975278085" at="361,0,368,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder$PROPS" />
+      <unit id="2353136177975278085" at="261,79,272,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder$BlockCellImpl_79747v_a$7$6" />
+      <unit id="2353136177975278085" at="247,74,260,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder$BlockCellImpl_79747v_a$7$5" />
+      <unit id="2353136177975278085" at="161,25,177,15" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder$BlockCellImpl_79747v_a$7$1$1" />
+      <unit id="2353136177975278085" at="189,25,206,15" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder$BlockCellImpl_79747v_a$7$2$1" />
+      <unit id="2353136177975278085" at="219,25,236,15" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder$BlockCellImpl_79747v_a$7$3$1" />
+      <unit id="2353136177975278085" at="217,134,238,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder$BlockCellImpl_79747v_a$7$3" />
+      <unit id="2353136177975278085" at="305,25,326,15" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder$BlockCellImpl_79747v_a$8$1$1" />
+      <unit id="2353136177975278085" at="331,25,352,15" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder$BlockCellImpl_79747v_a$8$2$1" />
+      <unit id="2353136177975278085" at="303,131,328,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder$BlockCellImpl_79747v_a$8$1" />
+      <unit id="2353136177975278085" at="329,133,354,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder$BlockCellImpl_79747v_a$8$2" />
+      <unit id="2353136177975278085" at="159,115,186,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder$BlockCellImpl_79747v_a$7$1" />
+      <unit id="2353136177975278085" at="187,117,215,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder$BlockCellImpl_79747v_a$7$2" />
+      <unit id="2353136177975278085" at="277,17,357,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder$BlockCellImpl_79747v_a$8" />
+      <unit id="2353136177975278085" at="155,17,274,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder$BlockCellImpl_79747v_a$7" />
+      <unit id="2353136177975278085" at="75,0,360,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder$BlockCellImpl_79747v_a" />
+      <unit id="2353136177975278085" at="48,0,375,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.BlockInstance_diagram_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:71352b9e-a946-4771-b87e-4431430937ee(jetbrains.mps.testHybridEditor.diagram.generated.editor)/5827780068500780337">
@@ -1260,11 +1260,11 @@
     <file name="InputPort_diagram_Editor.java">
       <node id="6306886970785124034" at="14,0,15,0" concept="3" trace="myContextHints" />
       <node id="6306886970785124034" at="17,47,18,26" concept="8" />
-      <node id="6306886970785124034" at="20,79,21,83" concept="8" />
+      <node id="6306886970785124034" at="20,79,21,81" concept="8" />
       <node id="6306886970785124034" at="20,0,23,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="6306886970785124034" at="15,0,20,0" concept="6" trace="getContextHints#()Ljava/util/Collection;" />
       <scope id="6306886970785124034" at="17,47,18,26" />
-      <scope id="6306886970785124034" at="20,79,21,83" />
+      <scope id="6306886970785124034" at="20,79,21,81" />
       <scope id="6306886970785124034" at="20,0,23,0">
         <var name="editorContext" id="6306886970785124034" />
         <var name="node" id="6306886970785124034" />
@@ -1272,8 +1272,8 @@
       <scope id="6306886970785124034" at="15,0,20,0" />
       <unit id="6306886970785124034" at="13,0,24,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.InputPort_diagram_Editor" />
     </file>
-    <file name="InputPort_diagram_EditorBuilder_a.java">
-      <node id="6306886970785124034" at="30,97,31,19" concept="13" />
+    <file name="InputPort_diagram_EditorBuilder.java">
+      <node id="6306886970785124034" at="30,95,31,19" concept="13" />
       <node id="6306886970785124034" at="31,19,32,18" concept="2" />
       <node id="6306886970785124034" at="37,26,38,18" concept="8" />
       <node id="6306886970785124034" at="41,39,42,33" concept="8" />
@@ -1323,7 +1323,7 @@
       <node id="6306886970785124034" at="89,57,92,15" concept="5" />
       <node id="6306886970785124034" at="117,53,120,11" concept="5" />
       <node id="6306886970785124034" at="121,125,124,11" concept="5" />
-      <node id="6306886970785124034" at="30,0,34,0" concept="1" trace="InputPort_diagram_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="6306886970785124034" at="30,0,34,0" concept="1" trace="InputPort_diagram_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="6306886970785124034" at="53,0,57,0" concept="1" trace="PortCellImpl_gtlhx2_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="6306886970785124034" at="35,0,40,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="6306886970785124034" at="67,0,72,0" concept="6" trace="set#(Ljava/lang/Boolean;)V" />
@@ -1352,7 +1352,7 @@
       <scope id="6306886970785124034" at="90,40,91,23" />
       <scope id="6306886970785124034" at="118,36,119,19" />
       <scope id="6306886970785124034" at="122,41,123,19" />
-      <scope id="6306886970785124034" at="30,97,32,18" />
+      <scope id="6306886970785124034" at="30,95,32,18" />
       <scope id="6306886970785124034" at="53,76,55,20" />
       <scope id="6306886970785124034" at="102,0,104,0" />
       <scope id="6306886970785124034" at="41,0,44,0" />
@@ -1412,24 +1412,24 @@
       </scope>
       <scope id="6306886970785124034" at="57,51,100,8" />
       <scope id="6306886970785124034" at="57,0,102,0" />
-      <unit id="6306886970785124034" at="66,80,72,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.InputPort_diagram_EditorBuilder_a$PortCellImpl_gtlhx2_a$1$1" />
-      <unit id="6306886970785124034" at="87,79,98,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.InputPort_diagram_EditorBuilder_a$PortCellImpl_gtlhx2_a$1$3" />
-      <unit id="6306886970785124034" at="73,74,86,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.InputPort_diagram_EditorBuilder_a$PortCellImpl_gtlhx2_a$1$2" />
-      <unit id="6306886970785124034" at="113,17,134,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.InputPort_diagram_EditorBuilder_a$PortCellImpl_gtlhx2_a$2" />
-      <unit id="6306886970785124034" at="58,17,100,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.InputPort_diagram_EditorBuilder_a$PortCellImpl_gtlhx2_a$1" />
-      <unit id="6306886970785124034" at="52,0,138,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.InputPort_diagram_EditorBuilder_a$PortCellImpl_gtlhx2_a" />
-      <unit id="6306886970785124034" at="26,0,139,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.InputPort_diagram_EditorBuilder_a" />
+      <unit id="6306886970785124034" at="66,80,72,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.InputPort_diagram_EditorBuilder$PortCellImpl_gtlhx2_a$1$1" />
+      <unit id="6306886970785124034" at="87,79,98,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.InputPort_diagram_EditorBuilder$PortCellImpl_gtlhx2_a$1$3" />
+      <unit id="6306886970785124034" at="73,74,86,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.InputPort_diagram_EditorBuilder$PortCellImpl_gtlhx2_a$1$2" />
+      <unit id="6306886970785124034" at="113,17,134,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.InputPort_diagram_EditorBuilder$PortCellImpl_gtlhx2_a$2" />
+      <unit id="6306886970785124034" at="58,17,100,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.InputPort_diagram_EditorBuilder$PortCellImpl_gtlhx2_a$1" />
+      <unit id="6306886970785124034" at="52,0,138,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.InputPort_diagram_EditorBuilder$PortCellImpl_gtlhx2_a" />
+      <unit id="6306886970785124034" at="26,0,139,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.InputPort_diagram_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:71352b9e-a946-4771-b87e-4431430937ee(jetbrains.mps.testHybridEditor.diagram.generated.editor)/6306886970785147343">
     <file name="OutputPort_diagram_Editor.java">
       <node id="6306886970785147343" at="14,0,15,0" concept="3" trace="myContextHints" />
       <node id="6306886970785147343" at="17,47,18,26" concept="8" />
-      <node id="6306886970785147343" at="20,79,21,84" concept="8" />
+      <node id="6306886970785147343" at="20,79,21,82" concept="8" />
       <node id="6306886970785147343" at="20,0,23,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="6306886970785147343" at="15,0,20,0" concept="6" trace="getContextHints#()Ljava/util/Collection;" />
       <scope id="6306886970785147343" at="17,47,18,26" />
-      <scope id="6306886970785147343" at="20,79,21,84" />
+      <scope id="6306886970785147343" at="20,79,21,82" />
       <scope id="6306886970785147343" at="20,0,23,0">
         <var name="editorContext" id="6306886970785147343" />
         <var name="node" id="6306886970785147343" />
@@ -1437,8 +1437,8 @@
       <scope id="6306886970785147343" at="15,0,20,0" />
       <unit id="6306886970785147343" at="13,0,24,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.OutputPort_diagram_Editor" />
     </file>
-    <file name="OutputPort_diagram_EditorBuilder_a.java">
-      <node id="6306886970785147343" at="30,98,31,19" concept="13" />
+    <file name="OutputPort_diagram_EditorBuilder.java">
+      <node id="6306886970785147343" at="30,96,31,19" concept="13" />
       <node id="6306886970785147343" at="31,19,32,18" concept="2" />
       <node id="6306886970785147343" at="37,26,38,18" concept="8" />
       <node id="6306886970785147343" at="41,39,42,33" concept="8" />
@@ -1489,7 +1489,7 @@
       <node id="6306886970785147343" at="90,57,93,15" concept="5" />
       <node id="6306886970785147343" at="118,53,121,11" concept="5" />
       <node id="6306886970785147343" at="122,125,125,11" concept="5" />
-      <node id="6306886970785147343" at="30,0,34,0" concept="1" trace="OutputPort_diagram_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="6306886970785147343" at="30,0,34,0" concept="1" trace="OutputPort_diagram_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="6306886970785147343" at="53,0,57,0" concept="1" trace="PortCellImpl_bbhyff_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="6306886970785147343" at="35,0,40,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="6306886970785147343" at="68,0,73,0" concept="6" trace="set#(Ljava/lang/Boolean;)V" />
@@ -1518,7 +1518,7 @@
       <scope id="6306886970785147343" at="91,40,92,23" />
       <scope id="6306886970785147343" at="119,36,120,19" />
       <scope id="6306886970785147343" at="123,41,124,19" />
-      <scope id="6306886970785147343" at="30,98,32,18" />
+      <scope id="6306886970785147343" at="30,96,32,18" />
       <scope id="6306886970785147343" at="53,76,55,20" />
       <scope id="6306886970785147343" at="103,0,105,0" />
       <scope id="6306886970785147343" at="41,0,44,0" />
@@ -1578,24 +1578,24 @@
       </scope>
       <scope id="6306886970785147343" at="57,51,101,8" />
       <scope id="6306886970785147343" at="57,0,103,0" />
-      <unit id="6306886970785147343" at="67,80,73,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.OutputPort_diagram_EditorBuilder_a$PortCellImpl_bbhyff_a$1$1" />
-      <unit id="6306886970785147343" at="88,79,99,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.OutputPort_diagram_EditorBuilder_a$PortCellImpl_bbhyff_a$1$3" />
-      <unit id="6306886970785147343" at="74,74,87,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.OutputPort_diagram_EditorBuilder_a$PortCellImpl_bbhyff_a$1$2" />
-      <unit id="6306886970785147343" at="114,17,135,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.OutputPort_diagram_EditorBuilder_a$PortCellImpl_bbhyff_a$2" />
-      <unit id="6306886970785147343" at="58,17,101,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.OutputPort_diagram_EditorBuilder_a$PortCellImpl_bbhyff_a$1" />
-      <unit id="6306886970785147343" at="52,0,139,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.OutputPort_diagram_EditorBuilder_a$PortCellImpl_bbhyff_a" />
-      <unit id="6306886970785147343" at="26,0,140,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.OutputPort_diagram_EditorBuilder_a" />
+      <unit id="6306886970785147343" at="67,80,73,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.OutputPort_diagram_EditorBuilder$PortCellImpl_bbhyff_a$1$1" />
+      <unit id="6306886970785147343" at="88,79,99,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.OutputPort_diagram_EditorBuilder$PortCellImpl_bbhyff_a$1$3" />
+      <unit id="6306886970785147343" at="74,74,87,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.OutputPort_diagram_EditorBuilder$PortCellImpl_bbhyff_a$1$2" />
+      <unit id="6306886970785147343" at="114,17,135,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.OutputPort_diagram_EditorBuilder$PortCellImpl_bbhyff_a$2" />
+      <unit id="6306886970785147343" at="58,17,101,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.OutputPort_diagram_EditorBuilder$PortCellImpl_bbhyff_a$1" />
+      <unit id="6306886970785147343" at="52,0,139,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.OutputPort_diagram_EditorBuilder$PortCellImpl_bbhyff_a" />
+      <unit id="6306886970785147343" at="26,0,140,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.OutputPort_diagram_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:71352b9e-a946-4771-b87e-4431430937ee(jetbrains.mps.testHybridEditor.diagram.generated.editor)/6306886970791123511">
     <file name="Diagram_diagram_Editor.java">
       <node id="6306886970791123511" at="14,0,15,0" concept="3" trace="myContextHints" />
       <node id="6306886970791123511" at="17,47,18,26" concept="8" />
-      <node id="6306886970791123511" at="20,79,21,81" concept="8" />
+      <node id="6306886970791123511" at="20,79,21,79" concept="8" />
       <node id="6306886970791123511" at="20,0,23,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="6306886970791123511" at="15,0,20,0" concept="6" trace="getContextHints#()Ljava/util/Collection;" />
       <scope id="6306886970791123511" at="17,47,18,26" />
-      <scope id="6306886970791123511" at="20,79,21,81" />
+      <scope id="6306886970791123511" at="20,79,21,79" />
       <scope id="6306886970791123511" at="20,0,23,0">
         <var name="editorContext" id="6306886970791123511" />
         <var name="node" id="6306886970791123511" />
@@ -1603,8 +1603,8 @@
       <scope id="6306886970791123511" at="15,0,20,0" />
       <unit id="6306886970791123511" at="13,0,24,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_Editor" />
     </file>
-    <file name="Diagram_diagram_EditorBuilder_a.java">
-      <node id="6306886970791123511" at="62,95,63,19" concept="13" />
+    <file name="Diagram_diagram_EditorBuilder.java">
+      <node id="6306886970791123511" at="62,93,63,19" concept="13" />
       <node id="6306886970791123511" at="63,19,64,18" concept="2" />
       <node id="6306886970791123511" at="69,26,70,18" concept="8" />
       <node id="6306886970791123511" at="73,39,74,32" concept="8" />
@@ -1778,7 +1778,7 @@
       <node id="6306886970791123511" at="303,0,306,0" concept="6" trace="createMapper#(Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/jetpad/mapper/Mapper;" />
       <node id="6306886970791123511" at="338,0,341,0" concept="6" trace="createMapper#(Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/jetpad/mapper/Mapper;" />
       <node id="6306886970791123511" at="343,0,346,0" concept="6" trace="createMapper#(Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/jetpad/mapper/Mapper;" />
-      <node id="6306886970791123511" at="62,0,66,0" concept="1" trace="Diagram_diagram_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="6306886970791123511" at="62,0,66,0" concept="1" trace="Diagram_diagram_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="7801692200918031065" at="146,0,150,0" concept="6" trace="invoke#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/model/SNode;Ljava/lang/Object;Lorg/jetbrains/mps/openapi/model/SNode;Ljava/lang/Object;)V" />
       <node id="6306886970791123511" at="162,86,166,10" concept="8" />
       <node id="6306886970791123511" at="236,0,240,0" concept="6" trace="createDiagramView#()Ljetbrains/jetpad/projectional/diagram/view/DiagramView;" />
@@ -1864,7 +1864,7 @@
       <scope id="6306886970791123511" at="322,83,323,56" />
       <scope id="6306886970791123511" at="338,85,339,85" />
       <scope id="6306886970791123511" at="343,85,344,89" />
-      <scope id="6306886970791123511" at="62,95,64,18" />
+      <scope id="6306886970791123511" at="62,93,64,18" />
       <scope id="2547454759988708542" at="115,74,117,145">
         <var name="manager" id="2547454759988708542" />
       </scope>
@@ -2070,44 +2070,44 @@
       <scope id="6306886970791123511" at="292,0,332,0">
         <var name="node" id="6306886970791123511" />
       </scope>
-      <unit id="6306886970791123511" at="173,114,177,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder_a$DiagramCellImpl_32adaa_c0$3$1" />
-      <unit id="6306886970791123511" at="178,109,182,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder_a$DiagramCellImpl_32adaa_c0$3$2" />
-      <unit id="6306886970791123511" at="213,123,217,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder_a$DiagramCellImpl_32adaa_c0$4$1" />
-      <unit id="6306886970791123511" at="218,132,222,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder_a$DiagramCellImpl_32adaa_c0$4$2" />
-      <unit id="6306886970791123511" at="297,114,301,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder_a$DiagramCellImpl_32adaa_e0$3$1" />
-      <unit id="6306886970791123511" at="302,109,306,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder_a$DiagramCellImpl_32adaa_e0$3$2" />
-      <unit id="6306886970791123511" at="337,123,341,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder_a$DiagramCellImpl_32adaa_e0$4$1" />
-      <unit id="6306886970791123511" at="342,132,346,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder_a$DiagramCellImpl_32adaa_e0$4$2" />
-      <unit id="7801692200918031065" at="145,278,150,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder_a$DiagramCellImpl_32adaa_c0$2" />
-      <unit id="8570854907291277223" at="255,216,261,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder_a$DiagramCellImpl_32adaa_e0$1" />
-      <unit id="8570854907292894775" at="138,205,145,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder_a$DiagramCellImpl_32adaa_c0$1" />
-      <unit id="6306886970791123511" at="374,0,381,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder_a$PROPS" />
-      <unit id="6306886970791123511" at="183,83,191,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder_a$DiagramCellImpl_32adaa_c0$3$3" />
-      <unit id="6306886970791123511" at="307,83,315,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder_a$DiagramCellImpl_32adaa_e0$3$3" />
-      <unit id="2981172682493798335" at="364,0,372,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder_a$DiagramCellImpl_32adaa_e0$DiagramPaletteImpl_32adaa_a4a" />
-      <unit id="939897302409476764" at="261,441,270,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder_a$DiagramCellImpl_32adaa_e0$2" />
-      <unit id="6306886970791123511" at="382,0,391,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder_a$CONCEPTS" />
-      <unit id="6306886970791123511" at="192,74,203,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder_a$DiagramCellImpl_32adaa_c0$3$4" />
-      <unit id="6306886970791123511" at="316,74,327,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder_a$DiagramCellImpl_32adaa_e0$3$4" />
-      <unit id="6306886970791123511" at="209,17,224,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder_a$DiagramCellImpl_32adaa_c0$4" />
-      <unit id="6306886970791123511" at="333,17,348,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder_a$DiagramCellImpl_32adaa_e0$4" />
-      <unit id="6306886970791123511" at="392,0,409,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder_a$LINKS" />
-      <unit id="6306886970791123511" at="169,17,206,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder_a$DiagramCellImpl_32adaa_c0$3" />
-      <unit id="6306886970791123511" at="293,17,330,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder_a$DiagramCellImpl_32adaa_e0$3" />
-      <unit id="6306886970791123511" at="135,0,241,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder_a$DiagramCellImpl_32adaa_c0" />
-      <unit id="6306886970791123511" at="252,0,373,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder_a$DiagramCellImpl_32adaa_e0" />
-      <unit id="6306886970791123511" at="58,0,410,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder_a" />
+      <unit id="6306886970791123511" at="173,114,177,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder$DiagramCellImpl_32adaa_c0$3$1" />
+      <unit id="6306886970791123511" at="178,109,182,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder$DiagramCellImpl_32adaa_c0$3$2" />
+      <unit id="6306886970791123511" at="213,123,217,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder$DiagramCellImpl_32adaa_c0$4$1" />
+      <unit id="6306886970791123511" at="218,132,222,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder$DiagramCellImpl_32adaa_c0$4$2" />
+      <unit id="6306886970791123511" at="297,114,301,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder$DiagramCellImpl_32adaa_e0$3$1" />
+      <unit id="6306886970791123511" at="302,109,306,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder$DiagramCellImpl_32adaa_e0$3$2" />
+      <unit id="6306886970791123511" at="337,123,341,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder$DiagramCellImpl_32adaa_e0$4$1" />
+      <unit id="6306886970791123511" at="342,132,346,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder$DiagramCellImpl_32adaa_e0$4$2" />
+      <unit id="7801692200918031065" at="145,278,150,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder$DiagramCellImpl_32adaa_c0$2" />
+      <unit id="8570854907291277223" at="255,216,261,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder$DiagramCellImpl_32adaa_e0$1" />
+      <unit id="8570854907292894775" at="138,205,145,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder$DiagramCellImpl_32adaa_c0$1" />
+      <unit id="6306886970791123511" at="374,0,381,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder$PROPS" />
+      <unit id="6306886970791123511" at="183,83,191,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder$DiagramCellImpl_32adaa_c0$3$3" />
+      <unit id="6306886970791123511" at="307,83,315,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder$DiagramCellImpl_32adaa_e0$3$3" />
+      <unit id="2981172682493798335" at="364,0,372,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder$DiagramCellImpl_32adaa_e0$DiagramPaletteImpl_32adaa_a4a" />
+      <unit id="939897302409476764" at="261,441,270,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder$DiagramCellImpl_32adaa_e0$2" />
+      <unit id="6306886970791123511" at="382,0,391,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder$CONCEPTS" />
+      <unit id="6306886970791123511" at="192,74,203,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder$DiagramCellImpl_32adaa_c0$3$4" />
+      <unit id="6306886970791123511" at="316,74,327,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder$DiagramCellImpl_32adaa_e0$3$4" />
+      <unit id="6306886970791123511" at="209,17,224,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder$DiagramCellImpl_32adaa_c0$4" />
+      <unit id="6306886970791123511" at="333,17,348,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder$DiagramCellImpl_32adaa_e0$4" />
+      <unit id="6306886970791123511" at="392,0,409,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder$LINKS" />
+      <unit id="6306886970791123511" at="169,17,206,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder$DiagramCellImpl_32adaa_c0$3" />
+      <unit id="6306886970791123511" at="293,17,330,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder$DiagramCellImpl_32adaa_e0$3" />
+      <unit id="6306886970791123511" at="135,0,241,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder$DiagramCellImpl_32adaa_c0" />
+      <unit id="6306886970791123511" at="252,0,373,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder$DiagramCellImpl_32adaa_e0" />
+      <unit id="6306886970791123511" at="58,0,410,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Diagram_diagram_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:71352b9e-a946-4771-b87e-4431430937ee(jetbrains.mps.testHybridEditor.diagram.generated.editor)/6970913567389678792">
     <file name="Connector_diagram_Editor.java">
       <node id="6970913567389678792" at="14,0,15,0" concept="3" trace="myContextHints" />
       <node id="6970913567389678792" at="17,47,18,26" concept="8" />
-      <node id="6970913567389678792" at="20,79,21,83" concept="8" />
+      <node id="6970913567389678792" at="20,79,21,81" concept="8" />
       <node id="6970913567389678792" at="20,0,23,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="6970913567389678792" at="15,0,20,0" concept="6" trace="getContextHints#()Ljava/util/Collection;" />
       <scope id="6970913567389678792" at="17,47,18,26" />
-      <scope id="6970913567389678792" at="20,79,21,83" />
+      <scope id="6970913567389678792" at="20,79,21,81" />
       <scope id="6970913567389678792" at="20,0,23,0">
         <var name="editorContext" id="6970913567389678792" />
         <var name="node" id="6970913567389678792" />
@@ -2115,8 +2115,8 @@
       <scope id="6970913567389678792" at="15,0,20,0" />
       <unit id="6970913567389678792" at="13,0,24,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Connector_diagram_Editor" />
     </file>
-    <file name="Connector_diagram_EditorBuilder_a.java">
-      <node id="6970913567389678792" at="35,97,36,19" concept="13" />
+    <file name="Connector_diagram_EditorBuilder.java">
+      <node id="6970913567389678792" at="35,95,36,19" concept="13" />
       <node id="6970913567389678792" at="36,19,37,18" concept="2" />
       <node id="6970913567389678792" at="42,26,43,18" concept="8" />
       <node id="6970913567389678792" at="46,39,47,38" concept="8" />
@@ -2190,7 +2190,7 @@
       <node id="6970913567389678792" at="146,125,149,11" concept="5" />
       <node id="6970913567389678792" at="160,49,163,7" concept="5" />
       <node id="6970913567389678792" at="164,115,167,7" concept="5" />
-      <node id="6970913567389678792" at="35,0,39,0" concept="1" trace="Connector_diagram_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="6970913567389678792" at="35,0,39,0" concept="1" trace="Connector_diagram_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="6970913567389678792" at="61,0,65,0" concept="1" trace="ConnectorCellImpl_a4xffp_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="6970913567389678792" at="85,62,89,15" concept="5" />
       <node id="6970913567389678792" at="173,0,177,0" concept="6" trace="synchronize#()V" />
@@ -2230,7 +2230,7 @@
       <scope id="6970913567389678792" at="147,41,148,19" />
       <scope id="6970913567389678792" at="161,32,162,38" />
       <scope id="6970913567389678792" at="165,37,166,38" />
-      <scope id="6970913567389678792" at="35,97,37,18" />
+      <scope id="6970913567389678792" at="35,95,37,18" />
       <scope id="6970913567389678792" at="61,81,63,20" />
       <scope id="6970913567389678792" at="86,95,88,47" />
       <scope id="6970913567389678792" at="173,31,175,109" />
@@ -2315,16 +2315,16 @@
       </scope>
       <scope id="6970913567389678792" at="65,61,134,8" />
       <scope id="6970913567389678792" at="65,0,136,0" />
-      <unit id="6970913567389678792" at="187,0,191,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Connector_diagram_EditorBuilder_a$LINKS" />
-      <unit id="6970913567389678792" at="100,80,106,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Connector_diagram_EditorBuilder_a$ConnectorCellImpl_a4xffp_a$1$3" />
-      <unit id="6970913567389678792" at="71,71,82,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Connector_diagram_EditorBuilder_a$ConnectorCellImpl_a4xffp_a$1$1" />
-      <unit id="6970913567389678792" at="121,79,132,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Connector_diagram_EditorBuilder_a$ConnectorCellImpl_a4xffp_a$1$5" />
-      <unit id="6970913567389678792" at="107,74,120,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Connector_diagram_EditorBuilder_a$ConnectorCellImpl_a4xffp_a$1$4" />
-      <unit id="6970913567389678792" at="83,72,98,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Connector_diagram_EditorBuilder_a$ConnectorCellImpl_a4xffp_a$1$2" />
-      <unit id="6970913567389678792" at="138,17,156,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Connector_diagram_EditorBuilder_a$ConnectorCellImpl_a4xffp_a$2" />
-      <unit id="6970913567389678792" at="66,17,134,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Connector_diagram_EditorBuilder_a$ConnectorCellImpl_a4xffp_a$1" />
-      <unit id="6970913567389678792" at="58,0,186,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Connector_diagram_EditorBuilder_a$ConnectorCellImpl_a4xffp_a" />
-      <unit id="6970913567389678792" at="31,0,192,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Connector_diagram_EditorBuilder_a" />
+      <unit id="6970913567389678792" at="187,0,191,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Connector_diagram_EditorBuilder$LINKS" />
+      <unit id="6970913567389678792" at="100,80,106,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Connector_diagram_EditorBuilder$ConnectorCellImpl_a4xffp_a$1$3" />
+      <unit id="6970913567389678792" at="71,71,82,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Connector_diagram_EditorBuilder$ConnectorCellImpl_a4xffp_a$1$1" />
+      <unit id="6970913567389678792" at="121,79,132,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Connector_diagram_EditorBuilder$ConnectorCellImpl_a4xffp_a$1$5" />
+      <unit id="6970913567389678792" at="107,74,120,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Connector_diagram_EditorBuilder$ConnectorCellImpl_a4xffp_a$1$4" />
+      <unit id="6970913567389678792" at="83,72,98,11" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Connector_diagram_EditorBuilder$ConnectorCellImpl_a4xffp_a$1$2" />
+      <unit id="6970913567389678792" at="138,17,156,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Connector_diagram_EditorBuilder$ConnectorCellImpl_a4xffp_a$2" />
+      <unit id="6970913567389678792" at="66,17,134,7" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Connector_diagram_EditorBuilder$ConnectorCellImpl_a4xffp_a$1" />
+      <unit id="6970913567389678792" at="58,0,186,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Connector_diagram_EditorBuilder$ConnectorCellImpl_a4xffp_a" />
+      <unit id="6970913567389678792" at="31,0,192,0" name="jetbrains.mps.testHybridEditor.diagram.generated.editor.Connector_diagram_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:71352b9e-a946-4771-b87e-4431430937ee(jetbrains.mps.testHybridEditor.diagram.generated.editor)/708810380382283310">

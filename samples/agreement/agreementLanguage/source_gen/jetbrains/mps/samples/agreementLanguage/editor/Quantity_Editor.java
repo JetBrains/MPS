@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class Quantity_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new Quantity_EditorBuilder_a(editorContext, node).createCell();
+    return new Quantity_EditorBuilder(editorContext, node).createCell();
   }
 }

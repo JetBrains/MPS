@@ -18,6 +18,6 @@ public class InPort_diagram_Editor extends DefaultNodeEditor {
     return myContextHints;
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new InPort_diagram_EditorBuilder_a(editorContext, node).createCell();
+    return new InPort_diagram_EditorBuilder(editorContext, node).createCell();
   }
 }

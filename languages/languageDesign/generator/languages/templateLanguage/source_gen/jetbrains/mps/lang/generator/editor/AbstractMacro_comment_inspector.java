@@ -16,6 +16,6 @@ public class AbstractMacro_comment_inspector implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new AbstractMacro_comment_inspector_ComponentBuilder_a(editorContext, node).createCell();
+    return new AbstractMacro_comment_inspector_ComponentBuilder(editorContext, node).createCell();
   }
 }

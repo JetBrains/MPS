@@ -16,6 +16,6 @@ public class TransformationMenuPartAlias implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new TransformationMenuPartAlias_ComponentBuilder_a(editorContext, node).createCell();
+    return new TransformationMenuPartAlias_ComponentBuilder(editorContext, node).createCell();
   }
 }

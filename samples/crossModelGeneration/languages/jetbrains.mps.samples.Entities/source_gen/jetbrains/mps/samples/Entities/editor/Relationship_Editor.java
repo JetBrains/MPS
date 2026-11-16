@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class Relationship_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new Relationship_EditorBuilder_a(editorContext, node).createCell();
+    return new Relationship_EditorBuilder(editorContext, node).createCell();
   }
 }

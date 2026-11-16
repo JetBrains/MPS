@@ -17,17 +17,17 @@
   </root>
   <root nodeRef="r:4623f006-0ae5-4737-a44c-e34f98471f24(testSubtypingA.editor)/2078093584692909746">
     <file name="WrapperType_Editor.java">
-      <node id="2078093584692909746" at="11,79,12,77" concept="6" />
+      <node id="2078093584692909746" at="11,79,12,75" concept="6" />
       <node id="2078093584692909746" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="2078093584692909746" at="11,79,12,77" />
+      <scope id="2078093584692909746" at="11,79,12,75" />
       <scope id="2078093584692909746" at="11,0,14,0">
         <var name="editorContext" id="2078093584692909746" />
         <var name="node" id="2078093584692909746" />
       </scope>
       <unit id="2078093584692909746" at="10,0,15,0" name="testSubtypingA.editor.WrapperType_Editor" />
     </file>
-    <file name="WrapperType_EditorBuilder_a.java">
-      <node id="2078093584692909746" at="31,91,32,19" concept="8" />
+    <file name="WrapperType_EditorBuilder.java">
+      <node id="2078093584692909746" at="31,89,32,19" concept="8" />
       <node id="2078093584692909746" at="32,19,33,18" concept="1" />
       <node id="2078093584692909746" at="38,26,39,18" concept="6" />
       <node id="2078093584692909746" at="42,39,43,32" concept="6" />
@@ -84,7 +84,7 @@
       <node id="2078093584692909746" at="99,87,102,7" concept="3" />
       <node id="2078093584692909746" at="102,7,105,7" concept="3" />
       <node id="2078093584692909746" at="121,0,124,0" concept="4" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="2078093584692909746" at="31,0,35,0" concept="0" trace="WrapperType_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="2078093584692909746" at="31,0,35,0" concept="0" trace="WrapperType_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="2078093584692922869" at="57,0,61,0" concept="4" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="2078093584692909746" at="70,0,74,0" concept="4" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="2078093584692909746" at="78,0,82,0" concept="0" trace="wrappedSingleRoleHandler_4ogpnj_c0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
@@ -104,7 +104,7 @@
       <scope id="2078093584692909746" at="103,42,104,48" />
       <scope id="2078093584692909746" at="117,17,118,42" />
       <scope id="2078093584692909746" at="121,40,122,28" />
-      <scope id="2078093584692909746" at="31,91,33,18" />
+      <scope id="2078093584692909746" at="31,89,33,18" />
       <scope id="2078093584692922869" at="57,42,59,22">
         <var name="editorCell" id="2078093584692922869" />
       </scope>
@@ -158,9 +158,9 @@
       <scope id="2078093584692909746" at="46,0,57,0" />
       <scope id="2078093584692909746" at="108,44,119,7" />
       <scope id="2078093584692909746" at="107,0,121,0" />
-      <unit id="2078093584692909746" at="135,0,138,0" name="testSubtypingA.editor.WrapperType_EditorBuilder_a$LINKS" />
-      <unit id="2078093584692909746" at="74,0,125,0" name="testSubtypingA.editor.WrapperType_EditorBuilder_a$wrappedSingleRoleHandler_4ogpnj_c0" />
-      <unit id="2078093584692909746" at="27,0,139,0" name="testSubtypingA.editor.WrapperType_EditorBuilder_a" />
+      <unit id="2078093584692909746" at="135,0,138,0" name="testSubtypingA.editor.WrapperType_EditorBuilder$LINKS" />
+      <unit id="2078093584692909746" at="74,0,125,0" name="testSubtypingA.editor.WrapperType_EditorBuilder$wrappedSingleRoleHandler_4ogpnj_c0" />
+      <unit id="2078093584692909746" at="27,0,139,0" name="testSubtypingA.editor.WrapperType_EditorBuilder" />
     </file>
   </root>
 </debug-info>

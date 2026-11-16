@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class XMLSAXFieldDeclaration_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new XMLSAXFieldDeclaration_EditorBuilder_a(editorContext, node).createCell();
+    return new XMLSAXFieldDeclaration_EditorBuilder(editorContext, node).createCell();
   }
 }

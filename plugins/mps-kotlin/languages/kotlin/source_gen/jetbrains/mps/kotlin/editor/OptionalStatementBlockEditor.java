@@ -16,6 +16,6 @@ public class OptionalStatementBlockEditor implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new OptionalStatementBlockEditor_ComponentBuilder_a(editorContext, node).createCell();
+    return new OptionalStatementBlockEditor_ComponentBuilder(editorContext, node).createCell();
   }
 }

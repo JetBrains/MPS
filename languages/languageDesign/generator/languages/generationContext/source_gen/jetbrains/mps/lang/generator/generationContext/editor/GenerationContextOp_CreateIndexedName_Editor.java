@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class GenerationContextOp_CreateIndexedName_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new GenerationContextOp_CreateIndexedName_EditorBuilder_a(editorContext, node).createCell();
+    return new GenerationContextOp_CreateIndexedName_EditorBuilder(editorContext, node).createCell();
   }
 }

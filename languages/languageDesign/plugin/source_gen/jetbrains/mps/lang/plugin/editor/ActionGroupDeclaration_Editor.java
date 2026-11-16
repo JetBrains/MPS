@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ActionGroupDeclaration_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ActionGroupDeclaration_EditorBuilder_a(editorContext, node).createCell();
+    return new ActionGroupDeclaration_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new ActionGroupDeclaration_InspectorBuilder_a(editorContext, node).createCell();
+    return new ActionGroupDeclaration_InspectorBuilder(editorContext, node).createCell();
   }
 }

@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class BuildSource_JavaDependencyExternalJar_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new BuildSource_JavaDependencyExternalJar_EditorBuilder_a(editorContext, node).createCell();
+    return new BuildSource_JavaDependencyExternalJar_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new BuildSource_JavaDependencyExternalJar_InspectorBuilder_a(editorContext, node).createCell();
+    return new BuildSource_JavaDependencyExternalJar_InspectorBuilder(editorContext, node).createCell();
   }
 }

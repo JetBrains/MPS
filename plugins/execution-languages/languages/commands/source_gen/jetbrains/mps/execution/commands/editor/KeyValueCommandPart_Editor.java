@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class KeyValueCommandPart_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new KeyValueCommandPart_EditorBuilder_a(editorContext, node).createCell();
+    return new KeyValueCommandPart_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new KeyValueCommandPart_InspectorBuilder_a(editorContext, node).createCell();
+    return new KeyValueCommandPart_InspectorBuilder(editorContext, node).createCell();
   }
 }

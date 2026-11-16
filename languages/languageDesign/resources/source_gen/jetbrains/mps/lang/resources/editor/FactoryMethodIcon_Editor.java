@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class FactoryMethodIcon_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new FactoryMethodIcon_EditorBuilder_a(editorContext, node).createCell();
+    return new FactoryMethodIcon_EditorBuilder(editorContext, node).createCell();
   }
 }

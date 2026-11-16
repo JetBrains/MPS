@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="9z9rkxay8tnon4vnrlilg85137irih6">
-  <files names="CoreThrought_diagram_Editor.java:CoreThrought_diagram_EditorBuilder_a.java:DefaultDiagramElementActionMap_0.java:DeleteRelationship.java:DeleteThought.java:EditorAspectDescriptorImpl.java:MindMap_diagram_Editor.java:MindMap_diagram_EditorBuilder_a.java:Relationship_diagram_Editor.java:Relationship_diagram_EditorBuilder_a.java:Specializes_diagram_Editor.java:Specializes_diagram_EditorBuilder_a.java:Thought_diagram_Editor.java:Thought_diagram_EditorBuilder_a.java" />
+  <files names="CoreThrought_diagram_Editor.java:CoreThrought_diagram_EditorBuilder.java:DefaultDiagramElementActionMap_0.java:DeleteRelationship.java:DeleteThought.java:EditorAspectDescriptorImpl.java:MindMap_diagram_Editor.java:MindMap_diagram_EditorBuilder.java:Relationship_diagram_Editor.java:Relationship_diagram_EditorBuilder.java:Specializes_diagram_Editor.java:Specializes_diagram_EditorBuilder.java:Thought_diagram_Editor.java:Thought_diagram_EditorBuilder.java" />
 </product>
 

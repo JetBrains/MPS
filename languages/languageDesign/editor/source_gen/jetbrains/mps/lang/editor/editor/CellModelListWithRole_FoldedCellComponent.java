@@ -16,6 +16,6 @@ public class CellModelListWithRole_FoldedCellComponent implements ConceptEditorC
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new CellModelListWithRole_FoldedCellComponent_ComponentBuilder_a(editorContext, node).createCell();
+    return new CellModelListWithRole_FoldedCellComponent_ComponentBuilder(editorContext, node).createCell();
   }
 }

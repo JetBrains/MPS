@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class UnknownConsCall_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new UnknownConsCall_EditorBuilder_a(editorContext, node).createCell();
+    return new UnknownConsCall_EditorBuilder(editorContext, node).createCell();
   }
 }

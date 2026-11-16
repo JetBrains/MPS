@@ -16,6 +16,6 @@ public class NoteMetaInformation implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new NoteMetaInformation_ComponentBuilder_a(editorContext, node).createCell();
+    return new NoteMetaInformation_ComponentBuilder(editorContext, node).createCell();
   }
 }

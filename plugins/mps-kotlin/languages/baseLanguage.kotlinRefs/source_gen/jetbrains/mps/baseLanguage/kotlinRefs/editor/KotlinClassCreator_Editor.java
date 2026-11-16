@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class KotlinClassCreator_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new KotlinClassCreator_EditorBuilder_a(editorContext, node).createCell();
+    return new KotlinClassCreator_EditorBuilder(editorContext, node).createCell();
   }
 }

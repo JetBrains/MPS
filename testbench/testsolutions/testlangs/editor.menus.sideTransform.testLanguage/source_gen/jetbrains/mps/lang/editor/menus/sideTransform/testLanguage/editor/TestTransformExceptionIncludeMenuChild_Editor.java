@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class TestTransformExceptionIncludeMenuChild_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new TestTransformExceptionIncludeMenuChild_EditorBuilder_a(editorContext, node).createCell();
+    return new TestTransformExceptionIncludeMenuChild_EditorBuilder(editorContext, node).createCell();
   }
 }

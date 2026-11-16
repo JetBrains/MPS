@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class BuildSourcePath_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new BuildSourcePath_EditorBuilder_a(editorContext, node).createCell();
+    return new BuildSourcePath_EditorBuilder(editorContext, node).createCell();
   }
 }

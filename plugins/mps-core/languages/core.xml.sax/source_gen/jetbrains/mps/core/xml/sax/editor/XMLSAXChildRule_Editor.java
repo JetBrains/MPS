@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class XMLSAXChildRule_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new XMLSAXChildRule_EditorBuilder_a(editorContext, node).createCell();
+    return new XMLSAXChildRule_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new XMLSAXChildRule_InspectorBuilder_a(editorContext, node).createCell();
+    return new XMLSAXChildRule_InspectorBuilder(editorContext, node).createCell();
   }
 }

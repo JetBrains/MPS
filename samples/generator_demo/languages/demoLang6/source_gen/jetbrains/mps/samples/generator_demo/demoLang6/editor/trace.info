@@ -17,17 +17,17 @@
   </root>
   <root nodeRef="r:64461e55-0680-4e64-905d-f5d8390b4161(jetbrains.mps.samples.generator_demo.demoLang6.editor)/3978102045101855484">
     <file name="Button_Editor.java">
-      <node id="3978102045101855484" at="11,79,12,72" concept="6" />
+      <node id="3978102045101855484" at="11,79,12,70" concept="6" />
       <node id="3978102045101855484" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="3978102045101855484" at="11,79,12,72" />
+      <scope id="3978102045101855484" at="11,79,12,70" />
       <scope id="3978102045101855484" at="11,0,14,0">
         <var name="editorContext" id="3978102045101855484" />
         <var name="node" id="3978102045101855484" />
       </scope>
       <unit id="3978102045101855484" at="10,0,15,0" name="jetbrains.mps.samples.generator_demo.demoLang6.editor.Button_Editor" />
     </file>
-    <file name="Button_EditorBuilder_a.java">
-      <node id="3978102045101855484" at="32,86,33,19" concept="8" />
+    <file name="Button_EditorBuilder.java">
+      <node id="3978102045101855484" at="32,84,33,19" concept="8" />
       <node id="3978102045101855484" at="33,19,34,18" concept="1" />
       <node id="3978102045101855484" at="39,26,40,18" concept="6" />
       <node id="3978102045101855484" at="43,39,44,32" concept="6" />
@@ -65,7 +65,7 @@
       <node id="3978102045101855484" at="96,0,97,0" concept="7" trace="PropertyAttribute$Gb" />
       <node id="3978102045101855484" at="29,0,31,0" concept="2" trace="myNode" />
       <node id="3978102045101855484" at="43,0,46,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="3978102045101855484" at="32,0,36,0" concept="0" trace="Button_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="3978102045101855484" at="32,0,36,0" concept="0" trace="Button_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="3978102045101855484" at="37,0,42,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="3978102045101856697" at="74,208,79,24" concept="3" />
       <node id="3978102045101856691" at="57,0,63,0" concept="4" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -76,7 +76,7 @@
       <scope id="3978102045101855484" at="39,26,40,18" />
       <scope id="3978102045101855484" at="43,39,44,32" />
       <scope id="3978102045101856697" at="80,15,81,40" />
-      <scope id="3978102045101855484" at="32,86,34,18" />
+      <scope id="3978102045101855484" at="32,84,34,18" />
       <scope id="3978102045101856697" at="75,74,77,145">
         <var name="manager" id="3978102045101856697" />
       </scope>
@@ -106,24 +106,24 @@
       </scope>
       <scope id="3978102045101856697" at="63,41,82,5" />
       <scope id="3978102045101856697" at="63,0,84,0" />
-      <unit id="3978102045101855484" at="91,0,94,0" name="jetbrains.mps.samples.generator_demo.demoLang6.editor.Button_EditorBuilder_a$PROPS" />
-      <unit id="3978102045101855484" at="95,0,98,0" name="jetbrains.mps.samples.generator_demo.demoLang6.editor.Button_EditorBuilder_a$CONCEPTS" />
-      <unit id="3978102045101855484" at="28,0,99,0" name="jetbrains.mps.samples.generator_demo.demoLang6.editor.Button_EditorBuilder_a" />
+      <unit id="3978102045101855484" at="91,0,94,0" name="jetbrains.mps.samples.generator_demo.demoLang6.editor.Button_EditorBuilder$PROPS" />
+      <unit id="3978102045101855484" at="95,0,98,0" name="jetbrains.mps.samples.generator_demo.demoLang6.editor.Button_EditorBuilder$CONCEPTS" />
+      <unit id="3978102045101855484" at="28,0,99,0" name="jetbrains.mps.samples.generator_demo.demoLang6.editor.Button_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:64461e55-0680-4e64-905d-f5d8390b4161(jetbrains.mps.samples.generator_demo.demoLang6.editor)/3978102045101877183">
     <file name="Label_Editor.java">
-      <node id="3978102045101877183" at="11,79,12,71" concept="6" />
+      <node id="3978102045101877183" at="11,79,12,69" concept="6" />
       <node id="3978102045101877183" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="3978102045101877183" at="11,79,12,71" />
+      <scope id="3978102045101877183" at="11,79,12,69" />
       <scope id="3978102045101877183" at="11,0,14,0">
         <var name="editorContext" id="3978102045101877183" />
         <var name="node" id="3978102045101877183" />
       </scope>
       <unit id="3978102045101877183" at="10,0,15,0" name="jetbrains.mps.samples.generator_demo.demoLang6.editor.Label_Editor" />
     </file>
-    <file name="Label_EditorBuilder_a.java">
-      <node id="3978102045101877183" at="32,85,33,19" concept="8" />
+    <file name="Label_EditorBuilder.java">
+      <node id="3978102045101877183" at="32,83,33,19" concept="8" />
       <node id="3978102045101877183" at="33,19,34,18" concept="1" />
       <node id="3978102045101877183" at="39,26,40,18" concept="6" />
       <node id="3978102045101877183" at="43,39,44,32" concept="6" />
@@ -161,7 +161,7 @@
       <node id="3978102045101877183" at="96,0,97,0" concept="7" trace="PropertyAttribute$Gb" />
       <node id="3978102045101877183" at="29,0,31,0" concept="2" trace="myNode" />
       <node id="3978102045101877183" at="43,0,46,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="3978102045101877183" at="32,0,36,0" concept="0" trace="Label_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="3978102045101877183" at="32,0,36,0" concept="0" trace="Label_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="3978102045101877183" at="37,0,42,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="3978102045101877249" at="74,208,79,24" concept="3" />
       <node id="3978102045101877243" at="57,0,63,0" concept="4" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -172,7 +172,7 @@
       <scope id="3978102045101877183" at="39,26,40,18" />
       <scope id="3978102045101877183" at="43,39,44,32" />
       <scope id="3978102045101877249" at="80,15,81,40" />
-      <scope id="3978102045101877183" at="32,85,34,18" />
+      <scope id="3978102045101877183" at="32,83,34,18" />
       <scope id="3978102045101877249" at="75,74,77,145">
         <var name="manager" id="3978102045101877249" />
       </scope>
@@ -202,9 +202,9 @@
       </scope>
       <scope id="3978102045101877249" at="63,41,82,5" />
       <scope id="3978102045101877249" at="63,0,84,0" />
-      <unit id="3978102045101877183" at="91,0,94,0" name="jetbrains.mps.samples.generator_demo.demoLang6.editor.Label_EditorBuilder_a$PROPS" />
-      <unit id="3978102045101877183" at="95,0,98,0" name="jetbrains.mps.samples.generator_demo.demoLang6.editor.Label_EditorBuilder_a$CONCEPTS" />
-      <unit id="3978102045101877183" at="28,0,99,0" name="jetbrains.mps.samples.generator_demo.demoLang6.editor.Label_EditorBuilder_a" />
+      <unit id="3978102045101877183" at="91,0,94,0" name="jetbrains.mps.samples.generator_demo.demoLang6.editor.Label_EditorBuilder$PROPS" />
+      <unit id="3978102045101877183" at="95,0,98,0" name="jetbrains.mps.samples.generator_demo.demoLang6.editor.Label_EditorBuilder$CONCEPTS" />
+      <unit id="3978102045101877183" at="28,0,99,0" name="jetbrains.mps.samples.generator_demo.demoLang6.editor.Label_EditorBuilder" />
     </file>
   </root>
 </debug-info>

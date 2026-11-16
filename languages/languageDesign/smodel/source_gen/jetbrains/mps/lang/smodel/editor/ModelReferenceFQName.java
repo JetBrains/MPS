@@ -16,6 +16,6 @@ public class ModelReferenceFQName implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ModelReferenceFQName_ComponentBuilder_a(editorContext, node).createCell();
+    return new ModelReferenceFQName_ComponentBuilder(editorContext, node).createCell();
   }
 }

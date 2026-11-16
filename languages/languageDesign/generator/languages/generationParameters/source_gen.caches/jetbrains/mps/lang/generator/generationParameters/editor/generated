@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="btnj2pi79oyqe4epqki99i27cj8lhk0">
-  <files names="DefaultGenerationParameterId_Editor.java:DefaultGenerationParameterId_EditorBuilder_a.java:DefaultGeneratorParameterContainer_Editor.java:DefaultGeneratorParameterContainer_EditorBuilder_a.java:DefaultGeneratorParameter_Editor.java:DefaultGeneratorParameter_EditorBuilder_a.java:DefaultGeneratorParameter_InspectorBuilder_a.java:EditorAspectDescriptorImpl.java" />
+  <files names="DefaultGenerationParameterId_Editor.java:DefaultGenerationParameterId_EditorBuilder.java:DefaultGeneratorParameterContainer_Editor.java:DefaultGeneratorParameterContainer_EditorBuilder.java:DefaultGeneratorParameter_Editor.java:DefaultGeneratorParameter_EditorBuilder.java:DefaultGeneratorParameter_InspectorBuilder.java:EditorAspectDescriptorImpl.java" />
 </product>
 

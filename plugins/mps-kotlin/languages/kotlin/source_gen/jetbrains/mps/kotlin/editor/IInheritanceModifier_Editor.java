@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class IInheritanceModifier_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new IInheritanceModifier_EditorBuilder_a(editorContext, node).createCell();
+    return new IInheritanceModifier_EditorBuilder(editorContext, node).createCell();
   }
 }

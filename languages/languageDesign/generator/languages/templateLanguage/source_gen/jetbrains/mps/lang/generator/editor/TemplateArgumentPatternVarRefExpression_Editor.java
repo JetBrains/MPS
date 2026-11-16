@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class TemplateArgumentPatternVarRefExpression_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new TemplateArgumentPatternVarRefExpression_EditorBuilder_a(editorContext, node).createCell();
+    return new TemplateArgumentPatternVarRefExpression_EditorBuilder(editorContext, node).createCell();
   }
 }

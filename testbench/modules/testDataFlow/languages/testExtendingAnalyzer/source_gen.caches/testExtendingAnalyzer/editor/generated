@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="42uqoz2kl2yc0h1wflghri38bnc37yg">
-  <files names="EditorAspectDescriptorImpl.java:NullSafeDotExpression_Editor.java:NullSafeDotExpression_EditorBuilder_a.java:NullUnsafeDotExpression_Editor.java:NullUnsafeDotExpression_EditorBuilder_a.java" />
+  <files names="EditorAspectDescriptorImpl.java:NullSafeDotExpression_Editor.java:NullSafeDotExpression_EditorBuilder.java:NullUnsafeDotExpression_Editor.java:NullUnsafeDotExpression_EditorBuilder.java" />
 </product>
 

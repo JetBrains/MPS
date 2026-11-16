@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class SimpleMathLongConstant_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new SimpleMathLongConstant_EditorBuilder_a(editorContext, node).createCell();
+    return new SimpleMathLongConstant_EditorBuilder(editorContext, node).createCell();
   }
 }

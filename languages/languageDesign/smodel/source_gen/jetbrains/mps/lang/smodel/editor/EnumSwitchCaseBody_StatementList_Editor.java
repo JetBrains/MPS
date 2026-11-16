@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class EnumSwitchCaseBody_StatementList_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new EnumSwitchCaseBody_StatementList_EditorBuilder_a(editorContext, node).createCell();
+    return new EnumSwitchCaseBody_StatementList_EditorBuilder(editorContext, node).createCell();
   }
 }

@@ -18,6 +18,6 @@ public class Component_diagram_Editor extends DefaultNodeEditor {
     return myContextHints;
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new Component_diagram_EditorBuilder_a(editorContext, node).createCell();
+    return new Component_diagram_EditorBuilder(editorContext, node).createCell();
   }
 }

@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class HtmlFile_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new HtmlFile_EditorBuilder_a(editorContext, node).createCell();
+    return new HtmlFile_EditorBuilder(editorContext, node).createCell();
   }
 }

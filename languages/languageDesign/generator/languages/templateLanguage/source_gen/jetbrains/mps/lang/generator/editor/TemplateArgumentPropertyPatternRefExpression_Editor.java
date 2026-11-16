@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class TemplateArgumentPropertyPatternRefExpression_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new TemplateArgumentPropertyPatternRefExpression_EditorBuilder_a(editorContext, node).createCell();
+    return new TemplateArgumentPropertyPatternRefExpression_EditorBuilder(editorContext, node).createCell();
   }
 }

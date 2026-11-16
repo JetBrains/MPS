@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class InstanceInitializer_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new InstanceInitializer_EditorBuilder_a(editorContext, node).createCell();
+    return new InstanceInitializer_EditorBuilder(editorContext, node).createCell();
   }
 }

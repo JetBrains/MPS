@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class XmlWhitespace_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new XmlWhitespace_EditorBuilder_a(editorContext, node).createCell();
+    return new XmlWhitespace_EditorBuilder(editorContext, node).createCell();
   }
 }

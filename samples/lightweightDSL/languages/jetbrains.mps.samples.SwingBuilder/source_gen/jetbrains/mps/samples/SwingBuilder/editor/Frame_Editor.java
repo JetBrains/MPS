@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class Frame_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new Frame_EditorBuilder_a(editorContext, node).createCell();
+    return new Frame_EditorBuilder(editorContext, node).createCell();
   }
 }

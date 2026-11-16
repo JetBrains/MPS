@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class TwoStepDeleteTestRoot_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new TwoStepDeleteTestRoot_EditorBuilder_a(editorContext, node).createCell();
+    return new TwoStepDeleteTestRoot_EditorBuilder(editorContext, node).createCell();
   }
 }

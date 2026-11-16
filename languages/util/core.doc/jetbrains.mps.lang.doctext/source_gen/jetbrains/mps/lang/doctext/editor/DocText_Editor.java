@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class DocText_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new DocText_EditorBuilder_a(editorContext, node).createCell();
+    return new DocText_EditorBuilder(editorContext, node).createCell();
   }
 }

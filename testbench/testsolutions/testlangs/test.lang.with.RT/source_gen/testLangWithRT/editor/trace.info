@@ -14,17 +14,17 @@
   </root>
   <root nodeRef="r:8c6d044a-ef1d-40ab-b643-0b9286ae0270(testLangWithRT.editor)/8398707621307281595">
     <file name="Sout_Editor.java">
-      <node id="8398707621307281595" at="11,79,12,70" concept="5" />
+      <node id="8398707621307281595" at="11,79,12,68" concept="5" />
       <node id="8398707621307281595" at="11,0,14,0" concept="3" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="8398707621307281595" at="11,79,12,70" />
+      <scope id="8398707621307281595" at="11,79,12,68" />
       <scope id="8398707621307281595" at="11,0,14,0">
         <var name="editorContext" id="8398707621307281595" />
         <var name="node" id="8398707621307281595" />
       </scope>
       <unit id="8398707621307281595" at="10,0,15,0" name="testLangWithRT.editor.Sout_Editor" />
     </file>
-    <file name="Sout_EditorBuilder_a.java">
-      <node id="8398707621307281595" at="17,84,18,19" concept="6" />
+    <file name="Sout_EditorBuilder.java">
+      <node id="8398707621307281595" at="17,82,18,19" concept="6" />
       <node id="8398707621307281595" at="18,19,19,18" concept="1" />
       <node id="8398707621307281595" at="24,26,25,18" concept="5" />
       <node id="8398707621307281595" at="28,39,29,32" concept="5" />
@@ -38,13 +38,13 @@
       <node id="8398707621307281639" at="41,119,42,22" concept="5" />
       <node id="8398707621307281595" at="14,0,16,0" concept="2" trace="myNode" />
       <node id="8398707621307281595" at="28,0,31,0" concept="3" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="8398707621307281595" at="17,0,21,0" concept="0" trace="Sout_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8398707621307281595" at="17,0,21,0" concept="0" trace="Sout_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8398707621307281639" at="40,0,44,0" concept="3" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="8398707621307281595" at="22,0,27,0" concept="3" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="8398707621307281595" at="32,0,40,0" concept="3" trace="createCollection_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="8398707621307281595" at="24,26,25,18" />
       <scope id="8398707621307281595" at="28,39,29,32" />
-      <scope id="8398707621307281595" at="17,84,19,18" />
+      <scope id="8398707621307281595" at="17,82,19,18" />
       <scope id="8398707621307281639" at="40,42,42,22">
         <var name="editorCell" id="8398707621307281639" />
       </scope>
@@ -59,7 +59,7 @@
         <var name="editorCell" id="8398707621307281595" />
       </scope>
       <scope id="8398707621307281595" at="32,0,40,0" />
-      <unit id="8398707621307281595" at="13,0,45,0" name="testLangWithRT.editor.Sout_EditorBuilder_a" />
+      <unit id="8398707621307281595" at="13,0,45,0" name="testLangWithRT.editor.Sout_EditorBuilder" />
     </file>
   </root>
 </debug-info>

@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class RefTestMethod_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new RefTestMethod_EditorBuilder_a(editorContext, node).createCell();
+    return new RefTestMethod_EditorBuilder(editorContext, node).createCell();
   }
 }

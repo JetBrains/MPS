@@ -18,6 +18,6 @@ public class NodeWithName_DiagramTestTextual_Editor extends DefaultNodeEditor {
     return myContextHints;
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new NodeWithName_DiagramTestTextual_EditorBuilder_a(editorContext, node).createCell();
+    return new NodeWithName_DiagramTestTextual_EditorBuilder(editorContext, node).createCell();
   }
 }

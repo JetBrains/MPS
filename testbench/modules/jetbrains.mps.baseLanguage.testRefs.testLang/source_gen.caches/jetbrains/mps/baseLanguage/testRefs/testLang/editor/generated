@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="-gc0wihpjjdiv8kulnv118hvqiq662p">
-  <files names="EditorAspectDescriptorImpl.java:Test_LValueExpression_Editor.java:Test_LValueExpression_EditorBuilder_a.java" />
+  <files names="EditorAspectDescriptorImpl.java:Test_LValueExpression_Editor.java:Test_LValueExpression_EditorBuilder.java" />
 </product>
 

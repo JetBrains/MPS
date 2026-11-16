@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class NodePointerArg_Identity_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new NodePointerArg_Identity_EditorBuilder_a(editorContext, node).createCell();
+    return new NodePointerArg_Identity_EditorBuilder(editorContext, node).createCell();
   }
 }

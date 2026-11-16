@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class CellModel_OpenAngleBracket_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new CellModel_OpenAngleBracket_EditorBuilder_a(editorContext, node).createCell();
+    return new CellModel_OpenAngleBracket_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new CellModel_OpenAngleBracket_InspectorBuilder_a(editorContext, node).createCell();
+    return new CellModel_OpenAngleBracket_InspectorBuilder(editorContext, node).createCell();
   }
 }

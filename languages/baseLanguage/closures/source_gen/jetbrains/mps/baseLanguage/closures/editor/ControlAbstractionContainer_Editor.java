@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ControlAbstractionContainer_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ControlAbstractionContainer_EditorBuilder_a(editorContext, node).createCell();
+    return new ControlAbstractionContainer_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new ControlAbstractionContainer_InspectorBuilder_a(editorContext, node).createCell();
+    return new ControlAbstractionContainer_InspectorBuilder(editorContext, node).createCell();
   }
 }

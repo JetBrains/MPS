@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class SimpleVmOptions_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new SimpleVmOptions_EditorBuilder_a(editorContext, node).createCell();
+    return new SimpleVmOptions_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new SimpleVmOptions_InspectorBuilder_a(editorContext, node).createCell();
+    return new SimpleVmOptions_InspectorBuilder(editorContext, node).createCell();
   }
 }

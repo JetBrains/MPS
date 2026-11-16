@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class UnapplyPriorityStyleCopy_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new UnapplyPriorityStyleCopy_EditorBuilder_a(editorContext, node).createCell();
+    return new UnapplyPriorityStyleCopy_EditorBuilder(editorContext, node).createCell();
   }
 }

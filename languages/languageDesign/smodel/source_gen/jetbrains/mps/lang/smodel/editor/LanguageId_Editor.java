@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class LanguageId_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new LanguageId_EditorBuilder_a(editorContext, node).createCell();
+    return new LanguageId_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new LanguageId_InspectorBuilder_a(editorContext, node).createCell();
+    return new LanguageId_InspectorBuilder(editorContext, node).createCell();
   }
 }

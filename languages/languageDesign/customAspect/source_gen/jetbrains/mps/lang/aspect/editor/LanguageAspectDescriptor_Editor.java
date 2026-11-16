@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class LanguageAspectDescriptor_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new LanguageAspectDescriptor_EditorBuilder_a(editorContext, node).createCell();
+    return new LanguageAspectDescriptor_EditorBuilder(editorContext, node).createCell();
   }
 }

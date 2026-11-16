@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class LinkIdRefExpression_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new LinkIdRefExpression_EditorBuilder_a(editorContext, node).createCell();
+    return new LinkIdRefExpression_EditorBuilder(editorContext, node).createCell();
   }
 }

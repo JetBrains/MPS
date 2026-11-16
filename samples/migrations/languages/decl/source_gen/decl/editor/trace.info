@@ -17,17 +17,17 @@
   </root>
   <root nodeRef="r:7bfb891a-8e42-4611-8f45-4aa668f68d38(decl.editor)/7709929535540674261">
     <file name="OldComponent_Editor.java">
-      <node id="7709929535540674261" at="11,79,12,78" concept="6" />
+      <node id="7709929535540674261" at="11,79,12,76" concept="6" />
       <node id="7709929535540674261" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="7709929535540674261" at="11,79,12,78" />
+      <scope id="7709929535540674261" at="11,79,12,76" />
       <scope id="7709929535540674261" at="11,0,14,0">
         <var name="editorContext" id="7709929535540674261" />
         <var name="node" id="7709929535540674261" />
       </scope>
       <unit id="7709929535540674261" at="10,0,15,0" name="decl.editor.OldComponent_Editor" />
     </file>
-    <file name="OldComponent_EditorBuilder_a.java">
-      <node id="7709929535540674261" at="50,92,51,19" concept="8" />
+    <file name="OldComponent_EditorBuilder.java">
+      <node id="7709929535540674261" at="50,90,51,19" concept="8" />
       <node id="7709929535540674261" at="51,19,52,18" concept="1" />
       <node id="7709929535540674261" at="57,26,58,18" concept="6" />
       <node id="7709929535540674261" at="61,39,62,32" concept="6" />
@@ -146,7 +146,7 @@
       <node id="7709929535540674261" at="177,0,180,0" concept="4" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="7709929535540674261" at="180,0,183,0" concept="4" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="7709929535540674261" at="224,96,227,9" concept="3" />
-      <node id="7709929535540674261" at="50,0,54,0" concept="0" trace="OldComponent_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="7709929535540674261" at="50,0,54,0" concept="0" trace="OldComponent_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="7709929535540674261" at="153,0,157,0" concept="4" trace="createIndentCell_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="7709929535540674261" at="168,0,172,0" concept="0" trace="memberListHandler_5nwkb_b1a#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="7709929535540674261" at="173,0,177,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -185,7 +185,7 @@
       <scope id="7709929535540674261" at="180,48,181,43" />
       <scope id="7709929535540674261" at="198,17,199,42" />
       <scope id="7709929535540674261" at="225,34,226,91" />
-      <scope id="7709929535540674261" at="50,92,52,18" />
+      <scope id="7709929535540674261" at="50,90,52,18" />
       <scope id="7709929535540722971" at="123,74,125,145">
         <var name="manager" id="7709929535540722971" />
       </scope>
@@ -279,26 +279,26 @@
         <var name="elementNode" id="7709929535540674261" />
         <var name="isEmptyCell" id="7709929535540674261" />
       </scope>
-      <unit id="7709929535540674261" at="243,0,246,0" name="decl.editor.OldComponent_EditorBuilder_a$PROPS" />
-      <unit id="7709929535540674261" at="252,0,255,0" name="decl.editor.OldComponent_EditorBuilder_a$LINKS" />
-      <unit id="7709929535540674261" at="247,0,251,0" name="decl.editor.OldComponent_EditorBuilder_a$CONCEPTS" />
-      <unit id="7709929535540674261" at="164,0,231,0" name="decl.editor.OldComponent_EditorBuilder_a$memberListHandler_5nwkb_b1a" />
-      <unit id="7709929535540674261" at="46,0,256,0" name="decl.editor.OldComponent_EditorBuilder_a" />
+      <unit id="7709929535540674261" at="243,0,246,0" name="decl.editor.OldComponent_EditorBuilder$PROPS" />
+      <unit id="7709929535540674261" at="252,0,255,0" name="decl.editor.OldComponent_EditorBuilder$LINKS" />
+      <unit id="7709929535540674261" at="247,0,251,0" name="decl.editor.OldComponent_EditorBuilder$CONCEPTS" />
+      <unit id="7709929535540674261" at="164,0,231,0" name="decl.editor.OldComponent_EditorBuilder$memberListHandler_5nwkb_b1a" />
+      <unit id="7709929535540674261" at="46,0,256,0" name="decl.editor.OldComponent_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:7bfb891a-8e42-4611-8f45-4aa668f68d38(decl.editor)/7709929535540733489">
     <file name="NewComponent_Editor.java">
-      <node id="7709929535540733489" at="11,79,12,78" concept="6" />
+      <node id="7709929535540733489" at="11,79,12,76" concept="6" />
       <node id="7709929535540733489" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="7709929535540733489" at="11,79,12,78" />
+      <scope id="7709929535540733489" at="11,79,12,76" />
       <scope id="7709929535540733489" at="11,0,14,0">
         <var name="editorContext" id="7709929535540733489" />
         <var name="node" id="7709929535540733489" />
       </scope>
       <unit id="7709929535540733489" at="10,0,15,0" name="decl.editor.NewComponent_Editor" />
     </file>
-    <file name="NewComponent_EditorBuilder_a.java">
-      <node id="7709929535540733489" at="50,92,51,19" concept="8" />
+    <file name="NewComponent_EditorBuilder.java">
+      <node id="7709929535540733489" at="50,90,51,19" concept="8" />
       <node id="7709929535540733489" at="51,19,52,18" concept="1" />
       <node id="7709929535540733489" at="57,26,58,18" concept="6" />
       <node id="7709929535540733489" at="61,39,62,32" concept="6" />
@@ -417,7 +417,7 @@
       <node id="7709929535540733489" at="177,0,180,0" concept="4" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="7709929535540733489" at="180,0,183,0" concept="4" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="7709929535540733489" at="224,96,227,9" concept="3" />
-      <node id="7709929535540733489" at="50,0,54,0" concept="0" trace="NewComponent_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="7709929535540733489" at="50,0,54,0" concept="0" trace="NewComponent_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="7709929535540733489" at="153,0,157,0" concept="4" trace="createIndentCell_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="7709929535540733489" at="168,0,172,0" concept="0" trace="memberListHandler_sv9e1j_b1a#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="7709929535540733489" at="173,0,177,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -456,7 +456,7 @@
       <scope id="7709929535540733489" at="180,48,181,44" />
       <scope id="7709929535540733489" at="198,17,199,42" />
       <scope id="7709929535540733489" at="225,34,226,91" />
-      <scope id="7709929535540733489" at="50,92,52,18" />
+      <scope id="7709929535540733489" at="50,90,52,18" />
       <scope id="7709929535540733513" at="123,74,125,145">
         <var name="manager" id="7709929535540733513" />
       </scope>
@@ -550,11 +550,11 @@
         <var name="elementNode" id="7709929535540733489" />
         <var name="isEmptyCell" id="7709929535540733489" />
       </scope>
-      <unit id="7709929535540733489" at="243,0,246,0" name="decl.editor.NewComponent_EditorBuilder_a$PROPS" />
-      <unit id="7709929535540733489" at="252,0,255,0" name="decl.editor.NewComponent_EditorBuilder_a$LINKS" />
-      <unit id="7709929535540733489" at="247,0,251,0" name="decl.editor.NewComponent_EditorBuilder_a$CONCEPTS" />
-      <unit id="7709929535540733489" at="164,0,231,0" name="decl.editor.NewComponent_EditorBuilder_a$memberListHandler_sv9e1j_b1a" />
-      <unit id="7709929535540733489" at="46,0,256,0" name="decl.editor.NewComponent_EditorBuilder_a" />
+      <unit id="7709929535540733489" at="243,0,246,0" name="decl.editor.NewComponent_EditorBuilder$PROPS" />
+      <unit id="7709929535540733489" at="252,0,255,0" name="decl.editor.NewComponent_EditorBuilder$LINKS" />
+      <unit id="7709929535540733489" at="247,0,251,0" name="decl.editor.NewComponent_EditorBuilder$CONCEPTS" />
+      <unit id="7709929535540733489" at="164,0,231,0" name="decl.editor.NewComponent_EditorBuilder$memberListHandler_sv9e1j_b1a" />
+      <unit id="7709929535540733489" at="46,0,256,0" name="decl.editor.NewComponent_EditorBuilder" />
     </file>
   </root>
 </debug-info>

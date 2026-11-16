@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class LongLiteral_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new LongLiteral_EditorBuilder_a(editorContext, node).createCell();
+    return new LongLiteral_EditorBuilder(editorContext, node).createCell();
   }
 }

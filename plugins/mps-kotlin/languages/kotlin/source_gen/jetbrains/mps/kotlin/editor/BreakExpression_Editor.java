@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class BreakExpression_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new BreakExpression_EditorBuilder_a(editorContext, node).createCell();
+    return new BreakExpression_EditorBuilder(editorContext, node).createCell();
   }
 }

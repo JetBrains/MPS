@@ -517,17 +517,17 @@
   </root>
   <root nodeRef="r:83d73286-80a4-4a12-bc9a-3d442d5242fa(jetbrains.mps.lang.editor.menus.style.testLanguage.editor)/4639084645851198830">
     <file name="TestCompletionCustomization_ContextMatcherChildInMatchingLink_Editor.java">
-      <node id="4639084645851198830" at="11,79,12,127" concept="8" />
+      <node id="4639084645851198830" at="11,79,12,125" concept="8" />
       <node id="4639084645851198830" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4639084645851198830" at="11,79,12,127" />
+      <scope id="4639084645851198830" at="11,79,12,125" />
       <scope id="4639084645851198830" at="11,0,14,0">
         <var name="editorContext" id="4639084645851198830" />
         <var name="node" id="4639084645851198830" />
       </scope>
       <unit id="4639084645851198830" at="10,0,15,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ContextMatcherChildInMatchingLink_Editor" />
     </file>
-    <file name="TestCompletionCustomization_ContextMatcherChildInMatchingLink_EditorBuilder_a.java">
-      <node id="4639084645851198830" at="16,141,17,19" concept="11" />
+    <file name="TestCompletionCustomization_ContextMatcherChildInMatchingLink_EditorBuilder.java">
+      <node id="4639084645851198830" at="16,139,17,19" concept="11" />
       <node id="4639084645851198830" at="17,19,18,18" concept="2" />
       <node id="4639084645851198830" at="23,26,24,18" concept="8" />
       <node id="4639084645851198830" at="27,39,28,31" concept="8" />
@@ -538,13 +538,13 @@
       <node id="4639084645851198832" at="37,5,38,22" concept="8" />
       <node id="4639084645851198830" at="13,0,15,0" concept="3" trace="myNode" />
       <node id="4639084645851198830" at="27,0,30,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="4639084645851198830" at="16,0,20,0" concept="1" trace="TestCompletionCustomization_ContextMatcherChildInMatchingLink_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4639084645851198830" at="16,0,20,0" concept="1" trace="TestCompletionCustomization_ContextMatcherChildInMatchingLink_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4639084645851198832" at="33,72,37,5" concept="5" />
       <node id="4639084645851198830" at="21,0,26,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="4639084645851198832" at="31,0,40,0" concept="6" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="4639084645851198830" at="23,26,24,18" />
       <scope id="4639084645851198830" at="27,39,28,31" />
-      <scope id="4639084645851198830" at="16,141,18,18" />
+      <scope id="4639084645851198830" at="16,139,18,18" />
       <scope id="4639084645851198832" at="34,26,36,30" />
       <scope id="4639084645851198830" at="27,0,30,0" />
       <scope id="4639084645851198830" at="16,0,20,0">
@@ -557,7 +557,7 @@
         <var name="editorCell" id="4639084645851198832" />
       </scope>
       <scope id="4639084645851198832" at="31,0,40,0" />
-      <unit id="4639084645851198830" at="12,0,41,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ContextMatcherChildInMatchingLink_EditorBuilder_a" />
+      <unit id="4639084645851198830" at="12,0,41,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ContextMatcherChildInMatchingLink_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:83d73286-80a4-4a12-bc9a-3d442d5242fa(jetbrains.mps.lang.editor.menus.style.testLanguage.editor)/4639084645851198901">
@@ -1085,17 +1085,17 @@
   </root>
   <root nodeRef="r:83d73286-80a4-4a12-bc9a-3d442d5242fa(jetbrains.mps.lang.editor.menus.style.testLanguage.editor)/5310043668061067522">
     <file name="TestCompletionCustomization_ParentTestContextMatcher_Editor.java">
-      <node id="5310043668061067522" at="11,79,12,118" concept="8" />
+      <node id="5310043668061067522" at="11,79,12,116" concept="8" />
       <node id="5310043668061067522" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="5310043668061067522" at="11,79,12,118" />
+      <scope id="5310043668061067522" at="11,79,12,116" />
       <scope id="5310043668061067522" at="11,0,14,0">
         <var name="editorContext" id="5310043668061067522" />
         <var name="node" id="5310043668061067522" />
       </scope>
       <unit id="5310043668061067522" at="10,0,15,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ParentTestContextMatcher_Editor" />
     </file>
-    <file name="TestCompletionCustomization_ParentTestContextMatcher_EditorBuilder_a.java">
-      <node id="5310043668061067522" at="65,132,66,19" concept="11" />
+    <file name="TestCompletionCustomization_ParentTestContextMatcher_EditorBuilder.java">
+      <node id="5310043668061067522" at="65,130,66,19" concept="11" />
       <node id="5310043668061067522" at="66,19,67,18" concept="2" />
       <node id="5310043668061067522" at="72,26,73,18" concept="8" />
       <node id="5310043668061067522" at="76,39,77,32" concept="8" />
@@ -1951,7 +1951,7 @@
       <node id="5310043668061067522" at="1434,87,1437,7" concept="5" />
       <node id="5310043668061067522" at="1437,7,1440,7" concept="5" />
       <node id="5310043668061067522" at="1459,0,1462,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="5310043668061067522" at="65,0,69,0" concept="1" trace="TestCompletionCustomization_ParentTestContextMatcher_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="5310043668061067522" at="65,0,69,0" concept="1" trace="TestCompletionCustomization_ParentTestContextMatcher_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="5310043668061067522" at="314,0,318,5" concept="5" />
       <node id="5310043668061067522" at="403,0,407,5" concept="5" />
       <node id="5310043668061067522" at="498,0,502,0" concept="1" trace="childNoMenuListHandler_oe0rtl_r2a#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
@@ -2218,7 +2218,7 @@
       <scope id="5310043668061067522" at="1438,42,1439,65" />
       <scope id="5310043668061067522" at="1455,17,1456,42" />
       <scope id="5310043668061067522" at="1459,40,1460,45" />
-      <scope id="5310043668061067522" at="65,132,67,18" />
+      <scope id="5310043668061067522" at="65,130,67,18" />
       <scope id="5310043668063133493" at="203,74,205,145">
         <var name="manager" id="5310043668063133493" />
       </scope>
@@ -2910,27 +2910,27 @@
         <var name="style" id="5310043668061067522" />
       </scope>
       <scope id="5310043668061067522" at="107,0,166,0" />
-      <unit id="4151313971381380495" at="460,0,464,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ParentTestContextMatcher_EditorBuilder_a$TestCompletionCustomization_ParentTestContextMatcher_referenceInlinePrimary_cellMenu_oe0rtl_a0o2a" />
-      <unit id="5310043668061067522" at="1474,0,1481,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ParentTestContextMatcher_EditorBuilder_a$PROPS" />
-      <unit id="5310043668061067522" at="302,42,310,5" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ParentTestContextMatcher_EditorBuilder_a$1" />
-      <unit id="5310043668061067522" at="391,42,399,5" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ParentTestContextMatcher_EditorBuilder_a$2" />
-      <unit id="5310043668061067522" at="1202,42,1210,5" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ParentTestContextMatcher_EditorBuilder_a$3" />
-      <unit id="8199816903240189641" at="1031,0,1040,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ParentTestContextMatcher_EditorBuilder_a$TestCompletionCustomization_ParentTestContextMatcher_childInMatchingLinkInlineMenu_cellMenu_oe0rtl_a0gb2a" />
-      <unit id="5310043668061067522" at="1482,0,1493,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ParentTestContextMatcher_EditorBuilder_a$CONCEPTS" />
-      <unit id="5310043668061067522" at="1494,0,1508,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ParentTestContextMatcher_EditorBuilder_a$LINKS" />
-      <unit id="4639084645851051320" at="328,0,371,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ParentTestContextMatcher_EditorBuilder_a$Inline_Builder0" />
-      <unit id="4151313971380832036" at="417,0,460,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ParentTestContextMatcher_EditorBuilder_a$Inline_Builder1" />
-      <unit id="3806643308052590225" at="1228,0,1271,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ParentTestContextMatcher_EditorBuilder_a$Inline_Builder2" />
-      <unit id="5310043668061067522" at="1409,0,1463,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ParentTestContextMatcher_EditorBuilder_a$childWithPropertyAndLinkSingleRoleHandler_oe0rtl_yb2a" />
-      <unit id="5310043668061067522" at="494,0,561,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ParentTestContextMatcher_EditorBuilder_a$childNoMenuListHandler_oe0rtl_r2a" />
-      <unit id="5310043668061067522" at="588,0,655,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ParentTestContextMatcher_EditorBuilder_a$childSimpleSubstituteMenuListHandler_oe0rtl_u2a" />
-      <unit id="5310043668061067522" at="682,0,749,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ParentTestContextMatcher_EditorBuilder_a$childParameterizedSubstituteMenuListHandler_oe0rtl_x2a" />
-      <unit id="5310043668061067522" at="776,0,843,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ParentTestContextMatcher_EditorBuilder_a$childWrapSubstituteMenuListHandler_oe0rtl_ab2a" />
-      <unit id="5310043668061067522" at="870,0,937,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ParentTestContextMatcher_EditorBuilder_a$childInMatchingLinkListHandler_oe0rtl_db2a" />
-      <unit id="5310043668061067522" at="964,0,1031,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ParentTestContextMatcher_EditorBuilder_a$childInMatchingLinkInlineMenuListHandler_oe0rtl_gb2a" />
-      <unit id="5310043668061067522" at="1067,0,1134,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ParentTestContextMatcher_EditorBuilder_a$childToSubstituteListHandler_oe0rtl_jb2a" />
-      <unit id="5310043668061067522" at="1310,0,1377,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ParentTestContextMatcher_EditorBuilder_a$customActionChildInMatchingLinkListHandler_oe0rtl_ub2a" />
-      <unit id="5310043668061067522" at="61,0,1509,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ParentTestContextMatcher_EditorBuilder_a" />
+      <unit id="4151313971381380495" at="460,0,464,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ParentTestContextMatcher_EditorBuilder$TestCompletionCustomization_ParentTestContextMatcher_referenceInlinePrimary_cellMenu_oe0rtl_a0o2a" />
+      <unit id="5310043668061067522" at="1474,0,1481,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ParentTestContextMatcher_EditorBuilder$PROPS" />
+      <unit id="5310043668061067522" at="302,42,310,5" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ParentTestContextMatcher_EditorBuilder$1" />
+      <unit id="5310043668061067522" at="391,42,399,5" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ParentTestContextMatcher_EditorBuilder$2" />
+      <unit id="5310043668061067522" at="1202,42,1210,5" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ParentTestContextMatcher_EditorBuilder$3" />
+      <unit id="8199816903240189641" at="1031,0,1040,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ParentTestContextMatcher_EditorBuilder$TestCompletionCustomization_ParentTestContextMatcher_childInMatchingLinkInlineMenu_cellMenu_oe0rtl_a0gb2a" />
+      <unit id="5310043668061067522" at="1482,0,1493,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ParentTestContextMatcher_EditorBuilder$CONCEPTS" />
+      <unit id="5310043668061067522" at="1494,0,1508,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ParentTestContextMatcher_EditorBuilder$LINKS" />
+      <unit id="4639084645851051320" at="328,0,371,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ParentTestContextMatcher_EditorBuilder$Inline_Builder0" />
+      <unit id="4151313971380832036" at="417,0,460,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ParentTestContextMatcher_EditorBuilder$Inline_Builder1" />
+      <unit id="3806643308052590225" at="1228,0,1271,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ParentTestContextMatcher_EditorBuilder$Inline_Builder2" />
+      <unit id="5310043668061067522" at="1409,0,1463,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ParentTestContextMatcher_EditorBuilder$childWithPropertyAndLinkSingleRoleHandler_oe0rtl_yb2a" />
+      <unit id="5310043668061067522" at="494,0,561,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ParentTestContextMatcher_EditorBuilder$childNoMenuListHandler_oe0rtl_r2a" />
+      <unit id="5310043668061067522" at="588,0,655,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ParentTestContextMatcher_EditorBuilder$childSimpleSubstituteMenuListHandler_oe0rtl_u2a" />
+      <unit id="5310043668061067522" at="682,0,749,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ParentTestContextMatcher_EditorBuilder$childParameterizedSubstituteMenuListHandler_oe0rtl_x2a" />
+      <unit id="5310043668061067522" at="776,0,843,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ParentTestContextMatcher_EditorBuilder$childWrapSubstituteMenuListHandler_oe0rtl_ab2a" />
+      <unit id="5310043668061067522" at="870,0,937,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ParentTestContextMatcher_EditorBuilder$childInMatchingLinkListHandler_oe0rtl_db2a" />
+      <unit id="5310043668061067522" at="964,0,1031,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ParentTestContextMatcher_EditorBuilder$childInMatchingLinkInlineMenuListHandler_oe0rtl_gb2a" />
+      <unit id="5310043668061067522" at="1067,0,1134,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ParentTestContextMatcher_EditorBuilder$childToSubstituteListHandler_oe0rtl_jb2a" />
+      <unit id="5310043668061067522" at="1310,0,1377,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ParentTestContextMatcher_EditorBuilder$customActionChildInMatchingLinkListHandler_oe0rtl_ub2a" />
+      <unit id="5310043668061067522" at="61,0,1509,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ParentTestContextMatcher_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:83d73286-80a4-4a12-bc9a-3d442d5242fa(jetbrains.mps.lang.editor.menus.style.testLanguage.editor)/5310043668061067560">
@@ -3217,17 +3217,17 @@
   </root>
   <root nodeRef="r:83d73286-80a4-4a12-bc9a-3d442d5242fa(jetbrains.mps.lang.editor.menus.style.testLanguage.editor)/5310043668063056845">
     <file name="TestCompletionCustomization_ContextMatcherBaseChild_Editor.java">
-      <node id="5310043668063056845" at="11,79,12,117" concept="8" />
+      <node id="5310043668063056845" at="11,79,12,115" concept="8" />
       <node id="5310043668063056845" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="5310043668063056845" at="11,79,12,117" />
+      <scope id="5310043668063056845" at="11,79,12,115" />
       <scope id="5310043668063056845" at="11,0,14,0">
         <var name="editorContext" id="5310043668063056845" />
         <var name="node" id="5310043668063056845" />
       </scope>
       <unit id="5310043668063056845" at="10,0,15,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ContextMatcherBaseChild_Editor" />
     </file>
-    <file name="TestCompletionCustomization_ContextMatcherBaseChild_EditorBuilder_a.java">
-      <node id="5310043668063056845" at="27,131,28,19" concept="11" />
+    <file name="TestCompletionCustomization_ContextMatcherBaseChild_EditorBuilder.java">
+      <node id="5310043668063056845" at="27,129,28,19" concept="11" />
       <node id="5310043668063056845" at="28,19,29,18" concept="2" />
       <node id="5310043668063056845" at="34,26,35,18" concept="8" />
       <node id="5310043668063056845" at="38,39,39,32" concept="8" />
@@ -3271,7 +3271,7 @@
       <node id="5310043668063056845" at="89,87,92,7" concept="5" />
       <node id="5310043668063056845" at="92,7,95,7" concept="5" />
       <node id="5310043668063056845" at="111,0,114,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="5310043668063056845" at="27,0,31,0" concept="1" trace="TestCompletionCustomization_ContextMatcherBaseChild_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="5310043668063056845" at="27,0,31,0" concept="1" trace="TestCompletionCustomization_ContextMatcherBaseChild_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="5310043668063056849" at="56,0,60,0" concept="6" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="5310043668063056845" at="60,0,64,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="5310043668063056845" at="68,0,72,0" concept="1" trace="wrappedSingleRoleHandler_8fvsfz_b0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
@@ -3291,7 +3291,7 @@
       <scope id="5310043668063056845" at="93,42,94,48" />
       <scope id="5310043668063056845" at="107,17,108,42" />
       <scope id="5310043668063056845" at="111,40,112,28" />
-      <scope id="5310043668063056845" at="27,131,29,18" />
+      <scope id="5310043668063056845" at="27,129,29,18" />
       <scope id="5310043668063056849" at="56,42,58,22">
         <var name="editorCell" id="5310043668063056849" />
       </scope>
@@ -3336,24 +3336,24 @@
       <scope id="5310043668063056845" at="42,0,53,0" />
       <scope id="5310043668063056845" at="98,44,109,7" />
       <scope id="5310043668063056845" at="97,0,111,0" />
-      <unit id="5310043668063056845" at="116,0,119,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ContextMatcherBaseChild_EditorBuilder_a$LINKS" />
-      <unit id="5310043668063056845" at="64,0,115,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ContextMatcherBaseChild_EditorBuilder_a$wrappedSingleRoleHandler_8fvsfz_b0" />
-      <unit id="5310043668063056845" at="23,0,120,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ContextMatcherBaseChild_EditorBuilder_a" />
+      <unit id="5310043668063056845" at="116,0,119,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ContextMatcherBaseChild_EditorBuilder$LINKS" />
+      <unit id="5310043668063056845" at="64,0,115,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ContextMatcherBaseChild_EditorBuilder$wrappedSingleRoleHandler_8fvsfz_b0" />
+      <unit id="5310043668063056845" at="23,0,120,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ContextMatcherBaseChild_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:83d73286-80a4-4a12-bc9a-3d442d5242fa(jetbrains.mps.lang.editor.menus.style.testLanguage.editor)/5310043668063057608">
     <file name="TestCompletionCustomization_ConceptToWrap_Editor.java">
-      <node id="5310043668063057608" at="11,79,12,107" concept="8" />
+      <node id="5310043668063057608" at="11,79,12,105" concept="8" />
       <node id="5310043668063057608" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="5310043668063057608" at="11,79,12,107" />
+      <scope id="5310043668063057608" at="11,79,12,105" />
       <scope id="5310043668063057608" at="11,0,14,0">
         <var name="editorContext" id="5310043668063057608" />
         <var name="node" id="5310043668063057608" />
       </scope>
       <unit id="5310043668063057608" at="10,0,15,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ConceptToWrap_Editor" />
     </file>
-    <file name="TestCompletionCustomization_ConceptToWrap_EditorBuilder_a.java">
-      <node id="5310043668063057608" at="18,121,19,19" concept="11" />
+    <file name="TestCompletionCustomization_ConceptToWrap_EditorBuilder.java">
+      <node id="5310043668063057608" at="18,119,19,19" concept="11" />
       <node id="5310043668063057608" at="19,19,20,18" concept="2" />
       <node id="5310043668063057608" at="25,26,26,18" concept="8" />
       <node id="5310043668063057608" at="29,39,30,32" concept="8" />
@@ -3372,14 +3372,14 @@
       <node id="5310043668063057610" at="49,119,50,22" concept="8" />
       <node id="5310043668063057608" at="15,0,17,0" concept="3" trace="myNode" />
       <node id="5310043668063057608" at="29,0,32,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="5310043668063057608" at="18,0,22,0" concept="1" trace="TestCompletionCustomization_ConceptToWrap_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="5310043668063057608" at="18,0,22,0" concept="1" trace="TestCompletionCustomization_ConceptToWrap_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="5310043668063057610" at="48,0,52,0" concept="6" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="5310043668063057608" at="23,0,28,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="5310043668063059082" at="42,0,48,0" concept="6" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="5310043668063057608" at="33,0,42,0" concept="6" trace="createCollection_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="5310043668063057608" at="25,26,26,18" />
       <scope id="5310043668063057608" at="29,39,30,32" />
-      <scope id="5310043668063057608" at="18,121,20,18" />
+      <scope id="5310043668063057608" at="18,119,20,18" />
       <scope id="5310043668063057610" at="48,42,50,22">
         <var name="editorCell" id="5310043668063057610" />
       </scope>
@@ -3398,7 +3398,7 @@
         <var name="editorCell" id="5310043668063057608" />
       </scope>
       <scope id="5310043668063057608" at="33,0,42,0" />
-      <unit id="5310043668063057608" at="14,0,53,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ConceptToWrap_EditorBuilder_a" />
+      <unit id="5310043668063057608" at="14,0,53,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ConceptToWrap_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:83d73286-80a4-4a12-bc9a-3d442d5242fa(jetbrains.mps.lang.editor.menus.style.testLanguage.editor)/5310043668063098240">
@@ -3737,17 +3737,17 @@
   </root>
   <root nodeRef="r:83d73286-80a4-4a12-bc9a-3d442d5242fa(jetbrains.mps.lang.editor.menus.style.testLanguage.editor)/7595250613974054489">
     <file name="TestCompletionCustomization_ChildWithPropertyAndLink_Editor.java">
-      <node id="7595250613974054489" at="11,79,12,118" concept="8" />
+      <node id="7595250613974054489" at="11,79,12,116" concept="8" />
       <node id="7595250613974054489" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="7595250613974054489" at="11,79,12,118" />
+      <scope id="7595250613974054489" at="11,79,12,116" />
       <scope id="7595250613974054489" at="11,0,14,0">
         <var name="editorContext" id="7595250613974054489" />
         <var name="node" id="7595250613974054489" />
       </scope>
       <unit id="7595250613974054489" at="10,0,15,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ChildWithPropertyAndLink_Editor" />
     </file>
-    <file name="TestCompletionCustomization_ChildWithPropertyAndLink_EditorBuilder_a.java">
-      <node id="7595250613974054489" at="40,132,41,19" concept="11" />
+    <file name="TestCompletionCustomization_ChildWithPropertyAndLink_EditorBuilder.java">
+      <node id="7595250613974054489" at="40,130,41,19" concept="11" />
       <node id="7595250613974054489" at="41,19,42,18" concept="2" />
       <node id="7595250613974054489" at="47,26,48,18" concept="8" />
       <node id="7595250613974054489" at="51,39,52,32" concept="8" />
@@ -3842,7 +3842,7 @@
       <node id="7595250613974056242" at="143,0,145,0" concept="3" trace="myNode" />
       <node id="7595250613974054489" at="51,0,54,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="7595250613974056242" at="153,0,156,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="7595250613974054489" at="40,0,44,0" concept="1" trace="TestCompletionCustomization_ChildWithPropertyAndLink_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="7595250613974054489" at="40,0,44,0" concept="1" trace="TestCompletionCustomization_ChildWithPropertyAndLink_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="7595250613974054489" at="128,0,132,5" concept="5" />
       <node id="7595250613974054489" at="45,0,50,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="7595250613974055751" at="94,208,99,24" concept="5" />
@@ -3867,7 +3867,7 @@
       <scope id="7595250613974056242" at="153,41,154,32" />
       <scope id="7595250613974056242" at="159,28,160,20" />
       <scope id="7595250613974056320" at="180,17,181,42" />
-      <scope id="7595250613974054489" at="40,132,42,18" />
+      <scope id="7595250613974054489" at="40,130,42,18" />
       <scope id="7595250613974055751" at="95,74,97,145">
         <var name="manager" id="7595250613974055751" />
       </scope>
@@ -3940,12 +3940,12 @@
         <var name="referenceLink" id="7595250613974054489" />
       </scope>
       <scope id="7595250613974054489" at="114,0,142,0" />
-      <unit id="7595250613974054489" at="196,0,199,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ChildWithPropertyAndLink_EditorBuilder_a$LINKS" />
-      <unit id="7595250613974054489" at="186,0,190,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ChildWithPropertyAndLink_EditorBuilder_a$PROPS" />
-      <unit id="7595250613974054489" at="191,0,195,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ChildWithPropertyAndLink_EditorBuilder_a$CONCEPTS" />
-      <unit id="7595250613974054489" at="116,42,124,5" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ChildWithPropertyAndLink_EditorBuilder_a$1" />
-      <unit id="7595250613974056242" at="142,0,185,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ChildWithPropertyAndLink_EditorBuilder_a$Inline_Builder0" />
-      <unit id="7595250613974054489" at="36,0,200,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ChildWithPropertyAndLink_EditorBuilder_a" />
+      <unit id="7595250613974054489" at="196,0,199,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ChildWithPropertyAndLink_EditorBuilder$LINKS" />
+      <unit id="7595250613974054489" at="186,0,190,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ChildWithPropertyAndLink_EditorBuilder$PROPS" />
+      <unit id="7595250613974054489" at="191,0,195,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ChildWithPropertyAndLink_EditorBuilder$CONCEPTS" />
+      <unit id="7595250613974054489" at="116,42,124,5" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ChildWithPropertyAndLink_EditorBuilder$1" />
+      <unit id="7595250613974056242" at="142,0,185,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ChildWithPropertyAndLink_EditorBuilder$Inline_Builder0" />
+      <unit id="7595250613974054489" at="36,0,200,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ChildWithPropertyAndLink_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:83d73286-80a4-4a12-bc9a-3d442d5242fa(jetbrains.mps.lang.editor.menus.style.testLanguage.editor)/7595250613974058225">
@@ -4042,17 +4042,17 @@
   </root>
   <root nodeRef="r:83d73286-80a4-4a12-bc9a-3d442d5242fa(jetbrains.mps.lang.editor.menus.style.testLanguage.editor)/8199816903239730053">
     <file name="TestCompletionCustomization_ParentTestStyle_Editor.java">
-      <node id="8199816903239730053" at="11,79,12,109" concept="8" />
+      <node id="8199816903239730053" at="11,79,12,107" concept="8" />
       <node id="8199816903239730053" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="8199816903239730053" at="11,79,12,109" />
+      <scope id="8199816903239730053" at="11,79,12,107" />
       <scope id="8199816903239730053" at="11,0,14,0">
         <var name="editorContext" id="8199816903239730053" />
         <var name="node" id="8199816903239730053" />
       </scope>
       <unit id="8199816903239730053" at="10,0,15,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ParentTestStyle_Editor" />
     </file>
-    <file name="TestCompletionCustomization_ParentTestStyle_EditorBuilder_a.java">
-      <node id="8199816903239730053" at="23,123,24,19" concept="11" />
+    <file name="TestCompletionCustomization_ParentTestStyle_EditorBuilder.java">
+      <node id="8199816903239730053" at="23,121,24,19" concept="11" />
       <node id="8199816903239730053" at="24,19,25,18" concept="2" />
       <node id="8199816903239730053" at="30,26,31,18" concept="8" />
       <node id="8199816903239730053" at="34,39,35,32" concept="8" />
@@ -4076,14 +4076,14 @@
       <node id="8199816903239730053" at="63,0,64,0" concept="10" trace="TestCompletionCustomization_ParentTestStyle$xV" />
       <node id="8199816903239730053" at="20,0,22,0" concept="3" trace="myNode" />
       <node id="8199816903239730053" at="34,0,37,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="8199816903239730053" at="23,0,27,0" concept="1" trace="TestCompletionCustomization_ParentTestStyle_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8199816903239730053" at="23,0,27,0" concept="1" trace="TestCompletionCustomization_ParentTestStyle_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8199816903239730053" at="28,0,33,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="8199816903239730062" at="47,0,53,0" concept="6" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="8199816903239730068" at="53,0,61,0" concept="6" trace="createConstant_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="8199816903239730053" at="38,0,47,0" concept="6" trace="createCollection_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="8199816903239730053" at="30,26,31,18" />
       <scope id="8199816903239730053" at="34,39,35,32" />
-      <scope id="8199816903239730053" at="23,123,25,18" />
+      <scope id="8199816903239730053" at="23,121,25,18" />
       <scope id="8199816903239730053" at="34,0,37,0" />
       <scope id="8199816903239730053" at="23,0,27,0">
         <var name="context" id="8199816903239730053" />
@@ -4102,8 +4102,8 @@
       </scope>
       <scope id="8199816903239730068" at="53,0,61,0" />
       <scope id="8199816903239730053" at="38,0,47,0" />
-      <unit id="8199816903239730053" at="62,0,65,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ParentTestStyle_EditorBuilder_a$CONCEPTS" />
-      <unit id="8199816903239730053" at="19,0,66,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ParentTestStyle_EditorBuilder_a" />
+      <unit id="8199816903239730053" at="62,0,65,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ParentTestStyle_EditorBuilder$CONCEPTS" />
+      <unit id="8199816903239730053" at="19,0,66,0" name="jetbrains.mps.lang.editor.menus.style.testLanguage.editor.TestCompletionCustomization_ParentTestStyle_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:83d73286-80a4-4a12-bc9a-3d442d5242fa(jetbrains.mps.lang.editor.menus.style.testLanguage.editor)/8199816903239730097">

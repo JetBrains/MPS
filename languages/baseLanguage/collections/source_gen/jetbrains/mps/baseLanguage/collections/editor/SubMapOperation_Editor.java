@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class SubMapOperation_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new SubMapOperation_EditorBuilder_a(editorContext, node).createCell();
+    return new SubMapOperation_EditorBuilder(editorContext, node).createCell();
   }
 }

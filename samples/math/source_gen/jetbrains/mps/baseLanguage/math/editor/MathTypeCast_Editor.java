@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class MathTypeCast_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new MathTypeCast_EditorBuilder_a(editorContext, node).createCell();
+    return new MathTypeCast_EditorBuilder(editorContext, node).createCell();
   }
 }

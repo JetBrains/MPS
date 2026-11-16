@@ -16,6 +16,6 @@ public class KtFunctionCallTypeArguments_Component implements ConceptEditorCompo
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new KtFunctionCallTypeArguments_Component_ComponentBuilder_a(editorContext, node).createCell();
+    return new KtFunctionCallTypeArguments_Component_ComponentBuilder(editorContext, node).createCell();
   }
 }

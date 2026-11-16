@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class GeneratorDebug_Mappings_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new GeneratorDebug_Mappings_EditorBuilder_a(editorContext, node).createCell();
+    return new GeneratorDebug_Mappings_EditorBuilder(editorContext, node).createCell();
   }
 }

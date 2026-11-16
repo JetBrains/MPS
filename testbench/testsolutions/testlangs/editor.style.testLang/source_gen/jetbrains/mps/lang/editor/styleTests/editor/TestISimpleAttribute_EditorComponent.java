@@ -16,6 +16,6 @@ public class TestISimpleAttribute_EditorComponent implements ConceptEditorCompon
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new TestISimpleAttribute_EditorComponent_ComponentBuilder_a(editorContext, node).createCell();
+    return new TestISimpleAttribute_EditorComponent_ComponentBuilder(editorContext, node).createCell();
   }
 }

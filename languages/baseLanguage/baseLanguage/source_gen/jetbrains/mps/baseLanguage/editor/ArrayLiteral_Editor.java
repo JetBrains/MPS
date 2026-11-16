@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ArrayLiteral_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ArrayLiteral_EditorBuilder_a(editorContext, node).createCell();
+    return new ArrayLiteral_EditorBuilder(editorContext, node).createCell();
   }
 }

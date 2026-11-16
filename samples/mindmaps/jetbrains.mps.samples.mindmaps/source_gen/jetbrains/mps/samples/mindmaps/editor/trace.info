@@ -28,11 +28,11 @@
     <file name="Specializes_diagram_Editor.java">
       <node id="5058522826399262891" at="14,0,15,0" concept="3" trace="myContextHints" />
       <node id="5058522826399262891" at="17,47,18,26" concept="8" />
-      <node id="5058522826399262891" at="20,79,21,85" concept="8" />
+      <node id="5058522826399262891" at="20,79,21,83" concept="8" />
       <node id="5058522826399262891" at="20,0,23,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="5058522826399262891" at="15,0,20,0" concept="6" trace="getContextHints#()Ljava/util/Collection;" />
       <scope id="5058522826399262891" at="17,47,18,26" />
-      <scope id="5058522826399262891" at="20,79,21,85" />
+      <scope id="5058522826399262891" at="20,79,21,83" />
       <scope id="5058522826399262891" at="20,0,23,0">
         <var name="editorContext" id="5058522826399262891" />
         <var name="node" id="5058522826399262891" />
@@ -40,8 +40,8 @@
       <scope id="5058522826399262891" at="15,0,20,0" />
       <unit id="5058522826399262891" at="13,0,24,0" name="jetbrains.mps.samples.mindmaps.editor.Specializes_diagram_Editor" />
     </file>
-    <file name="Specializes_diagram_EditorBuilder_a.java">
-      <node id="5058522826399262891" at="35,99,36,19" concept="13" />
+    <file name="Specializes_diagram_EditorBuilder.java">
+      <node id="5058522826399262891" at="35,97,36,19" concept="13" />
       <node id="5058522826399262891" at="36,19,37,18" concept="2" />
       <node id="5058522826399262891" at="42,26,43,18" concept="8" />
       <node id="5058522826399262891" at="46,39,47,38" concept="8" />
@@ -115,7 +115,7 @@
       <node id="5058522826399262891" at="146,125,149,11" concept="5" />
       <node id="5058522826399262891" at="160,49,163,7" concept="5" />
       <node id="5058522826399262891" at="164,115,167,7" concept="5" />
-      <node id="5058522826399262891" at="35,0,39,0" concept="1" trace="Specializes_diagram_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="5058522826399262891" at="35,0,39,0" concept="1" trace="Specializes_diagram_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="5058522826399262891" at="61,0,65,0" concept="1" trace="ConnectorCellImpl_x5bto0_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="5058522826399262891" at="85,62,89,15" concept="5" />
       <node id="5058522826399262891" at="173,0,177,0" concept="6" trace="synchronize#()V" />
@@ -155,7 +155,7 @@
       <scope id="5058522826399262891" at="147,41,148,19" />
       <scope id="5058522826399262891" at="161,32,162,38" />
       <scope id="5058522826399262891" at="165,37,166,38" />
-      <scope id="5058522826399262891" at="35,99,37,18" />
+      <scope id="5058522826399262891" at="35,97,37,18" />
       <scope id="5058522826399262891" at="61,81,63,20" />
       <scope id="5058522826399262891" at="86,95,88,47" />
       <scope id="5058522826399262891" at="173,31,175,105" />
@@ -240,27 +240,27 @@
       </scope>
       <scope id="5058522826399262891" at="65,61,134,8" />
       <scope id="5058522826399262891" at="65,0,136,0" />
-      <unit id="5058522826399262891" at="187,0,191,0" name="jetbrains.mps.samples.mindmaps.editor.Specializes_diagram_EditorBuilder_a$LINKS" />
-      <unit id="5058522826399262891" at="100,80,106,11" name="jetbrains.mps.samples.mindmaps.editor.Specializes_diagram_EditorBuilder_a$ConnectorCellImpl_x5bto0_a$1$3" />
-      <unit id="5058522826399262891" at="71,71,82,11" name="jetbrains.mps.samples.mindmaps.editor.Specializes_diagram_EditorBuilder_a$ConnectorCellImpl_x5bto0_a$1$1" />
-      <unit id="5058522826399262891" at="121,79,132,11" name="jetbrains.mps.samples.mindmaps.editor.Specializes_diagram_EditorBuilder_a$ConnectorCellImpl_x5bto0_a$1$5" />
-      <unit id="5058522826399262891" at="107,74,120,11" name="jetbrains.mps.samples.mindmaps.editor.Specializes_diagram_EditorBuilder_a$ConnectorCellImpl_x5bto0_a$1$4" />
-      <unit id="5058522826399262891" at="83,72,98,11" name="jetbrains.mps.samples.mindmaps.editor.Specializes_diagram_EditorBuilder_a$ConnectorCellImpl_x5bto0_a$1$2" />
-      <unit id="5058522826399262891" at="138,17,156,7" name="jetbrains.mps.samples.mindmaps.editor.Specializes_diagram_EditorBuilder_a$ConnectorCellImpl_x5bto0_a$2" />
-      <unit id="5058522826399262891" at="66,17,134,7" name="jetbrains.mps.samples.mindmaps.editor.Specializes_diagram_EditorBuilder_a$ConnectorCellImpl_x5bto0_a$1" />
-      <unit id="5058522826399262891" at="58,0,186,0" name="jetbrains.mps.samples.mindmaps.editor.Specializes_diagram_EditorBuilder_a$ConnectorCellImpl_x5bto0_a" />
-      <unit id="5058522826399262891" at="31,0,192,0" name="jetbrains.mps.samples.mindmaps.editor.Specializes_diagram_EditorBuilder_a" />
+      <unit id="5058522826399262891" at="187,0,191,0" name="jetbrains.mps.samples.mindmaps.editor.Specializes_diagram_EditorBuilder$LINKS" />
+      <unit id="5058522826399262891" at="100,80,106,11" name="jetbrains.mps.samples.mindmaps.editor.Specializes_diagram_EditorBuilder$ConnectorCellImpl_x5bto0_a$1$3" />
+      <unit id="5058522826399262891" at="71,71,82,11" name="jetbrains.mps.samples.mindmaps.editor.Specializes_diagram_EditorBuilder$ConnectorCellImpl_x5bto0_a$1$1" />
+      <unit id="5058522826399262891" at="121,79,132,11" name="jetbrains.mps.samples.mindmaps.editor.Specializes_diagram_EditorBuilder$ConnectorCellImpl_x5bto0_a$1$5" />
+      <unit id="5058522826399262891" at="107,74,120,11" name="jetbrains.mps.samples.mindmaps.editor.Specializes_diagram_EditorBuilder$ConnectorCellImpl_x5bto0_a$1$4" />
+      <unit id="5058522826399262891" at="83,72,98,11" name="jetbrains.mps.samples.mindmaps.editor.Specializes_diagram_EditorBuilder$ConnectorCellImpl_x5bto0_a$1$2" />
+      <unit id="5058522826399262891" at="138,17,156,7" name="jetbrains.mps.samples.mindmaps.editor.Specializes_diagram_EditorBuilder$ConnectorCellImpl_x5bto0_a$2" />
+      <unit id="5058522826399262891" at="66,17,134,7" name="jetbrains.mps.samples.mindmaps.editor.Specializes_diagram_EditorBuilder$ConnectorCellImpl_x5bto0_a$1" />
+      <unit id="5058522826399262891" at="58,0,186,0" name="jetbrains.mps.samples.mindmaps.editor.Specializes_diagram_EditorBuilder$ConnectorCellImpl_x5bto0_a" />
+      <unit id="5058522826399262891" at="31,0,192,0" name="jetbrains.mps.samples.mindmaps.editor.Specializes_diagram_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:e9cbc3d8-bcea-4ffe-8042-8e61a2d1bcc9(jetbrains.mps.samples.mindmaps.editor)/5058522826399342677">
     <file name="CoreThrought_diagram_Editor.java">
       <node id="5058522826399342677" at="14,0,15,0" concept="3" trace="myContextHints" />
       <node id="5058522826399342677" at="17,47,18,26" concept="8" />
-      <node id="5058522826399342677" at="20,79,21,86" concept="8" />
+      <node id="5058522826399342677" at="20,79,21,84" concept="8" />
       <node id="5058522826399342677" at="20,0,23,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="5058522826399342677" at="15,0,20,0" concept="6" trace="getContextHints#()Ljava/util/Collection;" />
       <scope id="5058522826399342677" at="17,47,18,26" />
-      <scope id="5058522826399342677" at="20,79,21,86" />
+      <scope id="5058522826399342677" at="20,79,21,84" />
       <scope id="5058522826399342677" at="20,0,23,0">
         <var name="editorContext" id="5058522826399342677" />
         <var name="node" id="5058522826399342677" />
@@ -268,8 +268,8 @@
       <scope id="5058522826399342677" at="15,0,20,0" />
       <unit id="5058522826399342677" at="13,0,24,0" name="jetbrains.mps.samples.mindmaps.editor.CoreThrought_diagram_Editor" />
     </file>
-    <file name="CoreThrought_diagram_EditorBuilder_a.java">
-      <node id="5058522826399342677" at="40,100,41,19" concept="13" />
+    <file name="CoreThrought_diagram_EditorBuilder.java">
+      <node id="5058522826399342677" at="40,98,41,19" concept="13" />
       <node id="5058522826399342677" at="41,19,42,18" concept="2" />
       <node id="5058522826399342677" at="47,26,48,18" concept="8" />
       <node id="5058522826399342677" at="51,39,52,33" concept="8" />
@@ -354,7 +354,7 @@
       <node id="5058522826399342677" at="174,53,177,11" concept="5" />
       <node id="5058522826399342677" at="178,78,181,11" concept="5" />
       <node id="5058522826399342677" at="187,101,190,13" concept="5" />
-      <node id="5058522826399342677" at="40,0,44,0" concept="1" trace="CoreThrought_diagram_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="5058522826399342677" at="40,0,44,0" concept="1" trace="CoreThrought_diagram_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="5058522826399342677" at="120,174,124,22" concept="2" />
       <node id="5058522826399342677" at="45,0,50,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="5058522826399342677" at="134,0,139,0" concept="6" trace="set#(Ljava/lang/Boolean;)V" />
@@ -397,7 +397,7 @@
       <scope id="5058522826399342677" at="175,36,176,19" />
       <scope id="5058522826399342677" at="179,36,180,19" />
       <scope id="5058522826399342677" at="188,32,189,21" />
-      <scope id="5058522826399342677" at="40,100,42,18" />
+      <scope id="5058522826399342677" at="40,98,42,18" />
       <scope id="5058522826399342677" at="121,107,123,89" />
       <scope id="5058522826399342677" at="51,0,54,0" />
       <scope id="955834388676349882" at="70,0,73,0" />
@@ -478,30 +478,30 @@
       </scope>
       <scope id="5058522826399342677" at="107,58,167,8" />
       <scope id="5058522826399342677" at="107,0,169,0" />
-      <unit id="5058522826399342677" at="202,0,207,0" name="jetbrains.mps.samples.mindmaps.editor.CoreThrought_diagram_EditorBuilder_a$PROPS" />
-      <unit id="5058522826399342677" at="133,80,139,11" name="jetbrains.mps.samples.mindmaps.editor.CoreThrought_diagram_EditorBuilder_a$BlockCellImpl_pr685x_a$4$2" />
-      <unit id="955834388676349882" at="69,38,76,7" name="jetbrains.mps.samples.mindmaps.editor.CoreThrought_diagram_EditorBuilder_a$BlockCellImpl_pr685x_a$1" />
-      <unit id="955834388676350039" at="79,38,86,7" name="jetbrains.mps.samples.mindmaps.editor.CoreThrought_diagram_EditorBuilder_a$BlockCellImpl_pr685x_a$2" />
-      <unit id="650270285024607649" at="89,38,96,7" name="jetbrains.mps.samples.mindmaps.editor.CoreThrought_diagram_EditorBuilder_a$BlockCellImpl_pr685x_a$3" />
-      <unit id="5058522826399342677" at="154,79,165,11" name="jetbrains.mps.samples.mindmaps.editor.CoreThrought_diagram_EditorBuilder_a$BlockCellImpl_pr685x_a$4$4" />
-      <unit id="5058522826399342677" at="140,74,153,11" name="jetbrains.mps.samples.mindmaps.editor.CoreThrought_diagram_EditorBuilder_a$BlockCellImpl_pr685x_a$4$3" />
-      <unit id="5058522826399342677" at="115,25,129,15" name="jetbrains.mps.samples.mindmaps.editor.CoreThrought_diagram_EditorBuilder_a$BlockCellImpl_pr685x_a$4$1$1" />
-      <unit id="5058522826399342677" at="113,134,131,11" name="jetbrains.mps.samples.mindmaps.editor.CoreThrought_diagram_EditorBuilder_a$BlockCellImpl_pr685x_a$4$1" />
-      <unit id="5058522826399342677" at="170,17,198,7" name="jetbrains.mps.samples.mindmaps.editor.CoreThrought_diagram_EditorBuilder_a$BlockCellImpl_pr685x_a$5" />
-      <unit id="5058522826399342677" at="108,17,167,7" name="jetbrains.mps.samples.mindmaps.editor.CoreThrought_diagram_EditorBuilder_a$BlockCellImpl_pr685x_a$4" />
-      <unit id="5058522826399342677" at="63,0,201,0" name="jetbrains.mps.samples.mindmaps.editor.CoreThrought_diagram_EditorBuilder_a$BlockCellImpl_pr685x_a" />
-      <unit id="5058522826399342677" at="36,0,208,0" name="jetbrains.mps.samples.mindmaps.editor.CoreThrought_diagram_EditorBuilder_a" />
+      <unit id="5058522826399342677" at="202,0,207,0" name="jetbrains.mps.samples.mindmaps.editor.CoreThrought_diagram_EditorBuilder$PROPS" />
+      <unit id="5058522826399342677" at="133,80,139,11" name="jetbrains.mps.samples.mindmaps.editor.CoreThrought_diagram_EditorBuilder$BlockCellImpl_pr685x_a$4$2" />
+      <unit id="955834388676349882" at="69,38,76,7" name="jetbrains.mps.samples.mindmaps.editor.CoreThrought_diagram_EditorBuilder$BlockCellImpl_pr685x_a$1" />
+      <unit id="955834388676350039" at="79,38,86,7" name="jetbrains.mps.samples.mindmaps.editor.CoreThrought_diagram_EditorBuilder$BlockCellImpl_pr685x_a$2" />
+      <unit id="650270285024607649" at="89,38,96,7" name="jetbrains.mps.samples.mindmaps.editor.CoreThrought_diagram_EditorBuilder$BlockCellImpl_pr685x_a$3" />
+      <unit id="5058522826399342677" at="154,79,165,11" name="jetbrains.mps.samples.mindmaps.editor.CoreThrought_diagram_EditorBuilder$BlockCellImpl_pr685x_a$4$4" />
+      <unit id="5058522826399342677" at="140,74,153,11" name="jetbrains.mps.samples.mindmaps.editor.CoreThrought_diagram_EditorBuilder$BlockCellImpl_pr685x_a$4$3" />
+      <unit id="5058522826399342677" at="115,25,129,15" name="jetbrains.mps.samples.mindmaps.editor.CoreThrought_diagram_EditorBuilder$BlockCellImpl_pr685x_a$4$1$1" />
+      <unit id="5058522826399342677" at="113,134,131,11" name="jetbrains.mps.samples.mindmaps.editor.CoreThrought_diagram_EditorBuilder$BlockCellImpl_pr685x_a$4$1" />
+      <unit id="5058522826399342677" at="170,17,198,7" name="jetbrains.mps.samples.mindmaps.editor.CoreThrought_diagram_EditorBuilder$BlockCellImpl_pr685x_a$5" />
+      <unit id="5058522826399342677" at="108,17,167,7" name="jetbrains.mps.samples.mindmaps.editor.CoreThrought_diagram_EditorBuilder$BlockCellImpl_pr685x_a$4" />
+      <unit id="5058522826399342677" at="63,0,201,0" name="jetbrains.mps.samples.mindmaps.editor.CoreThrought_diagram_EditorBuilder$BlockCellImpl_pr685x_a" />
+      <unit id="5058522826399342677" at="36,0,208,0" name="jetbrains.mps.samples.mindmaps.editor.CoreThrought_diagram_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:e9cbc3d8-bcea-4ffe-8042-8e61a2d1bcc9(jetbrains.mps.samples.mindmaps.editor)/5871420002487302234">
     <file name="Relationship_diagram_Editor.java">
       <node id="5871420002487302234" at="14,0,15,0" concept="3" trace="myContextHints" />
       <node id="5871420002487302234" at="17,47,18,26" concept="8" />
-      <node id="5871420002487302234" at="20,79,21,86" concept="8" />
+      <node id="5871420002487302234" at="20,79,21,84" concept="8" />
       <node id="5871420002487302234" at="20,0,23,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="5871420002487302234" at="15,0,20,0" concept="6" trace="getContextHints#()Ljava/util/Collection;" />
       <scope id="5871420002487302234" at="17,47,18,26" />
-      <scope id="5871420002487302234" at="20,79,21,86" />
+      <scope id="5871420002487302234" at="20,79,21,84" />
       <scope id="5871420002487302234" at="20,0,23,0">
         <var name="editorContext" id="5871420002487302234" />
         <var name="node" id="5871420002487302234" />
@@ -509,8 +509,8 @@
       <scope id="5871420002487302234" at="15,0,20,0" />
       <unit id="5871420002487302234" at="13,0,24,0" name="jetbrains.mps.samples.mindmaps.editor.Relationship_diagram_Editor" />
     </file>
-    <file name="Relationship_diagram_EditorBuilder_a.java">
-      <node id="5871420002487302234" at="35,100,36,19" concept="13" />
+    <file name="Relationship_diagram_EditorBuilder.java">
+      <node id="5871420002487302234" at="35,98,36,19" concept="13" />
       <node id="5871420002487302234" at="36,19,37,18" concept="2" />
       <node id="5871420002487302234" at="42,26,43,18" concept="8" />
       <node id="5871420002487302234" at="46,39,47,38" concept="8" />
@@ -584,7 +584,7 @@
       <node id="5871420002487302234" at="146,125,149,11" concept="5" />
       <node id="5871420002487302234" at="160,49,163,7" concept="5" />
       <node id="5871420002487302234" at="164,115,167,7" concept="5" />
-      <node id="5871420002487302234" at="35,0,39,0" concept="1" trace="Relationship_diagram_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="5871420002487302234" at="35,0,39,0" concept="1" trace="Relationship_diagram_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="5871420002487302234" at="61,0,65,0" concept="1" trace="ConnectorCellImpl_nydcps_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="5871420002487302234" at="85,62,89,15" concept="5" />
       <node id="5871420002487302234" at="173,0,177,0" concept="6" trace="synchronize#()V" />
@@ -624,7 +624,7 @@
       <scope id="5871420002487302234" at="147,41,148,19" />
       <scope id="5871420002487302234" at="161,32,162,38" />
       <scope id="5871420002487302234" at="165,37,166,38" />
-      <scope id="5871420002487302234" at="35,100,37,18" />
+      <scope id="5871420002487302234" at="35,98,37,18" />
       <scope id="5871420002487302234" at="61,81,63,20" />
       <scope id="5871420002487302234" at="86,95,88,47" />
       <scope id="5871420002487302234" at="173,31,175,105" />
@@ -709,16 +709,16 @@
       </scope>
       <scope id="5871420002487302234" at="65,61,134,8" />
       <scope id="5871420002487302234" at="65,0,136,0" />
-      <unit id="5871420002487302234" at="187,0,191,0" name="jetbrains.mps.samples.mindmaps.editor.Relationship_diagram_EditorBuilder_a$LINKS" />
-      <unit id="5871420002487302234" at="100,80,106,11" name="jetbrains.mps.samples.mindmaps.editor.Relationship_diagram_EditorBuilder_a$ConnectorCellImpl_nydcps_a$1$3" />
-      <unit id="5871420002487302234" at="71,71,82,11" name="jetbrains.mps.samples.mindmaps.editor.Relationship_diagram_EditorBuilder_a$ConnectorCellImpl_nydcps_a$1$1" />
-      <unit id="5871420002487302234" at="121,79,132,11" name="jetbrains.mps.samples.mindmaps.editor.Relationship_diagram_EditorBuilder_a$ConnectorCellImpl_nydcps_a$1$5" />
-      <unit id="5871420002487302234" at="107,74,120,11" name="jetbrains.mps.samples.mindmaps.editor.Relationship_diagram_EditorBuilder_a$ConnectorCellImpl_nydcps_a$1$4" />
-      <unit id="5871420002487302234" at="83,72,98,11" name="jetbrains.mps.samples.mindmaps.editor.Relationship_diagram_EditorBuilder_a$ConnectorCellImpl_nydcps_a$1$2" />
-      <unit id="5871420002487302234" at="138,17,156,7" name="jetbrains.mps.samples.mindmaps.editor.Relationship_diagram_EditorBuilder_a$ConnectorCellImpl_nydcps_a$2" />
-      <unit id="5871420002487302234" at="66,17,134,7" name="jetbrains.mps.samples.mindmaps.editor.Relationship_diagram_EditorBuilder_a$ConnectorCellImpl_nydcps_a$1" />
-      <unit id="5871420002487302234" at="58,0,186,0" name="jetbrains.mps.samples.mindmaps.editor.Relationship_diagram_EditorBuilder_a$ConnectorCellImpl_nydcps_a" />
-      <unit id="5871420002487302234" at="31,0,192,0" name="jetbrains.mps.samples.mindmaps.editor.Relationship_diagram_EditorBuilder_a" />
+      <unit id="5871420002487302234" at="187,0,191,0" name="jetbrains.mps.samples.mindmaps.editor.Relationship_diagram_EditorBuilder$LINKS" />
+      <unit id="5871420002487302234" at="100,80,106,11" name="jetbrains.mps.samples.mindmaps.editor.Relationship_diagram_EditorBuilder$ConnectorCellImpl_nydcps_a$1$3" />
+      <unit id="5871420002487302234" at="71,71,82,11" name="jetbrains.mps.samples.mindmaps.editor.Relationship_diagram_EditorBuilder$ConnectorCellImpl_nydcps_a$1$1" />
+      <unit id="5871420002487302234" at="121,79,132,11" name="jetbrains.mps.samples.mindmaps.editor.Relationship_diagram_EditorBuilder$ConnectorCellImpl_nydcps_a$1$5" />
+      <unit id="5871420002487302234" at="107,74,120,11" name="jetbrains.mps.samples.mindmaps.editor.Relationship_diagram_EditorBuilder$ConnectorCellImpl_nydcps_a$1$4" />
+      <unit id="5871420002487302234" at="83,72,98,11" name="jetbrains.mps.samples.mindmaps.editor.Relationship_diagram_EditorBuilder$ConnectorCellImpl_nydcps_a$1$2" />
+      <unit id="5871420002487302234" at="138,17,156,7" name="jetbrains.mps.samples.mindmaps.editor.Relationship_diagram_EditorBuilder$ConnectorCellImpl_nydcps_a$2" />
+      <unit id="5871420002487302234" at="66,17,134,7" name="jetbrains.mps.samples.mindmaps.editor.Relationship_diagram_EditorBuilder$ConnectorCellImpl_nydcps_a$1" />
+      <unit id="5871420002487302234" at="58,0,186,0" name="jetbrains.mps.samples.mindmaps.editor.Relationship_diagram_EditorBuilder$ConnectorCellImpl_nydcps_a" />
+      <unit id="5871420002487302234" at="31,0,192,0" name="jetbrains.mps.samples.mindmaps.editor.Relationship_diagram_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:e9cbc3d8-bcea-4ffe-8042-8e61a2d1bcc9(jetbrains.mps.samples.mindmaps.editor)/5871420002487709759">
@@ -902,11 +902,11 @@
     <file name="MindMap_diagram_Editor.java">
       <node id="79242395703887343" at="14,0,15,0" concept="3" trace="myContextHints" />
       <node id="79242395703887343" at="17,47,18,26" concept="8" />
-      <node id="79242395703887343" at="20,79,21,81" concept="8" />
+      <node id="79242395703887343" at="20,79,21,79" concept="8" />
       <node id="79242395703887343" at="20,0,23,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="79242395703887343" at="15,0,20,0" concept="6" trace="getContextHints#()Ljava/util/Collection;" />
       <scope id="79242395703887343" at="17,47,18,26" />
-      <scope id="79242395703887343" at="20,79,21,81" />
+      <scope id="79242395703887343" at="20,79,21,79" />
       <scope id="79242395703887343" at="20,0,23,0">
         <var name="editorContext" id="79242395703887343" />
         <var name="node" id="79242395703887343" />
@@ -914,8 +914,8 @@
       <scope id="79242395703887343" at="15,0,20,0" />
       <unit id="79242395703887343" at="13,0,24,0" name="jetbrains.mps.samples.mindmaps.editor.MindMap_diagram_Editor" />
     </file>
-    <file name="MindMap_diagram_EditorBuilder_a.java">
-      <node id="79242395703887343" at="63,95,64,19" concept="13" />
+    <file name="MindMap_diagram_EditorBuilder.java">
+      <node id="79242395703887343" at="63,93,64,19" concept="13" />
       <node id="79242395703887343" at="64,19,65,18" concept="2" />
       <node id="79242395703887343" at="70,26,71,18" concept="8" />
       <node id="79242395703887343" at="74,39,75,32" concept="8" />
@@ -1014,7 +1014,7 @@
       <node id="79242395703887343" at="175,0,178,0" concept="6" trace="createMapper#(Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/jetpad/mapper/Mapper;" />
       <node id="79242395703887343" at="210,0,213,0" concept="6" trace="createMapper#(Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/jetpad/mapper/Mapper;" />
       <node id="79242395703887343" at="215,0,218,0" concept="6" trace="createMapper#(Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/jetpad/mapper/Mapper;" />
-      <node id="79242395703887343" at="63,0,67,0" concept="1" trace="MindMap_diagram_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="79242395703887343" at="63,0,67,0" concept="1" trace="MindMap_diagram_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="5871420002487602664" at="138,0,142,0" concept="6" trace="invoke#(Lorg/jetbrains/mps/openapi/model/SNode;Ljava/lang/Integer;Ljava/lang/Integer;)V" />
       <node id="5871420002487614336" at="143,0,147,0" concept="6" trace="invoke#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/model/SNode;Ljava/lang/Object;Lorg/jetbrains/mps/openapi/model/SNode;Ljava/lang/Object;)V" />
       <node id="79242395703887343" at="152,82,156,10" concept="8" />
@@ -1065,7 +1065,7 @@
       <scope id="79242395703887343" at="210,85,211,85" />
       <scope id="79242395703887343" at="215,85,216,89" />
       <scope id="650270285024712134" at="244,35,245,29" />
-      <scope id="79242395703887343" at="63,95,65,18" />
+      <scope id="79242395703887343" at="63,93,65,18" />
       <scope id="79242395703887923" at="111,74,113,145">
         <var name="manager" id="79242395703887923" />
       </scope>
@@ -1188,34 +1188,34 @@
       <scope id="79242395703887343" at="164,0,204,0">
         <var name="node" id="79242395703887343" />
       </scope>
-      <unit id="79242395703887343" at="254,0,257,0" name="jetbrains.mps.samples.mindmaps.editor.MindMap_diagram_EditorBuilder_a$PROPS" />
-      <unit id="79242395703887343" at="169,114,173,11" name="jetbrains.mps.samples.mindmaps.editor.MindMap_diagram_EditorBuilder_a$DiagramCellImpl_e8klwn_d0$3$1" />
-      <unit id="79242395703887343" at="174,109,178,11" name="jetbrains.mps.samples.mindmaps.editor.MindMap_diagram_EditorBuilder_a$DiagramCellImpl_e8klwn_d0$3$2" />
-      <unit id="79242395703887343" at="209,123,213,11" name="jetbrains.mps.samples.mindmaps.editor.MindMap_diagram_EditorBuilder_a$DiagramCellImpl_e8klwn_d0$4$1" />
-      <unit id="79242395703887343" at="214,132,218,11" name="jetbrains.mps.samples.mindmaps.editor.MindMap_diagram_EditorBuilder_a$DiagramCellImpl_e8klwn_d0$4$2" />
-      <unit id="5871420002487602664" at="137,209,142,7" name="jetbrains.mps.samples.mindmaps.editor.MindMap_diagram_EditorBuilder_a$DiagramCellImpl_e8klwn_d0$1" />
-      <unit id="5871420002487614336" at="142,310,147,7" name="jetbrains.mps.samples.mindmaps.editor.MindMap_diagram_EditorBuilder_a$DiagramCellImpl_e8klwn_d0$2" />
-      <unit id="79242395703887343" at="258,0,263,0" name="jetbrains.mps.samples.mindmaps.editor.MindMap_diagram_EditorBuilder_a$CONCEPTS" />
-      <unit id="79242395703887343" at="264,0,270,0" name="jetbrains.mps.samples.mindmaps.editor.MindMap_diagram_EditorBuilder_a$LINKS" />
-      <unit id="79242395703887343" at="179,83,187,11" name="jetbrains.mps.samples.mindmaps.editor.MindMap_diagram_EditorBuilder_a$DiagramCellImpl_e8klwn_d0$3$3" />
-      <unit id="650270285024712134" at="239,30,247,9" name="jetbrains.mps.samples.mindmaps.editor.MindMap_diagram_EditorBuilder_a$DiagramCellImpl_e8klwn_d0$DiagramPaletteImpl_e8klwn_a3a$1" />
-      <unit id="79242395703887343" at="188,74,199,11" name="jetbrains.mps.samples.mindmaps.editor.MindMap_diagram_EditorBuilder_a$DiagramCellImpl_e8klwn_d0$3$4" />
-      <unit id="79242395703887343" at="205,17,220,7" name="jetbrains.mps.samples.mindmaps.editor.MindMap_diagram_EditorBuilder_a$DiagramCellImpl_e8klwn_d0$4" />
-      <unit id="650270285024711858" at="236,0,252,0" name="jetbrains.mps.samples.mindmaps.editor.MindMap_diagram_EditorBuilder_a$DiagramCellImpl_e8klwn_d0$DiagramPaletteImpl_e8klwn_a3a" />
-      <unit id="79242395703887343" at="165,17,202,7" name="jetbrains.mps.samples.mindmaps.editor.MindMap_diagram_EditorBuilder_a$DiagramCellImpl_e8klwn_d0$3" />
-      <unit id="79242395703887343" at="134,0,253,0" name="jetbrains.mps.samples.mindmaps.editor.MindMap_diagram_EditorBuilder_a$DiagramCellImpl_e8klwn_d0" />
-      <unit id="79242395703887343" at="59,0,271,0" name="jetbrains.mps.samples.mindmaps.editor.MindMap_diagram_EditorBuilder_a" />
+      <unit id="79242395703887343" at="254,0,257,0" name="jetbrains.mps.samples.mindmaps.editor.MindMap_diagram_EditorBuilder$PROPS" />
+      <unit id="79242395703887343" at="169,114,173,11" name="jetbrains.mps.samples.mindmaps.editor.MindMap_diagram_EditorBuilder$DiagramCellImpl_e8klwn_d0$3$1" />
+      <unit id="79242395703887343" at="174,109,178,11" name="jetbrains.mps.samples.mindmaps.editor.MindMap_diagram_EditorBuilder$DiagramCellImpl_e8klwn_d0$3$2" />
+      <unit id="79242395703887343" at="209,123,213,11" name="jetbrains.mps.samples.mindmaps.editor.MindMap_diagram_EditorBuilder$DiagramCellImpl_e8klwn_d0$4$1" />
+      <unit id="79242395703887343" at="214,132,218,11" name="jetbrains.mps.samples.mindmaps.editor.MindMap_diagram_EditorBuilder$DiagramCellImpl_e8klwn_d0$4$2" />
+      <unit id="5871420002487602664" at="137,209,142,7" name="jetbrains.mps.samples.mindmaps.editor.MindMap_diagram_EditorBuilder$DiagramCellImpl_e8klwn_d0$1" />
+      <unit id="5871420002487614336" at="142,310,147,7" name="jetbrains.mps.samples.mindmaps.editor.MindMap_diagram_EditorBuilder$DiagramCellImpl_e8klwn_d0$2" />
+      <unit id="79242395703887343" at="258,0,263,0" name="jetbrains.mps.samples.mindmaps.editor.MindMap_diagram_EditorBuilder$CONCEPTS" />
+      <unit id="79242395703887343" at="264,0,270,0" name="jetbrains.mps.samples.mindmaps.editor.MindMap_diagram_EditorBuilder$LINKS" />
+      <unit id="79242395703887343" at="179,83,187,11" name="jetbrains.mps.samples.mindmaps.editor.MindMap_diagram_EditorBuilder$DiagramCellImpl_e8klwn_d0$3$3" />
+      <unit id="650270285024712134" at="239,30,247,9" name="jetbrains.mps.samples.mindmaps.editor.MindMap_diagram_EditorBuilder$DiagramCellImpl_e8klwn_d0$DiagramPaletteImpl_e8klwn_a3a$1" />
+      <unit id="79242395703887343" at="188,74,199,11" name="jetbrains.mps.samples.mindmaps.editor.MindMap_diagram_EditorBuilder$DiagramCellImpl_e8klwn_d0$3$4" />
+      <unit id="79242395703887343" at="205,17,220,7" name="jetbrains.mps.samples.mindmaps.editor.MindMap_diagram_EditorBuilder$DiagramCellImpl_e8klwn_d0$4" />
+      <unit id="650270285024711858" at="236,0,252,0" name="jetbrains.mps.samples.mindmaps.editor.MindMap_diagram_EditorBuilder$DiagramCellImpl_e8klwn_d0$DiagramPaletteImpl_e8klwn_a3a" />
+      <unit id="79242395703887343" at="165,17,202,7" name="jetbrains.mps.samples.mindmaps.editor.MindMap_diagram_EditorBuilder$DiagramCellImpl_e8klwn_d0$3" />
+      <unit id="79242395703887343" at="134,0,253,0" name="jetbrains.mps.samples.mindmaps.editor.MindMap_diagram_EditorBuilder$DiagramCellImpl_e8klwn_d0" />
+      <unit id="79242395703887343" at="59,0,271,0" name="jetbrains.mps.samples.mindmaps.editor.MindMap_diagram_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:e9cbc3d8-bcea-4ffe-8042-8e61a2d1bcc9(jetbrains.mps.samples.mindmaps.editor)/79242395703954207">
     <file name="Thought_diagram_Editor.java">
       <node id="79242395703954207" at="14,0,15,0" concept="3" trace="myContextHints" />
       <node id="79242395703954207" at="17,47,18,26" concept="8" />
-      <node id="79242395703954207" at="20,79,21,81" concept="8" />
+      <node id="79242395703954207" at="20,79,21,79" concept="8" />
       <node id="79242395703954207" at="20,0,23,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="79242395703954207" at="15,0,20,0" concept="6" trace="getContextHints#()Ljava/util/Collection;" />
       <scope id="79242395703954207" at="17,47,18,26" />
-      <scope id="79242395703954207" at="20,79,21,81" />
+      <scope id="79242395703954207" at="20,79,21,79" />
       <scope id="79242395703954207" at="20,0,23,0">
         <var name="editorContext" id="79242395703954207" />
         <var name="node" id="79242395703954207" />
@@ -1223,8 +1223,8 @@
       <scope id="79242395703954207" at="15,0,20,0" />
       <unit id="79242395703954207" at="13,0,24,0" name="jetbrains.mps.samples.mindmaps.editor.Thought_diagram_Editor" />
     </file>
-    <file name="Thought_diagram_EditorBuilder_a.java">
-      <node id="79242395703954207" at="40,95,41,19" concept="13" />
+    <file name="Thought_diagram_EditorBuilder.java">
+      <node id="79242395703954207" at="40,93,41,19" concept="13" />
       <node id="79242395703954207" at="41,19,42,18" concept="2" />
       <node id="79242395703954207" at="47,26,48,18" concept="8" />
       <node id="79242395703954207" at="51,39,52,33" concept="8" />
@@ -1309,7 +1309,7 @@
       <node id="79242395703954207" at="174,53,177,11" concept="5" />
       <node id="79242395703954207" at="178,78,181,11" concept="5" />
       <node id="79242395703954207" at="187,101,190,13" concept="5" />
-      <node id="79242395703954207" at="40,0,44,0" concept="1" trace="Thought_diagram_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="79242395703954207" at="40,0,44,0" concept="1" trace="Thought_diagram_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="79242395703954207" at="120,174,124,22" concept="2" />
       <node id="79242395703954207" at="45,0,50,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="79242395703954207" at="134,0,139,0" concept="6" trace="set#(Ljava/lang/Boolean;)V" />
@@ -1352,7 +1352,7 @@
       <scope id="79242395703954207" at="175,36,176,19" />
       <scope id="79242395703954207" at="179,36,180,19" />
       <scope id="79242395703954207" at="188,32,189,21" />
-      <scope id="79242395703954207" at="40,95,42,18" />
+      <scope id="79242395703954207" at="40,93,42,18" />
       <scope id="79242395703954207" at="121,107,123,89" />
       <scope id="79242395703954207" at="51,0,54,0" />
       <scope id="955834388676349350" at="70,0,73,0" />
@@ -1433,19 +1433,19 @@
       </scope>
       <scope id="79242395703954207" at="107,58,167,8" />
       <scope id="79242395703954207" at="107,0,169,0" />
-      <unit id="79242395703954207" at="202,0,207,0" name="jetbrains.mps.samples.mindmaps.editor.Thought_diagram_EditorBuilder_a$PROPS" />
-      <unit id="79242395703954207" at="133,80,139,11" name="jetbrains.mps.samples.mindmaps.editor.Thought_diagram_EditorBuilder_a$BlockCellImpl_a6gtrz_a$4$2" />
-      <unit id="955834388676349350" at="69,38,76,7" name="jetbrains.mps.samples.mindmaps.editor.Thought_diagram_EditorBuilder_a$BlockCellImpl_a6gtrz_a$1" />
-      <unit id="955834388676349507" at="79,38,86,7" name="jetbrains.mps.samples.mindmaps.editor.Thought_diagram_EditorBuilder_a$BlockCellImpl_a6gtrz_a$2" />
-      <unit id="2138530310721189599" at="89,38,96,7" name="jetbrains.mps.samples.mindmaps.editor.Thought_diagram_EditorBuilder_a$BlockCellImpl_a6gtrz_a$3" />
-      <unit id="79242395703954207" at="154,79,165,11" name="jetbrains.mps.samples.mindmaps.editor.Thought_diagram_EditorBuilder_a$BlockCellImpl_a6gtrz_a$4$4" />
-      <unit id="79242395703954207" at="140,74,153,11" name="jetbrains.mps.samples.mindmaps.editor.Thought_diagram_EditorBuilder_a$BlockCellImpl_a6gtrz_a$4$3" />
-      <unit id="79242395703954207" at="115,25,129,15" name="jetbrains.mps.samples.mindmaps.editor.Thought_diagram_EditorBuilder_a$BlockCellImpl_a6gtrz_a$4$1$1" />
-      <unit id="79242395703954207" at="113,134,131,11" name="jetbrains.mps.samples.mindmaps.editor.Thought_diagram_EditorBuilder_a$BlockCellImpl_a6gtrz_a$4$1" />
-      <unit id="79242395703954207" at="170,17,198,7" name="jetbrains.mps.samples.mindmaps.editor.Thought_diagram_EditorBuilder_a$BlockCellImpl_a6gtrz_a$5" />
-      <unit id="79242395703954207" at="108,17,167,7" name="jetbrains.mps.samples.mindmaps.editor.Thought_diagram_EditorBuilder_a$BlockCellImpl_a6gtrz_a$4" />
-      <unit id="79242395703954207" at="63,0,201,0" name="jetbrains.mps.samples.mindmaps.editor.Thought_diagram_EditorBuilder_a$BlockCellImpl_a6gtrz_a" />
-      <unit id="79242395703954207" at="36,0,208,0" name="jetbrains.mps.samples.mindmaps.editor.Thought_diagram_EditorBuilder_a" />
+      <unit id="79242395703954207" at="202,0,207,0" name="jetbrains.mps.samples.mindmaps.editor.Thought_diagram_EditorBuilder$PROPS" />
+      <unit id="79242395703954207" at="133,80,139,11" name="jetbrains.mps.samples.mindmaps.editor.Thought_diagram_EditorBuilder$BlockCellImpl_a6gtrz_a$4$2" />
+      <unit id="955834388676349350" at="69,38,76,7" name="jetbrains.mps.samples.mindmaps.editor.Thought_diagram_EditorBuilder$BlockCellImpl_a6gtrz_a$1" />
+      <unit id="955834388676349507" at="79,38,86,7" name="jetbrains.mps.samples.mindmaps.editor.Thought_diagram_EditorBuilder$BlockCellImpl_a6gtrz_a$2" />
+      <unit id="2138530310721189599" at="89,38,96,7" name="jetbrains.mps.samples.mindmaps.editor.Thought_diagram_EditorBuilder$BlockCellImpl_a6gtrz_a$3" />
+      <unit id="79242395703954207" at="154,79,165,11" name="jetbrains.mps.samples.mindmaps.editor.Thought_diagram_EditorBuilder$BlockCellImpl_a6gtrz_a$4$4" />
+      <unit id="79242395703954207" at="140,74,153,11" name="jetbrains.mps.samples.mindmaps.editor.Thought_diagram_EditorBuilder$BlockCellImpl_a6gtrz_a$4$3" />
+      <unit id="79242395703954207" at="115,25,129,15" name="jetbrains.mps.samples.mindmaps.editor.Thought_diagram_EditorBuilder$BlockCellImpl_a6gtrz_a$4$1$1" />
+      <unit id="79242395703954207" at="113,134,131,11" name="jetbrains.mps.samples.mindmaps.editor.Thought_diagram_EditorBuilder$BlockCellImpl_a6gtrz_a$4$1" />
+      <unit id="79242395703954207" at="170,17,198,7" name="jetbrains.mps.samples.mindmaps.editor.Thought_diagram_EditorBuilder$BlockCellImpl_a6gtrz_a$5" />
+      <unit id="79242395703954207" at="108,17,167,7" name="jetbrains.mps.samples.mindmaps.editor.Thought_diagram_EditorBuilder$BlockCellImpl_a6gtrz_a$4" />
+      <unit id="79242395703954207" at="63,0,201,0" name="jetbrains.mps.samples.mindmaps.editor.Thought_diagram_EditorBuilder$BlockCellImpl_a6gtrz_a" />
+      <unit id="79242395703954207" at="36,0,208,0" name="jetbrains.mps.samples.mindmaps.editor.Thought_diagram_EditorBuilder" />
     </file>
   </root>
 </debug-info>

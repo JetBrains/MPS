@@ -16,6 +16,6 @@ public class paremeterized_with_type implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new paremeterized_with_type_ComponentBuilder_a(editorContext, node).createCell();
+    return new paremeterized_with_type_ComponentBuilder(editorContext, node).createCell();
   }
 }

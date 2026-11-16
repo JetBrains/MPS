@@ -16,6 +16,6 @@ public class ProjectedTypeArguments_Component implements ConceptEditorComponent 
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ProjectedTypeArguments_Component_ComponentBuilder_a(editorContext, node).createCell();
+    return new ProjectedTypeArguments_Component_ComponentBuilder(editorContext, node).createCell();
   }
 }

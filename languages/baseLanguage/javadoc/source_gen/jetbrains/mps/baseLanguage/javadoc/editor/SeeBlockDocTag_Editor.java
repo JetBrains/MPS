@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class SeeBlockDocTag_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new SeeBlockDocTag_EditorBuilder_a(editorContext, node).createCell();
+    return new SeeBlockDocTag_EditorBuilder(editorContext, node).createCell();
   }
 }

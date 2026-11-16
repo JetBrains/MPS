@@ -16,6 +16,6 @@ public class NodeBuilderNode_Inspector implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new NodeBuilderNode_Inspector_ComponentBuilder_a(editorContext, node).createCell();
+    return new NodeBuilderNode_Inspector_ComponentBuilder(editorContext, node).createCell();
   }
 }

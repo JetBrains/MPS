@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class BLBottomType_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new BLBottomType_EditorBuilder_a(editorContext, node).createCell();
+    return new BLBottomType_EditorBuilder(editorContext, node).createCell();
   }
 }

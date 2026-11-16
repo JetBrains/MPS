@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class FinderReference_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new FinderReference_EditorBuilder_a(editorContext, node).createCell();
+    return new FinderReference_EditorBuilder(editorContext, node).createCell();
   }
 }

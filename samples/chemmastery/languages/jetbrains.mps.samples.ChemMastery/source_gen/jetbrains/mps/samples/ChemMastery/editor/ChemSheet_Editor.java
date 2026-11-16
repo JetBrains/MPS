@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ChemSheet_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ChemSheet_EditorBuilder_a(editorContext, node).createCell();
+    return new ChemSheet_EditorBuilder(editorContext, node).createCell();
   }
 }

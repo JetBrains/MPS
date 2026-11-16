@@ -16,6 +16,6 @@ public class ObjectLiteral_Body implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ObjectLiteral_Body_ComponentBuilder_a(editorContext, node).createCell();
+    return new ObjectLiteral_Body_ComponentBuilder(editorContext, node).createCell();
   }
 }

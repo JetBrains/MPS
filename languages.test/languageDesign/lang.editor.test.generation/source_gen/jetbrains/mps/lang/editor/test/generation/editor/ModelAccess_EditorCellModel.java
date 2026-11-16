@@ -16,6 +16,6 @@ public class ModelAccess_EditorCellModel implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ModelAccess_EditorCellModel_ComponentBuilder_a(editorContext, node).createCell();
+    return new ModelAccess_EditorCellModel_ComponentBuilder(editorContext, node).createCell();
   }
 }

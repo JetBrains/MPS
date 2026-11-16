@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class CodeSnippetTextElement_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new CodeSnippetTextElement_EditorBuilder_a(editorContext, node).createCell();
+    return new CodeSnippetTextElement_EditorBuilder(editorContext, node).createCell();
   }
 }

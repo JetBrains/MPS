@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ConceptEditorHintDeclaration_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ConceptEditorHintDeclaration_EditorBuilder_a(editorContext, node).createCell();
+    return new ConceptEditorHintDeclaration_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new ConceptEditorHintDeclaration_InspectorBuilder_a(editorContext, node).createCell();
+    return new ConceptEditorHintDeclaration_InspectorBuilder(editorContext, node).createCell();
   }
 }

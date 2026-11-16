@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="-7keq2si70e3mfy7o1am5f7lf992yq9e">
-  <files names="CellModel_Checkbox_Editor.java:CellModel_Checkbox_EditorBuilder_a.java:CellModel_Checkbox_InspectorBuilder_a.java:CheckboxUI_Platform_Editor.java:CheckboxUI_Platform_EditorBuilder_a.java:CheckboxUI_Text_Editor.java:CheckboxUI_Text_EditorBuilder_a.java:CheckboxUI_Text_InspectorBuilder_a.java:EditorAspectDescriptorImpl.java:FormsStylePack_StyleSheet.java:StubCellModel_Checkbox_Editor.java:StubCellModel_Checkbox_EditorBuilder_a.java" />
+  <files names="CellModel_Checkbox_Editor.java:CellModel_Checkbox_EditorBuilder.java:CellModel_Checkbox_InspectorBuilder.java:CheckboxUI_Platform_Editor.java:CheckboxUI_Platform_EditorBuilder.java:CheckboxUI_Text_Editor.java:CheckboxUI_Text_EditorBuilder.java:CheckboxUI_Text_InspectorBuilder.java:EditorAspectDescriptorImpl.java:FormsStylePack_StyleSheet.java:StubCellModel_Checkbox_Editor.java:StubCellModel_Checkbox_EditorBuilder.java" />
 </product>
 

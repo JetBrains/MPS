@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="-dzcjbee05ftktp4s3oda9jf2ptpcuez">
-  <files names="DefaultNodeAttribute_Editor.java:DefaultNodeAttribute_EditorBuilder_a.java:DefaultPropertyAttribute_Editor.java:DefaultPropertyAttribute_EditorBuilder_a.java:DefaultReferenceAttribute_Editor.java:DefaultReferenceAttribute_EditorBuilder_a.java:EditorAspectDescriptorImpl.java:Friend_SubstituteMenu.java:NotSubstitutableDeveloper_SubstituteMenu.java" />
+  <files names="DefaultNodeAttribute_Editor.java:DefaultNodeAttribute_EditorBuilder.java:DefaultPropertyAttribute_Editor.java:DefaultPropertyAttribute_EditorBuilder.java:DefaultReferenceAttribute_Editor.java:DefaultReferenceAttribute_EditorBuilder.java:EditorAspectDescriptorImpl.java:Friend_SubstituteMenu.java:NotSubstitutableDeveloper_SubstituteMenu.java" />
 </product>
 

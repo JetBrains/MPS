@@ -16,6 +16,6 @@ public class IKotlinRootHeader implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new IKotlinRootHeader_ComponentBuilder_a(editorContext, node).createCell();
+    return new IKotlinRootHeader_ComponentBuilder(editorContext, node).createCell();
   }
 }

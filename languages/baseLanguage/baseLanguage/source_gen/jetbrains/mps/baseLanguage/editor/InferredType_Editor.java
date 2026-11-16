@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class InferredType_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new InferredType_EditorBuilder_a(editorContext, node).createCell();
+    return new InferredType_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new InferredType_InspectorBuilder_a(editorContext, node).createCell();
+    return new InferredType_InspectorBuilder(editorContext, node).createCell();
   }
 }

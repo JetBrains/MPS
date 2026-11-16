@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class InheritedNodeScopeFactory_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new InheritedNodeScopeFactory_EditorBuilder_a(editorContext, node).createCell();
+    return new InheritedNodeScopeFactory_EditorBuilder(editorContext, node).createCell();
   }
 }

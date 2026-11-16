@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class MenuTraceTransformationChild_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new MenuTraceTransformationChild_EditorBuilder_a(editorContext, node).createCell();
+    return new MenuTraceTransformationChild_EditorBuilder(editorContext, node).createCell();
   }
 }

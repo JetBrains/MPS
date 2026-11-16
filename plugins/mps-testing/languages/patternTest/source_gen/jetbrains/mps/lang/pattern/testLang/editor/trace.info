@@ -39,17 +39,17 @@
   </root>
   <root nodeRef="r:bf45fcee-273c-4767-a2ee-15f910547db0(jetbrains.mps.lang.pattern.testLang.editor)/1563914226484898745">
     <file name="TestPropertyVariableReference_Editor.java">
-      <node id="1563914226484898745" at="11,79,12,95" concept="6" />
+      <node id="1563914226484898745" at="11,79,12,93" concept="6" />
       <node id="1563914226484898745" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1563914226484898745" at="11,79,12,95" />
+      <scope id="1563914226484898745" at="11,79,12,93" />
       <scope id="1563914226484898745" at="11,0,14,0">
         <var name="editorContext" id="1563914226484898745" />
         <var name="node" id="1563914226484898745" />
       </scope>
       <unit id="1563914226484898745" at="10,0,15,0" name="jetbrains.mps.lang.pattern.testLang.editor.TestPropertyVariableReference_Editor" />
     </file>
-    <file name="TestPropertyVariableReference_EditorBuilder_a.java">
-      <node id="1563914226484898745" at="43,109,44,19" concept="9" />
+    <file name="TestPropertyVariableReference_EditorBuilder.java">
+      <node id="1563914226484898745" at="43,107,44,19" concept="9" />
       <node id="1563914226484898745" at="44,19,45,18" concept="1" />
       <node id="1563914226484898745" at="50,26,51,18" concept="6" />
       <node id="1563914226484898745" at="54,39,55,32" concept="6" />
@@ -112,7 +112,7 @@
       <node id="1563914226484898752" at="102,0,104,0" concept="2" trace="myNode" />
       <node id="1563914226484898745" at="54,0,57,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1563914226484898752" at="112,0,115,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="1563914226484898745" at="43,0,47,0" concept="0" trace="TestPropertyVariableReference_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1563914226484898745" at="43,0,47,0" concept="0" trace="TestPropertyVariableReference_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1563914226484898745" at="87,0,91,5" concept="3" />
       <node id="1563914226484898745" at="48,0,53,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1563914226484898745" at="94,205,99,22" concept="3" />
@@ -131,7 +131,7 @@
       <scope id="1563914226484898752" at="112,41,113,32" />
       <scope id="1563914226484898752" at="118,28,119,20" />
       <scope id="1563914226484898754" at="142,17,143,42" />
-      <scope id="1563914226484898745" at="43,109,45,18" />
+      <scope id="1563914226484898745" at="43,107,45,18" />
       <scope id="1563914226484898745" at="88,40,90,50" />
       <scope id="1563914226484898745" at="95,73,97,145">
         <var name="manager" id="1563914226484898745" />
@@ -186,27 +186,27 @@
         <var name="referenceLink" id="1563914226484898745" />
       </scope>
       <scope id="1563914226484898745" at="66,0,101,0" />
-      <unit id="1563914226484898745" at="148,0,151,0" name="jetbrains.mps.lang.pattern.testLang.editor.TestPropertyVariableReference_EditorBuilder_a$LINKS" />
-      <unit id="1563914226484898745" at="157,0,160,0" name="jetbrains.mps.lang.pattern.testLang.editor.TestPropertyVariableReference_EditorBuilder_a$PROPS" />
-      <unit id="1563914226484898745" at="152,0,156,0" name="jetbrains.mps.lang.pattern.testLang.editor.TestPropertyVariableReference_EditorBuilder_a$CONCEPTS" />
-      <unit id="1563914226484898745" at="68,42,83,5" name="jetbrains.mps.lang.pattern.testLang.editor.TestPropertyVariableReference_EditorBuilder_a$1" />
-      <unit id="1563914226484898752" at="101,0,147,0" name="jetbrains.mps.lang.pattern.testLang.editor.TestPropertyVariableReference_EditorBuilder_a$Inline_Builder0" />
-      <unit id="1563914226484898745" at="39,0,161,0" name="jetbrains.mps.lang.pattern.testLang.editor.TestPropertyVariableReference_EditorBuilder_a" />
+      <unit id="1563914226484898745" at="148,0,151,0" name="jetbrains.mps.lang.pattern.testLang.editor.TestPropertyVariableReference_EditorBuilder$LINKS" />
+      <unit id="1563914226484898745" at="157,0,160,0" name="jetbrains.mps.lang.pattern.testLang.editor.TestPropertyVariableReference_EditorBuilder$PROPS" />
+      <unit id="1563914226484898745" at="152,0,156,0" name="jetbrains.mps.lang.pattern.testLang.editor.TestPropertyVariableReference_EditorBuilder$CONCEPTS" />
+      <unit id="1563914226484898745" at="68,42,83,5" name="jetbrains.mps.lang.pattern.testLang.editor.TestPropertyVariableReference_EditorBuilder$1" />
+      <unit id="1563914226484898752" at="101,0,147,0" name="jetbrains.mps.lang.pattern.testLang.editor.TestPropertyVariableReference_EditorBuilder$Inline_Builder0" />
+      <unit id="1563914226484898745" at="39,0,161,0" name="jetbrains.mps.lang.pattern.testLang.editor.TestPropertyVariableReference_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:bf45fcee-273c-4767-a2ee-15f910547db0(jetbrains.mps.lang.pattern.testLang.editor)/1563914226484921026">
     <file name="PropertyValue_Editor.java">
-      <node id="1563914226484921026" at="11,79,12,79" concept="6" />
+      <node id="1563914226484921026" at="11,79,12,77" concept="6" />
       <node id="1563914226484921026" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1563914226484921026" at="11,79,12,79" />
+      <scope id="1563914226484921026" at="11,79,12,77" />
       <scope id="1563914226484921026" at="11,0,14,0">
         <var name="editorContext" id="1563914226484921026" />
         <var name="node" id="1563914226484921026" />
       </scope>
       <unit id="1563914226484921026" at="10,0,15,0" name="jetbrains.mps.lang.pattern.testLang.editor.PropertyValue_Editor" />
     </file>
-    <file name="PropertyValue_EditorBuilder_a.java">
-      <node id="1563914226484921026" at="31,93,32,19" concept="9" />
+    <file name="PropertyValue_EditorBuilder.java">
+      <node id="1563914226484921026" at="31,91,32,19" concept="9" />
       <node id="1563914226484921026" at="32,19,33,18" concept="1" />
       <node id="1563914226484921026" at="38,26,39,18" concept="6" />
       <node id="1563914226484921026" at="42,39,43,32" concept="6" />
@@ -282,7 +282,7 @@
       <node id="1563914226484921026" at="149,87,152,7" concept="3" />
       <node id="1563914226484921026" at="152,7,155,7" concept="3" />
       <node id="1563914226484921026" at="174,0,177,0" concept="4" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="1563914226484921026" at="31,0,35,0" concept="0" trace="PropertyValue_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1563914226484921026" at="31,0,35,0" concept="0" trace="PropertyValue_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1563914226484921026" at="56,0,60,0" concept="4" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1563914226484921026" at="64,0,68,0" concept="0" trace="variableSingleRoleHandler_hrcg2g_a0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1563914226484921026" at="120,0,124,0" concept="4" trace="createRefNode_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -312,7 +312,7 @@
       <scope id="1563914226484921026" at="153,42,154,46" />
       <scope id="1563914226484921026" at="170,17,171,42" />
       <scope id="1563914226484921026" at="174,40,175,26" />
-      <scope id="1563914226484921026" at="31,93,33,18" />
+      <scope id="1563914226484921026" at="31,91,33,18" />
       <scope id="1563914226484921026" at="56,40,58,33">
         <var name="provider" id="1563914226484921026" />
       </scope>
@@ -389,25 +389,25 @@
       <scope id="1563914226484921026" at="161,44,172,7" />
       <scope id="1563914226484921026" at="96,0,110,0" />
       <scope id="1563914226484921026" at="160,0,174,0" />
-      <unit id="1563914226484921026" at="179,0,183,0" name="jetbrains.mps.lang.pattern.testLang.editor.PropertyValue_EditorBuilder_a$LINKS" />
-      <unit id="1563914226484921026" at="60,0,114,0" name="jetbrains.mps.lang.pattern.testLang.editor.PropertyValue_EditorBuilder_a$variableSingleRoleHandler_hrcg2g_a0" />
-      <unit id="1563914226484921026" at="124,0,178,0" name="jetbrains.mps.lang.pattern.testLang.editor.PropertyValue_EditorBuilder_a$valueSingleRoleHandler_hrcg2g_c0" />
-      <unit id="1563914226484921026" at="27,0,184,0" name="jetbrains.mps.lang.pattern.testLang.editor.PropertyValue_EditorBuilder_a" />
+      <unit id="1563914226484921026" at="179,0,183,0" name="jetbrains.mps.lang.pattern.testLang.editor.PropertyValue_EditorBuilder$LINKS" />
+      <unit id="1563914226484921026" at="60,0,114,0" name="jetbrains.mps.lang.pattern.testLang.editor.PropertyValue_EditorBuilder$variableSingleRoleHandler_hrcg2g_a0" />
+      <unit id="1563914226484921026" at="124,0,178,0" name="jetbrains.mps.lang.pattern.testLang.editor.PropertyValue_EditorBuilder$valueSingleRoleHandler_hrcg2g_c0" />
+      <unit id="1563914226484921026" at="27,0,184,0" name="jetbrains.mps.lang.pattern.testLang.editor.PropertyValue_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:bf45fcee-273c-4767-a2ee-15f910547db0(jetbrains.mps.lang.pattern.testLang.editor)/1563914226484928846">
     <file name="ListValue_Editor.java">
-      <node id="1563914226484928846" at="11,79,12,75" concept="6" />
+      <node id="1563914226484928846" at="11,79,12,73" concept="6" />
       <node id="1563914226484928846" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1563914226484928846" at="11,79,12,75" />
+      <scope id="1563914226484928846" at="11,79,12,73" />
       <scope id="1563914226484928846" at="11,0,14,0">
         <var name="editorContext" id="1563914226484928846" />
         <var name="node" id="1563914226484928846" />
       </scope>
       <unit id="1563914226484928846" at="10,0,15,0" name="jetbrains.mps.lang.pattern.testLang.editor.ListValue_Editor" />
     </file>
-    <file name="ListValue_EditorBuilder_a.java">
-      <node id="1563914226484928846" at="36,89,37,19" concept="9" />
+    <file name="ListValue_EditorBuilder.java">
+      <node id="1563914226484928846" at="36,87,37,19" concept="9" />
       <node id="1563914226484928846" at="37,19,38,18" concept="1" />
       <node id="1563914226484928846" at="43,26,44,18" concept="6" />
       <node id="1563914226484928846" at="47,39,48,32" concept="6" />
@@ -495,7 +495,7 @@
       <node id="1563914226484928846" at="112,0,115,0" concept="4" trace="getNoTargetText#()Ljava/lang/String;" />
       <node id="1563914226484928846" at="142,0,145,0" concept="4" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="1563914226484928846" at="145,0,148,0" concept="4" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
-      <node id="1563914226484928846" at="36,0,40,0" concept="0" trace="ListValue_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1563914226484928846" at="36,0,40,0" concept="0" trace="ListValue_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1563914226484928846" at="61,0,65,0" concept="4" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1563914226484928846" at="69,0,73,0" concept="0" trace="variableSingleRoleHandler_9xngu4_a0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1563914226484928846" at="133,0,137,0" concept="0" trace="valueListHandler_9xngu4_c0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
@@ -533,7 +533,7 @@
       <scope id="1563914226484928846" at="142,40,143,30" />
       <scope id="1563914226484928846" at="145,48,146,37" />
       <scope id="1563914226484928846" at="163,17,164,42" />
-      <scope id="1563914226484928846" at="36,89,38,18" />
+      <scope id="1563914226484928846" at="36,87,38,18" />
       <scope id="1563914226484928846" at="61,40,63,33">
         <var name="provider" id="1563914226484928846" />
       </scope>
@@ -623,26 +623,26 @@
         <var name="elementNode" id="1563914226484928846" />
         <var name="isEmptyCell" id="1563914226484928846" />
       </scope>
-      <unit id="1563914226484928846" at="215,0,218,0" name="jetbrains.mps.lang.pattern.testLang.editor.ListValue_EditorBuilder_a$CONCEPTS" />
-      <unit id="1563914226484928846" at="210,0,214,0" name="jetbrains.mps.lang.pattern.testLang.editor.ListValue_EditorBuilder_a$LINKS" />
-      <unit id="1563914226484928846" at="65,0,116,0" name="jetbrains.mps.lang.pattern.testLang.editor.ListValue_EditorBuilder_a$variableSingleRoleHandler_9xngu4_a0" />
-      <unit id="1563914226484928846" at="129,0,209,0" name="jetbrains.mps.lang.pattern.testLang.editor.ListValue_EditorBuilder_a$valueListHandler_9xngu4_c0" />
-      <unit id="1563914226484928846" at="32,0,219,0" name="jetbrains.mps.lang.pattern.testLang.editor.ListValue_EditorBuilder_a" />
+      <unit id="1563914226484928846" at="215,0,218,0" name="jetbrains.mps.lang.pattern.testLang.editor.ListValue_EditorBuilder$CONCEPTS" />
+      <unit id="1563914226484928846" at="210,0,214,0" name="jetbrains.mps.lang.pattern.testLang.editor.ListValue_EditorBuilder$LINKS" />
+      <unit id="1563914226484928846" at="65,0,116,0" name="jetbrains.mps.lang.pattern.testLang.editor.ListValue_EditorBuilder$variableSingleRoleHandler_9xngu4_a0" />
+      <unit id="1563914226484928846" at="129,0,209,0" name="jetbrains.mps.lang.pattern.testLang.editor.ListValue_EditorBuilder$valueListHandler_9xngu4_c0" />
+      <unit id="1563914226484928846" at="32,0,219,0" name="jetbrains.mps.lang.pattern.testLang.editor.ListValue_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:bf45fcee-273c-4767-a2ee-15f910547db0(jetbrains.mps.lang.pattern.testLang.editor)/1563914226484929057">
     <file name="TestListReference_Editor.java">
-      <node id="1563914226484929057" at="11,79,12,83" concept="6" />
+      <node id="1563914226484929057" at="11,79,12,81" concept="6" />
       <node id="1563914226484929057" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1563914226484929057" at="11,79,12,83" />
+      <scope id="1563914226484929057" at="11,79,12,81" />
       <scope id="1563914226484929057" at="11,0,14,0">
         <var name="editorContext" id="1563914226484929057" />
         <var name="node" id="1563914226484929057" />
       </scope>
       <unit id="1563914226484929057" at="10,0,15,0" name="jetbrains.mps.lang.pattern.testLang.editor.TestListReference_Editor" />
     </file>
-    <file name="TestListReference_EditorBuilder_a.java">
-      <node id="1563914226484929057" at="43,97,44,19" concept="9" />
+    <file name="TestListReference_EditorBuilder.java">
+      <node id="1563914226484929057" at="43,95,44,19" concept="9" />
       <node id="1563914226484929057" at="44,19,45,18" concept="1" />
       <node id="1563914226484929057" at="50,26,51,18" concept="6" />
       <node id="1563914226484929057" at="54,39,55,32" concept="6" />
@@ -705,7 +705,7 @@
       <node id="1563914226484929063" at="102,0,104,0" concept="2" trace="myNode" />
       <node id="1563914226484929057" at="54,0,57,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1563914226484929063" at="112,0,115,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="1563914226484929057" at="43,0,47,0" concept="0" trace="TestListReference_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1563914226484929057" at="43,0,47,0" concept="0" trace="TestListReference_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1563914226484929057" at="87,0,91,5" concept="3" />
       <node id="1563914226484929057" at="48,0,53,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1563914226484929057" at="94,205,99,22" concept="3" />
@@ -724,7 +724,7 @@
       <scope id="1563914226484929063" at="112,41,113,32" />
       <scope id="1563914226484929063" at="118,28,119,20" />
       <scope id="1563914226484929065" at="142,17,143,42" />
-      <scope id="1563914226484929057" at="43,97,45,18" />
+      <scope id="1563914226484929057" at="43,95,45,18" />
       <scope id="1563914226484929057" at="88,40,90,50" />
       <scope id="1563914226484929057" at="95,73,97,145">
         <var name="manager" id="1563914226484929057" />
@@ -779,27 +779,27 @@
         <var name="referenceLink" id="1563914226484929057" />
       </scope>
       <scope id="1563914226484929057" at="66,0,101,0" />
-      <unit id="1563914226484929057" at="148,0,151,0" name="jetbrains.mps.lang.pattern.testLang.editor.TestListReference_EditorBuilder_a$LINKS" />
-      <unit id="1563914226484929057" at="157,0,160,0" name="jetbrains.mps.lang.pattern.testLang.editor.TestListReference_EditorBuilder_a$PROPS" />
-      <unit id="1563914226484929057" at="152,0,156,0" name="jetbrains.mps.lang.pattern.testLang.editor.TestListReference_EditorBuilder_a$CONCEPTS" />
-      <unit id="1563914226484929057" at="68,42,83,5" name="jetbrains.mps.lang.pattern.testLang.editor.TestListReference_EditorBuilder_a$1" />
-      <unit id="1563914226484929063" at="101,0,147,0" name="jetbrains.mps.lang.pattern.testLang.editor.TestListReference_EditorBuilder_a$Inline_Builder0" />
-      <unit id="1563914226484929057" at="39,0,161,0" name="jetbrains.mps.lang.pattern.testLang.editor.TestListReference_EditorBuilder_a" />
+      <unit id="1563914226484929057" at="148,0,151,0" name="jetbrains.mps.lang.pattern.testLang.editor.TestListReference_EditorBuilder$LINKS" />
+      <unit id="1563914226484929057" at="157,0,160,0" name="jetbrains.mps.lang.pattern.testLang.editor.TestListReference_EditorBuilder$PROPS" />
+      <unit id="1563914226484929057" at="152,0,156,0" name="jetbrains.mps.lang.pattern.testLang.editor.TestListReference_EditorBuilder$CONCEPTS" />
+      <unit id="1563914226484929057" at="68,42,83,5" name="jetbrains.mps.lang.pattern.testLang.editor.TestListReference_EditorBuilder$1" />
+      <unit id="1563914226484929063" at="101,0,147,0" name="jetbrains.mps.lang.pattern.testLang.editor.TestListReference_EditorBuilder$Inline_Builder0" />
+      <unit id="1563914226484929057" at="39,0,161,0" name="jetbrains.mps.lang.pattern.testLang.editor.TestListReference_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:bf45fcee-273c-4767-a2ee-15f910547db0(jetbrains.mps.lang.pattern.testLang.editor)/8707387027762047763">
     <file name="VariableValue_Editor.java">
-      <node id="8707387027762047763" at="11,79,12,79" concept="6" />
+      <node id="8707387027762047763" at="11,79,12,77" concept="6" />
       <node id="8707387027762047763" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="8707387027762047763" at="11,79,12,79" />
+      <scope id="8707387027762047763" at="11,79,12,77" />
       <scope id="8707387027762047763" at="11,0,14,0">
         <var name="editorContext" id="8707387027762047763" />
         <var name="node" id="8707387027762047763" />
       </scope>
       <unit id="8707387027762047763" at="10,0,15,0" name="jetbrains.mps.lang.pattern.testLang.editor.VariableValue_Editor" />
     </file>
-    <file name="VariableValue_EditorBuilder_a.java">
-      <node id="8707387027762047763" at="31,93,32,19" concept="9" />
+    <file name="VariableValue_EditorBuilder.java">
+      <node id="8707387027762047763" at="31,91,32,19" concept="9" />
       <node id="8707387027762047763" at="32,19,33,18" concept="1" />
       <node id="8707387027762047763" at="38,26,39,18" concept="6" />
       <node id="8707387027762047763" at="42,39,43,32" concept="6" />
@@ -875,7 +875,7 @@
       <node id="8707387027762047763" at="152,87,155,7" concept="3" />
       <node id="8707387027762047763" at="155,7,158,7" concept="3" />
       <node id="8707387027762047763" at="174,0,177,0" concept="4" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="8707387027762047763" at="31,0,35,0" concept="0" trace="VariableValue_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8707387027762047763" at="31,0,35,0" concept="0" trace="VariableValue_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8707387027762047763" at="56,0,60,0" concept="4" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="8707387027762047763" at="64,0,68,0" concept="0" trace="variableSingleRoleHandler_j27l2j_a0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="8707387027762047763" at="123,0,127,0" concept="4" trace="createRefNode_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -905,7 +905,7 @@
       <scope id="8707387027762047763" at="156,42,157,46" />
       <scope id="8707387027762047763" at="170,17,171,42" />
       <scope id="8707387027762047763" at="174,40,175,26" />
-      <scope id="8707387027762047763" at="31,93,33,18" />
+      <scope id="8707387027762047763" at="31,91,33,18" />
       <scope id="8707387027762047763" at="56,40,58,33">
         <var name="provider" id="8707387027762047763" />
       </scope>
@@ -981,25 +981,25 @@
       <scope id="8707387027762047763" at="161,44,172,7" />
       <scope id="8707387027762047763" at="96,0,110,0" />
       <scope id="8707387027762047763" at="160,0,174,0" />
-      <unit id="8707387027762047763" at="179,0,183,0" name="jetbrains.mps.lang.pattern.testLang.editor.VariableValue_EditorBuilder_a$LINKS" />
-      <unit id="8707387027762047763" at="127,0,178,0" name="jetbrains.mps.lang.pattern.testLang.editor.VariableValue_EditorBuilder_a$valueSingleRoleHandler_j27l2j_c0" />
-      <unit id="8707387027762047763" at="60,0,114,0" name="jetbrains.mps.lang.pattern.testLang.editor.VariableValue_EditorBuilder_a$variableSingleRoleHandler_j27l2j_a0" />
-      <unit id="8707387027762047763" at="27,0,184,0" name="jetbrains.mps.lang.pattern.testLang.editor.VariableValue_EditorBuilder_a" />
+      <unit id="8707387027762047763" at="179,0,183,0" name="jetbrains.mps.lang.pattern.testLang.editor.VariableValue_EditorBuilder$LINKS" />
+      <unit id="8707387027762047763" at="127,0,178,0" name="jetbrains.mps.lang.pattern.testLang.editor.VariableValue_EditorBuilder$valueSingleRoleHandler_j27l2j_c0" />
+      <unit id="8707387027762047763" at="60,0,114,0" name="jetbrains.mps.lang.pattern.testLang.editor.VariableValue_EditorBuilder$variableSingleRoleHandler_j27l2j_a0" />
+      <unit id="8707387027762047763" at="27,0,184,0" name="jetbrains.mps.lang.pattern.testLang.editor.VariableValue_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:bf45fcee-273c-4767-a2ee-15f910547db0(jetbrains.mps.lang.pattern.testLang.editor)/8707387027762047771">
     <file name="TestVariableReference_Editor.java">
-      <node id="8707387027762047771" at="11,79,12,87" concept="6" />
+      <node id="8707387027762047771" at="11,79,12,85" concept="6" />
       <node id="8707387027762047771" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="8707387027762047771" at="11,79,12,87" />
+      <scope id="8707387027762047771" at="11,79,12,85" />
       <scope id="8707387027762047771" at="11,0,14,0">
         <var name="editorContext" id="8707387027762047771" />
         <var name="node" id="8707387027762047771" />
       </scope>
       <unit id="8707387027762047771" at="10,0,15,0" name="jetbrains.mps.lang.pattern.testLang.editor.TestVariableReference_Editor" />
     </file>
-    <file name="TestVariableReference_EditorBuilder_a.java">
-      <node id="8707387027762047771" at="43,101,44,19" concept="9" />
+    <file name="TestVariableReference_EditorBuilder.java">
+      <node id="8707387027762047771" at="43,99,44,19" concept="9" />
       <node id="8707387027762047771" at="44,19,45,18" concept="1" />
       <node id="8707387027762047771" at="50,26,51,18" concept="6" />
       <node id="8707387027762047771" at="54,39,55,32" concept="6" />
@@ -1062,7 +1062,7 @@
       <node id="8707387027762047774" at="102,0,104,0" concept="2" trace="myNode" />
       <node id="8707387027762047771" at="54,0,57,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="8707387027762047774" at="112,0,115,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="8707387027762047771" at="43,0,47,0" concept="0" trace="TestVariableReference_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8707387027762047771" at="43,0,47,0" concept="0" trace="TestVariableReference_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8707387027762047771" at="87,0,91,5" concept="3" />
       <node id="8707387027762047771" at="48,0,53,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="8707387027762047771" at="94,205,99,22" concept="3" />
@@ -1081,7 +1081,7 @@
       <scope id="8707387027762047774" at="112,41,113,32" />
       <scope id="8707387027762047774" at="118,28,119,20" />
       <scope id="8707387027762047775" at="142,17,143,42" />
-      <scope id="8707387027762047771" at="43,101,45,18" />
+      <scope id="8707387027762047771" at="43,99,45,18" />
       <scope id="8707387027762047771" at="88,40,90,50" />
       <scope id="8707387027762047771" at="95,73,97,145">
         <var name="manager" id="8707387027762047771" />
@@ -1136,22 +1136,22 @@
         <var name="referenceLink" id="8707387027762047771" />
       </scope>
       <scope id="8707387027762047771" at="66,0,101,0" />
-      <unit id="8707387027762047771" at="148,0,151,0" name="jetbrains.mps.lang.pattern.testLang.editor.TestVariableReference_EditorBuilder_a$LINKS" />
-      <unit id="8707387027762047771" at="157,0,160,0" name="jetbrains.mps.lang.pattern.testLang.editor.TestVariableReference_EditorBuilder_a$PROPS" />
-      <unit id="8707387027762047771" at="152,0,156,0" name="jetbrains.mps.lang.pattern.testLang.editor.TestVariableReference_EditorBuilder_a$CONCEPTS" />
-      <unit id="8707387027762047771" at="68,42,83,5" name="jetbrains.mps.lang.pattern.testLang.editor.TestVariableReference_EditorBuilder_a$1" />
-      <unit id="8707387027762047774" at="101,0,147,0" name="jetbrains.mps.lang.pattern.testLang.editor.TestVariableReference_EditorBuilder_a$Inline_Builder0" />
-      <unit id="8707387027762047771" at="39,0,161,0" name="jetbrains.mps.lang.pattern.testLang.editor.TestVariableReference_EditorBuilder_a" />
+      <unit id="8707387027762047771" at="148,0,151,0" name="jetbrains.mps.lang.pattern.testLang.editor.TestVariableReference_EditorBuilder$LINKS" />
+      <unit id="8707387027762047771" at="157,0,160,0" name="jetbrains.mps.lang.pattern.testLang.editor.TestVariableReference_EditorBuilder$PROPS" />
+      <unit id="8707387027762047771" at="152,0,156,0" name="jetbrains.mps.lang.pattern.testLang.editor.TestVariableReference_EditorBuilder$CONCEPTS" />
+      <unit id="8707387027762047771" at="68,42,83,5" name="jetbrains.mps.lang.pattern.testLang.editor.TestVariableReference_EditorBuilder$1" />
+      <unit id="8707387027762047774" at="101,0,147,0" name="jetbrains.mps.lang.pattern.testLang.editor.TestVariableReference_EditorBuilder$Inline_Builder0" />
+      <unit id="8707387027762047771" at="39,0,161,0" name="jetbrains.mps.lang.pattern.testLang.editor.TestVariableReference_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:bf45fcee-273c-4767-a2ee-15f910547db0(jetbrains.mps.lang.pattern.testLang.editor)/8707387027762047777">
     <file name="PatternTest_Editor.java">
-      <node id="8707387027762047777" at="11,79,12,77" concept="6" />
-      <node id="8707387027762047777" at="14,82,15,80" concept="6" />
+      <node id="8707387027762047777" at="11,79,12,75" concept="6" />
+      <node id="8707387027762047777" at="14,82,15,78" concept="6" />
       <node id="8707387027762047777" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="8707387027762047777" at="14,0,17,0" concept="4" trace="createInspectedCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="8707387027762047777" at="11,79,12,77" />
-      <scope id="8707387027762047777" at="14,82,15,80" />
+      <scope id="8707387027762047777" at="11,79,12,75" />
+      <scope id="8707387027762047777" at="14,82,15,78" />
       <scope id="8707387027762047777" at="11,0,14,0">
         <var name="editorContext" id="8707387027762047777" />
         <var name="node" id="8707387027762047777" />
@@ -1162,8 +1162,8 @@
       </scope>
       <unit id="8707387027762047777" at="10,0,18,0" name="jetbrains.mps.lang.pattern.testLang.editor.PatternTest_Editor" />
     </file>
-    <file name="PatternTest_EditorBuilder_a.java">
-      <node id="8707387027762047777" at="50,91,51,19" concept="9" />
+    <file name="PatternTest_EditorBuilder.java">
+      <node id="8707387027762047777" at="50,89,51,19" concept="9" />
       <node id="8707387027762047777" at="51,19,52,18" concept="1" />
       <node id="8707387027762047777" at="57,26,58,18" concept="6" />
       <node id="8707387027762047777" at="61,39,62,32" concept="6" />
@@ -1524,7 +1524,7 @@
       <node id="8707387027762047777" at="609,0,612,0" concept="4" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="8707387027762047777" at="612,0,615,0" concept="4" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="8707387027762047777" at="656,96,659,9" concept="3" />
-      <node id="8707387027762047777" at="50,0,54,0" concept="0" trace="PatternTest_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8707387027762047777" at="50,0,54,0" concept="0" trace="PatternTest_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8707387027762047777" at="116,0,120,0" concept="4" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="8707387027762047777" at="124,0,128,0" concept="0" trace="patternSingleRoleHandler_kasahx_c0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="8707387027762047777" at="184,0,188,0" concept="4" trace="createRefNode_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -1648,7 +1648,7 @@
       <scope id="8707387027762047777" at="612,48,613,35" />
       <scope id="8707387027762047777" at="630,17,631,42" />
       <scope id="8707387027762047777" at="657,34,658,91" />
-      <scope id="8707387027762047777" at="50,91,52,18" />
+      <scope id="8707387027762047777" at="50,89,52,18" />
       <scope id="8707387027762047780" at="107,74,109,145">
         <var name="manager" id="8707387027762047780" />
       </scope>
@@ -1950,19 +1950,19 @@
         <var name="elementNode" id="8707387027762047777" />
         <var name="isEmptyCell" id="8707387027762047777" />
       </scope>
-      <unit id="8707387027762047777" at="673,0,677,0" name="jetbrains.mps.lang.pattern.testLang.editor.PatternTest_EditorBuilder_a$PROPS" />
-      <unit id="8707387027762047777" at="664,0,672,0" name="jetbrains.mps.lang.pattern.testLang.editor.PatternTest_EditorBuilder_a$LINKS" />
-      <unit id="8707387027762047777" at="678,0,687,0" name="jetbrains.mps.lang.pattern.testLang.editor.PatternTest_EditorBuilder_a$CONCEPTS" />
-      <unit id="8707387027762047777" at="120,0,174,0" name="jetbrains.mps.lang.pattern.testLang.editor.PatternTest_EditorBuilder_a$patternSingleRoleHandler_kasahx_c0" />
-      <unit id="8707387027762047777" at="188,0,242,0" name="jetbrains.mps.lang.pattern.testLang.editor.PatternTest_EditorBuilder_a$nodeToMatchSingleRoleHandler_kasahx_e0" />
-      <unit id="8707387027762047777" at="262,0,316,0" name="jetbrains.mps.lang.pattern.testLang.editor.PatternTest_EditorBuilder_a$matchesSingleRoleHandler_kasahx_h0" />
-      <unit id="8707387027762047777" at="382,0,449,0" name="jetbrains.mps.lang.pattern.testLang.editor.PatternTest_EditorBuilder_a$variableListHandler_kasahx_c0i0" />
-      <unit id="8707387027762047777" at="489,0,556,0" name="jetbrains.mps.lang.pattern.testLang.editor.PatternTest_EditorBuilder_a$propertyListHandler_kasahx_c1i0" />
-      <unit id="8707387027762047777" at="596,0,663,0" name="jetbrains.mps.lang.pattern.testLang.editor.PatternTest_EditorBuilder_a$listListHandler_kasahx_c2i0" />
-      <unit id="8707387027762047777" at="46,0,688,0" name="jetbrains.mps.lang.pattern.testLang.editor.PatternTest_EditorBuilder_a" />
+      <unit id="8707387027762047777" at="673,0,677,0" name="jetbrains.mps.lang.pattern.testLang.editor.PatternTest_EditorBuilder$PROPS" />
+      <unit id="8707387027762047777" at="664,0,672,0" name="jetbrains.mps.lang.pattern.testLang.editor.PatternTest_EditorBuilder$LINKS" />
+      <unit id="8707387027762047777" at="678,0,687,0" name="jetbrains.mps.lang.pattern.testLang.editor.PatternTest_EditorBuilder$CONCEPTS" />
+      <unit id="8707387027762047777" at="120,0,174,0" name="jetbrains.mps.lang.pattern.testLang.editor.PatternTest_EditorBuilder$patternSingleRoleHandler_kasahx_c0" />
+      <unit id="8707387027762047777" at="188,0,242,0" name="jetbrains.mps.lang.pattern.testLang.editor.PatternTest_EditorBuilder$nodeToMatchSingleRoleHandler_kasahx_e0" />
+      <unit id="8707387027762047777" at="262,0,316,0" name="jetbrains.mps.lang.pattern.testLang.editor.PatternTest_EditorBuilder$matchesSingleRoleHandler_kasahx_h0" />
+      <unit id="8707387027762047777" at="382,0,449,0" name="jetbrains.mps.lang.pattern.testLang.editor.PatternTest_EditorBuilder$variableListHandler_kasahx_c0i0" />
+      <unit id="8707387027762047777" at="489,0,556,0" name="jetbrains.mps.lang.pattern.testLang.editor.PatternTest_EditorBuilder$propertyListHandler_kasahx_c1i0" />
+      <unit id="8707387027762047777" at="596,0,663,0" name="jetbrains.mps.lang.pattern.testLang.editor.PatternTest_EditorBuilder$listListHandler_kasahx_c2i0" />
+      <unit id="8707387027762047777" at="46,0,688,0" name="jetbrains.mps.lang.pattern.testLang.editor.PatternTest_EditorBuilder" />
     </file>
-    <file name="PatternTest_InspectorBuilder_a.java">
-      <node id="8707387027762047777" at="42,94,43,19" concept="9" />
+    <file name="PatternTest_InspectorBuilder.java">
+      <node id="8707387027762047777" at="42,92,43,19" concept="9" />
       <node id="8707387027762047777" at="43,19,44,18" concept="1" />
       <node id="8707387027762047777" at="49,26,50,18" concept="6" />
       <node id="8707387027762047777" at="53,39,54,32" concept="6" />
@@ -2013,7 +2013,7 @@
       <node id="3159291778219979144" at="122,0,125,0" concept="4" trace="getMatchingText#()Ljava/lang/String;" />
       <node id="3159291778219979167" at="143,0,146,0" concept="4" trace="handleAction#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/model/SModel;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="3159291778219979167" at="146,0,149,0" concept="4" trace="getMatchingText#()Ljava/lang/String;" />
-      <node id="8707387027762047777" at="42,0,46,0" concept="0" trace="PatternTest_InspectorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8707387027762047777" at="42,0,46,0" concept="0" trace="PatternTest_InspectorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8707387027762047777" at="47,0,52,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="4154239884396210182" at="83,40,88,9" concept="3" />
       <node id="6436735966448462045" at="72,0,78,0" concept="4" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -2042,7 +2042,7 @@
       <scope id="3159291778219979144" at="122,37,123,21" />
       <scope id="3159291778219979167" at="143,88,144,77" />
       <scope id="3159291778219979167" at="146,37,147,20" />
-      <scope id="8707387027762047777" at="42,94,44,18" />
+      <scope id="8707387027762047777" at="42,92,44,18" />
       <scope id="3159291778219979144" at="103,0,105,0" />
       <scope id="3159291778219979167" at="127,0,129,0" />
       <scope id="8707387027762047777" at="53,0,56,0" />
@@ -2108,13 +2108,13 @@
         <var name="modelAccessor" id="8707387027762047777" />
       </scope>
       <scope id="8707387027762047777" at="78,0,102,0" />
-      <unit id="8707387027762047777" at="151,0,154,0" name="jetbrains.mps.lang.pattern.testLang.editor.PatternTest_InspectorBuilder_a$PROPS" />
-      <unit id="3159291778219979144" at="108,38,115,9" name="jetbrains.mps.lang.pattern.testLang.editor.PatternTest_InspectorBuilder_a$PatternTest_generic_cellMenu_kasahx_a0b0a$1" />
-      <unit id="3159291778219979167" at="132,38,139,9" name="jetbrains.mps.lang.pattern.testLang.editor.PatternTest_InspectorBuilder_a$PatternTest_generic_cellMenu_kasahx_b0b0a$1" />
-      <unit id="8707387027762047777" at="79,38,93,5" name="jetbrains.mps.lang.pattern.testLang.editor.PatternTest_InspectorBuilder_a$1" />
-      <unit id="3159291778219979144" at="102,0,126,0" name="jetbrains.mps.lang.pattern.testLang.editor.PatternTest_InspectorBuilder_a$PatternTest_generic_cellMenu_kasahx_a0b0a" />
-      <unit id="3159291778219979167" at="126,0,150,0" name="jetbrains.mps.lang.pattern.testLang.editor.PatternTest_InspectorBuilder_a$PatternTest_generic_cellMenu_kasahx_b0b0a" />
-      <unit id="8707387027762047777" at="38,0,155,0" name="jetbrains.mps.lang.pattern.testLang.editor.PatternTest_InspectorBuilder_a" />
+      <unit id="8707387027762047777" at="151,0,154,0" name="jetbrains.mps.lang.pattern.testLang.editor.PatternTest_InspectorBuilder$PROPS" />
+      <unit id="3159291778219979144" at="108,38,115,9" name="jetbrains.mps.lang.pattern.testLang.editor.PatternTest_InspectorBuilder$PatternTest_generic_cellMenu_kasahx_a0b0a$1" />
+      <unit id="3159291778219979167" at="132,38,139,9" name="jetbrains.mps.lang.pattern.testLang.editor.PatternTest_InspectorBuilder$PatternTest_generic_cellMenu_kasahx_b0b0a$1" />
+      <unit id="8707387027762047777" at="79,38,93,5" name="jetbrains.mps.lang.pattern.testLang.editor.PatternTest_InspectorBuilder$1" />
+      <unit id="3159291778219979144" at="102,0,126,0" name="jetbrains.mps.lang.pattern.testLang.editor.PatternTest_InspectorBuilder$PatternTest_generic_cellMenu_kasahx_a0b0a" />
+      <unit id="3159291778219979167" at="126,0,150,0" name="jetbrains.mps.lang.pattern.testLang.editor.PatternTest_InspectorBuilder$PatternTest_generic_cellMenu_kasahx_b0b0a" />
+      <unit id="8707387027762047777" at="38,0,155,0" name="jetbrains.mps.lang.pattern.testLang.editor.PatternTest_InspectorBuilder" />
     </file>
   </root>
 </debug-info>

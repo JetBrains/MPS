@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="-eqd7otohqq48ve4cn1ka3q9p1kx3wfd">
-  <files names="EditorAspectDescriptorImpl.java:WorkflowContainer_Editor.java:WorkflowContainer_EditorBuilder_a.java:Workflow_Editor.java:Workflow_EditorBuilder_a.java" />
+  <files names="EditorAspectDescriptorImpl.java:WorkflowContainer_Editor.java:WorkflowContainer_EditorBuilder.java:Workflow_Editor.java:Workflow_EditorBuilder.java" />
 </product>
 

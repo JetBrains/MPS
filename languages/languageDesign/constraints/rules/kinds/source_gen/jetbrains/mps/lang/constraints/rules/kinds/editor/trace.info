@@ -36,17 +36,17 @@
   </root>
   <root nodeRef="r:9c52f381-93f4-47f9-bd21-f9de8f562b1c(jetbrains.mps.lang.constraints.rules.kinds.editor)/7291380803376071472">
     <file name="RuleKind_Editor.java">
-      <node id="7291380803376071472" at="11,79,12,74" concept="6" />
+      <node id="7291380803376071472" at="11,79,12,72" concept="6" />
       <node id="7291380803376071472" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="7291380803376071472" at="11,79,12,74" />
+      <scope id="7291380803376071472" at="11,79,12,72" />
       <scope id="7291380803376071472" at="11,0,14,0">
         <var name="editorContext" id="7291380803376071472" />
         <var name="node" id="7291380803376071472" />
       </scope>
       <unit id="7291380803376071472" at="10,0,15,0" name="jetbrains.mps.lang.constraints.rules.kinds.editor.RuleKind_Editor" />
     </file>
-    <file name="RuleKind_EditorBuilder_a.java">
-      <node id="7291380803376071472" at="53,88,54,19" concept="8" />
+    <file name="RuleKind_EditorBuilder.java">
+      <node id="7291380803376071472" at="53,86,54,19" concept="8" />
       <node id="7291380803376071472" at="54,19,55,18" concept="1" />
       <node id="7291380803376071472" at="60,26,61,18" concept="6" />
       <node id="7291380803376071472" at="64,39,65,32" concept="6" />
@@ -224,7 +224,7 @@
       <node id="2949762704422496091" at="317,0,320,0" concept="4" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="2949762704422496091" at="320,0,323,0" concept="4" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="2949762704422496091" at="364,98,367,11" concept="3" />
-      <node id="7291380803376071472" at="53,0,57,0" concept="0" trace="RuleKind_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="7291380803376071472" at="53,0,57,0" concept="0" trace="RuleKind_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="7291380803376071472" at="131,63,135,5" concept="3" />
       <node id="693143365153302435" at="171,0,175,0" concept="4" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="693143365153302435" at="179,0,183,0" concept="0" trace="conceptParameterSingleRoleHandler_velomm_a0a3a#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
@@ -289,7 +289,7 @@
       <scope id="2949762704422496091" at="320,50,321,37" />
       <scope id="2949762704422496091" at="338,19,339,44" />
       <scope id="2949762704422496091" at="365,36,366,93" />
-      <scope id="7291380803376071472" at="53,88,55,18" />
+      <scope id="7291380803376071472" at="53,86,55,18" />
       <scope id="7291380803376071477" at="101,74,103,145">
         <var name="manager" id="7291380803376071477" />
       </scope>
@@ -457,16 +457,16 @@
         <var name="elementNode" id="2949762704422496091" />
         <var name="isEmptyCell" id="2949762704422496091" />
       </scope>
-      <unit id="7291380803376071472" at="379,0,382,0" name="jetbrains.mps.lang.constraints.rules.kinds.editor.RuleKind_EditorBuilder_a$PROPS" />
-      <unit id="7291380803376071472" at="383,0,388,0" name="jetbrains.mps.lang.constraints.rules.kinds.editor.RuleKind_EditorBuilder_a$CONCEPTS" />
-      <unit id="7291380803376071472" at="389,0,394,0" name="jetbrains.mps.lang.constraints.rules.kinds.editor.RuleKind_EditorBuilder_a$LINKS" />
-      <unit id="7291380803376071472" at="120,40,128,5" name="jetbrains.mps.lang.constraints.rules.kinds.editor.RuleKind_EditorBuilder_a$1" />
-      <unit id="7291380803376071472" at="241,40,249,5" name="jetbrains.mps.lang.constraints.rules.kinds.editor.RuleKind_EditorBuilder_a$2" />
-      <unit id="693143365153302435" at="175,0,229,0" name="jetbrains.mps.lang.constraints.rules.kinds.editor.RuleKind_EditorBuilder_a$Inline_Builder0$conceptParameterSingleRoleHandler_velomm_a0a3a" />
-      <unit id="2949762704422496091" at="304,0,377,0" name="jetbrains.mps.lang.constraints.rules.kinds.editor.RuleKind_EditorBuilder_a$Inline_Builder1$defsListHandler_velomm_a0a0e0" />
-      <unit id="693143365153302435" at="144,0,230,0" name="jetbrains.mps.lang.constraints.rules.kinds.editor.RuleKind_EditorBuilder_a$Inline_Builder0" />
-      <unit id="2949762704422496091" at="265,0,378,0" name="jetbrains.mps.lang.constraints.rules.kinds.editor.RuleKind_EditorBuilder_a$Inline_Builder1" />
-      <unit id="7291380803376071472" at="49,0,395,0" name="jetbrains.mps.lang.constraints.rules.kinds.editor.RuleKind_EditorBuilder_a" />
+      <unit id="7291380803376071472" at="379,0,382,0" name="jetbrains.mps.lang.constraints.rules.kinds.editor.RuleKind_EditorBuilder$PROPS" />
+      <unit id="7291380803376071472" at="383,0,388,0" name="jetbrains.mps.lang.constraints.rules.kinds.editor.RuleKind_EditorBuilder$CONCEPTS" />
+      <unit id="7291380803376071472" at="389,0,394,0" name="jetbrains.mps.lang.constraints.rules.kinds.editor.RuleKind_EditorBuilder$LINKS" />
+      <unit id="7291380803376071472" at="120,40,128,5" name="jetbrains.mps.lang.constraints.rules.kinds.editor.RuleKind_EditorBuilder$1" />
+      <unit id="7291380803376071472" at="241,40,249,5" name="jetbrains.mps.lang.constraints.rules.kinds.editor.RuleKind_EditorBuilder$2" />
+      <unit id="693143365153302435" at="175,0,229,0" name="jetbrains.mps.lang.constraints.rules.kinds.editor.RuleKind_EditorBuilder$Inline_Builder0$conceptParameterSingleRoleHandler_velomm_a0a3a" />
+      <unit id="2949762704422496091" at="304,0,377,0" name="jetbrains.mps.lang.constraints.rules.kinds.editor.RuleKind_EditorBuilder$Inline_Builder1$defsListHandler_velomm_a0a0e0" />
+      <unit id="693143365153302435" at="144,0,230,0" name="jetbrains.mps.lang.constraints.rules.kinds.editor.RuleKind_EditorBuilder$Inline_Builder0" />
+      <unit id="2949762704422496091" at="265,0,378,0" name="jetbrains.mps.lang.constraints.rules.kinds.editor.RuleKind_EditorBuilder$Inline_Builder1" />
+      <unit id="7291380803376071472" at="49,0,395,0" name="jetbrains.mps.lang.constraints.rules.kinds.editor.RuleKind_EditorBuilder" />
     </file>
   </root>
 </debug-info>

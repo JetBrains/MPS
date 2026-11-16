@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class OverloadedAssignment_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new OverloadedAssignment_EditorBuilder_a(editorContext, node).createCell();
+    return new OverloadedAssignment_EditorBuilder(editorContext, node).createCell();
   }
 }

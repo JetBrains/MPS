@@ -16,6 +16,6 @@ public class MessageComponent implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new MessageComponent_ComponentBuilder_a(editorContext, node).createCell();
+    return new MessageComponent_ComponentBuilder(editorContext, node).createCell();
   }
 }

@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class PopupCreator_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new PopupCreator_EditorBuilder_a(editorContext, node).createCell();
+    return new PopupCreator_EditorBuilder(editorContext, node).createCell();
   }
 }

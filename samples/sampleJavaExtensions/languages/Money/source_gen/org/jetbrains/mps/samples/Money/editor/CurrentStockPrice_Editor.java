@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class CurrentStockPrice_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new CurrentStockPrice_EditorBuilder_a(editorContext, node).createCell();
+    return new CurrentStockPrice_EditorBuilder(editorContext, node).createCell();
   }
 }

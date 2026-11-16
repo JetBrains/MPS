@@ -17,17 +17,17 @@
   </root>
   <root nodeRef="r:ea768d15-a9c9-488b-8295-d4b967b40487(MultiTarget.editor)/852022627621592891">
     <file name="Container_Editor.java">
-      <node id="852022627621592891" at="11,79,12,75" concept="6" />
+      <node id="852022627621592891" at="11,79,12,73" concept="6" />
       <node id="852022627621592891" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="852022627621592891" at="11,79,12,75" />
+      <scope id="852022627621592891" at="11,79,12,73" />
       <scope id="852022627621592891" at="11,0,14,0">
         <var name="editorContext" id="852022627621592891" />
         <var name="node" id="852022627621592891" />
       </scope>
       <unit id="852022627621592891" at="10,0,15,0" name="MultiTarget.editor.Container_Editor" />
     </file>
-    <file name="Container_EditorBuilder_a.java">
-      <node id="852022627621592891" at="46,89,47,19" concept="8" />
+    <file name="Container_EditorBuilder.java">
+      <node id="852022627621592891" at="46,87,47,19" concept="8" />
       <node id="852022627621592891" at="47,19,48,18" concept="1" />
       <node id="852022627621592891" at="53,26,54,18" concept="6" />
       <node id="852022627621592891" at="57,39,58,32" concept="6" />
@@ -102,7 +102,7 @@
       <node id="852022627621592891" at="124,0,127,0" concept="4" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="852022627621592891" at="127,0,130,0" concept="4" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="852022627621592891" at="171,96,174,9" concept="3" />
-      <node id="852022627621592891" at="46,0,50,0" concept="0" trace="Container_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="852022627621592891" at="46,0,50,0" concept="0" trace="Container_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="852022627621592891" at="115,0,119,0" concept="0" trace="membersListHandler_xjnu6t_c0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="852022627621592891" at="120,0,124,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="852022627621592891" at="153,97,157,9" concept="3" />
@@ -131,7 +131,7 @@
       <scope id="852022627621592891" at="127,48,128,32" />
       <scope id="852022627621592891" at="145,17,146,42" />
       <scope id="852022627621592891" at="172,34,173,91" />
-      <scope id="852022627621592891" at="46,89,48,18" />
+      <scope id="852022627621592891" at="46,87,48,18" />
       <scope id="852022627621592906" at="92,74,94,145">
         <var name="manager" id="852022627621592906" />
       </scope>
@@ -196,26 +196,26 @@
         <var name="elementNode" id="852022627621592891" />
         <var name="isEmptyCell" id="852022627621592891" />
       </scope>
-      <unit id="852022627621592891" at="179,0,182,0" name="MultiTarget.editor.Container_EditorBuilder_a$PROPS" />
-      <unit id="852022627621592891" at="188,0,191,0" name="MultiTarget.editor.Container_EditorBuilder_a$LINKS" />
-      <unit id="852022627621592891" at="183,0,187,0" name="MultiTarget.editor.Container_EditorBuilder_a$CONCEPTS" />
-      <unit id="852022627621592891" at="111,0,178,0" name="MultiTarget.editor.Container_EditorBuilder_a$membersListHandler_xjnu6t_c0" />
-      <unit id="852022627621592891" at="42,0,192,0" name="MultiTarget.editor.Container_EditorBuilder_a" />
+      <unit id="852022627621592891" at="179,0,182,0" name="MultiTarget.editor.Container_EditorBuilder$PROPS" />
+      <unit id="852022627621592891" at="188,0,191,0" name="MultiTarget.editor.Container_EditorBuilder$LINKS" />
+      <unit id="852022627621592891" at="183,0,187,0" name="MultiTarget.editor.Container_EditorBuilder$CONCEPTS" />
+      <unit id="852022627621592891" at="111,0,178,0" name="MultiTarget.editor.Container_EditorBuilder$membersListHandler_xjnu6t_c0" />
+      <unit id="852022627621592891" at="42,0,192,0" name="MultiTarget.editor.Container_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:ea768d15-a9c9-488b-8295-d4b967b40487(MultiTarget.editor)/852022627621592954">
     <file name="StringValue_Editor.java">
-      <node id="852022627621592954" at="11,79,12,77" concept="6" />
+      <node id="852022627621592954" at="11,79,12,75" concept="6" />
       <node id="852022627621592954" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="852022627621592954" at="11,79,12,77" />
+      <scope id="852022627621592954" at="11,79,12,75" />
       <scope id="852022627621592954" at="11,0,14,0">
         <var name="editorContext" id="852022627621592954" />
         <var name="node" id="852022627621592954" />
       </scope>
       <unit id="852022627621592954" at="10,0,15,0" name="MultiTarget.editor.StringValue_Editor" />
     </file>
-    <file name="StringValue_EditorBuilder_a.java">
-      <node id="852022627621592954" at="32,91,33,19" concept="8" />
+    <file name="StringValue_EditorBuilder.java">
+      <node id="852022627621592954" at="32,89,33,19" concept="8" />
       <node id="852022627621592954" at="33,19,34,18" concept="1" />
       <node id="852022627621592954" at="39,26,40,18" concept="6" />
       <node id="852022627621592954" at="43,39,44,32" concept="6" />
@@ -248,7 +248,7 @@
       <node id="852022627621592954" at="89,0,90,0" concept="7" trace="PropertyAttribute$Gb" />
       <node id="852022627621592954" at="29,0,31,0" concept="2" trace="myNode" />
       <node id="852022627621592954" at="43,0,46,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="852022627621592954" at="32,0,36,0" concept="0" trace="StringValue_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="852022627621592954" at="32,0,36,0" concept="0" trace="StringValue_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="852022627621592954" at="37,0,42,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="852022627621592969" at="73,208,78,24" concept="3" />
       <node id="852022627621592963" at="56,0,62,0" concept="4" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -258,7 +258,7 @@
       <scope id="852022627621592954" at="39,26,40,18" />
       <scope id="852022627621592954" at="43,39,44,32" />
       <scope id="852022627621592969" at="79,15,80,40" />
-      <scope id="852022627621592954" at="32,91,34,18" />
+      <scope id="852022627621592954" at="32,89,34,18" />
       <scope id="852022627621592969" at="74,74,76,145">
         <var name="manager" id="852022627621592969" />
       </scope>
@@ -284,24 +284,24 @@
       </scope>
       <scope id="852022627621592969" at="62,41,81,5" />
       <scope id="852022627621592969" at="62,0,83,0" />
-      <unit id="852022627621592954" at="84,0,87,0" name="MultiTarget.editor.StringValue_EditorBuilder_a$PROPS" />
-      <unit id="852022627621592954" at="88,0,91,0" name="MultiTarget.editor.StringValue_EditorBuilder_a$CONCEPTS" />
-      <unit id="852022627621592954" at="28,0,92,0" name="MultiTarget.editor.StringValue_EditorBuilder_a" />
+      <unit id="852022627621592954" at="84,0,87,0" name="MultiTarget.editor.StringValue_EditorBuilder$PROPS" />
+      <unit id="852022627621592954" at="88,0,91,0" name="MultiTarget.editor.StringValue_EditorBuilder$CONCEPTS" />
+      <unit id="852022627621592954" at="28,0,92,0" name="MultiTarget.editor.StringValue_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:ea768d15-a9c9-488b-8295-d4b967b40487(MultiTarget.editor)/852022627621593000">
     <file name="NumericValue_Editor.java">
-      <node id="852022627621593000" at="11,79,12,78" concept="6" />
+      <node id="852022627621593000" at="11,79,12,76" concept="6" />
       <node id="852022627621593000" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="852022627621593000" at="11,79,12,78" />
+      <scope id="852022627621593000" at="11,79,12,76" />
       <scope id="852022627621593000" at="11,0,14,0">
         <var name="editorContext" id="852022627621593000" />
         <var name="node" id="852022627621593000" />
       </scope>
       <unit id="852022627621593000" at="10,0,15,0" name="MultiTarget.editor.NumericValue_Editor" />
     </file>
-    <file name="NumericValue_EditorBuilder_a.java">
-      <node id="852022627621593000" at="32,92,33,19" concept="8" />
+    <file name="NumericValue_EditorBuilder.java">
+      <node id="852022627621593000" at="32,90,33,19" concept="8" />
       <node id="852022627621593000" at="33,19,34,18" concept="1" />
       <node id="852022627621593000" at="39,26,40,18" concept="6" />
       <node id="852022627621593000" at="43,39,44,32" concept="6" />
@@ -334,7 +334,7 @@
       <node id="852022627621593000" at="89,0,90,0" concept="7" trace="PropertyAttribute$Gb" />
       <node id="852022627621593000" at="29,0,31,0" concept="2" trace="myNode" />
       <node id="852022627621593000" at="43,0,46,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="852022627621593000" at="32,0,36,0" concept="0" trace="NumericValue_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="852022627621593000" at="32,0,36,0" concept="0" trace="NumericValue_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="852022627621593000" at="37,0,42,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="852022627621593015" at="73,208,78,24" concept="3" />
       <node id="852022627621593009" at="56,0,62,0" concept="4" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -344,7 +344,7 @@
       <scope id="852022627621593000" at="39,26,40,18" />
       <scope id="852022627621593000" at="43,39,44,32" />
       <scope id="852022627621593015" at="79,15,80,40" />
-      <scope id="852022627621593000" at="32,92,34,18" />
+      <scope id="852022627621593000" at="32,90,34,18" />
       <scope id="852022627621593015" at="74,74,76,145">
         <var name="manager" id="852022627621593015" />
       </scope>
@@ -370,9 +370,9 @@
       </scope>
       <scope id="852022627621593015" at="62,41,81,5" />
       <scope id="852022627621593015" at="62,0,83,0" />
-      <unit id="852022627621593000" at="84,0,87,0" name="MultiTarget.editor.NumericValue_EditorBuilder_a$PROPS" />
-      <unit id="852022627621593000" at="88,0,91,0" name="MultiTarget.editor.NumericValue_EditorBuilder_a$CONCEPTS" />
-      <unit id="852022627621593000" at="28,0,92,0" name="MultiTarget.editor.NumericValue_EditorBuilder_a" />
+      <unit id="852022627621593000" at="84,0,87,0" name="MultiTarget.editor.NumericValue_EditorBuilder$PROPS" />
+      <unit id="852022627621593000" at="88,0,91,0" name="MultiTarget.editor.NumericValue_EditorBuilder$CONCEPTS" />
+      <unit id="852022627621593000" at="28,0,92,0" name="MultiTarget.editor.NumericValue_EditorBuilder" />
     </file>
   </root>
 </debug-info>

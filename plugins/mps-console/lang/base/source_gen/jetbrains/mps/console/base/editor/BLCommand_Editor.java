@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class BLCommand_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new BLCommand_EditorBuilder_a(editorContext, node).createCell();
+    return new BLCommand_EditorBuilder(editorContext, node).createCell();
   }
 }

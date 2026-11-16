@@ -18,6 +18,6 @@ public class BlockInstance_diagram_Editor extends DefaultNodeEditor {
     return myContextHints;
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new BlockInstance_diagram_EditorBuilder_a(editorContext, node).createCell();
+    return new BlockInstance_diagram_EditorBuilder(editorContext, node).createCell();
   }
 }

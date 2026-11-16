@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class SingleLineHtmlTag_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new SingleLineHtmlTag_EditorBuilder_a(editorContext, node).createCell();
+    return new SingleLineHtmlTag_EditorBuilder(editorContext, node).createCell();
   }
 }

@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class LogicalSimpleMathExpression_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new LogicalSimpleMathExpression_EditorBuilder_a(editorContext, node).createCell();
+    return new LogicalSimpleMathExpression_EditorBuilder(editorContext, node).createCell();
   }
 }

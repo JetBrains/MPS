@@ -46,17 +46,17 @@
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c8959042d(jetbrains.mps.samples.secretCompartmentLanguage.editor)/1197149586039">
     <file name="StateMachine_Editor.java">
-      <node id="1197149586039" at="11,79,12,78" concept="6" />
+      <node id="1197149586039" at="11,79,12,76" concept="6" />
       <node id="1197149586039" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1197149586039" at="11,79,12,78" />
+      <scope id="1197149586039" at="11,79,12,76" />
       <scope id="1197149586039" at="11,0,14,0">
         <var name="editorContext" id="1197149586039" />
         <var name="node" id="1197149586039" />
       </scope>
       <unit id="1197149586039" at="10,0,15,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.StateMachine_Editor" />
     </file>
-    <file name="StateMachine_EditorBuilder_a.java">
-      <node id="1197149586039" at="53,92,54,19" concept="9" />
+    <file name="StateMachine_EditorBuilder.java">
+      <node id="1197149586039" at="53,90,54,19" concept="9" />
       <node id="1197149586039" at="54,19,55,18" concept="1" />
       <node id="1197149586039" at="60,26,61,18" concept="6" />
       <node id="1197149586039" at="64,39,65,32" concept="6" />
@@ -263,7 +263,7 @@
       <node id="1197149586039" at="351,0,354,0" concept="4" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="1197149586039" at="354,0,357,0" concept="4" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="1197149586039" at="398,96,401,9" concept="3" />
-      <node id="1197149586039" at="53,0,57,0" concept="0" trace="StateMachine_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1197149586039" at="53,0,57,0" concept="0" trace="StateMachine_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1197149586039" at="162,0,166,0" concept="0" trace="eventListHandler_qpt50r_b3a#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1197149586039" at="167,0,171,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1197149586039" at="200,97,204,9" concept="3" />
@@ -334,7 +334,7 @@
       <scope id="1197149586039" at="354,48,355,31" />
       <scope id="1197149586039" at="372,17,373,42" />
       <scope id="1197149586039" at="399,34,400,91" />
-      <scope id="1197149586039" at="53,92,55,18" />
+      <scope id="1197149586039" at="53,90,55,18" />
       <scope id="1197166579514" at="105,74,107,145">
         <var name="manager" id="1197166579514" />
       </scope>
@@ -517,29 +517,29 @@
         <var name="referenceLink" id="1197149586039" />
       </scope>
       <scope id="1197149586039" at="247,0,282,0" />
-      <unit id="1197149586039" at="406,0,410,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.StateMachine_EditorBuilder_a$PROPS" />
-      <unit id="1197149586039" at="418,0,423,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.StateMachine_EditorBuilder_a$LINKS" />
-      <unit id="1197149586039" at="411,0,417,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.StateMachine_EditorBuilder_a$CONCEPTS" />
-      <unit id="1197149586039" at="249,42,264,5" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.StateMachine_EditorBuilder_a$1" />
-      <unit id="1197239442209" at="282,0,325,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.StateMachine_EditorBuilder_a$Inline_Builder0" />
-      <unit id="1197149586039" at="158,0,225,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.StateMachine_EditorBuilder_a$eventListHandler_qpt50r_b3a" />
-      <unit id="1197149586039" at="338,0,405,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.StateMachine_EditorBuilder_a$stateListHandler_qpt50r_h0" />
-      <unit id="1197149586039" at="49,0,424,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.StateMachine_EditorBuilder_a" />
+      <unit id="1197149586039" at="406,0,410,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.StateMachine_EditorBuilder$PROPS" />
+      <unit id="1197149586039" at="418,0,423,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.StateMachine_EditorBuilder$LINKS" />
+      <unit id="1197149586039" at="411,0,417,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.StateMachine_EditorBuilder$CONCEPTS" />
+      <unit id="1197149586039" at="249,42,264,5" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.StateMachine_EditorBuilder$1" />
+      <unit id="1197239442209" at="282,0,325,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.StateMachine_EditorBuilder$Inline_Builder0" />
+      <unit id="1197149586039" at="158,0,225,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.StateMachine_EditorBuilder$eventListHandler_qpt50r_b3a" />
+      <unit id="1197149586039" at="338,0,405,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.StateMachine_EditorBuilder$stateListHandler_qpt50r_h0" />
+      <unit id="1197149586039" at="49,0,424,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.StateMachine_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c8959042d(jetbrains.mps.samples.secretCompartmentLanguage.editor)/1197169421748">
     <file name="Event_Editor.java">
-      <node id="1197169421748" at="11,79,12,71" concept="6" />
+      <node id="1197169421748" at="11,79,12,69" concept="6" />
       <node id="1197169421748" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1197169421748" at="11,79,12,71" />
+      <scope id="1197169421748" at="11,79,12,69" />
       <scope id="1197169421748" at="11,0,14,0">
         <var name="editorContext" id="1197169421748" />
         <var name="node" id="1197169421748" />
       </scope>
       <unit id="1197169421748" at="10,0,15,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.Event_Editor" />
     </file>
-    <file name="Event_EditorBuilder_a.java">
-      <node id="1197169421748" at="31,85,32,19" concept="9" />
+    <file name="Event_EditorBuilder.java">
+      <node id="1197169421748" at="31,83,32,19" concept="9" />
       <node id="1197169421748" at="32,19,33,18" concept="1" />
       <node id="1197169421748" at="38,26,39,18" concept="6" />
       <node id="1197169421748" at="42,39,43,32" concept="6" />
@@ -583,7 +583,7 @@
       <node id="1197169421748" at="104,0,105,0" concept="8" trace="PropertyAttribute$Gb" />
       <node id="1197169421748" at="28,0,30,0" concept="2" trace="myNode" />
       <node id="1197169421748" at="42,0,45,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="1197169421748" at="31,0,35,0" concept="0" trace="Event_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1197169421748" at="31,0,35,0" concept="0" trace="Event_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1197169421748" at="36,0,41,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1197169427033" at="66,208,71,24" concept="3" />
       <node id="1197169429473" at="87,208,92,24" concept="3" />
@@ -596,7 +596,7 @@
       <scope id="1197169421748" at="42,39,43,32" />
       <scope id="1197169427033" at="72,15,73,40" />
       <scope id="1197169429473" at="93,15,94,40" />
-      <scope id="1197169421748" at="31,85,33,18" />
+      <scope id="1197169421748" at="31,83,33,18" />
       <scope id="1197169427033" at="67,74,69,145">
         <var name="manager" id="1197169427033" />
       </scope>
@@ -629,24 +629,24 @@
       <scope id="1197169429473" at="76,41,95,5" />
       <scope id="1197169427033" at="55,0,76,0" />
       <scope id="1197169429473" at="76,0,97,0" />
-      <unit id="1197169421748" at="103,0,106,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.Event_EditorBuilder_a$CONCEPTS" />
-      <unit id="1197169421748" at="98,0,102,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.Event_EditorBuilder_a$PROPS" />
-      <unit id="1197169421748" at="27,0,107,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.Event_EditorBuilder_a" />
+      <unit id="1197169421748" at="103,0,106,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.Event_EditorBuilder$CONCEPTS" />
+      <unit id="1197169421748" at="98,0,102,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.Event_EditorBuilder$PROPS" />
+      <unit id="1197169421748" at="27,0,107,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.Event_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c8959042d(jetbrains.mps.samples.secretCompartmentLanguage.editor)/1197170596685">
     <file name="State_Editor.java">
-      <node id="1197170596685" at="11,79,12,71" concept="6" />
+      <node id="1197170596685" at="11,79,12,69" concept="6" />
       <node id="1197170596685" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1197170596685" at="11,79,12,71" />
+      <scope id="1197170596685" at="11,79,12,69" />
       <scope id="1197170596685" at="11,0,14,0">
         <var name="editorContext" id="1197170596685" />
         <var name="node" id="1197170596685" />
       </scope>
       <unit id="1197170596685" at="10,0,15,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.State_Editor" />
     </file>
-    <file name="State_EditorBuilder_a.java">
-      <node id="1197170596685" at="46,85,47,19" concept="9" />
+    <file name="State_EditorBuilder.java">
+      <node id="1197170596685" at="46,83,47,19" concept="9" />
       <node id="1197170596685" at="47,19,48,18" concept="1" />
       <node id="1197170596685" at="53,26,54,18" concept="6" />
       <node id="1197170596685" at="57,39,58,32" concept="6" />
@@ -742,7 +742,7 @@
       <node id="1197170596685" at="147,0,150,0" concept="4" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="1197170596685" at="150,0,153,0" concept="4" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="1197170596685" at="194,96,197,9" concept="3" />
-      <node id="1197170596685" at="46,0,50,0" concept="0" trace="State_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1197170596685" at="46,0,50,0" concept="0" trace="State_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1197170596685" at="138,0,142,0" concept="0" trace="transitionListHandler_sjqidp_b1a#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1197170596685" at="143,0,147,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1197170596685" at="176,97,180,9" concept="3" />
@@ -775,7 +775,7 @@
       <scope id="1197170596685" at="150,48,151,36" />
       <scope id="1197170596685" at="168,17,169,42" />
       <scope id="1197170596685" at="195,34,196,91" />
-      <scope id="1197170596685" at="46,85,48,18" />
+      <scope id="1197170596685" at="46,83,48,18" />
       <scope id="1197170640819" at="99,74,101,145">
         <var name="manager" id="1197170640819" />
       </scope>
@@ -857,26 +857,26 @@
         <var name="elementNode" id="1197170596685" />
         <var name="isEmptyCell" id="1197170596685" />
       </scope>
-      <unit id="1197170596685" at="208,0,211,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.State_EditorBuilder_a$PROPS" />
-      <unit id="1197170596685" at="217,0,220,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.State_EditorBuilder_a$LINKS" />
-      <unit id="1197170596685" at="212,0,216,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.State_EditorBuilder_a$CONCEPTS" />
-      <unit id="1197170596685" at="134,0,201,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.State_EditorBuilder_a$transitionListHandler_sjqidp_b1a" />
-      <unit id="1197170596685" at="42,0,221,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.State_EditorBuilder_a" />
+      <unit id="1197170596685" at="208,0,211,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.State_EditorBuilder$PROPS" />
+      <unit id="1197170596685" at="217,0,220,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.State_EditorBuilder$LINKS" />
+      <unit id="1197170596685" at="212,0,216,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.State_EditorBuilder$CONCEPTS" />
+      <unit id="1197170596685" at="134,0,201,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.State_EditorBuilder$transitionListHandler_sjqidp_b1a" />
+      <unit id="1197170596685" at="42,0,221,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.State_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c8959042d(jetbrains.mps.samples.secretCompartmentLanguage.editor)/1197240201006">
     <file name="Transition_Editor.java">
-      <node id="1197240201006" at="11,79,12,76" concept="6" />
+      <node id="1197240201006" at="11,79,12,74" concept="6" />
       <node id="1197240201006" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1197240201006" at="11,79,12,76" />
+      <scope id="1197240201006" at="11,79,12,74" />
       <scope id="1197240201006" at="11,0,14,0">
         <var name="editorContext" id="1197240201006" />
         <var name="node" id="1197240201006" />
       </scope>
       <unit id="1197240201006" at="10,0,15,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.Transition_Editor" />
     </file>
-    <file name="Transition_EditorBuilder_a.java">
-      <node id="1197240201006" at="37,90,38,19" concept="9" />
+    <file name="Transition_EditorBuilder.java">
+      <node id="1197240201006" at="37,88,38,19" concept="9" />
       <node id="1197240201006" at="38,19,39,18" concept="1" />
       <node id="1197240201006" at="44,26,45,18" concept="6" />
       <node id="1197240201006" at="48,39,49,32" concept="6" />
@@ -980,7 +980,7 @@
       <node id="1197240201006" at="48,0,51,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1197240213354" at="101,0,104,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1197240235674" at="178,0,181,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="1197240201006" at="37,0,41,0" concept="0" trace="Transition_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1197240201006" at="37,0,41,0" concept="0" trace="Transition_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1197240201006" at="76,0,80,5" concept="3" />
       <node id="1197240201006" at="153,0,157,5" concept="3" />
       <node id="1197240201006" at="42,0,47,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -1012,7 +1012,7 @@
       <scope id="1197240235674" at="178,41,179,32" />
       <scope id="1197240235674" at="184,28,185,20" />
       <scope id="1197240239176" at="205,17,206,42" />
-      <scope id="1197240201006" at="37,90,39,18" />
+      <scope id="1197240201006" at="37,88,39,18" />
       <scope id="1197240201006" at="77,40,79,46" />
       <scope id="1197240201006" at="84,73,86,145">
         <var name="manager" id="1197240201006" />
@@ -1101,29 +1101,29 @@
       </scope>
       <scope id="1197240201006" at="62,0,90,0" />
       <scope id="1197240201006" at="139,0,167,0" />
-      <unit id="1197240201006" at="211,0,215,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.Transition_EditorBuilder_a$LINKS" />
-      <unit id="1197240201006" at="216,0,220,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.Transition_EditorBuilder_a$CONCEPTS" />
-      <unit id="1197240201006" at="221,0,225,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.Transition_EditorBuilder_a$PROPS" />
-      <unit id="1197240201006" at="64,42,72,5" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.Transition_EditorBuilder_a$1" />
-      <unit id="1197240201006" at="141,42,149,5" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.Transition_EditorBuilder_a$2" />
-      <unit id="1197240213354" at="90,0,133,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.Transition_EditorBuilder_a$Inline_Builder0" />
-      <unit id="1197240235674" at="167,0,210,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.Transition_EditorBuilder_a$Inline_Builder1" />
-      <unit id="1197240201006" at="33,0,226,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.Transition_EditorBuilder_a" />
+      <unit id="1197240201006" at="211,0,215,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.Transition_EditorBuilder$LINKS" />
+      <unit id="1197240201006" at="216,0,220,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.Transition_EditorBuilder$CONCEPTS" />
+      <unit id="1197240201006" at="221,0,225,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.Transition_EditorBuilder$PROPS" />
+      <unit id="1197240201006" at="64,42,72,5" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.Transition_EditorBuilder$1" />
+      <unit id="1197240201006" at="141,42,149,5" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.Transition_EditorBuilder$2" />
+      <unit id="1197240213354" at="90,0,133,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.Transition_EditorBuilder$Inline_Builder0" />
+      <unit id="1197240235674" at="167,0,210,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.Transition_EditorBuilder$Inline_Builder1" />
+      <unit id="1197240201006" at="33,0,226,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.Transition_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c8959042d(jetbrains.mps.samples.secretCompartmentLanguage.editor)/1197246925130">
     <file name="StateMachineTest_Editor.java">
-      <node id="1197246925130" at="11,79,12,82" concept="6" />
+      <node id="1197246925130" at="11,79,12,80" concept="6" />
       <node id="1197246925130" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1197246925130" at="11,79,12,82" />
+      <scope id="1197246925130" at="11,79,12,80" />
       <scope id="1197246925130" at="11,0,14,0">
         <var name="editorContext" id="1197246925130" />
         <var name="node" id="1197246925130" />
       </scope>
       <unit id="1197246925130" at="10,0,15,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.StateMachineTest_Editor" />
     </file>
-    <file name="StateMachineTest_EditorBuilder_a.java">
-      <node id="1197246925130" at="53,96,54,19" concept="9" />
+    <file name="StateMachineTest_EditorBuilder.java">
+      <node id="1197246925130" at="53,94,54,19" concept="9" />
       <node id="1197246925130" at="54,19,55,18" concept="1" />
       <node id="1197246925130" at="60,26,61,18" concept="6" />
       <node id="1197246925130" at="64,39,65,32" concept="6" />
@@ -1236,7 +1236,7 @@
       <node id="1197246925130" at="198,0,201,0" concept="4" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="1197246925130" at="201,0,204,0" concept="4" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="1197246925130" at="245,96,248,9" concept="3" />
-      <node id="1197246925130" at="53,0,57,0" concept="0" trace="StateMachineTest_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1197246925130" at="53,0,57,0" concept="0" trace="StateMachineTest_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1197246925130" at="109,0,113,5" concept="3" />
       <node id="1197246925130" at="189,0,193,0" concept="0" trace="testMethodListHandler_hhanjm_c0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1197246925130" at="194,0,198,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -1277,7 +1277,7 @@
       <scope id="1197246925130" at="201,48,202,48" />
       <scope id="1197246925130" at="219,17,220,42" />
       <scope id="1197246925130" at="246,34,247,91" />
-      <scope id="1197246925130" at="53,96,55,18" />
+      <scope id="1197246925130" at="53,94,55,18" />
       <scope id="1197246925130" at="110,40,112,51" />
       <scope id="1197246925130" at="117,73,119,145">
         <var name="manager" id="1197246925130" />
@@ -1381,28 +1381,28 @@
         <var name="referenceLink" id="1197246925130" />
       </scope>
       <scope id="1197246925130" at="88,0,123,0" />
-      <unit id="1197246925130" at="264,0,267,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.StateMachineTest_EditorBuilder_a$PROPS" />
-      <unit id="1197246925130" at="253,0,257,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.StateMachineTest_EditorBuilder_a$LINKS" />
-      <unit id="1197246925130" at="258,0,263,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.StateMachineTest_EditorBuilder_a$CONCEPTS" />
-      <unit id="1197246925130" at="90,42,105,5" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.StateMachineTest_EditorBuilder_a$1" />
-      <unit id="1197247831195" at="123,0,166,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.StateMachineTest_EditorBuilder_a$Inline_Builder0" />
-      <unit id="1197246925130" at="185,0,252,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.StateMachineTest_EditorBuilder_a$testMethodListHandler_hhanjm_c0" />
-      <unit id="1197246925130" at="49,0,268,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.StateMachineTest_EditorBuilder_a" />
+      <unit id="1197246925130" at="264,0,267,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.StateMachineTest_EditorBuilder$PROPS" />
+      <unit id="1197246925130" at="253,0,257,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.StateMachineTest_EditorBuilder$LINKS" />
+      <unit id="1197246925130" at="258,0,263,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.StateMachineTest_EditorBuilder$CONCEPTS" />
+      <unit id="1197246925130" at="90,42,105,5" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.StateMachineTest_EditorBuilder$1" />
+      <unit id="1197247831195" at="123,0,166,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.StateMachineTest_EditorBuilder$Inline_Builder0" />
+      <unit id="1197246925130" at="185,0,252,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.StateMachineTest_EditorBuilder$testMethodListHandler_hhanjm_c0" />
+      <unit id="1197246925130" at="49,0,268,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.StateMachineTest_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c8959042d(jetbrains.mps.samples.secretCompartmentLanguage.editor)/1197252730365">
     <file name="StateMachineTestMethod_Editor.java">
-      <node id="1197252730365" at="11,79,12,88" concept="6" />
+      <node id="1197252730365" at="11,79,12,86" concept="6" />
       <node id="1197252730365" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1197252730365" at="11,79,12,88" />
+      <scope id="1197252730365" at="11,79,12,86" />
       <scope id="1197252730365" at="11,0,14,0">
         <var name="editorContext" id="1197252730365" />
         <var name="node" id="1197252730365" />
       </scope>
       <unit id="1197252730365" at="10,0,15,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.StateMachineTestMethod_Editor" />
     </file>
-    <file name="StateMachineTestMethod_EditorBuilder_a.java">
-      <node id="1197252730365" at="53,102,54,19" concept="9" />
+    <file name="StateMachineTestMethod_EditorBuilder.java">
+      <node id="1197252730365" at="53,100,54,19" concept="9" />
       <node id="1197252730365" at="54,19,55,18" concept="1" />
       <node id="1197252730365" at="60,26,61,18" concept="6" />
       <node id="1197252730365" at="64,39,65,32" concept="6" />
@@ -1560,7 +1560,7 @@
       <node id="1197252730365" at="166,0,169,0" concept="4" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="1197252730365" at="210,96,213,9" concept="3" />
       <node id="1197255262343" at="279,0,282,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="1197252730365" at="53,0,57,0" concept="0" trace="StateMachineTestMethod_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1197252730365" at="53,0,57,0" concept="0" trace="StateMachineTestMethod_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1197252730365" at="154,0,158,0" concept="0" trace="handleEventListHandler_ttjdsx_a1b0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1197252730365" at="159,0,163,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1197252730365" at="192,97,196,9" concept="3" />
@@ -1609,7 +1609,7 @@
       <scope id="1197255262343" at="279,41,280,32" />
       <scope id="1197255262343" at="285,28,286,20" />
       <scope id="1197255269330" at="306,17,307,42" />
-      <scope id="1197252730365" at="53,102,55,18" />
+      <scope id="1197252730365" at="53,100,55,18" />
       <scope id="1197252776280" at="105,74,107,145">
         <var name="manager" id="1197252776280" />
       </scope>
@@ -1744,28 +1744,28 @@
         <var name="referenceLink" id="1197252730365" />
       </scope>
       <scope id="1197252730365" at="233,0,268,0" />
-      <unit id="1197252730365" at="312,0,316,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.StateMachineTestMethod_EditorBuilder_a$PROPS" />
-      <unit id="1197252730365" at="323,0,327,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.StateMachineTestMethod_EditorBuilder_a$LINKS" />
-      <unit id="1197252730365" at="317,0,322,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.StateMachineTestMethod_EditorBuilder_a$CONCEPTS" />
-      <unit id="1197252730365" at="235,42,250,5" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.StateMachineTestMethod_EditorBuilder_a$1" />
-      <unit id="1197255262343" at="268,0,311,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.StateMachineTestMethod_EditorBuilder_a$Inline_Builder0" />
-      <unit id="1197252730365" at="150,0,217,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.StateMachineTestMethod_EditorBuilder_a$handleEventListHandler_ttjdsx_a1b0" />
-      <unit id="1197252730365" at="49,0,328,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.StateMachineTestMethod_EditorBuilder_a" />
+      <unit id="1197252730365" at="312,0,316,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.StateMachineTestMethod_EditorBuilder$PROPS" />
+      <unit id="1197252730365" at="323,0,327,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.StateMachineTestMethod_EditorBuilder$LINKS" />
+      <unit id="1197252730365" at="317,0,322,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.StateMachineTestMethod_EditorBuilder$CONCEPTS" />
+      <unit id="1197252730365" at="235,42,250,5" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.StateMachineTestMethod_EditorBuilder$1" />
+      <unit id="1197255262343" at="268,0,311,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.StateMachineTestMethod_EditorBuilder$Inline_Builder0" />
+      <unit id="1197252730365" at="150,0,217,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.StateMachineTestMethod_EditorBuilder$handleEventListHandler_ttjdsx_a1b0" />
+      <unit id="1197252730365" at="49,0,328,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.StateMachineTestMethod_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c8959042d(jetbrains.mps.samples.secretCompartmentLanguage.editor)/1197255791393">
     <file name="HandleEvent_Editor.java">
-      <node id="1197255791393" at="11,79,12,77" concept="6" />
+      <node id="1197255791393" at="11,79,12,75" concept="6" />
       <node id="1197255791393" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1197255791393" at="11,79,12,77" />
+      <scope id="1197255791393" at="11,79,12,75" />
       <scope id="1197255791393" at="11,0,14,0">
         <var name="editorContext" id="1197255791393" />
         <var name="node" id="1197255791393" />
       </scope>
       <unit id="1197255791393" at="10,0,15,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.HandleEvent_Editor" />
     </file>
-    <file name="HandleEvent_EditorBuilder_a.java">
-      <node id="1197255791393" at="41,91,42,19" concept="9" />
+    <file name="HandleEvent_EditorBuilder.java">
+      <node id="1197255791393" at="41,89,42,19" concept="9" />
       <node id="1197255791393" at="42,19,43,18" concept="1" />
       <node id="1197255791393" at="48,26,49,18" concept="6" />
       <node id="1197255791393" at="52,39,53,32" concept="6" />
@@ -1830,7 +1830,7 @@
       <node id="1197255802947" at="107,0,109,0" concept="2" trace="myNode" />
       <node id="1197255791393" at="52,0,55,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1197255802947" at="117,0,120,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="1197255791393" at="41,0,45,0" concept="0" trace="HandleEvent_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1197255791393" at="41,0,45,0" concept="0" trace="HandleEvent_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1197255791393" at="92,0,96,5" concept="3" />
       <node id="1197255791393" at="46,0,51,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1197255791393" at="99,205,104,22" concept="3" />
@@ -1850,7 +1850,7 @@
       <scope id="1197255802947" at="117,41,118,32" />
       <scope id="1197255802947" at="123,28,124,20" />
       <scope id="1197255805558" at="144,17,145,42" />
-      <scope id="1197255791393" at="41,91,43,18" />
+      <scope id="1197255791393" at="41,89,43,18" />
       <scope id="1197255791393" at="93,40,95,44" />
       <scope id="1197255791393" at="100,73,102,145">
         <var name="manager" id="1197255791393" />
@@ -1908,12 +1908,12 @@
         <var name="referenceLink" id="1197255791393" />
       </scope>
       <scope id="1197255791393" at="71,0,106,0" />
-      <unit id="1197255791393" at="150,0,153,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.HandleEvent_EditorBuilder_a$LINKS" />
-      <unit id="1197255791393" at="159,0,162,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.HandleEvent_EditorBuilder_a$PROPS" />
-      <unit id="1197255791393" at="154,0,158,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.HandleEvent_EditorBuilder_a$CONCEPTS" />
-      <unit id="1197255791393" at="73,42,88,5" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.HandleEvent_EditorBuilder_a$1" />
-      <unit id="1197255802947" at="106,0,149,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.HandleEvent_EditorBuilder_a$Inline_Builder0" />
-      <unit id="1197255791393" at="37,0,163,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.HandleEvent_EditorBuilder_a" />
+      <unit id="1197255791393" at="150,0,153,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.HandleEvent_EditorBuilder$LINKS" />
+      <unit id="1197255791393" at="159,0,162,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.HandleEvent_EditorBuilder$PROPS" />
+      <unit id="1197255791393" at="154,0,158,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.HandleEvent_EditorBuilder$CONCEPTS" />
+      <unit id="1197255791393" at="73,42,88,5" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.HandleEvent_EditorBuilder$1" />
+      <unit id="1197255802947" at="106,0,149,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.HandleEvent_EditorBuilder$Inline_Builder0" />
+      <unit id="1197255791393" at="37,0,163,0" name="jetbrains.mps.samples.secretCompartmentLanguage.editor.HandleEvent_EditorBuilder" />
     </file>
   </root>
 </debug-info>

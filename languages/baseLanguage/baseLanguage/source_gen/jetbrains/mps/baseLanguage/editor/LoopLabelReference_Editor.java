@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class LoopLabelReference_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new LoopLabelReference_EditorBuilder_a(editorContext, node).createCell();
+    return new LoopLabelReference_EditorBuilder(editorContext, node).createCell();
   }
 }

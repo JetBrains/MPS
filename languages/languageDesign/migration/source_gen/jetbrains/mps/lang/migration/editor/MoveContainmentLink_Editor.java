@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class MoveContainmentLink_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new MoveContainmentLink_EditorBuilder_a(editorContext, node).createCell();
+    return new MoveContainmentLink_EditorBuilder(editorContext, node).createCell();
   }
 }

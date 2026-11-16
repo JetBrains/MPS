@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class BinaryOperation_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new BinaryOperation_EditorBuilder_a(editorContext, node).createCell();
+    return new BinaryOperation_EditorBuilder(editorContext, node).createCell();
   }
 }

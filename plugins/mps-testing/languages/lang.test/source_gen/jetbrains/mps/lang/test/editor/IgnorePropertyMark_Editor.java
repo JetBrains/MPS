@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class IgnorePropertyMark_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new IgnorePropertyMark_EditorBuilder_a(editorContext, node).createCell();
+    return new IgnorePropertyMark_EditorBuilder(editorContext, node).createCell();
   }
 }

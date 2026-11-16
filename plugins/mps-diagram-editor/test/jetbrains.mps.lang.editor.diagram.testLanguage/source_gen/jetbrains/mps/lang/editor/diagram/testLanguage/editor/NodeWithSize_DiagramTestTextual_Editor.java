@@ -18,6 +18,6 @@ public class NodeWithSize_DiagramTestTextual_Editor extends DefaultNodeEditor {
     return myContextHints;
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new NodeWithSize_DiagramTestTextual_EditorBuilder_a(editorContext, node).createCell();
+    return new NodeWithSize_DiagramTestTextual_EditorBuilder(editorContext, node).createCell();
   }
 }

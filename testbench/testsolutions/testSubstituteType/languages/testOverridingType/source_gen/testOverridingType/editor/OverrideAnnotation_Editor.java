@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class OverrideAnnotation_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new OverrideAnnotation_EditorBuilder_a(editorContext, node).createCell();
+    return new OverrideAnnotation_EditorBuilder(editorContext, node).createCell();
   }
 }

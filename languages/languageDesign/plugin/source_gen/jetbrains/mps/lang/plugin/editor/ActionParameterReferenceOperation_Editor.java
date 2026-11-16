@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ActionParameterReferenceOperation_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ActionParameterReferenceOperation_EditorBuilder_a(editorContext, node).createCell();
+    return new ActionParameterReferenceOperation_EditorBuilder(editorContext, node).createCell();
   }
 }

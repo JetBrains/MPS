@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class CompletionCustomizationConceptCreatingSpecificator_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new CompletionCustomizationConceptCreatingSpecificator_EditorBuilder_a(editorContext, node).createCell();
+    return new CompletionCustomizationConceptCreatingSpecificator_EditorBuilder(editorContext, node).createCell();
   }
 }

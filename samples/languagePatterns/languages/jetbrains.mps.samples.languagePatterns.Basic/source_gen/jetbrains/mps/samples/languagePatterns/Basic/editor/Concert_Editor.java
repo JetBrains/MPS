@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class Concert_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new Concert_EditorBuilder_a(editorContext, node).createCell();
+    return new Concert_EditorBuilder(editorContext, node).createCell();
   }
 }

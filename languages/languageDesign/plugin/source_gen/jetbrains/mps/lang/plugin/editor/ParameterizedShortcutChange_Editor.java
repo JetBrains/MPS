@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ParameterizedShortcutChange_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ParameterizedShortcutChange_EditorBuilder_a(editorContext, node).createCell();
+    return new ParameterizedShortcutChange_EditorBuilder(editorContext, node).createCell();
   }
 }

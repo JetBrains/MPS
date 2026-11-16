@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class GlobalStatisticTarget_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new GlobalStatisticTarget_EditorBuilder_a(editorContext, node).createCell();
+    return new GlobalStatisticTarget_EditorBuilder(editorContext, node).createCell();
   }
 }

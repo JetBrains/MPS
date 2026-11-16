@@ -16,6 +16,6 @@ public class ClassLikeProperty_Name_EditorComponent implements ConceptEditorComp
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ClassLikeProperty_Name_EditorComponent_ComponentBuilder_a(editorContext, node).createCell();
+    return new ClassLikeProperty_Name_EditorComponent_ComponentBuilder(editorContext, node).createCell();
   }
 }

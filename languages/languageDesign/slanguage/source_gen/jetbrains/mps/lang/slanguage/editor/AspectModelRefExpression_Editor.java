@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class AspectModelRefExpression_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new AspectModelRefExpression_EditorBuilder_a(editorContext, node).createCell();
+    return new AspectModelRefExpression_EditorBuilder(editorContext, node).createCell();
   }
 }

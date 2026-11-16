@@ -32,17 +32,17 @@
   </root>
   <root nodeRef="r:7fc84d08-cd05-44dc-a93d-fc7d46adeba1(jetbrains.mps.vcs.mergehints.editor)/4140018591229954326">
     <file name="VCSHints_Editor.java">
-      <node id="4140018591229954326" at="11,79,12,74" concept="6" />
+      <node id="4140018591229954326" at="11,79,12,72" concept="6" />
       <node id="4140018591229954326" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4140018591229954326" at="11,79,12,74" />
+      <scope id="4140018591229954326" at="11,79,12,72" />
       <scope id="4140018591229954326" at="11,0,14,0">
         <var name="editorContext" id="4140018591229954326" />
         <var name="node" id="4140018591229954326" />
       </scope>
       <unit id="4140018591229954326" at="10,0,15,0" name="jetbrains.mps.vcs.mergehints.editor.VCSHints_Editor" />
     </file>
-    <file name="VCSHints_EditorBuilder_a.java">
-      <node id="4140018591229954326" at="50,88,51,19" concept="9" />
+    <file name="VCSHints_EditorBuilder.java">
+      <node id="4140018591229954326" at="50,86,51,19" concept="9" />
       <node id="4140018591229954326" at="51,19,52,18" concept="1" />
       <node id="4140018591229954326" at="57,26,58,18" concept="6" />
       <node id="4140018591229954326" at="61,39,62,32" concept="6" />
@@ -165,7 +165,7 @@
       <node id="4140018591229954326" at="181,0,184,0" concept="4" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="4140018591229954326" at="184,0,187,0" concept="4" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="4140018591229954326" at="228,96,231,9" concept="3" />
-      <node id="4140018591229954326" at="50,0,54,0" concept="0" trace="VCSHints_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4140018591229954326" at="50,0,54,0" concept="0" trace="VCSHints_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4140018591229954326" at="156,0,160,0" concept="4" trace="createIndentCell_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4140018591229954326" at="172,0,176,0" concept="0" trace="conceptsListHandler_s3ustf_b1a#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="4140018591229954326" at="177,0,181,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -204,7 +204,7 @@
       <scope id="4140018591229954326" at="184,48,185,46" />
       <scope id="4140018591229954326" at="202,17,203,42" />
       <scope id="4140018591229954326" at="229,34,230,91" />
-      <scope id="4140018591229954326" at="50,88,52,18" />
+      <scope id="4140018591229954326" at="50,86,52,18" />
       <scope id="7043625615963447843" at="126,74,128,145">
         <var name="manager" id="7043625615963447843" />
       </scope>
@@ -299,26 +299,26 @@
         <var name="elementNode" id="4140018591229954326" />
         <var name="isEmptyCell" id="4140018591229954326" />
       </scope>
-      <unit id="4140018591229954326" at="247,0,250,0" name="jetbrains.mps.vcs.mergehints.editor.VCSHints_EditorBuilder_a$PROPS" />
-      <unit id="4140018591229954326" at="256,0,259,0" name="jetbrains.mps.vcs.mergehints.editor.VCSHints_EditorBuilder_a$LINKS" />
-      <unit id="4140018591229954326" at="251,0,255,0" name="jetbrains.mps.vcs.mergehints.editor.VCSHints_EditorBuilder_a$CONCEPTS" />
-      <unit id="4140018591229954326" at="168,0,235,0" name="jetbrains.mps.vcs.mergehints.editor.VCSHints_EditorBuilder_a$conceptsListHandler_s3ustf_b1a" />
-      <unit id="4140018591229954326" at="46,0,260,0" name="jetbrains.mps.vcs.mergehints.editor.VCSHints_EditorBuilder_a" />
+      <unit id="4140018591229954326" at="247,0,250,0" name="jetbrains.mps.vcs.mergehints.editor.VCSHints_EditorBuilder$PROPS" />
+      <unit id="4140018591229954326" at="256,0,259,0" name="jetbrains.mps.vcs.mergehints.editor.VCSHints_EditorBuilder$LINKS" />
+      <unit id="4140018591229954326" at="251,0,255,0" name="jetbrains.mps.vcs.mergehints.editor.VCSHints_EditorBuilder$CONCEPTS" />
+      <unit id="4140018591229954326" at="168,0,235,0" name="jetbrains.mps.vcs.mergehints.editor.VCSHints_EditorBuilder$conceptsListHandler_s3ustf_b1a" />
+      <unit id="4140018591229954326" at="46,0,260,0" name="jetbrains.mps.vcs.mergehints.editor.VCSHints_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:7fc84d08-cd05-44dc-a93d-fc7d46adeba1(jetbrains.mps.vcs.mergehints.editor)/4140018591229954483">
     <file name="ConceptVCSDescriptor_Editor.java">
-      <node id="4140018591229954483" at="11,79,12,86" concept="6" />
+      <node id="4140018591229954483" at="11,79,12,84" concept="6" />
       <node id="4140018591229954483" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4140018591229954483" at="11,79,12,86" />
+      <scope id="4140018591229954483" at="11,79,12,84" />
       <scope id="4140018591229954483" at="11,0,14,0">
         <var name="editorContext" id="4140018591229954483" />
         <var name="node" id="4140018591229954483" />
       </scope>
       <unit id="4140018591229954483" at="10,0,15,0" name="jetbrains.mps.vcs.mergehints.editor.ConceptVCSDescriptor_Editor" />
     </file>
-    <file name="ConceptVCSDescriptor_EditorBuilder_a.java">
-      <node id="4140018591229954483" at="56,100,57,19" concept="9" />
+    <file name="ConceptVCSDescriptor_EditorBuilder.java">
+      <node id="4140018591229954483" at="56,98,57,19" concept="9" />
       <node id="4140018591229954483" at="57,19,58,18" concept="1" />
       <node id="4140018591229954483" at="63,26,64,18" concept="6" />
       <node id="4140018591229954483" at="67,39,68,32" concept="6" />
@@ -497,7 +497,7 @@
       <node id="4140018591229954483" at="296,0,299,0" concept="4" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="4140018591229954483" at="299,0,302,0" concept="4" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="4140018591229954483" at="343,96,346,9" concept="3" />
-      <node id="4140018591229954483" at="56,0,60,0" concept="0" trace="ConceptVCSDescriptor_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4140018591229954483" at="56,0,60,0" concept="0" trace="ConceptVCSDescriptor_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4140018591229954483" at="133,0,137,5" concept="3" />
       <node id="4140018591229954483" at="196,0,200,0" concept="4" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4140018591229954483" at="204,0,208,0" concept="0" trace="strategySingleRoleHandler_94pzwf_d0a0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
@@ -558,7 +558,7 @@
       <scope id="4140018591229954483" at="299,48,300,46" />
       <scope id="4140018591229954483" at="317,17,318,42" />
       <scope id="4140018591229954483" at="344,34,345,91" />
-      <scope id="4140018591229954483" at="56,100,58,18" />
+      <scope id="4140018591229954483" at="56,98,58,18" />
       <scope id="4140018591229954483" at="134,40,136,44" />
       <scope id="4140018591229954483" at="141,73,143,145">
         <var name="manager" id="4140018591229954483" />
@@ -711,29 +711,29 @@
         <var name="referenceLink" id="4140018591229954483" />
       </scope>
       <scope id="4140018591229954483" at="119,0,147,0" />
-      <unit id="4140018591229954483" at="374,0,377,0" name="jetbrains.mps.vcs.mergehints.editor.ConceptVCSDescriptor_EditorBuilder_a$PROPS" />
-      <unit id="4140018591229954483" at="362,0,367,0" name="jetbrains.mps.vcs.mergehints.editor.ConceptVCSDescriptor_EditorBuilder_a$LINKS" />
-      <unit id="4140018591229954483" at="368,0,373,0" name="jetbrains.mps.vcs.mergehints.editor.ConceptVCSDescriptor_EditorBuilder_a$CONCEPTS" />
-      <unit id="4140018591229954483" at="121,42,129,5" name="jetbrains.mps.vcs.mergehints.editor.ConceptVCSDescriptor_EditorBuilder_a$1" />
-      <unit id="4140018591229954491" at="147,0,190,0" name="jetbrains.mps.vcs.mergehints.editor.ConceptVCSDescriptor_EditorBuilder_a$Inline_Builder0" />
-      <unit id="4140018591229954483" at="200,0,251,0" name="jetbrains.mps.vcs.mergehints.editor.ConceptVCSDescriptor_EditorBuilder_a$strategySingleRoleHandler_94pzwf_d0a0" />
-      <unit id="4140018591229954483" at="283,0,350,0" name="jetbrains.mps.vcs.mergehints.editor.ConceptVCSDescriptor_EditorBuilder_a$featuresListHandler_94pzwf_b1a" />
-      <unit id="4140018591229954483" at="52,0,378,0" name="jetbrains.mps.vcs.mergehints.editor.ConceptVCSDescriptor_EditorBuilder_a" />
+      <unit id="4140018591229954483" at="374,0,377,0" name="jetbrains.mps.vcs.mergehints.editor.ConceptVCSDescriptor_EditorBuilder$PROPS" />
+      <unit id="4140018591229954483" at="362,0,367,0" name="jetbrains.mps.vcs.mergehints.editor.ConceptVCSDescriptor_EditorBuilder$LINKS" />
+      <unit id="4140018591229954483" at="368,0,373,0" name="jetbrains.mps.vcs.mergehints.editor.ConceptVCSDescriptor_EditorBuilder$CONCEPTS" />
+      <unit id="4140018591229954483" at="121,42,129,5" name="jetbrains.mps.vcs.mergehints.editor.ConceptVCSDescriptor_EditorBuilder$1" />
+      <unit id="4140018591229954491" at="147,0,190,0" name="jetbrains.mps.vcs.mergehints.editor.ConceptVCSDescriptor_EditorBuilder$Inline_Builder0" />
+      <unit id="4140018591229954483" at="200,0,251,0" name="jetbrains.mps.vcs.mergehints.editor.ConceptVCSDescriptor_EditorBuilder$strategySingleRoleHandler_94pzwf_d0a0" />
+      <unit id="4140018591229954483" at="283,0,350,0" name="jetbrains.mps.vcs.mergehints.editor.ConceptVCSDescriptor_EditorBuilder$featuresListHandler_94pzwf_b1a" />
+      <unit id="4140018591229954483" at="52,0,378,0" name="jetbrains.mps.vcs.mergehints.editor.ConceptVCSDescriptor_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:7fc84d08-cd05-44dc-a93d-fc7d46adeba1(jetbrains.mps.vcs.mergehints.editor)/5705146868101871887">
     <file name="LinkVCSDescriptor_Editor.java">
-      <node id="5705146868101871887" at="11,79,12,83" concept="6" />
+      <node id="5705146868101871887" at="11,79,12,81" concept="6" />
       <node id="5705146868101871887" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="5705146868101871887" at="11,79,12,83" />
+      <scope id="5705146868101871887" at="11,79,12,81" />
       <scope id="5705146868101871887" at="11,0,14,0">
         <var name="editorContext" id="5705146868101871887" />
         <var name="node" id="5705146868101871887" />
       </scope>
       <unit id="5705146868101871887" at="10,0,15,0" name="jetbrains.mps.vcs.mergehints.editor.LinkVCSDescriptor_Editor" />
     </file>
-    <file name="LinkVCSDescriptor_EditorBuilder_a.java">
-      <node id="5705146868101871887" at="48,97,49,19" concept="9" />
+    <file name="LinkVCSDescriptor_EditorBuilder.java">
+      <node id="5705146868101871887" at="48,95,49,19" concept="9" />
       <node id="5705146868101871887" at="49,19,50,18" concept="1" />
       <node id="5705146868101871887" at="55,26,56,18" concept="6" />
       <node id="5705146868101871887" at="59,39,60,32" concept="6" />
@@ -825,7 +825,7 @@
       <node id="5705146868101871887" at="186,87,189,7" concept="3" />
       <node id="5705146868101871887" at="189,7,192,7" concept="3" />
       <node id="5705146868101871887" at="208,0,211,0" concept="4" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="5705146868101871887" at="48,0,52,0" concept="0" trace="LinkVCSDescriptor_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="5705146868101871887" at="48,0,52,0" concept="0" trace="LinkVCSDescriptor_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="5705146868101871887" at="94,0,98,5" concept="3" />
       <node id="5705146868101871887" at="157,0,161,0" concept="4" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="5705146868101871887" at="165,0,169,0" concept="0" trace="strategySingleRoleHandler_o465bc_c0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
@@ -857,7 +857,7 @@
       <scope id="5705146868101871887" at="190,42,191,49" />
       <scope id="5705146868101871887" at="204,17,205,42" />
       <scope id="5705146868101871887" at="208,40,209,22" />
-      <scope id="5705146868101871887" at="48,97,50,18" />
+      <scope id="5705146868101871887" at="48,95,50,18" />
       <scope id="5705146868101871887" at="95,40,97,42" />
       <scope id="5705146868101871887" at="102,73,104,145">
         <var name="manager" id="5705146868101871887" />
@@ -944,28 +944,28 @@
         <var name="referenceLink" id="5705146868101871887" />
       </scope>
       <scope id="5705146868101871887" at="73,0,108,0" />
-      <unit id="5705146868101871887" at="223,0,226,0" name="jetbrains.mps.vcs.mergehints.editor.LinkVCSDescriptor_EditorBuilder_a$PROPS" />
-      <unit id="5705146868101871887" at="213,0,217,0" name="jetbrains.mps.vcs.mergehints.editor.LinkVCSDescriptor_EditorBuilder_a$LINKS" />
-      <unit id="5705146868101871887" at="218,0,222,0" name="jetbrains.mps.vcs.mergehints.editor.LinkVCSDescriptor_EditorBuilder_a$CONCEPTS" />
-      <unit id="5705146868101871887" at="75,42,90,5" name="jetbrains.mps.vcs.mergehints.editor.LinkVCSDescriptor_EditorBuilder_a$1" />
-      <unit id="5705146868101871897" at="108,0,151,0" name="jetbrains.mps.vcs.mergehints.editor.LinkVCSDescriptor_EditorBuilder_a$Inline_Builder0" />
-      <unit id="5705146868101871887" at="161,0,212,0" name="jetbrains.mps.vcs.mergehints.editor.LinkVCSDescriptor_EditorBuilder_a$strategySingleRoleHandler_o465bc_c0" />
-      <unit id="5705146868101871887" at="44,0,227,0" name="jetbrains.mps.vcs.mergehints.editor.LinkVCSDescriptor_EditorBuilder_a" />
+      <unit id="5705146868101871887" at="223,0,226,0" name="jetbrains.mps.vcs.mergehints.editor.LinkVCSDescriptor_EditorBuilder$PROPS" />
+      <unit id="5705146868101871887" at="213,0,217,0" name="jetbrains.mps.vcs.mergehints.editor.LinkVCSDescriptor_EditorBuilder$LINKS" />
+      <unit id="5705146868101871887" at="218,0,222,0" name="jetbrains.mps.vcs.mergehints.editor.LinkVCSDescriptor_EditorBuilder$CONCEPTS" />
+      <unit id="5705146868101871887" at="75,42,90,5" name="jetbrains.mps.vcs.mergehints.editor.LinkVCSDescriptor_EditorBuilder$1" />
+      <unit id="5705146868101871897" at="108,0,151,0" name="jetbrains.mps.vcs.mergehints.editor.LinkVCSDescriptor_EditorBuilder$Inline_Builder0" />
+      <unit id="5705146868101871887" at="161,0,212,0" name="jetbrains.mps.vcs.mergehints.editor.LinkVCSDescriptor_EditorBuilder$strategySingleRoleHandler_o465bc_c0" />
+      <unit id="5705146868101871887" at="44,0,227,0" name="jetbrains.mps.vcs.mergehints.editor.LinkVCSDescriptor_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:7fc84d08-cd05-44dc-a93d-fc7d46adeba1(jetbrains.mps.vcs.mergehints.editor)/5705146868101872109">
     <file name="PropertyVCSDescriptor_Editor.java">
-      <node id="5705146868101872109" at="11,79,12,87" concept="6" />
+      <node id="5705146868101872109" at="11,79,12,85" concept="6" />
       <node id="5705146868101872109" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="5705146868101872109" at="11,79,12,87" />
+      <scope id="5705146868101872109" at="11,79,12,85" />
       <scope id="5705146868101872109" at="11,0,14,0">
         <var name="editorContext" id="5705146868101872109" />
         <var name="node" id="5705146868101872109" />
       </scope>
       <unit id="5705146868101872109" at="10,0,15,0" name="jetbrains.mps.vcs.mergehints.editor.PropertyVCSDescriptor_Editor" />
     </file>
-    <file name="PropertyVCSDescriptor_EditorBuilder_a.java">
-      <node id="5705146868101872109" at="48,101,49,19" concept="9" />
+    <file name="PropertyVCSDescriptor_EditorBuilder.java">
+      <node id="5705146868101872109" at="48,99,49,19" concept="9" />
       <node id="5705146868101872109" at="49,19,50,18" concept="1" />
       <node id="5705146868101872109" at="55,26,56,18" concept="6" />
       <node id="5705146868101872109" at="59,39,60,32" concept="6" />
@@ -1057,7 +1057,7 @@
       <node id="5705146868101872109" at="186,87,189,7" concept="3" />
       <node id="5705146868101872109" at="189,7,192,7" concept="3" />
       <node id="5705146868101872109" at="208,0,211,0" concept="4" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="5705146868101872109" at="48,0,52,0" concept="0" trace="PropertyVCSDescriptor_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="5705146868101872109" at="48,0,52,0" concept="0" trace="PropertyVCSDescriptor_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="5705146868101872109" at="94,0,98,5" concept="3" />
       <node id="5705146868101872109" at="157,0,161,0" concept="4" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="5705146868101872109" at="165,0,169,0" concept="0" trace="strategySingleRoleHandler_5etlsm_c0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
@@ -1089,7 +1089,7 @@
       <scope id="5705146868101872109" at="190,42,191,49" />
       <scope id="5705146868101872109" at="204,17,205,42" />
       <scope id="5705146868101872109" at="208,40,209,22" />
-      <scope id="5705146868101872109" at="48,101,50,18" />
+      <scope id="5705146868101872109" at="48,99,50,18" />
       <scope id="5705146868101872109" at="95,40,97,43" />
       <scope id="5705146868101872109" at="102,73,104,145">
         <var name="manager" id="5705146868101872109" />
@@ -1176,28 +1176,28 @@
         <var name="referenceLink" id="5705146868101872109" />
       </scope>
       <scope id="5705146868101872109" at="73,0,108,0" />
-      <unit id="5705146868101872109" at="223,0,226,0" name="jetbrains.mps.vcs.mergehints.editor.PropertyVCSDescriptor_EditorBuilder_a$PROPS" />
-      <unit id="5705146868101872109" at="213,0,217,0" name="jetbrains.mps.vcs.mergehints.editor.PropertyVCSDescriptor_EditorBuilder_a$LINKS" />
-      <unit id="5705146868101872109" at="218,0,222,0" name="jetbrains.mps.vcs.mergehints.editor.PropertyVCSDescriptor_EditorBuilder_a$CONCEPTS" />
-      <unit id="5705146868101872109" at="75,42,90,5" name="jetbrains.mps.vcs.mergehints.editor.PropertyVCSDescriptor_EditorBuilder_a$1" />
-      <unit id="5705146868101872113" at="108,0,151,0" name="jetbrains.mps.vcs.mergehints.editor.PropertyVCSDescriptor_EditorBuilder_a$Inline_Builder0" />
-      <unit id="5705146868101872109" at="161,0,212,0" name="jetbrains.mps.vcs.mergehints.editor.PropertyVCSDescriptor_EditorBuilder_a$strategySingleRoleHandler_5etlsm_c0" />
-      <unit id="5705146868101872109" at="44,0,227,0" name="jetbrains.mps.vcs.mergehints.editor.PropertyVCSDescriptor_EditorBuilder_a" />
+      <unit id="5705146868101872109" at="223,0,226,0" name="jetbrains.mps.vcs.mergehints.editor.PropertyVCSDescriptor_EditorBuilder$PROPS" />
+      <unit id="5705146868101872109" at="213,0,217,0" name="jetbrains.mps.vcs.mergehints.editor.PropertyVCSDescriptor_EditorBuilder$LINKS" />
+      <unit id="5705146868101872109" at="218,0,222,0" name="jetbrains.mps.vcs.mergehints.editor.PropertyVCSDescriptor_EditorBuilder$CONCEPTS" />
+      <unit id="5705146868101872109" at="75,42,90,5" name="jetbrains.mps.vcs.mergehints.editor.PropertyVCSDescriptor_EditorBuilder$1" />
+      <unit id="5705146868101872113" at="108,0,151,0" name="jetbrains.mps.vcs.mergehints.editor.PropertyVCSDescriptor_EditorBuilder$Inline_Builder0" />
+      <unit id="5705146868101872109" at="161,0,212,0" name="jetbrains.mps.vcs.mergehints.editor.PropertyVCSDescriptor_EditorBuilder$strategySingleRoleHandler_5etlsm_c0" />
+      <unit id="5705146868101872109" at="44,0,227,0" name="jetbrains.mps.vcs.mergehints.editor.PropertyVCSDescriptor_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:7fc84d08-cd05-44dc-a93d-fc7d46adeba1(jetbrains.mps.vcs.mergehints.editor)/5705146868101924611">
     <file name="OursStrategy_Editor.java">
-      <node id="5705146868101924611" at="11,79,12,78" concept="6" />
+      <node id="5705146868101924611" at="11,79,12,76" concept="6" />
       <node id="5705146868101924611" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="5705146868101924611" at="11,79,12,78" />
+      <scope id="5705146868101924611" at="11,79,12,76" />
       <scope id="5705146868101924611" at="11,0,14,0">
         <var name="editorContext" id="5705146868101924611" />
         <var name="node" id="5705146868101924611" />
       </scope>
       <unit id="5705146868101924611" at="10,0,15,0" name="jetbrains.mps.vcs.mergehints.editor.OursStrategy_Editor" />
     </file>
-    <file name="OursStrategy_EditorBuilder_a.java">
-      <node id="5705146868101924611" at="16,92,17,19" concept="9" />
+    <file name="OursStrategy_EditorBuilder.java">
+      <node id="5705146868101924611" at="16,90,17,19" concept="9" />
       <node id="5705146868101924611" at="17,19,18,18" concept="1" />
       <node id="5705146868101924611" at="23,26,24,18" concept="6" />
       <node id="5705146868101924611" at="27,39,28,30" concept="6" />
@@ -1209,12 +1209,12 @@
       <node id="5705146868101924615" at="36,34,37,22" concept="6" />
       <node id="5705146868101924611" at="13,0,15,0" concept="2" trace="myNode" />
       <node id="5705146868101924611" at="27,0,30,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="5705146868101924611" at="16,0,20,0" concept="0" trace="OursStrategy_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="5705146868101924611" at="16,0,20,0" concept="0" trace="OursStrategy_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="5705146868101924611" at="21,0,26,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="5705146868101924615" at="31,0,39,0" concept="4" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="5705146868101924611" at="23,26,24,18" />
       <scope id="5705146868101924611" at="27,39,28,30" />
-      <scope id="5705146868101924611" at="16,92,18,18" />
+      <scope id="5705146868101924611" at="16,90,18,18" />
       <scope id="5705146868101924611" at="27,0,30,0" />
       <scope id="5705146868101924611" at="16,0,20,0">
         <var name="context" id="5705146868101924611" />
@@ -1225,22 +1225,22 @@
         <var name="editorCell" id="5705146868101924615" />
       </scope>
       <scope id="5705146868101924615" at="31,0,39,0" />
-      <unit id="5705146868101924611" at="12,0,40,0" name="jetbrains.mps.vcs.mergehints.editor.OursStrategy_EditorBuilder_a" />
+      <unit id="5705146868101924611" at="12,0,40,0" name="jetbrains.mps.vcs.mergehints.editor.OursStrategy_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:7fc84d08-cd05-44dc-a93d-fc7d46adeba1(jetbrains.mps.vcs.mergehints.editor)/5705146868101924666">
     <file name="TheirsStrategy_Editor.java">
-      <node id="5705146868101924666" at="11,79,12,80" concept="6" />
+      <node id="5705146868101924666" at="11,79,12,78" concept="6" />
       <node id="5705146868101924666" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="5705146868101924666" at="11,79,12,80" />
+      <scope id="5705146868101924666" at="11,79,12,78" />
       <scope id="5705146868101924666" at="11,0,14,0">
         <var name="editorContext" id="5705146868101924666" />
         <var name="node" id="5705146868101924666" />
       </scope>
       <unit id="5705146868101924666" at="10,0,15,0" name="jetbrains.mps.vcs.mergehints.editor.TheirsStrategy_Editor" />
     </file>
-    <file name="TheirsStrategy_EditorBuilder_a.java">
-      <node id="5705146868101924666" at="16,94,17,19" concept="9" />
+    <file name="TheirsStrategy_EditorBuilder.java">
+      <node id="5705146868101924666" at="16,92,17,19" concept="9" />
       <node id="5705146868101924666" at="17,19,18,18" concept="1" />
       <node id="5705146868101924666" at="23,26,24,18" concept="6" />
       <node id="5705146868101924666" at="27,39,28,30" concept="6" />
@@ -1252,12 +1252,12 @@
       <node id="5705146868101924668" at="36,34,37,22" concept="6" />
       <node id="5705146868101924666" at="13,0,15,0" concept="2" trace="myNode" />
       <node id="5705146868101924666" at="27,0,30,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="5705146868101924666" at="16,0,20,0" concept="0" trace="TheirsStrategy_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="5705146868101924666" at="16,0,20,0" concept="0" trace="TheirsStrategy_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="5705146868101924666" at="21,0,26,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="5705146868101924668" at="31,0,39,0" concept="4" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="5705146868101924666" at="23,26,24,18" />
       <scope id="5705146868101924666" at="27,39,28,30" />
-      <scope id="5705146868101924666" at="16,94,18,18" />
+      <scope id="5705146868101924666" at="16,92,18,18" />
       <scope id="5705146868101924666" at="27,0,30,0" />
       <scope id="5705146868101924666" at="16,0,20,0">
         <var name="context" id="5705146868101924666" />
@@ -1268,7 +1268,7 @@
         <var name="editorCell" id="5705146868101924668" />
       </scope>
       <scope id="5705146868101924668" at="31,0,39,0" />
-      <unit id="5705146868101924666" at="12,0,40,0" name="jetbrains.mps.vcs.mergehints.editor.TheirsStrategy_EditorBuilder_a" />
+      <unit id="5705146868101924666" at="12,0,40,0" name="jetbrains.mps.vcs.mergehints.editor.TheirsStrategy_EditorBuilder" />
     </file>
   </root>
 </debug-info>

@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class MultipleEditorsTestMostSpecificChild_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new MultipleEditorsTestMostSpecificChild_EditorBuilder_a(editorContext, node).createCell();
+    return new MultipleEditorsTestMostSpecificChild_EditorBuilder(editorContext, node).createCell();
   }
 }

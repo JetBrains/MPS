@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class TABCDEF_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new TABCDEF_EditorBuilder_a(editorContext, node).createCell();
+    return new TABCDEF_EditorBuilder(editorContext, node).createCell();
   }
 }

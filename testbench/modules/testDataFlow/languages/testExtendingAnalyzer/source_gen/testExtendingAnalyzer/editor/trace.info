@@ -17,17 +17,17 @@
   </root>
   <root nodeRef="r:b940fadc-cf0e-4ede-b197-0825b3588718(testExtendingAnalyzer.editor)/1417601170173057708">
     <file name="NullUnsafeDotExpression_Editor.java">
-      <node id="1417601170173057708" at="11,79,12,89" concept="6" />
+      <node id="1417601170173057708" at="11,79,12,87" concept="6" />
       <node id="1417601170173057708" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1417601170173057708" at="11,79,12,89" />
+      <scope id="1417601170173057708" at="11,79,12,87" />
       <scope id="1417601170173057708" at="11,0,14,0">
         <var name="editorContext" id="1417601170173057708" />
         <var name="node" id="1417601170173057708" />
       </scope>
       <unit id="1417601170173057708" at="10,0,15,0" name="testExtendingAnalyzer.editor.NullUnsafeDotExpression_Editor" />
     </file>
-    <file name="NullUnsafeDotExpression_EditorBuilder_a.java">
-      <node id="1417601170173057708" at="27,103,28,19" concept="8" />
+    <file name="NullUnsafeDotExpression_EditorBuilder.java">
+      <node id="1417601170173057708" at="27,101,28,19" concept="8" />
       <node id="1417601170173057708" at="28,19,29,18" concept="1" />
       <node id="1417601170173057708" at="34,26,35,18" concept="6" />
       <node id="1417601170173057708" at="38,39,39,32" concept="6" />
@@ -102,7 +102,7 @@
       <node id="1417601170173057708" at="149,87,152,7" concept="3" />
       <node id="1417601170173057708" at="152,7,155,7" concept="3" />
       <node id="1417601170173057708" at="171,0,174,0" concept="4" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="1417601170173057708" at="27,0,31,0" concept="0" trace="NullUnsafeDotExpression_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1417601170173057708" at="27,0,31,0" concept="0" trace="NullUnsafeDotExpression_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1417601170173057708" at="59,0,63,0" concept="4" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1417601170173057708" at="67,0,71,0" concept="0" trace="operandSingleRoleHandler_yu15xo_b0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1417601170173057708" at="120,0,124,0" concept="4" trace="createRefNode_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -133,7 +133,7 @@
       <scope id="1417601170173057708" at="153,42,154,50" />
       <scope id="1417601170173057708" at="167,17,168,42" />
       <scope id="1417601170173057708" at="171,40,172,30" />
-      <scope id="1417601170173057708" at="27,103,29,18" />
+      <scope id="1417601170173057708" at="27,101,29,18" />
       <scope id="1417601170173057708" at="59,40,61,33">
         <var name="provider" id="1417601170173057708" />
       </scope>
@@ -210,25 +210,25 @@
       <scope id="1417601170173057708" at="158,44,169,7" />
       <scope id="1417601170173057708" at="96,0,110,0" />
       <scope id="1417601170173057708" at="157,0,171,0" />
-      <unit id="1417601170173057708" at="176,0,180,0" name="testExtendingAnalyzer.editor.NullUnsafeDotExpression_EditorBuilder_a$LINKS" />
-      <unit id="1417601170173057708" at="63,0,114,0" name="testExtendingAnalyzer.editor.NullUnsafeDotExpression_EditorBuilder_a$operandSingleRoleHandler_yu15xo_b0" />
-      <unit id="1417601170173057708" at="124,0,175,0" name="testExtendingAnalyzer.editor.NullUnsafeDotExpression_EditorBuilder_a$operationSingleRoleHandler_yu15xo_d0" />
-      <unit id="1417601170173057708" at="23,0,181,0" name="testExtendingAnalyzer.editor.NullUnsafeDotExpression_EditorBuilder_a" />
+      <unit id="1417601170173057708" at="176,0,180,0" name="testExtendingAnalyzer.editor.NullUnsafeDotExpression_EditorBuilder$LINKS" />
+      <unit id="1417601170173057708" at="63,0,114,0" name="testExtendingAnalyzer.editor.NullUnsafeDotExpression_EditorBuilder$operandSingleRoleHandler_yu15xo_b0" />
+      <unit id="1417601170173057708" at="124,0,175,0" name="testExtendingAnalyzer.editor.NullUnsafeDotExpression_EditorBuilder$operationSingleRoleHandler_yu15xo_d0" />
+      <unit id="1417601170173057708" at="23,0,181,0" name="testExtendingAnalyzer.editor.NullUnsafeDotExpression_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:b940fadc-cf0e-4ede-b197-0825b3588718(testExtendingAnalyzer.editor)/1417601170173058118">
     <file name="NullSafeDotExpression_Editor.java">
-      <node id="1417601170173058118" at="11,79,12,87" concept="6" />
+      <node id="1417601170173058118" at="11,79,12,85" concept="6" />
       <node id="1417601170173058118" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1417601170173058118" at="11,79,12,87" />
+      <scope id="1417601170173058118" at="11,79,12,85" />
       <scope id="1417601170173058118" at="11,0,14,0">
         <var name="editorContext" id="1417601170173058118" />
         <var name="node" id="1417601170173058118" />
       </scope>
       <unit id="1417601170173058118" at="10,0,15,0" name="testExtendingAnalyzer.editor.NullSafeDotExpression_Editor" />
     </file>
-    <file name="NullSafeDotExpression_EditorBuilder_a.java">
-      <node id="1417601170173058118" at="27,101,28,19" concept="8" />
+    <file name="NullSafeDotExpression_EditorBuilder.java">
+      <node id="1417601170173058118" at="27,99,28,19" concept="8" />
       <node id="1417601170173058118" at="28,19,29,18" concept="1" />
       <node id="1417601170173058118" at="34,26,35,18" concept="6" />
       <node id="1417601170173058118" at="38,39,39,32" concept="6" />
@@ -303,7 +303,7 @@
       <node id="1417601170173058118" at="149,87,152,7" concept="3" />
       <node id="1417601170173058118" at="152,7,155,7" concept="3" />
       <node id="1417601170173058118" at="171,0,174,0" concept="4" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="1417601170173058118" at="27,0,31,0" concept="0" trace="NullSafeDotExpression_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1417601170173058118" at="27,0,31,0" concept="0" trace="NullSafeDotExpression_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1417601170173058118" at="59,0,63,0" concept="4" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1417601170173058118" at="67,0,71,0" concept="0" trace="operandSingleRoleHandler_bewhnj_b0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1417601170173058118" at="120,0,124,0" concept="4" trace="createRefNode_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -334,7 +334,7 @@
       <scope id="1417601170173058118" at="153,42,154,50" />
       <scope id="1417601170173058118" at="167,17,168,42" />
       <scope id="1417601170173058118" at="171,40,172,30" />
-      <scope id="1417601170173058118" at="27,101,29,18" />
+      <scope id="1417601170173058118" at="27,99,29,18" />
       <scope id="1417601170173058118" at="59,40,61,33">
         <var name="provider" id="1417601170173058118" />
       </scope>
@@ -411,10 +411,10 @@
       <scope id="1417601170173058118" at="158,44,169,7" />
       <scope id="1417601170173058118" at="96,0,110,0" />
       <scope id="1417601170173058118" at="157,0,171,0" />
-      <unit id="1417601170173058118" at="176,0,180,0" name="testExtendingAnalyzer.editor.NullSafeDotExpression_EditorBuilder_a$LINKS" />
-      <unit id="1417601170173058118" at="63,0,114,0" name="testExtendingAnalyzer.editor.NullSafeDotExpression_EditorBuilder_a$operandSingleRoleHandler_bewhnj_b0" />
-      <unit id="1417601170173058118" at="124,0,175,0" name="testExtendingAnalyzer.editor.NullSafeDotExpression_EditorBuilder_a$operationSingleRoleHandler_bewhnj_d0" />
-      <unit id="1417601170173058118" at="23,0,181,0" name="testExtendingAnalyzer.editor.NullSafeDotExpression_EditorBuilder_a" />
+      <unit id="1417601170173058118" at="176,0,180,0" name="testExtendingAnalyzer.editor.NullSafeDotExpression_EditorBuilder$LINKS" />
+      <unit id="1417601170173058118" at="63,0,114,0" name="testExtendingAnalyzer.editor.NullSafeDotExpression_EditorBuilder$operandSingleRoleHandler_bewhnj_b0" />
+      <unit id="1417601170173058118" at="124,0,175,0" name="testExtendingAnalyzer.editor.NullSafeDotExpression_EditorBuilder$operationSingleRoleHandler_bewhnj_d0" />
+      <unit id="1417601170173058118" at="23,0,181,0" name="testExtendingAnalyzer.editor.NullSafeDotExpression_EditorBuilder" />
     </file>
   </root>
 </debug-info>

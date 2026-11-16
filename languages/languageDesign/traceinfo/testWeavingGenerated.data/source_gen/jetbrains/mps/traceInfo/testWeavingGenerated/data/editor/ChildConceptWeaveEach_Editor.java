@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ChildConceptWeaveEach_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ChildConceptWeaveEach_EditorBuilder_a(editorContext, node).createCell();
+    return new ChildConceptWeaveEach_EditorBuilder(editorContext, node).createCell();
   }
 }

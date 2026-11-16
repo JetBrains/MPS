@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class WhenExpression_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new WhenExpression_EditorBuilder_a(editorContext, node).createCell();
+    return new WhenExpression_EditorBuilder(editorContext, node).createCell();
   }
 }

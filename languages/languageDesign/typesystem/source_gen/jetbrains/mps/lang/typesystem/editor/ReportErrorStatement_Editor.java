@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ReportErrorStatement_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ReportErrorStatement_EditorBuilder_a(editorContext, node).createCell();
+    return new ReportErrorStatement_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new ReportErrorStatement_InspectorBuilder_a(editorContext, node).createCell();
+    return new ReportErrorStatement_InspectorBuilder(editorContext, node).createCell();
   }
 }

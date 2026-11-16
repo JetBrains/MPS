@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class FunctionTypeParameter_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new FunctionTypeParameter_EditorBuilder_a(editorContext, node).createCell();
+    return new FunctionTypeParameter_EditorBuilder(editorContext, node).createCell();
   }
 }

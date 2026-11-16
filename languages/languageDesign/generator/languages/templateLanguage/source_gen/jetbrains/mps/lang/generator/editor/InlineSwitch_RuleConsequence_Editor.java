@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class InlineSwitch_RuleConsequence_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new InlineSwitch_RuleConsequence_EditorBuilder_a(editorContext, node).createCell();
+    return new InlineSwitch_RuleConsequence_EditorBuilder(editorContext, node).createCell();
   }
 }

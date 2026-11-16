@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class TrimOperation_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new TrimOperation_EditorBuilder_a(editorContext, node).createCell();
+    return new TrimOperation_EditorBuilder(editorContext, node).createCell();
   }
 }

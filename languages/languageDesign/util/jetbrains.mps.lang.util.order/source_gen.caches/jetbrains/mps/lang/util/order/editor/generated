@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="1adbmh2jhkagpvh3ki9pstepw1cqp6v">
-  <files names="EditorAspectDescriptorImpl.java:OrderDeclaration_Editor.java:OrderDeclaration_EditorBuilder_a.java:OrderReference_Editor.java:OrderReference_EditorBuilder_a.java:OrderReference_SubstituteMenu.java" />
+  <files names="EditorAspectDescriptorImpl.java:OrderDeclaration_Editor.java:OrderDeclaration_EditorBuilder.java:OrderReference_Editor.java:OrderReference_EditorBuilder.java:OrderReference_SubstituteMenu.java" />
 </product>
 

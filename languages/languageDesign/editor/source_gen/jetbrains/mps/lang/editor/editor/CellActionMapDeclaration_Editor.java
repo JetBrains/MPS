@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class CellActionMapDeclaration_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new CellActionMapDeclaration_EditorBuilder_a(editorContext, node).createCell();
+    return new CellActionMapDeclaration_EditorBuilder(editorContext, node).createCell();
   }
 }

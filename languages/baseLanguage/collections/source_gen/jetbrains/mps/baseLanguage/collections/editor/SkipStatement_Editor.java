@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class SkipStatement_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new SkipStatement_EditorBuilder_a(editorContext, node).createCell();
+    return new SkipStatement_EditorBuilder(editorContext, node).createCell();
   }
 }

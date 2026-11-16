@@ -51,17 +51,17 @@
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c89590308(jetbrains.mps.lang.constraints.editor)/1147468872959">
     <file name="NodePropertyConstraint_Editor.java">
-      <node id="1147468872959" at="11,79,12,88" concept="7" />
+      <node id="1147468872959" at="11,79,12,86" concept="7" />
       <node id="1147468872959" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1147468872959" at="11,79,12,88" />
+      <scope id="1147468872959" at="11,79,12,86" />
       <scope id="1147468872959" at="11,0,14,0">
         <var name="editorContext" id="1147468872959" />
         <var name="node" id="1147468872959" />
       </scope>
       <unit id="1147468872959" at="10,0,15,0" name="jetbrains.mps.lang.constraints.editor.NodePropertyConstraint_Editor" />
     </file>
-    <file name="NodePropertyConstraint_EditorBuilder_a.java">
-      <node id="1147468872959" at="57,102,58,19" concept="12" />
+    <file name="NodePropertyConstraint_EditorBuilder.java">
+      <node id="1147468872959" at="57,100,58,19" concept="12" />
       <node id="1147468872959" at="58,19,59,18" concept="2" />
       <node id="1147468872959" at="64,26,65,18" concept="7" />
       <node id="1147468872959" at="68,39,69,32" concept="7" />
@@ -324,7 +324,7 @@
       <node id="1147468872959" at="460,87,463,7" concept="4" />
       <node id="1147468872959" at="463,7,466,7" concept="4" />
       <node id="1147468872959" at="486,0,489,0" concept="5" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="1147468872959" at="57,0,61,0" concept="1" trace="NodePropertyConstraint_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1147468872959" at="57,0,61,0" concept="1" trace="NodePropertyConstraint_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1147468872959" at="124,0,128,5" concept="4" />
       <node id="1147468872959" at="224,0,228,0" concept="5" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1147468872959" at="232,0,236,0" concept="1" trace="propertyGetterSingleRoleHandler_vrfi3w_b4a#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
@@ -404,7 +404,7 @@
       <scope id="1147468872959" at="464,42,465,58" />
       <scope id="1147468872959" at="482,17,483,42" />
       <scope id="1147468872959" at="486,40,487,24" />
-      <scope id="1147468872959" at="57,102,59,18" />
+      <scope id="1147468872959" at="57,100,59,18" />
       <scope id="1147468872959" at="125,40,127,57" />
       <scope id="1147468872959" at="132,73,134,145">
         <var name="manager" id="1147468872959" />
@@ -625,31 +625,31 @@
         <var name="referenceLink" id="1147468872959" />
       </scope>
       <scope id="1147468872959" at="103,0,138,0" />
-      <unit id="1147468872959" at="512,0,515,0" name="jetbrains.mps.lang.constraints.editor.NodePropertyConstraint_EditorBuilder_a$PROPS" />
-      <unit id="1147468872959" at="507,0,511,0" name="jetbrains.mps.lang.constraints.editor.NodePropertyConstraint_EditorBuilder_a$CONCEPTS" />
-      <unit id="1147468872959" at="500,0,506,0" name="jetbrains.mps.lang.constraints.editor.NodePropertyConstraint_EditorBuilder_a$LINKS" />
-      <unit id="1147468872959" at="105,42,120,5" name="jetbrains.mps.lang.constraints.editor.NodePropertyConstraint_EditorBuilder_a$1" />
-      <unit id="1149010775553" at="138,0,185,0" name="jetbrains.mps.lang.constraints.editor.NodePropertyConstraint_EditorBuilder_a$Inline_Builder0" />
-      <unit id="1147468872959" at="315,0,366,0" name="jetbrains.mps.lang.constraints.editor.NodePropertyConstraint_EditorBuilder_a$propertySetterSingleRoleHandler_vrfi3w_a3e0" />
-      <unit id="1147468872959" at="370,0,421,0" name="jetbrains.mps.lang.constraints.editor.NodePropertyConstraint_EditorBuilder_a$propertySetterSingleRoleHandler_vrfi3w_a3e0_0" />
-      <unit id="1147468872959" at="228,0,283,0" name="jetbrains.mps.lang.constraints.editor.NodePropertyConstraint_EditorBuilder_a$propertyGetterSingleRoleHandler_vrfi3w_b4a" />
-      <unit id="1147468872959" at="435,0,490,0" name="jetbrains.mps.lang.constraints.editor.NodePropertyConstraint_EditorBuilder_a$propertyValidatorSingleRoleHandler_vrfi3w_f4a" />
-      <unit id="1147468872959" at="53,0,516,0" name="jetbrains.mps.lang.constraints.editor.NodePropertyConstraint_EditorBuilder_a" />
+      <unit id="1147468872959" at="512,0,515,0" name="jetbrains.mps.lang.constraints.editor.NodePropertyConstraint_EditorBuilder$PROPS" />
+      <unit id="1147468872959" at="507,0,511,0" name="jetbrains.mps.lang.constraints.editor.NodePropertyConstraint_EditorBuilder$CONCEPTS" />
+      <unit id="1147468872959" at="500,0,506,0" name="jetbrains.mps.lang.constraints.editor.NodePropertyConstraint_EditorBuilder$LINKS" />
+      <unit id="1147468872959" at="105,42,120,5" name="jetbrains.mps.lang.constraints.editor.NodePropertyConstraint_EditorBuilder$1" />
+      <unit id="1149010775553" at="138,0,185,0" name="jetbrains.mps.lang.constraints.editor.NodePropertyConstraint_EditorBuilder$Inline_Builder0" />
+      <unit id="1147468872959" at="315,0,366,0" name="jetbrains.mps.lang.constraints.editor.NodePropertyConstraint_EditorBuilder$propertySetterSingleRoleHandler_vrfi3w_a3e0" />
+      <unit id="1147468872959" at="370,0,421,0" name="jetbrains.mps.lang.constraints.editor.NodePropertyConstraint_EditorBuilder$propertySetterSingleRoleHandler_vrfi3w_a3e0_0" />
+      <unit id="1147468872959" at="228,0,283,0" name="jetbrains.mps.lang.constraints.editor.NodePropertyConstraint_EditorBuilder$propertyGetterSingleRoleHandler_vrfi3w_b4a" />
+      <unit id="1147468872959" at="435,0,490,0" name="jetbrains.mps.lang.constraints.editor.NodePropertyConstraint_EditorBuilder$propertyValidatorSingleRoleHandler_vrfi3w_f4a" />
+      <unit id="1147468872959" at="53,0,516,0" name="jetbrains.mps.lang.constraints.editor.NodePropertyConstraint_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c89590308(jetbrains.mps.lang.constraints.editor)/1148687645603">
     <file name="NodeReferentConstraint_Editor.java">
-      <node id="1148687645603" at="11,79,12,88" concept="7" />
+      <node id="1148687645603" at="11,79,12,86" concept="7" />
       <node id="1148687645603" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1148687645603" at="11,79,12,88" />
+      <scope id="1148687645603" at="11,79,12,86" />
       <scope id="1148687645603" at="11,0,14,0">
         <var name="editorContext" id="1148687645603" />
         <var name="node" id="1148687645603" />
       </scope>
       <unit id="1148687645603" at="10,0,15,0" name="jetbrains.mps.lang.constraints.editor.NodeReferentConstraint_Editor" />
     </file>
-    <file name="NodeReferentConstraint_EditorBuilder_a.java">
-      <node id="1148687645603" at="59,102,60,19" concept="12" />
+    <file name="NodeReferentConstraint_EditorBuilder.java">
+      <node id="1148687645603" at="59,100,60,19" concept="12" />
       <node id="1148687645603" at="60,19,61,18" concept="2" />
       <node id="1148687645603" at="66,26,67,18" concept="7" />
       <node id="1148687645603" at="70,39,71,32" concept="7" />
@@ -932,7 +932,7 @@
       <node id="1148687645603" at="484,87,487,7" concept="4" />
       <node id="1148687645603" at="487,7,490,7" concept="4" />
       <node id="1148687645603" at="510,0,513,0" concept="5" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="1148687645603" at="59,0,63,0" concept="1" trace="NodeReferentConstraint_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1148687645603" at="59,0,63,0" concept="1" trace="NodeReferentConstraint_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1148687645603" at="126,0,130,5" concept="4" />
       <node id="1148687645603" at="237,0,241,0" concept="5" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1148687645603" at="245,0,249,0" concept="1" trace="referentSetHandlerSingleRoleHandler_y1wtxd_b4a#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
@@ -1013,7 +1013,7 @@
       <scope id="1148687645603" at="488,42,489,53" />
       <scope id="1148687645603" at="506,17,507,42" />
       <scope id="1148687645603" at="510,40,511,16" />
-      <scope id="1148687645603" at="59,102,61,18" />
+      <scope id="1148687645603" at="59,100,61,18" />
       <scope id="1148687645603" at="127,40,129,53" />
       <scope id="1148687645603" at="134,73,136,145">
         <var name="manager" id="1148687645603" />
@@ -1243,31 +1243,31 @@
         <var name="referenceLink" id="1148687645603" />
       </scope>
       <scope id="1148687645603" at="105,0,140,0" />
-      <unit id="1148687645603" at="537,0,540,0" name="jetbrains.mps.lang.constraints.editor.NodeReferentConstraint_EditorBuilder_a$PROPS" />
-      <unit id="1148687645603" at="532,0,536,0" name="jetbrains.mps.lang.constraints.editor.NodeReferentConstraint_EditorBuilder_a$CONCEPTS" />
-      <unit id="1148687645603" at="524,0,531,0" name="jetbrains.mps.lang.constraints.editor.NodeReferentConstraint_EditorBuilder_a$LINKS" />
-      <unit id="1148687645603" at="107,42,122,5" name="jetbrains.mps.lang.constraints.editor.NodeReferentConstraint_EditorBuilder_a$1" />
-      <unit id="1148929692478" at="140,0,187,0" name="jetbrains.mps.lang.constraints.editor.NodeReferentConstraint_EditorBuilder_a$Inline_Builder0" />
-      <unit id="1148687645603" at="241,0,296,0" name="jetbrains.mps.lang.constraints.editor.NodeReferentConstraint_EditorBuilder_a$referentSetHandlerSingleRoleHandler_y1wtxd_b4a" />
-      <unit id="1148687645603" at="320,0,375,0" name="jetbrains.mps.lang.constraints.editor.NodeReferentConstraint_EditorBuilder_a$keepsReferenceSingleRoleHandler_y1wtxd_b2e0" />
-      <unit id="1148687645603" at="389,0,444,0" name="jetbrains.mps.lang.constraints.editor.NodeReferentConstraint_EditorBuilder_a$searchScopeFactorySingleRoleHandler_y1wtxd_e4a" />
-      <unit id="1148687645603" at="459,0,514,0" name="jetbrains.mps.lang.constraints.editor.NodeReferentConstraint_EditorBuilder_a$presentationSingleRoleHandler_y1wtxd_g4a" />
-      <unit id="1148687645603" at="55,0,541,0" name="jetbrains.mps.lang.constraints.editor.NodeReferentConstraint_EditorBuilder_a" />
+      <unit id="1148687645603" at="537,0,540,0" name="jetbrains.mps.lang.constraints.editor.NodeReferentConstraint_EditorBuilder$PROPS" />
+      <unit id="1148687645603" at="532,0,536,0" name="jetbrains.mps.lang.constraints.editor.NodeReferentConstraint_EditorBuilder$CONCEPTS" />
+      <unit id="1148687645603" at="524,0,531,0" name="jetbrains.mps.lang.constraints.editor.NodeReferentConstraint_EditorBuilder$LINKS" />
+      <unit id="1148687645603" at="107,42,122,5" name="jetbrains.mps.lang.constraints.editor.NodeReferentConstraint_EditorBuilder$1" />
+      <unit id="1148929692478" at="140,0,187,0" name="jetbrains.mps.lang.constraints.editor.NodeReferentConstraint_EditorBuilder$Inline_Builder0" />
+      <unit id="1148687645603" at="241,0,296,0" name="jetbrains.mps.lang.constraints.editor.NodeReferentConstraint_EditorBuilder$referentSetHandlerSingleRoleHandler_y1wtxd_b4a" />
+      <unit id="1148687645603" at="320,0,375,0" name="jetbrains.mps.lang.constraints.editor.NodeReferentConstraint_EditorBuilder$keepsReferenceSingleRoleHandler_y1wtxd_b2e0" />
+      <unit id="1148687645603" at="389,0,444,0" name="jetbrains.mps.lang.constraints.editor.NodeReferentConstraint_EditorBuilder$searchScopeFactorySingleRoleHandler_y1wtxd_e4a" />
+      <unit id="1148687645603" at="459,0,514,0" name="jetbrains.mps.lang.constraints.editor.NodeReferentConstraint_EditorBuilder$presentationSingleRoleHandler_y1wtxd_g4a" />
+      <unit id="1148687645603" at="55,0,541,0" name="jetbrains.mps.lang.constraints.editor.NodeReferentConstraint_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c89590308(jetbrains.mps.lang.constraints.editor)/1159289810183">
     <file name="NodeDefaultSearchScope_Editor.java">
-      <node id="1159289810183" at="11,79,12,88" concept="7" />
+      <node id="1159289810183" at="11,79,12,86" concept="7" />
       <node id="1159289810183" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1159289810183" at="11,79,12,88" />
+      <scope id="1159289810183" at="11,79,12,86" />
       <scope id="1159289810183" at="11,0,14,0">
         <var name="editorContext" id="1159289810183" />
         <var name="node" id="1159289810183" />
       </scope>
       <unit id="1159289810183" at="10,0,15,0" name="jetbrains.mps.lang.constraints.editor.NodeDefaultSearchScope_Editor" />
     </file>
-    <file name="NodeDefaultSearchScope_EditorBuilder_a.java">
-      <node id="1159289810183" at="31,102,32,19" concept="12" />
+    <file name="NodeDefaultSearchScope_EditorBuilder.java">
+      <node id="1159289810183" at="31,100,32,19" concept="12" />
       <node id="1159289810183" at="32,19,33,18" concept="2" />
       <node id="1159289810183" at="38,26,39,18" concept="7" />
       <node id="1159289810183" at="42,39,43,32" concept="7" />
@@ -1375,7 +1375,7 @@
       <node id="1159289810183" at="186,87,189,7" concept="4" />
       <node id="1159289810183" at="189,7,192,7" concept="4" />
       <node id="1159289810183" at="212,0,215,0" concept="5" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="1159289810183" at="31,0,35,0" concept="1" trace="NodeDefaultSearchScope_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1159289810183" at="31,0,35,0" concept="1" trace="NodeDefaultSearchScope_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1159289810183" at="88,0,92,0" concept="5" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1159289810183" at="96,0,100,0" concept="1" trace="searchScopeFactorySingleRoleHandler_3o8vz3_b1a#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1159289810183" at="157,0,161,0" concept="5" trace="createRefNode_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -1408,7 +1408,7 @@
       <scope id="1159289810183" at="190,42,191,53" />
       <scope id="1159289810183" at="208,17,209,42" />
       <scope id="1159289810183" at="212,40,213,33" />
-      <scope id="1159289810183" at="31,102,33,18" />
+      <scope id="1159289810183" at="31,100,33,18" />
       <scope id="1159289810183" at="88,40,90,33">
         <var name="provider" id="1159289810183" />
       </scope>
@@ -1501,25 +1501,25 @@
       <scope id="1159289810183" at="65,0,78,0" />
       <scope id="1159289810183" at="129,0,143,0" />
       <scope id="1159289810183" at="198,0,212,0" />
-      <unit id="1159289810183" at="217,0,221,0" name="jetbrains.mps.lang.constraints.editor.NodeDefaultSearchScope_EditorBuilder_a$LINKS" />
-      <unit id="1159289810183" at="92,0,147,0" name="jetbrains.mps.lang.constraints.editor.NodeDefaultSearchScope_EditorBuilder_a$searchScopeFactorySingleRoleHandler_3o8vz3_b1a" />
-      <unit id="1159289810183" at="161,0,216,0" name="jetbrains.mps.lang.constraints.editor.NodeDefaultSearchScope_EditorBuilder_a$presentationSingleRoleHandler_3o8vz3_d1a" />
-      <unit id="1159289810183" at="27,0,222,0" name="jetbrains.mps.lang.constraints.editor.NodeDefaultSearchScope_EditorBuilder_a" />
+      <unit id="1159289810183" at="217,0,221,0" name="jetbrains.mps.lang.constraints.editor.NodeDefaultSearchScope_EditorBuilder$LINKS" />
+      <unit id="1159289810183" at="92,0,147,0" name="jetbrains.mps.lang.constraints.editor.NodeDefaultSearchScope_EditorBuilder$searchScopeFactorySingleRoleHandler_3o8vz3_b1a" />
+      <unit id="1159289810183" at="161,0,216,0" name="jetbrains.mps.lang.constraints.editor.NodeDefaultSearchScope_EditorBuilder$presentationSingleRoleHandler_3o8vz3_d1a" />
+      <unit id="1159289810183" at="27,0,222,0" name="jetbrains.mps.lang.constraints.editor.NodeDefaultSearchScope_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c89590308(jetbrains.mps.lang.constraints.editor)/1213094054781">
     <file name="ConceptConstraints_Editor.java">
-      <node id="1213094054781" at="11,79,12,84" concept="7" />
+      <node id="1213094054781" at="11,79,12,82" concept="7" />
       <node id="1213094054781" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1213094054781" at="11,79,12,84" />
+      <scope id="1213094054781" at="11,79,12,82" />
       <scope id="1213094054781" at="11,0,14,0">
         <var name="editorContext" id="1213094054781" />
         <var name="node" id="1213094054781" />
       </scope>
       <unit id="1213094054781" at="10,0,15,0" name="jetbrains.mps.lang.constraints.editor.ConceptConstraints_Editor" />
     </file>
-    <file name="ConceptConstraints_EditorBuilder_a.java">
-      <node id="1213094054781" at="62,98,63,19" concept="12" />
+    <file name="ConceptConstraints_EditorBuilder.java">
+      <node id="1213094054781" at="62,96,63,19" concept="12" />
       <node id="1213094054781" at="63,19,64,18" concept="2" />
       <node id="1213094054781" at="69,26,70,18" concept="7" />
       <node id="1213094054781" at="73,39,74,32" concept="7" />
@@ -2204,7 +2204,7 @@
       <node id="1213094054781" at="1131,0,1134,0" concept="5" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="1213094054781" at="1134,0,1137,0" concept="5" trace="createNodeToInsert#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/model/SNode;I)Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1213094054781" at="1183,96,1186,9" concept="4" />
-      <node id="1213094054781" at="62,0,66,0" concept="1" trace="ConceptConstraints_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1213094054781" at="62,0,66,0" concept="1" trace="ConceptConstraints_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1213094054781" at="109,0,113,5" concept="4" />
       <node id="3754598629525415323" at="220,0,224,0" concept="5" trace="nodeCondition2#()Z" />
       <node id="1213094054781" at="255,0,259,5" concept="4" />
@@ -2415,7 +2415,7 @@
       <scope id="1213094054781" at="1134,109,1135,52" />
       <scope id="1213094054781" at="1157,17,1158,42" />
       <scope id="1213094054781" at="1184,34,1185,91" />
-      <scope id="1213094054781" at="62,98,64,18" />
+      <scope id="1213094054781" at="62,96,64,18" />
       <scope id="1213094054781" at="110,40,112,46" />
       <scope id="1213094054781" at="117,73,119,145">
         <var name="manager" id="1213094054781" />
@@ -2990,39 +2990,39 @@
         <var name="style" id="1213094054781" />
       </scope>
       <scope id="1213094054781" at="176,0,214,0" />
-      <unit id="1213094054781" at="1227,0,1232,0" name="jetbrains.mps.lang.constraints.editor.ConceptConstraints_EditorBuilder_a$PROPS" />
-      <unit id="1213094054781" at="97,42,105,5" name="jetbrains.mps.lang.constraints.editor.ConceptConstraints_EditorBuilder_a$1" />
-      <unit id="1213094054781" at="243,42,251,5" name="jetbrains.mps.lang.constraints.editor.ConceptConstraints_EditorBuilder_a$2" />
-      <unit id="1213094054781" at="1217,0,1226,0" name="jetbrains.mps.lang.constraints.editor.ConceptConstraints_EditorBuilder_a$CONCEPTS" />
-      <unit id="1213094054781" at="1201,0,1216,0" name="jetbrains.mps.lang.constraints.editor.ConceptConstraints_EditorBuilder_a$LINKS" />
-      <unit id="1213094094191" at="123,0,166,0" name="jetbrains.mps.lang.constraints.editor.ConceptConstraints_EditorBuilder_a$Inline_Builder0" />
-      <unit id="2118147876589610076" at="272,0,315,0" name="jetbrains.mps.lang.constraints.editor.ConceptConstraints_EditorBuilder_a$Inline_Builder1" />
-      <unit id="1213094054781" at="1026,0,1077,0" name="jetbrains.mps.lang.constraints.editor.ConceptConstraints_EditorBuilder_a$defaultScopeSingleRoleHandler_g00aa7_r3a" />
-      <unit id="1213094054781" at="338,0,393,0" name="jetbrains.mps.lang.constraints.editor.ConceptConstraints_EditorBuilder_a$canBeChildSingleRoleHandler_g00aa7_c3a" />
-      <unit id="1213094054781" at="428,0,483,0" name="jetbrains.mps.lang.constraints.editor.ConceptConstraints_EditorBuilder_a$canBeRootSingleRoleHandler_g00aa7_b4d0" />
-      <unit id="1213094054781" at="506,0,561,0" name="jetbrains.mps.lang.constraints.editor.ConceptConstraints_EditorBuilder_a$canBeParentSingleRoleHandler_g00aa7_g3a" />
-      <unit id="1213094054781" at="584,0,639,0" name="jetbrains.mps.lang.constraints.editor.ConceptConstraints_EditorBuilder_a$canBeAncestorSingleRoleHandler_g00aa7_j3a" />
-      <unit id="1213094054781" at="679,0,734,0" name="jetbrains.mps.lang.constraints.editor.ConceptConstraints_EditorBuilder_a$instanceIconSingleRoleHandler_g00aa7_b11d0" />
-      <unit id="1213094054781" at="757,0,812,0" name="jetbrains.mps.lang.constraints.editor.ConceptConstraints_EditorBuilder_a$alternativeIconSingleRoleHandler_g00aa7_b2l3a" />
-      <unit id="1213094054781" at="1115,0,1190,0" name="jetbrains.mps.lang.constraints.editor.ConceptConstraints_EditorBuilder_a$methodDeclarationListHandler_g00aa7_v3a" />
-      <unit id="1213094054781" at="833,0,909,0" name="jetbrains.mps.lang.constraints.editor.ConceptConstraints_EditorBuilder_a$propertyListHandler_g00aa7_m3a" />
-      <unit id="1213094054781" at="930,0,1006,0" name="jetbrains.mps.lang.constraints.editor.ConceptConstraints_EditorBuilder_a$referentListHandler_g00aa7_o3a" />
-      <unit id="1213094054781" at="58,0,1233,0" name="jetbrains.mps.lang.constraints.editor.ConceptConstraints_EditorBuilder_a" />
+      <unit id="1213094054781" at="1227,0,1232,0" name="jetbrains.mps.lang.constraints.editor.ConceptConstraints_EditorBuilder$PROPS" />
+      <unit id="1213094054781" at="97,42,105,5" name="jetbrains.mps.lang.constraints.editor.ConceptConstraints_EditorBuilder$1" />
+      <unit id="1213094054781" at="243,42,251,5" name="jetbrains.mps.lang.constraints.editor.ConceptConstraints_EditorBuilder$2" />
+      <unit id="1213094054781" at="1217,0,1226,0" name="jetbrains.mps.lang.constraints.editor.ConceptConstraints_EditorBuilder$CONCEPTS" />
+      <unit id="1213094054781" at="1201,0,1216,0" name="jetbrains.mps.lang.constraints.editor.ConceptConstraints_EditorBuilder$LINKS" />
+      <unit id="1213094094191" at="123,0,166,0" name="jetbrains.mps.lang.constraints.editor.ConceptConstraints_EditorBuilder$Inline_Builder0" />
+      <unit id="2118147876589610076" at="272,0,315,0" name="jetbrains.mps.lang.constraints.editor.ConceptConstraints_EditorBuilder$Inline_Builder1" />
+      <unit id="1213094054781" at="1026,0,1077,0" name="jetbrains.mps.lang.constraints.editor.ConceptConstraints_EditorBuilder$defaultScopeSingleRoleHandler_g00aa7_r3a" />
+      <unit id="1213094054781" at="338,0,393,0" name="jetbrains.mps.lang.constraints.editor.ConceptConstraints_EditorBuilder$canBeChildSingleRoleHandler_g00aa7_c3a" />
+      <unit id="1213094054781" at="428,0,483,0" name="jetbrains.mps.lang.constraints.editor.ConceptConstraints_EditorBuilder$canBeRootSingleRoleHandler_g00aa7_b4d0" />
+      <unit id="1213094054781" at="506,0,561,0" name="jetbrains.mps.lang.constraints.editor.ConceptConstraints_EditorBuilder$canBeParentSingleRoleHandler_g00aa7_g3a" />
+      <unit id="1213094054781" at="584,0,639,0" name="jetbrains.mps.lang.constraints.editor.ConceptConstraints_EditorBuilder$canBeAncestorSingleRoleHandler_g00aa7_j3a" />
+      <unit id="1213094054781" at="679,0,734,0" name="jetbrains.mps.lang.constraints.editor.ConceptConstraints_EditorBuilder$instanceIconSingleRoleHandler_g00aa7_b11d0" />
+      <unit id="1213094054781" at="757,0,812,0" name="jetbrains.mps.lang.constraints.editor.ConceptConstraints_EditorBuilder$alternativeIconSingleRoleHandler_g00aa7_b2l3a" />
+      <unit id="1213094054781" at="1115,0,1190,0" name="jetbrains.mps.lang.constraints.editor.ConceptConstraints_EditorBuilder$methodDeclarationListHandler_g00aa7_v3a" />
+      <unit id="1213094054781" at="833,0,909,0" name="jetbrains.mps.lang.constraints.editor.ConceptConstraints_EditorBuilder$propertyListHandler_g00aa7_m3a" />
+      <unit id="1213094054781" at="930,0,1006,0" name="jetbrains.mps.lang.constraints.editor.ConceptConstraints_EditorBuilder$referentListHandler_g00aa7_o3a" />
+      <unit id="1213094054781" at="58,0,1233,0" name="jetbrains.mps.lang.constraints.editor.ConceptConstraints_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c89590308(jetbrains.mps.lang.constraints.editor)/1278414312222851698">
     <file name="ConstraintsMigration_Editor.java">
-      <node id="1278414312222851698" at="11,79,12,86" concept="7" />
+      <node id="1278414312222851698" at="11,79,12,84" concept="7" />
       <node id="1278414312222851698" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1278414312222851698" at="11,79,12,86" />
+      <scope id="1278414312222851698" at="11,79,12,84" />
       <scope id="1278414312222851698" at="11,0,14,0">
         <var name="editorContext" id="1278414312222851698" />
         <var name="node" id="1278414312222851698" />
       </scope>
       <unit id="1278414312222851698" at="10,0,15,0" name="jetbrains.mps.lang.constraints.editor.ConstraintsMigration_Editor" />
     </file>
-    <file name="ConstraintsMigration_EditorBuilder_a.java">
-      <node id="1278414312222851698" at="23,100,24,19" concept="12" />
+    <file name="ConstraintsMigration_EditorBuilder.java">
+      <node id="1278414312222851698" at="23,98,24,19" concept="12" />
       <node id="1278414312222851698" at="24,19,25,18" concept="2" />
       <node id="1278414312222851698" at="30,26,31,18" concept="7" />
       <node id="1278414312222851698" at="34,39,35,32" concept="7" />
@@ -3045,14 +3045,14 @@
       <node id="1278414312222851715" at="58,93,59,22" concept="7" />
       <node id="1278414312222851698" at="20,0,22,0" concept="3" trace="myNode" />
       <node id="1278414312222851698" at="34,0,37,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="1278414312222851698" at="23,0,27,0" concept="1" trace="ConstraintsMigration_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1278414312222851698" at="23,0,27,0" concept="1" trace="ConstraintsMigration_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1278414312222851698" at="28,0,33,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1278414312222851715" at="56,0,61,0" concept="5" trace="createAttributedNodeCell_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1278414312222851698" at="38,0,47,0" concept="5" trace="createCollection_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1278414312222851710" at="47,0,56,0" concept="5" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="1278414312222851698" at="30,26,31,18" />
       <scope id="1278414312222851698" at="34,39,35,32" />
-      <scope id="1278414312222851698" at="23,100,25,18" />
+      <scope id="1278414312222851698" at="23,98,25,18" />
       <scope id="1278414312222851698" at="34,0,37,0" />
       <scope id="1278414312222851715" at="56,51,59,22">
         <var name="editorCell" id="1278414312222851715" />
@@ -3073,7 +3073,7 @@
       </scope>
       <scope id="1278414312222851698" at="38,0,47,0" />
       <scope id="1278414312222851710" at="47,0,56,0" />
-      <unit id="1278414312222851698" at="19,0,62,0" name="jetbrains.mps.lang.constraints.editor.ConstraintsMigration_EditorBuilder_a" />
+      <unit id="1278414312222851698" at="19,0,62,0" name="jetbrains.mps.lang.constraints.editor.ConstraintsMigration_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c89590308(jetbrains.mps.lang.constraints.editor)/1741258697587239313">
@@ -3240,17 +3240,17 @@
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c89590308(jetbrains.mps.lang.constraints.editor)/1926061574202685480">
     <file name="ModelScopeEval_Editor.java">
-      <node id="1926061574202685480" at="11,79,12,80" concept="7" />
+      <node id="1926061574202685480" at="11,79,12,78" concept="7" />
       <node id="1926061574202685480" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1926061574202685480" at="11,79,12,80" />
+      <scope id="1926061574202685480" at="11,79,12,78" />
       <scope id="1926061574202685480" at="11,0,14,0">
         <var name="editorContext" id="1926061574202685480" />
         <var name="node" id="1926061574202685480" />
       </scope>
       <unit id="1926061574202685480" at="10,0,15,0" name="jetbrains.mps.lang.constraints.editor.ModelScopeEval_Editor" />
     </file>
-    <file name="ModelScopeEval_EditorBuilder_a.java">
-      <node id="1926061574202685480" at="27,94,28,19" concept="12" />
+    <file name="ModelScopeEval_EditorBuilder.java">
+      <node id="1926061574202685480" at="27,92,28,19" concept="12" />
       <node id="1926061574202685480" at="28,19,29,18" concept="2" />
       <node id="1926061574202685480" at="34,26,35,18" concept="7" />
       <node id="1926061574202685480" at="38,39,39,32" concept="7" />
@@ -3335,7 +3335,7 @@
       <node id="1926061574202685480" at="157,87,160,7" concept="4" />
       <node id="1926061574202685480" at="160,7,163,7" concept="4" />
       <node id="1926061574202685480" at="179,0,182,0" concept="5" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="1926061574202685480" at="27,0,31,0" concept="1" trace="ModelScopeEval_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1926061574202685480" at="27,0,31,0" concept="1" trace="ModelScopeEval_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1926061574202685480" at="67,0,71,0" concept="5" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1926061574202685480" at="75,0,79,0" concept="1" trace="factorySingleRoleHandler_6xkqxu_c0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1926061574202685480" at="128,0,132,0" concept="5" trace="createRefNode_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -3368,7 +3368,7 @@
       <scope id="1926061574202685480" at="161,42,162,49" />
       <scope id="1926061574202685480" at="175,17,176,42" />
       <scope id="1926061574202685480" at="179,40,180,29" />
-      <scope id="1926061574202685480" at="27,94,29,18" />
+      <scope id="1926061574202685480" at="27,92,29,18" />
       <scope id="1926061574202685480" at="67,40,69,33">
         <var name="provider" id="1926061574202685480" />
       </scope>
@@ -3453,25 +3453,25 @@
       <scope id="1926061574202685480" at="42,0,55,0" />
       <scope id="1926061574202685480" at="104,0,118,0" />
       <scope id="1926061574202685480" at="165,0,179,0" />
-      <unit id="1926061574202685480" at="190,0,194,0" name="jetbrains.mps.lang.constraints.editor.ModelScopeEval_EditorBuilder_a$LINKS" />
-      <unit id="1926061574202685480" at="71,0,122,0" name="jetbrains.mps.lang.constraints.editor.ModelScopeEval_EditorBuilder_a$factorySingleRoleHandler_6xkqxu_c0" />
-      <unit id="1926061574202685480" at="132,0,183,0" name="jetbrains.mps.lang.constraints.editor.ModelScopeEval_EditorBuilder_a$cacheKeySingleRoleHandler_6xkqxu_e0" />
-      <unit id="1926061574202685480" at="23,0,195,0" name="jetbrains.mps.lang.constraints.editor.ModelScopeEval_EditorBuilder_a" />
+      <unit id="1926061574202685480" at="190,0,194,0" name="jetbrains.mps.lang.constraints.editor.ModelScopeEval_EditorBuilder$LINKS" />
+      <unit id="1926061574202685480" at="71,0,122,0" name="jetbrains.mps.lang.constraints.editor.ModelScopeEval_EditorBuilder$factorySingleRoleHandler_6xkqxu_c0" />
+      <unit id="1926061574202685480" at="132,0,183,0" name="jetbrains.mps.lang.constraints.editor.ModelScopeEval_EditorBuilder$cacheKeySingleRoleHandler_6xkqxu_e0" />
+      <unit id="1926061574202685480" at="23,0,195,0" name="jetbrains.mps.lang.constraints.editor.ModelScopeEval_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c89590308(jetbrains.mps.lang.constraints.editor)/1926061574202686142">
     <file name="RefScopeType_Editor.java">
-      <node id="1926061574202686142" at="11,79,12,78" concept="7" />
+      <node id="1926061574202686142" at="11,79,12,76" concept="7" />
       <node id="1926061574202686142" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1926061574202686142" at="11,79,12,78" />
+      <scope id="1926061574202686142" at="11,79,12,76" />
       <scope id="1926061574202686142" at="11,0,14,0">
         <var name="editorContext" id="1926061574202686142" />
         <var name="node" id="1926061574202686142" />
       </scope>
       <unit id="1926061574202686142" at="10,0,15,0" name="jetbrains.mps.lang.constraints.editor.RefScopeType_Editor" />
     </file>
-    <file name="RefScopeType_EditorBuilder_a.java">
-      <node id="1926061574202686142" at="16,92,17,19" concept="12" />
+    <file name="RefScopeType_EditorBuilder.java">
+      <node id="1926061574202686142" at="16,90,17,19" concept="12" />
       <node id="1926061574202686142" at="17,19,18,18" concept="2" />
       <node id="1926061574202686142" at="23,26,24,18" concept="7" />
       <node id="1926061574202686142" at="27,39,28,30" concept="7" />
@@ -3483,12 +3483,12 @@
       <node id="1926061574202686144" at="36,34,37,22" concept="7" />
       <node id="1926061574202686142" at="13,0,15,0" concept="3" trace="myNode" />
       <node id="1926061574202686142" at="27,0,30,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="1926061574202686142" at="16,0,20,0" concept="1" trace="RefScopeType_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1926061574202686142" at="16,0,20,0" concept="1" trace="RefScopeType_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1926061574202686142" at="21,0,26,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1926061574202686144" at="31,0,39,0" concept="5" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="1926061574202686142" at="23,26,24,18" />
       <scope id="1926061574202686142" at="27,39,28,30" />
-      <scope id="1926061574202686142" at="16,92,18,18" />
+      <scope id="1926061574202686142" at="16,90,18,18" />
       <scope id="1926061574202686142" at="27,0,30,0" />
       <scope id="1926061574202686142" at="16,0,20,0">
         <var name="context" id="1926061574202686142" />
@@ -3499,17 +3499,17 @@
         <var name="editorCell" id="1926061574202686144" />
       </scope>
       <scope id="1926061574202686144" at="31,0,39,0" />
-      <unit id="1926061574202686142" at="12,0,40,0" name="jetbrains.mps.lang.constraints.editor.RefScopeType_EditorBuilder_a" />
+      <unit id="1926061574202686142" at="12,0,40,0" name="jetbrains.mps.lang.constraints.editor.RefScopeType_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c89590308(jetbrains.mps.lang.constraints.editor)/1926061574202943482">
     <file name="RootScopeEval_Editor.java">
-      <node id="1926061574202943482" at="11,79,12,79" concept="7" />
-      <node id="1926061574202943482" at="14,82,15,82" concept="7" />
+      <node id="1926061574202943482" at="11,79,12,77" concept="7" />
+      <node id="1926061574202943482" at="14,82,15,80" concept="7" />
       <node id="1926061574202943482" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1926061574202943482" at="14,0,17,0" concept="5" trace="createInspectedCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1926061574202943482" at="11,79,12,79" />
-      <scope id="1926061574202943482" at="14,82,15,82" />
+      <scope id="1926061574202943482" at="11,79,12,77" />
+      <scope id="1926061574202943482" at="14,82,15,80" />
       <scope id="1926061574202943482" at="11,0,14,0">
         <var name="editorContext" id="1926061574202943482" />
         <var name="node" id="1926061574202943482" />
@@ -3520,8 +3520,8 @@
       </scope>
       <unit id="1926061574202943482" at="10,0,18,0" name="jetbrains.mps.lang.constraints.editor.RootScopeEval_Editor" />
     </file>
-    <file name="RootScopeEval_EditorBuilder_a.java">
-      <node id="1926061574202943482" at="41,93,42,19" concept="12" />
+    <file name="RootScopeEval_EditorBuilder.java">
+      <node id="1926061574202943482" at="41,91,42,19" concept="12" />
       <node id="1926061574202943482" at="42,19,43,18" concept="2" />
       <node id="1926061574202943482" at="48,26,49,18" concept="7" />
       <node id="1926061574202943482" at="52,39,53,32" concept="7" />
@@ -3596,7 +3596,7 @@
       <node id="1926061574202943561" at="115,0,117,0" concept="3" trace="myNode" />
       <node id="1926061574202943482" at="52,0,55,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1926061574202943561" at="125,0,128,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="1926061574202943482" at="41,0,45,0" concept="1" trace="RootScopeEval_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1926061574202943482" at="41,0,45,0" concept="1" trace="RootScopeEval_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1926061574202943482" at="100,0,104,5" concept="4" />
       <node id="1926061574202943482" at="46,0,51,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1926061574202943482" at="107,205,112,22" concept="4" />
@@ -3618,7 +3618,7 @@
       <scope id="1926061574202943561" at="125,41,126,32" />
       <scope id="1926061574202943561" at="131,28,132,20" />
       <scope id="1926061574202944724" at="152,17,153,42" />
-      <scope id="1926061574202943482" at="41,93,43,18" />
+      <scope id="1926061574202943482" at="41,91,43,18" />
       <scope id="1926061574202943482" at="101,40,103,43" />
       <scope id="1926061574202943482" at="108,73,110,145">
         <var name="manager" id="1926061574202943482" />
@@ -3684,15 +3684,15 @@
         <var name="referenceLink" id="1926061574202943482" />
       </scope>
       <scope id="1926061574202943482" at="79,0,114,0" />
-      <unit id="1926061574202943482" at="164,0,167,0" name="jetbrains.mps.lang.constraints.editor.RootScopeEval_EditorBuilder_a$LINKS" />
-      <unit id="1926061574202943482" at="173,0,176,0" name="jetbrains.mps.lang.constraints.editor.RootScopeEval_EditorBuilder_a$PROPS" />
-      <unit id="1926061574202943482" at="168,0,172,0" name="jetbrains.mps.lang.constraints.editor.RootScopeEval_EditorBuilder_a$CONCEPTS" />
-      <unit id="1926061574202943482" at="81,42,96,5" name="jetbrains.mps.lang.constraints.editor.RootScopeEval_EditorBuilder_a$1" />
-      <unit id="1926061574202943561" at="114,0,157,0" name="jetbrains.mps.lang.constraints.editor.RootScopeEval_EditorBuilder_a$Inline_Builder0" />
-      <unit id="1926061574202943482" at="37,0,177,0" name="jetbrains.mps.lang.constraints.editor.RootScopeEval_EditorBuilder_a" />
+      <unit id="1926061574202943482" at="164,0,167,0" name="jetbrains.mps.lang.constraints.editor.RootScopeEval_EditorBuilder$LINKS" />
+      <unit id="1926061574202943482" at="173,0,176,0" name="jetbrains.mps.lang.constraints.editor.RootScopeEval_EditorBuilder$PROPS" />
+      <unit id="1926061574202943482" at="168,0,172,0" name="jetbrains.mps.lang.constraints.editor.RootScopeEval_EditorBuilder$CONCEPTS" />
+      <unit id="1926061574202943482" at="81,42,96,5" name="jetbrains.mps.lang.constraints.editor.RootScopeEval_EditorBuilder$1" />
+      <unit id="1926061574202943561" at="114,0,157,0" name="jetbrains.mps.lang.constraints.editor.RootScopeEval_EditorBuilder$Inline_Builder0" />
+      <unit id="1926061574202943482" at="37,0,177,0" name="jetbrains.mps.lang.constraints.editor.RootScopeEval_EditorBuilder" />
     </file>
-    <file name="RootScopeEval_InspectorBuilder_a.java">
-      <node id="1926061574202943482" at="19,96,20,19" concept="12" />
+    <file name="RootScopeEval_InspectorBuilder.java">
+      <node id="1926061574202943482" at="19,94,20,19" concept="12" />
       <node id="1926061574202943482" at="20,19,21,18" concept="2" />
       <node id="1926061574202943482" at="26,26,27,18" concept="7" />
       <node id="1926061574202943482" at="30,39,31,30" concept="7" />
@@ -3707,12 +3707,12 @@
       <node id="1926061574202943504" at="42,34,43,22" concept="7" />
       <node id="1926061574202943482" at="16,0,18,0" concept="3" trace="myNode" />
       <node id="1926061574202943482" at="30,0,33,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="1926061574202943482" at="19,0,23,0" concept="1" trace="RootScopeEval_InspectorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1926061574202943482" at="19,0,23,0" concept="1" trace="RootScopeEval_InspectorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1926061574202943482" at="24,0,29,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1926061574202943504" at="34,0,45,0" concept="5" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="1926061574202943482" at="26,26,27,18" />
       <scope id="1926061574202943482" at="30,39,31,30" />
-      <scope id="1926061574202943482" at="19,96,21,18" />
+      <scope id="1926061574202943482" at="19,94,21,18" />
       <scope id="1926061574202943482" at="30,0,33,0" />
       <scope id="1926061574202943482" at="19,0,23,0">
         <var name="context" id="1926061574202943482" />
@@ -3724,17 +3724,17 @@
         <var name="style" id="1926061574202943504" />
       </scope>
       <scope id="1926061574202943504" at="34,0,45,0" />
-      <unit id="1926061574202943482" at="15,0,46,0" name="jetbrains.mps.lang.constraints.editor.RootScopeEval_InspectorBuilder_a" />
+      <unit id="1926061574202943482" at="15,0,46,0" name="jetbrains.mps.lang.constraints.editor.RootScopeEval_InspectorBuilder" />
     </file>
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c89590308(jetbrains.mps.lang.constraints.editor)/1926061574202946738">
     <file name="NodeScopeEval_Editor.java">
-      <node id="1926061574202946738" at="11,79,12,79" concept="7" />
-      <node id="1926061574202946738" at="14,82,15,82" concept="7" />
+      <node id="1926061574202946738" at="11,79,12,77" concept="7" />
+      <node id="1926061574202946738" at="14,82,15,80" concept="7" />
       <node id="1926061574202946738" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1926061574202946738" at="14,0,17,0" concept="5" trace="createInspectedCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1926061574202946738" at="11,79,12,79" />
-      <scope id="1926061574202946738" at="14,82,15,82" />
+      <scope id="1926061574202946738" at="11,79,12,77" />
+      <scope id="1926061574202946738" at="14,82,15,80" />
       <scope id="1926061574202946738" at="11,0,14,0">
         <var name="editorContext" id="1926061574202946738" />
         <var name="node" id="1926061574202946738" />
@@ -3745,8 +3745,8 @@
       </scope>
       <unit id="1926061574202946738" at="10,0,18,0" name="jetbrains.mps.lang.constraints.editor.NodeScopeEval_Editor" />
     </file>
-    <file name="NodeScopeEval_EditorBuilder_a.java">
-      <node id="1926061574202946738" at="41,93,42,19" concept="12" />
+    <file name="NodeScopeEval_EditorBuilder.java">
+      <node id="1926061574202946738" at="41,91,42,19" concept="12" />
       <node id="1926061574202946738" at="42,19,43,18" concept="2" />
       <node id="1926061574202946738" at="48,26,49,18" concept="7" />
       <node id="1926061574202946738" at="52,39,53,32" concept="7" />
@@ -3821,7 +3821,7 @@
       <node id="1926061574202946851" at="115,0,117,0" concept="3" trace="myNode" />
       <node id="1926061574202946738" at="52,0,55,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1926061574202946851" at="125,0,128,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="1926061574202946738" at="41,0,45,0" concept="1" trace="NodeScopeEval_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1926061574202946738" at="41,0,45,0" concept="1" trace="NodeScopeEval_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1926061574202946738" at="100,0,104,5" concept="4" />
       <node id="1926061574202946738" at="46,0,51,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1926061574202946738" at="107,205,112,22" concept="4" />
@@ -3843,7 +3843,7 @@
       <scope id="1926061574202946851" at="125,41,126,32" />
       <scope id="1926061574202946851" at="131,28,132,20" />
       <scope id="1926061574202946865" at="152,17,153,42" />
-      <scope id="1926061574202946738" at="41,93,43,18" />
+      <scope id="1926061574202946738" at="41,91,43,18" />
       <scope id="1926061574202946738" at="101,40,103,43" />
       <scope id="1926061574202946738" at="108,73,110,145">
         <var name="manager" id="1926061574202946738" />
@@ -3909,15 +3909,15 @@
         <var name="referenceLink" id="1926061574202946738" />
       </scope>
       <scope id="1926061574202946738" at="79,0,114,0" />
-      <unit id="1926061574202946738" at="164,0,167,0" name="jetbrains.mps.lang.constraints.editor.NodeScopeEval_EditorBuilder_a$LINKS" />
-      <unit id="1926061574202946738" at="173,0,176,0" name="jetbrains.mps.lang.constraints.editor.NodeScopeEval_EditorBuilder_a$PROPS" />
-      <unit id="1926061574202946738" at="168,0,172,0" name="jetbrains.mps.lang.constraints.editor.NodeScopeEval_EditorBuilder_a$CONCEPTS" />
-      <unit id="1926061574202946738" at="81,42,96,5" name="jetbrains.mps.lang.constraints.editor.NodeScopeEval_EditorBuilder_a$1" />
-      <unit id="1926061574202946851" at="114,0,157,0" name="jetbrains.mps.lang.constraints.editor.NodeScopeEval_EditorBuilder_a$Inline_Builder0" />
-      <unit id="1926061574202946738" at="37,0,177,0" name="jetbrains.mps.lang.constraints.editor.NodeScopeEval_EditorBuilder_a" />
+      <unit id="1926061574202946738" at="164,0,167,0" name="jetbrains.mps.lang.constraints.editor.NodeScopeEval_EditorBuilder$LINKS" />
+      <unit id="1926061574202946738" at="173,0,176,0" name="jetbrains.mps.lang.constraints.editor.NodeScopeEval_EditorBuilder$PROPS" />
+      <unit id="1926061574202946738" at="168,0,172,0" name="jetbrains.mps.lang.constraints.editor.NodeScopeEval_EditorBuilder$CONCEPTS" />
+      <unit id="1926061574202946738" at="81,42,96,5" name="jetbrains.mps.lang.constraints.editor.NodeScopeEval_EditorBuilder$1" />
+      <unit id="1926061574202946851" at="114,0,157,0" name="jetbrains.mps.lang.constraints.editor.NodeScopeEval_EditorBuilder$Inline_Builder0" />
+      <unit id="1926061574202946738" at="37,0,177,0" name="jetbrains.mps.lang.constraints.editor.NodeScopeEval_EditorBuilder" />
     </file>
-    <file name="NodeScopeEval_InspectorBuilder_a.java">
-      <node id="1926061574202946738" at="19,96,20,19" concept="12" />
+    <file name="NodeScopeEval_InspectorBuilder.java">
+      <node id="1926061574202946738" at="19,94,20,19" concept="12" />
       <node id="1926061574202946738" at="20,19,21,18" concept="2" />
       <node id="1926061574202946738" at="26,26,27,18" concept="7" />
       <node id="1926061574202946738" at="30,39,31,30" concept="7" />
@@ -3932,12 +3932,12 @@
       <node id="1926061574202946758" at="42,34,43,22" concept="7" />
       <node id="1926061574202946738" at="16,0,18,0" concept="3" trace="myNode" />
       <node id="1926061574202946738" at="30,0,33,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="1926061574202946738" at="19,0,23,0" concept="1" trace="NodeScopeEval_InspectorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1926061574202946738" at="19,0,23,0" concept="1" trace="NodeScopeEval_InspectorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1926061574202946738" at="24,0,29,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1926061574202946758" at="34,0,45,0" concept="5" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="1926061574202946738" at="26,26,27,18" />
       <scope id="1926061574202946738" at="30,39,31,30" />
-      <scope id="1926061574202946738" at="19,96,21,18" />
+      <scope id="1926061574202946738" at="19,94,21,18" />
       <scope id="1926061574202946738" at="30,0,33,0" />
       <scope id="1926061574202946738" at="19,0,23,0">
         <var name="context" id="1926061574202946738" />
@@ -3949,17 +3949,17 @@
         <var name="style" id="1926061574202946758" />
       </scope>
       <scope id="1926061574202946758" at="34,0,45,0" />
-      <unit id="1926061574202946738" at="15,0,46,0" name="jetbrains.mps.lang.constraints.editor.NodeScopeEval_InspectorBuilder_a" />
+      <unit id="1926061574202946738" at="15,0,46,0" name="jetbrains.mps.lang.constraints.editor.NodeScopeEval_InspectorBuilder" />
     </file>
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c89590308(jetbrains.mps.lang.constraints.editor)/2487047136346128092">
     <file name="ConstraintFunction_ReferentSearchScope_AbstractBase_Editor.java">
-      <node id="2487047136346128092" at="11,79,12,117" concept="7" />
-      <node id="2487047136346128092" at="14,82,15,120" concept="7" />
+      <node id="2487047136346128092" at="11,79,12,115" concept="7" />
+      <node id="2487047136346128092" at="14,82,15,118" concept="7" />
       <node id="2487047136346128092" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="2487047136346128092" at="14,0,17,0" concept="5" trace="createInspectedCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="2487047136346128092" at="11,79,12,117" />
-      <scope id="2487047136346128092" at="14,82,15,120" />
+      <scope id="2487047136346128092" at="11,79,12,115" />
+      <scope id="2487047136346128092" at="14,82,15,118" />
       <scope id="2487047136346128092" at="11,0,14,0">
         <var name="editorContext" id="2487047136346128092" />
         <var name="node" id="2487047136346128092" />
@@ -3970,8 +3970,8 @@
       </scope>
       <unit id="2487047136346128092" at="10,0,18,0" name="jetbrains.mps.lang.constraints.editor.ConstraintFunction_ReferentSearchScope_AbstractBase_Editor" />
     </file>
-    <file name="ConstraintFunction_ReferentSearchScope_AbstractBase_EditorBuilder_a.java">
-      <node id="2487047136346128092" at="16,131,17,19" concept="12" />
+    <file name="ConstraintFunction_ReferentSearchScope_AbstractBase_EditorBuilder.java">
+      <node id="2487047136346128092" at="16,129,17,19" concept="12" />
       <node id="2487047136346128092" at="17,19,18,18" concept="2" />
       <node id="2487047136346128092" at="23,26,24,18" concept="7" />
       <node id="2487047136346128092" at="27,39,28,31" concept="7" />
@@ -3982,13 +3982,13 @@
       <node id="2487047136346128094" at="37,5,38,22" concept="7" />
       <node id="2487047136346128092" at="13,0,15,0" concept="3" trace="myNode" />
       <node id="2487047136346128092" at="27,0,30,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="2487047136346128092" at="16,0,20,0" concept="1" trace="ConstraintFunction_ReferentSearchScope_AbstractBase_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="2487047136346128092" at="16,0,20,0" concept="1" trace="ConstraintFunction_ReferentSearchScope_AbstractBase_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="2487047136346128094" at="33,72,37,5" concept="4" />
       <node id="2487047136346128092" at="21,0,26,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="2487047136346128094" at="31,0,40,0" concept="5" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="2487047136346128092" at="23,26,24,18" />
       <scope id="2487047136346128092" at="27,39,28,31" />
-      <scope id="2487047136346128092" at="16,131,18,18" />
+      <scope id="2487047136346128092" at="16,129,18,18" />
       <scope id="2487047136346128094" at="34,26,36,30" />
       <scope id="2487047136346128092" at="27,0,30,0" />
       <scope id="2487047136346128092" at="16,0,20,0">
@@ -4001,10 +4001,10 @@
         <var name="editorCell" id="2487047136346128094" />
       </scope>
       <scope id="2487047136346128094" at="31,0,40,0" />
-      <unit id="2487047136346128092" at="12,0,41,0" name="jetbrains.mps.lang.constraints.editor.ConstraintFunction_ReferentSearchScope_AbstractBase_EditorBuilder_a" />
+      <unit id="2487047136346128092" at="12,0,41,0" name="jetbrains.mps.lang.constraints.editor.ConstraintFunction_ReferentSearchScope_AbstractBase_EditorBuilder" />
     </file>
-    <file name="ConstraintFunction_ReferentSearchScope_AbstractBase_InspectorBuilder_a.java">
-      <node id="2487047136346128092" at="28,134,29,19" concept="12" />
+    <file name="ConstraintFunction_ReferentSearchScope_AbstractBase_InspectorBuilder.java">
+      <node id="2487047136346128092" at="28,132,29,19" concept="12" />
       <node id="2487047136346128092" at="29,19,30,18" concept="2" />
       <node id="2487047136346128092" at="35,26,36,18" concept="7" />
       <node id="2487047136346128092" at="39,39,40,32" concept="7" />
@@ -4368,7 +4368,7 @@
       <node id="2487047136346128092" at="39,0,42,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="252989475023172007" at="132,51,135,5" concept="4" />
       <node id="252989475023177895" at="144,0,147,0" concept="5" trace="nodeCondition0#()Z" />
-      <node id="2487047136346128092" at="28,0,32,0" concept="1" trace="ConstraintFunction_ReferentSearchScope_AbstractBase_InspectorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="2487047136346128092" at="28,0,32,0" concept="1" trace="ConstraintFunction_ReferentSearchScope_AbstractBase_InspectorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="2487047136346128092" at="33,0,38,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="2487047136346128111" at="157,0,163,0" concept="5" trace="createConstant_4#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="6267670002293958552" at="182,0,188,0" concept="5" trace="createConstant_6#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -4423,7 +4423,7 @@
       <scope id="2487047136346128092" at="39,39,40,32" />
       <scope id="252989475023172007" at="133,27,134,53" />
       <scope id="252989475023177896" at="144,36,145,113" />
-      <scope id="2487047136346128092" at="28,134,30,18" />
+      <scope id="2487047136346128092" at="28,132,30,18" />
       <scope id="2487047136346128092" at="39,0,42,0" />
       <scope id="252989475023177895" at="144,0,147,0" />
       <scope id="2487047136346128092" at="28,0,32,0">
@@ -4669,8 +4669,8 @@
         <var name="style" id="2487047136346128092" />
       </scope>
       <scope id="2487047136346128092" at="121,0,144,0" />
-      <unit id="2487047136346128092" at="501,0,504,0" name="jetbrains.mps.lang.constraints.editor.ConstraintFunction_ReferentSearchScope_AbstractBase_InspectorBuilder_a$CONCEPTS" />
-      <unit id="2487047136346128092" at="24,0,505,0" name="jetbrains.mps.lang.constraints.editor.ConstraintFunction_ReferentSearchScope_AbstractBase_InspectorBuilder_a" />
+      <unit id="2487047136346128092" at="501,0,504,0" name="jetbrains.mps.lang.constraints.editor.ConstraintFunction_ReferentSearchScope_AbstractBase_InspectorBuilder$CONCEPTS" />
+      <unit id="2487047136346128092" at="24,0,505,0" name="jetbrains.mps.lang.constraints.editor.ConstraintFunction_ReferentSearchScope_AbstractBase_InspectorBuilder" />
     </file>
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c89590308(jetbrains.mps.lang.constraints.editor)/3096203427927295673">
@@ -4784,12 +4784,12 @@
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c89590308(jetbrains.mps.lang.constraints.editor)/5564765827938396623">
     <file name="ConstraintFunction_ReferentSearchScope_Scope_Editor.java">
-      <node id="5564765827938396623" at="11,79,12,110" concept="7" />
-      <node id="5564765827938396623" at="14,82,15,113" concept="7" />
+      <node id="5564765827938396623" at="11,79,12,108" concept="7" />
+      <node id="5564765827938396623" at="14,82,15,111" concept="7" />
       <node id="5564765827938396623" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="5564765827938396623" at="14,0,17,0" concept="5" trace="createInspectedCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="5564765827938396623" at="11,79,12,110" />
-      <scope id="5564765827938396623" at="14,82,15,113" />
+      <scope id="5564765827938396623" at="11,79,12,108" />
+      <scope id="5564765827938396623" at="14,82,15,111" />
       <scope id="5564765827938396623" at="11,0,14,0">
         <var name="editorContext" id="5564765827938396623" />
         <var name="node" id="5564765827938396623" />
@@ -4800,8 +4800,8 @@
       </scope>
       <unit id="5564765827938396623" at="10,0,18,0" name="jetbrains.mps.lang.constraints.editor.ConstraintFunction_ReferentSearchScope_Scope_Editor" />
     </file>
-    <file name="ConstraintFunction_ReferentSearchScope_Scope_EditorBuilder_a.java">
-      <node id="5564765827938396623" at="16,124,17,19" concept="12" />
+    <file name="ConstraintFunction_ReferentSearchScope_Scope_EditorBuilder.java">
+      <node id="5564765827938396623" at="16,122,17,19" concept="12" />
       <node id="5564765827938396623" at="17,19,18,18" concept="2" />
       <node id="5564765827938396623" at="23,26,24,18" concept="7" />
       <node id="5564765827938396623" at="27,39,28,31" concept="7" />
@@ -4812,13 +4812,13 @@
       <node id="5564765827938396694" at="37,5,38,22" concept="7" />
       <node id="5564765827938396623" at="13,0,15,0" concept="3" trace="myNode" />
       <node id="5564765827938396623" at="27,0,30,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="5564765827938396623" at="16,0,20,0" concept="1" trace="ConstraintFunction_ReferentSearchScope_Scope_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="5564765827938396623" at="16,0,20,0" concept="1" trace="ConstraintFunction_ReferentSearchScope_Scope_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="5564765827938396694" at="33,72,37,5" concept="4" />
       <node id="5564765827938396623" at="21,0,26,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="5564765827938396694" at="31,0,40,0" concept="5" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="5564765827938396623" at="23,26,24,18" />
       <scope id="5564765827938396623" at="27,39,28,31" />
-      <scope id="5564765827938396623" at="16,124,18,18" />
+      <scope id="5564765827938396623" at="16,122,18,18" />
       <scope id="5564765827938396694" at="34,26,36,30" />
       <scope id="5564765827938396623" at="27,0,30,0" />
       <scope id="5564765827938396623" at="16,0,20,0">
@@ -4831,10 +4831,10 @@
         <var name="editorCell" id="5564765827938396694" />
       </scope>
       <scope id="5564765827938396694" at="31,0,40,0" />
-      <unit id="5564765827938396623" at="12,0,41,0" name="jetbrains.mps.lang.constraints.editor.ConstraintFunction_ReferentSearchScope_Scope_EditorBuilder_a" />
+      <unit id="5564765827938396623" at="12,0,41,0" name="jetbrains.mps.lang.constraints.editor.ConstraintFunction_ReferentSearchScope_Scope_EditorBuilder" />
     </file>
-    <file name="ConstraintFunction_ReferentSearchScope_Scope_InspectorBuilder_a.java">
-      <node id="5564765827938396623" at="28,127,29,19" concept="12" />
+    <file name="ConstraintFunction_ReferentSearchScope_Scope_InspectorBuilder.java">
+      <node id="5564765827938396623" at="28,125,29,19" concept="12" />
       <node id="5564765827938396623" at="29,19,30,18" concept="2" />
       <node id="5564765827938396623" at="35,26,36,18" concept="7" />
       <node id="5564765827938396623" at="39,39,40,32" concept="7" />
@@ -5172,7 +5172,7 @@
       <node id="5564765827938420441" at="462,34,463,22" concept="7" />
       <node id="5564765827938396623" at="25,0,27,0" concept="3" trace="myNode" />
       <node id="5564765827938396623" at="39,0,42,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="5564765827938396623" at="28,0,32,0" concept="1" trace="ConstraintFunction_ReferentSearchScope_Scope_InspectorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="5564765827938396623" at="28,0,32,0" concept="1" trace="ConstraintFunction_ReferentSearchScope_Scope_InspectorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="5564765827938396623" at="33,0,38,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="7227297302474785400" at="121,0,127,0" concept="5" trace="createConstant_3#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="5564765827938396813" at="263,0,269,0" concept="5" trace="createConstant_13#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -5221,7 +5221,7 @@
       <node id="5564765827938396623" at="43,0,61,0" concept="5" trace="createCollection_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="5564765827938396623" at="35,26,36,18" />
       <scope id="5564765827938396623" at="39,39,40,32" />
-      <scope id="5564765827938396623" at="28,127,30,18" />
+      <scope id="5564765827938396623" at="28,125,30,18" />
       <scope id="5564765827938396623" at="39,0,42,0" />
       <scope id="5564765827938396623" at="28,0,32,0">
         <var name="context" id="5564765827938396623" />
@@ -5445,22 +5445,22 @@
         <var name="style" id="5564765827938396623" />
       </scope>
       <scope id="5564765827938396623" at="43,0,61,0" />
-      <unit id="5564765827938396623" at="24,0,466,0" name="jetbrains.mps.lang.constraints.editor.ConstraintFunction_ReferentSearchScope_Scope_InspectorBuilder_a" />
+      <unit id="5564765827938396623" at="24,0,466,0" name="jetbrains.mps.lang.constraints.editor.ConstraintFunction_ReferentSearchScope_Scope_InspectorBuilder" />
     </file>
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c89590308(jetbrains.mps.lang.constraints.editor)/5753863164744594487">
     <file name="RefPresentationMigrated_Editor.java">
-      <node id="5753863164744594487" at="11,79,12,89" concept="7" />
+      <node id="5753863164744594487" at="11,79,12,87" concept="7" />
       <node id="5753863164744594487" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="5753863164744594487" at="11,79,12,89" />
+      <scope id="5753863164744594487" at="11,79,12,87" />
       <scope id="5753863164744594487" at="11,0,14,0">
         <var name="editorContext" id="5753863164744594487" />
         <var name="node" id="5753863164744594487" />
       </scope>
       <unit id="5753863164744594487" at="10,0,15,0" name="jetbrains.mps.lang.constraints.editor.RefPresentationMigrated_Editor" />
     </file>
-    <file name="RefPresentationMigrated_EditorBuilder_a.java">
-      <node id="5753863164744594487" at="42,103,43,19" concept="12" />
+    <file name="RefPresentationMigrated_EditorBuilder.java">
+      <node id="5753863164744594487" at="42,101,43,19" concept="12" />
       <node id="5753863164744594487" at="43,19,44,18" concept="2" />
       <node id="5753863164744594487" at="49,26,50,18" concept="7" />
       <node id="5753863164744594487" at="53,39,54,32" concept="7" />
@@ -5645,7 +5645,7 @@
       <node id="5753863164744594487" at="254,0,257,0" concept="5" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="5753863164744594487" at="257,0,260,0" concept="5" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="5753863164744594487" at="301,96,304,9" concept="4" />
-      <node id="5753863164744594487" at="42,0,46,0" concept="1" trace="RefPresentationMigrated_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="5753863164744594487" at="42,0,46,0" concept="1" trace="RefPresentationMigrated_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="2115302367868117085" at="82,0,86,0" concept="5" trace="createIndentCell_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="5753863164744594599" at="105,0,109,0" concept="5" trace="createIndentCell_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="5753863164744626757" at="165,0,169,0" concept="5" trace="createIndentCell_2#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -5691,7 +5691,7 @@
       <scope id="5753863164744594487" at="257,48,258,56" />
       <scope id="5753863164744594487" at="275,17,276,42" />
       <scope id="5753863164744594487" at="302,34,303,91" />
-      <scope id="5753863164744594487" at="42,103,44,18" />
+      <scope id="5753863164744594487" at="42,101,44,18" />
       <scope id="2115302367868117085" at="82,43,84,22">
         <var name="editorCell" id="2115302367868117085" />
       </scope>
@@ -5835,25 +5835,25 @@
         <var name="elementNode" id="5753863164744594487" />
         <var name="isEmptyCell" id="5753863164744594487" />
       </scope>
-      <unit id="5753863164744594487" at="320,0,323,0" name="jetbrains.mps.lang.constraints.editor.RefPresentationMigrated_EditorBuilder_a$LINKS" />
-      <unit id="5753863164744594487" at="324,0,327,0" name="jetbrains.mps.lang.constraints.editor.RefPresentationMigrated_EditorBuilder_a$CONCEPTS" />
-      <unit id="5753863164744594487" at="241,0,308,0" name="jetbrains.mps.lang.constraints.editor.RefPresentationMigrated_EditorBuilder_a$problemsListHandler_6blbyb_b5b1a" />
-      <unit id="5753863164744594487" at="38,0,328,0" name="jetbrains.mps.lang.constraints.editor.RefPresentationMigrated_EditorBuilder_a" />
+      <unit id="5753863164744594487" at="320,0,323,0" name="jetbrains.mps.lang.constraints.editor.RefPresentationMigrated_EditorBuilder$LINKS" />
+      <unit id="5753863164744594487" at="324,0,327,0" name="jetbrains.mps.lang.constraints.editor.RefPresentationMigrated_EditorBuilder$CONCEPTS" />
+      <unit id="5753863164744594487" at="241,0,308,0" name="jetbrains.mps.lang.constraints.editor.RefPresentationMigrated_EditorBuilder$problemsListHandler_6blbyb_b5b1a" />
+      <unit id="5753863164744594487" at="38,0,328,0" name="jetbrains.mps.lang.constraints.editor.RefPresentationMigrated_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c89590308(jetbrains.mps.lang.constraints.editor)/5753863164744783895">
     <file name="RefPresentationMigratedProblem_Editor.java">
-      <node id="5753863164744783895" at="11,79,12,96" concept="7" />
+      <node id="5753863164744783895" at="11,79,12,94" concept="7" />
       <node id="5753863164744783895" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="5753863164744783895" at="11,79,12,96" />
+      <scope id="5753863164744783895" at="11,79,12,94" />
       <scope id="5753863164744783895" at="11,0,14,0">
         <var name="editorContext" id="5753863164744783895" />
         <var name="node" id="5753863164744783895" />
       </scope>
       <unit id="5753863164744783895" at="10,0,15,0" name="jetbrains.mps.lang.constraints.editor.RefPresentationMigratedProblem_Editor" />
     </file>
-    <file name="RefPresentationMigratedProblem_EditorBuilder_a.java">
-      <node id="5753863164744783895" at="36,110,37,19" concept="12" />
+    <file name="RefPresentationMigratedProblem_EditorBuilder.java">
+      <node id="5753863164744783895" at="36,108,37,19" concept="12" />
       <node id="5753863164744783895" at="37,19,38,18" concept="2" />
       <node id="5753863164744783895" at="43,26,44,18" concept="7" />
       <node id="5753863164744783895" at="47,39,48,32" concept="7" />
@@ -5899,7 +5899,7 @@
       <node id="5753863164744783899" at="88,0,90,0" concept="3" trace="myNode" />
       <node id="5753863164744783895" at="47,0,50,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="5753863164744783899" at="98,0,101,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="5753863164744783895" at="36,0,40,0" concept="1" trace="RefPresentationMigratedProblem_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="5753863164744783895" at="36,0,40,0" concept="1" trace="RefPresentationMigratedProblem_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="5753863164744783895" at="73,0,77,5" concept="4" />
       <node id="5753863164744783895" at="41,0,46,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="5753863164744783895" at="80,205,85,22" concept="4" />
@@ -5914,7 +5914,7 @@
       <scope id="5753863164744783895" at="47,39,48,32" />
       <scope id="5753863164744783899" at="98,41,99,45" />
       <scope id="5753863164744783899" at="104,28,105,20" />
-      <scope id="5753863164744783895" at="36,110,38,18" />
+      <scope id="5753863164744783895" at="36,108,38,18" />
       <scope id="5753863164744783895" at="74,40,76,45" />
       <scope id="5753863164744783895" at="81,73,83,145">
         <var name="manager" id="5753863164744783895" />
@@ -5956,26 +5956,26 @@
         <var name="referenceLink" id="5753863164744783895" />
       </scope>
       <scope id="5753863164744783895" at="59,0,87,0" />
-      <unit id="5753863164744783895" at="118,0,121,0" name="jetbrains.mps.lang.constraints.editor.RefPresentationMigratedProblem_EditorBuilder_a$LINKS" />
-      <unit id="5753863164744783895" at="122,0,125,0" name="jetbrains.mps.lang.constraints.editor.RefPresentationMigratedProblem_EditorBuilder_a$CONCEPTS" />
-      <unit id="5753863164744783895" at="61,42,69,5" name="jetbrains.mps.lang.constraints.editor.RefPresentationMigratedProblem_EditorBuilder_a$1" />
-      <unit id="5753863164744783899" at="87,0,117,0" name="jetbrains.mps.lang.constraints.editor.RefPresentationMigratedProblem_EditorBuilder_a$Inline_Builder0" />
-      <unit id="5753863164744783895" at="32,0,126,0" name="jetbrains.mps.lang.constraints.editor.RefPresentationMigratedProblem_EditorBuilder_a" />
+      <unit id="5753863164744783895" at="118,0,121,0" name="jetbrains.mps.lang.constraints.editor.RefPresentationMigratedProblem_EditorBuilder$LINKS" />
+      <unit id="5753863164744783895" at="122,0,125,0" name="jetbrains.mps.lang.constraints.editor.RefPresentationMigratedProblem_EditorBuilder$CONCEPTS" />
+      <unit id="5753863164744783895" at="61,42,69,5" name="jetbrains.mps.lang.constraints.editor.RefPresentationMigratedProblem_EditorBuilder$1" />
+      <unit id="5753863164744783899" at="87,0,117,0" name="jetbrains.mps.lang.constraints.editor.RefPresentationMigratedProblem_EditorBuilder$Inline_Builder0" />
+      <unit id="5753863164744783895" at="32,0,126,0" name="jetbrains.mps.lang.constraints.editor.RefPresentationMigratedProblem_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c89590308(jetbrains.mps.lang.constraints.editor)/8401916545537438644">
     <file name="InheritedNodeScopeFactory_Editor.java">
-      <node id="8401916545537438644" at="11,79,12,91" concept="7" />
+      <node id="8401916545537438644" at="11,79,12,89" concept="7" />
       <node id="8401916545537438644" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="8401916545537438644" at="11,79,12,91" />
+      <scope id="8401916545537438644" at="11,79,12,89" />
       <scope id="8401916545537438644" at="11,0,14,0">
         <var name="editorContext" id="8401916545537438644" />
         <var name="node" id="8401916545537438644" />
       </scope>
       <unit id="8401916545537438644" at="10,0,15,0" name="jetbrains.mps.lang.constraints.editor.InheritedNodeScopeFactory_Editor" />
     </file>
-    <file name="InheritedNodeScopeFactory_EditorBuilder_a.java">
-      <node id="8401916545537438644" at="40,105,41,19" concept="12" />
+    <file name="InheritedNodeScopeFactory_EditorBuilder.java">
+      <node id="8401916545537438644" at="40,103,41,19" concept="12" />
       <node id="8401916545537438644" at="41,19,42,18" concept="2" />
       <node id="8401916545537438644" at="47,26,48,18" concept="7" />
       <node id="8401916545537438644" at="51,39,52,32" concept="7" />
@@ -6044,7 +6044,7 @@
       <node id="8401916545537438652" at="109,0,111,0" concept="3" trace="myNode" />
       <node id="8401916545537438644" at="51,0,54,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="8401916545537438652" at="119,0,122,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="8401916545537438644" at="40,0,44,0" concept="1" trace="InheritedNodeScopeFactory_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8401916545537438644" at="40,0,44,0" concept="1" trace="InheritedNodeScopeFactory_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8401916545537438644" at="94,0,98,5" concept="4" />
       <node id="8401916545537438644" at="45,0,50,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="8401916545537438644" at="101,205,106,22" concept="4" />
@@ -6064,7 +6064,7 @@
       <scope id="8401916545537438652" at="119,41,120,32" />
       <scope id="8401916545537438652" at="125,28,126,20" />
       <scope id="8401916545537438654" at="146,17,147,42" />
-      <scope id="8401916545537438644" at="40,105,42,18" />
+      <scope id="8401916545537438644" at="40,103,42,18" />
       <scope id="8401916545537438644" at="95,40,97,43" />
       <scope id="8401916545537438644" at="102,73,104,145">
         <var name="manager" id="8401916545537438644" />
@@ -6121,12 +6121,12 @@
         <var name="referenceLink" id="8401916545537438644" />
       </scope>
       <scope id="8401916545537438644" at="80,0,108,0" />
-      <unit id="8401916545537438644" at="152,0,155,0" name="jetbrains.mps.lang.constraints.editor.InheritedNodeScopeFactory_EditorBuilder_a$LINKS" />
-      <unit id="8401916545537438644" at="161,0,164,0" name="jetbrains.mps.lang.constraints.editor.InheritedNodeScopeFactory_EditorBuilder_a$PROPS" />
-      <unit id="8401916545537438644" at="156,0,160,0" name="jetbrains.mps.lang.constraints.editor.InheritedNodeScopeFactory_EditorBuilder_a$CONCEPTS" />
-      <unit id="8401916545537438644" at="82,42,90,5" name="jetbrains.mps.lang.constraints.editor.InheritedNodeScopeFactory_EditorBuilder_a$1" />
-      <unit id="8401916545537438652" at="108,0,151,0" name="jetbrains.mps.lang.constraints.editor.InheritedNodeScopeFactory_EditorBuilder_a$Inline_Builder0" />
-      <unit id="8401916545537438644" at="36,0,165,0" name="jetbrains.mps.lang.constraints.editor.InheritedNodeScopeFactory_EditorBuilder_a" />
+      <unit id="8401916545537438644" at="152,0,155,0" name="jetbrains.mps.lang.constraints.editor.InheritedNodeScopeFactory_EditorBuilder$LINKS" />
+      <unit id="8401916545537438644" at="161,0,164,0" name="jetbrains.mps.lang.constraints.editor.InheritedNodeScopeFactory_EditorBuilder$PROPS" />
+      <unit id="8401916545537438644" at="156,0,160,0" name="jetbrains.mps.lang.constraints.editor.InheritedNodeScopeFactory_EditorBuilder$CONCEPTS" />
+      <unit id="8401916545537438644" at="82,42,90,5" name="jetbrains.mps.lang.constraints.editor.InheritedNodeScopeFactory_EditorBuilder$1" />
+      <unit id="8401916545537438652" at="108,0,151,0" name="jetbrains.mps.lang.constraints.editor.InheritedNodeScopeFactory_EditorBuilder$Inline_Builder0" />
+      <unit id="8401916545537438644" at="36,0,165,0" name="jetbrains.mps.lang.constraints.editor.InheritedNodeScopeFactory_EditorBuilder" />
     </file>
   </root>
 </debug-info>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="-cqmgqc9dyfzxmczu1mety0lgul0fyfp">
-  <files names="AttributeDelete_Actions.java:EditorAspectDescriptorImpl.java:ExternalViewFigureParameter_Editor.java:ExternalViewFigureParameter_EditorBuilder_a.java:ExternalViewFigureParameter_SubstituteMenu.java:ExternalViewFigure_Editor.java:ExternalViewFigure_EditorBuilder_a.java:ExternalViewFigure_SubstituteMenu.java:FigureAttribute_Editor.java:FigureAttribute_EditorBuilder_a.java:FigureParameterAttribute_Editor.java:FigureParameterAttribute_EditorBuilder_a.java" />
+  <files names="AttributeDelete_Actions.java:EditorAspectDescriptorImpl.java:ExternalViewFigureParameter_Editor.java:ExternalViewFigureParameter_EditorBuilder.java:ExternalViewFigureParameter_SubstituteMenu.java:ExternalViewFigure_Editor.java:ExternalViewFigure_EditorBuilder.java:ExternalViewFigure_SubstituteMenu.java:FigureAttribute_Editor.java:FigureAttribute_EditorBuilder.java:FigureParameterAttribute_Editor.java:FigureParameterAttribute_EditorBuilder.java" />
 </product>
 

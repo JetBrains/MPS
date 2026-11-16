@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="b6jab8hhsxykvluebfnwvh97wis54bv">
-  <files names="ConceptVCSDescriptor_Editor.java:ConceptVCSDescriptor_EditorBuilder_a.java:EditorAspectDescriptorImpl.java:LinkVCSDescriptor_Editor.java:LinkVCSDescriptor_EditorBuilder_a.java:LinkVCSDescriptor_SubstituteMenu.java:OursStrategy_Editor.java:OursStrategy_EditorBuilder_a.java:PropertyVCSDescriptor_Editor.java:PropertyVCSDescriptor_EditorBuilder_a.java:PropertyVCSDescriptor_SubstituteMenu.java:TheirsStrategy_Editor.java:TheirsStrategy_EditorBuilder_a.java:VCSHints_Editor.java:VCSHints_EditorBuilder_a.java" />
+  <files names="ConceptVCSDescriptor_Editor.java:ConceptVCSDescriptor_EditorBuilder.java:EditorAspectDescriptorImpl.java:LinkVCSDescriptor_Editor.java:LinkVCSDescriptor_EditorBuilder.java:LinkVCSDescriptor_SubstituteMenu.java:OursStrategy_Editor.java:OursStrategy_EditorBuilder.java:PropertyVCSDescriptor_Editor.java:PropertyVCSDescriptor_EditorBuilder.java:PropertyVCSDescriptor_SubstituteMenu.java:TheirsStrategy_Editor.java:TheirsStrategy_EditorBuilder.java:VCSHints_Editor.java:VCSHints_EditorBuilder.java" />
 </product>
 

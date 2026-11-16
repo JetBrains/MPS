@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class TestEnum_Container_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new TestEnum_Container_EditorBuilder_a(editorContext, node).createCell();
+    return new TestEnum_Container_EditorBuilder(editorContext, node).createCell();
   }
 }

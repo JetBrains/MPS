@@ -16,6 +16,6 @@ public class MetaInfo implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new MetaInfo_ComponentBuilder_a(editorContext, node).createCell();
+    return new MetaInfo_ComponentBuilder(editorContext, node).createCell();
   }
 }

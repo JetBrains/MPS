@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class TailMapOperation_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new TailMapOperation_EditorBuilder_a(editorContext, node).createCell();
+    return new TailMapOperation_EditorBuilder(editorContext, node).createCell();
   }
 }

@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class DataDependencyReference_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new DataDependencyReference_EditorBuilder_a(editorContext, node).createCell();
+    return new DataDependencyReference_EditorBuilder(editorContext, node).createCell();
   }
 }

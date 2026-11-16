@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class BeforeTaskCall_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new BeforeTaskCall_EditorBuilder_a(editorContext, node).createCell();
+    return new BeforeTaskCall_EditorBuilder(editorContext, node).createCell();
   }
 }

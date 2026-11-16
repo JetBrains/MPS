@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ImplicitAnnotationInstanceValue_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ImplicitAnnotationInstanceValue_EditorBuilder_a(editorContext, node).createCell();
+    return new ImplicitAnnotationInstanceValue_EditorBuilder(editorContext, node).createCell();
   }
 }

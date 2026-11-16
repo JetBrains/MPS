@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ClearSetOperation_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ClearSetOperation_EditorBuilder_a(editorContext, node).createCell();
+    return new ClearSetOperation_EditorBuilder(editorContext, node).createCell();
   }
 }

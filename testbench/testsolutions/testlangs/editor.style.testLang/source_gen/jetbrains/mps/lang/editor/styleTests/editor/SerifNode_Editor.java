@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class SerifNode_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new SerifNode_EditorBuilder_a(editorContext, node).createCell();
+    return new SerifNode_EditorBuilder(editorContext, node).createCell();
   }
 }

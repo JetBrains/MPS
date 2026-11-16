@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class SingleArgumentSequenceOperation_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new SingleArgumentSequenceOperation_EditorBuilder_a(editorContext, node).createCell();
+    return new SingleArgumentSequenceOperation_EditorBuilder(editorContext, node).createCell();
   }
 }

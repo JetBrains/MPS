@@ -16,6 +16,6 @@ public class AbstractContainerCreator_Component implements ConceptEditorComponen
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new AbstractContainerCreator_Component_ComponentBuilder_a(editorContext, node).createCell();
+    return new AbstractContainerCreator_Component_ComponentBuilder(editorContext, node).createCell();
   }
 }

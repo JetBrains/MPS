@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class VerticalLayoutBlockList_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new VerticalLayoutBlockList_EditorBuilder_a(editorContext, node).createCell();
+    return new VerticalLayoutBlockList_EditorBuilder(editorContext, node).createCell();
   }
 }

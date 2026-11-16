@@ -16,6 +16,6 @@ public class DelegateComponent implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new DelegateComponent_ComponentBuilder_a(editorContext, node).createCell();
+    return new DelegateComponent_ComponentBuilder(editorContext, node).createCell();
   }
 }

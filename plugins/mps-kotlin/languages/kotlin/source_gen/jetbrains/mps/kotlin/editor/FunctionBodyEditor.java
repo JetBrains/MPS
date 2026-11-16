@@ -16,6 +16,6 @@ public class FunctionBodyEditor implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new FunctionBodyEditor_ComponentBuilder_a(editorContext, node).createCell();
+    return new FunctionBodyEditor_ComponentBuilder(editorContext, node).createCell();
   }
 }

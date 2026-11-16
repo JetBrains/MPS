@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class DegreeComplexExpression_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new DegreeComplexExpression_EditorBuilder_a(editorContext, node).createCell();
+    return new DegreeComplexExpression_EditorBuilder(editorContext, node).createCell();
   }
 }

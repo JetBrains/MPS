@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class HugePriorityStyle_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new HugePriorityStyle_EditorBuilder_a(editorContext, node).createCell();
+    return new HugePriorityStyle_EditorBuilder(editorContext, node).createCell();
   }
 }

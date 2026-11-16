@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class FoldedCell_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new FoldedCell_EditorBuilder_a(editorContext, node).createCell();
+    return new FoldedCell_EditorBuilder(editorContext, node).createCell();
   }
 }

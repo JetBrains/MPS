@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ValueInlineDocTag_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ValueInlineDocTag_EditorBuilder_a(editorContext, node).createCell();
+    return new ValueInlineDocTag_EditorBuilder(editorContext, node).createCell();
   }
 }

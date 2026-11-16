@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class TypeKeyStatement_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new TypeKeyStatement_EditorBuilder_a(editorContext, node).createCell();
+    return new TypeKeyStatement_EditorBuilder(editorContext, node).createCell();
   }
 }

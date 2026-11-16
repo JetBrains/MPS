@@ -172,17 +172,17 @@
   </root>
   <root nodeRef="r:ea3af2e4-d2a0-4af5-9025-3843d79c1cde(jetbrains.mps.kotlin.smodel.editor)/2461357008640156811">
     <file name="ConceptType_Editor.java">
-      <node id="2461357008640156811" at="11,79,12,77" concept="7" />
+      <node id="2461357008640156811" at="11,79,12,75" concept="7" />
       <node id="2461357008640156811" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="2461357008640156811" at="11,79,12,77" />
+      <scope id="2461357008640156811" at="11,79,12,75" />
       <scope id="2461357008640156811" at="11,0,14,0">
         <var name="editorContext" id="2461357008640156811" />
         <var name="node" id="2461357008640156811" />
       </scope>
       <unit id="2461357008640156811" at="10,0,15,0" name="jetbrains.mps.kotlin.smodel.editor.ConceptType_Editor" />
     </file>
-    <file name="ConceptType_EditorBuilder_a.java">
-      <node id="2461357008640156811" at="46,91,47,19" concept="11" />
+    <file name="ConceptType_EditorBuilder.java">
+      <node id="2461357008640156811" at="46,89,47,19" concept="11" />
       <node id="2461357008640156811" at="47,19,48,18" concept="1" />
       <node id="2461357008640156811" at="53,26,54,18" concept="7" />
       <node id="2461357008640156811" at="57,39,58,32" concept="7" />
@@ -279,7 +279,7 @@
       <node id="7647285342501221584" at="66,49,69,5" concept="4" />
       <node id="7647285342501228594" at="72,0,75,0" concept="5" trace="nodeCondition0#()Z" />
       <node id="2461357008640157837" at="149,0,152,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="2461357008640156811" at="46,0,50,0" concept="0" trace="ConceptType_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="2461357008640156811" at="46,0,50,0" concept="0" trace="ConceptType_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="2461357008640156811" at="120,0,124,5" concept="4" />
       <node id="2461357008640156811" at="51,0,56,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="2461357008640156811" at="131,205,136,22" concept="4" />
@@ -303,7 +303,7 @@
       <scope id="2461357008640157837" at="149,41,150,32" />
       <scope id="2461357008640157837" at="155,28,156,20" />
       <scope id="2461357008640160277" at="176,17,177,42" />
-      <scope id="2461357008640156811" at="46,91,48,18" />
+      <scope id="2461357008640156811" at="46,89,48,18" />
       <scope id="2461357008640156811" at="121,40,123,46" />
       <scope id="2461357008640156811" at="132,73,134,145">
         <var name="manager" id="2461357008640156811" />
@@ -373,27 +373,27 @@
         <var name="style" id="2461357008640156811" />
       </scope>
       <scope id="2461357008640156811" at="106,0,138,0" />
-      <unit id="2461357008640156811" at="192,0,195,0" name="jetbrains.mps.kotlin.smodel.editor.ConceptType_EditorBuilder_a$LINKS" />
-      <unit id="2461357008640156811" at="201,0,204,0" name="jetbrains.mps.kotlin.smodel.editor.ConceptType_EditorBuilder_a$PROPS" />
-      <unit id="2461357008640156811" at="196,0,200,0" name="jetbrains.mps.kotlin.smodel.editor.ConceptType_EditorBuilder_a$CONCEPTS" />
-      <unit id="2461357008640156811" at="108,42,116,5" name="jetbrains.mps.kotlin.smodel.editor.ConceptType_EditorBuilder_a$1" />
-      <unit id="2461357008640157837" at="138,0,181,0" name="jetbrains.mps.kotlin.smodel.editor.ConceptType_EditorBuilder_a$Inline_Builder0" />
-      <unit id="2461357008640156811" at="42,0,205,0" name="jetbrains.mps.kotlin.smodel.editor.ConceptType_EditorBuilder_a" />
+      <unit id="2461357008640156811" at="192,0,195,0" name="jetbrains.mps.kotlin.smodel.editor.ConceptType_EditorBuilder$LINKS" />
+      <unit id="2461357008640156811" at="201,0,204,0" name="jetbrains.mps.kotlin.smodel.editor.ConceptType_EditorBuilder$PROPS" />
+      <unit id="2461357008640156811" at="196,0,200,0" name="jetbrains.mps.kotlin.smodel.editor.ConceptType_EditorBuilder$CONCEPTS" />
+      <unit id="2461357008640156811" at="108,42,116,5" name="jetbrains.mps.kotlin.smodel.editor.ConceptType_EditorBuilder$1" />
+      <unit id="2461357008640157837" at="138,0,181,0" name="jetbrains.mps.kotlin.smodel.editor.ConceptType_EditorBuilder$Inline_Builder0" />
+      <unit id="2461357008640156811" at="42,0,205,0" name="jetbrains.mps.kotlin.smodel.editor.ConceptType_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:ea3af2e4-d2a0-4af5-9025-3843d79c1cde(jetbrains.mps.kotlin.smodel.editor)/3181756179480688385">
     <file name="LinkReference_Editor.java">
-      <node id="3181756179480688385" at="11,79,12,79" concept="7" />
+      <node id="3181756179480688385" at="11,79,12,77" concept="7" />
       <node id="3181756179480688385" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="3181756179480688385" at="11,79,12,79" />
+      <scope id="3181756179480688385" at="11,79,12,77" />
       <scope id="3181756179480688385" at="11,0,14,0">
         <var name="editorContext" id="3181756179480688385" />
         <var name="node" id="3181756179480688385" />
       </scope>
       <unit id="3181756179480688385" at="10,0,15,0" name="jetbrains.mps.kotlin.smodel.editor.LinkReference_Editor" />
     </file>
-    <file name="LinkReference_EditorBuilder_a.java">
-      <node id="3181756179480688385" at="48,93,49,19" concept="11" />
+    <file name="LinkReference_EditorBuilder.java">
+      <node id="3181756179480688385" at="48,91,49,19" concept="11" />
       <node id="3181756179480688385" at="49,19,50,18" concept="1" />
       <node id="3181756179480688385" at="55,26,56,18" concept="7" />
       <node id="3181756179480688385" at="59,39,60,32" concept="7" />
@@ -536,7 +536,7 @@
       <node id="3181756179480688385" at="59,0,62,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="2644386474301421461" at="135,0,138,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="2644386474301421468" at="222,0,225,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="3181756179480688385" at="48,0,52,0" concept="0" trace="LinkReference_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="3181756179480688385" at="48,0,52,0" concept="0" trace="LinkReference_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="3181756179480688385" at="110,0,114,5" concept="4" />
       <node id="3181756179480688385" at="194,0,198,5" concept="4" />
       <node id="3181756179480688385" at="53,0,58,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -571,7 +571,7 @@
       <scope id="2644386474301421468" at="222,41,223,32" />
       <scope id="2644386474301421468" at="228,28,229,20" />
       <scope id="2644386474301421469" at="252,17,253,42" />
-      <scope id="3181756179480688385" at="48,93,50,18" />
+      <scope id="3181756179480688385" at="48,91,50,18" />
       <scope id="3181756179480688385" at="111,40,113,46" />
       <scope id="3181756179480688385" at="118,73,120,145">
         <var name="manager" id="3181756179480688385" />
@@ -679,29 +679,29 @@
         <var name="style" id="3181756179480688385" />
       </scope>
       <scope id="3181756179480688385" at="180,0,211,0" />
-      <unit id="3181756179480688385" at="267,0,271,0" name="jetbrains.mps.kotlin.smodel.editor.LinkReference_EditorBuilder_a$LINKS" />
-      <unit id="3181756179480688385" at="272,0,276,0" name="jetbrains.mps.kotlin.smodel.editor.LinkReference_EditorBuilder_a$CONCEPTS" />
-      <unit id="3181756179480688385" at="277,0,281,0" name="jetbrains.mps.kotlin.smodel.editor.LinkReference_EditorBuilder_a$PROPS" />
-      <unit id="3181756179480688385" at="98,42,106,5" name="jetbrains.mps.kotlin.smodel.editor.LinkReference_EditorBuilder_a$1" />
-      <unit id="3181756179480688385" at="182,42,190,5" name="jetbrains.mps.kotlin.smodel.editor.LinkReference_EditorBuilder_a$2" />
-      <unit id="2644386474301421461" at="124,0,170,0" name="jetbrains.mps.kotlin.smodel.editor.LinkReference_EditorBuilder_a$Inline_Builder0" />
-      <unit id="2644386474301421468" at="211,0,257,0" name="jetbrains.mps.kotlin.smodel.editor.LinkReference_EditorBuilder_a$Inline_Builder1" />
-      <unit id="3181756179480688385" at="44,0,282,0" name="jetbrains.mps.kotlin.smodel.editor.LinkReference_EditorBuilder_a" />
+      <unit id="3181756179480688385" at="267,0,271,0" name="jetbrains.mps.kotlin.smodel.editor.LinkReference_EditorBuilder$LINKS" />
+      <unit id="3181756179480688385" at="272,0,276,0" name="jetbrains.mps.kotlin.smodel.editor.LinkReference_EditorBuilder$CONCEPTS" />
+      <unit id="3181756179480688385" at="277,0,281,0" name="jetbrains.mps.kotlin.smodel.editor.LinkReference_EditorBuilder$PROPS" />
+      <unit id="3181756179480688385" at="98,42,106,5" name="jetbrains.mps.kotlin.smodel.editor.LinkReference_EditorBuilder$1" />
+      <unit id="3181756179480688385" at="182,42,190,5" name="jetbrains.mps.kotlin.smodel.editor.LinkReference_EditorBuilder$2" />
+      <unit id="2644386474301421461" at="124,0,170,0" name="jetbrains.mps.kotlin.smodel.editor.LinkReference_EditorBuilder$Inline_Builder0" />
+      <unit id="2644386474301421468" at="211,0,257,0" name="jetbrains.mps.kotlin.smodel.editor.LinkReference_EditorBuilder$Inline_Builder1" />
+      <unit id="3181756179480688385" at="44,0,282,0" name="jetbrains.mps.kotlin.smodel.editor.LinkReference_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:ea3af2e4-d2a0-4af5-9025-3843d79c1cde(jetbrains.mps.kotlin.smodel.editor)/3181756179490079290">
     <file name="PropertyReference_Editor.java">
-      <node id="3181756179490079290" at="11,79,12,83" concept="7" />
+      <node id="3181756179490079290" at="11,79,12,81" concept="7" />
       <node id="3181756179490079290" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="3181756179490079290" at="11,79,12,83" />
+      <scope id="3181756179490079290" at="11,79,12,81" />
       <scope id="3181756179490079290" at="11,0,14,0">
         <var name="editorContext" id="3181756179490079290" />
         <var name="node" id="3181756179490079290" />
       </scope>
       <unit id="3181756179490079290" at="10,0,15,0" name="jetbrains.mps.kotlin.smodel.editor.PropertyReference_Editor" />
     </file>
-    <file name="PropertyReference_EditorBuilder_a.java">
-      <node id="3181756179490079290" at="48,97,49,19" concept="11" />
+    <file name="PropertyReference_EditorBuilder.java">
+      <node id="3181756179490079290" at="48,95,49,19" concept="11" />
       <node id="3181756179490079290" at="49,19,50,18" concept="1" />
       <node id="3181756179490079290" at="55,26,56,18" concept="7" />
       <node id="3181756179490079290" at="59,39,60,32" concept="7" />
@@ -843,7 +843,7 @@
       <node id="3181756179490079290" at="59,0,62,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="3181756179490079402" at="135,0,138,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="3181756179490079407" at="222,0,225,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="3181756179490079290" at="48,0,52,0" concept="0" trace="PropertyReference_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="3181756179490079290" at="48,0,52,0" concept="0" trace="PropertyReference_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="3181756179490079290" at="110,0,114,5" concept="4" />
       <node id="3181756179490079290" at="194,0,198,5" concept="4" />
       <node id="3181756179490079290" at="53,0,58,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -878,7 +878,7 @@
       <scope id="3181756179490079407" at="222,41,223,32" />
       <scope id="3181756179490079407" at="228,28,229,20" />
       <scope id="3181756179490079408" at="252,17,253,42" />
-      <scope id="3181756179490079290" at="48,97,50,18" />
+      <scope id="3181756179490079290" at="48,95,50,18" />
       <scope id="3181756179490079290" at="111,40,113,46" />
       <scope id="3181756179490079290" at="118,73,120,145">
         <var name="manager" id="3181756179490079290" />
@@ -986,29 +986,29 @@
         <var name="style" id="3181756179490079290" />
       </scope>
       <scope id="3181756179490079290" at="180,0,211,0" />
-      <unit id="3181756179490079290" at="277,0,280,0" name="jetbrains.mps.kotlin.smodel.editor.PropertyReference_EditorBuilder_a$PROPS" />
-      <unit id="3181756179490079290" at="267,0,271,0" name="jetbrains.mps.kotlin.smodel.editor.PropertyReference_EditorBuilder_a$LINKS" />
-      <unit id="3181756179490079290" at="272,0,276,0" name="jetbrains.mps.kotlin.smodel.editor.PropertyReference_EditorBuilder_a$CONCEPTS" />
-      <unit id="3181756179490079290" at="98,42,106,5" name="jetbrains.mps.kotlin.smodel.editor.PropertyReference_EditorBuilder_a$1" />
-      <unit id="3181756179490079290" at="182,42,190,5" name="jetbrains.mps.kotlin.smodel.editor.PropertyReference_EditorBuilder_a$2" />
-      <unit id="3181756179490079402" at="124,0,170,0" name="jetbrains.mps.kotlin.smodel.editor.PropertyReference_EditorBuilder_a$Inline_Builder0" />
-      <unit id="3181756179490079407" at="211,0,257,0" name="jetbrains.mps.kotlin.smodel.editor.PropertyReference_EditorBuilder_a$Inline_Builder1" />
-      <unit id="3181756179490079290" at="44,0,281,0" name="jetbrains.mps.kotlin.smodel.editor.PropertyReference_EditorBuilder_a" />
+      <unit id="3181756179490079290" at="277,0,280,0" name="jetbrains.mps.kotlin.smodel.editor.PropertyReference_EditorBuilder$PROPS" />
+      <unit id="3181756179490079290" at="267,0,271,0" name="jetbrains.mps.kotlin.smodel.editor.PropertyReference_EditorBuilder$LINKS" />
+      <unit id="3181756179490079290" at="272,0,276,0" name="jetbrains.mps.kotlin.smodel.editor.PropertyReference_EditorBuilder$CONCEPTS" />
+      <unit id="3181756179490079290" at="98,42,106,5" name="jetbrains.mps.kotlin.smodel.editor.PropertyReference_EditorBuilder$1" />
+      <unit id="3181756179490079290" at="182,42,190,5" name="jetbrains.mps.kotlin.smodel.editor.PropertyReference_EditorBuilder$2" />
+      <unit id="3181756179490079402" at="124,0,170,0" name="jetbrains.mps.kotlin.smodel.editor.PropertyReference_EditorBuilder$Inline_Builder0" />
+      <unit id="3181756179490079407" at="211,0,257,0" name="jetbrains.mps.kotlin.smodel.editor.PropertyReference_EditorBuilder$Inline_Builder1" />
+      <unit id="3181756179490079290" at="44,0,281,0" name="jetbrains.mps.kotlin.smodel.editor.PropertyReference_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:ea3af2e4-d2a0-4af5-9025-3843d79c1cde(jetbrains.mps.kotlin.smodel.editor)/5594483833294616565">
     <file name="ConceptTypeParameter_Editor.java">
-      <node id="5594483833294616565" at="11,79,12,86" concept="7" />
+      <node id="5594483833294616565" at="11,79,12,84" concept="7" />
       <node id="5594483833294616565" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="5594483833294616565" at="11,79,12,86" />
+      <scope id="5594483833294616565" at="11,79,12,84" />
       <scope id="5594483833294616565" at="11,0,14,0">
         <var name="editorContext" id="5594483833294616565" />
         <var name="node" id="5594483833294616565" />
       </scope>
       <unit id="5594483833294616565" at="10,0,15,0" name="jetbrains.mps.kotlin.smodel.editor.ConceptTypeParameter_Editor" />
     </file>
-    <file name="ConceptTypeParameter_EditorBuilder_a.java">
-      <node id="5594483833294616565" at="48,100,49,19" concept="11" />
+    <file name="ConceptTypeParameter_EditorBuilder.java">
+      <node id="5594483833294616565" at="48,98,49,19" concept="11" />
       <node id="5594483833294616565" at="49,19,50,18" concept="1" />
       <node id="5594483833294616565" at="55,26,56,18" concept="7" />
       <node id="5594483833294616565" at="59,39,60,32" concept="7" />
@@ -1108,7 +1108,7 @@
       <node id="5594483833294616565" at="183,87,186,7" concept="4" />
       <node id="5594483833294616565" at="186,7,189,7" concept="4" />
       <node id="5594483833294616565" at="205,0,208,0" concept="5" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="5594483833294616565" at="48,0,52,0" concept="0" trace="ConceptTypeParameter_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="5594483833294616565" at="48,0,52,0" concept="0" trace="ConceptTypeParameter_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="5594483833294616565" at="154,0,158,0" concept="5" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="5594483833294616565" at="162,0,166,0" concept="0" trace="boundSingleRoleHandler_gvo2_b3a#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="5594483833294616565" at="53,0,58,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -1140,7 +1140,7 @@
       <scope id="5594483833294616565" at="187,42,188,46" />
       <scope id="5594483833294616565" at="201,17,202,42" />
       <scope id="5594483833294616565" at="205,40,206,26" />
-      <scope id="5594483833294616565" at="48,100,50,18" />
+      <scope id="5594483833294616565" at="48,98,50,18" />
       <scope id="2441172150877059658" at="96,74,98,145">
         <var name="manager" id="2441172150877059658" />
       </scope>
@@ -1219,26 +1219,26 @@
       <scope id="2324909103758916044" at="114,41,133,5" />
       <scope id="2441172150877059658" at="84,0,105,0" />
       <scope id="2324909103758916044" at="114,0,135,0" />
-      <unit id="5594483833294616565" at="215,0,218,0" name="jetbrains.mps.kotlin.smodel.editor.ConceptTypeParameter_EditorBuilder_a$LINKS" />
-      <unit id="5594483833294616565" at="219,0,222,0" name="jetbrains.mps.kotlin.smodel.editor.ConceptTypeParameter_EditorBuilder_a$CONCEPTS" />
-      <unit id="5594483833294616565" at="210,0,214,0" name="jetbrains.mps.kotlin.smodel.editor.ConceptTypeParameter_EditorBuilder_a$PROPS" />
-      <unit id="5594483833294616565" at="158,0,209,0" name="jetbrains.mps.kotlin.smodel.editor.ConceptTypeParameter_EditorBuilder_a$boundSingleRoleHandler_gvo2_b3a" />
-      <unit id="5594483833294616565" at="44,0,223,0" name="jetbrains.mps.kotlin.smodel.editor.ConceptTypeParameter_EditorBuilder_a" />
+      <unit id="5594483833294616565" at="215,0,218,0" name="jetbrains.mps.kotlin.smodel.editor.ConceptTypeParameter_EditorBuilder$LINKS" />
+      <unit id="5594483833294616565" at="219,0,222,0" name="jetbrains.mps.kotlin.smodel.editor.ConceptTypeParameter_EditorBuilder$CONCEPTS" />
+      <unit id="5594483833294616565" at="210,0,214,0" name="jetbrains.mps.kotlin.smodel.editor.ConceptTypeParameter_EditorBuilder$PROPS" />
+      <unit id="5594483833294616565" at="158,0,209,0" name="jetbrains.mps.kotlin.smodel.editor.ConceptTypeParameter_EditorBuilder$boundSingleRoleHandler_gvo2_b3a" />
+      <unit id="5594483833294616565" at="44,0,223,0" name="jetbrains.mps.kotlin.smodel.editor.ConceptTypeParameter_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:ea3af2e4-d2a0-4af5-9025-3843d79c1cde(jetbrains.mps.kotlin.smodel.editor)/687366223599089046">
     <file name="ProjectedConceptParameterizedType_Editor.java">
-      <node id="687366223599089046" at="11,79,12,99" concept="7" />
+      <node id="687366223599089046" at="11,79,12,97" concept="7" />
       <node id="687366223599089046" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="687366223599089046" at="11,79,12,99" />
+      <scope id="687366223599089046" at="11,79,12,97" />
       <scope id="687366223599089046" at="11,0,14,0">
         <var name="editorContext" id="687366223599089046" />
         <var name="node" id="687366223599089046" />
       </scope>
       <unit id="687366223599089046" at="10,0,15,0" name="jetbrains.mps.kotlin.smodel.editor.ProjectedConceptParameterizedType_Editor" />
     </file>
-    <file name="ProjectedConceptParameterizedType_EditorBuilder_a.java">
-      <node id="687366223599089046" at="45,113,46,19" concept="11" />
+    <file name="ProjectedConceptParameterizedType_EditorBuilder.java">
+      <node id="687366223599089046" at="45,111,46,19" concept="11" />
       <node id="687366223599089046" at="46,19,47,18" concept="1" />
       <node id="687366223599089046" at="52,26,53,18" concept="7" />
       <node id="687366223599089046" at="56,39,57,32" concept="7" />
@@ -1316,7 +1316,7 @@
       <node id="687366223599089046" at="143,87,146,7" concept="4" />
       <node id="687366223599089046" at="146,7,149,7" concept="4" />
       <node id="687366223599089046" at="165,0,168,0" concept="5" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="687366223599089046" at="45,0,49,0" concept="0" trace="ProjectedConceptParameterizedType_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="687366223599089046" at="45,0,49,0" concept="0" trace="ProjectedConceptParameterizedType_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="687366223599092201" at="88,0,92,0" concept="5" trace="createEditorMenuDescriptor#(Ljetbrains/mps/nodeEditor/cellMenu/CellContext;Ljetbrains/mps/openapi/editor/EditorContext;)Ljetbrains/mps/openapi/editor/menus/EditorMenuDescriptor;" />
       <node id="687366223599089046" at="114,0,118,0" concept="5" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="687366223599089046" at="122,0,126,0" concept="0" trace="projectionSingleRoleHandler_qofn50_b1a#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
@@ -1343,7 +1343,7 @@
       <scope id="687366223599089046" at="147,42,148,51" />
       <scope id="687366223599089046" at="161,17,162,42" />
       <scope id="687366223599089046" at="165,40,166,17" />
-      <scope id="687366223599089046" at="45,113,47,18" />
+      <scope id="687366223599089046" at="45,111,47,18" />
       <scope id="687366223599092201" at="83,0,85,0" />
       <scope id="687366223599089046" at="114,40,116,33">
         <var name="provider" id="687366223599089046" />
@@ -1410,26 +1410,26 @@
       <scope id="687366223599089046" at="93,0,104,0" />
       <scope id="687366223599089046" at="152,44,163,7" />
       <scope id="687366223599089046" at="151,0,165,0" />
-      <unit id="687366223599089046" at="180,0,183,0" name="jetbrains.mps.kotlin.smodel.editor.ProjectedConceptParameterizedType_EditorBuilder_a$LINKS" />
-      <unit id="687366223599089046" at="184,0,187,0" name="jetbrains.mps.kotlin.smodel.editor.ProjectedConceptParameterizedType_EditorBuilder_a$CONCEPTS" />
-      <unit id="687366223599092201" at="82,0,93,0" name="jetbrains.mps.kotlin.smodel.editor.ProjectedConceptParameterizedType_EditorBuilder_a$ReplaceWith_IType_cellMenu_qofn50_a0a0" />
-      <unit id="687366223599089046" at="118,0,169,0" name="jetbrains.mps.kotlin.smodel.editor.ProjectedConceptParameterizedType_EditorBuilder_a$projectionSingleRoleHandler_qofn50_b1a" />
-      <unit id="687366223599089046" at="41,0,188,0" name="jetbrains.mps.kotlin.smodel.editor.ProjectedConceptParameterizedType_EditorBuilder_a" />
+      <unit id="687366223599089046" at="180,0,183,0" name="jetbrains.mps.kotlin.smodel.editor.ProjectedConceptParameterizedType_EditorBuilder$LINKS" />
+      <unit id="687366223599089046" at="184,0,187,0" name="jetbrains.mps.kotlin.smodel.editor.ProjectedConceptParameterizedType_EditorBuilder$CONCEPTS" />
+      <unit id="687366223599092201" at="82,0,93,0" name="jetbrains.mps.kotlin.smodel.editor.ProjectedConceptParameterizedType_EditorBuilder$ReplaceWith_IType_cellMenu_qofn50_a0a0" />
+      <unit id="687366223599089046" at="118,0,169,0" name="jetbrains.mps.kotlin.smodel.editor.ProjectedConceptParameterizedType_EditorBuilder$projectionSingleRoleHandler_qofn50_b1a" />
+      <unit id="687366223599089046" at="41,0,188,0" name="jetbrains.mps.kotlin.smodel.editor.ProjectedConceptParameterizedType_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:ea3af2e4-d2a0-4af5-9025-3843d79c1cde(jetbrains.mps.kotlin.smodel.editor)/7030867043393553987">
     <file name="ShortNodeType_Editor.java">
-      <node id="7030867043393553987" at="11,79,12,79" concept="7" />
+      <node id="7030867043393553987" at="11,79,12,77" concept="7" />
       <node id="7030867043393553987" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="7030867043393553987" at="11,79,12,79" />
+      <scope id="7030867043393553987" at="11,79,12,77" />
       <scope id="7030867043393553987" at="11,0,14,0">
         <var name="editorContext" id="7030867043393553987" />
         <var name="node" id="7030867043393553987" />
       </scope>
       <unit id="7030867043393553987" at="10,0,15,0" name="jetbrains.mps.kotlin.smodel.editor.ShortNodeType_Editor" />
     </file>
-    <file name="ShortNodeType_EditorBuilder_a.java">
-      <node id="7030867043393553987" at="44,93,45,19" concept="11" />
+    <file name="ShortNodeType_EditorBuilder.java">
+      <node id="7030867043393553987" at="44,91,45,19" concept="11" />
       <node id="7030867043393553987" at="45,19,46,18" concept="1" />
       <node id="7030867043393553987" at="51,26,52,18" concept="7" />
       <node id="7030867043393553987" at="55,39,56,32" concept="7" />
@@ -1496,7 +1496,7 @@
       <node id="7030867043393557626" at="107,0,109,0" concept="2" trace="myNode" />
       <node id="7030867043393553987" at="55,0,58,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="7030867043393557626" at="117,0,120,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="7030867043393553987" at="44,0,48,0" concept="0" trace="ShortNodeType_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="7030867043393553987" at="44,0,48,0" concept="0" trace="ShortNodeType_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="7030867043393553987" at="88,0,92,5" concept="4" />
       <node id="7030867043393553987" at="49,0,54,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="7030867043393553987" at="99,205,104,22" concept="4" />
@@ -1515,7 +1515,7 @@
       <scope id="7030867043393557626" at="117,41,118,32" />
       <scope id="7030867043393557626" at="123,28,124,20" />
       <scope id="7030867043393557627" at="147,17,148,42" />
-      <scope id="7030867043393553987" at="44,93,46,18" />
+      <scope id="7030867043393553987" at="44,91,46,18" />
       <scope id="7030867043393553987" at="89,40,91,46" />
       <scope id="7030867043393553987" at="100,73,102,145">
         <var name="manager" id="7030867043393553987" />
@@ -1571,12 +1571,12 @@
         <var name="style" id="7030867043393553987" />
       </scope>
       <scope id="7030867043393553987" at="67,0,106,0" />
-      <unit id="7030867043393553987" at="153,0,156,0" name="jetbrains.mps.kotlin.smodel.editor.ShortNodeType_EditorBuilder_a$LINKS" />
-      <unit id="7030867043393553987" at="162,0,165,0" name="jetbrains.mps.kotlin.smodel.editor.ShortNodeType_EditorBuilder_a$PROPS" />
-      <unit id="7030867043393553987" at="157,0,161,0" name="jetbrains.mps.kotlin.smodel.editor.ShortNodeType_EditorBuilder_a$CONCEPTS" />
-      <unit id="7030867043393553987" at="69,42,84,5" name="jetbrains.mps.kotlin.smodel.editor.ShortNodeType_EditorBuilder_a$1" />
-      <unit id="7030867043393557626" at="106,0,152,0" name="jetbrains.mps.kotlin.smodel.editor.ShortNodeType_EditorBuilder_a$Inline_Builder0" />
-      <unit id="7030867043393553987" at="40,0,166,0" name="jetbrains.mps.kotlin.smodel.editor.ShortNodeType_EditorBuilder_a" />
+      <unit id="7030867043393553987" at="153,0,156,0" name="jetbrains.mps.kotlin.smodel.editor.ShortNodeType_EditorBuilder$LINKS" />
+      <unit id="7030867043393553987" at="162,0,165,0" name="jetbrains.mps.kotlin.smodel.editor.ShortNodeType_EditorBuilder$PROPS" />
+      <unit id="7030867043393553987" at="157,0,161,0" name="jetbrains.mps.kotlin.smodel.editor.ShortNodeType_EditorBuilder$CONCEPTS" />
+      <unit id="7030867043393553987" at="69,42,84,5" name="jetbrains.mps.kotlin.smodel.editor.ShortNodeType_EditorBuilder$1" />
+      <unit id="7030867043393557626" at="106,0,152,0" name="jetbrains.mps.kotlin.smodel.editor.ShortNodeType_EditorBuilder$Inline_Builder0" />
+      <unit id="7030867043393553987" at="40,0,166,0" name="jetbrains.mps.kotlin.smodel.editor.ShortNodeType_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:ea3af2e4-d2a0-4af5-9025-3843d79c1cde(jetbrains.mps.kotlin.smodel.editor)/7030867043393559062">
@@ -1931,17 +1931,17 @@
   </root>
   <root nodeRef="r:ea3af2e4-d2a0-4af5-9025-3843d79c1cde(jetbrains.mps.kotlin.smodel.editor)/898881083036585816">
     <file name="PropertyAccessExpression_Editor.java">
-      <node id="898881083036585816" at="11,79,12,90" concept="7" />
+      <node id="898881083036585816" at="11,79,12,88" concept="7" />
       <node id="898881083036585816" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="898881083036585816" at="11,79,12,90" />
+      <scope id="898881083036585816" at="11,79,12,88" />
       <scope id="898881083036585816" at="11,0,14,0">
         <var name="editorContext" id="898881083036585816" />
         <var name="node" id="898881083036585816" />
       </scope>
       <unit id="898881083036585816" at="10,0,15,0" name="jetbrains.mps.kotlin.smodel.editor.PropertyAccessExpression_Editor" />
     </file>
-    <file name="PropertyAccessExpression_EditorBuilder_a.java">
-      <node id="898881083036585816" at="44,104,45,19" concept="11" />
+    <file name="PropertyAccessExpression_EditorBuilder.java">
+      <node id="898881083036585816" at="44,102,45,19" concept="11" />
       <node id="898881083036585816" at="45,19,46,18" concept="1" />
       <node id="898881083036585816" at="51,26,52,18" concept="7" />
       <node id="898881083036585816" at="55,39,56,32" concept="7" />
@@ -2005,7 +2005,7 @@
       <node id="898881083036586490" at="103,0,105,0" concept="2" trace="myNode" />
       <node id="898881083036585816" at="55,0,58,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="898881083036586490" at="113,0,116,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="898881083036585816" at="44,0,48,0" concept="0" trace="PropertyAccessExpression_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="898881083036585816" at="44,0,48,0" concept="0" trace="PropertyAccessExpression_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="898881083036585816" at="88,0,92,5" concept="4" />
       <node id="898881083036585816" at="49,0,54,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="898881083036585816" at="95,205,100,22" concept="4" />
@@ -2024,7 +2024,7 @@
       <scope id="898881083036586490" at="113,41,114,32" />
       <scope id="898881083036586490" at="119,28,120,20" />
       <scope id="898881083036586838" at="144,17,145,42" />
-      <scope id="898881083036585816" at="44,104,46,18" />
+      <scope id="898881083036585816" at="44,102,46,18" />
       <scope id="898881083036585816" at="89,40,91,47" />
       <scope id="898881083036585816" at="96,73,98,145">
         <var name="manager" id="898881083036585816" />
@@ -2079,12 +2079,12 @@
         <var name="referenceLink" id="898881083036585816" />
       </scope>
       <scope id="898881083036585816" at="67,0,102,0" />
-      <unit id="898881083036585816" at="150,0,153,0" name="jetbrains.mps.kotlin.smodel.editor.PropertyAccessExpression_EditorBuilder_a$LINKS" />
-      <unit id="898881083036585816" at="159,0,162,0" name="jetbrains.mps.kotlin.smodel.editor.PropertyAccessExpression_EditorBuilder_a$PROPS" />
-      <unit id="898881083036585816" at="154,0,158,0" name="jetbrains.mps.kotlin.smodel.editor.PropertyAccessExpression_EditorBuilder_a$CONCEPTS" />
-      <unit id="898881083036585816" at="69,42,84,5" name="jetbrains.mps.kotlin.smodel.editor.PropertyAccessExpression_EditorBuilder_a$1" />
-      <unit id="898881083036586490" at="102,0,149,0" name="jetbrains.mps.kotlin.smodel.editor.PropertyAccessExpression_EditorBuilder_a$Inline_Builder0" />
-      <unit id="898881083036585816" at="40,0,163,0" name="jetbrains.mps.kotlin.smodel.editor.PropertyAccessExpression_EditorBuilder_a" />
+      <unit id="898881083036585816" at="150,0,153,0" name="jetbrains.mps.kotlin.smodel.editor.PropertyAccessExpression_EditorBuilder$LINKS" />
+      <unit id="898881083036585816" at="159,0,162,0" name="jetbrains.mps.kotlin.smodel.editor.PropertyAccessExpression_EditorBuilder$PROPS" />
+      <unit id="898881083036585816" at="154,0,158,0" name="jetbrains.mps.kotlin.smodel.editor.PropertyAccessExpression_EditorBuilder$CONCEPTS" />
+      <unit id="898881083036585816" at="69,42,84,5" name="jetbrains.mps.kotlin.smodel.editor.PropertyAccessExpression_EditorBuilder$1" />
+      <unit id="898881083036586490" at="102,0,149,0" name="jetbrains.mps.kotlin.smodel.editor.PropertyAccessExpression_EditorBuilder$Inline_Builder0" />
+      <unit id="898881083036585816" at="40,0,163,0" name="jetbrains.mps.kotlin.smodel.editor.PropertyAccessExpression_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:ea3af2e4-d2a0-4af5-9025-3843d79c1cde(jetbrains.mps.kotlin.smodel.editor)/9182535150784311284">
@@ -2138,17 +2138,17 @@
   </root>
   <root nodeRef="r:ea3af2e4-d2a0-4af5-9025-3843d79c1cde(jetbrains.mps.kotlin.smodel.editor)/9182535150794151558">
     <file name="LinkAccessExpression_Editor.java">
-      <node id="9182535150794151558" at="11,79,12,86" concept="7" />
+      <node id="9182535150794151558" at="11,79,12,84" concept="7" />
       <node id="9182535150794151558" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="9182535150794151558" at="11,79,12,86" />
+      <scope id="9182535150794151558" at="11,79,12,84" />
       <scope id="9182535150794151558" at="11,0,14,0">
         <var name="editorContext" id="9182535150794151558" />
         <var name="node" id="9182535150794151558" />
       </scope>
       <unit id="9182535150794151558" at="10,0,15,0" name="jetbrains.mps.kotlin.smodel.editor.LinkAccessExpression_Editor" />
     </file>
-    <file name="LinkAccessExpression_EditorBuilder_a.java">
-      <node id="9182535150794151558" at="44,100,45,19" concept="11" />
+    <file name="LinkAccessExpression_EditorBuilder.java">
+      <node id="9182535150794151558" at="44,98,45,19" concept="11" />
       <node id="9182535150794151558" at="45,19,46,18" concept="1" />
       <node id="9182535150794151558" at="51,26,52,18" concept="7" />
       <node id="9182535150794151558" at="55,39,56,32" concept="7" />
@@ -2212,7 +2212,7 @@
       <node id="9182535150794152600" at="103,0,105,0" concept="2" trace="myNode" />
       <node id="9182535150794151558" at="55,0,58,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="9182535150794152600" at="113,0,116,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="9182535150794151558" at="44,0,48,0" concept="0" trace="LinkAccessExpression_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="9182535150794151558" at="44,0,48,0" concept="0" trace="LinkAccessExpression_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="9182535150794151558" at="88,0,92,5" concept="4" />
       <node id="9182535150794151558" at="49,0,54,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="9182535150794151558" at="95,205,100,22" concept="4" />
@@ -2231,7 +2231,7 @@
       <scope id="9182535150794152600" at="113,41,114,32" />
       <scope id="9182535150794152600" at="119,28,120,20" />
       <scope id="9182535150794153286" at="144,17,145,42" />
-      <scope id="9182535150794151558" at="44,100,46,18" />
+      <scope id="9182535150794151558" at="44,98,46,18" />
       <scope id="9182535150794151558" at="89,40,91,43" />
       <scope id="9182535150794151558" at="96,73,98,145">
         <var name="manager" id="9182535150794151558" />
@@ -2286,12 +2286,12 @@
         <var name="referenceLink" id="9182535150794151558" />
       </scope>
       <scope id="9182535150794151558" at="67,0,102,0" />
-      <unit id="9182535150794151558" at="150,0,153,0" name="jetbrains.mps.kotlin.smodel.editor.LinkAccessExpression_EditorBuilder_a$LINKS" />
-      <unit id="9182535150794151558" at="159,0,162,0" name="jetbrains.mps.kotlin.smodel.editor.LinkAccessExpression_EditorBuilder_a$PROPS" />
-      <unit id="9182535150794151558" at="154,0,158,0" name="jetbrains.mps.kotlin.smodel.editor.LinkAccessExpression_EditorBuilder_a$CONCEPTS" />
-      <unit id="9182535150794151558" at="69,42,84,5" name="jetbrains.mps.kotlin.smodel.editor.LinkAccessExpression_EditorBuilder_a$1" />
-      <unit id="9182535150794152600" at="102,0,149,0" name="jetbrains.mps.kotlin.smodel.editor.LinkAccessExpression_EditorBuilder_a$Inline_Builder0" />
-      <unit id="9182535150794151558" at="40,0,163,0" name="jetbrains.mps.kotlin.smodel.editor.LinkAccessExpression_EditorBuilder_a" />
+      <unit id="9182535150794151558" at="150,0,153,0" name="jetbrains.mps.kotlin.smodel.editor.LinkAccessExpression_EditorBuilder$LINKS" />
+      <unit id="9182535150794151558" at="159,0,162,0" name="jetbrains.mps.kotlin.smodel.editor.LinkAccessExpression_EditorBuilder$PROPS" />
+      <unit id="9182535150794151558" at="154,0,158,0" name="jetbrains.mps.kotlin.smodel.editor.LinkAccessExpression_EditorBuilder$CONCEPTS" />
+      <unit id="9182535150794151558" at="69,42,84,5" name="jetbrains.mps.kotlin.smodel.editor.LinkAccessExpression_EditorBuilder$1" />
+      <unit id="9182535150794152600" at="102,0,149,0" name="jetbrains.mps.kotlin.smodel.editor.LinkAccessExpression_EditorBuilder$Inline_Builder0" />
+      <unit id="9182535150794151558" at="40,0,163,0" name="jetbrains.mps.kotlin.smodel.editor.LinkAccessExpression_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:ea3af2e4-d2a0-4af5-9025-3843d79c1cde(jetbrains.mps.kotlin.smodel.editor)/9182535150794155928">

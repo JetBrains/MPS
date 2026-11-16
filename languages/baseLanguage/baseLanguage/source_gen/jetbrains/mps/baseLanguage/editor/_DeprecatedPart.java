@@ -16,6 +16,6 @@ public class _DeprecatedPart implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new _DeprecatedPart_ComponentBuilder_a(editorContext, node).createCell();
+    return new _DeprecatedPart_ComponentBuilder(editorContext, node).createCell();
   }
 }

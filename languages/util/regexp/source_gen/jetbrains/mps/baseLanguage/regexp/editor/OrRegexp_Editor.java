@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class OrRegexp_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new OrRegexp_EditorBuilder_a(editorContext, node).createCell();
+    return new OrRegexp_EditorBuilder(editorContext, node).createCell();
   }
 }

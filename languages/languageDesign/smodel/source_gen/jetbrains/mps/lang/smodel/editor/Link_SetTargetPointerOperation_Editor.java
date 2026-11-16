@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class Link_SetTargetPointerOperation_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new Link_SetTargetPointerOperation_EditorBuilder_a(editorContext, node).createCell();
+    return new Link_SetTargetPointerOperation_EditorBuilder(editorContext, node).createCell();
   }
 }

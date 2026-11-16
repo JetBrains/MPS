@@ -17,17 +17,17 @@
   </root>
   <root nodeRef="r:e4c3371f-743b-4590-b521-03a11e9bad7f(jetbrains.mps.samples.theSimplestLanguage.editor)/1222954953898">
     <file name="TheSimplestConcept_Editor.java">
-      <node id="1222954953898" at="11,79,12,84" concept="6" />
+      <node id="1222954953898" at="11,79,12,82" concept="6" />
       <node id="1222954953898" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1222954953898" at="11,79,12,84" />
+      <scope id="1222954953898" at="11,79,12,82" />
       <scope id="1222954953898" at="11,0,14,0">
         <var name="editorContext" id="1222954953898" />
         <var name="node" id="1222954953898" />
       </scope>
       <unit id="1222954953898" at="10,0,15,0" name="jetbrains.mps.samples.theSimplestLanguage.editor.TheSimplestConcept_Editor" />
     </file>
-    <file name="TheSimplestConcept_EditorBuilder_a.java">
-      <node id="1222954953898" at="36,98,37,19" concept="8" />
+    <file name="TheSimplestConcept_EditorBuilder.java">
+      <node id="1222954953898" at="36,96,37,19" concept="8" />
       <node id="1222954953898" at="37,19,38,18" concept="1" />
       <node id="1222954953898" at="43,26,44,18" concept="6" />
       <node id="1222954953898" at="47,39,48,32" concept="6" />
@@ -103,7 +103,7 @@
       <node id="1222954953898" at="151,0,152,0" concept="7" trace="PropertyAttribute$Gb" />
       <node id="1222954953898" at="33,0,35,0" concept="2" trace="myNode" />
       <node id="1222954953898" at="47,0,50,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="1222954953898" at="36,0,40,0" concept="0" trace="TheSimplestConcept_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1222954953898" at="36,0,40,0" concept="0" trace="TheSimplestConcept_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1222954953898" at="41,0,46,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1222954965284" at="88,208,93,24" concept="3" />
       <node id="1222954988615" at="134,208,139,24" concept="3" />
@@ -121,7 +121,7 @@
       <scope id="1222954953898" at="47,39,48,32" />
       <scope id="1222954965284" at="94,15,95,40" />
       <scope id="1222954988615" at="140,15,141,40" />
-      <scope id="1222954953898" at="36,98,38,18" />
+      <scope id="1222954953898" at="36,96,38,18" />
       <scope id="1222954965284" at="89,74,91,145">
         <var name="manager" id="1222954965284" />
       </scope>
@@ -177,9 +177,9 @@
       <scope id="1222954988615" at="123,41,142,5" />
       <scope id="1222954965284" at="77,0,98,0" />
       <scope id="1222954988615" at="123,0,144,0" />
-      <unit id="1222954953898" at="150,0,153,0" name="jetbrains.mps.samples.theSimplestLanguage.editor.TheSimplestConcept_EditorBuilder_a$CONCEPTS" />
-      <unit id="1222954953898" at="145,0,149,0" name="jetbrains.mps.samples.theSimplestLanguage.editor.TheSimplestConcept_EditorBuilder_a$PROPS" />
-      <unit id="1222954953898" at="32,0,154,0" name="jetbrains.mps.samples.theSimplestLanguage.editor.TheSimplestConcept_EditorBuilder_a" />
+      <unit id="1222954953898" at="150,0,153,0" name="jetbrains.mps.samples.theSimplestLanguage.editor.TheSimplestConcept_EditorBuilder$CONCEPTS" />
+      <unit id="1222954953898" at="145,0,149,0" name="jetbrains.mps.samples.theSimplestLanguage.editor.TheSimplestConcept_EditorBuilder$PROPS" />
+      <unit id="1222954953898" at="32,0,154,0" name="jetbrains.mps.samples.theSimplestLanguage.editor.TheSimplestConcept_EditorBuilder" />
     </file>
   </root>
 </debug-info>

@@ -16,6 +16,6 @@ public class _CellModel_Common implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new _CellModel_Common_ComponentBuilder_a(editorContext, node).createCell();
+    return new _CellModel_Common_ComponentBuilder(editorContext, node).createCell();
   }
 }

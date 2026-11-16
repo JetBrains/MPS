@@ -16,6 +16,6 @@ public class Position implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new Position_ComponentBuilder_a(editorContext, node).createCell();
+    return new Position_ComponentBuilder(editorContext, node).createCell();
   }
 }

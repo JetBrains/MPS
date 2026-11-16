@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="-47ft6rtd47cxkcf8ozpgcgxifchd5hy">
-  <files names="Attribute_Editor.java:Attribute_EditorBuilder_a.java:Attribute_SubstituteMenu.java:Document_Editor.java:Document_EditorBuilder_a.java:EditorAspectDescriptorImpl.java:ElementPart_Editor.java:ElementPart_EditorBuilder_a.java:Element_Editor.java:Element_EditorBuilder_a.java:Text_Editor.java:Text_EditorBuilder_a.java" />
+  <files names="Attribute_Editor.java:Attribute_EditorBuilder.java:Attribute_SubstituteMenu.java:Document_Editor.java:Document_EditorBuilder.java:EditorAspectDescriptorImpl.java:ElementPart_Editor.java:ElementPart_EditorBuilder.java:Element_Editor.java:Element_EditorBuilder.java:Text_Editor.java:Text_EditorBuilder.java" />
 </product>
 

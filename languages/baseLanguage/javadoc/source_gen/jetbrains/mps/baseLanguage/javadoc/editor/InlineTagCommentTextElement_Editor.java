@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class InlineTagCommentTextElement_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new InlineTagCommentTextElement_EditorBuilder_a(editorContext, node).createCell();
+    return new InlineTagCommentTextElement_EditorBuilder(editorContext, node).createCell();
   }
 }

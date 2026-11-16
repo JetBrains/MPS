@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class NodeAttributeQualifier_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new NodeAttributeQualifier_EditorBuilder_a(editorContext, node).createCell();
+    return new NodeAttributeQualifier_EditorBuilder(editorContext, node).createCell();
   }
 }

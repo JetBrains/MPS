@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class PostfixDecrementExpression_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new PostfixDecrementExpression_EditorBuilder_a(editorContext, node).createCell();
+    return new PostfixDecrementExpression_EditorBuilder(editorContext, node).createCell();
   }
 }

@@ -18,6 +18,6 @@ public class Note_compact_Editor extends DefaultNodeEditor {
     return myContextHints;
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new Note_compact_EditorBuilder_a(editorContext, node).createCell();
+    return new Note_compact_EditorBuilder(editorContext, node).createCell();
   }
 }

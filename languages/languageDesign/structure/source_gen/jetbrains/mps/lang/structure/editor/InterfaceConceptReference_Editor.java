@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class InterfaceConceptReference_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new InterfaceConceptReference_EditorBuilder_a(editorContext, node).createCell();
+    return new InterfaceConceptReference_EditorBuilder(editorContext, node).createCell();
   }
 }

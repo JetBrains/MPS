@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="-avy089q2lj8pa24jyl3pqvj0wehpbkr">
-  <files names="Button_Editor.java:Button_EditorBuilder_a.java:EditorAspectDescriptorImpl.java:Label_Editor.java:Label_EditorBuilder_a.java" />
+  <files names="Button_Editor.java:Button_EditorBuilder.java:EditorAspectDescriptorImpl.java:Label_Editor.java:Label_EditorBuilder.java" />
 </product>
 

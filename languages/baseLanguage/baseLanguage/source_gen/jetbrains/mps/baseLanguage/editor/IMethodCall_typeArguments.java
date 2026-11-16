@@ -16,6 +16,6 @@ public class IMethodCall_typeArguments implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new IMethodCall_typeArguments_ComponentBuilder_a(editorContext, node).createCell();
+    return new IMethodCall_typeArguments_ComponentBuilder(editorContext, node).createCell();
   }
 }

@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class AggregationLinkType_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new AggregationLinkType_EditorBuilder_a(editorContext, node).createCell();
+    return new AggregationLinkType_EditorBuilder(editorContext, node).createCell();
   }
 }

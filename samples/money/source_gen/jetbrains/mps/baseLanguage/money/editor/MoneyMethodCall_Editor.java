@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class MoneyMethodCall_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new MoneyMethodCall_EditorBuilder_a(editorContext, node).createCell();
+    return new MoneyMethodCall_EditorBuilder(editorContext, node).createCell();
   }
 }

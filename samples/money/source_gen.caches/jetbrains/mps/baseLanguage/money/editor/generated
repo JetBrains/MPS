@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="4bwoiwq8jy40uwl0n5xkdnrotfn3zwp">
-  <files names="EditorAspectDescriptorImpl.java:MoneyCreator_Editor.java:MoneyCreator_EditorBuilder_a.java:MoneyLiteral_Editor.java:MoneyLiteral_EditorBuilder_a.java:MoneyMethodCall_Editor.java:MoneyMethodCall_EditorBuilder_a.java:MoneyMethods_Contribution.java" />
+  <files names="EditorAspectDescriptorImpl.java:MoneyCreator_Editor.java:MoneyCreator_EditorBuilder.java:MoneyLiteral_Editor.java:MoneyLiteral_EditorBuilder.java:MoneyMethodCall_Editor.java:MoneyMethodCall_EditorBuilder.java:MoneyMethods_Contribution.java" />
 </product>
 

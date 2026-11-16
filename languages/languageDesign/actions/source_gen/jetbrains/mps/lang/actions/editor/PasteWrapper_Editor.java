@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class PasteWrapper_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new PasteWrapper_EditorBuilder_a(editorContext, node).createCell();
+    return new PasteWrapper_EditorBuilder(editorContext, node).createCell();
   }
 }

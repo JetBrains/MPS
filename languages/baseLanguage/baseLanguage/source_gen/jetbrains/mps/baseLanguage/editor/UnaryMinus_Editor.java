@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class UnaryMinus_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new UnaryMinus_EditorBuilder_a(editorContext, node).createCell();
+    return new UnaryMinus_EditorBuilder(editorContext, node).createCell();
   }
 }

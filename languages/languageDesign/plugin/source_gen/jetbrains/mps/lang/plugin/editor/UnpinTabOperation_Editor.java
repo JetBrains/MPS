@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class UnpinTabOperation_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new UnpinTabOperation_EditorBuilder_a(editorContext, node).createCell();
+    return new UnpinTabOperation_EditorBuilder(editorContext, node).createCell();
   }
 }

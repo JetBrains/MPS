@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="1rysjyjau7l19fwkmrn28jjm2d35v7d">
-  <files names="CellModel_HierarchycalTable_Editor.java:CellModel_HierarchycalTable_EditorBuilder_a.java:CellModel_Table_Editor.java:CellModel_Table_EditorBuilder_a.java:CellModel_Table_InspectorBuilder_a.java:EditorAspectDescriptorImpl.java" />
+  <files names="CellModel_HierarchycalTable_Editor.java:CellModel_HierarchycalTable_EditorBuilder.java:CellModel_Table_Editor.java:CellModel_Table_EditorBuilder.java:CellModel_Table_InspectorBuilder.java:EditorAspectDescriptorImpl.java" />
 </product>
 

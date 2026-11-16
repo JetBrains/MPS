@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class CompiledStubStatement_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new CompiledStubStatement_EditorBuilder_a(editorContext, node).createCell();
+    return new CompiledStubStatement_EditorBuilder(editorContext, node).createCell();
   }
 }

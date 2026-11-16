@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class PrefixUnaryExpression_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new PrefixUnaryExpression_EditorBuilder_a(editorContext, node).createCell();
+    return new PrefixUnaryExpression_EditorBuilder(editorContext, node).createCell();
   }
 }

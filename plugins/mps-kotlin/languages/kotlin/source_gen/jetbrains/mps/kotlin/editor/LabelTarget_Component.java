@@ -16,6 +16,6 @@ public class LabelTarget_Component implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new LabelTarget_Component_ComponentBuilder_a(editorContext, node).createCell();
+    return new LabelTarget_Component_ComponentBuilder(editorContext, node).createCell();
   }
 }

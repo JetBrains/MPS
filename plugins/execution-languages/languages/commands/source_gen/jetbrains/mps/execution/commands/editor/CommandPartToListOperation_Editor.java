@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class CommandPartToListOperation_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new CommandPartToListOperation_EditorBuilder_a(editorContext, node).createCell();
+    return new CommandPartToListOperation_EditorBuilder(editorContext, node).createCell();
   }
 }

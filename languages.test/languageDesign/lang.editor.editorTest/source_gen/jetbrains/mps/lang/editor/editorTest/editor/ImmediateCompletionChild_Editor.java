@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ImmediateCompletionChild_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ImmediateCompletionChild_EditorBuilder_a(editorContext, node).createCell();
+    return new ImmediateCompletionChild_EditorBuilder(editorContext, node).createCell();
   }
 }

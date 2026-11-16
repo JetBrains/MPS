@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class LocalPatternReference_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new LocalPatternReference_EditorBuilder_a(editorContext, node).createCell();
+    return new LocalPatternReference_EditorBuilder(editorContext, node).createCell();
   }
 }

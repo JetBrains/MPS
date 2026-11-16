@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ForEachVariable_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ForEachVariable_EditorBuilder_a(editorContext, node).createCell();
+    return new ForEachVariable_EditorBuilder(editorContext, node).createCell();
   }
 }

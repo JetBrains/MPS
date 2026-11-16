@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class PredefinedSymbolClassRegexp_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new PredefinedSymbolClassRegexp_EditorBuilder_a(editorContext, node).createCell();
+    return new PredefinedSymbolClassRegexp_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new PredefinedSymbolClassRegexp_InspectorBuilder_a(editorContext, node).createCell();
+    return new PredefinedSymbolClassRegexp_InspectorBuilder(editorContext, node).createCell();
   }
 }

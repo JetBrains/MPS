@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class DataFlowBuilderDeclaration_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new DataFlowBuilderDeclaration_EditorBuilder_a(editorContext, node).createCell();
+    return new DataFlowBuilderDeclaration_EditorBuilder(editorContext, node).createCell();
   }
 }

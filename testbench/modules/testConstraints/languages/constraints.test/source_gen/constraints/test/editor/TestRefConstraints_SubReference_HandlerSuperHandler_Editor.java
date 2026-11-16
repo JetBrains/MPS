@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class TestRefConstraints_SubReference_HandlerSuperHandler_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new TestRefConstraints_SubReference_HandlerSuperHandler_EditorBuilder_a(editorContext, node).createCell();
+    return new TestRefConstraints_SubReference_HandlerSuperHandler_EditorBuilder(editorContext, node).createCell();
   }
 }

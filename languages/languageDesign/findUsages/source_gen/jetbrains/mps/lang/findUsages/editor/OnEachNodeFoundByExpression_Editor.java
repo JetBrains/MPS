@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class OnEachNodeFoundByExpression_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new OnEachNodeFoundByExpression_EditorBuilder_a(editorContext, node).createCell();
+    return new OnEachNodeFoundByExpression_EditorBuilder(editorContext, node).createCell();
   }
 }

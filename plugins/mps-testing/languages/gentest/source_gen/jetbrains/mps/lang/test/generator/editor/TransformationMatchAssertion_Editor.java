@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class TransformationMatchAssertion_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new TransformationMatchAssertion_EditorBuilder_a(editorContext, node).createCell();
+    return new TransformationMatchAssertion_EditorBuilder(editorContext, node).createCell();
   }
 }

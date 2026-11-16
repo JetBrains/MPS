@@ -16,6 +16,6 @@ public class ReplaceableAlias_Comp implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ReplaceableAlias_Comp_ComponentBuilder_a(editorContext, node).createCell();
+    return new ReplaceableAlias_Comp_ComponentBuilder(editorContext, node).createCell();
   }
 }

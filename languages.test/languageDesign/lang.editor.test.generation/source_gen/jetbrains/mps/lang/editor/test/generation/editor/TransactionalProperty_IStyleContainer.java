@@ -16,6 +16,6 @@ public class TransactionalProperty_IStyleContainer implements ConceptEditorCompo
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new TransactionalProperty_IStyleContainer_ComponentBuilder_a(editorContext, node).createCell();
+    return new TransactionalProperty_IStyleContainer_ComponentBuilder(editorContext, node).createCell();
   }
 }

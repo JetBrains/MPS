@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="-b5ctgv7w8tkqs3meyl11vp17ojvpz8v">
-  <files names="BuildWall_Editor.java:BuildWall_EditorBuilder_a.java:DestroyWall_Editor.java:DestroyWall_EditorBuilder_a.java:DropMark_Editor.java:DropMark_EditorBuilder_a.java:EditorAspectDescriptorImpl.java:PickMark_Editor.java:PickMark_EditorBuilder_a.java:Position.java:Position_ComponentBuilder_a.java:SceneBuildingCommands.java" />
+  <files names="BuildWall_Editor.java:BuildWall_EditorBuilder.java:DestroyWall_Editor.java:DestroyWall_EditorBuilder.java:DropMark_Editor.java:DropMark_EditorBuilder.java:EditorAspectDescriptorImpl.java:PickMark_Editor.java:PickMark_EditorBuilder.java:Position.java:Position_ComponentBuilder.java:SceneBuildingCommands.java" />
 </product>
 

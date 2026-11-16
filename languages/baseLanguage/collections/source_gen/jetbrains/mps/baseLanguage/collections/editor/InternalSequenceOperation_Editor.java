@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class InternalSequenceOperation_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new InternalSequenceOperation_EditorBuilder_a(editorContext, node).createCell();
+    return new InternalSequenceOperation_EditorBuilder(editorContext, node).createCell();
   }
 }

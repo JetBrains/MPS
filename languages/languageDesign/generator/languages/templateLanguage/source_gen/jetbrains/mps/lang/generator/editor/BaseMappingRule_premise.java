@@ -16,6 +16,6 @@ public class BaseMappingRule_premise implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new BaseMappingRule_premise_ComponentBuilder_a(editorContext, node).createCell();
+    return new BaseMappingRule_premise_ComponentBuilder(editorContext, node).createCell();
   }
 }

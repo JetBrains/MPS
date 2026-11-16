@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class DropMark_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new DropMark_EditorBuilder_a(editorContext, node).createCell();
+    return new DropMark_EditorBuilder(editorContext, node).createCell();
   }
 }

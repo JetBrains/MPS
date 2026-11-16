@@ -25,17 +25,17 @@
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c895902dc(jetbrains.mps.baseLanguage.blTypes.editor)/1159268590362">
     <file name="PrimitiveTypeDescriptor_Editor.java">
-      <node id="1159268590362" at="11,79,12,89" concept="6" />
+      <node id="1159268590362" at="11,79,12,87" concept="6" />
       <node id="1159268590362" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1159268590362" at="11,79,12,89" />
+      <scope id="1159268590362" at="11,79,12,87" />
       <scope id="1159268590362" at="11,0,14,0">
         <var name="editorContext" id="1159268590362" />
         <var name="node" id="1159268590362" />
       </scope>
       <unit id="1159268590362" at="10,0,15,0" name="jetbrains.mps.baseLanguage.blTypes.editor.PrimitiveTypeDescriptor_Editor" />
     </file>
-    <file name="PrimitiveTypeDescriptor_EditorBuilder_a.java">
-      <node id="1159268590362" at="47,103,48,19" concept="9" />
+    <file name="PrimitiveTypeDescriptor_EditorBuilder.java">
+      <node id="1159268590362" at="47,101,48,19" concept="9" />
       <node id="1159268590362" at="48,19,49,18" concept="1" />
       <node id="1159268590362" at="54,26,55,18" concept="6" />
       <node id="1159268590362" at="58,39,59,32" concept="6" />
@@ -121,7 +121,7 @@
       <node id="1159268590362" at="58,0,61,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1159268590362" at="129,0,132,0" concept="4" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="1159268590362" at="132,0,135,0" concept="4" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
-      <node id="1159268590362" at="47,0,51,0" concept="0" trace="PrimitiveTypeDescriptor_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1159268590362" at="47,0,51,0" concept="0" trace="PrimitiveTypeDescriptor_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1159268590362" at="120,0,124,0" concept="0" trace="extendsListHandler_7ntfj2_d0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1159268590362" at="125,0,129,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1159268590362" at="158,97,162,9" concept="3" />
@@ -152,7 +152,7 @@
       <scope id="1159268590362" at="129,40,130,32" />
       <scope id="1159268590362" at="132,48,133,42" />
       <scope id="1159268590362" at="150,17,151,42" />
-      <scope id="1159268590362" at="47,103,49,18" />
+      <scope id="1159268590362" at="47,101,49,18" />
       <scope id="1159268590365" at="94,74,96,145">
         <var name="manager" id="1159268590365" />
       </scope>
@@ -229,26 +229,26 @@
         <var name="elementNode" id="1159268590362" />
         <var name="isEmptyCell" id="1159268590362" />
       </scope>
-      <unit id="1159268590362" at="197,0,200,0" name="jetbrains.mps.baseLanguage.blTypes.editor.PrimitiveTypeDescriptor_EditorBuilder_a$PROPS" />
-      <unit id="1159268590362" at="206,0,209,0" name="jetbrains.mps.baseLanguage.blTypes.editor.PrimitiveTypeDescriptor_EditorBuilder_a$LINKS" />
-      <unit id="1159268590362" at="201,0,205,0" name="jetbrains.mps.baseLanguage.blTypes.editor.PrimitiveTypeDescriptor_EditorBuilder_a$CONCEPTS" />
-      <unit id="1159268590362" at="116,0,196,0" name="jetbrains.mps.baseLanguage.blTypes.editor.PrimitiveTypeDescriptor_EditorBuilder_a$extendsListHandler_7ntfj2_d0" />
-      <unit id="1159268590362" at="43,0,210,0" name="jetbrains.mps.baseLanguage.blTypes.editor.PrimitiveTypeDescriptor_EditorBuilder_a" />
+      <unit id="1159268590362" at="197,0,200,0" name="jetbrains.mps.baseLanguage.blTypes.editor.PrimitiveTypeDescriptor_EditorBuilder$PROPS" />
+      <unit id="1159268590362" at="206,0,209,0" name="jetbrains.mps.baseLanguage.blTypes.editor.PrimitiveTypeDescriptor_EditorBuilder$LINKS" />
+      <unit id="1159268590362" at="201,0,205,0" name="jetbrains.mps.baseLanguage.blTypes.editor.PrimitiveTypeDescriptor_EditorBuilder$CONCEPTS" />
+      <unit id="1159268590362" at="116,0,196,0" name="jetbrains.mps.baseLanguage.blTypes.editor.PrimitiveTypeDescriptor_EditorBuilder$extendsListHandler_7ntfj2_d0" />
+      <unit id="1159268590362" at="43,0,210,0" name="jetbrains.mps.baseLanguage.blTypes.editor.PrimitiveTypeDescriptor_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c895902dc(jetbrains.mps.baseLanguage.blTypes.editor)/1159268661793">
     <file name="PrimitiveTypeRef_Editor.java">
-      <node id="1159268661793" at="11,79,12,82" concept="6" />
+      <node id="1159268661793" at="11,79,12,80" concept="6" />
       <node id="1159268661793" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1159268661793" at="11,79,12,82" />
+      <scope id="1159268661793" at="11,79,12,80" />
       <scope id="1159268661793" at="11,0,14,0">
         <var name="editorContext" id="1159268661793" />
         <var name="node" id="1159268661793" />
       </scope>
       <unit id="1159268661793" at="10,0,15,0" name="jetbrains.mps.baseLanguage.blTypes.editor.PrimitiveTypeRef_Editor" />
     </file>
-    <file name="PrimitiveTypeRef_EditorBuilder_a.java">
-      <node id="1159268661793" at="46,96,47,19" concept="9" />
+    <file name="PrimitiveTypeRef_EditorBuilder.java">
+      <node id="1159268661793" at="46,94,47,19" concept="9" />
       <node id="1159268661793" at="47,19,48,18" concept="1" />
       <node id="1159268661793" at="53,26,54,18" concept="6" />
       <node id="1159268661793" at="57,39,58,32" concept="6" />
@@ -313,7 +313,7 @@
       <node id="1159268661796" at="105,0,107,0" concept="2" trace="myNode" />
       <node id="1159268661793" at="57,0,60,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1159268661796" at="115,0,118,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="1159268661793" at="46,0,50,0" concept="0" trace="PrimitiveTypeRef_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1159268661793" at="46,0,50,0" concept="0" trace="PrimitiveTypeRef_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1159268661793" at="90,0,94,5" concept="3" />
       <node id="1159268661793" at="51,0,56,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1159268661793" at="97,205,102,22" concept="3" />
@@ -332,7 +332,7 @@
       <scope id="1159268661796" at="115,41,116,32" />
       <scope id="1159268661796" at="121,28,122,20" />
       <scope id="1159268661797" at="147,17,148,42" />
-      <scope id="1159268661793" at="46,96,48,18" />
+      <scope id="1159268661793" at="46,94,48,18" />
       <scope id="1159268661793" at="91,40,93,49" />
       <scope id="1159268661793" at="98,73,100,145">
         <var name="manager" id="1159268661793" />
@@ -387,12 +387,12 @@
         <var name="referenceLink" id="1159268661793" />
       </scope>
       <scope id="1159268661793" at="69,0,104,0" />
-      <unit id="1159268661793" at="153,0,156,0" name="jetbrains.mps.baseLanguage.blTypes.editor.PrimitiveTypeRef_EditorBuilder_a$LINKS" />
-      <unit id="1159268661793" at="162,0,165,0" name="jetbrains.mps.baseLanguage.blTypes.editor.PrimitiveTypeRef_EditorBuilder_a$PROPS" />
-      <unit id="1159268661793" at="157,0,161,0" name="jetbrains.mps.baseLanguage.blTypes.editor.PrimitiveTypeRef_EditorBuilder_a$CONCEPTS" />
-      <unit id="1159268661793" at="71,42,86,5" name="jetbrains.mps.baseLanguage.blTypes.editor.PrimitiveTypeRef_EditorBuilder_a$1" />
-      <unit id="1159268661796" at="104,0,152,0" name="jetbrains.mps.baseLanguage.blTypes.editor.PrimitiveTypeRef_EditorBuilder_a$Inline_Builder0" />
-      <unit id="1159268661793" at="42,0,166,0" name="jetbrains.mps.baseLanguage.blTypes.editor.PrimitiveTypeRef_EditorBuilder_a" />
+      <unit id="1159268661793" at="153,0,156,0" name="jetbrains.mps.baseLanguage.blTypes.editor.PrimitiveTypeRef_EditorBuilder$LINKS" />
+      <unit id="1159268661793" at="162,0,165,0" name="jetbrains.mps.baseLanguage.blTypes.editor.PrimitiveTypeRef_EditorBuilder$PROPS" />
+      <unit id="1159268661793" at="157,0,161,0" name="jetbrains.mps.baseLanguage.blTypes.editor.PrimitiveTypeRef_EditorBuilder$CONCEPTS" />
+      <unit id="1159268661793" at="71,42,86,5" name="jetbrains.mps.baseLanguage.blTypes.editor.PrimitiveTypeRef_EditorBuilder$1" />
+      <unit id="1159268661796" at="104,0,152,0" name="jetbrains.mps.baseLanguage.blTypes.editor.PrimitiveTypeRef_EditorBuilder$Inline_Builder0" />
+      <unit id="1159268661793" at="42,0,166,0" name="jetbrains.mps.baseLanguage.blTypes.editor.PrimitiveTypeRef_EditorBuilder" />
     </file>
   </root>
 </debug-info>

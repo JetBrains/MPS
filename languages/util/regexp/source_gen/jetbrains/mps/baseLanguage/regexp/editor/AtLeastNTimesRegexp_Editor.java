@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class AtLeastNTimesRegexp_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new AtLeastNTimesRegexp_EditorBuilder_a(editorContext, node).createCell();
+    return new AtLeastNTimesRegexp_EditorBuilder(editorContext, node).createCell();
   }
 }

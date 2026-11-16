@@ -16,6 +16,6 @@ public class SuppressedErrorComponent implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new SuppressedErrorComponent_ComponentBuilder_a(editorContext, node).createCell();
+    return new SuppressedErrorComponent_ComponentBuilder(editorContext, node).createCell();
   }
 }

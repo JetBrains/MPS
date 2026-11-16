@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class StringLiteralRegexp_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new StringLiteralRegexp_EditorBuilder_a(editorContext, node).createCell();
+    return new StringLiteralRegexp_EditorBuilder(editorContext, node).createCell();
   }
 }

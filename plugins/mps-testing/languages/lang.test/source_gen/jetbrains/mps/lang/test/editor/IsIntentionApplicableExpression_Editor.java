@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class IsIntentionApplicableExpression_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new IsIntentionApplicableExpression_EditorBuilder_a(editorContext, node).createCell();
+    return new IsIntentionApplicableExpression_EditorBuilder(editorContext, node).createCell();
   }
 }

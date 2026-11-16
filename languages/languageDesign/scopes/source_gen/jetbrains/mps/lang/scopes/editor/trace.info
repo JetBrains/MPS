@@ -18,17 +18,17 @@
   </root>
   <root nodeRef="r:82cb30c4-7981-4a3f-86bc-fac1087d9cc7(jetbrains.mps.lang.scopes.editor)/8077936094962911308">
     <file name="ParentScope_Editor.java">
-      <node id="8077936094962911308" at="11,79,12,77" concept="6" />
+      <node id="8077936094962911308" at="11,79,12,75" concept="6" />
       <node id="8077936094962911308" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="8077936094962911308" at="11,79,12,77" />
+      <scope id="8077936094962911308" at="11,79,12,75" />
       <scope id="8077936094962911308" at="11,0,14,0">
         <var name="editorContext" id="8077936094962911308" />
         <var name="node" id="8077936094962911308" />
       </scope>
       <unit id="8077936094962911308" at="10,0,15,0" name="jetbrains.mps.lang.scopes.editor.ParentScope_Editor" />
     </file>
-    <file name="ParentScope_EditorBuilder_a.java">
-      <node id="8077936094962911308" at="16,91,17,19" concept="9" />
+    <file name="ParentScope_EditorBuilder.java">
+      <node id="8077936094962911308" at="16,89,17,19" concept="9" />
       <node id="8077936094962911308" at="17,19,18,18" concept="1" />
       <node id="8077936094962911308" at="23,26,24,18" concept="6" />
       <node id="8077936094962911308" at="27,39,28,30" concept="6" />
@@ -40,12 +40,12 @@
       <node id="8077936094962911310" at="36,34,37,22" concept="6" />
       <node id="8077936094962911308" at="13,0,15,0" concept="2" trace="myNode" />
       <node id="8077936094962911308" at="27,0,30,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="8077936094962911308" at="16,0,20,0" concept="0" trace="ParentScope_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8077936094962911308" at="16,0,20,0" concept="0" trace="ParentScope_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8077936094962911308" at="21,0,26,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="8077936094962911310" at="31,0,39,0" concept="4" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="8077936094962911308" at="23,26,24,18" />
       <scope id="8077936094962911308" at="27,39,28,30" />
-      <scope id="8077936094962911308" at="16,91,18,18" />
+      <scope id="8077936094962911308" at="16,89,18,18" />
       <scope id="8077936094962911308" at="27,0,30,0" />
       <scope id="8077936094962911308" at="16,0,20,0">
         <var name="context" id="8077936094962911308" />
@@ -56,22 +56,22 @@
         <var name="editorCell" id="8077936094962911310" />
       </scope>
       <scope id="8077936094962911310" at="31,0,39,0" />
-      <unit id="8077936094962911308" at="12,0,40,0" name="jetbrains.mps.lang.scopes.editor.ParentScope_EditorBuilder_a" />
+      <unit id="8077936094962911308" at="12,0,40,0" name="jetbrains.mps.lang.scopes.editor.ParentScope_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:82cb30c4-7981-4a3f-86bc-fac1087d9cc7(jetbrains.mps.lang.scopes.editor)/8077936094962958437">
     <file name="ComeFromExpression_Editor.java">
-      <node id="8077936094962958437" at="11,79,12,84" concept="6" />
+      <node id="8077936094962958437" at="11,79,12,82" concept="6" />
       <node id="8077936094962958437" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="8077936094962958437" at="11,79,12,84" />
+      <scope id="8077936094962958437" at="11,79,12,82" />
       <scope id="8077936094962958437" at="11,0,14,0">
         <var name="editorContext" id="8077936094962958437" />
         <var name="node" id="8077936094962958437" />
       </scope>
       <unit id="8077936094962958437" at="10,0,15,0" name="jetbrains.mps.lang.scopes.editor.ComeFromExpression_Editor" />
     </file>
-    <file name="ComeFromExpression_EditorBuilder_a.java">
-      <node id="8077936094962958437" at="43,98,44,19" concept="9" />
+    <file name="ComeFromExpression_EditorBuilder.java">
+      <node id="8077936094962958437" at="43,96,44,19" concept="9" />
       <node id="8077936094962958437" at="44,19,45,18" concept="1" />
       <node id="8077936094962958437" at="50,26,51,18" concept="6" />
       <node id="8077936094962958437" at="54,39,55,32" concept="6" />
@@ -139,7 +139,7 @@
       <node id="5253134957341697450" at="105,0,107,0" concept="2" trace="myNode" />
       <node id="8077936094962958437" at="54,0,57,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="5253134957341697450" at="115,0,118,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="8077936094962958437" at="43,0,47,0" concept="0" trace="ComeFromExpression_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8077936094962958437" at="43,0,47,0" concept="0" trace="ComeFromExpression_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8077936094962958437" at="87,0,91,5" concept="3" />
       <node id="8077936094962958437" at="48,0,53,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="8077936094962958437" at="97,205,102,22" concept="3" />
@@ -158,7 +158,7 @@
       <scope id="5253134957341697450" at="115,41,116,32" />
       <scope id="5253134957341697450" at="121,28,122,20" />
       <scope id="5253134957341697451" at="146,17,147,42" />
-      <scope id="8077936094962958437" at="43,98,45,18" />
+      <scope id="8077936094962958437" at="43,96,45,18" />
       <scope id="8077936094962958437" at="88,40,90,43" />
       <scope id="8077936094962958437" at="98,73,100,145">
         <var name="manager" id="8077936094962958437" />
@@ -212,27 +212,27 @@
         <var name="style" id="8077936094962958437" />
       </scope>
       <scope id="8077936094962958437" at="73,0,104,0" />
-      <unit id="8077936094962958437" at="152,0,155,0" name="jetbrains.mps.lang.scopes.editor.ComeFromExpression_EditorBuilder_a$LINKS" />
-      <unit id="8077936094962958437" at="161,0,164,0" name="jetbrains.mps.lang.scopes.editor.ComeFromExpression_EditorBuilder_a$PROPS" />
-      <unit id="8077936094962958437" at="156,0,160,0" name="jetbrains.mps.lang.scopes.editor.ComeFromExpression_EditorBuilder_a$CONCEPTS" />
-      <unit id="8077936094962958437" at="75,42,83,5" name="jetbrains.mps.lang.scopes.editor.ComeFromExpression_EditorBuilder_a$1" />
-      <unit id="5253134957341697450" at="104,0,151,0" name="jetbrains.mps.lang.scopes.editor.ComeFromExpression_EditorBuilder_a$Inline_Builder0" />
-      <unit id="8077936094962958437" at="39,0,165,0" name="jetbrains.mps.lang.scopes.editor.ComeFromExpression_EditorBuilder_a" />
+      <unit id="8077936094962958437" at="152,0,155,0" name="jetbrains.mps.lang.scopes.editor.ComeFromExpression_EditorBuilder$LINKS" />
+      <unit id="8077936094962958437" at="161,0,164,0" name="jetbrains.mps.lang.scopes.editor.ComeFromExpression_EditorBuilder$PROPS" />
+      <unit id="8077936094962958437" at="156,0,160,0" name="jetbrains.mps.lang.scopes.editor.ComeFromExpression_EditorBuilder$CONCEPTS" />
+      <unit id="8077936094962958437" at="75,42,83,5" name="jetbrains.mps.lang.scopes.editor.ComeFromExpression_EditorBuilder$1" />
+      <unit id="5253134957341697450" at="104,0,151,0" name="jetbrains.mps.lang.scopes.editor.ComeFromExpression_EditorBuilder$Inline_Builder0" />
+      <unit id="8077936094962958437" at="39,0,165,0" name="jetbrains.mps.lang.scopes.editor.ComeFromExpression_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:82cb30c4-7981-4a3f-86bc-fac1087d9cc7(jetbrains.mps.lang.scopes.editor)/8077936094962969173">
     <file name="CompositeWithParentScopeExpression_Editor.java">
-      <node id="8077936094962969173" at="11,79,12,100" concept="6" />
+      <node id="8077936094962969173" at="11,79,12,98" concept="6" />
       <node id="8077936094962969173" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="8077936094962969173" at="11,79,12,100" />
+      <scope id="8077936094962969173" at="11,79,12,98" />
       <scope id="8077936094962969173" at="11,0,14,0">
         <var name="editorContext" id="8077936094962969173" />
         <var name="node" id="8077936094962969173" />
       </scope>
       <unit id="8077936094962969173" at="10,0,15,0" name="jetbrains.mps.lang.scopes.editor.CompositeWithParentScopeExpression_Editor" />
     </file>
-    <file name="CompositeWithParentScopeExpression_EditorBuilder_a.java">
-      <node id="8077936094962969173" at="32,114,33,19" concept="9" />
+    <file name="CompositeWithParentScopeExpression_EditorBuilder.java">
+      <node id="8077936094962969173" at="32,112,33,19" concept="9" />
       <node id="8077936094962969173" at="33,19,34,18" concept="1" />
       <node id="8077936094962969173" at="39,26,40,18" concept="6" />
       <node id="8077936094962969173" at="43,39,44,32" concept="6" />
@@ -288,7 +288,7 @@
       <node id="8077936094962969173" at="96,87,99,7" concept="3" />
       <node id="8077936094962969173" at="99,7,102,7" concept="3" />
       <node id="8077936094962969173" at="118,0,121,0" concept="4" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="8077936094962969173" at="32,0,36,0" concept="0" trace="CompositeWithParentScopeExpression_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8077936094962969173" at="32,0,36,0" concept="0" trace="CompositeWithParentScopeExpression_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8077936094962969173" at="67,0,71,0" concept="4" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="8077936094962969173" at="75,0,79,0" concept="0" trace="exprSingleRoleHandler_ayfre3_b0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="8077936094962969173" at="37,0,42,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -307,7 +307,7 @@
       <scope id="8077936094962969173" at="100,42,101,45" />
       <scope id="8077936094962969173" at="114,17,115,42" />
       <scope id="8077936094962969173" at="118,40,119,25" />
-      <scope id="8077936094962969173" at="32,114,34,18" />
+      <scope id="8077936094962969173" at="32,112,34,18" />
       <scope id="8077936094962969173" at="67,40,69,33">
         <var name="provider" id="8077936094962969173" />
       </scope>
@@ -357,9 +357,9 @@
       <scope id="8077936094962969192" at="122,0,132,0" />
       <scope id="8077936094962969173" at="105,44,116,7" />
       <scope id="8077936094962969173" at="104,0,118,0" />
-      <unit id="8077936094962969173" at="133,0,136,0" name="jetbrains.mps.lang.scopes.editor.CompositeWithParentScopeExpression_EditorBuilder_a$LINKS" />
-      <unit id="8077936094962969173" at="71,0,122,0" name="jetbrains.mps.lang.scopes.editor.CompositeWithParentScopeExpression_EditorBuilder_a$exprSingleRoleHandler_ayfre3_b0" />
-      <unit id="8077936094962969173" at="28,0,137,0" name="jetbrains.mps.lang.scopes.editor.CompositeWithParentScopeExpression_EditorBuilder_a" />
+      <unit id="8077936094962969173" at="133,0,136,0" name="jetbrains.mps.lang.scopes.editor.CompositeWithParentScopeExpression_EditorBuilder$LINKS" />
+      <unit id="8077936094962969173" at="71,0,122,0" name="jetbrains.mps.lang.scopes.editor.CompositeWithParentScopeExpression_EditorBuilder$exprSingleRoleHandler_ayfre3_b0" />
+      <unit id="8077936094962969173" at="28,0,137,0" name="jetbrains.mps.lang.scopes.editor.CompositeWithParentScopeExpression_EditorBuilder" />
     </file>
   </root>
 </debug-info>

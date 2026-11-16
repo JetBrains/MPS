@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="3jksknm88md6bg0o1do9vmpqzc5npli">
-  <files names="Car_Editor.java:Car_EditorBuilder_a.java:EditorAspectDescriptorImpl.java:Person_Editor.java:Person_EditorBuilder_a.java" />
+  <files names="Car_Editor.java:Car_EditorBuilder.java:EditorAspectDescriptorImpl.java:Person_Editor.java:Person_EditorBuilder.java" />
 </product>
 

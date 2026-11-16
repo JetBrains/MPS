@@ -17,17 +17,17 @@
   </root>
   <root nodeRef="r:f3e9fe62-b7bf-45b5-802d-9490929b754a(jetbrains.mps.lang.access.editor)/8974276187400348186">
     <file name="BaseExecuteCommandStatement_Editor.java">
-      <node id="8974276187400348186" at="11,79,12,93" concept="6" />
+      <node id="8974276187400348186" at="11,79,12,91" concept="6" />
       <node id="8974276187400348186" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="8974276187400348186" at="11,79,12,93" />
+      <scope id="8974276187400348186" at="11,79,12,91" />
       <scope id="8974276187400348186" at="11,0,14,0">
         <var name="editorContext" id="8974276187400348186" />
         <var name="node" id="8974276187400348186" />
       </scope>
       <unit id="8974276187400348186" at="10,0,15,0" name="jetbrains.mps.lang.access.editor.BaseExecuteCommandStatement_Editor" />
     </file>
-    <file name="BaseExecuteCommandStatement_EditorBuilder_a.java">
-      <node id="8974276187400348186" at="32,107,33,19" concept="8" />
+    <file name="BaseExecuteCommandStatement_EditorBuilder.java">
+      <node id="8974276187400348186" at="32,105,33,19" concept="8" />
       <node id="8974276187400348186" at="33,19,34,18" concept="1" />
       <node id="8974276187400348186" at="39,26,40,18" concept="6" />
       <node id="8974276187400348186" at="43,39,44,32" concept="6" />
@@ -128,7 +128,7 @@
       <node id="8974276187400348186" at="170,87,173,7" concept="3" />
       <node id="8974276187400348186" at="173,7,176,7" concept="3" />
       <node id="8974276187400348186" at="196,0,199,0" concept="4" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="8974276187400348186" at="32,0,36,0" concept="0" trace="BaseExecuteCommandStatement_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8974276187400348186" at="32,0,36,0" concept="0" trace="BaseExecuteCommandStatement_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8974276187400348186" at="76,0,80,0" concept="4" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="8974276187400348186" at="84,0,88,0" concept="0" trace="repoSingleRoleHandler_lfwa2a_c0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="8974276187400348186" at="141,0,145,0" concept="4" trace="createRefNode_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -161,7 +161,7 @@
       <scope id="8974276187400348186" at="174,42,175,62" />
       <scope id="8974276187400348186" at="192,17,193,42" />
       <scope id="8974276187400348186" at="196,40,197,42" />
-      <scope id="8974276187400348186" at="32,107,34,18" />
+      <scope id="8974276187400348186" at="32,105,34,18" />
       <scope id="8974276187400348186" at="76,40,78,33">
         <var name="provider" id="8974276187400348186" />
       </scope>
@@ -252,25 +252,25 @@
       <scope id="8974276187400348186" at="47,0,60,0" />
       <scope id="8974276187400348186" at="113,0,127,0" />
       <scope id="8974276187400348186" at="182,0,196,0" />
-      <unit id="8974276187400348186" at="211,0,215,0" name="jetbrains.mps.lang.access.editor.BaseExecuteCommandStatement_EditorBuilder_a$LINKS" />
-      <unit id="8974276187400348186" at="80,0,131,0" name="jetbrains.mps.lang.access.editor.BaseExecuteCommandStatement_EditorBuilder_a$repoSingleRoleHandler_lfwa2a_c0" />
-      <unit id="8974276187400348186" at="145,0,200,0" name="jetbrains.mps.lang.access.editor.BaseExecuteCommandStatement_EditorBuilder_a$commandClosureLiteralSingleRoleHandler_lfwa2a_e0" />
-      <unit id="8974276187400348186" at="28,0,216,0" name="jetbrains.mps.lang.access.editor.BaseExecuteCommandStatement_EditorBuilder_a" />
+      <unit id="8974276187400348186" at="211,0,215,0" name="jetbrains.mps.lang.access.editor.BaseExecuteCommandStatement_EditorBuilder$LINKS" />
+      <unit id="8974276187400348186" at="80,0,131,0" name="jetbrains.mps.lang.access.editor.BaseExecuteCommandStatement_EditorBuilder$repoSingleRoleHandler_lfwa2a_c0" />
+      <unit id="8974276187400348186" at="145,0,200,0" name="jetbrains.mps.lang.access.editor.BaseExecuteCommandStatement_EditorBuilder$commandClosureLiteralSingleRoleHandler_lfwa2a_e0" />
+      <unit id="8974276187400348186" at="28,0,216,0" name="jetbrains.mps.lang.access.editor.BaseExecuteCommandStatement_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:f3e9fe62-b7bf-45b5-802d-9490929b754a(jetbrains.mps.lang.access.editor)/8974276187400348197">
     <file name="CommandClosureLiteral_Editor.java">
-      <node id="8974276187400348197" at="11,79,12,87" concept="6" />
+      <node id="8974276187400348197" at="11,79,12,85" concept="6" />
       <node id="8974276187400348197" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="8974276187400348197" at="11,79,12,87" />
+      <scope id="8974276187400348197" at="11,79,12,85" />
       <scope id="8974276187400348197" at="11,0,14,0">
         <var name="editorContext" id="8974276187400348197" />
         <var name="node" id="8974276187400348197" />
       </scope>
       <unit id="8974276187400348197" at="10,0,15,0" name="jetbrains.mps.lang.access.editor.CommandClosureLiteral_Editor" />
     </file>
-    <file name="CommandClosureLiteral_EditorBuilder_a.java">
-      <node id="8974276187400348197" at="26,101,27,19" concept="8" />
+    <file name="CommandClosureLiteral_EditorBuilder.java">
+      <node id="8974276187400348197" at="26,99,27,19" concept="8" />
       <node id="8974276187400348197" at="27,19,28,18" concept="1" />
       <node id="8974276187400348197" at="33,26,34,18" concept="6" />
       <node id="8974276187400348197" at="37,39,38,32" concept="6" />
@@ -308,7 +308,7 @@
       <node id="8974276187400348197" at="78,87,81,7" concept="3" />
       <node id="8974276187400348197" at="81,7,84,7" concept="3" />
       <node id="8974276187400348197" at="100,0,103,0" concept="4" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="8974276187400348197" at="26,0,30,0" concept="0" trace="CommandClosureLiteral_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8974276187400348197" at="26,0,30,0" concept="0" trace="CommandClosureLiteral_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8974276187400348197" at="49,0,53,0" concept="4" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="8974276187400348197" at="57,0,61,0" concept="0" trace="bodySingleRoleHandler_4tqlt2_a0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="8974276187400348197" at="31,0,36,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -325,7 +325,7 @@
       <scope id="8974276187400348197" at="82,42,83,45" />
       <scope id="8974276187400348197" at="96,17,97,42" />
       <scope id="8974276187400348197" at="100,40,101,25" />
-      <scope id="8974276187400348197" at="26,101,28,18" />
+      <scope id="8974276187400348197" at="26,99,28,18" />
       <scope id="8974276187400348197" at="49,40,51,33">
         <var name="provider" id="8974276187400348197" />
       </scope>
@@ -365,9 +365,9 @@
       </scope>
       <scope id="8974276187400348197" at="87,44,98,7" />
       <scope id="8974276187400348197" at="86,0,100,0" />
-      <unit id="8974276187400348197" at="105,0,108,0" name="jetbrains.mps.lang.access.editor.CommandClosureLiteral_EditorBuilder_a$LINKS" />
-      <unit id="8974276187400348197" at="53,0,104,0" name="jetbrains.mps.lang.access.editor.CommandClosureLiteral_EditorBuilder_a$bodySingleRoleHandler_4tqlt2_a0" />
-      <unit id="8974276187400348197" at="22,0,109,0" name="jetbrains.mps.lang.access.editor.CommandClosureLiteral_EditorBuilder_a" />
+      <unit id="8974276187400348197" at="105,0,108,0" name="jetbrains.mps.lang.access.editor.CommandClosureLiteral_EditorBuilder$LINKS" />
+      <unit id="8974276187400348197" at="53,0,104,0" name="jetbrains.mps.lang.access.editor.CommandClosureLiteral_EditorBuilder$bodySingleRoleHandler_4tqlt2_a0" />
+      <unit id="8974276187400348197" at="22,0,109,0" name="jetbrains.mps.lang.access.editor.CommandClosureLiteral_EditorBuilder" />
     </file>
   </root>
 </debug-info>

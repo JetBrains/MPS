@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class FontFamilyStyleClassItem_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new FontFamilyStyleClassItem_EditorBuilder_a(editorContext, node).createCell();
+    return new FontFamilyStyleClassItem_EditorBuilder(editorContext, node).createCell();
   }
 }

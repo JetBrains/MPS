@@ -20,17 +20,17 @@
   </root>
   <root nodeRef="r:e0b66e1e-58f0-4d4c-b699-45df07297948(jetbrains.mps.baseLanguage.jdk8.editor)/1164142520228621357">
     <file name="DefaultModifier_old_Editor.java">
-      <node id="1164142520228621357" at="11,79,12,85" concept="6" />
+      <node id="1164142520228621357" at="11,79,12,83" concept="6" />
       <node id="1164142520228621357" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1164142520228621357" at="11,79,12,85" />
+      <scope id="1164142520228621357" at="11,79,12,83" />
       <scope id="1164142520228621357" at="11,0,14,0">
         <var name="editorContext" id="1164142520228621357" />
         <var name="node" id="1164142520228621357" />
       </scope>
       <unit id="1164142520228621357" at="10,0,15,0" name="jetbrains.mps.baseLanguage.jdk8.editor.DefaultModifier_old_Editor" />
     </file>
-    <file name="DefaultModifier_old_EditorBuilder_a.java">
-      <node id="1164142520228621357" at="20,99,21,19" concept="11" />
+    <file name="DefaultModifier_old_EditorBuilder.java">
+      <node id="1164142520228621357" at="20,97,21,19" concept="11" />
       <node id="1164142520228621357" at="21,19,22,18" concept="1" />
       <node id="1164142520228621357" at="27,26,28,18" concept="6" />
       <node id="1164142520228621357" at="31,39,32,31" concept="6" />
@@ -46,13 +46,13 @@
       <node id="1164142520228621359" at="46,73,47,22" concept="6" />
       <node id="1164142520228621357" at="17,0,19,0" concept="2" trace="myNode" />
       <node id="1164142520228621357" at="31,0,34,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="1164142520228621357" at="20,0,24,0" concept="0" trace="DefaultModifier_old_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1164142520228621357" at="20,0,24,0" concept="0" trace="DefaultModifier_old_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1164142520228621359" at="37,72,41,5" concept="3" />
       <node id="1164142520228621357" at="25,0,30,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1164142520228621359" at="35,0,49,0" concept="4" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="1164142520228621357" at="27,26,28,18" />
       <scope id="1164142520228621357" at="31,39,32,31" />
-      <scope id="1164142520228621357" at="20,99,22,18" />
+      <scope id="1164142520228621357" at="20,97,22,18" />
       <scope id="1164142520228621359" at="38,26,40,30" />
       <scope id="1164142520228621357" at="31,0,34,0" />
       <scope id="1164142520228621357" at="20,0,24,0">
@@ -66,7 +66,7 @@
         <var name="style" id="1164142520228621359" />
       </scope>
       <scope id="1164142520228621359" at="35,0,49,0" />
-      <unit id="1164142520228621357" at="16,0,50,0" name="jetbrains.mps.baseLanguage.jdk8.editor.DefaultModifier_old_EditorBuilder_a" />
+      <unit id="1164142520228621357" at="16,0,50,0" name="jetbrains.mps.baseLanguage.jdk8.editor.DefaultModifier_old_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:e0b66e1e-58f0-4d4c-b699-45df07297948(jetbrains.mps.baseLanguage.jdk8.editor)/1521886782223553382">
@@ -157,17 +157,17 @@
   </root>
   <root nodeRef="r:e0b66e1e-58f0-4d4c-b699-45df07297948(jetbrains.mps.baseLanguage.jdk8.editor)/1719162360410047536">
     <file name="SuperInterfaceMethodCall_old_Editor.java">
-      <node id="1719162360410047536" at="11,79,12,94" concept="6" />
+      <node id="1719162360410047536" at="11,79,12,92" concept="6" />
       <node id="1719162360410047536" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1719162360410047536" at="11,79,12,94" />
+      <scope id="1719162360410047536" at="11,79,12,92" />
       <scope id="1719162360410047536" at="11,0,14,0">
         <var name="editorContext" id="1719162360410047536" />
         <var name="node" id="1719162360410047536" />
       </scope>
       <unit id="1719162360410047536" at="10,0,15,0" name="jetbrains.mps.baseLanguage.jdk8.editor.SuperInterfaceMethodCall_old_Editor" />
     </file>
-    <file name="SuperInterfaceMethodCall_old_EditorBuilder_a.java">
-      <node id="1719162360410047536" at="40,108,41,19" concept="11" />
+    <file name="SuperInterfaceMethodCall_old_EditorBuilder.java">
+      <node id="1719162360410047536" at="40,106,41,19" concept="11" />
       <node id="1719162360410047536" at="41,19,42,18" concept="1" />
       <node id="1719162360410047536" at="47,26,48,18" concept="6" />
       <node id="1719162360410047536" at="51,39,52,32" concept="6" />
@@ -239,7 +239,7 @@
       <node id="1719162360410062971" at="94,0,96,0" concept="2" trace="myNode" />
       <node id="1719162360410047536" at="51,0,54,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1719162360410062971" at="104,0,107,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="1719162360410047536" at="40,0,44,0" concept="0" trace="SuperInterfaceMethodCall_old_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1719162360410047536" at="40,0,44,0" concept="0" trace="SuperInterfaceMethodCall_old_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1719162360410047536" at="79,0,83,5" concept="3" />
       <node id="1719162360410047536" at="45,0,50,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1719162360410047536" at="86,205,91,22" concept="3" />
@@ -259,7 +259,7 @@
       <scope id="1719162360410062971" at="104,41,105,32" />
       <scope id="1719162360410062971" at="110,28,111,20" />
       <scope id="1719162360410062981" at="131,17,132,42" />
-      <scope id="1719162360410047536" at="40,108,42,18" />
+      <scope id="1719162360410047536" at="40,106,42,18" />
       <scope id="1719162360410047536" at="80,40,82,53" />
       <scope id="1719162360410047536" at="87,73,89,145">
         <var name="manager" id="1719162360410047536" />
@@ -317,12 +317,12 @@
         <var name="referenceLink" id="1719162360410047536" />
       </scope>
       <scope id="1719162360410047536" at="65,0,93,0" />
-      <unit id="1719162360410047536" at="155,0,158,0" name="jetbrains.mps.baseLanguage.jdk8.editor.SuperInterfaceMethodCall_old_EditorBuilder_a$LINKS" />
-      <unit id="1719162360410047536" at="164,0,167,0" name="jetbrains.mps.baseLanguage.jdk8.editor.SuperInterfaceMethodCall_old_EditorBuilder_a$PROPS" />
-      <unit id="1719162360410047536" at="159,0,163,0" name="jetbrains.mps.baseLanguage.jdk8.editor.SuperInterfaceMethodCall_old_EditorBuilder_a$CONCEPTS" />
-      <unit id="1719162360410047536" at="67,42,75,5" name="jetbrains.mps.baseLanguage.jdk8.editor.SuperInterfaceMethodCall_old_EditorBuilder_a$1" />
-      <unit id="1719162360410062971" at="93,0,136,0" name="jetbrains.mps.baseLanguage.jdk8.editor.SuperInterfaceMethodCall_old_EditorBuilder_a$Inline_Builder0" />
-      <unit id="1719162360410047536" at="36,0,168,0" name="jetbrains.mps.baseLanguage.jdk8.editor.SuperInterfaceMethodCall_old_EditorBuilder_a" />
+      <unit id="1719162360410047536" at="155,0,158,0" name="jetbrains.mps.baseLanguage.jdk8.editor.SuperInterfaceMethodCall_old_EditorBuilder$LINKS" />
+      <unit id="1719162360410047536" at="164,0,167,0" name="jetbrains.mps.baseLanguage.jdk8.editor.SuperInterfaceMethodCall_old_EditorBuilder$PROPS" />
+      <unit id="1719162360410047536" at="159,0,163,0" name="jetbrains.mps.baseLanguage.jdk8.editor.SuperInterfaceMethodCall_old_EditorBuilder$CONCEPTS" />
+      <unit id="1719162360410047536" at="67,42,75,5" name="jetbrains.mps.baseLanguage.jdk8.editor.SuperInterfaceMethodCall_old_EditorBuilder$1" />
+      <unit id="1719162360410062971" at="93,0,136,0" name="jetbrains.mps.baseLanguage.jdk8.editor.SuperInterfaceMethodCall_old_EditorBuilder$Inline_Builder0" />
+      <unit id="1719162360410047536" at="36,0,168,0" name="jetbrains.mps.baseLanguage.jdk8.editor.SuperInterfaceMethodCall_old_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:e0b66e1e-58f0-4d4c-b699-45df07297948(jetbrains.mps.baseLanguage.jdk8.editor)/2649128189911787239">

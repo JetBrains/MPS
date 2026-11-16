@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class MenuTypeDefault_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new MenuTypeDefault_EditorBuilder_a(editorContext, node).createCell();
+    return new MenuTypeDefault_EditorBuilder(editorContext, node).createCell();
   }
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="a64zakhqm51na91nnylhk3glos0965k">
-  <files names="EditorAspectDescriptorImpl.java:MPSTipsAndTricks_Editor.java:MPSTipsAndTricks_EditorBuilder_a.java:MPSTipsAndTricks_Image_Editor.java:MPSTipsAndTricks_Image_EditorBuilder_a.java:MPSTipsAndTricks_Text_Editor.java:MPSTipsAndTricks_Text_EditorBuilder_a.java:MPSTipsAndTricks_Tip_Editor.java:MPSTipsAndTricks_Tip_EditorBuilder_a.java" />
+  <files names="EditorAspectDescriptorImpl.java:MPSTipsAndTricks_Editor.java:MPSTipsAndTricks_EditorBuilder.java:MPSTipsAndTricks_Image_Editor.java:MPSTipsAndTricks_Image_EditorBuilder.java:MPSTipsAndTricks_Text_Editor.java:MPSTipsAndTricks_Text_EditorBuilder.java:MPSTipsAndTricks_Tip_Editor.java:MPSTipsAndTricks_Tip_EditorBuilder.java" />
 </product>
 

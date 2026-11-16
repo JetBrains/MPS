@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="-2hbefkc6o3x04lmiqrej4c0wgp2ub77">
-  <files names="EditorAspectDescriptorImpl.java:TransformationFeature_Icon_Editor.java:TransformationFeature_Icon_EditorBuilder_a.java:TransformationFeature_Tooltip_Editor.java:TransformationFeature_Tooltip_EditorBuilder_a.java" />
+  <files names="EditorAspectDescriptorImpl.java:TransformationFeature_Icon_Editor.java:TransformationFeature_Icon_EditorBuilder.java:TransformationFeature_Tooltip_Editor.java:TransformationFeature_Tooltip_EditorBuilder.java" />
 </product>
 

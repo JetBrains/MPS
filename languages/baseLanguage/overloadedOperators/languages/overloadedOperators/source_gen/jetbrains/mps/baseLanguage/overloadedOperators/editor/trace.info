@@ -47,17 +47,17 @@
   </root>
   <root nodeRef="r:13d16a02-6fc1-4986-8d3c-61aadbaeccd7(jetbrains.mps.baseLanguage.overloadedOperators.editor)/1569627462441399921">
     <file name="CustomOperatorUsage_Editor.java">
-      <node id="1569627462441399921" at="11,79,12,85" concept="7" />
+      <node id="1569627462441399921" at="11,79,12,83" concept="7" />
       <node id="1569627462441399921" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1569627462441399921" at="11,79,12,85" />
+      <scope id="1569627462441399921" at="11,79,12,83" />
       <scope id="1569627462441399921" at="11,0,14,0">
         <var name="editorContext" id="1569627462441399921" />
         <var name="node" id="1569627462441399921" />
       </scope>
       <unit id="1569627462441399921" at="10,0,15,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.CustomOperatorUsage_Editor" />
     </file>
-    <file name="CustomOperatorUsage_EditorBuilder_a.java">
-      <node id="1569627462441399921" at="49,99,50,19" concept="10" />
+    <file name="CustomOperatorUsage_EditorBuilder.java">
+      <node id="1569627462441399921" at="49,97,50,19" concept="10" />
       <node id="1569627462441399921" at="50,19,51,18" concept="1" />
       <node id="1569627462441399921" at="56,26,57,18" concept="7" />
       <node id="1569627462441399921" at="60,39,61,32" concept="7" />
@@ -173,7 +173,7 @@
       <node id="1569627462441399921" at="237,87,240,7" concept="4" />
       <node id="1569627462441399921" at="240,7,243,7" concept="4" />
       <node id="1569627462441399921" at="260,0,263,0" concept="5" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="1569627462441399921" at="49,0,53,0" concept="0" trace="CustomOperatorUsage_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1569627462441399921" at="49,0,53,0" concept="0" trace="CustomOperatorUsage_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1569627462441399921" at="74,0,78,0" concept="5" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1569627462441399921" at="82,0,86,0" concept="0" trace="leftExpressionSingleRoleHandler_fe04xc_a0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1569627462441399921" at="151,0,155,5" concept="4" />
@@ -216,7 +216,7 @@
       <scope id="1569627462441399921" at="241,42,242,55" />
       <scope id="1569627462441399921" at="256,17,257,42" />
       <scope id="1569627462441399921" at="260,40,261,36" />
-      <scope id="1569627462441399921" at="49,99,51,18" />
+      <scope id="1569627462441399921" at="49,97,51,18" />
       <scope id="1569627462441399921" at="74,40,76,33">
         <var name="provider" id="1569627462441399921" />
       </scope>
@@ -328,14 +328,14 @@
         <var name="referenceLink" id="1569627462441399921" />
       </scope>
       <scope id="1569627462441399921" at="130,0,165,0" />
-      <unit id="1569627462441399921" at="276,0,279,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.CustomOperatorUsage_EditorBuilder_a$PROPS" />
-      <unit id="1569627462441399921" at="271,0,275,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.CustomOperatorUsage_EditorBuilder_a$CONCEPTS" />
-      <unit id="1569627462441399921" at="265,0,270,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.CustomOperatorUsage_EditorBuilder_a$LINKS" />
-      <unit id="1569627462441399921" at="132,42,147,5" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.CustomOperatorUsage_EditorBuilder_a$1" />
-      <unit id="1141736782993463025" at="165,0,208,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.CustomOperatorUsage_EditorBuilder_a$Inline_Builder0" />
-      <unit id="1569627462441399921" at="78,0,130,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.CustomOperatorUsage_EditorBuilder_a$leftExpressionSingleRoleHandler_fe04xc_a0" />
-      <unit id="1569627462441399921" at="212,0,264,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.CustomOperatorUsage_EditorBuilder_a$rightExpressionSingleRoleHandler_fe04xc_c0" />
-      <unit id="1569627462441399921" at="45,0,280,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.CustomOperatorUsage_EditorBuilder_a" />
+      <unit id="1569627462441399921" at="276,0,279,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.CustomOperatorUsage_EditorBuilder$PROPS" />
+      <unit id="1569627462441399921" at="271,0,275,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.CustomOperatorUsage_EditorBuilder$CONCEPTS" />
+      <unit id="1569627462441399921" at="265,0,270,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.CustomOperatorUsage_EditorBuilder$LINKS" />
+      <unit id="1569627462441399921" at="132,42,147,5" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.CustomOperatorUsage_EditorBuilder$1" />
+      <unit id="1141736782993463025" at="165,0,208,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.CustomOperatorUsage_EditorBuilder$Inline_Builder0" />
+      <unit id="1569627462441399921" at="78,0,130,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.CustomOperatorUsage_EditorBuilder$leftExpressionSingleRoleHandler_fe04xc_a0" />
+      <unit id="1569627462441399921" at="212,0,264,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.CustomOperatorUsage_EditorBuilder$rightExpressionSingleRoleHandler_fe04xc_c0" />
+      <unit id="1569627462441399921" at="45,0,280,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.CustomOperatorUsage_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:13d16a02-6fc1-4986-8d3c-61aadbaeccd7(jetbrains.mps.baseLanguage.overloadedOperators.editor)/1741258697587178575">
@@ -453,17 +453,17 @@
   </root>
   <root nodeRef="r:13d16a02-6fc1-4986-8d3c-61aadbaeccd7(jetbrains.mps.baseLanguage.overloadedOperators.editor)/2838654975956757964">
     <file name="CustomOperatorDeclaration_Editor.java">
-      <node id="2838654975956757964" at="11,79,12,91" concept="7" />
+      <node id="2838654975956757964" at="11,79,12,89" concept="7" />
       <node id="2838654975956757964" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="2838654975956757964" at="11,79,12,91" />
+      <scope id="2838654975956757964" at="11,79,12,89" />
       <scope id="2838654975956757964" at="11,0,14,0">
         <var name="editorContext" id="2838654975956757964" />
         <var name="node" id="2838654975956757964" />
       </scope>
       <unit id="2838654975956757964" at="10,0,15,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.CustomOperatorDeclaration_Editor" />
     </file>
-    <file name="CustomOperatorDeclaration_EditorBuilder_a.java">
-      <node id="2838654975956757964" at="32,105,33,19" concept="10" />
+    <file name="CustomOperatorDeclaration_EditorBuilder.java">
+      <node id="2838654975956757964" at="32,103,33,19" concept="10" />
       <node id="2838654975956757964" at="33,19,34,18" concept="1" />
       <node id="2838654975956757964" at="39,26,40,18" concept="7" />
       <node id="2838654975956757964" at="43,39,44,32" concept="7" />
@@ -496,7 +496,7 @@
       <node id="2838654975956757964" at="89,0,90,0" concept="9" trace="PropertyAttribute$Gb" />
       <node id="2838654975956757964" at="29,0,31,0" concept="2" trace="myNode" />
       <node id="2838654975956757964" at="43,0,46,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="2838654975956757964" at="32,0,36,0" concept="0" trace="CustomOperatorDeclaration_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="2838654975956757964" at="32,0,36,0" concept="0" trace="CustomOperatorDeclaration_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="2838654975956757964" at="37,0,42,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1569627462441431071" at="73,208,78,24" concept="4" />
       <node id="2838654975956759203" at="56,0,62,0" concept="5" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -506,7 +506,7 @@
       <scope id="2838654975956757964" at="39,26,40,18" />
       <scope id="2838654975956757964" at="43,39,44,32" />
       <scope id="1569627462441431071" at="79,15,80,40" />
-      <scope id="2838654975956757964" at="32,105,34,18" />
+      <scope id="2838654975956757964" at="32,103,34,18" />
       <scope id="1569627462441431071" at="74,74,76,145">
         <var name="manager" id="1569627462441431071" />
       </scope>
@@ -532,24 +532,24 @@
       </scope>
       <scope id="1569627462441431071" at="62,41,81,5" />
       <scope id="1569627462441431071" at="62,0,83,0" />
-      <unit id="2838654975956757964" at="84,0,87,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.CustomOperatorDeclaration_EditorBuilder_a$PROPS" />
-      <unit id="2838654975956757964" at="88,0,91,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.CustomOperatorDeclaration_EditorBuilder_a$CONCEPTS" />
-      <unit id="2838654975956757964" at="28,0,92,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.CustomOperatorDeclaration_EditorBuilder_a" />
+      <unit id="2838654975956757964" at="84,0,87,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.CustomOperatorDeclaration_EditorBuilder$PROPS" />
+      <unit id="2838654975956757964" at="88,0,91,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.CustomOperatorDeclaration_EditorBuilder$CONCEPTS" />
+      <unit id="2838654975956757964" at="28,0,92,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.CustomOperatorDeclaration_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:13d16a02-6fc1-4986-8d3c-61aadbaeccd7(jetbrains.mps.baseLanguage.overloadedOperators.editor)/2838654975957155511">
     <file name="BinaryOperationReference_Editor.java">
-      <node id="2838654975957155511" at="11,79,12,90" concept="7" />
+      <node id="2838654975957155511" at="11,79,12,88" concept="7" />
       <node id="2838654975957155511" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="2838654975957155511" at="11,79,12,90" />
+      <scope id="2838654975957155511" at="11,79,12,88" />
       <scope id="2838654975957155511" at="11,0,14,0">
         <var name="editorContext" id="2838654975957155511" />
         <var name="node" id="2838654975957155511" />
       </scope>
       <unit id="2838654975957155511" at="10,0,15,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.BinaryOperationReference_Editor" />
     </file>
-    <file name="BinaryOperationReference_EditorBuilder_a.java">
-      <node id="2838654975957155511" at="42,104,43,19" concept="10" />
+    <file name="BinaryOperationReference_EditorBuilder.java">
+      <node id="2838654975957155511" at="42,102,43,19" concept="10" />
       <node id="2838654975957155511" at="43,19,44,18" concept="1" />
       <node id="2838654975957155511" at="49,26,50,18" concept="7" />
       <node id="2838654975957155511" at="53,39,54,32" concept="7" />
@@ -603,7 +603,7 @@
       <node id="2838654975957155511" at="53,0,56,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="2838654975957155517" at="111,0,114,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="8134325418310264578" at="123,0,126,0" concept="5" trace="getText#()Ljava/lang/String;" />
-      <node id="2838654975957155511" at="42,0,46,0" concept="0" trace="BinaryOperationReference_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="2838654975957155511" at="42,0,46,0" concept="0" trace="BinaryOperationReference_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="2838654975957155511" at="86,0,90,5" concept="4" />
       <node id="2838654975957155511" at="47,0,52,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="2838654975957155511" at="93,205,98,22" concept="4" />
@@ -621,7 +621,7 @@
       <scope id="2838654975957155517" at="111,41,112,45" />
       <scope id="2838654975957155517" at="117,28,118,20" />
       <scope id="8134325418310264584" at="123,33,124,80" />
-      <scope id="2838654975957155511" at="42,104,44,18" />
+      <scope id="2838654975957155511" at="42,102,44,18" />
       <scope id="2838654975957155511" at="87,40,89,54" />
       <scope id="2838654975957155511" at="94,73,96,145">
         <var name="manager" id="2838654975957155511" />
@@ -670,28 +670,28 @@
         <var name="referenceLink" id="2838654975957155511" />
       </scope>
       <scope id="2838654975957155511" at="65,0,100,0" />
-      <unit id="2838654975957155511" at="137,0,140,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.BinaryOperationReference_EditorBuilder_a$LINKS" />
-      <unit id="2838654975957155511" at="141,0,144,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.BinaryOperationReference_EditorBuilder_a$CONCEPTS" />
-      <unit id="2838654975957155511" at="145,0,148,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.BinaryOperationReference_EditorBuilder_a$PROPS" />
-      <unit id="8134325418310264578" at="122,90,126,7" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.BinaryOperationReference_EditorBuilder_a$Inline_Builder0$1" />
-      <unit id="2838654975957155511" at="67,42,82,5" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.BinaryOperationReference_EditorBuilder_a$1" />
-      <unit id="2838654975957155517" at="100,0,136,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.BinaryOperationReference_EditorBuilder_a$Inline_Builder0" />
-      <unit id="2838654975957155511" at="38,0,149,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.BinaryOperationReference_EditorBuilder_a" />
+      <unit id="2838654975957155511" at="137,0,140,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.BinaryOperationReference_EditorBuilder$LINKS" />
+      <unit id="2838654975957155511" at="141,0,144,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.BinaryOperationReference_EditorBuilder$CONCEPTS" />
+      <unit id="2838654975957155511" at="145,0,148,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.BinaryOperationReference_EditorBuilder$PROPS" />
+      <unit id="8134325418310264578" at="122,90,126,7" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.BinaryOperationReference_EditorBuilder$Inline_Builder0$1" />
+      <unit id="2838654975957155511" at="67,42,82,5" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.BinaryOperationReference_EditorBuilder$1" />
+      <unit id="2838654975957155517" at="100,0,136,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.BinaryOperationReference_EditorBuilder$Inline_Builder0" />
+      <unit id="2838654975957155511" at="38,0,149,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.BinaryOperationReference_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:13d16a02-6fc1-4986-8d3c-61aadbaeccd7(jetbrains.mps.baseLanguage.overloadedOperators.editor)/2838654975957402170">
     <file name="CustomOperator_Editor.java">
-      <node id="2838654975957402170" at="11,79,12,80" concept="7" />
+      <node id="2838654975957402170" at="11,79,12,78" concept="7" />
       <node id="2838654975957402170" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="2838654975957402170" at="11,79,12,80" />
+      <scope id="2838654975957402170" at="11,79,12,78" />
       <scope id="2838654975957402170" at="11,0,14,0">
         <var name="editorContext" id="2838654975957402170" />
         <var name="node" id="2838654975957402170" />
       </scope>
       <unit id="2838654975957402170" at="10,0,15,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.CustomOperator_Editor" />
     </file>
-    <file name="CustomOperator_EditorBuilder_a.java">
-      <node id="2838654975957402170" at="43,94,44,19" concept="10" />
+    <file name="CustomOperator_EditorBuilder.java">
+      <node id="2838654975957402170" at="43,92,44,19" concept="10" />
       <node id="2838654975957402170" at="44,19,45,18" concept="1" />
       <node id="2838654975957402170" at="50,26,51,18" concept="7" />
       <node id="2838654975957402170" at="54,39,55,32" concept="7" />
@@ -754,7 +754,7 @@
       <node id="1569627462442536642" at="102,0,104,0" concept="2" trace="myNode" />
       <node id="2838654975957402170" at="54,0,57,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1569627462442536642" at="112,0,115,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="2838654975957402170" at="43,0,47,0" concept="0" trace="CustomOperator_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="2838654975957402170" at="43,0,47,0" concept="0" trace="CustomOperator_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="2838654975957402170" at="87,0,91,5" concept="4" />
       <node id="2838654975957402170" at="48,0,53,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="2838654975957402170" at="94,205,99,22" concept="4" />
@@ -773,7 +773,7 @@
       <scope id="1569627462442536642" at="112,41,113,32" />
       <scope id="1569627462442536642" at="118,28,119,20" />
       <scope id="1569627462442536644" at="142,17,143,42" />
-      <scope id="2838654975957402170" at="43,94,45,18" />
+      <scope id="2838654975957402170" at="43,92,45,18" />
       <scope id="2838654975957402170" at="88,40,90,50" />
       <scope id="2838654975957402170" at="95,73,97,145">
         <var name="manager" id="2838654975957402170" />
@@ -828,27 +828,27 @@
         <var name="referenceLink" id="2838654975957402170" />
       </scope>
       <scope id="2838654975957402170" at="66,0,101,0" />
-      <unit id="2838654975957402170" at="148,0,151,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.CustomOperator_EditorBuilder_a$LINKS" />
-      <unit id="2838654975957402170" at="157,0,160,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.CustomOperator_EditorBuilder_a$PROPS" />
-      <unit id="2838654975957402170" at="152,0,156,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.CustomOperator_EditorBuilder_a$CONCEPTS" />
-      <unit id="2838654975957402170" at="68,42,83,5" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.CustomOperator_EditorBuilder_a$1" />
-      <unit id="1569627462442536642" at="101,0,147,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.CustomOperator_EditorBuilder_a$Inline_Builder0" />
-      <unit id="2838654975957402170" at="39,0,161,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.CustomOperator_EditorBuilder_a" />
+      <unit id="2838654975957402170" at="148,0,151,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.CustomOperator_EditorBuilder$LINKS" />
+      <unit id="2838654975957402170" at="157,0,160,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.CustomOperator_EditorBuilder$PROPS" />
+      <unit id="2838654975957402170" at="152,0,156,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.CustomOperator_EditorBuilder$CONCEPTS" />
+      <unit id="2838654975957402170" at="68,42,83,5" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.CustomOperator_EditorBuilder$1" />
+      <unit id="1569627462442536642" at="101,0,147,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.CustomOperator_EditorBuilder$Inline_Builder0" />
+      <unit id="2838654975957402170" at="39,0,161,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.CustomOperator_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:13d16a02-6fc1-4986-8d3c-61aadbaeccd7(jetbrains.mps.baseLanguage.overloadedOperators.editor)/483844232470139401">
     <file name="OverloadedOperatorContainer_Editor.java">
-      <node id="483844232470139401" at="11,79,12,93" concept="7" />
+      <node id="483844232470139401" at="11,79,12,91" concept="7" />
       <node id="483844232470139401" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="483844232470139401" at="11,79,12,93" />
+      <scope id="483844232470139401" at="11,79,12,91" />
       <scope id="483844232470139401" at="11,0,14,0">
         <var name="editorContext" id="483844232470139401" />
         <var name="node" id="483844232470139401" />
       </scope>
       <unit id="483844232470139401" at="10,0,15,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.OverloadedOperatorContainer_Editor" />
     </file>
-    <file name="OverloadedOperatorContainer_EditorBuilder_a.java">
-      <node id="483844232470139401" at="51,107,52,19" concept="10" />
+    <file name="OverloadedOperatorContainer_EditorBuilder.java">
+      <node id="483844232470139401" at="51,105,52,19" concept="10" />
       <node id="483844232470139401" at="52,19,53,18" concept="1" />
       <node id="483844232470139401" at="58,26,59,18" concept="7" />
       <node id="483844232470139401" at="62,39,63,32" concept="7" />
@@ -1049,7 +1049,7 @@
       <node id="483844232470139401" at="303,0,306,0" concept="5" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="483844232470139401" at="306,0,309,0" concept="5" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="483844232470139401" at="350,96,353,9" concept="4" />
-      <node id="483844232470139401" at="51,0,55,0" concept="0" trace="OverloadedOperatorContainer_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="483844232470139401" at="51,0,55,0" concept="0" trace="OverloadedOperatorContainer_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="483844232470139401" at="167,0,171,0" concept="5" trace="createIndentCell_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="483844232470139401" at="209,0,213,0" concept="0" trace="customOperatorsListHandler_2ntrw4_b1b3a#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="483844232470139401" at="214,0,218,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -1112,7 +1112,7 @@
       <scope id="483844232470139401" at="306,48,307,50" />
       <scope id="483844232470139401" at="324,17,325,42" />
       <scope id="483844232470139401" at="351,34,352,91" />
-      <scope id="483844232470139401" at="51,107,53,18" />
+      <scope id="483844232470139401" at="51,105,53,18" />
       <scope id="483844232470139410" at="98,74,100,145">
         <var name="manager" id="483844232470139410" />
       </scope>
@@ -1269,27 +1269,27 @@
         <var name="elementNode" id="483844232470139401" />
         <var name="isEmptyCell" id="483844232470139401" />
       </scope>
-      <unit id="483844232470139401" at="375,0,378,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.OverloadedOperatorContainer_EditorBuilder_a$PROPS" />
-      <unit id="483844232470139401" at="385,0,389,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.OverloadedOperatorContainer_EditorBuilder_a$LINKS" />
-      <unit id="483844232470139401" at="379,0,384,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.OverloadedOperatorContainer_EditorBuilder_a$CONCEPTS" />
-      <unit id="483844232470139401" at="205,0,278,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.OverloadedOperatorContainer_EditorBuilder_a$customOperatorsListHandler_2ntrw4_b1b3a" />
-      <unit id="483844232470139401" at="290,0,363,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.OverloadedOperatorContainer_EditorBuilder_a$operatorsListHandler_2ntrw4_c1b3a" />
-      <unit id="483844232470139401" at="47,0,390,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.OverloadedOperatorContainer_EditorBuilder_a" />
+      <unit id="483844232470139401" at="375,0,378,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.OverloadedOperatorContainer_EditorBuilder$PROPS" />
+      <unit id="483844232470139401" at="385,0,389,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.OverloadedOperatorContainer_EditorBuilder$LINKS" />
+      <unit id="483844232470139401" at="379,0,384,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.OverloadedOperatorContainer_EditorBuilder$CONCEPTS" />
+      <unit id="483844232470139401" at="205,0,278,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.OverloadedOperatorContainer_EditorBuilder$customOperatorsListHandler_2ntrw4_b1b3a" />
+      <unit id="483844232470139401" at="290,0,363,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.OverloadedOperatorContainer_EditorBuilder$operatorsListHandler_2ntrw4_c1b3a" />
+      <unit id="483844232470139401" at="47,0,390,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.OverloadedOperatorContainer_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:13d16a02-6fc1-4986-8d3c-61aadbaeccd7(jetbrains.mps.baseLanguage.overloadedOperators.editor)/483844232470139749">
     <file name="OverloadedBinaryOperator_Editor.java">
-      <node id="483844232470139749" at="11,79,12,90" concept="7" />
+      <node id="483844232470139749" at="11,79,12,88" concept="7" />
       <node id="483844232470139749" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="483844232470139749" at="11,79,12,90" />
+      <scope id="483844232470139749" at="11,79,12,88" />
       <scope id="483844232470139749" at="11,0,14,0">
         <var name="editorContext" id="483844232470139749" />
         <var name="node" id="483844232470139749" />
       </scope>
       <unit id="483844232470139749" at="10,0,15,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.OverloadedBinaryOperator_Editor" />
     </file>
-    <file name="OverloadedBinaryOperator_EditorBuilder_a.java">
-      <node id="483844232470139749" at="45,104,46,19" concept="10" />
+    <file name="OverloadedBinaryOperator_EditorBuilder.java">
+      <node id="483844232470139749" at="45,102,46,19" concept="10" />
       <node id="483844232470139749" at="46,19,47,18" concept="1" />
       <node id="483844232470139749" at="52,26,53,18" concept="7" />
       <node id="483844232470139749" at="56,39,57,32" concept="7" />
@@ -1490,7 +1490,7 @@
       <node id="483844232470139749" at="328,87,331,7" concept="4" />
       <node id="483844232470139749" at="331,7,334,7" concept="4" />
       <node id="483844232470139749" at="353,0,356,0" concept="5" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="483844232470139749" at="45,0,49,0" concept="0" trace="OverloadedBinaryOperator_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="483844232470139749" at="45,0,49,0" concept="0" trace="OverloadedBinaryOperator_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="483844232470139749" at="99,0,103,0" concept="5" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="483844232470139749" at="107,0,111,0" concept="0" trace="operatorSingleRoleHandler_42nz3b_c0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="483844232470139749" at="164,0,168,0" concept="5" trace="createRefNode_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -1555,7 +1555,7 @@
       <scope id="483844232470139749" at="349,17,350,42" />
       <scope id="483844232470139749" at="353,40,354,31" />
       <scope id="2673276898228709092" at="383,15,384,40" />
-      <scope id="483844232470139749" at="45,104,47,18" />
+      <scope id="483844232470139749" at="45,102,47,18" />
       <scope id="483844232470139749" at="99,40,101,33">
         <var name="provider" id="483844232470139749" />
       </scope>
@@ -1734,29 +1734,29 @@
       <scope id="483844232470139749" at="60,0,80,0" />
       <scope id="2673276898228709092" at="363,41,385,5" />
       <scope id="2673276898228709092" at="363,0,387,0" />
-      <unit id="483844232470139749" at="402,0,405,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.OverloadedBinaryOperator_EditorBuilder_a$PROPS" />
-      <unit id="483844232470139749" at="406,0,409,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.OverloadedBinaryOperator_EditorBuilder_a$CONCEPTS" />
-      <unit id="483844232470139749" at="395,0,401,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.OverloadedBinaryOperator_EditorBuilder_a$LINKS" />
-      <unit id="483844232470139749" at="103,0,154,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.OverloadedBinaryOperator_EditorBuilder_a$operatorSingleRoleHandler_42nz3b_c0" />
-      <unit id="483844232470139749" at="168,0,219,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.OverloadedBinaryOperator_EditorBuilder_a$leftTypeSingleRoleHandler_42nz3b_e0" />
-      <unit id="483844232470139749" at="232,0,283,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.OverloadedBinaryOperator_EditorBuilder_a$rightTypeSingleRoleHandler_42nz3b_g0" />
-      <unit id="483844232470139749" at="303,0,357,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.OverloadedBinaryOperator_EditorBuilder_a$returnTypeSingleRoleHandler_42nz3b_j0" />
-      <unit id="483844232470139749" at="41,0,410,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.OverloadedBinaryOperator_EditorBuilder_a" />
+      <unit id="483844232470139749" at="402,0,405,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.OverloadedBinaryOperator_EditorBuilder$PROPS" />
+      <unit id="483844232470139749" at="406,0,409,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.OverloadedBinaryOperator_EditorBuilder$CONCEPTS" />
+      <unit id="483844232470139749" at="395,0,401,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.OverloadedBinaryOperator_EditorBuilder$LINKS" />
+      <unit id="483844232470139749" at="103,0,154,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.OverloadedBinaryOperator_EditorBuilder$operatorSingleRoleHandler_42nz3b_c0" />
+      <unit id="483844232470139749" at="168,0,219,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.OverloadedBinaryOperator_EditorBuilder$leftTypeSingleRoleHandler_42nz3b_e0" />
+      <unit id="483844232470139749" at="232,0,283,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.OverloadedBinaryOperator_EditorBuilder$rightTypeSingleRoleHandler_42nz3b_g0" />
+      <unit id="483844232470139749" at="303,0,357,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.OverloadedBinaryOperator_EditorBuilder$returnTypeSingleRoleHandler_42nz3b_j0" />
+      <unit id="483844232470139749" at="41,0,410,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.OverloadedBinaryOperator_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:13d16a02-6fc1-4986-8d3c-61aadbaeccd7(jetbrains.mps.baseLanguage.overloadedOperators.editor)/7363434029342207372">
     <file name="ContainerImport_Editor.java">
-      <node id="7363434029342207372" at="11,79,12,81" concept="7" />
+      <node id="7363434029342207372" at="11,79,12,79" concept="7" />
       <node id="7363434029342207372" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="7363434029342207372" at="11,79,12,81" />
+      <scope id="7363434029342207372" at="11,79,12,79" />
       <scope id="7363434029342207372" at="11,0,14,0">
         <var name="editorContext" id="7363434029342207372" />
         <var name="node" id="7363434029342207372" />
       </scope>
       <unit id="7363434029342207372" at="10,0,15,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.ContainerImport_Editor" />
     </file>
-    <file name="ContainerImport_EditorBuilder_a.java">
-      <node id="7363434029342207372" at="41,95,42,19" concept="10" />
+    <file name="ContainerImport_EditorBuilder.java">
+      <node id="7363434029342207372" at="41,93,42,19" concept="10" />
       <node id="7363434029342207372" at="42,19,43,18" concept="1" />
       <node id="7363434029342207372" at="48,26,49,18" concept="7" />
       <node id="7363434029342207372" at="52,39,53,32" concept="7" />
@@ -1821,7 +1821,7 @@
       <node id="7363434029342209491" at="107,0,109,0" concept="2" trace="myNode" />
       <node id="7363434029342207372" at="52,0,55,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="7363434029342209491" at="117,0,120,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="7363434029342207372" at="41,0,45,0" concept="0" trace="ContainerImport_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="7363434029342207372" at="41,0,45,0" concept="0" trace="ContainerImport_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="7363434029342207372" at="92,0,96,5" concept="4" />
       <node id="7363434029342207372" at="46,0,51,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="7363434029342207372" at="99,205,104,22" concept="4" />
@@ -1841,7 +1841,7 @@
       <scope id="7363434029342209491" at="117,41,118,32" />
       <scope id="7363434029342209491" at="123,28,124,20" />
       <scope id="7363434029342209499" at="144,17,145,42" />
-      <scope id="7363434029342207372" at="41,95,43,18" />
+      <scope id="7363434029342207372" at="41,93,43,18" />
       <scope id="7363434029342207372" at="93,40,95,48" />
       <scope id="7363434029342207372" at="100,73,102,145">
         <var name="manager" id="7363434029342207372" />
@@ -1899,12 +1899,12 @@
         <var name="referenceLink" id="7363434029342207372" />
       </scope>
       <scope id="7363434029342207372" at="71,0,106,0" />
-      <unit id="7363434029342207372" at="150,0,153,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.ContainerImport_EditorBuilder_a$LINKS" />
-      <unit id="7363434029342207372" at="159,0,162,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.ContainerImport_EditorBuilder_a$PROPS" />
-      <unit id="7363434029342207372" at="154,0,158,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.ContainerImport_EditorBuilder_a$CONCEPTS" />
-      <unit id="7363434029342207372" at="73,42,88,5" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.ContainerImport_EditorBuilder_a$1" />
-      <unit id="7363434029342209491" at="106,0,149,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.ContainerImport_EditorBuilder_a$Inline_Builder0" />
-      <unit id="7363434029342207372" at="37,0,163,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.ContainerImport_EditorBuilder_a" />
+      <unit id="7363434029342207372" at="150,0,153,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.ContainerImport_EditorBuilder$LINKS" />
+      <unit id="7363434029342207372" at="159,0,162,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.ContainerImport_EditorBuilder$PROPS" />
+      <unit id="7363434029342207372" at="154,0,158,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.ContainerImport_EditorBuilder$CONCEPTS" />
+      <unit id="7363434029342207372" at="73,42,88,5" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.ContainerImport_EditorBuilder$1" />
+      <unit id="7363434029342209491" at="106,0,149,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.ContainerImport_EditorBuilder$Inline_Builder0" />
+      <unit id="7363434029342207372" at="37,0,163,0" name="jetbrains.mps.baseLanguage.overloadedOperators.editor.ContainerImport_EditorBuilder" />
     </file>
   </root>
 </debug-info>

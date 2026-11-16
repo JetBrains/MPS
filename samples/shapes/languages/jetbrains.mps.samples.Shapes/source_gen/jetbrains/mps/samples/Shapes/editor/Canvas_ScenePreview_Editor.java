@@ -18,6 +18,6 @@ public class Canvas_ScenePreview_Editor extends DefaultNodeEditor {
     return myContextHints;
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new Canvas_ScenePreview_EditorBuilder_a(editorContext, node).createCell();
+    return new Canvas_ScenePreview_EditorBuilder(editorContext, node).createCell();
   }
 }

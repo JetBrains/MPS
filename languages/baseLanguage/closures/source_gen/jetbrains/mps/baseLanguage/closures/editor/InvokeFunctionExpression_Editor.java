@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class InvokeFunctionExpression_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new InvokeFunctionExpression_EditorBuilder_a(editorContext, node).createCell();
+    return new InvokeFunctionExpression_EditorBuilder(editorContext, node).createCell();
   }
 }

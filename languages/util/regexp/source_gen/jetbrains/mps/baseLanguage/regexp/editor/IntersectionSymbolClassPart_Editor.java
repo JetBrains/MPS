@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class IntersectionSymbolClassPart_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new IntersectionSymbolClassPart_EditorBuilder_a(editorContext, node).createCell();
+    return new IntersectionSymbolClassPart_EditorBuilder(editorContext, node).createCell();
   }
 }

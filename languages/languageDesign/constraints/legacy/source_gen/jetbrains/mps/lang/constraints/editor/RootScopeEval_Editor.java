@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class RootScopeEval_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new RootScopeEval_EditorBuilder_a(editorContext, node).createCell();
+    return new RootScopeEval_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new RootScopeEval_InspectorBuilder_a(editorContext, node).createCell();
+    return new RootScopeEval_InspectorBuilder(editorContext, node).createCell();
   }
 }

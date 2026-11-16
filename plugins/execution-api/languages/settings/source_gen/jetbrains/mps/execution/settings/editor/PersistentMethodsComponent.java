@@ -16,6 +16,6 @@ public class PersistentMethodsComponent implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new PersistentMethodsComponent_ComponentBuilder_a(editorContext, node).createCell();
+    return new PersistentMethodsComponent_ComponentBuilder(editorContext, node).createCell();
   }
 }

@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class NonDumbAwareActions_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new NonDumbAwareActions_EditorBuilder_a(editorContext, node).createCell();
+    return new NonDumbAwareActions_EditorBuilder(editorContext, node).createCell();
   }
 }

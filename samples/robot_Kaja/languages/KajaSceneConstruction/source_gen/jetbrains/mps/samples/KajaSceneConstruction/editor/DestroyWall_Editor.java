@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class DestroyWall_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new DestroyWall_EditorBuilder_a(editorContext, node).createCell();
+    return new DestroyWall_EditorBuilder(editorContext, node).createCell();
   }
 }

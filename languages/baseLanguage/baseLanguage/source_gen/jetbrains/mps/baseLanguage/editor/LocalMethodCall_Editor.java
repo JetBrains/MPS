@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class LocalMethodCall_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new LocalMethodCall_EditorBuilder_a(editorContext, node).createCell();
+    return new LocalMethodCall_EditorBuilder(editorContext, node).createCell();
   }
 }

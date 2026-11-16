@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ManyStatementsContainer_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ManyStatementsContainer_EditorBuilder_a(editorContext, node).createCell();
+    return new ManyStatementsContainer_EditorBuilder(editorContext, node).createCell();
   }
 }

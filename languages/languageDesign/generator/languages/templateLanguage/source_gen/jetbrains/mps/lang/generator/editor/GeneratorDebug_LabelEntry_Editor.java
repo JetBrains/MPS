@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class GeneratorDebug_LabelEntry_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new GeneratorDebug_LabelEntry_EditorBuilder_a(editorContext, node).createCell();
+    return new GeneratorDebug_LabelEntry_EditorBuilder(editorContext, node).createCell();
   }
 }

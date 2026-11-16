@@ -16,6 +16,6 @@ public class SimpleCanRunAndDebug implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new SimpleCanRunAndDebug_ComponentBuilder_a(editorContext, node).createCell();
+    return new SimpleCanRunAndDebug_ComponentBuilder(editorContext, node).createCell();
   }
 }

@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class OrPatternClause_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new OrPatternClause_EditorBuilder_a(editorContext, node).createCell();
+    return new OrPatternClause_EditorBuilder(editorContext, node).createCell();
   }
 }

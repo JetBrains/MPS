@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class SequenceType_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new SequenceType_EditorBuilder_a(editorContext, node).createCell();
+    return new SequenceType_EditorBuilder(editorContext, node).createCell();
   }
 }

@@ -25,17 +25,17 @@
   </root>
   <root nodeRef="r:3589994e-eecd-4bab-9b0f-ede6f7a11eaa(jetbrains.mps.lang.generator.plan.bl.editor)/2933797630832239141">
     <file name="ParameterIdentityExpression_Editor.java">
-      <node id="2933797630832239141" at="11,79,12,93" concept="6" />
+      <node id="2933797630832239141" at="11,79,12,91" concept="6" />
       <node id="2933797630832239141" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="2933797630832239141" at="11,79,12,93" />
+      <scope id="2933797630832239141" at="11,79,12,91" />
       <scope id="2933797630832239141" at="11,0,14,0">
         <var name="editorContext" id="2933797630832239141" />
         <var name="node" id="2933797630832239141" />
       </scope>
       <unit id="2933797630832239141" at="10,0,15,0" name="jetbrains.mps.lang.generator.plan.bl.editor.ParameterIdentityExpression_Editor" />
     </file>
-    <file name="ParameterIdentityExpression_EditorBuilder_a.java">
-      <node id="2933797630832239141" at="44,107,45,19" concept="9" />
+    <file name="ParameterIdentityExpression_EditorBuilder.java">
+      <node id="2933797630832239141" at="44,105,45,19" concept="9" />
       <node id="2933797630832239141" at="45,19,46,18" concept="1" />
       <node id="2933797630832239141" at="51,26,52,18" concept="6" />
       <node id="2933797630832239141" at="55,39,56,32" concept="6" />
@@ -102,7 +102,7 @@
       <node id="2933797630832239251" at="107,0,109,0" concept="2" trace="myNode" />
       <node id="2933797630832239141" at="55,0,58,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="2933797630832239251" at="117,0,120,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="2933797630832239141" at="44,0,48,0" concept="0" trace="ParameterIdentityExpression_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="2933797630832239141" at="44,0,48,0" concept="0" trace="ParameterIdentityExpression_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="2933797630832239141" at="88,0,92,5" concept="3" />
       <node id="2933797630832239141" at="49,0,54,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="2933797630832239141" at="99,205,104,22" concept="3" />
@@ -121,7 +121,7 @@
       <scope id="2933797630832239251" at="117,41,118,32" />
       <scope id="2933797630832239251" at="123,28,124,20" />
       <scope id="2933797630832239361" at="147,17,148,42" />
-      <scope id="2933797630832239141" at="44,107,46,18" />
+      <scope id="2933797630832239141" at="44,105,46,18" />
       <scope id="2933797630832239141" at="89,40,91,50" />
       <scope id="2933797630832239141" at="100,73,102,145">
         <var name="manager" id="2933797630832239141" />
@@ -177,12 +177,12 @@
         <var name="style" id="2933797630832239141" />
       </scope>
       <scope id="2933797630832239141" at="67,0,106,0" />
-      <unit id="2933797630832239141" at="153,0,156,0" name="jetbrains.mps.lang.generator.plan.bl.editor.ParameterIdentityExpression_EditorBuilder_a$LINKS" />
-      <unit id="2933797630832239141" at="162,0,165,0" name="jetbrains.mps.lang.generator.plan.bl.editor.ParameterIdentityExpression_EditorBuilder_a$PROPS" />
-      <unit id="2933797630832239141" at="157,0,161,0" name="jetbrains.mps.lang.generator.plan.bl.editor.ParameterIdentityExpression_EditorBuilder_a$CONCEPTS" />
-      <unit id="2933797630832239141" at="69,42,84,5" name="jetbrains.mps.lang.generator.plan.bl.editor.ParameterIdentityExpression_EditorBuilder_a$1" />
-      <unit id="2933797630832239251" at="106,0,152,0" name="jetbrains.mps.lang.generator.plan.bl.editor.ParameterIdentityExpression_EditorBuilder_a$Inline_Builder0" />
-      <unit id="2933797630832239141" at="40,0,166,0" name="jetbrains.mps.lang.generator.plan.bl.editor.ParameterIdentityExpression_EditorBuilder_a" />
+      <unit id="2933797630832239141" at="153,0,156,0" name="jetbrains.mps.lang.generator.plan.bl.editor.ParameterIdentityExpression_EditorBuilder$LINKS" />
+      <unit id="2933797630832239141" at="162,0,165,0" name="jetbrains.mps.lang.generator.plan.bl.editor.ParameterIdentityExpression_EditorBuilder$PROPS" />
+      <unit id="2933797630832239141" at="157,0,161,0" name="jetbrains.mps.lang.generator.plan.bl.editor.ParameterIdentityExpression_EditorBuilder$CONCEPTS" />
+      <unit id="2933797630832239141" at="69,42,84,5" name="jetbrains.mps.lang.generator.plan.bl.editor.ParameterIdentityExpression_EditorBuilder$1" />
+      <unit id="2933797630832239251" at="106,0,152,0" name="jetbrains.mps.lang.generator.plan.bl.editor.ParameterIdentityExpression_EditorBuilder$Inline_Builder0" />
+      <unit id="2933797630832239141" at="40,0,166,0" name="jetbrains.mps.lang.generator.plan.bl.editor.ParameterIdentityExpression_EditorBuilder" />
     </file>
   </root>
 </debug-info>

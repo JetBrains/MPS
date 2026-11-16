@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class MPSTipsAndTricks_Image_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new MPSTipsAndTricks_Image_EditorBuilder_a(editorContext, node).createCell();
+    return new MPSTipsAndTricks_Image_EditorBuilder(editorContext, node).createCell();
   }
 }

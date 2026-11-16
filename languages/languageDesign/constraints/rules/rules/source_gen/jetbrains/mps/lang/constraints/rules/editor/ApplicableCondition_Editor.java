@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ApplicableCondition_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ApplicableCondition_EditorBuilder_a(editorContext, node).createCell();
+    return new ApplicableCondition_EditorBuilder(editorContext, node).createCell();
   }
 }

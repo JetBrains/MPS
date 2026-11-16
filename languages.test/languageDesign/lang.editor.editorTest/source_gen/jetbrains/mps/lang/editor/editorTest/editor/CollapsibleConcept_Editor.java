@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class CollapsibleConcept_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new CollapsibleConcept_EditorBuilder_a(editorContext, node).createCell();
+    return new CollapsibleConcept_EditorBuilder(editorContext, node).createCell();
   }
 }

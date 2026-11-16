@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class FloatStyleClassItem_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new FloatStyleClassItem_EditorBuilder_a(editorContext, node).createCell();
+    return new FloatStyleClassItem_EditorBuilder(editorContext, node).createCell();
   }
 }

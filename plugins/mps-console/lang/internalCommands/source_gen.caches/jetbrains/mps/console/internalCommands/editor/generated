@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="326ozhqyj6545us164yl1j0aijeep7d">
-  <files names="ConsoleModelExpression_Editor.java:ConsoleModelExpression_EditorBuilder_a.java:ConsoleModelExpression_SubstituteMenu.java:EditorAspectDescriptorImpl.java:InternalMode_Editor.java:InternalMode_EditorBuilder_a.java:ShowRepositoryCommand_SubstituteMenu.java" />
+  <files names="ConsoleModelExpression_Editor.java:ConsoleModelExpression_EditorBuilder.java:ConsoleModelExpression_SubstituteMenu.java:EditorAspectDescriptorImpl.java:InternalMode_Editor.java:InternalMode_EditorBuilder.java:ShowRepositoryCommand_SubstituteMenu.java" />
 </product>
 

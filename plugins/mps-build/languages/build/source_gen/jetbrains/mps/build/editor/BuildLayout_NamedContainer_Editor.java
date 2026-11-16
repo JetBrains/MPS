@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class BuildLayout_NamedContainer_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new BuildLayout_NamedContainer_EditorBuilder_a(editorContext, node).createCell();
+    return new BuildLayout_NamedContainer_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new BuildLayout_NamedContainer_InspectorBuilder_a(editorContext, node).createCell();
+    return new BuildLayout_NamedContainer_InspectorBuilder(editorContext, node).createCell();
   }
 }

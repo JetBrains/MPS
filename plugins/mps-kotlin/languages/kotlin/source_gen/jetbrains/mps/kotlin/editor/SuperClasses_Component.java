@@ -16,6 +16,6 @@ public class SuperClasses_Component implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new SuperClasses_Component_ComponentBuilder_a(editorContext, node).createCell();
+    return new SuperClasses_Component_ComponentBuilder(editorContext, node).createCell();
   }
 }

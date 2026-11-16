@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class BwfDependency_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new BwfDependency_EditorBuilder_a(editorContext, node).createCell();
+    return new BwfDependency_EditorBuilder(editorContext, node).createCell();
   }
 }

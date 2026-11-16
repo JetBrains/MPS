@@ -18,9 +18,9 @@ public class NodeAttribute_comment_Editor extends DefaultNodeEditor {
     return myContextHints;
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new NodeAttribute_comment_EditorBuilder_a(editorContext, node).createCell();
+    return new NodeAttribute_comment_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new NodeAttribute_comment_InspectorBuilder_a(editorContext, node).createCell();
+    return new NodeAttribute_comment_InspectorBuilder(editorContext, node).createCell();
   }
 }

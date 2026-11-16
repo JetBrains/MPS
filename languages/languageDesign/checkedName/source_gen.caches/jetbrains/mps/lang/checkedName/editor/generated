@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="fwv196ltkfk3xbkv3eb31igpu38e8n">
-  <files names="EditorAspectDescriptorImpl.java:NativeLanguageSelection.java:NativeLanguageSelection_ComponentBuilder_a.java:PropertyPointerType_Editor.java:PropertyPointerType_EditorBuilder_a.java:PropertyPointerValueOperation_Editor.java:PropertyPointerValueOperation_EditorBuilder_a.java:PropertyRefExpression_Editor.java:PropertyRefExpression_EditorBuilder_a.java:PropertyRefType_Editor.java:PropertyRefType_EditorBuilder_a.java" />
+  <files names="EditorAspectDescriptorImpl.java:NativeLanguageSelection.java:NativeLanguageSelection_ComponentBuilder.java:PropertyPointerType_Editor.java:PropertyPointerType_EditorBuilder.java:PropertyPointerValueOperation_Editor.java:PropertyPointerValueOperation_EditorBuilder.java:PropertyRefExpression_Editor.java:PropertyRefExpression_EditorBuilder.java:PropertyRefType_Editor.java:PropertyRefType_EditorBuilder.java" />
 </product>
 

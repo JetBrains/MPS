@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class AbstractStyledTextOperation_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new AbstractStyledTextOperation_EditorBuilder_a(editorContext, node).createCell();
+    return new AbstractStyledTextOperation_EditorBuilder(editorContext, node).createCell();
   }
 }

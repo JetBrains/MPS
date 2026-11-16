@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class StructureAspectDeclaration_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new StructureAspectDeclaration_EditorBuilder_a(editorContext, node).createCell();
+    return new StructureAspectDeclaration_EditorBuilder(editorContext, node).createCell();
   }
 }

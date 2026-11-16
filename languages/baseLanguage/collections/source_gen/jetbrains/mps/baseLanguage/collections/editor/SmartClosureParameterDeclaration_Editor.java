@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class SmartClosureParameterDeclaration_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new SmartClosureParameterDeclaration_EditorBuilder_a(editorContext, node).createCell();
+    return new SmartClosureParameterDeclaration_EditorBuilder(editorContext, node).createCell();
   }
 }

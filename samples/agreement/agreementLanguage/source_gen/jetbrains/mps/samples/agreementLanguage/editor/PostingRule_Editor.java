@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class PostingRule_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new PostingRule_EditorBuilder_a(editorContext, node).createCell();
+    return new PostingRule_EditorBuilder(editorContext, node).createCell();
   }
 }

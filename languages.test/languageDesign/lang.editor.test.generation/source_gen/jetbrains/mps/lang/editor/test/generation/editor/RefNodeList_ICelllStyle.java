@@ -16,6 +16,6 @@ public class RefNodeList_ICelllStyle implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new RefNodeList_ICelllStyle_ComponentBuilder_a(editorContext, node).createCell();
+    return new RefNodeList_ICelllStyle_ComponentBuilder(editorContext, node).createCell();
   }
 }

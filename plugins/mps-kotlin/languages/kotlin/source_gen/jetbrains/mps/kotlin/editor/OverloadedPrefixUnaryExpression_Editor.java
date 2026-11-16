@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class OverloadedPrefixUnaryExpression_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new OverloadedPrefixUnaryExpression_EditorBuilder_a(editorContext, node).createCell();
+    return new OverloadedPrefixUnaryExpression_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new OverloadedPrefixUnaryExpression_InspectorBuilder_a(editorContext, node).createCell();
+    return new OverloadedPrefixUnaryExpression_InspectorBuilder(editorContext, node).createCell();
   }
 }

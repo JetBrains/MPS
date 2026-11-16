@@ -16,6 +16,6 @@ public class _FocusPolicy_Applicable implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new _FocusPolicy_Applicable_ComponentBuilder_a(editorContext, node).createCell();
+    return new _FocusPolicy_Applicable_ComponentBuilder(editorContext, node).createCell();
   }
 }

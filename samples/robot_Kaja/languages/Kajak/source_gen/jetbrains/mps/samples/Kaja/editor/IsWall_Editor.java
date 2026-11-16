@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class IsWall_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new IsWall_EditorBuilder_a(editorContext, node).createCell();
+    return new IsWall_EditorBuilder(editorContext, node).createCell();
   }
 }

@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class OrderDependency_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new OrderDependency_EditorBuilder_a(editorContext, node).createCell();
+    return new OrderDependency_EditorBuilder(editorContext, node).createCell();
   }
 }

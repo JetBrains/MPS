@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class InitChildWithDirectCycle_card1_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new InitChildWithDirectCycle_card1_EditorBuilder_a(editorContext, node).createCell();
+    return new InitChildWithDirectCycle_card1_EditorBuilder(editorContext, node).createCell();
   }
 }

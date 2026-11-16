@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class QueryDefinition_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new QueryDefinition_EditorBuilder_a(editorContext, node).createCell();
+    return new QueryDefinition_EditorBuilder(editorContext, node).createCell();
   }
 }

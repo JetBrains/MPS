@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class RequiredAnnotationDataDeclaration_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new RequiredAnnotationDataDeclaration_EditorBuilder_a(editorContext, node).createCell();
+    return new RequiredAnnotationDataDeclaration_EditorBuilder(editorContext, node).createCell();
   }
 }

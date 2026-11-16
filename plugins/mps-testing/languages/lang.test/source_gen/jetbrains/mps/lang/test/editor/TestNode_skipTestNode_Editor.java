@@ -18,6 +18,6 @@ public class TestNode_skipTestNode_Editor extends DefaultNodeEditor {
     return myContextHints;
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new TestNode_skipTestNode_EditorBuilder_a(editorContext, node).createCell();
+    return new TestNode_skipTestNode_EditorBuilder(editorContext, node).createCell();
   }
 }

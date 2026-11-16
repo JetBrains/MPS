@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class UnboundClosureParameterDeclaration_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new UnboundClosureParameterDeclaration_EditorBuilder_a(editorContext, node).createCell();
+    return new UnboundClosureParameterDeclaration_EditorBuilder(editorContext, node).createCell();
   }
 }

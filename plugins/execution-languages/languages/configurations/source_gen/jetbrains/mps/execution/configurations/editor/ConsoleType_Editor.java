@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ConsoleType_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ConsoleType_EditorBuilder_a(editorContext, node).createCell();
+    return new ConsoleType_EditorBuilder(editorContext, node).createCell();
   }
 }

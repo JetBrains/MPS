@@ -65,17 +65,17 @@
   </root>
   <root nodeRef="r:1267752b-a233-4432-a848-3e68e0ea0db1(jetbrains.mps.build.workflow.editor)/144710003695346442">
     <file name="BwfJavaLibrary_Editor.java">
-      <node id="144710003695346442" at="11,79,12,80" concept="8" />
+      <node id="144710003695346442" at="11,79,12,78" concept="8" />
       <node id="144710003695346442" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="144710003695346442" at="11,79,12,80" />
+      <scope id="144710003695346442" at="11,79,12,78" />
       <scope id="144710003695346442" at="11,0,14,0">
         <var name="editorContext" id="144710003695346442" />
         <var name="node" id="144710003695346442" />
       </scope>
       <unit id="144710003695346442" at="10,0,15,0" name="jetbrains.mps.build.workflow.editor.BwfJavaLibrary_Editor" />
     </file>
-    <file name="BwfJavaLibrary_EditorBuilder_a.java">
-      <node id="144710003695346442" at="46,94,47,19" concept="13" />
+    <file name="BwfJavaLibrary_EditorBuilder.java">
+      <node id="144710003695346442" at="46,92,47,19" concept="13" />
       <node id="144710003695346442" at="47,19,48,18" concept="2" />
       <node id="144710003695346442" at="53,26,54,18" concept="8" />
       <node id="144710003695346442" at="57,39,58,32" concept="8" />
@@ -159,7 +159,7 @@
       <node id="144710003695346442" at="129,0,132,0" concept="6" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="144710003695346442" at="132,0,135,0" concept="6" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="144710003695346442" at="176,96,179,9" concept="5" />
-      <node id="144710003695346442" at="46,0,50,0" concept="1" trace="BwfJavaLibrary_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="144710003695346442" at="46,0,50,0" concept="1" trace="BwfJavaLibrary_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="144710003695346442" at="120,0,124,0" concept="1" trace="classpathListHandler_757giq_c0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="144710003695346442" at="125,0,129,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="144710003695346442" at="158,97,162,9" concept="5" />
@@ -189,7 +189,7 @@
       <scope id="144710003695346442" at="132,48,133,42" />
       <scope id="144710003695346442" at="150,17,151,42" />
       <scope id="144710003695346442" at="177,34,178,91" />
-      <scope id="144710003695346442" at="46,94,48,18" />
+      <scope id="144710003695346442" at="46,92,48,18" />
       <scope id="144710003695466874" at="96,74,98,145">
         <var name="manager" id="144710003695466874" />
       </scope>
@@ -259,26 +259,26 @@
         <var name="elementNode" id="144710003695346442" />
         <var name="isEmptyCell" id="144710003695346442" />
       </scope>
-      <unit id="144710003695346442" at="190,0,193,0" name="jetbrains.mps.build.workflow.editor.BwfJavaLibrary_EditorBuilder_a$PROPS" />
-      <unit id="144710003695346442" at="199,0,202,0" name="jetbrains.mps.build.workflow.editor.BwfJavaLibrary_EditorBuilder_a$LINKS" />
-      <unit id="144710003695346442" at="194,0,198,0" name="jetbrains.mps.build.workflow.editor.BwfJavaLibrary_EditorBuilder_a$CONCEPTS" />
-      <unit id="144710003695346442" at="116,0,183,0" name="jetbrains.mps.build.workflow.editor.BwfJavaLibrary_EditorBuilder_a$classpathListHandler_757giq_c0" />
-      <unit id="144710003695346442" at="42,0,203,0" name="jetbrains.mps.build.workflow.editor.BwfJavaLibrary_EditorBuilder_a" />
+      <unit id="144710003695346442" at="190,0,193,0" name="jetbrains.mps.build.workflow.editor.BwfJavaLibrary_EditorBuilder$PROPS" />
+      <unit id="144710003695346442" at="199,0,202,0" name="jetbrains.mps.build.workflow.editor.BwfJavaLibrary_EditorBuilder$LINKS" />
+      <unit id="144710003695346442" at="194,0,198,0" name="jetbrains.mps.build.workflow.editor.BwfJavaLibrary_EditorBuilder$CONCEPTS" />
+      <unit id="144710003695346442" at="116,0,183,0" name="jetbrains.mps.build.workflow.editor.BwfJavaLibrary_EditorBuilder$classpathListHandler_757giq_c0" />
+      <unit id="144710003695346442" at="42,0,203,0" name="jetbrains.mps.build.workflow.editor.BwfJavaLibrary_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:1267752b-a233-4432-a848-3e68e0ea0db1(jetbrains.mps.build.workflow.editor)/144710003695507918">
     <file name="BwfJavaLibraryReference_Editor.java">
-      <node id="144710003695507918" at="11,79,12,89" concept="8" />
+      <node id="144710003695507918" at="11,79,12,87" concept="8" />
       <node id="144710003695507918" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="144710003695507918" at="11,79,12,89" />
+      <scope id="144710003695507918" at="11,79,12,87" />
       <scope id="144710003695507918" at="11,0,14,0">
         <var name="editorContext" id="144710003695507918" />
         <var name="node" id="144710003695507918" />
       </scope>
       <unit id="144710003695507918" at="10,0,15,0" name="jetbrains.mps.build.workflow.editor.BwfJavaLibraryReference_Editor" />
     </file>
-    <file name="BwfJavaLibraryReference_EditorBuilder_a.java">
-      <node id="144710003695507918" at="40,103,41,19" concept="13" />
+    <file name="BwfJavaLibraryReference_EditorBuilder.java">
+      <node id="144710003695507918" at="40,101,41,19" concept="13" />
       <node id="144710003695507918" at="41,19,42,18" concept="2" />
       <node id="144710003695507918" at="47,26,48,18" concept="8" />
       <node id="144710003695507918" at="51,39,52,32" concept="8" />
@@ -342,7 +342,7 @@
       <node id="144710003695507926" at="102,0,104,0" concept="3" trace="myNode" />
       <node id="144710003695507918" at="51,0,54,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="144710003695507926" at="112,0,115,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="144710003695507918" at="40,0,44,0" concept="1" trace="BwfJavaLibraryReference_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="144710003695507918" at="40,0,44,0" concept="1" trace="BwfJavaLibraryReference_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="144710003695507918" at="87,0,91,5" concept="5" />
       <node id="144710003695507918" at="45,0,50,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="144710003695507918" at="94,205,99,22" concept="5" />
@@ -361,7 +361,7 @@
       <scope id="144710003695507926" at="112,41,113,32" />
       <scope id="144710003695507926" at="118,28,119,20" />
       <scope id="144710003695507928" at="139,17,140,42" />
-      <scope id="144710003695507918" at="40,103,42,18" />
+      <scope id="144710003695507918" at="40,101,42,18" />
       <scope id="144710003695507918" at="88,40,90,45" />
       <scope id="144710003695507918" at="95,73,97,145">
         <var name="manager" id="144710003695507918" />
@@ -414,12 +414,12 @@
         <var name="referenceLink" id="144710003695507918" />
       </scope>
       <scope id="144710003695507918" at="73,0,101,0" />
-      <unit id="144710003695507918" at="145,0,148,0" name="jetbrains.mps.build.workflow.editor.BwfJavaLibraryReference_EditorBuilder_a$LINKS" />
-      <unit id="144710003695507918" at="154,0,157,0" name="jetbrains.mps.build.workflow.editor.BwfJavaLibraryReference_EditorBuilder_a$PROPS" />
-      <unit id="144710003695507918" at="149,0,153,0" name="jetbrains.mps.build.workflow.editor.BwfJavaLibraryReference_EditorBuilder_a$CONCEPTS" />
-      <unit id="144710003695507918" at="75,42,83,5" name="jetbrains.mps.build.workflow.editor.BwfJavaLibraryReference_EditorBuilder_a$1" />
-      <unit id="144710003695507926" at="101,0,144,0" name="jetbrains.mps.build.workflow.editor.BwfJavaLibraryReference_EditorBuilder_a$Inline_Builder0" />
-      <unit id="144710003695507918" at="36,0,158,0" name="jetbrains.mps.build.workflow.editor.BwfJavaLibraryReference_EditorBuilder_a" />
+      <unit id="144710003695507918" at="145,0,148,0" name="jetbrains.mps.build.workflow.editor.BwfJavaLibraryReference_EditorBuilder$LINKS" />
+      <unit id="144710003695507918" at="154,0,157,0" name="jetbrains.mps.build.workflow.editor.BwfJavaLibraryReference_EditorBuilder$PROPS" />
+      <unit id="144710003695507918" at="149,0,153,0" name="jetbrains.mps.build.workflow.editor.BwfJavaLibraryReference_EditorBuilder$CONCEPTS" />
+      <unit id="144710003695507918" at="75,42,83,5" name="jetbrains.mps.build.workflow.editor.BwfJavaLibraryReference_EditorBuilder$1" />
+      <unit id="144710003695507926" at="101,0,144,0" name="jetbrains.mps.build.workflow.editor.BwfJavaLibraryReference_EditorBuilder$Inline_Builder0" />
+      <unit id="144710003695507918" at="36,0,158,0" name="jetbrains.mps.build.workflow.editor.BwfJavaLibraryReference_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:1267752b-a233-4432-a848-3e68e0ea0db1(jetbrains.mps.build.workflow.editor)/1741258697587102496">
@@ -1201,17 +1201,17 @@
   </root>
   <root nodeRef="r:1267752b-a233-4432-a848-3e68e0ea0db1(jetbrains.mps.build.workflow.editor)/2059109515400477504">
     <file name="BwfAntTaskDeclaration_Editor.java">
-      <node id="2059109515400477504" at="11,79,12,87" concept="8" />
+      <node id="2059109515400477504" at="11,79,12,85" concept="8" />
       <node id="2059109515400477504" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="2059109515400477504" at="11,79,12,87" />
+      <scope id="2059109515400477504" at="11,79,12,85" />
       <scope id="2059109515400477504" at="11,0,14,0">
         <var name="editorContext" id="2059109515400477504" />
         <var name="node" id="2059109515400477504" />
       </scope>
       <unit id="2059109515400477504" at="10,0,15,0" name="jetbrains.mps.build.workflow.editor.BwfAntTaskDeclaration_Editor" />
     </file>
-    <file name="BwfAntTaskDeclaration_EditorBuilder_a.java">
-      <node id="2059109515400477504" at="40,101,41,19" concept="13" />
+    <file name="BwfAntTaskDeclaration_EditorBuilder.java">
+      <node id="2059109515400477504" at="40,99,41,19" concept="13" />
       <node id="2059109515400477504" at="41,19,42,18" concept="2" />
       <node id="2059109515400477504" at="47,26,48,18" concept="8" />
       <node id="2059109515400477504" at="51,39,52,32" concept="8" />
@@ -1346,7 +1346,7 @@
       <node id="2059109515400477521" at="168,0,170,0" concept="3" trace="myNode" />
       <node id="2059109515400477504" at="51,0,54,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="2059109515400477521" at="178,0,181,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="2059109515400477504" at="40,0,44,0" concept="1" trace="BwfAntTaskDeclaration_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="2059109515400477504" at="40,0,44,0" concept="1" trace="BwfAntTaskDeclaration_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="2059109515400477504" at="153,0,157,5" concept="5" />
       <node id="2059109515400477504" at="45,0,50,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="2059109515400477512" at="90,208,95,24" concept="5" />
@@ -1380,7 +1380,7 @@
       <scope id="2059109515400477521" at="184,28,185,20" />
       <scope id="2059109515400477523" at="205,17,206,42" />
       <scope id="2421267928268272517" at="236,15,237,40" />
-      <scope id="2059109515400477504" at="40,101,42,18" />
+      <scope id="2059109515400477504" at="40,99,42,18" />
       <scope id="2059109515400477512" at="91,74,93,145">
         <var name="manager" id="2059109515400477512" />
       </scope>
@@ -1481,27 +1481,27 @@
         <var name="referenceLink" id="2059109515400477504" />
       </scope>
       <scope id="2059109515400477504" at="139,0,167,0" />
-      <unit id="2059109515400477504" at="252,0,255,0" name="jetbrains.mps.build.workflow.editor.BwfAntTaskDeclaration_EditorBuilder_a$LINKS" />
-      <unit id="2059109515400477504" at="247,0,251,0" name="jetbrains.mps.build.workflow.editor.BwfAntTaskDeclaration_EditorBuilder_a$CONCEPTS" />
-      <unit id="2059109515400477504" at="241,0,246,0" name="jetbrains.mps.build.workflow.editor.BwfAntTaskDeclaration_EditorBuilder_a$PROPS" />
-      <unit id="2059109515400477504" at="141,42,149,5" name="jetbrains.mps.build.workflow.editor.BwfAntTaskDeclaration_EditorBuilder_a$1" />
-      <unit id="2059109515400477521" at="167,0,210,0" name="jetbrains.mps.build.workflow.editor.BwfAntTaskDeclaration_EditorBuilder_a$Inline_Builder0" />
-      <unit id="2059109515400477504" at="36,0,256,0" name="jetbrains.mps.build.workflow.editor.BwfAntTaskDeclaration_EditorBuilder_a" />
+      <unit id="2059109515400477504" at="252,0,255,0" name="jetbrains.mps.build.workflow.editor.BwfAntTaskDeclaration_EditorBuilder$LINKS" />
+      <unit id="2059109515400477504" at="247,0,251,0" name="jetbrains.mps.build.workflow.editor.BwfAntTaskDeclaration_EditorBuilder$CONCEPTS" />
+      <unit id="2059109515400477504" at="241,0,246,0" name="jetbrains.mps.build.workflow.editor.BwfAntTaskDeclaration_EditorBuilder$PROPS" />
+      <unit id="2059109515400477504" at="141,42,149,5" name="jetbrains.mps.build.workflow.editor.BwfAntTaskDeclaration_EditorBuilder$1" />
+      <unit id="2059109515400477521" at="167,0,210,0" name="jetbrains.mps.build.workflow.editor.BwfAntTaskDeclaration_EditorBuilder$Inline_Builder0" />
+      <unit id="2059109515400477504" at="36,0,256,0" name="jetbrains.mps.build.workflow.editor.BwfAntTaskDeclaration_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:1267752b-a233-4432-a848-3e68e0ea0db1(jetbrains.mps.build.workflow.editor)/244868996532667536">
     <file name="BwfCustomMacro_Editor.java">
-      <node id="244868996532667536" at="11,79,12,80" concept="8" />
+      <node id="244868996532667536" at="11,79,12,78" concept="8" />
       <node id="244868996532667536" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="244868996532667536" at="11,79,12,80" />
+      <scope id="244868996532667536" at="11,79,12,78" />
       <scope id="244868996532667536" at="11,0,14,0">
         <var name="editorContext" id="244868996532667536" />
         <var name="node" id="244868996532667536" />
       </scope>
       <unit id="244868996532667536" at="10,0,15,0" name="jetbrains.mps.build.workflow.editor.BwfCustomMacro_Editor" />
     </file>
-    <file name="BwfCustomMacro_EditorBuilder_a.java">
-      <node id="244868996532667536" at="34,94,35,19" concept="13" />
+    <file name="BwfCustomMacro_EditorBuilder.java">
+      <node id="244868996532667536" at="34,92,35,19" concept="13" />
       <node id="244868996532667536" at="35,19,36,18" concept="2" />
       <node id="244868996532667536" at="41,26,42,18" concept="8" />
       <node id="244868996532667536" at="45,39,46,32" concept="8" />
@@ -1561,7 +1561,7 @@
       <node id="244868996532667536" at="92,0,95,0" concept="6" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="244868996532667536" at="95,0,98,0" concept="6" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="244868996532667536" at="139,96,142,9" concept="5" />
-      <node id="244868996532667536" at="34,0,38,0" concept="1" trace="BwfCustomMacro_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="244868996532667536" at="34,0,38,0" concept="1" trace="BwfCustomMacro_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="244868996532667536" at="83,0,87,0" concept="1" trace="elementsListHandler_3al981_b0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="244868996532667536" at="88,0,92,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="244868996532667536" at="121,97,125,9" concept="5" />
@@ -1586,7 +1586,7 @@
       <scope id="244868996532667536" at="95,48,96,40" />
       <scope id="244868996532667536" at="113,17,114,42" />
       <scope id="244868996532667536" at="140,34,141,91" />
-      <scope id="244868996532667536" at="34,94,36,18" />
+      <scope id="244868996532667536" at="34,92,36,18" />
       <scope id="244868996532667536" at="83,82,85,25" />
       <scope id="244868996532667536" at="122,122,124,146" />
       <scope id="244868996532667536" at="128,34,130,142" />
@@ -1640,25 +1640,25 @@
         <var name="elementNode" id="244868996532667536" />
         <var name="isEmptyCell" id="244868996532667536" />
       </scope>
-      <unit id="244868996532667536" at="147,0,150,0" name="jetbrains.mps.build.workflow.editor.BwfCustomMacro_EditorBuilder_a$LINKS" />
-      <unit id="244868996532667536" at="151,0,154,0" name="jetbrains.mps.build.workflow.editor.BwfCustomMacro_EditorBuilder_a$CONCEPTS" />
-      <unit id="244868996532667536" at="79,0,146,0" name="jetbrains.mps.build.workflow.editor.BwfCustomMacro_EditorBuilder_a$elementsListHandler_3al981_b0" />
-      <unit id="244868996532667536" at="30,0,155,0" name="jetbrains.mps.build.workflow.editor.BwfCustomMacro_EditorBuilder_a" />
+      <unit id="244868996532667536" at="147,0,150,0" name="jetbrains.mps.build.workflow.editor.BwfCustomMacro_EditorBuilder$LINKS" />
+      <unit id="244868996532667536" at="151,0,154,0" name="jetbrains.mps.build.workflow.editor.BwfCustomMacro_EditorBuilder$CONCEPTS" />
+      <unit id="244868996532667536" at="79,0,146,0" name="jetbrains.mps.build.workflow.editor.BwfCustomMacro_EditorBuilder$elementsListHandler_3al981_b0" />
+      <unit id="244868996532667536" at="30,0,155,0" name="jetbrains.mps.build.workflow.editor.BwfCustomMacro_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:1267752b-a233-4432-a848-3e68e0ea0db1(jetbrains.mps.build.workflow.editor)/2529023923283121118">
     <file name="BwfProjectPartStatement_Editor.java">
-      <node id="2529023923283121118" at="11,79,12,89" concept="8" />
+      <node id="2529023923283121118" at="11,79,12,87" concept="8" />
       <node id="2529023923283121118" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="2529023923283121118" at="11,79,12,89" />
+      <scope id="2529023923283121118" at="11,79,12,87" />
       <scope id="2529023923283121118" at="11,0,14,0">
         <var name="editorContext" id="2529023923283121118" />
         <var name="node" id="2529023923283121118" />
       </scope>
       <unit id="2529023923283121118" at="10,0,15,0" name="jetbrains.mps.build.workflow.editor.BwfProjectPartStatement_Editor" />
     </file>
-    <file name="BwfProjectPartStatement_EditorBuilder_a.java">
-      <node id="2529023923283121118" at="31,103,32,19" concept="13" />
+    <file name="BwfProjectPartStatement_EditorBuilder.java">
+      <node id="2529023923283121118" at="31,101,32,19" concept="13" />
       <node id="2529023923283121118" at="32,19,33,18" concept="2" />
       <node id="2529023923283121118" at="38,26,39,18" concept="8" />
       <node id="2529023923283121118" at="42,39,43,32" concept="8" />
@@ -1705,7 +1705,7 @@
       <node id="2529023923283121118" at="94,87,97,7" concept="5" />
       <node id="2529023923283121118" at="97,7,100,7" concept="5" />
       <node id="2529023923283121118" at="116,0,119,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="2529023923283121118" at="31,0,35,0" concept="1" trace="BwfProjectPartStatement_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="2529023923283121118" at="31,0,35,0" concept="1" trace="BwfProjectPartStatement_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="2529023923283121118" at="65,0,69,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="2529023923283121118" at="73,0,77,0" concept="1" trace="partSingleRoleHandler_bye224_b0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="2529023923283121118" at="36,0,41,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -1723,7 +1723,7 @@
       <scope id="2529023923283121118" at="98,42,99,45" />
       <scope id="2529023923283121118" at="112,17,113,42" />
       <scope id="2529023923283121118" at="116,40,117,25" />
-      <scope id="2529023923283121118" at="31,103,33,18" />
+      <scope id="2529023923283121118" at="31,101,33,18" />
       <scope id="2529023923283121118" at="65,40,67,33">
         <var name="provider" id="2529023923283121118" />
       </scope>
@@ -1768,24 +1768,24 @@
       <scope id="3068598563201788798" at="55,0,65,0" />
       <scope id="2529023923283121118" at="103,44,114,7" />
       <scope id="2529023923283121118" at="102,0,116,0" />
-      <unit id="2529023923283121118" at="121,0,124,0" name="jetbrains.mps.build.workflow.editor.BwfProjectPartStatement_EditorBuilder_a$LINKS" />
-      <unit id="2529023923283121118" at="69,0,120,0" name="jetbrains.mps.build.workflow.editor.BwfProjectPartStatement_EditorBuilder_a$partSingleRoleHandler_bye224_b0" />
-      <unit id="2529023923283121118" at="27,0,125,0" name="jetbrains.mps.build.workflow.editor.BwfProjectPartStatement_EditorBuilder_a" />
+      <unit id="2529023923283121118" at="121,0,124,0" name="jetbrains.mps.build.workflow.editor.BwfProjectPartStatement_EditorBuilder$LINKS" />
+      <unit id="2529023923283121118" at="69,0,120,0" name="jetbrains.mps.build.workflow.editor.BwfProjectPartStatement_EditorBuilder$partSingleRoleHandler_bye224_b0" />
+      <unit id="2529023923283121118" at="27,0,125,0" name="jetbrains.mps.build.workflow.editor.BwfProjectPartStatement_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:1267752b-a233-4432-a848-3e68e0ea0db1(jetbrains.mps.build.workflow.editor)/2529023923283158039">
     <file name="BwfAntTaskBundleDeclaration_Editor.java">
-      <node id="2529023923283158039" at="11,79,12,93" concept="8" />
+      <node id="2529023923283158039" at="11,79,12,91" concept="8" />
       <node id="2529023923283158039" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="2529023923283158039" at="11,79,12,93" />
+      <scope id="2529023923283158039" at="11,79,12,91" />
       <scope id="2529023923283158039" at="11,0,14,0">
         <var name="editorContext" id="2529023923283158039" />
         <var name="node" id="2529023923283158039" />
       </scope>
       <unit id="2529023923283158039" at="10,0,15,0" name="jetbrains.mps.build.workflow.editor.BwfAntTaskBundleDeclaration_Editor" />
     </file>
-    <file name="BwfAntTaskBundleDeclaration_EditorBuilder_a.java">
-      <node id="2529023923283158039" at="40,107,41,19" concept="13" />
+    <file name="BwfAntTaskBundleDeclaration_EditorBuilder.java">
+      <node id="2529023923283158039" at="40,105,41,19" concept="13" />
       <node id="2529023923283158039" at="41,19,42,18" concept="2" />
       <node id="2529023923283158039" at="47,26,48,18" concept="8" />
       <node id="2529023923283158039" at="51,39,52,32" concept="8" />
@@ -1881,7 +1881,7 @@
       <node id="2529023923283158057" at="144,0,146,0" concept="3" trace="myNode" />
       <node id="2529023923283158039" at="51,0,54,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="2529023923283158057" at="154,0,157,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="2529023923283158039" at="40,0,44,0" concept="1" trace="BwfAntTaskBundleDeclaration_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="2529023923283158039" at="40,0,44,0" concept="1" trace="BwfAntTaskBundleDeclaration_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="2529023923283158039" at="129,0,133,5" concept="5" />
       <node id="2529023923283158039" at="45,0,50,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="2529023923282826435" at="96,208,101,24" concept="5" />
@@ -1906,7 +1906,7 @@
       <scope id="2529023923283158057" at="154,41,155,32" />
       <scope id="2529023923283158057" at="160,28,161,20" />
       <scope id="2529023923283158058" at="181,17,182,42" />
-      <scope id="2529023923283158039" at="40,107,42,18" />
+      <scope id="2529023923283158039" at="40,105,42,18" />
       <scope id="2529023923282826435" at="97,74,99,145">
         <var name="manager" id="2529023923282826435" />
       </scope>
@@ -1980,27 +1980,27 @@
         <var name="referenceLink" id="2529023923283158039" />
       </scope>
       <scope id="2529023923283158039" at="115,0,143,0" />
-      <unit id="2529023923283158039" at="197,0,200,0" name="jetbrains.mps.build.workflow.editor.BwfAntTaskBundleDeclaration_EditorBuilder_a$LINKS" />
-      <unit id="2529023923283158039" at="187,0,191,0" name="jetbrains.mps.build.workflow.editor.BwfAntTaskBundleDeclaration_EditorBuilder_a$PROPS" />
-      <unit id="2529023923283158039" at="192,0,196,0" name="jetbrains.mps.build.workflow.editor.BwfAntTaskBundleDeclaration_EditorBuilder_a$CONCEPTS" />
-      <unit id="2529023923283158039" at="117,42,125,5" name="jetbrains.mps.build.workflow.editor.BwfAntTaskBundleDeclaration_EditorBuilder_a$1" />
-      <unit id="2529023923283158057" at="143,0,186,0" name="jetbrains.mps.build.workflow.editor.BwfAntTaskBundleDeclaration_EditorBuilder_a$Inline_Builder0" />
-      <unit id="2529023923283158039" at="36,0,201,0" name="jetbrains.mps.build.workflow.editor.BwfAntTaskBundleDeclaration_EditorBuilder_a" />
+      <unit id="2529023923283158039" at="197,0,200,0" name="jetbrains.mps.build.workflow.editor.BwfAntTaskBundleDeclaration_EditorBuilder$LINKS" />
+      <unit id="2529023923283158039" at="187,0,191,0" name="jetbrains.mps.build.workflow.editor.BwfAntTaskBundleDeclaration_EditorBuilder$PROPS" />
+      <unit id="2529023923283158039" at="192,0,196,0" name="jetbrains.mps.build.workflow.editor.BwfAntTaskBundleDeclaration_EditorBuilder$CONCEPTS" />
+      <unit id="2529023923283158039" at="117,42,125,5" name="jetbrains.mps.build.workflow.editor.BwfAntTaskBundleDeclaration_EditorBuilder$1" />
+      <unit id="2529023923283158057" at="143,0,186,0" name="jetbrains.mps.build.workflow.editor.BwfAntTaskBundleDeclaration_EditorBuilder$Inline_Builder0" />
+      <unit id="2529023923283158039" at="36,0,201,0" name="jetbrains.mps.build.workflow.editor.BwfAntTaskBundleDeclaration_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:1267752b-a233-4432-a848-3e68e0ea0db1(jetbrains.mps.build.workflow.editor)/2769948622284546682">
     <file name="BwfProject_Editor.java">
-      <node id="2769948622284546682" at="11,79,12,76" concept="8" />
+      <node id="2769948622284546682" at="11,79,12,74" concept="8" />
       <node id="2769948622284546682" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="2769948622284546682" at="11,79,12,76" />
+      <scope id="2769948622284546682" at="11,79,12,74" />
       <scope id="2769948622284546682" at="11,0,14,0">
         <var name="editorContext" id="2769948622284546682" />
         <var name="node" id="2769948622284546682" />
       </scope>
       <unit id="2769948622284546682" at="10,0,15,0" name="jetbrains.mps.build.workflow.editor.BwfProject_Editor" />
     </file>
-    <file name="BwfProject_EditorBuilder_a.java">
-      <node id="2769948622284546682" at="47,90,48,19" concept="13" />
+    <file name="BwfProject_EditorBuilder.java">
+      <node id="2769948622284546682" at="47,88,48,19" concept="13" />
       <node id="2769948622284546682" at="48,19,49,18" concept="2" />
       <node id="2769948622284546682" at="54,26,55,18" concept="8" />
       <node id="2769948622284546682" at="58,39,59,32" concept="8" />
@@ -2234,7 +2234,7 @@
       <node id="2769948622284546682" at="353,0,356,0" concept="6" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="2769948622284546682" at="356,0,359,0" concept="6" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="2769948622284546682" at="400,96,403,9" concept="5" />
-      <node id="2769948622284546682" at="47,0,51,0" concept="1" trace="BwfProject_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="2769948622284546682" at="47,0,51,0" concept="1" trace="BwfProject_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="2769948622284546682" at="160,0,164,0" concept="1" trace="importsListHandler_4tk4ky_f0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="2769948622284546682" at="165,0,169,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="2769948622284546682" at="198,97,202,9" concept="5" />
@@ -2299,7 +2299,7 @@
       <scope id="2769948622284546682" at="356,48,357,40" />
       <scope id="2769948622284546682" at="374,17,375,42" />
       <scope id="2769948622284546682" at="401,34,402,91" />
-      <scope id="2769948622284546682" at="47,90,49,18" />
+      <scope id="2769948622284546682" at="47,88,49,18" />
       <scope id="7389400916847962449" at="105,74,107,145">
         <var name="manager" id="7389400916847962449" />
       </scope>
@@ -2470,27 +2470,27 @@
         <var name="elementNode" id="2769948622284546682" />
         <var name="isEmptyCell" id="2769948622284546682" />
       </scope>
-      <unit id="2769948622284546682" at="420,0,424,0" name="jetbrains.mps.build.workflow.editor.BwfProject_EditorBuilder_a$LINKS" />
-      <unit id="2769948622284546682" at="408,0,413,0" name="jetbrains.mps.build.workflow.editor.BwfProject_EditorBuilder_a$PROPS" />
-      <unit id="2769948622284546682" at="414,0,419,0" name="jetbrains.mps.build.workflow.editor.BwfProject_EditorBuilder_a$CONCEPTS" />
-      <unit id="2769948622284546682" at="156,0,223,0" name="jetbrains.mps.build.workflow.editor.BwfProject_EditorBuilder_a$importsListHandler_4tk4ky_f0" />
-      <unit id="2769948622284546682" at="340,0,407,0" name="jetbrains.mps.build.workflow.editor.BwfProject_EditorBuilder_a$partsListHandler_4tk4ky_o0" />
-      <unit id="2769948622284546682" at="43,0,425,0" name="jetbrains.mps.build.workflow.editor.BwfProject_EditorBuilder_a" />
+      <unit id="2769948622284546682" at="420,0,424,0" name="jetbrains.mps.build.workflow.editor.BwfProject_EditorBuilder$LINKS" />
+      <unit id="2769948622284546682" at="408,0,413,0" name="jetbrains.mps.build.workflow.editor.BwfProject_EditorBuilder$PROPS" />
+      <unit id="2769948622284546682" at="414,0,419,0" name="jetbrains.mps.build.workflow.editor.BwfProject_EditorBuilder$CONCEPTS" />
+      <unit id="2769948622284546682" at="156,0,223,0" name="jetbrains.mps.build.workflow.editor.BwfProject_EditorBuilder$importsListHandler_4tk4ky_f0" />
+      <unit id="2769948622284546682" at="340,0,407,0" name="jetbrains.mps.build.workflow.editor.BwfProject_EditorBuilder$partsListHandler_4tk4ky_o0" />
+      <unit id="2769948622284546682" at="43,0,425,0" name="jetbrains.mps.build.workflow.editor.BwfProject_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:1267752b-a233-4432-a848-3e68e0ea0db1(jetbrains.mps.build.workflow.editor)/2769948622284567284">
     <file name="BwfProjectPart_Editor.java">
-      <node id="2769948622284567284" at="11,79,12,80" concept="8" />
+      <node id="2769948622284567284" at="11,79,12,78" concept="8" />
       <node id="2769948622284567284" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="2769948622284567284" at="11,79,12,80" />
+      <scope id="2769948622284567284" at="11,79,12,78" />
       <scope id="2769948622284567284" at="11,0,14,0">
         <var name="editorContext" id="2769948622284567284" />
         <var name="node" id="2769948622284567284" />
       </scope>
       <unit id="2769948622284567284" at="10,0,15,0" name="jetbrains.mps.build.workflow.editor.BwfProjectPart_Editor" />
     </file>
-    <file name="BwfProjectPart_EditorBuilder_a.java">
-      <node id="2769948622284567284" at="21,94,22,19" concept="13" />
+    <file name="BwfProjectPart_EditorBuilder.java">
+      <node id="2769948622284567284" at="21,92,22,19" concept="13" />
       <node id="2769948622284567284" at="22,19,23,18" concept="2" />
       <node id="2769948622284567284" at="28,26,29,18" concept="8" />
       <node id="2769948622284567284" at="32,39,33,27" concept="8" />
@@ -2505,12 +2505,12 @@
       <node id="2580966228161922989" at="44,40,45,22" concept="8" />
       <node id="2769948622284567284" at="18,0,20,0" concept="3" trace="myNode" />
       <node id="2769948622284567284" at="32,0,35,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="2769948622284567284" at="21,0,25,0" concept="1" trace="BwfProjectPart_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="2769948622284567284" at="21,0,25,0" concept="1" trace="BwfProjectPart_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="2769948622284567284" at="26,0,31,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="2580966228161922989" at="36,0,47,0" concept="6" trace="createError_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="2769948622284567284" at="28,26,29,18" />
       <scope id="2769948622284567284" at="32,39,33,27" />
-      <scope id="2769948622284567284" at="21,94,23,18" />
+      <scope id="2769948622284567284" at="21,92,23,18" />
       <scope id="2769948622284567284" at="32,0,35,0" />
       <scope id="2769948622284567284" at="21,0,25,0">
         <var name="context" id="2769948622284567284" />
@@ -2522,22 +2522,22 @@
         <var name="style" id="2580966228161922989" />
       </scope>
       <scope id="2580966228161922989" at="36,0,47,0" />
-      <unit id="2769948622284567284" at="17,0,48,0" name="jetbrains.mps.build.workflow.editor.BwfProjectPart_EditorBuilder_a" />
+      <unit id="2769948622284567284" at="17,0,48,0" name="jetbrains.mps.build.workflow.editor.BwfProjectPart_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:1267752b-a233-4432-a848-3e68e0ea0db1(jetbrains.mps.build.workflow.editor)/2769948622284574286">
     <file name="BwfTask_Editor.java">
-      <node id="2769948622284574286" at="11,79,12,73" concept="8" />
+      <node id="2769948622284574286" at="11,79,12,71" concept="8" />
       <node id="2769948622284574286" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="2769948622284574286" at="11,79,12,73" />
+      <scope id="2769948622284574286" at="11,79,12,71" />
       <scope id="2769948622284574286" at="11,0,14,0">
         <var name="editorContext" id="2769948622284574286" />
         <var name="node" id="2769948622284574286" />
       </scope>
       <unit id="2769948622284574286" at="10,0,15,0" name="jetbrains.mps.build.workflow.editor.BwfTask_Editor" />
     </file>
-    <file name="BwfTask_EditorBuilder_a.java">
-      <node id="2769948622284574286" at="61,87,62,19" concept="13" />
+    <file name="BwfTask_EditorBuilder.java">
+      <node id="2769948622284574286" at="61,85,62,19" concept="13" />
       <node id="2769948622284574286" at="62,19,63,18" concept="2" />
       <node id="2769948622284574286" at="68,26,69,18" concept="8" />
       <node id="2769948622284574286" at="72,39,73,32" concept="8" />
@@ -2799,7 +2799,7 @@
       <node id="2769948622284574286" at="443,0,446,0" concept="6" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="2769948622284574286" at="446,0,449,0" concept="6" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="2769948622284574286" at="490,96,493,9" concept="5" />
-      <node id="2769948622284574286" at="61,0,65,0" concept="1" trace="BwfTask_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="2769948622284574286" at="61,0,65,0" concept="1" trace="BwfTask_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="2769948622284574286" at="165,0,169,0" concept="1" trace="dependenciesListHandler_plbod7_b2a#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="2769948622284574286" at="170,0,174,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="2769948622284574286" at="203,97,207,9" concept="5" />
@@ -2890,7 +2890,7 @@
       <scope id="2769948622284574286" at="446,48,447,35" />
       <scope id="2769948622284574286" at="464,17,465,42" />
       <scope id="2769948622284574286" at="491,34,492,91" />
-      <scope id="2769948622284574286" at="61,87,63,18" />
+      <scope id="2769948622284574286" at="61,85,63,18" />
       <scope id="2769948622284574327" at="120,74,122,145">
         <var name="manager" id="2769948622284574327" />
       </scope>
@@ -3113,31 +3113,31 @@
         <var name="referenceLink" id="8206585334432448670" />
       </scope>
       <scope id="8206585334432448670" at="337,0,365,0" />
-      <unit id="2769948622284574286" at="511,0,515,0" name="jetbrains.mps.build.workflow.editor.BwfTask_EditorBuilder_a$PROPS" />
-      <unit id="2769948622284574286" at="504,0,510,0" name="jetbrains.mps.build.workflow.editor.BwfTask_EditorBuilder_a$LINKS" />
-      <unit id="2769948622284574286" at="286,40,294,5" name="jetbrains.mps.build.workflow.editor.BwfTask_EditorBuilder_a$1" />
-      <unit id="8206585334432448670" at="339,44,347,7" name="jetbrains.mps.build.workflow.editor.BwfTask_EditorBuilder_a$Inline_Builder0$1" />
-      <unit id="2769948622284574286" at="516,0,524,0" name="jetbrains.mps.build.workflow.editor.BwfTask_EditorBuilder_a$CONCEPTS" />
-      <unit id="8206585334432449067" at="365,0,411,0" name="jetbrains.mps.build.workflow.editor.BwfTask_EditorBuilder_a$Inline_Builder0$Inline_Builder1" />
-      <unit id="2769948622284574286" at="430,0,497,0" name="jetbrains.mps.build.workflow.editor.BwfTask_EditorBuilder_a$subTasksListHandler_plbod7_d0" />
-      <unit id="2769948622284574286" at="161,0,241,0" name="jetbrains.mps.build.workflow.editor.BwfTask_EditorBuilder_a$dependenciesListHandler_plbod7_b2a" />
-      <unit id="8206585334432448670" at="310,0,412,0" name="jetbrains.mps.build.workflow.editor.BwfTask_EditorBuilder_a$Inline_Builder0" />
-      <unit id="2769948622284574286" at="57,0,525,0" name="jetbrains.mps.build.workflow.editor.BwfTask_EditorBuilder_a" />
+      <unit id="2769948622284574286" at="511,0,515,0" name="jetbrains.mps.build.workflow.editor.BwfTask_EditorBuilder$PROPS" />
+      <unit id="2769948622284574286" at="504,0,510,0" name="jetbrains.mps.build.workflow.editor.BwfTask_EditorBuilder$LINKS" />
+      <unit id="2769948622284574286" at="286,40,294,5" name="jetbrains.mps.build.workflow.editor.BwfTask_EditorBuilder$1" />
+      <unit id="8206585334432448670" at="339,44,347,7" name="jetbrains.mps.build.workflow.editor.BwfTask_EditorBuilder$Inline_Builder0$1" />
+      <unit id="2769948622284574286" at="516,0,524,0" name="jetbrains.mps.build.workflow.editor.BwfTask_EditorBuilder$CONCEPTS" />
+      <unit id="8206585334432449067" at="365,0,411,0" name="jetbrains.mps.build.workflow.editor.BwfTask_EditorBuilder$Inline_Builder0$Inline_Builder1" />
+      <unit id="2769948622284574286" at="430,0,497,0" name="jetbrains.mps.build.workflow.editor.BwfTask_EditorBuilder$subTasksListHandler_plbod7_d0" />
+      <unit id="2769948622284574286" at="161,0,241,0" name="jetbrains.mps.build.workflow.editor.BwfTask_EditorBuilder$dependenciesListHandler_plbod7_b2a" />
+      <unit id="8206585334432448670" at="310,0,412,0" name="jetbrains.mps.build.workflow.editor.BwfTask_EditorBuilder$Inline_Builder0" />
+      <unit id="2769948622284574286" at="57,0,525,0" name="jetbrains.mps.build.workflow.editor.BwfTask_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:1267752b-a233-4432-a848-3e68e0ea0db1(jetbrains.mps.build.workflow.editor)/2769948622284574292">
     <file name="BwfSubTask_Editor.java">
-      <node id="2769948622284574292" at="11,79,12,76" concept="8" />
+      <node id="2769948622284574292" at="11,79,12,74" concept="8" />
       <node id="2769948622284574292" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="2769948622284574292" at="11,79,12,76" />
+      <scope id="2769948622284574292" at="11,79,12,74" />
       <scope id="2769948622284574292" at="11,0,14,0">
         <var name="editorContext" id="2769948622284574292" />
         <var name="node" id="2769948622284574292" />
       </scope>
       <unit id="2769948622284574292" at="10,0,15,0" name="jetbrains.mps.build.workflow.editor.BwfSubTask_Editor" />
     </file>
-    <file name="BwfSubTask_EditorBuilder_a.java">
-      <node id="2769948622284574292" at="50,90,51,19" concept="13" />
+    <file name="BwfSubTask_EditorBuilder.java">
+      <node id="2769948622284574292" at="50,88,51,19" concept="13" />
       <node id="2769948622284574292" at="51,19,52,18" concept="2" />
       <node id="2769948622284574292" at="57,26,58,18" concept="8" />
       <node id="2769948622284574292" at="61,39,62,32" concept="8" />
@@ -3348,7 +3348,7 @@
       <node id="2769948622284574292" at="358,0,361,0" concept="6" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="2769948622284574292" at="361,0,364,0" concept="6" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="2769948622284574292" at="405,96,408,9" concept="5" />
-      <node id="2769948622284574292" at="50,0,54,0" concept="1" trace="BwfSubTask_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="2769948622284574292" at="50,0,54,0" concept="1" trace="BwfSubTask_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="2769948622284574292" at="150,0,154,0" concept="1" trace="afterListHandler_6puhak_b2a#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="2769948622284574292" at="155,0,159,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="2769948622284574292" at="188,97,192,9" concept="5" />
@@ -3426,7 +3426,7 @@
       <scope id="2769948622284574292" at="361,48,362,38" />
       <scope id="2769948622284574292" at="379,17,380,42" />
       <scope id="2769948622284574292" at="406,34,407,91" />
-      <scope id="2769948622284574292" at="50,90,52,18" />
+      <scope id="2769948622284574292" at="50,88,52,18" />
       <scope id="2769948622284605944" at="110,74,112,145">
         <var name="manager" id="2769948622284605944" />
       </scope>
@@ -3609,28 +3609,28 @@
         <var name="elementNode" id="2769948622284574292" />
         <var name="isEmptyCell" id="2769948622284574292" />
       </scope>
-      <unit id="2769948622284574292" at="425,0,428,0" name="jetbrains.mps.build.workflow.editor.BwfSubTask_EditorBuilder_a$PROPS" />
-      <unit id="2769948622284574292" at="419,0,424,0" name="jetbrains.mps.build.workflow.editor.BwfSubTask_EditorBuilder_a$LINKS" />
-      <unit id="2769948622284574292" at="429,0,435,0" name="jetbrains.mps.build.workflow.editor.BwfSubTask_EditorBuilder_a$CONCEPTS" />
-      <unit id="2769948622284574292" at="345,0,412,0" name="jetbrains.mps.build.workflow.editor.BwfSubTask_EditorBuilder_a$statementsListHandler_6puhak_e0" />
-      <unit id="2769948622284574292" at="146,0,226,0" name="jetbrains.mps.build.workflow.editor.BwfSubTask_EditorBuilder_a$afterListHandler_6puhak_b2a" />
-      <unit id="2769948622284574292" at="253,0,333,0" name="jetbrains.mps.build.workflow.editor.BwfSubTask_EditorBuilder_a$beforeListHandler_6puhak_b3a" />
-      <unit id="2769948622284574292" at="46,0,436,0" name="jetbrains.mps.build.workflow.editor.BwfSubTask_EditorBuilder_a" />
+      <unit id="2769948622284574292" at="425,0,428,0" name="jetbrains.mps.build.workflow.editor.BwfSubTask_EditorBuilder$PROPS" />
+      <unit id="2769948622284574292" at="419,0,424,0" name="jetbrains.mps.build.workflow.editor.BwfSubTask_EditorBuilder$LINKS" />
+      <unit id="2769948622284574292" at="429,0,435,0" name="jetbrains.mps.build.workflow.editor.BwfSubTask_EditorBuilder$CONCEPTS" />
+      <unit id="2769948622284574292" at="345,0,412,0" name="jetbrains.mps.build.workflow.editor.BwfSubTask_EditorBuilder$statementsListHandler_6puhak_e0" />
+      <unit id="2769948622284574292" at="146,0,226,0" name="jetbrains.mps.build.workflow.editor.BwfSubTask_EditorBuilder$afterListHandler_6puhak_b2a" />
+      <unit id="2769948622284574292" at="253,0,333,0" name="jetbrains.mps.build.workflow.editor.BwfSubTask_EditorBuilder$beforeListHandler_6puhak_b3a" />
+      <unit id="2769948622284574292" at="46,0,436,0" name="jetbrains.mps.build.workflow.editor.BwfSubTask_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:1267752b-a233-4432-a848-3e68e0ea0db1(jetbrains.mps.build.workflow.editor)/2769948622284574296">
     <file name="BwfTaskDependency_Editor.java">
-      <node id="2769948622284574296" at="11,79,12,83" concept="8" />
+      <node id="2769948622284574296" at="11,79,12,81" concept="8" />
       <node id="2769948622284574296" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="2769948622284574296" at="11,79,12,83" />
+      <scope id="2769948622284574296" at="11,79,12,81" />
       <scope id="2769948622284574296" at="11,0,14,0">
         <var name="editorContext" id="2769948622284574296" />
         <var name="node" id="2769948622284574296" />
       </scope>
       <unit id="2769948622284574296" at="10,0,15,0" name="jetbrains.mps.build.workflow.editor.BwfTaskDependency_Editor" />
     </file>
-    <file name="BwfTaskDependency_EditorBuilder_a.java">
-      <node id="2769948622284574296" at="43,97,44,19" concept="13" />
+    <file name="BwfTaskDependency_EditorBuilder.java">
+      <node id="2769948622284574296" at="43,95,44,19" concept="13" />
       <node id="2769948622284574296" at="44,19,45,18" concept="2" />
       <node id="2769948622284574296" at="50,26,51,18" concept="8" />
       <node id="2769948622284574296" at="54,39,55,32" concept="8" />
@@ -3693,7 +3693,7 @@
       <node id="2769948622284574299" at="102,0,104,0" concept="3" trace="myNode" />
       <node id="2769948622284574296" at="54,0,57,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="2769948622284574299" at="112,0,115,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="2769948622284574296" at="43,0,47,0" concept="1" trace="BwfTaskDependency_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="2769948622284574296" at="43,0,47,0" concept="1" trace="BwfTaskDependency_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="2769948622284574296" at="87,0,91,5" concept="5" />
       <node id="2769948622284574296" at="48,0,53,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="2769948622284574296" at="94,205,99,22" concept="5" />
@@ -3712,7 +3712,7 @@
       <scope id="2769948622284574299" at="112,41,113,32" />
       <scope id="2769948622284574299" at="118,28,119,20" />
       <scope id="2769948622284574301" at="142,17,143,42" />
-      <scope id="2769948622284574296" at="43,97,45,18" />
+      <scope id="2769948622284574296" at="43,95,45,18" />
       <scope id="2769948622284574296" at="88,40,90,45" />
       <scope id="2769948622284574296" at="95,73,97,145">
         <var name="manager" id="2769948622284574296" />
@@ -3767,12 +3767,12 @@
         <var name="referenceLink" id="2769948622284574296" />
       </scope>
       <scope id="2769948622284574296" at="66,0,101,0" />
-      <unit id="2769948622284574296" at="148,0,151,0" name="jetbrains.mps.build.workflow.editor.BwfTaskDependency_EditorBuilder_a$LINKS" />
-      <unit id="2769948622284574296" at="157,0,160,0" name="jetbrains.mps.build.workflow.editor.BwfTaskDependency_EditorBuilder_a$PROPS" />
-      <unit id="2769948622284574296" at="152,0,156,0" name="jetbrains.mps.build.workflow.editor.BwfTaskDependency_EditorBuilder_a$CONCEPTS" />
-      <unit id="2769948622284574296" at="68,42,83,5" name="jetbrains.mps.build.workflow.editor.BwfTaskDependency_EditorBuilder_a$1" />
-      <unit id="2769948622284574299" at="101,0,147,0" name="jetbrains.mps.build.workflow.editor.BwfTaskDependency_EditorBuilder_a$Inline_Builder0" />
-      <unit id="2769948622284574296" at="39,0,161,0" name="jetbrains.mps.build.workflow.editor.BwfTaskDependency_EditorBuilder_a" />
+      <unit id="2769948622284574296" at="148,0,151,0" name="jetbrains.mps.build.workflow.editor.BwfTaskDependency_EditorBuilder$LINKS" />
+      <unit id="2769948622284574296" at="157,0,160,0" name="jetbrains.mps.build.workflow.editor.BwfTaskDependency_EditorBuilder$PROPS" />
+      <unit id="2769948622284574296" at="152,0,156,0" name="jetbrains.mps.build.workflow.editor.BwfTaskDependency_EditorBuilder$CONCEPTS" />
+      <unit id="2769948622284574296" at="68,42,83,5" name="jetbrains.mps.build.workflow.editor.BwfTaskDependency_EditorBuilder$1" />
+      <unit id="2769948622284574299" at="101,0,147,0" name="jetbrains.mps.build.workflow.editor.BwfTaskDependency_EditorBuilder$Inline_Builder0" />
+      <unit id="2769948622284574296" at="39,0,161,0" name="jetbrains.mps.build.workflow.editor.BwfTaskDependency_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:1267752b-a233-4432-a848-3e68e0ea0db1(jetbrains.mps.build.workflow.editor)/2769948622284574315">
@@ -3801,17 +3801,17 @@
   </root>
   <root nodeRef="r:1267752b-a233-4432-a848-3e68e0ea0db1(jetbrains.mps.build.workflow.editor)/2769948622284605882">
     <file name="BwfSubTaskDependency_Editor.java">
-      <node id="2769948622284605882" at="11,79,12,86" concept="8" />
+      <node id="2769948622284605882" at="11,79,12,84" concept="8" />
       <node id="2769948622284605882" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="2769948622284605882" at="11,79,12,86" />
+      <scope id="2769948622284605882" at="11,79,12,84" />
       <scope id="2769948622284605882" at="11,0,14,0">
         <var name="editorContext" id="2769948622284605882" />
         <var name="node" id="2769948622284605882" />
       </scope>
       <unit id="2769948622284605882" at="10,0,15,0" name="jetbrains.mps.build.workflow.editor.BwfSubTaskDependency_Editor" />
     </file>
-    <file name="BwfSubTaskDependency_EditorBuilder_a.java">
-      <node id="2769948622284605882" at="43,100,44,19" concept="13" />
+    <file name="BwfSubTaskDependency_EditorBuilder.java">
+      <node id="2769948622284605882" at="43,98,44,19" concept="13" />
       <node id="2769948622284605882" at="44,19,45,18" concept="2" />
       <node id="2769948622284605882" at="50,26,51,18" concept="8" />
       <node id="2769948622284605882" at="54,39,55,32" concept="8" />
@@ -3874,7 +3874,7 @@
       <node id="2769948622284605885" at="102,0,104,0" concept="3" trace="myNode" />
       <node id="2769948622284605882" at="54,0,57,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="2769948622284605885" at="112,0,115,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="2769948622284605882" at="43,0,47,0" concept="1" trace="BwfSubTaskDependency_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="2769948622284605882" at="43,0,47,0" concept="1" trace="BwfSubTaskDependency_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="2769948622284605882" at="87,0,91,5" concept="5" />
       <node id="2769948622284605882" at="48,0,53,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="2769948622284605882" at="94,205,99,22" concept="5" />
@@ -3893,7 +3893,7 @@
       <scope id="2769948622284605885" at="112,41,113,32" />
       <scope id="2769948622284605885" at="118,28,119,20" />
       <scope id="2769948622284605887" at="142,17,143,42" />
-      <scope id="2769948622284605882" at="43,100,45,18" />
+      <scope id="2769948622284605882" at="43,98,45,18" />
       <scope id="2769948622284605882" at="88,40,90,45" />
       <scope id="2769948622284605882" at="95,73,97,145">
         <var name="manager" id="2769948622284605882" />
@@ -3948,27 +3948,27 @@
         <var name="referenceLink" id="2769948622284605882" />
       </scope>
       <scope id="2769948622284605882" at="66,0,101,0" />
-      <unit id="2769948622284605882" at="148,0,151,0" name="jetbrains.mps.build.workflow.editor.BwfSubTaskDependency_EditorBuilder_a$LINKS" />
-      <unit id="2769948622284605882" at="157,0,160,0" name="jetbrains.mps.build.workflow.editor.BwfSubTaskDependency_EditorBuilder_a$PROPS" />
-      <unit id="2769948622284605882" at="152,0,156,0" name="jetbrains.mps.build.workflow.editor.BwfSubTaskDependency_EditorBuilder_a$CONCEPTS" />
-      <unit id="2769948622284605882" at="68,42,83,5" name="jetbrains.mps.build.workflow.editor.BwfSubTaskDependency_EditorBuilder_a$1" />
-      <unit id="2769948622284605885" at="101,0,147,0" name="jetbrains.mps.build.workflow.editor.BwfSubTaskDependency_EditorBuilder_a$Inline_Builder0" />
-      <unit id="2769948622284605882" at="39,0,161,0" name="jetbrains.mps.build.workflow.editor.BwfSubTaskDependency_EditorBuilder_a" />
+      <unit id="2769948622284605882" at="148,0,151,0" name="jetbrains.mps.build.workflow.editor.BwfSubTaskDependency_EditorBuilder$LINKS" />
+      <unit id="2769948622284605882" at="157,0,160,0" name="jetbrains.mps.build.workflow.editor.BwfSubTaskDependency_EditorBuilder$PROPS" />
+      <unit id="2769948622284605882" at="152,0,156,0" name="jetbrains.mps.build.workflow.editor.BwfSubTaskDependency_EditorBuilder$CONCEPTS" />
+      <unit id="2769948622284605882" at="68,42,83,5" name="jetbrains.mps.build.workflow.editor.BwfSubTaskDependency_EditorBuilder$1" />
+      <unit id="2769948622284605885" at="101,0,147,0" name="jetbrains.mps.build.workflow.editor.BwfSubTaskDependency_EditorBuilder$Inline_Builder0" />
+      <unit id="2769948622284605882" at="39,0,161,0" name="jetbrains.mps.build.workflow.editor.BwfSubTaskDependency_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:1267752b-a233-4432-a848-3e68e0ea0db1(jetbrains.mps.build.workflow.editor)/2769948622284605981">
     <file name="BwfStatement_Editor.java">
-      <node id="2769948622284605981" at="11,79,12,78" concept="8" />
+      <node id="2769948622284605981" at="11,79,12,76" concept="8" />
       <node id="2769948622284605981" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="2769948622284605981" at="11,79,12,78" />
+      <scope id="2769948622284605981" at="11,79,12,76" />
       <scope id="2769948622284605981" at="11,0,14,0">
         <var name="editorContext" id="2769948622284605981" />
         <var name="node" id="2769948622284605981" />
       </scope>
       <unit id="2769948622284605981" at="10,0,15,0" name="jetbrains.mps.build.workflow.editor.BwfStatement_Editor" />
     </file>
-    <file name="BwfStatement_EditorBuilder_a.java">
-      <node id="2769948622284605981" at="19,92,20,19" concept="13" />
+    <file name="BwfStatement_EditorBuilder.java">
+      <node id="2769948622284605981" at="19,90,20,19" concept="13" />
       <node id="2769948622284605981" at="20,19,21,18" concept="2" />
       <node id="2769948622284605981" at="26,26,27,18" concept="8" />
       <node id="2769948622284605981" at="30,39,31,30" concept="8" />
@@ -3983,12 +3983,12 @@
       <node id="2769948622284606041" at="42,34,43,22" concept="8" />
       <node id="2769948622284605981" at="16,0,18,0" concept="3" trace="myNode" />
       <node id="2769948622284605981" at="30,0,33,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="2769948622284605981" at="19,0,23,0" concept="1" trace="BwfStatement_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="2769948622284605981" at="19,0,23,0" concept="1" trace="BwfStatement_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="2769948622284605981" at="24,0,29,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="2769948622284606041" at="34,0,45,0" concept="6" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="2769948622284605981" at="26,26,27,18" />
       <scope id="2769948622284605981" at="30,39,31,30" />
-      <scope id="2769948622284605981" at="19,92,21,18" />
+      <scope id="2769948622284605981" at="19,90,21,18" />
       <scope id="2769948622284605981" at="30,0,33,0" />
       <scope id="2769948622284605981" at="19,0,23,0">
         <var name="context" id="2769948622284605981" />
@@ -4000,22 +4000,22 @@
         <var name="style" id="2769948622284606041" />
       </scope>
       <scope id="2769948622284606041" at="34,0,45,0" />
-      <unit id="2769948622284605981" at="15,0,46,0" name="jetbrains.mps.build.workflow.editor.BwfStatement_EditorBuilder_a" />
+      <unit id="2769948622284605981" at="15,0,46,0" name="jetbrains.mps.build.workflow.editor.BwfStatement_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:1267752b-a233-4432-a848-3e68e0ea0db1(jetbrains.mps.build.workflow.editor)/2769948622284768361">
     <file name="BwfAntStatement_Editor.java">
-      <node id="2769948622284768361" at="11,79,12,81" concept="8" />
+      <node id="2769948622284768361" at="11,79,12,79" concept="8" />
       <node id="2769948622284768361" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="2769948622284768361" at="11,79,12,81" />
+      <scope id="2769948622284768361" at="11,79,12,79" />
       <scope id="2769948622284768361" at="11,0,14,0">
         <var name="editorContext" id="2769948622284768361" />
         <var name="node" id="2769948622284768361" />
       </scope>
       <unit id="2769948622284768361" at="10,0,15,0" name="jetbrains.mps.build.workflow.editor.BwfAntStatement_Editor" />
     </file>
-    <file name="BwfAntStatement_EditorBuilder_a.java">
-      <node id="2769948622284768361" at="30,95,31,19" concept="13" />
+    <file name="BwfAntStatement_EditorBuilder.java">
+      <node id="2769948622284768361" at="30,93,31,19" concept="13" />
       <node id="2769948622284768361" at="31,19,32,18" concept="2" />
       <node id="2769948622284768361" at="37,26,38,18" concept="8" />
       <node id="2769948622284768361" at="41,39,42,32" concept="8" />
@@ -4061,7 +4061,7 @@
       <node id="2769948622284768361" at="92,87,95,7" concept="5" />
       <node id="2769948622284768361" at="95,7,98,7" concept="5" />
       <node id="2769948622284768361" at="114,0,117,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="2769948622284768361" at="30,0,34,0" concept="1" trace="BwfAntStatement_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="2769948622284768361" at="30,0,34,0" concept="1" trace="BwfAntStatement_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="2769948622284768361" at="63,0,67,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="2769948622284768361" at="71,0,75,0" concept="1" trace="elementSingleRoleHandler_9ovle1_b0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="2769948622284768361" at="35,0,40,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -4079,7 +4079,7 @@
       <scope id="2769948622284768361" at="96,42,97,48" />
       <scope id="2769948622284768361" at="110,17,111,42" />
       <scope id="2769948622284768361" at="114,40,115,28" />
-      <scope id="2769948622284768361" at="30,95,32,18" />
+      <scope id="2769948622284768361" at="30,93,32,18" />
       <scope id="2769948622284768361" at="63,40,65,33">
         <var name="provider" id="2769948622284768361" />
       </scope>
@@ -4124,24 +4124,24 @@
       <scope id="2769948622284768366" at="54,0,63,0" />
       <scope id="2769948622284768361" at="101,44,112,7" />
       <scope id="2769948622284768361" at="100,0,114,0" />
-      <unit id="2769948622284768361" at="119,0,122,0" name="jetbrains.mps.build.workflow.editor.BwfAntStatement_EditorBuilder_a$LINKS" />
-      <unit id="2769948622284768361" at="67,0,118,0" name="jetbrains.mps.build.workflow.editor.BwfAntStatement_EditorBuilder_a$elementSingleRoleHandler_9ovle1_b0" />
-      <unit id="2769948622284768361" at="26,0,123,0" name="jetbrains.mps.build.workflow.editor.BwfAntStatement_EditorBuilder_a" />
+      <unit id="2769948622284768361" at="119,0,122,0" name="jetbrains.mps.build.workflow.editor.BwfAntStatement_EditorBuilder$LINKS" />
+      <unit id="2769948622284768361" at="67,0,118,0" name="jetbrains.mps.build.workflow.editor.BwfAntStatement_EditorBuilder$elementSingleRoleHandler_9ovle1_b0" />
+      <unit id="2769948622284768361" at="26,0,123,0" name="jetbrains.mps.build.workflow.editor.BwfAntStatement_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:1267752b-a233-4432-a848-3e68e0ea0db1(jetbrains.mps.build.workflow.editor)/3961775458390352311">
     <file name="BwfTaskPart_Editor.java">
-      <node id="3961775458390352311" at="11,79,12,77" concept="8" />
+      <node id="3961775458390352311" at="11,79,12,75" concept="8" />
       <node id="3961775458390352311" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="3961775458390352311" at="11,79,12,77" />
+      <scope id="3961775458390352311" at="11,79,12,75" />
       <scope id="3961775458390352311" at="11,0,14,0">
         <var name="editorContext" id="3961775458390352311" />
         <var name="node" id="3961775458390352311" />
       </scope>
       <unit id="3961775458390352311" at="10,0,15,0" name="jetbrains.mps.build.workflow.editor.BwfTaskPart_Editor" />
     </file>
-    <file name="BwfTaskPart_EditorBuilder_a.java">
-      <node id="3961775458390352311" at="57,91,58,19" concept="13" />
+    <file name="BwfTaskPart_EditorBuilder.java">
+      <node id="3961775458390352311" at="57,89,58,19" concept="13" />
       <node id="3961775458390352311" at="58,19,59,18" concept="2" />
       <node id="3961775458390352311" at="64,26,65,18" concept="8" />
       <node id="3961775458390352311" at="68,39,69,32" concept="8" />
@@ -4319,7 +4319,7 @@
       <node id="3961775458390352311" at="306,0,309,0" concept="6" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="3961775458390352311" at="309,0,312,0" concept="6" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="3961775458390352311" at="353,96,356,9" concept="5" />
-      <node id="3961775458390352311" at="57,0,61,0" concept="1" trace="BwfTaskPart_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="3961775458390352311" at="57,0,61,0" concept="1" trace="BwfTaskPart_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="3961775458390352311" at="117,0,121,5" concept="5" />
       <node id="3961775458390352311" at="205,0,209,0" concept="1" trace="additionalDependenciesListHandler_rjgbfl_b2a#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="3961775458390352311" at="210,0,214,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -4384,7 +4384,7 @@
       <scope id="3961775458390352311" at="309,48,310,35" />
       <scope id="3961775458390352311" at="327,17,328,42" />
       <scope id="3961775458390352311" at="354,34,355,91" />
-      <scope id="3961775458390352311" at="57,91,59,18" />
+      <scope id="3961775458390352311" at="57,89,59,18" />
       <scope id="3961775458390352311" at="118,40,120,43" />
       <scope id="3961775458390352311" at="126,73,128,145">
         <var name="manager" id="3961775458390352311" />
@@ -4537,24 +4537,24 @@
         <var name="referenceLink" id="3961775458390352311" />
       </scope>
       <scope id="3961775458390352311" at="103,0,132,0" />
-      <unit id="3961775458390352311" at="381,0,384,0" name="jetbrains.mps.build.workflow.editor.BwfTaskPart_EditorBuilder_a$PROPS" />
-      <unit id="3961775458390352311" at="367,0,372,0" name="jetbrains.mps.build.workflow.editor.BwfTaskPart_EditorBuilder_a$LINKS" />
-      <unit id="3961775458390352311" at="373,0,380,0" name="jetbrains.mps.build.workflow.editor.BwfTaskPart_EditorBuilder_a$CONCEPTS" />
-      <unit id="3961775458390352311" at="105,42,113,5" name="jetbrains.mps.build.workflow.editor.BwfTaskPart_EditorBuilder_a$1" />
-      <unit id="3961775458390352319" at="132,0,175,0" name="jetbrains.mps.build.workflow.editor.BwfTaskPart_EditorBuilder_a$Inline_Builder0" />
-      <unit id="3961775458390352311" at="293,0,360,0" name="jetbrains.mps.build.workflow.editor.BwfTaskPart_EditorBuilder_a$subTasksListHandler_rjgbfl_d0" />
-      <unit id="3961775458390352311" at="201,0,281,0" name="jetbrains.mps.build.workflow.editor.BwfTaskPart_EditorBuilder_a$additionalDependenciesListHandler_rjgbfl_b2a" />
-      <unit id="3961775458390352311" at="53,0,385,0" name="jetbrains.mps.build.workflow.editor.BwfTaskPart_EditorBuilder_a" />
+      <unit id="3961775458390352311" at="381,0,384,0" name="jetbrains.mps.build.workflow.editor.BwfTaskPart_EditorBuilder$PROPS" />
+      <unit id="3961775458390352311" at="367,0,372,0" name="jetbrains.mps.build.workflow.editor.BwfTaskPart_EditorBuilder$LINKS" />
+      <unit id="3961775458390352311" at="373,0,380,0" name="jetbrains.mps.build.workflow.editor.BwfTaskPart_EditorBuilder$CONCEPTS" />
+      <unit id="3961775458390352311" at="105,42,113,5" name="jetbrains.mps.build.workflow.editor.BwfTaskPart_EditorBuilder$1" />
+      <unit id="3961775458390352319" at="132,0,175,0" name="jetbrains.mps.build.workflow.editor.BwfTaskPart_EditorBuilder$Inline_Builder0" />
+      <unit id="3961775458390352311" at="293,0,360,0" name="jetbrains.mps.build.workflow.editor.BwfTaskPart_EditorBuilder$subTasksListHandler_rjgbfl_d0" />
+      <unit id="3961775458390352311" at="201,0,281,0" name="jetbrains.mps.build.workflow.editor.BwfTaskPart_EditorBuilder$additionalDependenciesListHandler_rjgbfl_b2a" />
+      <unit id="3961775458390352311" at="53,0,385,0" name="jetbrains.mps.build.workflow.editor.BwfTaskPart_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:1267752b-a233-4432-a848-3e68e0ea0db1(jetbrains.mps.build.workflow.editor)/4755209551904389321">
     <file name="BwfJavaModule_Editor.java">
-      <node id="4755209551904389321" at="11,79,12,79" concept="8" />
-      <node id="4755209551904389321" at="14,82,15,82" concept="8" />
+      <node id="4755209551904389321" at="11,79,12,77" concept="8" />
+      <node id="4755209551904389321" at="14,82,15,80" concept="8" />
       <node id="4755209551904389321" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4755209551904389321" at="14,0,17,0" concept="6" trace="createInspectedCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4755209551904389321" at="11,79,12,79" />
-      <scope id="4755209551904389321" at="14,82,15,82" />
+      <scope id="4755209551904389321" at="11,79,12,77" />
+      <scope id="4755209551904389321" at="14,82,15,80" />
       <scope id="4755209551904389321" at="11,0,14,0">
         <var name="editorContext" id="4755209551904389321" />
         <var name="node" id="4755209551904389321" />
@@ -4565,8 +4565,8 @@
       </scope>
       <unit id="4755209551904389321" at="10,0,18,0" name="jetbrains.mps.build.workflow.editor.BwfJavaModule_Editor" />
     </file>
-    <file name="BwfJavaModule_EditorBuilder_a.java">
-      <node id="4755209551904389321" at="48,93,49,19" concept="13" />
+    <file name="BwfJavaModule_EditorBuilder.java">
+      <node id="4755209551904389321" at="48,91,49,19" concept="13" />
       <node id="4755209551904389321" at="49,19,50,18" concept="2" />
       <node id="4755209551904389321" at="55,26,56,18" concept="8" />
       <node id="4755209551904389321" at="59,39,60,32" concept="8" />
@@ -4873,7 +4873,7 @@
       <node id="4755209551904389321" at="506,0,509,0" concept="6" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="4755209551904389321" at="509,0,512,0" concept="6" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="4755209551904389321" at="553,96,556,9" concept="5" />
-      <node id="4755209551904389321" at="48,0,52,0" concept="1" trace="BwfJavaModule_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4755209551904389321" at="48,0,52,0" concept="1" trace="BwfJavaModule_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4755209551904389321" at="129,0,133,0" concept="1" trace="taskDepsListHandler_y27sly_d0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="4755209551904389321" at="134,0,138,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="4755209551904389321" at="167,97,171,9" concept="5" />
@@ -4977,7 +4977,7 @@
       <scope id="4755209551904389321" at="509,48,510,41" />
       <scope id="4755209551904389321" at="527,17,528,42" />
       <scope id="4755209551904389321" at="554,34,555,91" />
-      <scope id="4755209551904389321" at="48,93,50,18" />
+      <scope id="4755209551904389321" at="48,91,50,18" />
       <scope id="4755209551904389368" at="97,74,99,145">
         <var name="manager" id="4755209551904389368" />
       </scope>
@@ -5235,18 +5235,18 @@
         <var name="elementNode" id="4755209551904389321" />
         <var name="isEmptyCell" id="4755209551904389321" />
       </scope>
-      <unit id="4755209551904389321" at="573,0,577,0" name="jetbrains.mps.build.workflow.editor.BwfJavaModule_EditorBuilder_a$PROPS" />
-      <unit id="4755209551904389321" at="578,0,584,0" name="jetbrains.mps.build.workflow.editor.BwfJavaModule_EditorBuilder_a$CONCEPTS" />
-      <unit id="4755209551904389321" at="585,0,592,0" name="jetbrains.mps.build.workflow.editor.BwfJavaModule_EditorBuilder_a$LINKS" />
-      <unit id="4755209551904389321" at="225,0,280,0" name="jetbrains.mps.build.workflow.editor.BwfJavaModule_EditorBuilder_a$sourcesSingleRoleHandler_y27sly_b4a" />
-      <unit id="4755209551904389321" at="294,0,349,0" name="jetbrains.mps.build.workflow.editor.BwfJavaModule_EditorBuilder_a$resourcesSingleRoleHandler_y27sly_d4a" />
-      <unit id="4755209551904389321" at="125,0,192,0" name="jetbrains.mps.build.workflow.editor.BwfJavaModule_EditorBuilder_a$taskDepsListHandler_y27sly_d0" />
-      <unit id="4755209551904389321" at="370,0,437,0" name="jetbrains.mps.build.workflow.editor.BwfJavaModule_EditorBuilder_a$dependenciesListHandler_y27sly_f4a" />
-      <unit id="4755209551904389321" at="493,0,566,0" name="jetbrains.mps.build.workflow.editor.BwfJavaModule_EditorBuilder_a$prepareStatementsListHandler_y27sly_j4a" />
-      <unit id="4755209551904389321" at="44,0,593,0" name="jetbrains.mps.build.workflow.editor.BwfJavaModule_EditorBuilder_a" />
+      <unit id="4755209551904389321" at="573,0,577,0" name="jetbrains.mps.build.workflow.editor.BwfJavaModule_EditorBuilder$PROPS" />
+      <unit id="4755209551904389321" at="578,0,584,0" name="jetbrains.mps.build.workflow.editor.BwfJavaModule_EditorBuilder$CONCEPTS" />
+      <unit id="4755209551904389321" at="585,0,592,0" name="jetbrains.mps.build.workflow.editor.BwfJavaModule_EditorBuilder$LINKS" />
+      <unit id="4755209551904389321" at="225,0,280,0" name="jetbrains.mps.build.workflow.editor.BwfJavaModule_EditorBuilder$sourcesSingleRoleHandler_y27sly_b4a" />
+      <unit id="4755209551904389321" at="294,0,349,0" name="jetbrains.mps.build.workflow.editor.BwfJavaModule_EditorBuilder$resourcesSingleRoleHandler_y27sly_d4a" />
+      <unit id="4755209551904389321" at="125,0,192,0" name="jetbrains.mps.build.workflow.editor.BwfJavaModule_EditorBuilder$taskDepsListHandler_y27sly_d0" />
+      <unit id="4755209551904389321" at="370,0,437,0" name="jetbrains.mps.build.workflow.editor.BwfJavaModule_EditorBuilder$dependenciesListHandler_y27sly_f4a" />
+      <unit id="4755209551904389321" at="493,0,566,0" name="jetbrains.mps.build.workflow.editor.BwfJavaModule_EditorBuilder$prepareStatementsListHandler_y27sly_j4a" />
+      <unit id="4755209551904389321" at="44,0,593,0" name="jetbrains.mps.build.workflow.editor.BwfJavaModule_EditorBuilder" />
     </file>
-    <file name="BwfJavaModule_InspectorBuilder_a.java">
-      <node id="4755209551904389321" at="54,96,55,19" concept="13" />
+    <file name="BwfJavaModule_InspectorBuilder.java">
+      <node id="4755209551904389321" at="54,94,55,19" concept="13" />
       <node id="4755209551904389321" at="55,19,56,18" concept="2" />
       <node id="4755209551904389321" at="61,26,62,18" concept="8" />
       <node id="4755209551904389321" at="65,39,66,32" concept="8" />
@@ -5569,7 +5569,7 @@
       <node id="2059109515400350050" at="225,0,228,0" concept="6" trace="getPropertyValues#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)Ljava/util/List;" />
       <node id="6998860900671427489" at="345,0,348,0" concept="6" trace="getPropertyValues#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)Ljava/util/List;" />
       <node id="6998860900671532617" at="399,0,402,0" concept="6" trace="getPropertyValues#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)Ljava/util/List;" />
-      <node id="4755209551904389321" at="54,0,58,0" concept="1" trace="BwfJavaModule_InspectorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4755209551904389321" at="54,0,58,0" concept="1" trace="BwfJavaModule_InspectorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4755209551904389321" at="59,0,64,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="927724900262155821" at="132,208,137,24" concept="5" />
       <node id="927724900262398960" at="165,208,170,24" concept="5" />
@@ -5649,7 +5649,7 @@
       <scope id="1476884141930135293" at="432,15,433,40" />
       <scope id="8206585334429334561" at="481,15,482,40" />
       <scope id="7687809870062885639" at="517,15,518,40" />
-      <scope id="4755209551904389321" at="54,96,56,18" />
+      <scope id="4755209551904389321" at="54,94,56,18" />
       <scope id="927724900262155821" at="133,74,135,145">
         <var name="manager" id="927724900262155821" />
       </scope>
@@ -5889,30 +5889,30 @@
         <var name="editorCell" id="4755209551904389321" />
       </scope>
       <scope id="4755209551904389321" at="69,0,103,0" />
-      <unit id="4755209551904389321" at="535,0,539,0" name="jetbrains.mps.build.workflow.editor.BwfJavaModule_InspectorBuilder_a$CONCEPTS" />
-      <unit id="2059109515400350050" at="214,38,221,9" name="jetbrains.mps.build.workflow.editor.BwfJavaModule_InspectorBuilder_a$BwfJavaModule_compiler_cellMenu_y27sly_a0f0$1" />
-      <unit id="6998860900671427489" at="334,38,341,9" name="jetbrains.mps.build.workflow.editor.BwfJavaModule_InspectorBuilder_a$BwfJavaModule_javaLevelSource_cellMenu_y27sly_a0l0$1" />
-      <unit id="6998860900671532617" at="388,38,395,9" name="jetbrains.mps.build.workflow.editor.BwfJavaModule_InspectorBuilder_a$BwfJavaModule_javaLevelTarget_cellMenu_y27sly_a0n0$1" />
-      <unit id="4755209551904389321" at="522,0,534,0" name="jetbrains.mps.build.workflow.editor.BwfJavaModule_InspectorBuilder_a$PROPS" />
-      <unit id="2059109515400350050" at="208,0,229,0" name="jetbrains.mps.build.workflow.editor.BwfJavaModule_InspectorBuilder_a$BwfJavaModule_compiler_cellMenu_y27sly_a0f0" />
-      <unit id="6998860900671427489" at="328,0,349,0" name="jetbrains.mps.build.workflow.editor.BwfJavaModule_InspectorBuilder_a$BwfJavaModule_javaLevelSource_cellMenu_y27sly_a0l0" />
-      <unit id="6998860900671532617" at="382,0,403,0" name="jetbrains.mps.build.workflow.editor.BwfJavaModule_InspectorBuilder_a$BwfJavaModule_javaLevelTarget_cellMenu_y27sly_a0n0" />
-      <unit id="4755209551904389321" at="50,0,540,0" name="jetbrains.mps.build.workflow.editor.BwfJavaModule_InspectorBuilder_a" />
+      <unit id="4755209551904389321" at="535,0,539,0" name="jetbrains.mps.build.workflow.editor.BwfJavaModule_InspectorBuilder$CONCEPTS" />
+      <unit id="2059109515400350050" at="214,38,221,9" name="jetbrains.mps.build.workflow.editor.BwfJavaModule_InspectorBuilder$BwfJavaModule_compiler_cellMenu_y27sly_a0f0$1" />
+      <unit id="6998860900671427489" at="334,38,341,9" name="jetbrains.mps.build.workflow.editor.BwfJavaModule_InspectorBuilder$BwfJavaModule_javaLevelSource_cellMenu_y27sly_a0l0$1" />
+      <unit id="6998860900671532617" at="388,38,395,9" name="jetbrains.mps.build.workflow.editor.BwfJavaModule_InspectorBuilder$BwfJavaModule_javaLevelTarget_cellMenu_y27sly_a0n0$1" />
+      <unit id="4755209551904389321" at="522,0,534,0" name="jetbrains.mps.build.workflow.editor.BwfJavaModule_InspectorBuilder$PROPS" />
+      <unit id="2059109515400350050" at="208,0,229,0" name="jetbrains.mps.build.workflow.editor.BwfJavaModule_InspectorBuilder$BwfJavaModule_compiler_cellMenu_y27sly_a0f0" />
+      <unit id="6998860900671427489" at="328,0,349,0" name="jetbrains.mps.build.workflow.editor.BwfJavaModule_InspectorBuilder$BwfJavaModule_javaLevelSource_cellMenu_y27sly_a0l0" />
+      <unit id="6998860900671532617" at="382,0,403,0" name="jetbrains.mps.build.workflow.editor.BwfJavaModule_InspectorBuilder$BwfJavaModule_javaLevelTarget_cellMenu_y27sly_a0n0" />
+      <unit id="4755209551904389321" at="50,0,540,0" name="jetbrains.mps.build.workflow.editor.BwfJavaModule_InspectorBuilder" />
     </file>
   </root>
   <root nodeRef="r:1267752b-a233-4432-a848-3e68e0ea0db1(jetbrains.mps.build.workflow.editor)/4755209551904397949">
     <file name="BwfJavaModuleReference_Editor.java">
-      <node id="4755209551904397949" at="11,79,12,88" concept="8" />
+      <node id="4755209551904397949" at="11,79,12,86" concept="8" />
       <node id="4755209551904397949" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4755209551904397949" at="11,79,12,88" />
+      <scope id="4755209551904397949" at="11,79,12,86" />
       <scope id="4755209551904397949" at="11,0,14,0">
         <var name="editorContext" id="4755209551904397949" />
         <var name="node" id="4755209551904397949" />
       </scope>
       <unit id="4755209551904397949" at="10,0,15,0" name="jetbrains.mps.build.workflow.editor.BwfJavaModuleReference_Editor" />
     </file>
-    <file name="BwfJavaModuleReference_EditorBuilder_a.java">
-      <node id="4755209551904397949" at="43,102,44,19" concept="13" />
+    <file name="BwfJavaModuleReference_EditorBuilder.java">
+      <node id="4755209551904397949" at="43,100,44,19" concept="13" />
       <node id="4755209551904397949" at="44,19,45,18" concept="2" />
       <node id="4755209551904397949" at="50,26,51,18" concept="8" />
       <node id="4755209551904397949" at="54,39,55,32" concept="8" />
@@ -5975,7 +5975,7 @@
       <node id="4755209551904397952" at="102,0,104,0" concept="3" trace="myNode" />
       <node id="4755209551904397949" at="54,0,57,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4755209551904397952" at="112,0,115,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="4755209551904397949" at="43,0,47,0" concept="1" trace="BwfJavaModuleReference_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4755209551904397949" at="43,0,47,0" concept="1" trace="BwfJavaModuleReference_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4755209551904397949" at="87,0,91,5" concept="5" />
       <node id="4755209551904397949" at="48,0,53,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="4755209551904397949" at="94,205,99,22" concept="5" />
@@ -5994,7 +5994,7 @@
       <scope id="4755209551904397952" at="112,41,113,32" />
       <scope id="4755209551904397952" at="118,28,119,20" />
       <scope id="4755209551904397954" at="142,17,143,42" />
-      <scope id="4755209551904397949" at="43,102,45,18" />
+      <scope id="4755209551904397949" at="43,100,45,18" />
       <scope id="4755209551904397949" at="88,40,90,45" />
       <scope id="4755209551904397949" at="95,73,97,145">
         <var name="manager" id="4755209551904397949" />
@@ -6049,12 +6049,12 @@
         <var name="referenceLink" id="4755209551904397949" />
       </scope>
       <scope id="4755209551904397949" at="66,0,101,0" />
-      <unit id="4755209551904397949" at="148,0,151,0" name="jetbrains.mps.build.workflow.editor.BwfJavaModuleReference_EditorBuilder_a$LINKS" />
-      <unit id="4755209551904397949" at="157,0,160,0" name="jetbrains.mps.build.workflow.editor.BwfJavaModuleReference_EditorBuilder_a$PROPS" />
-      <unit id="4755209551904397949" at="152,0,156,0" name="jetbrains.mps.build.workflow.editor.BwfJavaModuleReference_EditorBuilder_a$CONCEPTS" />
-      <unit id="4755209551904397949" at="68,42,83,5" name="jetbrains.mps.build.workflow.editor.BwfJavaModuleReference_EditorBuilder_a$1" />
-      <unit id="4755209551904397952" at="101,0,147,0" name="jetbrains.mps.build.workflow.editor.BwfJavaModuleReference_EditorBuilder_a$Inline_Builder0" />
-      <unit id="4755209551904397949" at="39,0,161,0" name="jetbrains.mps.build.workflow.editor.BwfJavaModuleReference_EditorBuilder_a" />
+      <unit id="4755209551904397949" at="148,0,151,0" name="jetbrains.mps.build.workflow.editor.BwfJavaModuleReference_EditorBuilder$LINKS" />
+      <unit id="4755209551904397949" at="157,0,160,0" name="jetbrains.mps.build.workflow.editor.BwfJavaModuleReference_EditorBuilder$PROPS" />
+      <unit id="4755209551904397949" at="152,0,156,0" name="jetbrains.mps.build.workflow.editor.BwfJavaModuleReference_EditorBuilder$CONCEPTS" />
+      <unit id="4755209551904397949" at="68,42,83,5" name="jetbrains.mps.build.workflow.editor.BwfJavaModuleReference_EditorBuilder$1" />
+      <unit id="4755209551904397952" at="101,0,147,0" name="jetbrains.mps.build.workflow.editor.BwfJavaModuleReference_EditorBuilder$Inline_Builder0" />
+      <unit id="4755209551904397949" at="39,0,161,0" name="jetbrains.mps.build.workflow.editor.BwfJavaModuleReference_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:1267752b-a233-4432-a848-3e68e0ea0db1(jetbrains.mps.build.workflow.editor)/5248329904288177749">
@@ -6151,17 +6151,17 @@
   </root>
   <root nodeRef="r:1267752b-a233-4432-a848-3e68e0ea0db1(jetbrains.mps.build.workflow.editor)/5423338990219633835">
     <file name="BwfAntProjectPart_Editor.java">
-      <node id="5423338990219633835" at="11,79,12,83" concept="8" />
+      <node id="5423338990219633835" at="11,79,12,81" concept="8" />
       <node id="5423338990219633835" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="5423338990219633835" at="11,79,12,83" />
+      <scope id="5423338990219633835" at="11,79,12,81" />
       <scope id="5423338990219633835" at="11,0,14,0">
         <var name="editorContext" id="5423338990219633835" />
         <var name="node" id="5423338990219633835" />
       </scope>
       <unit id="5423338990219633835" at="10,0,15,0" name="jetbrains.mps.build.workflow.editor.BwfAntProjectPart_Editor" />
     </file>
-    <file name="BwfAntProjectPart_EditorBuilder_a.java">
-      <node id="5423338990219633835" at="27,97,28,19" concept="13" />
+    <file name="BwfAntProjectPart_EditorBuilder.java">
+      <node id="5423338990219633835" at="27,95,28,19" concept="13" />
       <node id="5423338990219633835" at="28,19,29,18" concept="2" />
       <node id="5423338990219633835" at="34,26,35,18" concept="8" />
       <node id="5423338990219633835" at="38,39,39,32" concept="8" />
@@ -6204,7 +6204,7 @@
       <node id="5423338990219633835" at="86,87,89,7" concept="5" />
       <node id="5423338990219633835" at="89,7,92,7" concept="5" />
       <node id="5423338990219633835" at="108,0,111,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="5423338990219633835" at="27,0,31,0" concept="1" trace="BwfAntProjectPart_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="5423338990219633835" at="27,0,31,0" concept="1" trace="BwfAntProjectPart_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="5423338990219633835" at="57,0,61,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="5423338990219633835" at="65,0,69,0" concept="1" trace="elementSingleRoleHandler_gsbq6z_b0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="5423338990219633835" at="32,0,37,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -6222,7 +6222,7 @@
       <scope id="5423338990219633835" at="90,42,91,48" />
       <scope id="5423338990219633835" at="104,17,105,42" />
       <scope id="5423338990219633835" at="108,40,109,28" />
-      <scope id="5423338990219633835" at="27,97,29,18" />
+      <scope id="5423338990219633835" at="27,95,29,18" />
       <scope id="5423338990219633835" at="57,40,59,33">
         <var name="provider" id="5423338990219633835" />
       </scope>
@@ -6266,24 +6266,24 @@
       <scope id="5423338990219633835" at="42,0,51,0" />
       <scope id="5423338990219633835" at="95,44,106,7" />
       <scope id="5423338990219633835" at="94,0,108,0" />
-      <unit id="5423338990219633835" at="113,0,116,0" name="jetbrains.mps.build.workflow.editor.BwfAntProjectPart_EditorBuilder_a$LINKS" />
-      <unit id="5423338990219633835" at="61,0,112,0" name="jetbrains.mps.build.workflow.editor.BwfAntProjectPart_EditorBuilder_a$elementSingleRoleHandler_gsbq6z_b0" />
-      <unit id="5423338990219633835" at="23,0,117,0" name="jetbrains.mps.build.workflow.editor.BwfAntProjectPart_EditorBuilder_a" />
+      <unit id="5423338990219633835" at="113,0,116,0" name="jetbrains.mps.build.workflow.editor.BwfAntProjectPart_EditorBuilder$LINKS" />
+      <unit id="5423338990219633835" at="61,0,112,0" name="jetbrains.mps.build.workflow.editor.BwfAntProjectPart_EditorBuilder$elementSingleRoleHandler_gsbq6z_b0" />
+      <unit id="5423338990219633835" at="23,0,117,0" name="jetbrains.mps.build.workflow.editor.BwfAntProjectPart_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:1267752b-a233-4432-a848-3e68e0ea0db1(jetbrains.mps.build.workflow.editor)/6520682027040940626">
     <file name="BwfMacroListImport_Editor.java">
-      <node id="6520682027040940626" at="11,79,12,84" concept="8" />
+      <node id="6520682027040940626" at="11,79,12,82" concept="8" />
       <node id="6520682027040940626" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="6520682027040940626" at="11,79,12,84" />
+      <scope id="6520682027040940626" at="11,79,12,82" />
       <scope id="6520682027040940626" at="11,0,14,0">
         <var name="editorContext" id="6520682027040940626" />
         <var name="node" id="6520682027040940626" />
       </scope>
       <unit id="6520682027040940626" at="10,0,15,0" name="jetbrains.mps.build.workflow.editor.BwfMacroListImport_Editor" />
     </file>
-    <file name="BwfMacroListImport_EditorBuilder_a.java">
-      <node id="6520682027040940626" at="36,98,37,19" concept="13" />
+    <file name="BwfMacroListImport_EditorBuilder.java">
+      <node id="6520682027040940626" at="36,96,37,19" concept="13" />
       <node id="6520682027040940626" at="37,19,38,18" concept="2" />
       <node id="6520682027040940626" at="43,26,44,18" concept="8" />
       <node id="6520682027040940626" at="47,39,48,32" concept="8" />
@@ -6351,7 +6351,7 @@
       <node id="6520682027040940626" at="139,0,140,0" concept="11" trace="PropertyAttribute$Gb" />
       <node id="6520682027040940626" at="33,0,35,0" concept="3" trace="myNode" />
       <node id="6520682027040940626" at="47,0,50,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="6520682027040940626" at="36,0,40,0" concept="1" trace="BwfMacroListImport_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="6520682027040940626" at="36,0,40,0" concept="1" trace="BwfMacroListImport_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="6520682027040940626" at="41,0,46,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="6520682027040951599" at="83,208,88,24" concept="5" />
       <node id="6520682027040951603" at="116,208,121,24" concept="5" />
@@ -6367,7 +6367,7 @@
       <scope id="6520682027040940626" at="47,39,48,32" />
       <scope id="6520682027040951599" at="89,15,90,40" />
       <scope id="6520682027040951603" at="122,15,123,40" />
-      <scope id="6520682027040940626" at="36,98,38,18" />
+      <scope id="6520682027040940626" at="36,96,38,18" />
       <scope id="6520682027040951599" at="84,74,86,145">
         <var name="manager" id="6520682027040951599" />
       </scope>
@@ -6415,24 +6415,24 @@
       <scope id="6520682027040951599" at="72,0,93,0" />
       <scope id="6520682027040951603" at="102,41,124,5" />
       <scope id="6520682027040951603" at="102,0,126,0" />
-      <unit id="6520682027040940626" at="138,0,141,0" name="jetbrains.mps.build.workflow.editor.BwfMacroListImport_EditorBuilder_a$CONCEPTS" />
-      <unit id="6520682027040940626" at="133,0,137,0" name="jetbrains.mps.build.workflow.editor.BwfMacroListImport_EditorBuilder_a$PROPS" />
-      <unit id="6520682027040940626" at="32,0,142,0" name="jetbrains.mps.build.workflow.editor.BwfMacroListImport_EditorBuilder_a" />
+      <unit id="6520682027040940626" at="138,0,141,0" name="jetbrains.mps.build.workflow.editor.BwfMacroListImport_EditorBuilder$CONCEPTS" />
+      <unit id="6520682027040940626" at="133,0,137,0" name="jetbrains.mps.build.workflow.editor.BwfMacroListImport_EditorBuilder$PROPS" />
+      <unit id="6520682027040940626" at="32,0,142,0" name="jetbrains.mps.build.workflow.editor.BwfMacroListImport_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:1267752b-a233-4432-a848-3e68e0ea0db1(jetbrains.mps.build.workflow.editor)/6647099934206976116">
     <file name="BwfJavaDependency_Editor.java">
-      <node id="6647099934206976116" at="11,79,12,83" concept="8" />
+      <node id="6647099934206976116" at="11,79,12,81" concept="8" />
       <node id="6647099934206976116" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="6647099934206976116" at="11,79,12,83" />
+      <scope id="6647099934206976116" at="11,79,12,81" />
       <scope id="6647099934206976116" at="11,0,14,0">
         <var name="editorContext" id="6647099934206976116" />
         <var name="node" id="6647099934206976116" />
       </scope>
       <unit id="6647099934206976116" at="10,0,15,0" name="jetbrains.mps.build.workflow.editor.BwfJavaDependency_Editor" />
     </file>
-    <file name="BwfJavaDependency_EditorBuilder_a.java">
-      <node id="6647099934206976116" at="16,97,17,19" concept="13" />
+    <file name="BwfJavaDependency_EditorBuilder.java">
+      <node id="6647099934206976116" at="16,95,17,19" concept="13" />
       <node id="6647099934206976116" at="17,19,18,18" concept="2" />
       <node id="6647099934206976116" at="23,26,24,18" concept="8" />
       <node id="6647099934206976116" at="27,39,28,27" concept="8" />
@@ -6443,12 +6443,12 @@
       <node id="6647099934206976118" at="35,31,36,22" concept="8" />
       <node id="6647099934206976116" at="13,0,15,0" concept="3" trace="myNode" />
       <node id="6647099934206976116" at="27,0,30,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="6647099934206976116" at="16,0,20,0" concept="1" trace="BwfJavaDependency_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="6647099934206976116" at="16,0,20,0" concept="1" trace="BwfJavaDependency_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="6647099934206976116" at="21,0,26,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="6647099934206976118" at="31,0,38,0" concept="6" trace="createError_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="6647099934206976116" at="23,26,24,18" />
       <scope id="6647099934206976116" at="27,39,28,27" />
-      <scope id="6647099934206976116" at="16,97,18,18" />
+      <scope id="6647099934206976116" at="16,95,18,18" />
       <scope id="6647099934206976116" at="27,0,30,0" />
       <scope id="6647099934206976116" at="16,0,20,0">
         <var name="context" id="6647099934206976116" />
@@ -6459,22 +6459,22 @@
         <var name="editorCell" id="6647099934206976118" />
       </scope>
       <scope id="6647099934206976118" at="31,0,38,0" />
-      <unit id="6647099934206976116" at="12,0,39,0" name="jetbrains.mps.build.workflow.editor.BwfJavaDependency_EditorBuilder_a" />
+      <unit id="6647099934206976116" at="12,0,39,0" name="jetbrains.mps.build.workflow.editor.BwfJavaDependency_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:1267752b-a233-4432-a848-3e68e0ea0db1(jetbrains.mps.build.workflow.editor)/6647099934206976121">
     <file name="BwfJavaClassPath_Editor.java">
-      <node id="6647099934206976121" at="11,79,12,82" concept="8" />
+      <node id="6647099934206976121" at="11,79,12,80" concept="8" />
       <node id="6647099934206976121" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="6647099934206976121" at="11,79,12,82" />
+      <scope id="6647099934206976121" at="11,79,12,80" />
       <scope id="6647099934206976121" at="11,0,14,0">
         <var name="editorContext" id="6647099934206976121" />
         <var name="node" id="6647099934206976121" />
       </scope>
       <unit id="6647099934206976121" at="10,0,15,0" name="jetbrains.mps.build.workflow.editor.BwfJavaClassPath_Editor" />
     </file>
-    <file name="BwfJavaClassPath_EditorBuilder_a.java">
-      <node id="6647099934206976121" at="26,96,27,19" concept="13" />
+    <file name="BwfJavaClassPath_EditorBuilder.java">
+      <node id="6647099934206976121" at="26,94,27,19" concept="13" />
       <node id="6647099934206976121" at="27,19,28,18" concept="2" />
       <node id="6647099934206976121" at="33,26,34,18" concept="8" />
       <node id="6647099934206976121" at="37,39,38,32" concept="8" />
@@ -6512,7 +6512,7 @@
       <node id="6647099934206976121" at="78,87,81,7" concept="5" />
       <node id="6647099934206976121" at="81,7,84,7" concept="5" />
       <node id="6647099934206976121" at="100,0,103,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="6647099934206976121" at="26,0,30,0" concept="1" trace="BwfJavaClassPath_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="6647099934206976121" at="26,0,30,0" concept="1" trace="BwfJavaClassPath_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="6647099934206976121" at="49,0,53,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="6647099934206976121" at="57,0,61,0" concept="1" trace="classpathSingleRoleHandler_fy29up_a0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="6647099934206976121" at="31,0,36,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -6529,7 +6529,7 @@
       <scope id="6647099934206976121" at="82,42,83,50" />
       <scope id="6647099934206976121" at="96,17,97,42" />
       <scope id="6647099934206976121" at="100,40,101,30" />
-      <scope id="6647099934206976121" at="26,96,28,18" />
+      <scope id="6647099934206976121" at="26,94,28,18" />
       <scope id="6647099934206976121" at="49,40,51,33">
         <var name="provider" id="6647099934206976121" />
       </scope>
@@ -6569,24 +6569,24 @@
       </scope>
       <scope id="6647099934206976121" at="87,44,98,7" />
       <scope id="6647099934206976121" at="86,0,100,0" />
-      <unit id="6647099934206976121" at="105,0,108,0" name="jetbrains.mps.build.workflow.editor.BwfJavaClassPath_EditorBuilder_a$LINKS" />
-      <unit id="6647099934206976121" at="53,0,104,0" name="jetbrains.mps.build.workflow.editor.BwfJavaClassPath_EditorBuilder_a$classpathSingleRoleHandler_fy29up_a0" />
-      <unit id="6647099934206976121" at="22,0,109,0" name="jetbrains.mps.build.workflow.editor.BwfJavaClassPath_EditorBuilder_a" />
+      <unit id="6647099934206976121" at="105,0,108,0" name="jetbrains.mps.build.workflow.editor.BwfJavaClassPath_EditorBuilder$LINKS" />
+      <unit id="6647099934206976121" at="53,0,104,0" name="jetbrains.mps.build.workflow.editor.BwfJavaClassPath_EditorBuilder$classpathSingleRoleHandler_fy29up_a0" />
+      <unit id="6647099934206976121" at="22,0,109,0" name="jetbrains.mps.build.workflow.editor.BwfJavaClassPath_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:1267752b-a233-4432-a848-3e68e0ea0db1(jetbrains.mps.build.workflow.editor)/6647099934207069203">
     <file name="BwfPathDeclaration_Editor.java">
-      <node id="6647099934207069203" at="11,79,12,84" concept="8" />
+      <node id="6647099934207069203" at="11,79,12,82" concept="8" />
       <node id="6647099934207069203" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="6647099934207069203" at="11,79,12,84" />
+      <scope id="6647099934207069203" at="11,79,12,82" />
       <scope id="6647099934207069203" at="11,0,14,0">
         <var name="editorContext" id="6647099934207069203" />
         <var name="node" id="6647099934207069203" />
       </scope>
       <unit id="6647099934207069203" at="10,0,15,0" name="jetbrains.mps.build.workflow.editor.BwfPathDeclaration_Editor" />
     </file>
-    <file name="BwfPathDeclaration_EditorBuilder_a.java">
-      <node id="6647099934207069203" at="47,98,48,19" concept="13" />
+    <file name="BwfPathDeclaration_EditorBuilder.java">
+      <node id="6647099934207069203" at="47,96,48,19" concept="13" />
       <node id="6647099934207069203" at="48,19,49,18" concept="2" />
       <node id="6647099934207069203" at="54,26,55,18" concept="8" />
       <node id="6647099934207069203" at="58,39,59,32" concept="8" />
@@ -6674,7 +6674,7 @@
       <node id="6647099934207069203" at="136,0,139,0" concept="6" trace="createNodeToInsert#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/model/SNode;I)Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="6647099934207069203" at="140,0,143,0" concept="6" trace="nodeFactory#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/model/SNode;I)Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="6647099934207069203" at="183,96,186,9" concept="5" />
-      <node id="6647099934207069203" at="47,0,51,0" concept="1" trace="BwfPathDeclaration_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="6647099934207069203" at="47,0,51,0" concept="1" trace="BwfPathDeclaration_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="6647099934207069203" at="121,0,125,0" concept="1" trace="contentListHandler_onntkk_c0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="6647099934207069203" at="126,0,130,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="6647099934207069203" at="165,97,169,9" concept="5" />
@@ -6706,7 +6706,7 @@
       <scope id="2132783325237920840" at="140,73,141,184" />
       <scope id="6647099934207069203" at="157,17,158,42" />
       <scope id="6647099934207069203" at="184,34,185,91" />
-      <scope id="6647099934207069203" at="47,98,49,18" />
+      <scope id="6647099934207069203" at="47,96,49,18" />
       <scope id="6647099934207069210" at="97,74,99,145">
         <var name="manager" id="6647099934207069210" />
       </scope>
@@ -6787,26 +6787,26 @@
         <var name="elementNode" id="6647099934207069203" />
         <var name="isEmptyCell" id="6647099934207069203" />
       </scope>
-      <unit id="6647099934207069203" at="197,0,200,0" name="jetbrains.mps.build.workflow.editor.BwfPathDeclaration_EditorBuilder_a$PROPS" />
-      <unit id="6647099934207069203" at="206,0,209,0" name="jetbrains.mps.build.workflow.editor.BwfPathDeclaration_EditorBuilder_a$LINKS" />
-      <unit id="6647099934207069203" at="201,0,205,0" name="jetbrains.mps.build.workflow.editor.BwfPathDeclaration_EditorBuilder_a$CONCEPTS" />
-      <unit id="6647099934207069203" at="117,0,190,0" name="jetbrains.mps.build.workflow.editor.BwfPathDeclaration_EditorBuilder_a$contentListHandler_onntkk_c0" />
-      <unit id="6647099934207069203" at="43,0,210,0" name="jetbrains.mps.build.workflow.editor.BwfPathDeclaration_EditorBuilder_a" />
+      <unit id="6647099934207069203" at="197,0,200,0" name="jetbrains.mps.build.workflow.editor.BwfPathDeclaration_EditorBuilder$PROPS" />
+      <unit id="6647099934207069203" at="206,0,209,0" name="jetbrains.mps.build.workflow.editor.BwfPathDeclaration_EditorBuilder$LINKS" />
+      <unit id="6647099934207069203" at="201,0,205,0" name="jetbrains.mps.build.workflow.editor.BwfPathDeclaration_EditorBuilder$CONCEPTS" />
+      <unit id="6647099934207069203" at="117,0,190,0" name="jetbrains.mps.build.workflow.editor.BwfPathDeclaration_EditorBuilder$contentListHandler_onntkk_c0" />
+      <unit id="6647099934207069203" at="43,0,210,0" name="jetbrains.mps.build.workflow.editor.BwfPathDeclaration_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:1267752b-a233-4432-a848-3e68e0ea0db1(jetbrains.mps.build.workflow.editor)/6647099934207069217">
     <file name="BwfPathReference_Editor.java">
-      <node id="6647099934207069217" at="11,79,12,82" concept="8" />
+      <node id="6647099934207069217" at="11,79,12,80" concept="8" />
       <node id="6647099934207069217" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="6647099934207069217" at="11,79,12,82" />
+      <scope id="6647099934207069217" at="11,79,12,80" />
       <scope id="6647099934207069217" at="11,0,14,0">
         <var name="editorContext" id="6647099934207069217" />
         <var name="node" id="6647099934207069217" />
       </scope>
       <unit id="6647099934207069217" at="10,0,15,0" name="jetbrains.mps.build.workflow.editor.BwfPathReference_Editor" />
     </file>
-    <file name="BwfPathReference_EditorBuilder_a.java">
-      <node id="6647099934207069217" at="47,96,48,19" concept="13" />
+    <file name="BwfPathReference_EditorBuilder.java">
+      <node id="6647099934207069217" at="47,94,48,19" concept="13" />
       <node id="6647099934207069217" at="48,19,49,18" concept="2" />
       <node id="6647099934207069217" at="54,26,55,18" concept="8" />
       <node id="6647099934207069217" at="58,39,59,32" concept="8" />
@@ -6899,7 +6899,7 @@
       <node id="6647099934207069220" at="132,0,134,0" concept="3" trace="myNode" />
       <node id="6647099934207069217" at="58,0,61,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="6647099934207069220" at="142,0,145,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="6647099934207069217" at="47,0,51,0" concept="1" trace="BwfPathReference_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="6647099934207069217" at="47,0,51,0" concept="1" trace="BwfPathReference_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="6647099934207069217" at="117,0,121,5" concept="5" />
       <node id="6647099934207069217" at="52,0,57,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="6647099934207069217" at="124,205,129,22" concept="5" />
@@ -6921,7 +6921,7 @@
       <scope id="6647099934207069220" at="142,41,143,32" />
       <scope id="6647099934207069220" at="148,28,149,20" />
       <scope id="6647099934207069222" at="172,17,173,42" />
-      <scope id="6647099934207069217" at="47,96,49,18" />
+      <scope id="6647099934207069217" at="47,94,49,18" />
       <scope id="6647099934207069217" at="118,40,120,45" />
       <scope id="6647099934207069217" at="125,73,127,145">
         <var name="manager" id="6647099934207069217" />
@@ -6992,27 +6992,27 @@
         <var name="referenceLink" id="6647099934207069217" />
       </scope>
       <scope id="6647099934207069217" at="96,0,131,0" />
-      <unit id="6647099934207069217" at="188,0,191,0" name="jetbrains.mps.build.workflow.editor.BwfPathReference_EditorBuilder_a$LINKS" />
-      <unit id="6647099934207069217" at="197,0,200,0" name="jetbrains.mps.build.workflow.editor.BwfPathReference_EditorBuilder_a$PROPS" />
-      <unit id="6647099934207069217" at="192,0,196,0" name="jetbrains.mps.build.workflow.editor.BwfPathReference_EditorBuilder_a$CONCEPTS" />
-      <unit id="6647099934207069217" at="98,42,113,5" name="jetbrains.mps.build.workflow.editor.BwfPathReference_EditorBuilder_a$1" />
-      <unit id="6647099934207069220" at="131,0,177,0" name="jetbrains.mps.build.workflow.editor.BwfPathReference_EditorBuilder_a$Inline_Builder0" />
-      <unit id="6647099934207069217" at="43,0,201,0" name="jetbrains.mps.build.workflow.editor.BwfPathReference_EditorBuilder_a" />
+      <unit id="6647099934207069217" at="188,0,191,0" name="jetbrains.mps.build.workflow.editor.BwfPathReference_EditorBuilder$LINKS" />
+      <unit id="6647099934207069217" at="197,0,200,0" name="jetbrains.mps.build.workflow.editor.BwfPathReference_EditorBuilder$PROPS" />
+      <unit id="6647099934207069217" at="192,0,196,0" name="jetbrains.mps.build.workflow.editor.BwfPathReference_EditorBuilder$CONCEPTS" />
+      <unit id="6647099934207069217" at="98,42,113,5" name="jetbrains.mps.build.workflow.editor.BwfPathReference_EditorBuilder$1" />
+      <unit id="6647099934207069220" at="131,0,177,0" name="jetbrains.mps.build.workflow.editor.BwfPathReference_EditorBuilder$Inline_Builder0" />
+      <unit id="6647099934207069217" at="43,0,201,0" name="jetbrains.mps.build.workflow.editor.BwfPathReference_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:1267752b-a233-4432-a848-3e68e0ea0db1(jetbrains.mps.build.workflow.editor)/687702229764898375">
     <file name="XmlForeignRefValue_Editor.java">
-      <node id="687702229764898375" at="11,79,12,84" concept="8" />
+      <node id="687702229764898375" at="11,79,12,82" concept="8" />
       <node id="687702229764898375" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="687702229764898375" at="11,79,12,84" />
+      <scope id="687702229764898375" at="11,79,12,82" />
       <scope id="687702229764898375" at="11,0,14,0">
         <var name="editorContext" id="687702229764898375" />
         <var name="node" id="687702229764898375" />
       </scope>
       <unit id="687702229764898375" at="10,0,15,0" name="jetbrains.mps.build.workflow.editor.XmlForeignRefValue_Editor" />
     </file>
-    <file name="XmlForeignRefValue_EditorBuilder_a.java">
-      <node id="687702229764898375" at="34,98,35,19" concept="13" />
+    <file name="XmlForeignRefValue_EditorBuilder.java">
+      <node id="687702229764898375" at="34,96,35,19" concept="13" />
       <node id="687702229764898375" at="35,19,36,18" concept="2" />
       <node id="687702229764898375" at="41,26,42,18" concept="8" />
       <node id="687702229764898375" at="45,39,46,32" concept="8" />
@@ -7065,7 +7065,7 @@
       <node id="687702229764898429" at="94,0,96,0" concept="3" trace="myNode" />
       <node id="687702229764898375" at="45,0,48,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="687702229764898429" at="104,0,107,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="687702229764898375" at="34,0,38,0" concept="1" trace="XmlForeignRefValue_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="687702229764898375" at="34,0,38,0" concept="1" trace="XmlForeignRefValue_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="687702229764898375" at="79,0,83,5" concept="5" />
       <node id="687702229764898375" at="39,0,44,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="687702229764898375" at="86,205,91,22" concept="5" />
@@ -7082,7 +7082,7 @@
       <scope id="687702229764898375" at="45,39,46,32" />
       <scope id="687702229764898429" at="104,41,105,45" />
       <scope id="687702229764898429" at="110,28,111,20" />
-      <scope id="687702229764898375" at="34,98,36,18" />
+      <scope id="687702229764898375" at="34,96,36,18" />
       <scope id="687702229764898375" at="80,40,82,45" />
       <scope id="687702229764898375" at="87,73,89,145">
         <var name="manager" id="687702229764898375" />
@@ -7131,21 +7131,21 @@
         <var name="referenceLink" id="687702229764898375" />
       </scope>
       <scope id="687702229764898375" at="65,0,93,0" />
-      <unit id="687702229764898375" at="127,0,130,0" name="jetbrains.mps.build.workflow.editor.XmlForeignRefValue_EditorBuilder_a$LINKS" />
-      <unit id="687702229764898375" at="131,0,134,0" name="jetbrains.mps.build.workflow.editor.XmlForeignRefValue_EditorBuilder_a$CONCEPTS" />
-      <unit id="687702229764898375" at="67,42,75,5" name="jetbrains.mps.build.workflow.editor.XmlForeignRefValue_EditorBuilder_a$1" />
-      <unit id="687702229764898429" at="93,0,120,0" name="jetbrains.mps.build.workflow.editor.XmlForeignRefValue_EditorBuilder_a$Inline_Builder0" />
-      <unit id="687702229764898375" at="30,0,135,0" name="jetbrains.mps.build.workflow.editor.XmlForeignRefValue_EditorBuilder_a" />
+      <unit id="687702229764898375" at="127,0,130,0" name="jetbrains.mps.build.workflow.editor.XmlForeignRefValue_EditorBuilder$LINKS" />
+      <unit id="687702229764898375" at="131,0,134,0" name="jetbrains.mps.build.workflow.editor.XmlForeignRefValue_EditorBuilder$CONCEPTS" />
+      <unit id="687702229764898375" at="67,42,75,5" name="jetbrains.mps.build.workflow.editor.XmlForeignRefValue_EditorBuilder$1" />
+      <unit id="687702229764898429" at="93,0,120,0" name="jetbrains.mps.build.workflow.editor.XmlForeignRefValue_EditorBuilder$Inline_Builder0" />
+      <unit id="687702229764898375" at="30,0,135,0" name="jetbrains.mps.build.workflow.editor.XmlForeignRefValue_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:1267752b-a233-4432-a848-3e68e0ea0db1(jetbrains.mps.build.workflow.editor)/6896005762093571404">
     <file name="BwfMacro_Editor.java">
-      <node id="6896005762093571404" at="11,79,12,74" concept="8" />
-      <node id="6896005762093571404" at="14,82,15,77" concept="8" />
+      <node id="6896005762093571404" at="11,79,12,72" concept="8" />
+      <node id="6896005762093571404" at="14,82,15,75" concept="8" />
       <node id="6896005762093571404" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="6896005762093571404" at="14,0,17,0" concept="6" trace="createInspectedCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="6896005762093571404" at="11,79,12,74" />
-      <scope id="6896005762093571404" at="14,82,15,77" />
+      <scope id="6896005762093571404" at="11,79,12,72" />
+      <scope id="6896005762093571404" at="14,82,15,75" />
       <scope id="6896005762093571404" at="11,0,14,0">
         <var name="editorContext" id="6896005762093571404" />
         <var name="node" id="6896005762093571404" />
@@ -7156,8 +7156,8 @@
       </scope>
       <unit id="6896005762093571404" at="10,0,18,0" name="jetbrains.mps.build.workflow.editor.BwfMacro_Editor" />
     </file>
-    <file name="BwfMacro_EditorBuilder_a.java">
-      <node id="6896005762093571404" at="37,88,38,19" concept="13" />
+    <file name="BwfMacro_EditorBuilder.java">
+      <node id="6896005762093571404" at="37,86,38,19" concept="13" />
       <node id="6896005762093571404" at="38,19,39,18" concept="2" />
       <node id="6896005762093571404" at="44,26,45,18" concept="8" />
       <node id="6896005762093571404" at="48,39,49,32" concept="8" />
@@ -7258,7 +7258,7 @@
       <node id="6921160174096674365" at="73,0,76,0" concept="6" trace="nodeCondition0#()Z" />
       <node id="6921160174096674390" at="76,0,79,0" concept="6" trace="nodeCondition1#()Z" />
       <node id="6921160174096674415" at="79,0,82,0" concept="6" trace="nodeCondition2#()Z" />
-      <node id="6896005762093571404" at="37,0,41,0" concept="1" trace="BwfMacro_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="6896005762093571404" at="37,0,41,0" concept="1" trace="BwfMacro_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="6896005762093571404" at="42,0,47,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="6896005762093571413" at="129,208,134,24" concept="5" />
       <node id="6896005762093571418" at="159,208,164,24" concept="5" />
@@ -7283,7 +7283,7 @@
       <scope id="6921160174096674416" at="79,36,80,76" />
       <scope id="6896005762093571413" at="135,15,136,40" />
       <scope id="6896005762093571418" at="165,15,166,40" />
-      <scope id="6896005762093571404" at="37,88,39,18" />
+      <scope id="6896005762093571404" at="37,86,39,18" />
       <scope id="6896005762093571413" at="130,74,132,145">
         <var name="manager" id="6896005762093571413" />
       </scope>
@@ -7348,12 +7348,12 @@
       <scope id="6896005762093571413" at="118,0,139,0" />
       <scope id="6896005762093571418" at="145,41,167,5" />
       <scope id="6896005762093571418" at="145,0,169,0" />
-      <unit id="6896005762093571404" at="184,0,187,0" name="jetbrains.mps.build.workflow.editor.BwfMacro_EditorBuilder_a$CONCEPTS" />
-      <unit id="6896005762093571404" at="176,0,183,0" name="jetbrains.mps.build.workflow.editor.BwfMacro_EditorBuilder_a$PROPS" />
-      <unit id="6896005762093571404" at="33,0,188,0" name="jetbrains.mps.build.workflow.editor.BwfMacro_EditorBuilder_a" />
+      <unit id="6896005762093571404" at="184,0,187,0" name="jetbrains.mps.build.workflow.editor.BwfMacro_EditorBuilder$CONCEPTS" />
+      <unit id="6896005762093571404" at="176,0,183,0" name="jetbrains.mps.build.workflow.editor.BwfMacro_EditorBuilder$PROPS" />
+      <unit id="6896005762093571404" at="33,0,188,0" name="jetbrains.mps.build.workflow.editor.BwfMacro_EditorBuilder" />
     </file>
-    <file name="BwfMacro_InspectorBuilder_a.java">
-      <node id="6896005762093571404" at="36,91,37,19" concept="13" />
+    <file name="BwfMacro_InspectorBuilder.java">
+      <node id="6896005762093571404" at="36,89,37,19" concept="13" />
       <node id="6896005762093571404" at="37,19,38,18" concept="2" />
       <node id="6896005762093571404" at="43,26,44,18" concept="8" />
       <node id="6896005762093571404" at="47,39,48,32" concept="8" />
@@ -7443,7 +7443,7 @@
       <node id="6896005762093571404" at="168,0,169,0" concept="11" trace="PropertyAttribute$Gb" />
       <node id="6896005762093571404" at="33,0,35,0" concept="3" trace="myNode" />
       <node id="6896005762093571404" at="47,0,50,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="6896005762093571404" at="36,0,40,0" concept="1" trace="BwfMacro_InspectorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="6896005762093571404" at="36,0,40,0" concept="1" trace="BwfMacro_InspectorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="6896005762093571404" at="41,0,46,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="6896005762093571428" at="87,208,92,24" concept="5" />
       <node id="6896005762093571435" at="120,208,125,24" concept="5" />
@@ -7463,7 +7463,7 @@
       <scope id="6896005762093571428" at="93,15,94,40" />
       <scope id="6896005762093571435" at="126,15,127,40" />
       <scope id="6921160174096674358" at="156,15,157,40" />
-      <scope id="6896005762093571404" at="36,91,38,18" />
+      <scope id="6896005762093571404" at="36,89,38,18" />
       <scope id="6896005762093571428" at="88,74,90,145">
         <var name="manager" id="6896005762093571428" />
       </scope>
@@ -7524,24 +7524,24 @@
       <scope id="6896005762093571435" at="106,41,128,5" />
       <scope id="6896005762093571428" at="73,0,97,0" />
       <scope id="6896005762093571435" at="106,0,130,0" />
-      <unit id="6896005762093571404" at="167,0,170,0" name="jetbrains.mps.build.workflow.editor.BwfMacro_InspectorBuilder_a$CONCEPTS" />
-      <unit id="6896005762093571404" at="161,0,166,0" name="jetbrains.mps.build.workflow.editor.BwfMacro_InspectorBuilder_a$PROPS" />
-      <unit id="6896005762093571404" at="32,0,171,0" name="jetbrains.mps.build.workflow.editor.BwfMacro_InspectorBuilder_a" />
+      <unit id="6896005762093571404" at="167,0,170,0" name="jetbrains.mps.build.workflow.editor.BwfMacro_InspectorBuilder$CONCEPTS" />
+      <unit id="6896005762093571404" at="161,0,166,0" name="jetbrains.mps.build.workflow.editor.BwfMacro_InspectorBuilder$PROPS" />
+      <unit id="6896005762093571404" at="32,0,171,0" name="jetbrains.mps.build.workflow.editor.BwfMacro_InspectorBuilder" />
     </file>
   </root>
   <root nodeRef="r:1267752b-a233-4432-a848-3e68e0ea0db1(jetbrains.mps.build.workflow.editor)/7306485738221315930">
     <file name="BwfJavaDescriptor_Editor.java">
-      <node id="7306485738221315930" at="11,79,12,83" concept="8" />
+      <node id="7306485738221315930" at="11,79,12,81" concept="8" />
       <node id="7306485738221315930" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="7306485738221315930" at="11,79,12,83" />
+      <scope id="7306485738221315930" at="11,79,12,81" />
       <scope id="7306485738221315930" at="11,0,14,0">
         <var name="editorContext" id="7306485738221315930" />
         <var name="node" id="7306485738221315930" />
       </scope>
       <unit id="7306485738221315930" at="10,0,15,0" name="jetbrains.mps.build.workflow.editor.BwfJavaDescriptor_Editor" />
     </file>
-    <file name="BwfJavaDescriptor_EditorBuilder_a.java">
-      <node id="7306485738221315930" at="22,97,23,19" concept="13" />
+    <file name="BwfJavaDescriptor_EditorBuilder.java">
+      <node id="7306485738221315930" at="22,95,23,19" concept="13" />
       <node id="7306485738221315930" at="23,19,24,18" concept="2" />
       <node id="7306485738221315930" at="29,26,30,18" concept="8" />
       <node id="7306485738221315930" at="33,39,34,32" concept="8" />
@@ -7566,14 +7566,14 @@
       <node id="7306485738221326885" at="59,34,60,22" concept="8" />
       <node id="7306485738221315930" at="19,0,21,0" concept="3" trace="myNode" />
       <node id="7306485738221315930" at="33,0,36,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="7306485738221315930" at="22,0,26,0" concept="1" trace="BwfJavaDescriptor_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="7306485738221315930" at="22,0,26,0" concept="1" trace="BwfJavaDescriptor_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="7306485738221315930" at="27,0,32,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="7306485738221326885" at="56,0,62,0" concept="6" trace="createConstant_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="7306485738221315930" at="37,0,46,0" concept="6" trace="createCollection_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="7306485738221326883" at="46,0,56,0" concept="6" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="7306485738221315930" at="29,26,30,18" />
       <scope id="7306485738221315930" at="33,39,34,32" />
-      <scope id="7306485738221315930" at="22,97,24,18" />
+      <scope id="7306485738221315930" at="22,95,24,18" />
       <scope id="7306485738221315930" at="33,0,36,0" />
       <scope id="7306485738221315930" at="22,0,26,0">
         <var name="context" id="7306485738221315930" />
@@ -7593,22 +7593,22 @@
       </scope>
       <scope id="7306485738221315930" at="37,0,46,0" />
       <scope id="7306485738221326883" at="46,0,56,0" />
-      <unit id="7306485738221315930" at="18,0,63,0" name="jetbrains.mps.build.workflow.editor.BwfJavaDescriptor_EditorBuilder_a" />
+      <unit id="7306485738221315930" at="18,0,63,0" name="jetbrains.mps.build.workflow.editor.BwfJavaDescriptor_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:1267752b-a233-4432-a848-3e68e0ea0db1(jetbrains.mps.build.workflow.editor)/7306485738221391510">
     <file name="BwfTaskLibrary_Editor.java">
-      <node id="7306485738221391510" at="11,79,12,80" concept="8" />
+      <node id="7306485738221391510" at="11,79,12,78" concept="8" />
       <node id="7306485738221391510" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="7306485738221391510" at="11,79,12,80" />
+      <scope id="7306485738221391510" at="11,79,12,78" />
       <scope id="7306485738221391510" at="11,0,14,0">
         <var name="editorContext" id="7306485738221391510" />
         <var name="node" id="7306485738221391510" />
       </scope>
       <unit id="7306485738221391510" at="10,0,15,0" name="jetbrains.mps.build.workflow.editor.BwfTaskLibrary_Editor" />
     </file>
-    <file name="BwfTaskLibrary_EditorBuilder_a.java">
-      <node id="7306485738221391510" at="46,94,47,19" concept="13" />
+    <file name="BwfTaskLibrary_EditorBuilder.java">
+      <node id="7306485738221391510" at="46,92,47,19" concept="13" />
       <node id="7306485738221391510" at="47,19,48,18" concept="2" />
       <node id="7306485738221391510" at="53,26,54,18" concept="8" />
       <node id="7306485738221391510" at="57,39,58,32" concept="8" />
@@ -7763,7 +7763,7 @@
       <node id="7306485738221391510" at="251,0,254,0" concept="6" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="7306485738221391510" at="254,0,257,0" concept="6" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="7306485738221391510" at="298,96,301,9" concept="5" />
-      <node id="7306485738221391510" at="46,0,50,0" concept="1" trace="BwfTaskLibrary_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="7306485738221391510" at="46,0,50,0" concept="1" trace="BwfTaskLibrary_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="7306485738221391510" at="144,0,148,0" concept="1" trace="importsListHandler_qi7xwz_e0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="7306485738221391510" at="149,0,153,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="7306485738221391510" at="182,97,186,9" concept="5" />
@@ -7815,7 +7815,7 @@
       <scope id="7306485738221391510" at="254,48,255,40" />
       <scope id="7306485738221391510" at="272,17,273,42" />
       <scope id="7306485738221391510" at="299,34,300,91" />
-      <scope id="7306485738221391510" at="46,94,48,18" />
+      <scope id="7306485738221391510" at="46,92,48,18" />
       <scope id="7306485738221391515" at="100,74,102,145">
         <var name="manager" id="7306485738221391515" />
       </scope>
@@ -7939,27 +7939,27 @@
         <var name="elementNode" id="7306485738221391510" />
         <var name="isEmptyCell" id="7306485738221391510" />
       </scope>
-      <unit id="7306485738221391510" at="306,0,309,0" name="jetbrains.mps.build.workflow.editor.BwfTaskLibrary_EditorBuilder_a$PROPS" />
-      <unit id="7306485738221391510" at="316,0,320,0" name="jetbrains.mps.build.workflow.editor.BwfTaskLibrary_EditorBuilder_a$LINKS" />
-      <unit id="7306485738221391510" at="310,0,315,0" name="jetbrains.mps.build.workflow.editor.BwfTaskLibrary_EditorBuilder_a$CONCEPTS" />
-      <unit id="7306485738221391510" at="140,0,207,0" name="jetbrains.mps.build.workflow.editor.BwfTaskLibrary_EditorBuilder_a$importsListHandler_qi7xwz_e0" />
-      <unit id="7306485738221391510" at="238,0,305,0" name="jetbrains.mps.build.workflow.editor.BwfTaskLibrary_EditorBuilder_a$partsListHandler_qi7xwz_h0" />
-      <unit id="7306485738221391510" at="42,0,321,0" name="jetbrains.mps.build.workflow.editor.BwfTaskLibrary_EditorBuilder_a" />
+      <unit id="7306485738221391510" at="306,0,309,0" name="jetbrains.mps.build.workflow.editor.BwfTaskLibrary_EditorBuilder$PROPS" />
+      <unit id="7306485738221391510" at="316,0,320,0" name="jetbrains.mps.build.workflow.editor.BwfTaskLibrary_EditorBuilder$LINKS" />
+      <unit id="7306485738221391510" at="310,0,315,0" name="jetbrains.mps.build.workflow.editor.BwfTaskLibrary_EditorBuilder$CONCEPTS" />
+      <unit id="7306485738221391510" at="140,0,207,0" name="jetbrains.mps.build.workflow.editor.BwfTaskLibrary_EditorBuilder$importsListHandler_qi7xwz_e0" />
+      <unit id="7306485738221391510" at="238,0,305,0" name="jetbrains.mps.build.workflow.editor.BwfTaskLibrary_EditorBuilder$partsListHandler_qi7xwz_h0" />
+      <unit id="7306485738221391510" at="42,0,321,0" name="jetbrains.mps.build.workflow.editor.BwfTaskLibrary_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:1267752b-a233-4432-a848-3e68e0ea0db1(jetbrains.mps.build.workflow.editor)/7306485738221471033">
     <file name="BwfTaskLibraryDependency_Editor.java">
-      <node id="7306485738221471033" at="11,79,12,90" concept="8" />
+      <node id="7306485738221471033" at="11,79,12,88" concept="8" />
       <node id="7306485738221471033" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="7306485738221471033" at="11,79,12,90" />
+      <scope id="7306485738221471033" at="11,79,12,88" />
       <scope id="7306485738221471033" at="11,0,14,0">
         <var name="editorContext" id="7306485738221471033" />
         <var name="node" id="7306485738221471033" />
       </scope>
       <unit id="7306485738221471033" at="10,0,15,0" name="jetbrains.mps.build.workflow.editor.BwfTaskLibraryDependency_Editor" />
     </file>
-    <file name="BwfTaskLibraryDependency_EditorBuilder_a.java">
-      <node id="7306485738221471033" at="43,104,44,19" concept="13" />
+    <file name="BwfTaskLibraryDependency_EditorBuilder.java">
+      <node id="7306485738221471033" at="43,102,44,19" concept="13" />
       <node id="7306485738221471033" at="44,19,45,18" concept="2" />
       <node id="7306485738221471033" at="50,26,51,18" concept="8" />
       <node id="7306485738221471033" at="54,39,55,32" concept="8" />
@@ -8022,7 +8022,7 @@
       <node id="7306485738221471038" at="102,0,104,0" concept="3" trace="myNode" />
       <node id="7306485738221471033" at="54,0,57,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="7306485738221471038" at="112,0,115,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="7306485738221471033" at="43,0,47,0" concept="1" trace="BwfTaskLibraryDependency_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="7306485738221471033" at="43,0,47,0" concept="1" trace="BwfTaskLibraryDependency_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="7306485738221471033" at="87,0,91,5" concept="5" />
       <node id="7306485738221471033" at="48,0,53,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="7306485738221471033" at="94,205,99,22" concept="5" />
@@ -8041,7 +8041,7 @@
       <scope id="7306485738221471038" at="112,41,113,32" />
       <scope id="7306485738221471038" at="118,28,119,20" />
       <scope id="7306485738221471040" at="142,17,143,42" />
-      <scope id="7306485738221471033" at="43,104,45,18" />
+      <scope id="7306485738221471033" at="43,102,45,18" />
       <scope id="7306485738221471033" at="88,40,90,45" />
       <scope id="7306485738221471033" at="95,73,97,145">
         <var name="manager" id="7306485738221471033" />
@@ -8096,27 +8096,27 @@
         <var name="referenceLink" id="7306485738221471033" />
       </scope>
       <scope id="7306485738221471033" at="66,0,101,0" />
-      <unit id="7306485738221471033" at="148,0,151,0" name="jetbrains.mps.build.workflow.editor.BwfTaskLibraryDependency_EditorBuilder_a$LINKS" />
-      <unit id="7306485738221471033" at="157,0,160,0" name="jetbrains.mps.build.workflow.editor.BwfTaskLibraryDependency_EditorBuilder_a$PROPS" />
-      <unit id="7306485738221471033" at="152,0,156,0" name="jetbrains.mps.build.workflow.editor.BwfTaskLibraryDependency_EditorBuilder_a$CONCEPTS" />
-      <unit id="7306485738221471033" at="68,42,83,5" name="jetbrains.mps.build.workflow.editor.BwfTaskLibraryDependency_EditorBuilder_a$1" />
-      <unit id="7306485738221471038" at="101,0,147,0" name="jetbrains.mps.build.workflow.editor.BwfTaskLibraryDependency_EditorBuilder_a$Inline_Builder0" />
-      <unit id="7306485738221471033" at="39,0,161,0" name="jetbrains.mps.build.workflow.editor.BwfTaskLibraryDependency_EditorBuilder_a" />
+      <unit id="7306485738221471033" at="148,0,151,0" name="jetbrains.mps.build.workflow.editor.BwfTaskLibraryDependency_EditorBuilder$LINKS" />
+      <unit id="7306485738221471033" at="157,0,160,0" name="jetbrains.mps.build.workflow.editor.BwfTaskLibraryDependency_EditorBuilder$PROPS" />
+      <unit id="7306485738221471033" at="152,0,156,0" name="jetbrains.mps.build.workflow.editor.BwfTaskLibraryDependency_EditorBuilder$CONCEPTS" />
+      <unit id="7306485738221471033" at="68,42,83,5" name="jetbrains.mps.build.workflow.editor.BwfTaskLibraryDependency_EditorBuilder$1" />
+      <unit id="7306485738221471038" at="101,0,147,0" name="jetbrains.mps.build.workflow.editor.BwfTaskLibraryDependency_EditorBuilder$Inline_Builder0" />
+      <unit id="7306485738221471033" at="39,0,161,0" name="jetbrains.mps.build.workflow.editor.BwfTaskLibraryDependency_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:1267752b-a233-4432-a848-3e68e0ea0db1(jetbrains.mps.build.workflow.editor)/7926701909975416093">
     <file name="BwfFileSet_Editor.java">
-      <node id="7926701909975416093" at="11,79,12,76" concept="8" />
+      <node id="7926701909975416093" at="11,79,12,74" concept="8" />
       <node id="7926701909975416093" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="7926701909975416093" at="11,79,12,76" />
+      <scope id="7926701909975416093" at="11,79,12,74" />
       <scope id="7926701909975416093" at="11,0,14,0">
         <var name="editorContext" id="7926701909975416093" />
         <var name="node" id="7926701909975416093" />
       </scope>
       <unit id="7926701909975416093" at="10,0,15,0" name="jetbrains.mps.build.workflow.editor.BwfFileSet_Editor" />
     </file>
-    <file name="BwfFileSet_EditorBuilder_a.java">
-      <node id="7926701909975416093" at="30,90,31,19" concept="13" />
+    <file name="BwfFileSet_EditorBuilder.java">
+      <node id="7926701909975416093" at="30,88,31,19" concept="13" />
       <node id="7926701909975416093" at="31,19,32,18" concept="2" />
       <node id="7926701909975416093" at="37,26,38,18" concept="8" />
       <node id="7926701909975416093" at="41,39,42,32" concept="8" />
@@ -8167,7 +8167,7 @@
       <node id="7926701909975416093" at="73,0,76,0" concept="6" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="7926701909975416093" at="76,0,79,0" concept="6" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="7926701909975416093" at="120,96,123,9" concept="5" />
-      <node id="7926701909975416093" at="30,0,34,0" concept="1" trace="BwfFileSet_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="7926701909975416093" at="30,0,34,0" concept="1" trace="BwfFileSet_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="7926701909975416093" at="64,0,68,0" concept="1" trace="elementsListHandler_wd783v_a0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="7926701909975416093" at="69,0,73,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="7926701909975416093" at="102,97,106,9" concept="5" />
@@ -8192,7 +8192,7 @@
       <scope id="7926701909975416093" at="76,48,77,40" />
       <scope id="7926701909975416093" at="94,17,95,42" />
       <scope id="7926701909975416093" at="121,34,122,91" />
-      <scope id="7926701909975416093" at="30,90,32,18" />
+      <scope id="7926701909975416093" at="30,88,32,18" />
       <scope id="7926701909975416093" at="64,82,66,25" />
       <scope id="7926701909975416093" at="103,122,105,146" />
       <scope id="7926701909975416093" at="109,34,111,142" />
@@ -8244,25 +8244,25 @@
         <var name="elementNode" id="7926701909975416093" />
         <var name="isEmptyCell" id="7926701909975416093" />
       </scope>
-      <unit id="7926701909975416093" at="134,0,137,0" name="jetbrains.mps.build.workflow.editor.BwfFileSet_EditorBuilder_a$LINKS" />
-      <unit id="7926701909975416093" at="138,0,141,0" name="jetbrains.mps.build.workflow.editor.BwfFileSet_EditorBuilder_a$CONCEPTS" />
-      <unit id="7926701909975416093" at="60,0,133,0" name="jetbrains.mps.build.workflow.editor.BwfFileSet_EditorBuilder_a$elementsListHandler_wd783v_a0" />
-      <unit id="7926701909975416093" at="26,0,142,0" name="jetbrains.mps.build.workflow.editor.BwfFileSet_EditorBuilder_a" />
+      <unit id="7926701909975416093" at="134,0,137,0" name="jetbrains.mps.build.workflow.editor.BwfFileSet_EditorBuilder$LINKS" />
+      <unit id="7926701909975416093" at="138,0,141,0" name="jetbrains.mps.build.workflow.editor.BwfFileSet_EditorBuilder$CONCEPTS" />
+      <unit id="7926701909975416093" at="60,0,133,0" name="jetbrains.mps.build.workflow.editor.BwfFileSet_EditorBuilder$elementsListHandler_wd783v_a0" />
+      <unit id="7926701909975416093" at="26,0,142,0" name="jetbrains.mps.build.workflow.editor.BwfFileSet_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:1267752b-a233-4432-a848-3e68e0ea0db1(jetbrains.mps.build.workflow.editor)/8292198017262926601">
     <file name="BwfDependency_Editor.java">
-      <node id="8292198017262926601" at="11,79,12,79" concept="8" />
+      <node id="8292198017262926601" at="11,79,12,77" concept="8" />
       <node id="8292198017262926601" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="8292198017262926601" at="11,79,12,79" />
+      <scope id="8292198017262926601" at="11,79,12,77" />
       <scope id="8292198017262926601" at="11,0,14,0">
         <var name="editorContext" id="8292198017262926601" />
         <var name="node" id="8292198017262926601" />
       </scope>
       <unit id="8292198017262926601" at="10,0,15,0" name="jetbrains.mps.build.workflow.editor.BwfDependency_Editor" />
     </file>
-    <file name="BwfDependency_EditorBuilder_a.java">
-      <node id="8292198017262926601" at="29,93,30,19" concept="13" />
+    <file name="BwfDependency_EditorBuilder.java">
+      <node id="8292198017262926601" at="29,91,30,19" concept="13" />
       <node id="8292198017262926601" at="30,19,31,18" concept="2" />
       <node id="8292198017262926601" at="36,26,37,18" concept="8" />
       <node id="8292198017262926601" at="40,39,41,30" concept="8" />
@@ -8286,7 +8286,7 @@
       <node id="8292198017262926601" at="73,0,74,0" concept="11" trace="PropertyAttribute$Gb" />
       <node id="8292198017262926601" at="26,0,28,0" concept="3" trace="myNode" />
       <node id="8292198017262926601" at="40,0,43,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="8292198017262926601" at="29,0,33,0" concept="1" trace="BwfDependency_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8292198017262926601" at="29,0,33,0" concept="1" trace="BwfDependency_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8292198017262926601" at="34,0,39,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="8292198017262926603" at="57,208,62,24" concept="5" />
       <node id="8292198017262926603" at="45,39,65,5" concept="14" />
@@ -8294,7 +8294,7 @@
       <scope id="8292198017262926601" at="36,26,37,18" />
       <scope id="8292198017262926601" at="40,39,41,30" />
       <scope id="8292198017262926603" at="63,15,64,40" />
-      <scope id="8292198017262926601" at="29,93,31,18" />
+      <scope id="8292198017262926601" at="29,91,31,18" />
       <scope id="8292198017262926603" at="58,74,60,145">
         <var name="manager" id="8292198017262926603" />
       </scope>
@@ -8312,24 +8312,24 @@
       </scope>
       <scope id="8292198017262926603" at="44,41,65,5" />
       <scope id="8292198017262926603" at="44,0,67,0" />
-      <unit id="8292198017262926601" at="68,0,71,0" name="jetbrains.mps.build.workflow.editor.BwfDependency_EditorBuilder_a$PROPS" />
-      <unit id="8292198017262926601" at="72,0,75,0" name="jetbrains.mps.build.workflow.editor.BwfDependency_EditorBuilder_a$CONCEPTS" />
-      <unit id="8292198017262926601" at="25,0,76,0" name="jetbrains.mps.build.workflow.editor.BwfDependency_EditorBuilder_a" />
+      <unit id="8292198017262926601" at="68,0,71,0" name="jetbrains.mps.build.workflow.editor.BwfDependency_EditorBuilder$PROPS" />
+      <unit id="8292198017262926601" at="72,0,75,0" name="jetbrains.mps.build.workflow.editor.BwfDependency_EditorBuilder$CONCEPTS" />
+      <unit id="8292198017262926601" at="25,0,76,0" name="jetbrains.mps.build.workflow.editor.BwfDependency_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:1267752b-a233-4432-a848-3e68e0ea0db1(jetbrains.mps.build.workflow.editor)/8817646574325011231">
     <file name="BwfValueStatement_Editor.java">
-      <node id="8817646574325011231" at="11,79,12,83" concept="8" />
+      <node id="8817646574325011231" at="11,79,12,81" concept="8" />
       <node id="8817646574325011231" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="8817646574325011231" at="11,79,12,83" />
+      <scope id="8817646574325011231" at="11,79,12,81" />
       <scope id="8817646574325011231" at="11,0,14,0">
         <var name="editorContext" id="8817646574325011231" />
         <var name="node" id="8817646574325011231" />
       </scope>
       <unit id="8817646574325011231" at="10,0,15,0" name="jetbrains.mps.build.workflow.editor.BwfValueStatement_Editor" />
     </file>
-    <file name="BwfValueStatement_EditorBuilder_a.java">
-      <node id="8817646574325011231" at="32,97,33,19" concept="13" />
+    <file name="BwfValueStatement_EditorBuilder.java">
+      <node id="8817646574325011231" at="32,95,33,19" concept="13" />
       <node id="8817646574325011231" at="33,19,34,18" concept="2" />
       <node id="8817646574325011231" at="39,26,40,18" concept="8" />
       <node id="8817646574325011231" at="43,39,44,32" concept="8" />
@@ -8378,7 +8378,7 @@
       <node id="8817646574325011231" at="112,0,113,0" concept="11" trace="PropertyAttribute$Gb" />
       <node id="8817646574325011231" at="29,0,31,0" concept="3" trace="myNode" />
       <node id="8817646574325011231" at="43,0,46,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="8817646574325011231" at="32,0,36,0" concept="1" trace="BwfValueStatement_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8817646574325011231" at="32,0,36,0" concept="1" trace="BwfValueStatement_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8817646574325011231" at="37,0,42,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="8817646574325011240" at="68,208,73,24" concept="5" />
       <node id="8817646574325011259" at="95,208,100,24" concept="5" />
@@ -8392,7 +8392,7 @@
       <scope id="8817646574325011231" at="43,39,44,32" />
       <scope id="8817646574325011240" at="74,15,75,40" />
       <scope id="8817646574325011259" at="101,15,102,40" />
-      <scope id="8817646574325011231" at="32,97,34,18" />
+      <scope id="8817646574325011231" at="32,95,34,18" />
       <scope id="8817646574325011240" at="69,74,71,145">
         <var name="manager" id="8817646574325011240" />
       </scope>
@@ -8429,24 +8429,24 @@
       <scope id="8817646574325011259" at="84,41,103,5" />
       <scope id="8817646574325011240" at="57,0,78,0" />
       <scope id="8817646574325011259" at="84,0,105,0" />
-      <unit id="8817646574325011231" at="111,0,114,0" name="jetbrains.mps.build.workflow.editor.BwfValueStatement_EditorBuilder_a$CONCEPTS" />
-      <unit id="8817646574325011231" at="106,0,110,0" name="jetbrains.mps.build.workflow.editor.BwfValueStatement_EditorBuilder_a$PROPS" />
-      <unit id="8817646574325011231" at="28,0,115,0" name="jetbrains.mps.build.workflow.editor.BwfValueStatement_EditorBuilder_a" />
+      <unit id="8817646574325011231" at="111,0,114,0" name="jetbrains.mps.build.workflow.editor.BwfValueStatement_EditorBuilder$CONCEPTS" />
+      <unit id="8817646574325011231" at="106,0,110,0" name="jetbrains.mps.build.workflow.editor.BwfValueStatement_EditorBuilder$PROPS" />
+      <unit id="8817646574325011231" at="28,0,115,0" name="jetbrains.mps.build.workflow.editor.BwfValueStatement_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:1267752b-a233-4432-a848-3e68e0ea0db1(jetbrains.mps.build.workflow.editor)/8817646574325011423">
     <file name="BwfValueReference_Editor.java">
-      <node id="8817646574325011423" at="11,79,12,83" concept="8" />
+      <node id="8817646574325011423" at="11,79,12,81" concept="8" />
       <node id="8817646574325011423" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="8817646574325011423" at="11,79,12,83" />
+      <scope id="8817646574325011423" at="11,79,12,81" />
       <scope id="8817646574325011423" at="11,0,14,0">
         <var name="editorContext" id="8817646574325011423" />
         <var name="node" id="8817646574325011423" />
       </scope>
       <unit id="8817646574325011423" at="10,0,15,0" name="jetbrains.mps.build.workflow.editor.BwfValueReference_Editor" />
     </file>
-    <file name="BwfValueReference_EditorBuilder_a.java">
-      <node id="8817646574325011423" at="41,97,42,19" concept="13" />
+    <file name="BwfValueReference_EditorBuilder.java">
+      <node id="8817646574325011423" at="41,95,42,19" concept="13" />
       <node id="8817646574325011423" at="42,19,43,18" concept="2" />
       <node id="8817646574325011423" at="48,26,49,18" concept="8" />
       <node id="8817646574325011423" at="52,39,53,32" concept="8" />
@@ -8511,7 +8511,7 @@
       <node id="8817646574325011446" at="107,0,109,0" concept="3" trace="myNode" />
       <node id="8817646574325011423" at="52,0,55,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="8817646574325011446" at="117,0,120,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="8817646574325011423" at="41,0,45,0" concept="1" trace="BwfValueReference_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8817646574325011423" at="41,0,45,0" concept="1" trace="BwfValueReference_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8817646574325011423" at="92,0,96,5" concept="5" />
       <node id="8817646574325011423" at="46,0,51,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="8817646574325011423" at="99,205,104,22" concept="5" />
@@ -8531,7 +8531,7 @@
       <scope id="8817646574325011446" at="117,41,118,32" />
       <scope id="8817646574325011446" at="123,28,124,20" />
       <scope id="8817646574325011454" at="144,17,145,42" />
-      <scope id="8817646574325011423" at="41,97,43,18" />
+      <scope id="8817646574325011423" at="41,95,43,18" />
       <scope id="8817646574325011423" at="93,40,95,43" />
       <scope id="8817646574325011423" at="100,73,102,145">
         <var name="manager" id="8817646574325011423" />
@@ -8589,12 +8589,12 @@
         <var name="referenceLink" id="8817646574325011423" />
       </scope>
       <scope id="8817646574325011423" at="71,0,106,0" />
-      <unit id="8817646574325011423" at="150,0,153,0" name="jetbrains.mps.build.workflow.editor.BwfValueReference_EditorBuilder_a$LINKS" />
-      <unit id="8817646574325011423" at="159,0,162,0" name="jetbrains.mps.build.workflow.editor.BwfValueReference_EditorBuilder_a$PROPS" />
-      <unit id="8817646574325011423" at="154,0,158,0" name="jetbrains.mps.build.workflow.editor.BwfValueReference_EditorBuilder_a$CONCEPTS" />
-      <unit id="8817646574325011423" at="73,42,88,5" name="jetbrains.mps.build.workflow.editor.BwfValueReference_EditorBuilder_a$1" />
-      <unit id="8817646574325011446" at="106,0,149,0" name="jetbrains.mps.build.workflow.editor.BwfValueReference_EditorBuilder_a$Inline_Builder0" />
-      <unit id="8817646574325011423" at="37,0,163,0" name="jetbrains.mps.build.workflow.editor.BwfValueReference_EditorBuilder_a" />
+      <unit id="8817646574325011423" at="150,0,153,0" name="jetbrains.mps.build.workflow.editor.BwfValueReference_EditorBuilder$LINKS" />
+      <unit id="8817646574325011423" at="159,0,162,0" name="jetbrains.mps.build.workflow.editor.BwfValueReference_EditorBuilder$PROPS" />
+      <unit id="8817646574325011423" at="154,0,158,0" name="jetbrains.mps.build.workflow.editor.BwfValueReference_EditorBuilder$CONCEPTS" />
+      <unit id="8817646574325011423" at="73,42,88,5" name="jetbrains.mps.build.workflow.editor.BwfValueReference_EditorBuilder$1" />
+      <unit id="8817646574325011446" at="106,0,149,0" name="jetbrains.mps.build.workflow.editor.BwfValueReference_EditorBuilder$Inline_Builder0" />
+      <unit id="8817646574325011423" at="37,0,163,0" name="jetbrains.mps.build.workflow.editor.BwfValueReference_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:1267752b-a233-4432-a848-3e68e0ea0db1(jetbrains.mps.build.workflow.editor)/8849917859617058468">

@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class LanguageDependency_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new LanguageDependency_EditorBuilder_a(editorContext, node).createCell();
+    return new LanguageDependency_EditorBuilder(editorContext, node).createCell();
   }
 }

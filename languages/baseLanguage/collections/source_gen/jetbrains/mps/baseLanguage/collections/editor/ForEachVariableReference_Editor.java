@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ForEachVariableReference_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ForEachVariableReference_EditorBuilder_a(editorContext, node).createCell();
+    return new ForEachVariableReference_EditorBuilder(editorContext, node).createCell();
   }
 }

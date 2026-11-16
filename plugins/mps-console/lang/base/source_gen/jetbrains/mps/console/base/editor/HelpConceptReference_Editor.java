@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class HelpConceptReference_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new HelpConceptReference_EditorBuilder_a(editorContext, node).createCell();
+    return new HelpConceptReference_EditorBuilder(editorContext, node).createCell();
   }
 }

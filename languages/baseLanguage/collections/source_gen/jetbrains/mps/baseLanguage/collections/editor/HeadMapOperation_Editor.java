@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class HeadMapOperation_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new HeadMapOperation_EditorBuilder_a(editorContext, node).createCell();
+    return new HeadMapOperation_EditorBuilder(editorContext, node).createCell();
   }
 }

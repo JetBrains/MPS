@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class InlineSwitch_Case_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new InlineSwitch_Case_EditorBuilder_a(editorContext, node).createCell();
+    return new InlineSwitch_Case_EditorBuilder(editorContext, node).createCell();
   }
 }

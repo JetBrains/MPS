@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class HighLevelCustomViewer_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new HighLevelCustomViewer_EditorBuilder_a(editorContext, node).createCell();
+    return new HighLevelCustomViewer_EditorBuilder(editorContext, node).createCell();
   }
 }

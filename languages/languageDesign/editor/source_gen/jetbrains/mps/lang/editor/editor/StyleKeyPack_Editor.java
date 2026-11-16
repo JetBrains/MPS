@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class StyleKeyPack_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new StyleKeyPack_EditorBuilder_a(editorContext, node).createCell();
+    return new StyleKeyPack_EditorBuilder(editorContext, node).createCell();
   }
 }

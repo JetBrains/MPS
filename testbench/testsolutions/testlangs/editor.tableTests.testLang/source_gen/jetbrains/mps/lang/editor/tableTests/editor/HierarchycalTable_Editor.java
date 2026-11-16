@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class HierarchycalTable_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new HierarchycalTable_EditorBuilder_a(editorContext, node).createCell();
+    return new HierarchycalTable_EditorBuilder(editorContext, node).createCell();
   }
 }

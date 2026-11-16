@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class FileAnnotationList_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new FileAnnotationList_EditorBuilder_a(editorContext, node).createCell();
+    return new FileAnnotationList_EditorBuilder(editorContext, node).createCell();
   }
 }

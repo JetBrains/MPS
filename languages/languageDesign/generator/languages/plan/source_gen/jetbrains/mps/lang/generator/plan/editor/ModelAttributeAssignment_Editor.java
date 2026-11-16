@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ModelAttributeAssignment_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ModelAttributeAssignment_EditorBuilder_a(editorContext, node).createCell();
+    return new ModelAttributeAssignment_EditorBuilder(editorContext, node).createCell();
   }
 }

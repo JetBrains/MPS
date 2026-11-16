@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class TypesystemIntentionArgument_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new TypesystemIntentionArgument_EditorBuilder_a(editorContext, node).createCell();
+    return new TypesystemIntentionArgument_EditorBuilder(editorContext, node).createCell();
   }
 }

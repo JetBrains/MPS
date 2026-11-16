@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ActionTestSidetransformAddConceptChild_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ActionTestSidetransformAddConceptChild_EditorBuilder_a(editorContext, node).createCell();
+    return new ActionTestSidetransformAddConceptChild_EditorBuilder(editorContext, node).createCell();
   }
 }

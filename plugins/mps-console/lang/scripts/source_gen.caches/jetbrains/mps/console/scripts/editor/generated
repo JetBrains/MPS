@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="e5cm01ev7qfb1y8w7rpgs8dudo186r1">
-  <files names="ConsoleScript_Editor.java:ConsoleScript_EditorBuilder_a.java:EditorAspectDescriptorImpl.java:Execute_Editor.java:Execute_EditorBuilder_a.java:RefactorOperation_SubstituteMenu.java" />
+  <files names="ConsoleScript_Editor.java:ConsoleScript_EditorBuilder.java:EditorAspectDescriptorImpl.java:Execute_Editor.java:Execute_EditorBuilder.java:RefactorOperation_SubstituteMenu.java" />
 </product>
 

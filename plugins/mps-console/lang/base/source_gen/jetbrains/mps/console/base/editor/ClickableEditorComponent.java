@@ -16,6 +16,6 @@ public class ClickableEditorComponent implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ClickableEditorComponent_ComponentBuilder_a(editorContext, node).createCell();
+    return new ClickableEditorComponent_ComponentBuilder(editorContext, node).createCell();
   }
 }

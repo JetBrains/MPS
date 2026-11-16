@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class LabelPosition_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new LabelPosition_EditorBuilder_a(editorContext, node).createCell();
+    return new LabelPosition_EditorBuilder(editorContext, node).createCell();
   }
 }

@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class StringLiteralRaw_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new StringLiteralRaw_EditorBuilder_a(editorContext, node).createCell();
+    return new StringLiteralRaw_EditorBuilder(editorContext, node).createCell();
   }
 }

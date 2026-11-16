@@ -16,6 +16,6 @@ public class RefNodeList_ListWithRole implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new RefNodeList_ListWithRole_ComponentBuilder_a(editorContext, node).createCell();
+    return new RefNodeList_ListWithRole_ComponentBuilder(editorContext, node).createCell();
   }
 }

@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class CellModel_ReadOnlyModelAccessor_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new CellModel_ReadOnlyModelAccessor_EditorBuilder_a(editorContext, node).createCell();
+    return new CellModel_ReadOnlyModelAccessor_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new CellModel_ReadOnlyModelAccessor_InspectorBuilder_a(editorContext, node).createCell();
+    return new CellModel_ReadOnlyModelAccessor_InspectorBuilder(editorContext, node).createCell();
   }
 }

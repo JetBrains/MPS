@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class JavaEnumConstantReference_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new JavaEnumConstantReference_EditorBuilder_a(editorContext, node).createCell();
+    return new JavaEnumConstantReference_EditorBuilder(editorContext, node).createCell();
   }
 }

@@ -17,12 +17,12 @@
   </root>
   <root nodeRef="r:f92db55c-5d08-4e87-9cad-0d694ee4825c(jetbrains.mps.lang.editor.doc.editor)/4710646077647677182">
     <file name="CellModel_OpenAngleBracket_Editor.java">
-      <node id="4710646077647677182" at="11,79,12,92" concept="6" />
-      <node id="4710646077647677182" at="14,82,15,95" concept="6" />
+      <node id="4710646077647677182" at="11,79,12,90" concept="6" />
+      <node id="4710646077647677182" at="14,82,15,93" concept="6" />
       <node id="4710646077647677182" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4710646077647677182" at="14,0,17,0" concept="4" trace="createInspectedCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4710646077647677182" at="11,79,12,92" />
-      <scope id="4710646077647677182" at="14,82,15,95" />
+      <scope id="4710646077647677182" at="11,79,12,90" />
+      <scope id="4710646077647677182" at="14,82,15,93" />
       <scope id="4710646077647677182" at="11,0,14,0">
         <var name="editorContext" id="4710646077647677182" />
         <var name="node" id="4710646077647677182" />
@@ -33,8 +33,8 @@
       </scope>
       <unit id="4710646077647677182" at="10,0,18,0" name="jetbrains.mps.lang.editor.doc.editor.CellModel_OpenAngleBracket_Editor" />
     </file>
-    <file name="CellModel_OpenAngleBracket_EditorBuilder_a.java">
-      <node id="4710646077647677182" at="34,106,35,19" concept="8" />
+    <file name="CellModel_OpenAngleBracket_EditorBuilder.java">
+      <node id="4710646077647677182" at="34,104,35,19" concept="8" />
       <node id="4710646077647677182" at="35,19,36,18" concept="1" />
       <node id="4710646077647677182" at="41,26,42,18" concept="6" />
       <node id="4710646077647677182" at="45,39,46,30" concept="6" />
@@ -63,7 +63,7 @@
       <node id="4710646077647677182" at="83,0,84,0" concept="7" trace="PropertyAttribute$Gb" />
       <node id="4710646077647677182" at="31,0,33,0" concept="2" trace="myNode" />
       <node id="4710646077647677182" at="45,0,48,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="4710646077647677182" at="34,0,38,0" concept="0" trace="CellModel_OpenAngleBracket_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4710646077647677182" at="34,0,38,0" concept="0" trace="CellModel_OpenAngleBracket_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4710646077647677182" at="39,0,44,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="4710646077647677189" at="67,208,72,24" concept="3" />
       <node id="4710646077647677189" at="50,39,75,5" concept="9" />
@@ -71,7 +71,7 @@
       <scope id="4710646077647677182" at="41,26,42,18" />
       <scope id="4710646077647677182" at="45,39,46,30" />
       <scope id="4710646077647677189" at="73,15,74,40" />
-      <scope id="4710646077647677182" at="34,106,36,18" />
+      <scope id="4710646077647677182" at="34,104,36,18" />
       <scope id="4710646077647677189" at="68,74,70,145">
         <var name="manager" id="4710646077647677189" />
       </scope>
@@ -90,12 +90,12 @@
       </scope>
       <scope id="4710646077647677189" at="49,41,75,5" />
       <scope id="4710646077647677189" at="49,0,77,0" />
-      <unit id="4710646077647677182" at="78,0,81,0" name="jetbrains.mps.lang.editor.doc.editor.CellModel_OpenAngleBracket_EditorBuilder_a$PROPS" />
-      <unit id="4710646077647677182" at="82,0,85,0" name="jetbrains.mps.lang.editor.doc.editor.CellModel_OpenAngleBracket_EditorBuilder_a$CONCEPTS" />
-      <unit id="4710646077647677182" at="30,0,86,0" name="jetbrains.mps.lang.editor.doc.editor.CellModel_OpenAngleBracket_EditorBuilder_a" />
+      <unit id="4710646077647677182" at="78,0,81,0" name="jetbrains.mps.lang.editor.doc.editor.CellModel_OpenAngleBracket_EditorBuilder$PROPS" />
+      <unit id="4710646077647677182" at="82,0,85,0" name="jetbrains.mps.lang.editor.doc.editor.CellModel_OpenAngleBracket_EditorBuilder$CONCEPTS" />
+      <unit id="4710646077647677182" at="30,0,86,0" name="jetbrains.mps.lang.editor.doc.editor.CellModel_OpenAngleBracket_EditorBuilder" />
     </file>
-    <file name="CellModel_OpenAngleBracket_InspectorBuilder_a.java">
-      <node id="4710646077647677182" at="20,109,21,19" concept="8" />
+    <file name="CellModel_OpenAngleBracket_InspectorBuilder.java">
+      <node id="4710646077647677182" at="20,107,21,19" concept="8" />
       <node id="4710646077647677182" at="21,19,22,18" concept="1" />
       <node id="4710646077647677182" at="27,26,28,18" concept="6" />
       <node id="4710646077647677182" at="31,39,32,32" concept="6" />
@@ -113,13 +113,13 @@
       <node id="4710646077647677185" at="48,133,49,22" concept="6" />
       <node id="4710646077647677182" at="17,0,19,0" concept="2" trace="myNode" />
       <node id="4710646077647677182" at="31,0,34,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="4710646077647677182" at="20,0,24,0" concept="0" trace="CellModel_OpenAngleBracket_InspectorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4710646077647677182" at="20,0,24,0" concept="0" trace="CellModel_OpenAngleBracket_InspectorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4710646077647677185" at="47,0,51,0" concept="4" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4710646077647677182" at="25,0,30,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="4710646077647677182" at="35,0,47,0" concept="4" trace="createCollection_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="4710646077647677182" at="27,26,28,18" />
       <scope id="4710646077647677182" at="31,39,32,32" />
-      <scope id="4710646077647677182" at="20,109,22,18" />
+      <scope id="4710646077647677182" at="20,107,22,18" />
       <scope id="4710646077647677185" at="47,42,49,22">
         <var name="editorCell" id="4710646077647677185" />
       </scope>
@@ -135,17 +135,17 @@
         <var name="style" id="4710646077647677182" />
       </scope>
       <scope id="4710646077647677182" at="35,0,47,0" />
-      <unit id="4710646077647677182" at="16,0,52,0" name="jetbrains.mps.lang.editor.doc.editor.CellModel_OpenAngleBracket_InspectorBuilder_a" />
+      <unit id="4710646077647677182" at="16,0,52,0" name="jetbrains.mps.lang.editor.doc.editor.CellModel_OpenAngleBracket_InspectorBuilder" />
     </file>
   </root>
   <root nodeRef="r:f92db55c-5d08-4e87-9cad-0d694ee4825c(jetbrains.mps.lang.editor.doc.editor)/4710646077656023494">
     <file name="CellModel_CloseAngleBracket_Editor.java">
-      <node id="4710646077656023494" at="11,79,12,93" concept="6" />
-      <node id="4710646077656023494" at="14,82,15,96" concept="6" />
+      <node id="4710646077656023494" at="11,79,12,91" concept="6" />
+      <node id="4710646077656023494" at="14,82,15,94" concept="6" />
       <node id="4710646077656023494" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4710646077656023494" at="14,0,17,0" concept="4" trace="createInspectedCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4710646077656023494" at="11,79,12,93" />
-      <scope id="4710646077656023494" at="14,82,15,96" />
+      <scope id="4710646077656023494" at="11,79,12,91" />
+      <scope id="4710646077656023494" at="14,82,15,94" />
       <scope id="4710646077656023494" at="11,0,14,0">
         <var name="editorContext" id="4710646077656023494" />
         <var name="node" id="4710646077656023494" />
@@ -156,8 +156,8 @@
       </scope>
       <unit id="4710646077656023494" at="10,0,18,0" name="jetbrains.mps.lang.editor.doc.editor.CellModel_CloseAngleBracket_Editor" />
     </file>
-    <file name="CellModel_CloseAngleBracket_EditorBuilder_a.java">
-      <node id="4710646077656023494" at="34,107,35,19" concept="8" />
+    <file name="CellModel_CloseAngleBracket_EditorBuilder.java">
+      <node id="4710646077656023494" at="34,105,35,19" concept="8" />
       <node id="4710646077656023494" at="35,19,36,18" concept="1" />
       <node id="4710646077656023494" at="41,26,42,18" concept="6" />
       <node id="4710646077656023494" at="45,39,46,30" concept="6" />
@@ -186,7 +186,7 @@
       <node id="4710646077656023494" at="83,0,84,0" concept="7" trace="PropertyAttribute$Gb" />
       <node id="4710646077656023494" at="31,0,33,0" concept="2" trace="myNode" />
       <node id="4710646077656023494" at="45,0,48,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="4710646077656023494" at="34,0,38,0" concept="0" trace="CellModel_CloseAngleBracket_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4710646077656023494" at="34,0,38,0" concept="0" trace="CellModel_CloseAngleBracket_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4710646077656023494" at="39,0,44,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="4710646077656023496" at="67,208,72,24" concept="3" />
       <node id="4710646077656023496" at="50,39,75,5" concept="9" />
@@ -194,7 +194,7 @@
       <scope id="4710646077656023494" at="41,26,42,18" />
       <scope id="4710646077656023494" at="45,39,46,30" />
       <scope id="4710646077656023496" at="73,15,74,40" />
-      <scope id="4710646077656023494" at="34,107,36,18" />
+      <scope id="4710646077656023494" at="34,105,36,18" />
       <scope id="4710646077656023496" at="68,74,70,145">
         <var name="manager" id="4710646077656023496" />
       </scope>
@@ -213,12 +213,12 @@
       </scope>
       <scope id="4710646077656023496" at="49,41,75,5" />
       <scope id="4710646077656023496" at="49,0,77,0" />
-      <unit id="4710646077656023494" at="78,0,81,0" name="jetbrains.mps.lang.editor.doc.editor.CellModel_CloseAngleBracket_EditorBuilder_a$PROPS" />
-      <unit id="4710646077656023494" at="82,0,85,0" name="jetbrains.mps.lang.editor.doc.editor.CellModel_CloseAngleBracket_EditorBuilder_a$CONCEPTS" />
-      <unit id="4710646077656023494" at="30,0,86,0" name="jetbrains.mps.lang.editor.doc.editor.CellModel_CloseAngleBracket_EditorBuilder_a" />
+      <unit id="4710646077656023494" at="78,0,81,0" name="jetbrains.mps.lang.editor.doc.editor.CellModel_CloseAngleBracket_EditorBuilder$PROPS" />
+      <unit id="4710646077656023494" at="82,0,85,0" name="jetbrains.mps.lang.editor.doc.editor.CellModel_CloseAngleBracket_EditorBuilder$CONCEPTS" />
+      <unit id="4710646077656023494" at="30,0,86,0" name="jetbrains.mps.lang.editor.doc.editor.CellModel_CloseAngleBracket_EditorBuilder" />
     </file>
-    <file name="CellModel_CloseAngleBracket_InspectorBuilder_a.java">
-      <node id="4710646077656023494" at="20,110,21,19" concept="8" />
+    <file name="CellModel_CloseAngleBracket_InspectorBuilder.java">
+      <node id="4710646077656023494" at="20,108,21,19" concept="8" />
       <node id="4710646077656023494" at="21,19,22,18" concept="1" />
       <node id="4710646077656023494" at="27,26,28,18" concept="6" />
       <node id="4710646077656023494" at="31,39,32,32" concept="6" />
@@ -236,13 +236,13 @@
       <node id="4710646077656023500" at="48,133,49,22" concept="6" />
       <node id="4710646077656023494" at="17,0,19,0" concept="2" trace="myNode" />
       <node id="4710646077656023494" at="31,0,34,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="4710646077656023494" at="20,0,24,0" concept="0" trace="CellModel_CloseAngleBracket_InspectorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4710646077656023494" at="20,0,24,0" concept="0" trace="CellModel_CloseAngleBracket_InspectorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4710646077656023500" at="47,0,51,0" concept="4" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4710646077656023494" at="25,0,30,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="4710646077656023494" at="35,0,47,0" concept="4" trace="createCollection_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="4710646077656023494" at="27,26,28,18" />
       <scope id="4710646077656023494" at="31,39,32,32" />
-      <scope id="4710646077656023494" at="20,110,22,18" />
+      <scope id="4710646077656023494" at="20,108,22,18" />
       <scope id="4710646077656023500" at="47,42,49,22">
         <var name="editorCell" id="4710646077656023500" />
       </scope>
@@ -258,17 +258,17 @@
         <var name="style" id="4710646077656023494" />
       </scope>
       <scope id="4710646077656023494" at="35,0,47,0" />
-      <unit id="4710646077656023494" at="16,0,52,0" name="jetbrains.mps.lang.editor.doc.editor.CellModel_CloseAngleBracket_InspectorBuilder_a" />
+      <unit id="4710646077656023494" at="16,0,52,0" name="jetbrains.mps.lang.editor.doc.editor.CellModel_CloseAngleBracket_InspectorBuilder" />
     </file>
   </root>
   <root nodeRef="r:f92db55c-5d08-4e87-9cad-0d694ee4825c(jetbrains.mps.lang.editor.doc.editor)/4710646077657337708">
     <file name="CellModel_OpenAngleBracketSlash_Editor.java">
-      <node id="4710646077657337708" at="11,79,12,97" concept="6" />
-      <node id="4710646077657337708" at="14,82,15,100" concept="6" />
+      <node id="4710646077657337708" at="11,79,12,95" concept="6" />
+      <node id="4710646077657337708" at="14,82,15,98" concept="6" />
       <node id="4710646077657337708" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4710646077657337708" at="14,0,17,0" concept="4" trace="createInspectedCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4710646077657337708" at="11,79,12,97" />
-      <scope id="4710646077657337708" at="14,82,15,100" />
+      <scope id="4710646077657337708" at="11,79,12,95" />
+      <scope id="4710646077657337708" at="14,82,15,98" />
       <scope id="4710646077657337708" at="11,0,14,0">
         <var name="editorContext" id="4710646077657337708" />
         <var name="node" id="4710646077657337708" />
@@ -279,8 +279,8 @@
       </scope>
       <unit id="4710646077657337708" at="10,0,18,0" name="jetbrains.mps.lang.editor.doc.editor.CellModel_OpenAngleBracketSlash_Editor" />
     </file>
-    <file name="CellModel_OpenAngleBracketSlash_EditorBuilder_a.java">
-      <node id="4710646077657337708" at="34,111,35,19" concept="8" />
+    <file name="CellModel_OpenAngleBracketSlash_EditorBuilder.java">
+      <node id="4710646077657337708" at="34,109,35,19" concept="8" />
       <node id="4710646077657337708" at="35,19,36,18" concept="1" />
       <node id="4710646077657337708" at="41,26,42,18" concept="6" />
       <node id="4710646077657337708" at="45,39,46,30" concept="6" />
@@ -309,7 +309,7 @@
       <node id="4710646077657337708" at="83,0,84,0" concept="7" trace="PropertyAttribute$Gb" />
       <node id="4710646077657337708" at="31,0,33,0" concept="2" trace="myNode" />
       <node id="4710646077657337708" at="45,0,48,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="4710646077657337708" at="34,0,38,0" concept="0" trace="CellModel_OpenAngleBracketSlash_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4710646077657337708" at="34,0,38,0" concept="0" trace="CellModel_OpenAngleBracketSlash_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4710646077657337708" at="39,0,44,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="4710646077657337710" at="67,208,72,24" concept="3" />
       <node id="4710646077657337710" at="50,39,75,5" concept="9" />
@@ -317,7 +317,7 @@
       <scope id="4710646077657337708" at="41,26,42,18" />
       <scope id="4710646077657337708" at="45,39,46,30" />
       <scope id="4710646077657337710" at="73,15,74,40" />
-      <scope id="4710646077657337708" at="34,111,36,18" />
+      <scope id="4710646077657337708" at="34,109,36,18" />
       <scope id="4710646077657337710" at="68,74,70,145">
         <var name="manager" id="4710646077657337710" />
       </scope>
@@ -336,12 +336,12 @@
       </scope>
       <scope id="4710646077657337710" at="49,41,75,5" />
       <scope id="4710646077657337710" at="49,0,77,0" />
-      <unit id="4710646077657337708" at="78,0,81,0" name="jetbrains.mps.lang.editor.doc.editor.CellModel_OpenAngleBracketSlash_EditorBuilder_a$PROPS" />
-      <unit id="4710646077657337708" at="82,0,85,0" name="jetbrains.mps.lang.editor.doc.editor.CellModel_OpenAngleBracketSlash_EditorBuilder_a$CONCEPTS" />
-      <unit id="4710646077657337708" at="30,0,86,0" name="jetbrains.mps.lang.editor.doc.editor.CellModel_OpenAngleBracketSlash_EditorBuilder_a" />
+      <unit id="4710646077657337708" at="78,0,81,0" name="jetbrains.mps.lang.editor.doc.editor.CellModel_OpenAngleBracketSlash_EditorBuilder$PROPS" />
+      <unit id="4710646077657337708" at="82,0,85,0" name="jetbrains.mps.lang.editor.doc.editor.CellModel_OpenAngleBracketSlash_EditorBuilder$CONCEPTS" />
+      <unit id="4710646077657337708" at="30,0,86,0" name="jetbrains.mps.lang.editor.doc.editor.CellModel_OpenAngleBracketSlash_EditorBuilder" />
     </file>
-    <file name="CellModel_OpenAngleBracketSlash_InspectorBuilder_a.java">
-      <node id="4710646077657337708" at="20,114,21,19" concept="8" />
+    <file name="CellModel_OpenAngleBracketSlash_InspectorBuilder.java">
+      <node id="4710646077657337708" at="20,112,21,19" concept="8" />
       <node id="4710646077657337708" at="21,19,22,18" concept="1" />
       <node id="4710646077657337708" at="27,26,28,18" concept="6" />
       <node id="4710646077657337708" at="31,39,32,32" concept="6" />
@@ -359,13 +359,13 @@
       <node id="4710646077657337714" at="48,133,49,22" concept="6" />
       <node id="4710646077657337708" at="17,0,19,0" concept="2" trace="myNode" />
       <node id="4710646077657337708" at="31,0,34,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="4710646077657337708" at="20,0,24,0" concept="0" trace="CellModel_OpenAngleBracketSlash_InspectorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4710646077657337708" at="20,0,24,0" concept="0" trace="CellModel_OpenAngleBracketSlash_InspectorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4710646077657337714" at="47,0,51,0" concept="4" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4710646077657337708" at="25,0,30,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="4710646077657337708" at="35,0,47,0" concept="4" trace="createCollection_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="4710646077657337708" at="27,26,28,18" />
       <scope id="4710646077657337708" at="31,39,32,32" />
-      <scope id="4710646077657337708" at="20,114,22,18" />
+      <scope id="4710646077657337708" at="20,112,22,18" />
       <scope id="4710646077657337714" at="47,42,49,22">
         <var name="editorCell" id="4710646077657337714" />
       </scope>
@@ -381,17 +381,17 @@
         <var name="style" id="4710646077657337708" />
       </scope>
       <scope id="4710646077657337708" at="35,0,47,0" />
-      <unit id="4710646077657337708" at="16,0,52,0" name="jetbrains.mps.lang.editor.doc.editor.CellModel_OpenAngleBracketSlash_InspectorBuilder_a" />
+      <unit id="4710646077657337708" at="16,0,52,0" name="jetbrains.mps.lang.editor.doc.editor.CellModel_OpenAngleBracketSlash_InspectorBuilder" />
     </file>
   </root>
   <root nodeRef="r:f92db55c-5d08-4e87-9cad-0d694ee4825c(jetbrains.mps.lang.editor.doc.editor)/9185659875393569207">
     <file name="CellModel_HtmlTag_Editor.java">
-      <node id="9185659875393569207" at="11,79,12,83" concept="6" />
-      <node id="9185659875393569207" at="14,82,15,86" concept="6" />
+      <node id="9185659875393569207" at="11,79,12,81" concept="6" />
+      <node id="9185659875393569207" at="14,82,15,84" concept="6" />
       <node id="9185659875393569207" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="9185659875393569207" at="14,0,17,0" concept="4" trace="createInspectedCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="9185659875393569207" at="11,79,12,83" />
-      <scope id="9185659875393569207" at="14,82,15,86" />
+      <scope id="9185659875393569207" at="11,79,12,81" />
+      <scope id="9185659875393569207" at="14,82,15,84" />
       <scope id="9185659875393569207" at="11,0,14,0">
         <var name="editorContext" id="9185659875393569207" />
         <var name="node" id="9185659875393569207" />
@@ -402,8 +402,8 @@
       </scope>
       <unit id="9185659875393569207" at="10,0,18,0" name="jetbrains.mps.lang.editor.doc.editor.CellModel_HtmlTag_Editor" />
     </file>
-    <file name="CellModel_HtmlTag_EditorBuilder_a.java">
-      <node id="9185659875393569207" at="33,97,34,19" concept="8" />
+    <file name="CellModel_HtmlTag_EditorBuilder.java">
+      <node id="9185659875393569207" at="33,95,34,19" concept="8" />
       <node id="9185659875393569207" at="34,19,35,18" concept="1" />
       <node id="9185659875393569207" at="40,26,41,18" concept="6" />
       <node id="9185659875393569207" at="44,39,45,32" concept="6" />
@@ -629,7 +629,7 @@
       <node id="9185659875393569207" at="446,87,449,7" concept="3" />
       <node id="9185659875393569207" at="449,7,452,7" concept="3" />
       <node id="9185659875393569207" at="468,0,471,0" concept="4" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="9185659875393569207" at="33,0,37,0" concept="0" trace="CellModel_HtmlTag_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="9185659875393569207" at="33,0,37,0" concept="0" trace="CellModel_HtmlTag_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="9185659875393569207" at="84,0,88,0" concept="4" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="9185659875393569207" at="92,0,96,0" concept="0" trace="openBracket1SingleRoleHandler_6rsugq_b0a#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="9185659875393569207" at="142,0,146,0" concept="4" trace="createRefNode_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -721,7 +721,7 @@
       <scope id="9185659875393569207" at="450,42,451,54" />
       <scope id="9185659875393569207" at="464,17,465,42" />
       <scope id="9185659875393569207" at="468,40,469,34" />
-      <scope id="9185659875393569207" at="33,97,35,18" />
+      <scope id="9185659875393569207" at="33,95,35,18" />
       <scope id="9185659875393569207" at="84,40,86,33">
         <var name="provider" id="9185659875393569207" />
       </scope>
@@ -953,18 +953,18 @@
         <var name="style" id="9185659875393569207" />
       </scope>
       <scope id="9185659875393569207" at="59,0,76,0" />
-      <unit id="9185659875393569207" at="481,0,489,0" name="jetbrains.mps.lang.editor.doc.editor.CellModel_HtmlTag_EditorBuilder_a$LINKS" />
-      <unit id="9185659875393569207" at="146,0,197,0" name="jetbrains.mps.lang.editor.doc.editor.CellModel_HtmlTag_EditorBuilder_a$nameSingleRoleHandler_6rsugq_c0a" />
-      <unit id="9185659875393569207" at="201,0,252,0" name="jetbrains.mps.lang.editor.doc.editor.CellModel_HtmlTag_EditorBuilder_a$closeBracket1SingleRoleHandler_6rsugq_d0a" />
-      <unit id="9185659875393569207" at="256,0,307,0" name="jetbrains.mps.lang.editor.doc.editor.CellModel_HtmlTag_EditorBuilder_a$visibleCellSingleRoleHandler_6rsugq_e0a" />
-      <unit id="9185659875393569207" at="311,0,362,0" name="jetbrains.mps.lang.editor.doc.editor.CellModel_HtmlTag_EditorBuilder_a$openBracket2SingleRoleHandler_6rsugq_f0a" />
-      <unit id="9185659875393569207" at="366,0,417,0" name="jetbrains.mps.lang.editor.doc.editor.CellModel_HtmlTag_EditorBuilder_a$nameSingleRoleHandler_6rsugq_g0a" />
-      <unit id="9185659875393569207" at="421,0,472,0" name="jetbrains.mps.lang.editor.doc.editor.CellModel_HtmlTag_EditorBuilder_a$closeBracket2SingleRoleHandler_6rsugq_h0a" />
-      <unit id="9185659875393569207" at="88,0,142,0" name="jetbrains.mps.lang.editor.doc.editor.CellModel_HtmlTag_EditorBuilder_a$openBracket1SingleRoleHandler_6rsugq_b0a" />
-      <unit id="9185659875393569207" at="29,0,490,0" name="jetbrains.mps.lang.editor.doc.editor.CellModel_HtmlTag_EditorBuilder_a" />
+      <unit id="9185659875393569207" at="481,0,489,0" name="jetbrains.mps.lang.editor.doc.editor.CellModel_HtmlTag_EditorBuilder$LINKS" />
+      <unit id="9185659875393569207" at="146,0,197,0" name="jetbrains.mps.lang.editor.doc.editor.CellModel_HtmlTag_EditorBuilder$nameSingleRoleHandler_6rsugq_c0a" />
+      <unit id="9185659875393569207" at="201,0,252,0" name="jetbrains.mps.lang.editor.doc.editor.CellModel_HtmlTag_EditorBuilder$closeBracket1SingleRoleHandler_6rsugq_d0a" />
+      <unit id="9185659875393569207" at="256,0,307,0" name="jetbrains.mps.lang.editor.doc.editor.CellModel_HtmlTag_EditorBuilder$visibleCellSingleRoleHandler_6rsugq_e0a" />
+      <unit id="9185659875393569207" at="311,0,362,0" name="jetbrains.mps.lang.editor.doc.editor.CellModel_HtmlTag_EditorBuilder$openBracket2SingleRoleHandler_6rsugq_f0a" />
+      <unit id="9185659875393569207" at="366,0,417,0" name="jetbrains.mps.lang.editor.doc.editor.CellModel_HtmlTag_EditorBuilder$nameSingleRoleHandler_6rsugq_g0a" />
+      <unit id="9185659875393569207" at="421,0,472,0" name="jetbrains.mps.lang.editor.doc.editor.CellModel_HtmlTag_EditorBuilder$closeBracket2SingleRoleHandler_6rsugq_h0a" />
+      <unit id="9185659875393569207" at="88,0,142,0" name="jetbrains.mps.lang.editor.doc.editor.CellModel_HtmlTag_EditorBuilder$openBracket1SingleRoleHandler_6rsugq_b0a" />
+      <unit id="9185659875393569207" at="29,0,490,0" name="jetbrains.mps.lang.editor.doc.editor.CellModel_HtmlTag_EditorBuilder" />
     </file>
-    <file name="CellModel_HtmlTag_InspectorBuilder_a.java">
-      <node id="9185659875393569207" at="17,100,18,19" concept="8" />
+    <file name="CellModel_HtmlTag_InspectorBuilder.java">
+      <node id="9185659875393569207" at="17,98,18,19" concept="8" />
       <node id="9185659875393569207" at="18,19,19,18" concept="1" />
       <node id="9185659875393569207" at="24,26,25,18" concept="6" />
       <node id="9185659875393569207" at="28,39,29,32" concept="6" />
@@ -978,13 +978,13 @@
       <node id="1214479415172" at="41,133,42,22" concept="6" />
       <node id="9185659875393569207" at="14,0,16,0" concept="2" trace="myNode" />
       <node id="9185659875393569207" at="28,0,31,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="9185659875393569207" at="17,0,21,0" concept="0" trace="CellModel_HtmlTag_InspectorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="9185659875393569207" at="17,0,21,0" concept="0" trace="CellModel_HtmlTag_InspectorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1214479415172" at="40,0,44,0" concept="4" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="9185659875393569207" at="22,0,27,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="9185659875393569207" at="32,0,40,0" concept="4" trace="createCollection_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="9185659875393569207" at="24,26,25,18" />
       <scope id="9185659875393569207" at="28,39,29,32" />
-      <scope id="9185659875393569207" at="17,100,19,18" />
+      <scope id="9185659875393569207" at="17,98,19,18" />
       <scope id="1214479415172" at="40,42,42,22">
         <var name="editorCell" id="1214479415172" />
       </scope>
@@ -999,7 +999,7 @@
         <var name="editorCell" id="9185659875393569207" />
       </scope>
       <scope id="9185659875393569207" at="32,0,40,0" />
-      <unit id="9185659875393569207" at="13,0,45,0" name="jetbrains.mps.lang.editor.doc.editor.CellModel_HtmlTag_InspectorBuilder_a" />
+      <unit id="9185659875393569207" at="13,0,45,0" name="jetbrains.mps.lang.editor.doc.editor.CellModel_HtmlTag_InspectorBuilder" />
     </file>
   </root>
 </debug-info>

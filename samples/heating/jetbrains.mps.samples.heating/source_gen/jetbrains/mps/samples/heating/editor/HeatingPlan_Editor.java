@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class HeatingPlan_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new HeatingPlan_EditorBuilder_a(editorContext, node).createCell();
+    return new HeatingPlan_EditorBuilder(editorContext, node).createCell();
   }
 }

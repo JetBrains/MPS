@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class SplitOperation_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new SplitOperation_EditorBuilder_a(editorContext, node).createCell();
+    return new SplitOperation_EditorBuilder(editorContext, node).createCell();
   }
 }

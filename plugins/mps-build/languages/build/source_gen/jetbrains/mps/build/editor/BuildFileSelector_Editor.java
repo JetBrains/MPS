@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class BuildFileSelector_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new BuildFileSelector_EditorBuilder_a(editorContext, node).createCell();
+    return new BuildFileSelector_EditorBuilder(editorContext, node).createCell();
   }
 }

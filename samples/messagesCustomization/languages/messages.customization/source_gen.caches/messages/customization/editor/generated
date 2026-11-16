@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="-6un0xwqtyny4hv5271p8a7papl16l4k">
-  <files names="AuxConcept_Editor.java:AuxConcept_EditorBuilder_a.java:BrokenConcept_Editor.java:BrokenConcept_EditorBuilder_a.java:CardinalityTestConcept_Editor.java:CardinalityTestConcept_EditorBuilder_a.java:CardinalityTestConcept_SubstituteMenu.java:EditorAspectDescriptorImpl.java:IncorrectTargetTestConcept_Editor.java:IncorrectTargetTestConcept_EditorBuilder_a.java:NamedContainer_Editor.java:NamedContainer_EditorBuilder_a.java:TestConcept_Editor.java:TestConcept_EditorBuilder_a.java" />
+  <files names="AuxConcept_Editor.java:AuxConcept_EditorBuilder.java:BrokenConcept_Editor.java:BrokenConcept_EditorBuilder.java:CardinalityTestConcept_Editor.java:CardinalityTestConcept_EditorBuilder.java:CardinalityTestConcept_SubstituteMenu.java:EditorAspectDescriptorImpl.java:IncorrectTargetTestConcept_Editor.java:IncorrectTargetTestConcept_EditorBuilder.java:NamedContainer_Editor.java:NamedContainer_EditorBuilder.java:TestConcept_Editor.java:TestConcept_EditorBuilder.java" />
 </product>
 

@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class InferenceRule_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new InferenceRule_EditorBuilder_a(editorContext, node).createCell();
+    return new InferenceRule_EditorBuilder(editorContext, node).createCell();
   }
 }

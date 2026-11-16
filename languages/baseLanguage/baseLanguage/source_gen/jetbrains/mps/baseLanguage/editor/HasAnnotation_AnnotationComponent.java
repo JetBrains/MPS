@@ -16,6 +16,6 @@ public class HasAnnotation_AnnotationComponent implements ConceptEditorComponent
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new HasAnnotation_AnnotationComponent_ComponentBuilder_a(editorContext, node).createCell();
+    return new HasAnnotation_AnnotationComponent_ComponentBuilder(editorContext, node).createCell();
   }
 }

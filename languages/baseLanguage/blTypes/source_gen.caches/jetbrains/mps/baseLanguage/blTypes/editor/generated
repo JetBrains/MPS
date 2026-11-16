@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="cbdzrqnxmtpoq23yndjanr9pz5epn5p">
-  <files names="EditorAspectDescriptorImpl.java:PrimitiveTypeDescriptor_Editor.java:PrimitiveTypeDescriptor_EditorBuilder_a.java:PrimitiveTypeRef_Editor.java:PrimitiveTypeRef_EditorBuilder_a.java:PrimitiveTypeRef_SubstituteMenu.java" />
+  <files names="EditorAspectDescriptorImpl.java:PrimitiveTypeDescriptor_Editor.java:PrimitiveTypeDescriptor_EditorBuilder.java:PrimitiveTypeRef_Editor.java:PrimitiveTypeRef_EditorBuilder.java:PrimitiveTypeRef_SubstituteMenu.java" />
 </product>
 

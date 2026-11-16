@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ISuperTypeSpecifier_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ISuperTypeSpecifier_EditorBuilder_a(editorContext, node).createCell();
+    return new ISuperTypeSpecifier_EditorBuilder(editorContext, node).createCell();
   }
 }

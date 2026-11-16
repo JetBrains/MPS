@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class TemplateSwitch_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new TemplateSwitch_EditorBuilder_a(editorContext, node).createCell();
+    return new TemplateSwitch_EditorBuilder(editorContext, node).createCell();
   }
 }

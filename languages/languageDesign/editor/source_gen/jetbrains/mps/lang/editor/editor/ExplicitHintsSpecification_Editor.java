@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ExplicitHintsSpecification_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ExplicitHintsSpecification_EditorBuilder_a(editorContext, node).createCell();
+    return new ExplicitHintsSpecification_EditorBuilder(editorContext, node).createCell();
   }
 }

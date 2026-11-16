@@ -25,17 +25,17 @@
   </root>
   <root nodeRef="r:148d8860-62be-4d6a-8520-3fd48938aa97(jetbrains.mps.samples.customizedDebugger.Highlevel.editor)/8203012558887843647">
     <file name="Participant_Editor.java">
-      <node id="8203012558887843647" at="11,79,12,77" concept="6" />
+      <node id="8203012558887843647" at="11,79,12,75" concept="6" />
       <node id="8203012558887843647" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="8203012558887843647" at="11,79,12,77" />
+      <scope id="8203012558887843647" at="11,79,12,75" />
       <scope id="8203012558887843647" at="11,0,14,0">
         <var name="editorContext" id="8203012558887843647" />
         <var name="node" id="8203012558887843647" />
       </scope>
       <unit id="8203012558887843647" at="10,0,15,0" name="jetbrains.mps.samples.customizedDebugger.Highlevel.editor.Participant_Editor" />
     </file>
-    <file name="Participant_EditorBuilder_a.java">
-      <node id="8203012558887843647" at="29,91,30,19" concept="9" />
+    <file name="Participant_EditorBuilder.java">
+      <node id="8203012558887843647" at="29,89,30,19" concept="9" />
       <node id="8203012558887843647" at="30,19,31,18" concept="1" />
       <node id="8203012558887843647" at="36,26,37,18" concept="6" />
       <node id="8203012558887843647" at="40,39,41,30" concept="6" />
@@ -59,7 +59,7 @@
       <node id="8203012558887843647" at="73,0,74,0" concept="8" trace="PropertyAttribute$Gb" />
       <node id="8203012558887843647" at="26,0,28,0" concept="2" trace="myNode" />
       <node id="8203012558887843647" at="40,0,43,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="8203012558887843647" at="29,0,33,0" concept="0" trace="Participant_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8203012558887843647" at="29,0,33,0" concept="0" trace="Participant_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8203012558887843647" at="34,0,39,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="8203012558887846150" at="57,208,62,24" concept="3" />
       <node id="8203012558887846150" at="45,39,65,5" concept="10" />
@@ -67,7 +67,7 @@
       <scope id="8203012558887843647" at="36,26,37,18" />
       <scope id="8203012558887843647" at="40,39,41,30" />
       <scope id="8203012558887846150" at="63,15,64,40" />
-      <scope id="8203012558887843647" at="29,91,31,18" />
+      <scope id="8203012558887843647" at="29,89,31,18" />
       <scope id="8203012558887846150" at="58,74,60,145">
         <var name="manager" id="8203012558887846150" />
       </scope>
@@ -85,24 +85,24 @@
       </scope>
       <scope id="8203012558887846150" at="44,41,65,5" />
       <scope id="8203012558887846150" at="44,0,67,0" />
-      <unit id="8203012558887843647" at="68,0,71,0" name="jetbrains.mps.samples.customizedDebugger.Highlevel.editor.Participant_EditorBuilder_a$PROPS" />
-      <unit id="8203012558887843647" at="72,0,75,0" name="jetbrains.mps.samples.customizedDebugger.Highlevel.editor.Participant_EditorBuilder_a$CONCEPTS" />
-      <unit id="8203012558887843647" at="25,0,76,0" name="jetbrains.mps.samples.customizedDebugger.Highlevel.editor.Participant_EditorBuilder_a" />
+      <unit id="8203012558887843647" at="68,0,71,0" name="jetbrains.mps.samples.customizedDebugger.Highlevel.editor.Participant_EditorBuilder$PROPS" />
+      <unit id="8203012558887843647" at="72,0,75,0" name="jetbrains.mps.samples.customizedDebugger.Highlevel.editor.Participant_EditorBuilder$CONCEPTS" />
+      <unit id="8203012558887843647" at="25,0,76,0" name="jetbrains.mps.samples.customizedDebugger.Highlevel.editor.Participant_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:148d8860-62be-4d6a-8520-3fd48938aa97(jetbrains.mps.samples.customizedDebugger.Highlevel.editor)/8203012558887843700">
     <file name="Message_Editor.java">
-      <node id="8203012558887843700" at="11,79,12,73" concept="6" />
+      <node id="8203012558887843700" at="11,79,12,71" concept="6" />
       <node id="8203012558887843700" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="8203012558887843700" at="11,79,12,73" />
+      <scope id="8203012558887843700" at="11,79,12,71" />
       <scope id="8203012558887843700" at="11,0,14,0">
         <var name="editorContext" id="8203012558887843700" />
         <var name="node" id="8203012558887843700" />
       </scope>
       <unit id="8203012558887843700" at="10,0,15,0" name="jetbrains.mps.samples.customizedDebugger.Highlevel.editor.Message_Editor" />
     </file>
-    <file name="Message_EditorBuilder_a.java">
-      <node id="8203012558887843700" at="45,87,46,19" concept="9" />
+    <file name="Message_EditorBuilder.java">
+      <node id="8203012558887843700" at="45,85,46,19" concept="9" />
       <node id="8203012558887843700" at="46,19,47,18" concept="1" />
       <node id="8203012558887843700" at="52,26,53,18" concept="6" />
       <node id="8203012558887843700" at="56,39,57,32" concept="6" />
@@ -186,7 +186,7 @@
       <node id="8203012558887843720" at="106,0,108,0" concept="2" trace="myNode" />
       <node id="8203012558887843700" at="56,0,59,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="8203012558887843720" at="116,0,119,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="8203012558887843700" at="45,0,49,0" concept="0" trace="Message_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8203012558887843700" at="45,0,49,0" concept="0" trace="Message_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8203012558887843700" at="91,0,95,5" concept="3" />
       <node id="8203012558887843700" at="50,0,55,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="8203012558887843700" at="98,205,103,22" concept="3" />
@@ -210,7 +210,7 @@
       <scope id="8203012558887843720" at="122,28,123,20" />
       <scope id="8203012558887843730" at="143,17,144,42" />
       <scope id="8203012558887843750" at="174,15,175,40" />
-      <scope id="8203012558887843700" at="45,87,47,18" />
+      <scope id="8203012558887843700" at="45,85,47,18" />
       <scope id="8203012558887843700" at="92,40,94,45" />
       <scope id="8203012558887843700" at="99,73,101,145">
         <var name="manager" id="8203012558887843700" />
@@ -280,27 +280,27 @@
         <var name="referenceLink" id="8203012558887843700" />
       </scope>
       <scope id="8203012558887843700" at="70,0,105,0" />
-      <unit id="8203012558887843700" at="179,0,182,0" name="jetbrains.mps.samples.customizedDebugger.Highlevel.editor.Message_EditorBuilder_a$LINKS" />
-      <unit id="8203012558887843700" at="183,0,187,0" name="jetbrains.mps.samples.customizedDebugger.Highlevel.editor.Message_EditorBuilder_a$CONCEPTS" />
-      <unit id="8203012558887843700" at="188,0,192,0" name="jetbrains.mps.samples.customizedDebugger.Highlevel.editor.Message_EditorBuilder_a$PROPS" />
-      <unit id="8203012558887843700" at="72,42,87,5" name="jetbrains.mps.samples.customizedDebugger.Highlevel.editor.Message_EditorBuilder_a$1" />
-      <unit id="8203012558887843720" at="105,0,148,0" name="jetbrains.mps.samples.customizedDebugger.Highlevel.editor.Message_EditorBuilder_a$Inline_Builder0" />
-      <unit id="8203012558887843700" at="41,0,193,0" name="jetbrains.mps.samples.customizedDebugger.Highlevel.editor.Message_EditorBuilder_a" />
+      <unit id="8203012558887843700" at="179,0,182,0" name="jetbrains.mps.samples.customizedDebugger.Highlevel.editor.Message_EditorBuilder$LINKS" />
+      <unit id="8203012558887843700" at="183,0,187,0" name="jetbrains.mps.samples.customizedDebugger.Highlevel.editor.Message_EditorBuilder$CONCEPTS" />
+      <unit id="8203012558887843700" at="188,0,192,0" name="jetbrains.mps.samples.customizedDebugger.Highlevel.editor.Message_EditorBuilder$PROPS" />
+      <unit id="8203012558887843700" at="72,42,87,5" name="jetbrains.mps.samples.customizedDebugger.Highlevel.editor.Message_EditorBuilder$1" />
+      <unit id="8203012558887843720" at="105,0,148,0" name="jetbrains.mps.samples.customizedDebugger.Highlevel.editor.Message_EditorBuilder$Inline_Builder0" />
+      <unit id="8203012558887843700" at="41,0,193,0" name="jetbrains.mps.samples.customizedDebugger.Highlevel.editor.Message_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:148d8860-62be-4d6a-8520-3fd48938aa97(jetbrains.mps.samples.customizedDebugger.Highlevel.editor)/8203012558887843888">
     <file name="Conversation_Editor.java">
-      <node id="8203012558887843888" at="11,79,12,78" concept="6" />
+      <node id="8203012558887843888" at="11,79,12,76" concept="6" />
       <node id="8203012558887843888" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="8203012558887843888" at="11,79,12,78" />
+      <scope id="8203012558887843888" at="11,79,12,76" />
       <scope id="8203012558887843888" at="11,0,14,0">
         <var name="editorContext" id="8203012558887843888" />
         <var name="node" id="8203012558887843888" />
       </scope>
       <unit id="8203012558887843888" at="10,0,15,0" name="jetbrains.mps.samples.customizedDebugger.Highlevel.editor.Conversation_Editor" />
     </file>
-    <file name="Conversation_EditorBuilder_a.java">
-      <node id="8203012558887843888" at="46,92,47,19" concept="9" />
+    <file name="Conversation_EditorBuilder.java">
+      <node id="8203012558887843888" at="46,90,47,19" concept="9" />
       <node id="8203012558887843888" at="47,19,48,18" concept="1" />
       <node id="8203012558887843888" at="53,26,54,18" concept="6" />
       <node id="8203012558887843888" at="57,39,58,32" concept="6" />
@@ -430,7 +430,7 @@
       <node id="8203012558887843888" at="225,0,228,0" concept="4" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="8203012558887843888" at="228,0,231,0" concept="4" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="8203012558887843888" at="272,96,275,9" concept="3" />
-      <node id="8203012558887843888" at="46,0,50,0" concept="0" trace="Conversation_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8203012558887843888" at="46,0,50,0" concept="0" trace="Conversation_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8203012558887843888" at="121,0,125,0" concept="0" trace="participantsListHandler_h5gehg_d0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="8203012558887843888" at="126,0,130,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="8203012558887843888" at="159,97,163,9" concept="3" />
@@ -481,7 +481,7 @@
       <scope id="8203012558887843888" at="228,48,229,33" />
       <scope id="8203012558887843888" at="246,17,247,42" />
       <scope id="8203012558887843888" at="273,34,274,91" />
-      <scope id="8203012558887843888" at="46,92,48,18" />
+      <scope id="8203012558887843888" at="46,90,48,18" />
       <scope id="8203012558887843912" at="92,74,94,145">
         <var name="manager" id="8203012558887843912" />
       </scope>
@@ -599,12 +599,12 @@
         <var name="elementNode" id="8203012558887843888" />
         <var name="isEmptyCell" id="8203012558887843888" />
       </scope>
-      <unit id="8203012558887843888" at="280,0,283,0" name="jetbrains.mps.samples.customizedDebugger.Highlevel.editor.Conversation_EditorBuilder_a$PROPS" />
-      <unit id="8203012558887843888" at="290,0,294,0" name="jetbrains.mps.samples.customizedDebugger.Highlevel.editor.Conversation_EditorBuilder_a$LINKS" />
-      <unit id="8203012558887843888" at="284,0,289,0" name="jetbrains.mps.samples.customizedDebugger.Highlevel.editor.Conversation_EditorBuilder_a$CONCEPTS" />
-      <unit id="8203012558887843888" at="212,0,279,0" name="jetbrains.mps.samples.customizedDebugger.Highlevel.editor.Conversation_EditorBuilder_a$smallTalkListHandler_h5gehg_f0" />
-      <unit id="8203012558887843888" at="117,0,196,0" name="jetbrains.mps.samples.customizedDebugger.Highlevel.editor.Conversation_EditorBuilder_a$participantsListHandler_h5gehg_d0" />
-      <unit id="8203012558887843888" at="42,0,295,0" name="jetbrains.mps.samples.customizedDebugger.Highlevel.editor.Conversation_EditorBuilder_a" />
+      <unit id="8203012558887843888" at="280,0,283,0" name="jetbrains.mps.samples.customizedDebugger.Highlevel.editor.Conversation_EditorBuilder$PROPS" />
+      <unit id="8203012558887843888" at="290,0,294,0" name="jetbrains.mps.samples.customizedDebugger.Highlevel.editor.Conversation_EditorBuilder$LINKS" />
+      <unit id="8203012558887843888" at="284,0,289,0" name="jetbrains.mps.samples.customizedDebugger.Highlevel.editor.Conversation_EditorBuilder$CONCEPTS" />
+      <unit id="8203012558887843888" at="212,0,279,0" name="jetbrains.mps.samples.customizedDebugger.Highlevel.editor.Conversation_EditorBuilder$smallTalkListHandler_h5gehg_f0" />
+      <unit id="8203012558887843888" at="117,0,196,0" name="jetbrains.mps.samples.customizedDebugger.Highlevel.editor.Conversation_EditorBuilder$participantsListHandler_h5gehg_d0" />
+      <unit id="8203012558887843888" at="42,0,295,0" name="jetbrains.mps.samples.customizedDebugger.Highlevel.editor.Conversation_EditorBuilder" />
     </file>
   </root>
 </debug-info>

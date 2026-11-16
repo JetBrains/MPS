@@ -16,6 +16,6 @@ public class MultipleEditorsTestEditorComponentChild_default implements ConceptE
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new MultipleEditorsTestEditorComponentChild_default_ComponentBuilder_a(editorContext, node).createCell();
+    return new MultipleEditorsTestEditorComponentChild_default_ComponentBuilder(editorContext, node).createCell();
   }
 }

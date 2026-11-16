@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class RGBColor_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new RGBColor_EditorBuilder_a(editorContext, node).createCell();
+    return new RGBColor_EditorBuilder(editorContext, node).createCell();
   }
 }

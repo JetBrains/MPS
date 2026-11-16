@@ -17,17 +17,17 @@
   </root>
   <root nodeRef="r:b96dcc7d-bee1-45db-9bae-10fd8574af99(org.jetbrains.mps.samples.DecisionTable.editor)/1987251859606934921">
     <file name="DecisionTable_Editor.java">
-      <node id="1987251859606934921" at="11,79,12,79" concept="6" />
+      <node id="1987251859606934921" at="11,79,12,77" concept="6" />
       <node id="1987251859606934921" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1987251859606934921" at="11,79,12,79" />
+      <scope id="1987251859606934921" at="11,79,12,77" />
       <scope id="1987251859606934921" at="11,0,14,0">
         <var name="editorContext" id="1987251859606934921" />
         <var name="node" id="1987251859606934921" />
       </scope>
       <unit id="1987251859606934921" at="10,0,15,0" name="org.jetbrains.mps.samples.DecisionTable.editor.DecisionTable_Editor" />
     </file>
-    <file name="DecisionTable_EditorBuilder_a.java">
-      <node id="1987251859606934921" at="31,93,32,19" concept="8" />
+    <file name="DecisionTable_EditorBuilder.java">
+      <node id="1987251859606934921" at="31,91,32,19" concept="8" />
       <node id="1987251859606934921" at="32,19,33,18" concept="1" />
       <node id="1987251859606934921" at="38,26,39,18" concept="6" />
       <node id="1987251859606934921" at="42,39,43,32" concept="6" />
@@ -106,7 +106,7 @@
       <node id="1987251859606934921" at="150,7,153,7" concept="3" />
       <node id="1987251859606934921" at="169,0,172,0" concept="4" trace="getNoTargetText#()Ljava/lang/String;" />
       <node id="1987251859606934930" at="175,0,178,0" concept="4" trace="createTableModel#()Ljetbrains/mps/lang/editor/table/runtime/TableModel;" />
-      <node id="1987251859606934921" at="31,0,35,0" concept="0" trace="DecisionTable_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1987251859606934921" at="31,0,35,0" concept="0" trace="DecisionTable_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1987251859606934921" at="57,0,61,0" concept="4" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1987251859606934921" at="65,0,69,0" concept="0" trace="expectedTypeSingleRoleHandler_h1ymql_a0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1987251859606934921" at="118,0,122,0" concept="4" trace="createRefNode_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -139,7 +139,7 @@
       <scope id="1987251859606934921" at="165,17,166,42" />
       <scope id="1987251859606934921" at="169,40,170,33" />
       <scope id="1987251859606934930" at="175,44,176,132" />
-      <scope id="1987251859606934921" at="31,93,33,18" />
+      <scope id="1987251859606934921" at="31,91,33,18" />
       <scope id="1987251859606934921" at="57,40,59,33">
         <var name="provider" id="1987251859606934921" />
       </scope>
@@ -218,11 +218,11 @@
       <scope id="1987251859606934921" at="156,44,167,7" />
       <scope id="1987251859606934921" at="94,0,108,0" />
       <scope id="1987251859606934921" at="155,0,169,0" />
-      <unit id="1987251859606934930" at="174,36,178,5" name="org.jetbrains.mps.samples.DecisionTable.editor.DecisionTable_EditorBuilder_a$1" />
-      <unit id="1987251859606934921" at="184,0,191,0" name="org.jetbrains.mps.samples.DecisionTable.editor.DecisionTable_EditorBuilder_a$LINKS" />
-      <unit id="1987251859606934921" at="61,0,112,0" name="org.jetbrains.mps.samples.DecisionTable.editor.DecisionTable_EditorBuilder_a$expectedTypeSingleRoleHandler_h1ymql_a0" />
-      <unit id="1987251859606934921" at="122,0,173,0" name="org.jetbrains.mps.samples.DecisionTable.editor.DecisionTable_EditorBuilder_a$defaultValueSingleRoleHandler_h1ymql_c0" />
-      <unit id="1987251859606934921" at="27,0,192,0" name="org.jetbrains.mps.samples.DecisionTable.editor.DecisionTable_EditorBuilder_a" />
+      <unit id="1987251859606934930" at="174,36,178,5" name="org.jetbrains.mps.samples.DecisionTable.editor.DecisionTable_EditorBuilder$1" />
+      <unit id="1987251859606934921" at="184,0,191,0" name="org.jetbrains.mps.samples.DecisionTable.editor.DecisionTable_EditorBuilder$LINKS" />
+      <unit id="1987251859606934921" at="61,0,112,0" name="org.jetbrains.mps.samples.DecisionTable.editor.DecisionTable_EditorBuilder$expectedTypeSingleRoleHandler_h1ymql_a0" />
+      <unit id="1987251859606934921" at="122,0,173,0" name="org.jetbrains.mps.samples.DecisionTable.editor.DecisionTable_EditorBuilder$defaultValueSingleRoleHandler_h1ymql_c0" />
+      <unit id="1987251859606934921" at="27,0,192,0" name="org.jetbrains.mps.samples.DecisionTable.editor.DecisionTable_EditorBuilder" />
     </file>
   </root>
 </debug-info>

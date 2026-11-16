@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class GenerationContextOp_UniqueValidId_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new GenerationContextOp_UniqueValidId_EditorBuilder_a(editorContext, node).createCell();
+    return new GenerationContextOp_UniqueValidId_EditorBuilder(editorContext, node).createCell();
   }
 }

@@ -32,17 +32,17 @@
   </root>
   <root nodeRef="r:ab3ec9f7-a74b-4f27-b12e-43d436cdab82(jetbrains.mps.samples.multipleProjections.stateMachine.editor)/3675491646420501088">
     <file name="StateMachine_Editor.java">
-      <node id="3675491646420501088" at="11,79,12,78" concept="6" />
+      <node id="3675491646420501088" at="11,79,12,76" concept="6" />
       <node id="3675491646420501088" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="3675491646420501088" at="11,79,12,78" />
+      <scope id="3675491646420501088" at="11,79,12,76" />
       <scope id="3675491646420501088" at="11,0,14,0">
         <var name="editorContext" id="3675491646420501088" />
         <var name="node" id="3675491646420501088" />
       </scope>
       <unit id="3675491646420501088" at="10,0,15,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.StateMachine_Editor" />
     </file>
-    <file name="StateMachine_EditorBuilder_a.java">
-      <node id="3675491646420501088" at="33,92,34,19" concept="9" />
+    <file name="StateMachine_EditorBuilder.java">
+      <node id="3675491646420501088" at="33,90,34,19" concept="9" />
       <node id="3675491646420501088" at="34,19,35,18" concept="1" />
       <node id="3675491646420501088" at="40,26,41,18" concept="6" />
       <node id="3675491646420501088" at="44,39,45,32" concept="6" />
@@ -192,7 +192,7 @@
       <node id="3675491646420501088" at="261,0,264,0" concept="4" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="3675491646420501088" at="264,0,267,0" concept="4" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="3675491646420501088" at="308,96,311,9" concept="3" />
-      <node id="3675491646420501088" at="33,0,37,0" concept="0" trace="StateMachine_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="3675491646420501088" at="33,0,37,0" concept="0" trace="StateMachine_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="3675491646420501088" at="76,0,80,0" concept="0" trace="statesListHandler_qpt50r_a0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="3675491646420501088" at="81,0,85,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="3675491646420501088" at="114,97,118,9" concept="3" />
@@ -256,7 +256,7 @@
       <scope id="3675491646420501088" at="264,48,265,36" />
       <scope id="3675491646420501088" at="282,17,283,42" />
       <scope id="3675491646420501088" at="309,34,310,91" />
-      <scope id="3675491646420501088" at="33,92,35,18" />
+      <scope id="3675491646420501088" at="33,90,35,18" />
       <scope id="3675491646420501088" at="76,80,78,25" />
       <scope id="3675491646420501088" at="115,122,117,146" />
       <scope id="3675491646420501088" at="121,34,123,142" />
@@ -391,27 +391,27 @@
         <var name="elementNode" id="3675491646420501088" />
         <var name="isEmptyCell" id="3675491646420501088" />
       </scope>
-      <unit id="3675491646420501088" at="316,0,321,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.StateMachine_EditorBuilder_a$LINKS" />
-      <unit id="3675491646420501088" at="322,0,327,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.StateMachine_EditorBuilder_a$CONCEPTS" />
-      <unit id="3675491646420501088" at="72,0,139,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.StateMachine_EditorBuilder_a$statesListHandler_qpt50r_a0" />
-      <unit id="3675491646420501088" at="160,0,227,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.StateMachine_EditorBuilder_a$eventsListHandler_qpt50r_c0" />
-      <unit id="3675491646420501088" at="248,0,315,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.StateMachine_EditorBuilder_a$transitionsListHandler_qpt50r_e0" />
-      <unit id="3675491646420501088" at="29,0,328,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.StateMachine_EditorBuilder_a" />
+      <unit id="3675491646420501088" at="316,0,321,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.StateMachine_EditorBuilder$LINKS" />
+      <unit id="3675491646420501088" at="322,0,327,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.StateMachine_EditorBuilder$CONCEPTS" />
+      <unit id="3675491646420501088" at="72,0,139,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.StateMachine_EditorBuilder$statesListHandler_qpt50r_a0" />
+      <unit id="3675491646420501088" at="160,0,227,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.StateMachine_EditorBuilder$eventsListHandler_qpt50r_c0" />
+      <unit id="3675491646420501088" at="248,0,315,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.StateMachine_EditorBuilder$transitionsListHandler_qpt50r_e0" />
+      <unit id="3675491646420501088" at="29,0,328,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.StateMachine_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:ab3ec9f7-a74b-4f27-b12e-43d436cdab82(jetbrains.mps.samples.multipleProjections.stateMachine.editor)/3675491646420501146">
     <file name="State_Editor.java">
-      <node id="3675491646420501146" at="11,79,12,71" concept="6" />
+      <node id="3675491646420501146" at="11,79,12,69" concept="6" />
       <node id="3675491646420501146" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="3675491646420501146" at="11,79,12,71" />
+      <scope id="3675491646420501146" at="11,79,12,69" />
       <scope id="3675491646420501146" at="11,0,14,0">
         <var name="editorContext" id="3675491646420501146" />
         <var name="node" id="3675491646420501146" />
       </scope>
       <unit id="3675491646420501146" at="10,0,15,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.State_Editor" />
     </file>
-    <file name="State_EditorBuilder_a.java">
-      <node id="3675491646420501146" at="35,85,36,19" concept="9" />
+    <file name="State_EditorBuilder.java">
+      <node id="3675491646420501146" at="35,83,36,19" concept="9" />
       <node id="3675491646420501146" at="36,19,37,18" concept="1" />
       <node id="3675491646420501146" at="42,26,43,18" concept="6" />
       <node id="3675491646420501146" at="46,39,47,32" concept="6" />
@@ -452,7 +452,7 @@
       <node id="3675491646420501146" at="102,0,103,0" concept="8" trace="PropertyAttribute$Gb" />
       <node id="3675491646420501146" at="32,0,34,0" concept="2" trace="myNode" />
       <node id="3675491646420501146" at="46,0,49,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="3675491646420501146" at="35,0,39,0" concept="0" trace="State_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="3675491646420501146" at="35,0,39,0" concept="0" trace="State_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="3675491646420501146" at="40,0,45,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="3675491646420506402" at="77,208,82,24" concept="3" />
       <node id="3675491646420506401" at="60,0,66,0" concept="4" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -463,7 +463,7 @@
       <scope id="3675491646420501146" at="42,26,43,18" />
       <scope id="3675491646420501146" at="46,39,47,32" />
       <scope id="3675491646420506402" at="83,15,84,40" />
-      <scope id="3675491646420501146" at="35,85,37,18" />
+      <scope id="3675491646420501146" at="35,83,37,18" />
       <scope id="3675491646420506402" at="78,74,80,145">
         <var name="manager" id="3675491646420506402" />
       </scope>
@@ -494,24 +494,24 @@
       </scope>
       <scope id="3675491646420506402" at="66,41,85,5" />
       <scope id="3675491646420506402" at="66,0,87,0" />
-      <unit id="3675491646420501146" at="97,0,100,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.State_EditorBuilder_a$PROPS" />
-      <unit id="3675491646420501146" at="101,0,104,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.State_EditorBuilder_a$CONCEPTS" />
-      <unit id="3675491646420501146" at="31,0,105,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.State_EditorBuilder_a" />
+      <unit id="3675491646420501146" at="97,0,100,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.State_EditorBuilder$PROPS" />
+      <unit id="3675491646420501146" at="101,0,104,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.State_EditorBuilder$CONCEPTS" />
+      <unit id="3675491646420501146" at="31,0,105,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.State_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:ab3ec9f7-a74b-4f27-b12e-43d436cdab82(jetbrains.mps.samples.multipleProjections.stateMachine.editor)/3675491646420506426">
     <file name="Event_Editor.java">
-      <node id="3675491646420506426" at="11,79,12,71" concept="6" />
+      <node id="3675491646420506426" at="11,79,12,69" concept="6" />
       <node id="3675491646420506426" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="3675491646420506426" at="11,79,12,71" />
+      <scope id="3675491646420506426" at="11,79,12,69" />
       <scope id="3675491646420506426" at="11,0,14,0">
         <var name="editorContext" id="3675491646420506426" />
         <var name="node" id="3675491646420506426" />
       </scope>
       <unit id="3675491646420506426" at="10,0,15,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.Event_Editor" />
     </file>
-    <file name="Event_EditorBuilder_a.java">
-      <node id="3675491646420506426" at="35,85,36,19" concept="9" />
+    <file name="Event_EditorBuilder.java">
+      <node id="3675491646420506426" at="35,83,36,19" concept="9" />
       <node id="3675491646420506426" at="36,19,37,18" concept="1" />
       <node id="3675491646420506426" at="42,26,43,18" concept="6" />
       <node id="3675491646420506426" at="46,39,47,32" concept="6" />
@@ -552,7 +552,7 @@
       <node id="3675491646420506426" at="102,0,103,0" concept="8" trace="PropertyAttribute$Gb" />
       <node id="3675491646420506426" at="32,0,34,0" concept="2" trace="myNode" />
       <node id="3675491646420506426" at="46,0,49,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="3675491646420506426" at="35,0,39,0" concept="0" trace="Event_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="3675491646420506426" at="35,0,39,0" concept="0" trace="Event_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="3675491646420506426" at="40,0,45,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="3675491646420506458" at="77,208,82,24" concept="3" />
       <node id="3675491646420506457" at="60,0,66,0" concept="4" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -563,7 +563,7 @@
       <scope id="3675491646420506426" at="42,26,43,18" />
       <scope id="3675491646420506426" at="46,39,47,32" />
       <scope id="3675491646420506458" at="83,15,84,40" />
-      <scope id="3675491646420506426" at="35,85,37,18" />
+      <scope id="3675491646420506426" at="35,83,37,18" />
       <scope id="3675491646420506458" at="78,74,80,145">
         <var name="manager" id="3675491646420506458" />
       </scope>
@@ -594,24 +594,24 @@
       </scope>
       <scope id="3675491646420506458" at="66,41,85,5" />
       <scope id="3675491646420506458" at="66,0,87,0" />
-      <unit id="3675491646420506426" at="97,0,100,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.Event_EditorBuilder_a$PROPS" />
-      <unit id="3675491646420506426" at="101,0,104,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.Event_EditorBuilder_a$CONCEPTS" />
-      <unit id="3675491646420506426" at="31,0,105,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.Event_EditorBuilder_a" />
+      <unit id="3675491646420506426" at="97,0,100,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.Event_EditorBuilder$PROPS" />
+      <unit id="3675491646420506426" at="101,0,104,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.Event_EditorBuilder$CONCEPTS" />
+      <unit id="3675491646420506426" at="31,0,105,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.Event_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:ab3ec9f7-a74b-4f27-b12e-43d436cdab82(jetbrains.mps.samples.multipleProjections.stateMachine.editor)/3675491646420506497">
     <file name="EventReference_Editor.java">
-      <node id="3675491646420506497" at="11,79,12,80" concept="6" />
+      <node id="3675491646420506497" at="11,79,12,78" concept="6" />
       <node id="3675491646420506497" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="3675491646420506497" at="11,79,12,80" />
+      <scope id="3675491646420506497" at="11,79,12,78" />
       <scope id="3675491646420506497" at="11,0,14,0">
         <var name="editorContext" id="3675491646420506497" />
         <var name="node" id="3675491646420506497" />
       </scope>
       <unit id="3675491646420506497" at="10,0,15,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.EventReference_Editor" />
     </file>
-    <file name="EventReference_EditorBuilder_a.java">
-      <node id="3675491646420506497" at="43,94,44,19" concept="9" />
+    <file name="EventReference_EditorBuilder.java">
+      <node id="3675491646420506497" at="43,92,44,19" concept="9" />
       <node id="3675491646420506497" at="44,19,45,18" concept="1" />
       <node id="3675491646420506497" at="50,26,51,18" concept="6" />
       <node id="3675491646420506497" at="54,39,55,32" concept="6" />
@@ -674,7 +674,7 @@
       <node id="3675491646420506542" at="102,0,104,0" concept="2" trace="myNode" />
       <node id="3675491646420506497" at="54,0,57,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="3675491646420506542" at="112,0,115,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="3675491646420506497" at="43,0,47,0" concept="0" trace="EventReference_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="3675491646420506497" at="43,0,47,0" concept="0" trace="EventReference_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="3675491646420506497" at="87,0,91,5" concept="3" />
       <node id="3675491646420506497" at="48,0,53,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="3675491646420506497" at="94,205,99,22" concept="3" />
@@ -693,7 +693,7 @@
       <scope id="3675491646420506542" at="112,41,113,32" />
       <scope id="3675491646420506542" at="118,28,119,20" />
       <scope id="3675491646420506544" at="142,17,143,42" />
-      <scope id="3675491646420506497" at="43,94,45,18" />
+      <scope id="3675491646420506497" at="43,92,45,18" />
       <scope id="3675491646420506497" at="88,40,90,44" />
       <scope id="3675491646420506497" at="95,73,97,145">
         <var name="manager" id="3675491646420506497" />
@@ -748,27 +748,27 @@
         <var name="referenceLink" id="3675491646420506497" />
       </scope>
       <scope id="3675491646420506497" at="66,0,101,0" />
-      <unit id="3675491646420506497" at="148,0,151,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.EventReference_EditorBuilder_a$LINKS" />
-      <unit id="3675491646420506497" at="157,0,160,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.EventReference_EditorBuilder_a$PROPS" />
-      <unit id="3675491646420506497" at="152,0,156,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.EventReference_EditorBuilder_a$CONCEPTS" />
-      <unit id="3675491646420506497" at="68,42,83,5" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.EventReference_EditorBuilder_a$1" />
-      <unit id="3675491646420506542" at="101,0,147,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.EventReference_EditorBuilder_a$Inline_Builder0" />
-      <unit id="3675491646420506497" at="39,0,161,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.EventReference_EditorBuilder_a" />
+      <unit id="3675491646420506497" at="148,0,151,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.EventReference_EditorBuilder$LINKS" />
+      <unit id="3675491646420506497" at="157,0,160,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.EventReference_EditorBuilder$PROPS" />
+      <unit id="3675491646420506497" at="152,0,156,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.EventReference_EditorBuilder$CONCEPTS" />
+      <unit id="3675491646420506497" at="68,42,83,5" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.EventReference_EditorBuilder$1" />
+      <unit id="3675491646420506542" at="101,0,147,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.EventReference_EditorBuilder$Inline_Builder0" />
+      <unit id="3675491646420506497" at="39,0,161,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.EventReference_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:ab3ec9f7-a74b-4f27-b12e-43d436cdab82(jetbrains.mps.samples.multipleProjections.stateMachine.editor)/3675491646420506633">
     <file name="StateReference_Editor.java">
-      <node id="3675491646420506633" at="11,79,12,80" concept="6" />
+      <node id="3675491646420506633" at="11,79,12,78" concept="6" />
       <node id="3675491646420506633" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="3675491646420506633" at="11,79,12,80" />
+      <scope id="3675491646420506633" at="11,79,12,78" />
       <scope id="3675491646420506633" at="11,0,14,0">
         <var name="editorContext" id="3675491646420506633" />
         <var name="node" id="3675491646420506633" />
       </scope>
       <unit id="3675491646420506633" at="10,0,15,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.StateReference_Editor" />
     </file>
-    <file name="StateReference_EditorBuilder_a.java">
-      <node id="3675491646420506633" at="43,94,44,19" concept="9" />
+    <file name="StateReference_EditorBuilder.java">
+      <node id="3675491646420506633" at="43,92,44,19" concept="9" />
       <node id="3675491646420506633" at="44,19,45,18" concept="1" />
       <node id="3675491646420506633" at="50,26,51,18" concept="6" />
       <node id="3675491646420506633" at="54,39,55,32" concept="6" />
@@ -831,7 +831,7 @@
       <node id="3675491646420506642" at="102,0,104,0" concept="2" trace="myNode" />
       <node id="3675491646420506633" at="54,0,57,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="3675491646420506642" at="112,0,115,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="3675491646420506633" at="43,0,47,0" concept="0" trace="StateReference_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="3675491646420506633" at="43,0,47,0" concept="0" trace="StateReference_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="3675491646420506633" at="87,0,91,5" concept="3" />
       <node id="3675491646420506633" at="48,0,53,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="3675491646420506633" at="94,205,99,22" concept="3" />
@@ -850,7 +850,7 @@
       <scope id="3675491646420506642" at="112,41,113,32" />
       <scope id="3675491646420506642" at="118,28,119,20" />
       <scope id="3675491646420506644" at="142,17,143,42" />
-      <scope id="3675491646420506633" at="43,94,45,18" />
+      <scope id="3675491646420506633" at="43,92,45,18" />
       <scope id="3675491646420506633" at="88,40,90,44" />
       <scope id="3675491646420506633" at="95,73,97,145">
         <var name="manager" id="3675491646420506633" />
@@ -905,27 +905,27 @@
         <var name="referenceLink" id="3675491646420506633" />
       </scope>
       <scope id="3675491646420506633" at="66,0,101,0" />
-      <unit id="3675491646420506633" at="148,0,151,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.StateReference_EditorBuilder_a$LINKS" />
-      <unit id="3675491646420506633" at="157,0,160,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.StateReference_EditorBuilder_a$PROPS" />
-      <unit id="3675491646420506633" at="152,0,156,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.StateReference_EditorBuilder_a$CONCEPTS" />
-      <unit id="3675491646420506633" at="68,42,83,5" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.StateReference_EditorBuilder_a$1" />
-      <unit id="3675491646420506642" at="101,0,147,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.StateReference_EditorBuilder_a$Inline_Builder0" />
-      <unit id="3675491646420506633" at="39,0,161,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.StateReference_EditorBuilder_a" />
+      <unit id="3675491646420506633" at="148,0,151,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.StateReference_EditorBuilder$LINKS" />
+      <unit id="3675491646420506633" at="157,0,160,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.StateReference_EditorBuilder$PROPS" />
+      <unit id="3675491646420506633" at="152,0,156,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.StateReference_EditorBuilder$CONCEPTS" />
+      <unit id="3675491646420506633" at="68,42,83,5" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.StateReference_EditorBuilder$1" />
+      <unit id="3675491646420506642" at="101,0,147,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.StateReference_EditorBuilder$Inline_Builder0" />
+      <unit id="3675491646420506633" at="39,0,161,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.StateReference_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:ab3ec9f7-a74b-4f27-b12e-43d436cdab82(jetbrains.mps.samples.multipleProjections.stateMachine.editor)/3675491646420506735">
     <file name="Transition_Editor.java">
-      <node id="3675491646420506735" at="11,79,12,76" concept="6" />
+      <node id="3675491646420506735" at="11,79,12,74" concept="6" />
       <node id="3675491646420506735" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="3675491646420506735" at="11,79,12,76" />
+      <scope id="3675491646420506735" at="11,79,12,74" />
       <scope id="3675491646420506735" at="11,0,14,0">
         <var name="editorContext" id="3675491646420506735" />
         <var name="node" id="3675491646420506735" />
       </scope>
       <unit id="3675491646420506735" at="10,0,15,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.Transition_Editor" />
     </file>
-    <file name="Transition_EditorBuilder_a.java">
-      <node id="3675491646420506735" at="30,90,31,19" concept="9" />
+    <file name="Transition_EditorBuilder.java">
+      <node id="3675491646420506735" at="30,88,31,19" concept="9" />
       <node id="3675491646420506735" at="31,19,32,18" concept="1" />
       <node id="3675491646420506735" at="37,26,38,18" concept="6" />
       <node id="3675491646420506735" at="41,39,42,32" concept="6" />
@@ -1047,7 +1047,7 @@
       <node id="3675491646420506735" at="223,87,226,7" concept="3" />
       <node id="3675491646420506735" at="226,7,229,7" concept="3" />
       <node id="3675491646420506735" at="245,0,248,0" concept="4" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="3675491646420506735" at="30,0,34,0" concept="0" trace="Transition_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="3675491646420506735" at="30,0,34,0" concept="0" trace="Transition_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="3675491646420506735" at="62,0,66,0" concept="4" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="3675491646420506735" at="70,0,74,0" concept="0" trace="triggerSingleRoleHandler_jj4qz_b0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="3675491646420506735" at="133,0,137,0" concept="4" trace="createRefNode_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -1092,7 +1092,7 @@
       <scope id="3675491646420506735" at="227,42,228,48" />
       <scope id="3675491646420506735" at="241,17,242,42" />
       <scope id="3675491646420506735" at="245,40,246,28" />
-      <scope id="3675491646420506735" at="30,90,32,18" />
+      <scope id="3675491646420506735" at="30,88,32,18" />
       <scope id="3675491646420506735" at="62,40,64,33">
         <var name="provider" id="3675491646420506735" />
       </scope>
@@ -1210,11 +1210,11 @@
       <scope id="3675491646420506735" at="102,0,116,0" />
       <scope id="3675491646420506735" at="170,0,184,0" />
       <scope id="3675491646420506735" at="231,0,245,0" />
-      <unit id="3675491646420506735" at="259,0,264,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.Transition_EditorBuilder_a$LINKS" />
-      <unit id="3675491646420506735" at="137,0,188,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.Transition_EditorBuilder_a$fromStateSingleRoleHandler_jj4qz_a2a" />
-      <unit id="3675491646420506735" at="198,0,249,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.Transition_EditorBuilder_a$toStateSingleRoleHandler_jj4qz_c2a" />
-      <unit id="3675491646420506735" at="66,0,120,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.Transition_EditorBuilder_a$triggerSingleRoleHandler_jj4qz_b0" />
-      <unit id="3675491646420506735" at="26,0,265,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.Transition_EditorBuilder_a" />
+      <unit id="3675491646420506735" at="259,0,264,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.Transition_EditorBuilder$LINKS" />
+      <unit id="3675491646420506735" at="137,0,188,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.Transition_EditorBuilder$fromStateSingleRoleHandler_jj4qz_a2a" />
+      <unit id="3675491646420506735" at="198,0,249,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.Transition_EditorBuilder$toStateSingleRoleHandler_jj4qz_c2a" />
+      <unit id="3675491646420506735" at="66,0,120,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.Transition_EditorBuilder$triggerSingleRoleHandler_jj4qz_b0" />
+      <unit id="3675491646420506735" at="26,0,265,0" name="jetbrains.mps.samples.multipleProjections.stateMachine.editor.Transition_EditorBuilder" />
     </file>
   </root>
 </debug-info>

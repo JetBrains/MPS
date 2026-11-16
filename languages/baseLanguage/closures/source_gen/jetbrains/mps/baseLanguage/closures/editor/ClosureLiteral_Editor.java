@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ClosureLiteral_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ClosureLiteral_EditorBuilder_a(editorContext, node).createCell();
+    return new ClosureLiteral_EditorBuilder(editorContext, node).createCell();
   }
 }

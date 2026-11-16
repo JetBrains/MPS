@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class CommandType_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new CommandType_EditorBuilder_a(editorContext, node).createCell();
+    return new CommandType_EditorBuilder(editorContext, node).createCell();
   }
 }

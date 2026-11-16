@@ -17,6 +17,6 @@ public class MultipleEditorsTestEditorComponentChild_compactRich implements Conc
     return myContextHints;
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new MultipleEditorsTestEditorComponentChild_compactRich_ComponentBuilder_a(editorContext, node).createCell();
+    return new MultipleEditorsTestEditorComponentChild_compactRich_ComponentBuilder(editorContext, node).createCell();
   }
 }

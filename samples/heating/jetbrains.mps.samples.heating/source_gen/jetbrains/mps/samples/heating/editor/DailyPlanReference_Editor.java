@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class DailyPlanReference_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new DailyPlanReference_EditorBuilder_a(editorContext, node).createCell();
+    return new DailyPlanReference_EditorBuilder(editorContext, node).createCell();
   }
 }

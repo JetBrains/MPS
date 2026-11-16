@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class CustomPlaceholder_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new CustomPlaceholder_EditorBuilder_a(editorContext, node).createCell();
+    return new CustomPlaceholder_EditorBuilder(editorContext, node).createCell();
   }
 }

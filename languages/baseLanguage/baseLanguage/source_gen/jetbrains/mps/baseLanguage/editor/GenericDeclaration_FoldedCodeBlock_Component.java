@@ -16,6 +16,6 @@ public class GenericDeclaration_FoldedCodeBlock_Component implements ConceptEdit
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new GenericDeclaration_FoldedCodeBlock_Component_ComponentBuilder_a(editorContext, node).createCell();
+    return new GenericDeclaration_FoldedCodeBlock_Component_ComponentBuilder(editorContext, node).createCell();
   }
 }

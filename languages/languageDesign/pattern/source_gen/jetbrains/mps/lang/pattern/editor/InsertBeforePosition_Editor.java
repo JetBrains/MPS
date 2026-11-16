@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class InsertBeforePosition_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new InsertBeforePosition_EditorBuilder_a(editorContext, node).createCell();
+    return new InsertBeforePosition_EditorBuilder(editorContext, node).createCell();
   }
 }

@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class MultiForEachPair_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new MultiForEachPair_EditorBuilder_a(editorContext, node).createCell();
+    return new MultiForEachPair_EditorBuilder(editorContext, node).createCell();
   }
 }

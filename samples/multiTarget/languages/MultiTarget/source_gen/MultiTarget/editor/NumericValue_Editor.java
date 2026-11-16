@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class NumericValue_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new NumericValue_EditorBuilder_a(editorContext, node).createCell();
+    return new NumericValue_EditorBuilder(editorContext, node).createCell();
   }
 }

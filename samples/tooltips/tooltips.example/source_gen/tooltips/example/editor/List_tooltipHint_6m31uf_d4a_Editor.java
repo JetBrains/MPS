@@ -18,6 +18,6 @@ public class List_tooltipHint_6m31uf_d4a_Editor extends DefaultNodeEditor {
     return myContextHints;
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new List_tooltipHint_6m31uf_d4a_EditorBuilder_a(editorContext, node).createCell();
+    return new List_tooltipHint_6m31uf_d4a_EditorBuilder(editorContext, node).createCell();
   }
 }

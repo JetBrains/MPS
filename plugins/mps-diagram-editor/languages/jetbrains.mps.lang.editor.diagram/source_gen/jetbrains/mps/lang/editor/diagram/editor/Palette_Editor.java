@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class Palette_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new Palette_EditorBuilder_a(editorContext, node).createCell();
+    return new Palette_EditorBuilder(editorContext, node).createCell();
   }
 }

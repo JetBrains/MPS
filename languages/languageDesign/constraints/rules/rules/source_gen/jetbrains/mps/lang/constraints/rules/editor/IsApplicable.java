@@ -16,6 +16,6 @@ public class IsApplicable implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new IsApplicable_ComponentBuilder_a(editorContext, node).createCell();
+    return new IsApplicable_ComponentBuilder(editorContext, node).createCell();
   }
 }

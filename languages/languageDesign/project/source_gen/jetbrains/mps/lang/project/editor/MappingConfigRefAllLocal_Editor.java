@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class MappingConfigRefAllLocal_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new MappingConfigRefAllLocal_EditorBuilder_a(editorContext, node).createCell();
+    return new MappingConfigRefAllLocal_EditorBuilder(editorContext, node).createCell();
   }
 }

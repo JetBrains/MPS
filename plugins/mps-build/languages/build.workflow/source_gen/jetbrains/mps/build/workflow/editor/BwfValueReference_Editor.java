@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class BwfValueReference_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new BwfValueReference_EditorBuilder_a(editorContext, node).createCell();
+    return new BwfValueReference_EditorBuilder(editorContext, node).createCell();
   }
 }

@@ -17,6 +17,6 @@ public class MultipleEditorsTestEditorComponentChild_compact implements ConceptE
     return myContextHints;
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new MultipleEditorsTestEditorComponentChild_compact_ComponentBuilder_a(editorContext, node).createCell();
+    return new MultipleEditorsTestEditorComponentChild_compact_ComponentBuilder(editorContext, node).createCell();
   }
 }

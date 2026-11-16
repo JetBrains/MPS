@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class FigureParameterMapping_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new FigureParameterMapping_EditorBuilder_a(editorContext, node).createCell();
+    return new FigureParameterMapping_EditorBuilder(editorContext, node).createCell();
   }
 }

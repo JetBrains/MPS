@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class FailingRuleProblem_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new FailingRuleProblem_EditorBuilder_a(editorContext, node).createCell();
+    return new FailingRuleProblem_EditorBuilder(editorContext, node).createCell();
   }
 }

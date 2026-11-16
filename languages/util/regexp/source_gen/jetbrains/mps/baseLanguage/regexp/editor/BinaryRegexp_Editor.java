@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class BinaryRegexp_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new BinaryRegexp_EditorBuilder_a(editorContext, node).createCell();
+    return new BinaryRegexp_EditorBuilder(editorContext, node).createCell();
   }
 }

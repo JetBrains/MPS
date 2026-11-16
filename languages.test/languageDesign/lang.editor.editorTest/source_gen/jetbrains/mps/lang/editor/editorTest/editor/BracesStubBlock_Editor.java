@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class BracesStubBlock_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new BracesStubBlock_EditorBuilder_a(editorContext, node).createCell();
+    return new BracesStubBlock_EditorBuilder(editorContext, node).createCell();
   }
 }

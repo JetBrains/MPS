@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class CardinalityTestConcept_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new CardinalityTestConcept_EditorBuilder_a(editorContext, node).createCell();
+    return new CardinalityTestConcept_EditorBuilder(editorContext, node).createCell();
   }
 }

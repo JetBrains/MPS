@@ -35,17 +35,17 @@
   </root>
   <root nodeRef="r:293510ad-7298-4276-86d7-1873781733f1(jetbrains.mps.samples.lambdaCalculus.editor)/1564819815921013157">
     <file name="MultipleExpression_Editor.java">
-      <node id="1564819815921013157" at="11,79,12,84" concept="7" />
+      <node id="1564819815921013157" at="11,79,12,82" concept="7" />
       <node id="1564819815921013157" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1564819815921013157" at="11,79,12,84" />
+      <scope id="1564819815921013157" at="11,79,12,82" />
       <scope id="1564819815921013157" at="11,0,14,0">
         <var name="editorContext" id="1564819815921013157" />
         <var name="node" id="1564819815921013157" />
       </scope>
       <unit id="1564819815921013157" at="10,0,15,0" name="jetbrains.mps.samples.lambdaCalculus.editor.MultipleExpression_Editor" />
     </file>
-    <file name="MultipleExpression_EditorBuilder_a.java">
-      <node id="1564819815921013157" at="34,98,35,19" concept="12" />
+    <file name="MultipleExpression_EditorBuilder.java">
+      <node id="1564819815921013157" at="34,96,35,19" concept="12" />
       <node id="1564819815921013157" at="35,19,36,18" concept="1" />
       <node id="1564819815921013157" at="41,26,42,18" concept="7" />
       <node id="1564819815921013157" at="45,39,46,32" concept="7" />
@@ -101,7 +101,7 @@
       <node id="1564819815921013157" at="45,0,48,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1564819815921013157" at="77,0,80,0" concept="5" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="1564819815921013157" at="80,0,83,0" concept="5" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
-      <node id="1564819815921013157" at="34,0,38,0" concept="0" trace="MultipleExpression_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1564819815921013157" at="34,0,38,0" concept="0" trace="MultipleExpression_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1564819815921013157" at="68,0,72,0" concept="0" trace="expressionsListHandler_24hnc2_a0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1564819815921013157" at="73,0,77,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1564819815921013157" at="106,97,110,9" concept="4" />
@@ -126,7 +126,7 @@
       <scope id="1564819815921013157" at="77,40,78,36" />
       <scope id="1564819815921013157" at="80,48,81,42" />
       <scope id="1564819815921013157" at="98,17,99,42" />
-      <scope id="1564819815921013157" at="34,98,36,18" />
+      <scope id="1564819815921013157" at="34,96,36,18" />
       <scope id="1564819815921013157" at="68,85,70,25" />
       <scope id="1564819815921013157" at="107,122,109,146" />
       <scope id="1564819815921013157" at="113,34,115,142" />
@@ -183,10 +183,10 @@
         <var name="elementNode" id="1564819815921013157" />
         <var name="isEmptyCell" id="1564819815921013157" />
       </scope>
-      <unit id="1564819815921013157" at="145,0,148,0" name="jetbrains.mps.samples.lambdaCalculus.editor.MultipleExpression_EditorBuilder_a$LINKS" />
-      <unit id="1564819815921013157" at="149,0,152,0" name="jetbrains.mps.samples.lambdaCalculus.editor.MultipleExpression_EditorBuilder_a$CONCEPTS" />
-      <unit id="1564819815921013157" at="64,0,144,0" name="jetbrains.mps.samples.lambdaCalculus.editor.MultipleExpression_EditorBuilder_a$expressionsListHandler_24hnc2_a0" />
-      <unit id="1564819815921013157" at="30,0,153,0" name="jetbrains.mps.samples.lambdaCalculus.editor.MultipleExpression_EditorBuilder_a" />
+      <unit id="1564819815921013157" at="145,0,148,0" name="jetbrains.mps.samples.lambdaCalculus.editor.MultipleExpression_EditorBuilder$LINKS" />
+      <unit id="1564819815921013157" at="149,0,152,0" name="jetbrains.mps.samples.lambdaCalculus.editor.MultipleExpression_EditorBuilder$CONCEPTS" />
+      <unit id="1564819815921013157" at="64,0,144,0" name="jetbrains.mps.samples.lambdaCalculus.editor.MultipleExpression_EditorBuilder$expressionsListHandler_24hnc2_a0" />
+      <unit id="1564819815921013157" at="30,0,153,0" name="jetbrains.mps.samples.lambdaCalculus.editor.MultipleExpression_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:293510ad-7298-4276-86d7-1873781733f1(jetbrains.mps.samples.lambdaCalculus.editor)/1741258697587106809">
@@ -1013,17 +1013,17 @@
   </root>
   <root nodeRef="r:293510ad-7298-4276-86d7-1873781733f1(jetbrains.mps.samples.lambdaCalculus.editor)/1934341835352312158">
     <file name="BinaryOperation_Editor.java">
-      <node id="1934341835352312158" at="11,79,12,81" concept="7" />
+      <node id="1934341835352312158" at="11,79,12,79" concept="7" />
       <node id="1934341835352312158" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1934341835352312158" at="11,79,12,81" />
+      <scope id="1934341835352312158" at="11,79,12,79" />
       <scope id="1934341835352312158" at="11,0,14,0">
         <var name="editorContext" id="1934341835352312158" />
         <var name="node" id="1934341835352312158" />
       </scope>
       <unit id="1934341835352312158" at="10,0,15,0" name="jetbrains.mps.samples.lambdaCalculus.editor.BinaryOperation_Editor" />
     </file>
-    <file name="BinaryOperation_EditorBuilder_a.java">
-      <node id="1934341835352312158" at="26,95,27,19" concept="12" />
+    <file name="BinaryOperation_EditorBuilder.java">
+      <node id="1934341835352312158" at="26,93,27,19" concept="12" />
       <node id="1934341835352312158" at="27,19,28,18" concept="1" />
       <node id="1934341835352312158" at="33,26,34,18" concept="7" />
       <node id="1934341835352312158" at="37,39,38,32" concept="7" />
@@ -1093,7 +1093,7 @@
       <node id="1934341835352312158" at="140,87,143,7" concept="4" />
       <node id="1934341835352312158" at="143,7,146,7" concept="4" />
       <node id="1934341835352312158" at="163,0,166,0" concept="5" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="1934341835352312158" at="26,0,30,0" concept="0" trace="BinaryOperation_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1934341835352312158" at="26,0,30,0" concept="0" trace="BinaryOperation_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1934341835352312158" at="51,0,55,0" concept="5" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1934341835352312158" at="59,0,63,0" concept="0" trace="leftSingleRoleHandler_tdrdn7_a0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1934341835352312158" at="111,0,115,0" concept="5" trace="createRefNode_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -1123,7 +1123,7 @@
       <scope id="1934341835352312158" at="144,42,145,46" />
       <scope id="1934341835352312158" at="159,17,160,42" />
       <scope id="1934341835352312158" at="163,40,164,26" />
-      <scope id="1934341835352312158" at="26,95,28,18" />
+      <scope id="1934341835352312158" at="26,93,28,18" />
       <scope id="1934341835352312158" at="51,40,53,33">
         <var name="provider" id="1934341835352312158" />
       </scope>
@@ -1196,10 +1196,10 @@
       <scope id="1934341835352312158" at="150,44,161,7" />
       <scope id="1934341835352312158" at="88,0,102,0" />
       <scope id="1934341835352312158" at="149,0,163,0" />
-      <unit id="1934341835352312158" at="168,0,172,0" name="jetbrains.mps.samples.lambdaCalculus.editor.BinaryOperation_EditorBuilder_a$LINKS" />
-      <unit id="1934341835352312158" at="55,0,106,0" name="jetbrains.mps.samples.lambdaCalculus.editor.BinaryOperation_EditorBuilder_a$leftSingleRoleHandler_tdrdn7_a0" />
-      <unit id="1934341835352312158" at="115,0,167,0" name="jetbrains.mps.samples.lambdaCalculus.editor.BinaryOperation_EditorBuilder_a$rightSingleRoleHandler_tdrdn7_c0" />
-      <unit id="1934341835352312158" at="22,0,173,0" name="jetbrains.mps.samples.lambdaCalculus.editor.BinaryOperation_EditorBuilder_a" />
+      <unit id="1934341835352312158" at="168,0,172,0" name="jetbrains.mps.samples.lambdaCalculus.editor.BinaryOperation_EditorBuilder$LINKS" />
+      <unit id="1934341835352312158" at="55,0,106,0" name="jetbrains.mps.samples.lambdaCalculus.editor.BinaryOperation_EditorBuilder$leftSingleRoleHandler_tdrdn7_a0" />
+      <unit id="1934341835352312158" at="115,0,167,0" name="jetbrains.mps.samples.lambdaCalculus.editor.BinaryOperation_EditorBuilder$rightSingleRoleHandler_tdrdn7_c0" />
+      <unit id="1934341835352312158" at="22,0,173,0" name="jetbrains.mps.samples.lambdaCalculus.editor.BinaryOperation_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:293510ad-7298-4276-86d7-1873781733f1(jetbrains.mps.samples.lambdaCalculus.editor)/2076063674015982318">
@@ -1299,17 +1299,17 @@
   </root>
   <root nodeRef="r:293510ad-7298-4276-86d7-1873781733f1(jetbrains.mps.samples.lambdaCalculus.editor)/3333953058369882579">
     <file name="VariableReference_Editor.java">
-      <node id="3333953058369882579" at="11,79,12,83" concept="7" />
+      <node id="3333953058369882579" at="11,79,12,81" concept="7" />
       <node id="3333953058369882579" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="3333953058369882579" at="11,79,12,83" />
+      <scope id="3333953058369882579" at="11,79,12,81" />
       <scope id="3333953058369882579" at="11,0,14,0">
         <var name="editorContext" id="3333953058369882579" />
         <var name="node" id="3333953058369882579" />
       </scope>
       <unit id="3333953058369882579" at="10,0,15,0" name="jetbrains.mps.samples.lambdaCalculus.editor.VariableReference_Editor" />
     </file>
-    <file name="VariableReference_EditorBuilder_a.java">
-      <node id="3333953058369882579" at="39,97,40,19" concept="12" />
+    <file name="VariableReference_EditorBuilder.java">
+      <node id="3333953058369882579" at="39,95,40,19" concept="12" />
       <node id="3333953058369882579" at="40,19,41,18" concept="1" />
       <node id="3333953058369882579" at="46,26,47,18" concept="7" />
       <node id="3333953058369882579" at="50,39,51,32" concept="7" />
@@ -1368,7 +1368,7 @@
       <node id="3333953058369882585" at="91,0,93,0" concept="2" trace="myNode" />
       <node id="3333953058369882579" at="50,0,53,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="3333953058369882585" at="101,0,104,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="3333953058369882579" at="39,0,43,0" concept="0" trace="VariableReference_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="3333953058369882579" at="39,0,43,0" concept="0" trace="VariableReference_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="3333953058369882579" at="76,0,80,5" concept="4" />
       <node id="3333953058369882579" at="44,0,49,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="3333953058369882579" at="83,205,88,22" concept="4" />
@@ -1386,7 +1386,7 @@
       <scope id="3333953058369882585" at="101,41,102,32" />
       <scope id="3333953058369882585" at="107,28,108,20" />
       <scope id="3333953058369882587" at="131,17,132,42" />
-      <scope id="3333953058369882579" at="39,97,41,18" />
+      <scope id="3333953058369882579" at="39,95,41,18" />
       <scope id="3333953058369882579" at="77,40,79,47" />
       <scope id="3333953058369882579" at="84,73,86,145">
         <var name="manager" id="3333953058369882579" />
@@ -1435,27 +1435,27 @@
         <var name="referenceLink" id="3333953058369882579" />
       </scope>
       <scope id="3333953058369882579" at="62,0,90,0" />
-      <unit id="3333953058369882579" at="137,0,140,0" name="jetbrains.mps.samples.lambdaCalculus.editor.VariableReference_EditorBuilder_a$LINKS" />
-      <unit id="3333953058369882579" at="146,0,149,0" name="jetbrains.mps.samples.lambdaCalculus.editor.VariableReference_EditorBuilder_a$PROPS" />
-      <unit id="3333953058369882579" at="141,0,145,0" name="jetbrains.mps.samples.lambdaCalculus.editor.VariableReference_EditorBuilder_a$CONCEPTS" />
-      <unit id="3333953058369882579" at="64,42,72,5" name="jetbrains.mps.samples.lambdaCalculus.editor.VariableReference_EditorBuilder_a$1" />
-      <unit id="3333953058369882585" at="90,0,136,0" name="jetbrains.mps.samples.lambdaCalculus.editor.VariableReference_EditorBuilder_a$Inline_Builder0" />
-      <unit id="3333953058369882579" at="35,0,150,0" name="jetbrains.mps.samples.lambdaCalculus.editor.VariableReference_EditorBuilder_a" />
+      <unit id="3333953058369882579" at="137,0,140,0" name="jetbrains.mps.samples.lambdaCalculus.editor.VariableReference_EditorBuilder$LINKS" />
+      <unit id="3333953058369882579" at="146,0,149,0" name="jetbrains.mps.samples.lambdaCalculus.editor.VariableReference_EditorBuilder$PROPS" />
+      <unit id="3333953058369882579" at="141,0,145,0" name="jetbrains.mps.samples.lambdaCalculus.editor.VariableReference_EditorBuilder$CONCEPTS" />
+      <unit id="3333953058369882579" at="64,42,72,5" name="jetbrains.mps.samples.lambdaCalculus.editor.VariableReference_EditorBuilder$1" />
+      <unit id="3333953058369882585" at="90,0,136,0" name="jetbrains.mps.samples.lambdaCalculus.editor.VariableReference_EditorBuilder$Inline_Builder0" />
+      <unit id="3333953058369882579" at="35,0,150,0" name="jetbrains.mps.samples.lambdaCalculus.editor.VariableReference_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:293510ad-7298-4276-86d7-1873781733f1(jetbrains.mps.samples.lambdaCalculus.editor)/3978364766705449819">
     <file name="ParenthesisExpression_Editor.java">
-      <node id="3978364766705449819" at="11,79,12,87" concept="7" />
+      <node id="3978364766705449819" at="11,79,12,85" concept="7" />
       <node id="3978364766705449819" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="3978364766705449819" at="11,79,12,87" />
+      <scope id="3978364766705449819" at="11,79,12,85" />
       <scope id="3978364766705449819" at="11,0,14,0">
         <var name="editorContext" id="3978364766705449819" />
         <var name="node" id="3978364766705449819" />
       </scope>
       <unit id="3978364766705449819" at="10,0,15,0" name="jetbrains.mps.samples.lambdaCalculus.editor.ParenthesisExpression_Editor" />
     </file>
-    <file name="ParenthesisExpression_EditorBuilder_a.java">
-      <node id="3978364766705449819" at="30,101,31,19" concept="12" />
+    <file name="ParenthesisExpression_EditorBuilder.java">
+      <node id="3978364766705449819" at="30,99,31,19" concept="12" />
       <node id="3978364766705449819" at="31,19,32,18" concept="1" />
       <node id="3978364766705449819" at="37,26,38,18" concept="7" />
       <node id="3978364766705449819" at="41,39,42,32" concept="7" />
@@ -1511,7 +1511,7 @@
       <node id="3978364766705449819" at="94,87,97,7" concept="4" />
       <node id="3978364766705449819" at="97,7,100,7" concept="4" />
       <node id="3978364766705449819" at="116,0,119,0" concept="5" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="3978364766705449819" at="30,0,34,0" concept="0" trace="ParenthesisExpression_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="3978364766705449819" at="30,0,34,0" concept="0" trace="ParenthesisExpression_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="3978364766705449819" at="65,0,69,0" concept="5" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="3978364766705449819" at="73,0,77,0" concept="0" trace="expressionSingleRoleHandler_83li2n_b0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="3978364766705449819" at="35,0,40,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -1530,7 +1530,7 @@
       <scope id="3978364766705449819" at="98,42,99,51" />
       <scope id="3978364766705449819" at="112,17,113,42" />
       <scope id="3978364766705449819" at="116,40,117,31" />
-      <scope id="3978364766705449819" at="30,101,32,18" />
+      <scope id="3978364766705449819" at="30,99,32,18" />
       <scope id="3978364766705449819" at="65,40,67,33">
         <var name="provider" id="3978364766705449819" />
       </scope>
@@ -1580,24 +1580,24 @@
       <scope id="3978364766705456161" at="120,0,130,0" />
       <scope id="3978364766705449819" at="103,44,114,7" />
       <scope id="3978364766705449819" at="102,0,116,0" />
-      <unit id="3978364766705449819" at="131,0,134,0" name="jetbrains.mps.samples.lambdaCalculus.editor.ParenthesisExpression_EditorBuilder_a$LINKS" />
-      <unit id="3978364766705449819" at="69,0,120,0" name="jetbrains.mps.samples.lambdaCalculus.editor.ParenthesisExpression_EditorBuilder_a$expressionSingleRoleHandler_83li2n_b0" />
-      <unit id="3978364766705449819" at="26,0,135,0" name="jetbrains.mps.samples.lambdaCalculus.editor.ParenthesisExpression_EditorBuilder_a" />
+      <unit id="3978364766705449819" at="131,0,134,0" name="jetbrains.mps.samples.lambdaCalculus.editor.ParenthesisExpression_EditorBuilder$LINKS" />
+      <unit id="3978364766705449819" at="69,0,120,0" name="jetbrains.mps.samples.lambdaCalculus.editor.ParenthesisExpression_EditorBuilder$expressionSingleRoleHandler_83li2n_b0" />
+      <unit id="3978364766705449819" at="26,0,135,0" name="jetbrains.mps.samples.lambdaCalculus.editor.ParenthesisExpression_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:293510ad-7298-4276-86d7-1873781733f1(jetbrains.mps.samples.lambdaCalculus.editor)/4022026349914762683">
     <file name="LambdaAbstraction_Editor.java">
-      <node id="4022026349914762683" at="11,79,12,83" concept="7" />
+      <node id="4022026349914762683" at="11,79,12,81" concept="7" />
       <node id="4022026349914762683" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4022026349914762683" at="11,79,12,83" />
+      <scope id="4022026349914762683" at="11,79,12,81" />
       <scope id="4022026349914762683" at="11,0,14,0">
         <var name="editorContext" id="4022026349914762683" />
         <var name="node" id="4022026349914762683" />
       </scope>
       <unit id="4022026349914762683" at="10,0,15,0" name="jetbrains.mps.samples.lambdaCalculus.editor.LambdaAbstraction_Editor" />
     </file>
-    <file name="LambdaAbstraction_EditorBuilder_a.java">
-      <node id="4022026349914762683" at="35,97,36,19" concept="12" />
+    <file name="LambdaAbstraction_EditorBuilder.java">
+      <node id="4022026349914762683" at="35,95,36,19" concept="12" />
       <node id="4022026349914762683" at="36,19,37,18" concept="1" />
       <node id="4022026349914762683" at="42,26,43,18" concept="7" />
       <node id="4022026349914762683" at="46,39,47,32" concept="7" />
@@ -1717,7 +1717,7 @@
       <node id="4022026349914762683" at="208,87,211,7" concept="4" />
       <node id="4022026349914762683" at="211,7,214,7" concept="4" />
       <node id="4022026349914762683" at="230,0,233,0" concept="5" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="4022026349914762683" at="35,0,39,0" concept="0" trace="LambdaAbstraction_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4022026349914762683" at="35,0,39,0" concept="0" trace="LambdaAbstraction_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4022026349914762683" at="96,0,100,0" concept="0" trace="variableListHandler_w093uu_b0a#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="4022026349914762683" at="101,0,105,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="4022026349914762683" at="134,97,138,9" concept="4" />
@@ -1758,7 +1758,7 @@
       <scope id="4022026349914762683" at="212,42,213,45" />
       <scope id="4022026349914762683" at="226,17,227,42" />
       <scope id="4022026349914762683" at="230,40,231,25" />
-      <scope id="4022026349914762683" at="35,97,37,18" />
+      <scope id="4022026349914762683" at="35,95,37,18" />
       <scope id="4022026349914762683" at="96,83,98,25" />
       <scope id="4022026349914762683" at="135,122,137,146" />
       <scope id="4022026349914762683" at="141,34,143,142" />
@@ -1861,26 +1861,26 @@
         <var name="elementNode" id="4022026349914762683" />
         <var name="isEmptyCell" id="4022026349914762683" />
       </scope>
-      <unit id="4022026349914762683" at="250,0,253,0" name="jetbrains.mps.samples.lambdaCalculus.editor.LambdaAbstraction_EditorBuilder_a$CONCEPTS" />
-      <unit id="4022026349914762683" at="245,0,249,0" name="jetbrains.mps.samples.lambdaCalculus.editor.LambdaAbstraction_EditorBuilder_a$LINKS" />
-      <unit id="4022026349914762683" at="183,0,234,0" name="jetbrains.mps.samples.lambdaCalculus.editor.LambdaAbstraction_EditorBuilder_a$bodySingleRoleHandler_w093uu_c0" />
-      <unit id="4022026349914762683" at="92,0,159,0" name="jetbrains.mps.samples.lambdaCalculus.editor.LambdaAbstraction_EditorBuilder_a$variableListHandler_w093uu_b0a" />
-      <unit id="4022026349914762683" at="31,0,254,0" name="jetbrains.mps.samples.lambdaCalculus.editor.LambdaAbstraction_EditorBuilder_a" />
+      <unit id="4022026349914762683" at="250,0,253,0" name="jetbrains.mps.samples.lambdaCalculus.editor.LambdaAbstraction_EditorBuilder$CONCEPTS" />
+      <unit id="4022026349914762683" at="245,0,249,0" name="jetbrains.mps.samples.lambdaCalculus.editor.LambdaAbstraction_EditorBuilder$LINKS" />
+      <unit id="4022026349914762683" at="183,0,234,0" name="jetbrains.mps.samples.lambdaCalculus.editor.LambdaAbstraction_EditorBuilder$bodySingleRoleHandler_w093uu_c0" />
+      <unit id="4022026349914762683" at="92,0,159,0" name="jetbrains.mps.samples.lambdaCalculus.editor.LambdaAbstraction_EditorBuilder$variableListHandler_w093uu_b0a" />
+      <unit id="4022026349914762683" at="31,0,254,0" name="jetbrains.mps.samples.lambdaCalculus.editor.LambdaAbstraction_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:293510ad-7298-4276-86d7-1873781733f1(jetbrains.mps.samples.lambdaCalculus.editor)/4022026349914762698">
     <file name="StringConstant_Editor.java">
-      <node id="4022026349914762698" at="11,79,12,80" concept="7" />
+      <node id="4022026349914762698" at="11,79,12,78" concept="7" />
       <node id="4022026349914762698" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4022026349914762698" at="11,79,12,80" />
+      <scope id="4022026349914762698" at="11,79,12,78" />
       <scope id="4022026349914762698" at="11,0,14,0">
         <var name="editorContext" id="4022026349914762698" />
         <var name="node" id="4022026349914762698" />
       </scope>
       <unit id="4022026349914762698" at="10,0,15,0" name="jetbrains.mps.samples.lambdaCalculus.editor.StringConstant_Editor" />
     </file>
-    <file name="StringConstant_EditorBuilder_a.java">
-      <node id="4022026349914762698" at="35,94,36,19" concept="12" />
+    <file name="StringConstant_EditorBuilder.java">
+      <node id="4022026349914762698" at="35,92,36,19" concept="12" />
       <node id="4022026349914762698" at="36,19,37,18" concept="1" />
       <node id="4022026349914762698" at="42,26,43,18" concept="7" />
       <node id="4022026349914762698" at="46,39,47,32" concept="7" />
@@ -1924,7 +1924,7 @@
       <node id="4022026349914762698" at="105,0,106,0" concept="10" trace="PropertyAttribute$Gb" />
       <node id="4022026349914762698" at="32,0,34,0" concept="2" trace="myNode" />
       <node id="4022026349914762698" at="46,0,49,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="4022026349914762698" at="35,0,39,0" concept="0" trace="StringConstant_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4022026349914762698" at="35,0,39,0" concept="0" trace="StringConstant_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4022026349914762698" at="40,0,45,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="4022026349914762706" at="80,208,85,24" concept="4" />
       <node id="4022026349914762703" at="60,0,69,0" concept="5" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -1935,7 +1935,7 @@
       <scope id="4022026349914762698" at="42,26,43,18" />
       <scope id="4022026349914762698" at="46,39,47,32" />
       <scope id="4022026349914762706" at="86,15,87,40" />
-      <scope id="4022026349914762698" at="35,94,37,18" />
+      <scope id="4022026349914762698" at="35,92,37,18" />
       <scope id="4022026349914762706" at="81,74,83,145">
         <var name="manager" id="4022026349914762706" />
       </scope>
@@ -1967,24 +1967,24 @@
       </scope>
       <scope id="4022026349914762706" at="69,41,88,5" />
       <scope id="4022026349914762706" at="69,0,90,0" />
-      <unit id="4022026349914762698" at="100,0,103,0" name="jetbrains.mps.samples.lambdaCalculus.editor.StringConstant_EditorBuilder_a$PROPS" />
-      <unit id="4022026349914762698" at="104,0,107,0" name="jetbrains.mps.samples.lambdaCalculus.editor.StringConstant_EditorBuilder_a$CONCEPTS" />
-      <unit id="4022026349914762698" at="31,0,108,0" name="jetbrains.mps.samples.lambdaCalculus.editor.StringConstant_EditorBuilder_a" />
+      <unit id="4022026349914762698" at="100,0,103,0" name="jetbrains.mps.samples.lambdaCalculus.editor.StringConstant_EditorBuilder$PROPS" />
+      <unit id="4022026349914762698" at="104,0,107,0" name="jetbrains.mps.samples.lambdaCalculus.editor.StringConstant_EditorBuilder$CONCEPTS" />
+      <unit id="4022026349914762698" at="31,0,108,0" name="jetbrains.mps.samples.lambdaCalculus.editor.StringConstant_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:293510ad-7298-4276-86d7-1873781733f1(jetbrains.mps.samples.lambdaCalculus.editor)/4022026349914762711">
     <file name="NumericConstant_Editor.java">
-      <node id="4022026349914762711" at="11,79,12,81" concept="7" />
+      <node id="4022026349914762711" at="11,79,12,79" concept="7" />
       <node id="4022026349914762711" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4022026349914762711" at="11,79,12,81" />
+      <scope id="4022026349914762711" at="11,79,12,79" />
       <scope id="4022026349914762711" at="11,0,14,0">
         <var name="editorContext" id="4022026349914762711" />
         <var name="node" id="4022026349914762711" />
       </scope>
       <unit id="4022026349914762711" at="10,0,15,0" name="jetbrains.mps.samples.lambdaCalculus.editor.NumericConstant_Editor" />
     </file>
-    <file name="NumericConstant_EditorBuilder_a.java">
-      <node id="4022026349914762711" at="31,95,32,19" concept="12" />
+    <file name="NumericConstant_EditorBuilder.java">
+      <node id="4022026349914762711" at="31,93,32,19" concept="12" />
       <node id="4022026349914762711" at="32,19,33,18" concept="1" />
       <node id="4022026349914762711" at="38,26,39,18" concept="7" />
       <node id="4022026349914762711" at="42,39,43,32" concept="7" />
@@ -2012,7 +2012,7 @@
       <node id="4022026349914762711" at="81,0,82,0" concept="10" trace="PropertyAttribute$Gb" />
       <node id="4022026349914762711" at="28,0,30,0" concept="2" trace="myNode" />
       <node id="4022026349914762711" at="42,0,45,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="4022026349914762711" at="31,0,35,0" concept="0" trace="NumericConstant_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4022026349914762711" at="31,0,35,0" concept="0" trace="NumericConstant_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4022026349914762711" at="36,0,41,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="4022026349914762716" at="65,208,70,24" concept="4" />
       <node id="4022026349914762711" at="46,0,54,0" concept="5" trace="createCollection_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -2021,7 +2021,7 @@
       <scope id="4022026349914762711" at="38,26,39,18" />
       <scope id="4022026349914762711" at="42,39,43,32" />
       <scope id="4022026349914762716" at="71,15,72,40" />
-      <scope id="4022026349914762711" at="31,95,33,18" />
+      <scope id="4022026349914762711" at="31,93,33,18" />
       <scope id="4022026349914762716" at="66,74,68,145">
         <var name="manager" id="4022026349914762716" />
       </scope>
@@ -2043,24 +2043,24 @@
       </scope>
       <scope id="4022026349914762716" at="54,41,73,5" />
       <scope id="4022026349914762716" at="54,0,75,0" />
-      <unit id="4022026349914762711" at="76,0,79,0" name="jetbrains.mps.samples.lambdaCalculus.editor.NumericConstant_EditorBuilder_a$PROPS" />
-      <unit id="4022026349914762711" at="80,0,83,0" name="jetbrains.mps.samples.lambdaCalculus.editor.NumericConstant_EditorBuilder_a$CONCEPTS" />
-      <unit id="4022026349914762711" at="27,0,84,0" name="jetbrains.mps.samples.lambdaCalculus.editor.NumericConstant_EditorBuilder_a" />
+      <unit id="4022026349914762711" at="76,0,79,0" name="jetbrains.mps.samples.lambdaCalculus.editor.NumericConstant_EditorBuilder$PROPS" />
+      <unit id="4022026349914762711" at="80,0,83,0" name="jetbrains.mps.samples.lambdaCalculus.editor.NumericConstant_EditorBuilder$CONCEPTS" />
+      <unit id="4022026349914762711" at="27,0,84,0" name="jetbrains.mps.samples.lambdaCalculus.editor.NumericConstant_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:293510ad-7298-4276-86d7-1873781733f1(jetbrains.mps.samples.lambdaCalculus.editor)/4022026349914894289">
     <file name="LambdaApplication_Editor.java">
-      <node id="4022026349914894289" at="11,79,12,83" concept="7" />
+      <node id="4022026349914894289" at="11,79,12,81" concept="7" />
       <node id="4022026349914894289" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4022026349914894289" at="11,79,12,83" />
+      <scope id="4022026349914894289" at="11,79,12,81" />
       <scope id="4022026349914894289" at="11,0,14,0">
         <var name="editorContext" id="4022026349914894289" />
         <var name="node" id="4022026349914894289" />
       </scope>
       <unit id="4022026349914894289" at="10,0,15,0" name="jetbrains.mps.samples.lambdaCalculus.editor.LambdaApplication_Editor" />
     </file>
-    <file name="LambdaApplication_EditorBuilder_a.java">
-      <node id="4022026349914894289" at="35,97,36,19" concept="12" />
+    <file name="LambdaApplication_EditorBuilder.java">
+      <node id="4022026349914894289" at="35,95,36,19" concept="12" />
       <node id="4022026349914894289" at="36,19,37,18" concept="1" />
       <node id="4022026349914894289" at="42,26,43,18" concept="7" />
       <node id="4022026349914894289" at="46,39,47,32" concept="7" />
@@ -2162,7 +2162,7 @@
       <node id="4022026349914894289" at="158,0,161,0" concept="5" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="4022026349914894289" at="161,0,164,0" concept="5" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="4022026349914894289" at="205,96,208,9" concept="4" />
-      <node id="4022026349914894289" at="35,0,39,0" concept="0" trace="LambdaApplication_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4022026349914894289" at="35,0,39,0" concept="0" trace="LambdaApplication_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4022026349914894289" at="59,0,63,0" concept="5" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4022026349914894289" at="67,0,71,0" concept="0" trace="functionSingleRoleHandler_ppbi6p_a0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="4022026349914894289" at="149,0,153,0" concept="0" trace="argumentListHandler_ppbi6p_b1a#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
@@ -2201,7 +2201,7 @@
       <scope id="4022026349914894289" at="161,48,162,42" />
       <scope id="4022026349914894289" at="179,17,180,42" />
       <scope id="4022026349914894289" at="206,34,207,91" />
-      <scope id="4022026349914894289" at="35,97,37,18" />
+      <scope id="4022026349914894289" at="35,95,37,18" />
       <scope id="4022026349914894289" at="59,40,61,33">
         <var name="provider" id="4022026349914894289" />
       </scope>
@@ -2295,26 +2295,26 @@
         <var name="elementNode" id="4022026349914894289" />
         <var name="isEmptyCell" id="4022026349914894289" />
       </scope>
-      <unit id="4022026349914894289" at="228,0,231,0" name="jetbrains.mps.samples.lambdaCalculus.editor.LambdaApplication_EditorBuilder_a$CONCEPTS" />
-      <unit id="4022026349914894289" at="223,0,227,0" name="jetbrains.mps.samples.lambdaCalculus.editor.LambdaApplication_EditorBuilder_a$LINKS" />
-      <unit id="4022026349914894289" at="63,0,117,0" name="jetbrains.mps.samples.lambdaCalculus.editor.LambdaApplication_EditorBuilder_a$functionSingleRoleHandler_ppbi6p_a0" />
-      <unit id="4022026349914894289" at="145,0,212,0" name="jetbrains.mps.samples.lambdaCalculus.editor.LambdaApplication_EditorBuilder_a$argumentListHandler_ppbi6p_b1a" />
-      <unit id="4022026349914894289" at="31,0,232,0" name="jetbrains.mps.samples.lambdaCalculus.editor.LambdaApplication_EditorBuilder_a" />
+      <unit id="4022026349914894289" at="228,0,231,0" name="jetbrains.mps.samples.lambdaCalculus.editor.LambdaApplication_EditorBuilder$CONCEPTS" />
+      <unit id="4022026349914894289" at="223,0,227,0" name="jetbrains.mps.samples.lambdaCalculus.editor.LambdaApplication_EditorBuilder$LINKS" />
+      <unit id="4022026349914894289" at="63,0,117,0" name="jetbrains.mps.samples.lambdaCalculus.editor.LambdaApplication_EditorBuilder$functionSingleRoleHandler_ppbi6p_a0" />
+      <unit id="4022026349914894289" at="145,0,212,0" name="jetbrains.mps.samples.lambdaCalculus.editor.LambdaApplication_EditorBuilder$argumentListHandler_ppbi6p_b1a" />
+      <unit id="4022026349914894289" at="31,0,232,0" name="jetbrains.mps.samples.lambdaCalculus.editor.LambdaApplication_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:293510ad-7298-4276-86d7-1873781733f1(jetbrains.mps.samples.lambdaCalculus.editor)/4022026349915669387">
     <file name="Program_Editor.java">
-      <node id="4022026349915669387" at="11,79,12,73" concept="7" />
+      <node id="4022026349915669387" at="11,79,12,71" concept="7" />
       <node id="4022026349915669387" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4022026349915669387" at="11,79,12,73" />
+      <scope id="4022026349915669387" at="11,79,12,71" />
       <scope id="4022026349915669387" at="11,0,14,0">
         <var name="editorContext" id="4022026349915669387" />
         <var name="node" id="4022026349915669387" />
       </scope>
       <unit id="4022026349915669387" at="10,0,15,0" name="jetbrains.mps.samples.lambdaCalculus.editor.Program_Editor" />
     </file>
-    <file name="Program_EditorBuilder_a.java">
-      <node id="4022026349915669387" at="43,87,44,19" concept="12" />
+    <file name="Program_EditorBuilder.java">
+      <node id="4022026349915669387" at="43,85,44,19" concept="12" />
       <node id="4022026349915669387" at="44,19,45,18" concept="1" />
       <node id="4022026349915669387" at="50,26,51,18" concept="7" />
       <node id="4022026349915669387" at="54,39,55,32" concept="7" />
@@ -2383,7 +2383,7 @@
       <node id="4022026349915669387" at="130,87,133,7" concept="4" />
       <node id="4022026349915669387" at="133,7,136,7" concept="4" />
       <node id="4022026349915669387" at="155,0,158,0" concept="5" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="4022026349915669387" at="43,0,47,0" concept="0" trace="Program_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4022026349915669387" at="43,0,47,0" concept="0" trace="Program_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4022026349915669387" at="101,0,105,0" concept="5" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4022026349915669387" at="109,0,113,0" concept="0" trace="expressionSingleRoleHandler_c7xntw_c0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="4022026349915669387" at="48,0,53,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -2405,7 +2405,7 @@
       <scope id="4022026349915669387" at="134,42,135,51" />
       <scope id="4022026349915669387" at="151,17,152,42" />
       <scope id="4022026349915669387" at="155,40,156,31" />
-      <scope id="4022026349915669387" at="43,87,45,18" />
+      <scope id="4022026349915669387" at="43,85,45,18" />
       <scope id="4022026349915669406" at="92,74,94,145">
         <var name="manager" id="4022026349915669406" />
       </scope>
@@ -2464,11 +2464,11 @@
       </scope>
       <scope id="4022026349915669406" at="77,41,99,5" />
       <scope id="4022026349915669406" at="77,0,101,0" />
-      <unit id="4022026349915669387" at="160,0,163,0" name="jetbrains.mps.samples.lambdaCalculus.editor.Program_EditorBuilder_a$PROPS" />
-      <unit id="4022026349915669387" at="164,0,167,0" name="jetbrains.mps.samples.lambdaCalculus.editor.Program_EditorBuilder_a$CONCEPTS" />
-      <unit id="4022026349915669387" at="168,0,171,0" name="jetbrains.mps.samples.lambdaCalculus.editor.Program_EditorBuilder_a$LINKS" />
-      <unit id="4022026349915669387" at="105,0,159,0" name="jetbrains.mps.samples.lambdaCalculus.editor.Program_EditorBuilder_a$expressionSingleRoleHandler_c7xntw_c0" />
-      <unit id="4022026349915669387" at="39,0,172,0" name="jetbrains.mps.samples.lambdaCalculus.editor.Program_EditorBuilder_a" />
+      <unit id="4022026349915669387" at="160,0,163,0" name="jetbrains.mps.samples.lambdaCalculus.editor.Program_EditorBuilder$PROPS" />
+      <unit id="4022026349915669387" at="164,0,167,0" name="jetbrains.mps.samples.lambdaCalculus.editor.Program_EditorBuilder$CONCEPTS" />
+      <unit id="4022026349915669387" at="168,0,171,0" name="jetbrains.mps.samples.lambdaCalculus.editor.Program_EditorBuilder$LINKS" />
+      <unit id="4022026349915669387" at="105,0,159,0" name="jetbrains.mps.samples.lambdaCalculus.editor.Program_EditorBuilder$expressionSingleRoleHandler_c7xntw_c0" />
+      <unit id="4022026349915669387" at="39,0,172,0" name="jetbrains.mps.samples.lambdaCalculus.editor.Program_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:293510ad-7298-4276-86d7-1873781733f1(jetbrains.mps.samples.lambdaCalculus.editor)/4516885200389677659">
@@ -2564,17 +2564,17 @@
   </root>
   <root nodeRef="r:293510ad-7298-4276-86d7-1873781733f1(jetbrains.mps.samples.lambdaCalculus.editor)/4530871765544139483">
     <file name="NumberType_Editor.java">
-      <node id="4530871765544139483" at="11,79,12,76" concept="7" />
+      <node id="4530871765544139483" at="11,79,12,74" concept="7" />
       <node id="4530871765544139483" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4530871765544139483" at="11,79,12,76" />
+      <scope id="4530871765544139483" at="11,79,12,74" />
       <scope id="4530871765544139483" at="11,0,14,0">
         <var name="editorContext" id="4530871765544139483" />
         <var name="node" id="4530871765544139483" />
       </scope>
       <unit id="4530871765544139483" at="10,0,15,0" name="jetbrains.mps.samples.lambdaCalculus.editor.NumberType_Editor" />
     </file>
-    <file name="NumberType_EditorBuilder_a.java">
-      <node id="4530871765544139483" at="18,90,19,19" concept="12" />
+    <file name="NumberType_EditorBuilder.java">
+      <node id="4530871765544139483" at="18,88,19,19" concept="12" />
       <node id="4530871765544139483" at="19,19,20,18" concept="1" />
       <node id="4530871765544139483" at="25,26,26,18" concept="7" />
       <node id="4530871765544139483" at="29,39,30,32" concept="7" />
@@ -2590,13 +2590,13 @@
       <node id="4530871765544139488" at="44,34,45,22" concept="7" />
       <node id="4530871765544139483" at="15,0,17,0" concept="2" trace="myNode" />
       <node id="4530871765544139483" at="29,0,32,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="4530871765544139483" at="18,0,22,0" concept="0" trace="NumberType_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4530871765544139483" at="18,0,22,0" concept="0" trace="NumberType_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4530871765544139483" at="23,0,28,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="4530871765544139488" at="41,0,47,0" concept="5" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4530871765544139483" at="33,0,41,0" concept="5" trace="createCollection_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="4530871765544139483" at="25,26,26,18" />
       <scope id="4530871765544139483" at="29,39,30,32" />
-      <scope id="4530871765544139483" at="18,90,20,18" />
+      <scope id="4530871765544139483" at="18,88,20,18" />
       <scope id="4530871765544139483" at="29,0,32,0" />
       <scope id="4530871765544139483" at="18,0,22,0">
         <var name="context" id="4530871765544139483" />
@@ -2611,22 +2611,22 @@
       </scope>
       <scope id="4530871765544139488" at="41,0,47,0" />
       <scope id="4530871765544139483" at="33,0,41,0" />
-      <unit id="4530871765544139483" at="14,0,48,0" name="jetbrains.mps.samples.lambdaCalculus.editor.NumberType_EditorBuilder_a" />
+      <unit id="4530871765544139483" at="14,0,48,0" name="jetbrains.mps.samples.lambdaCalculus.editor.NumberType_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:293510ad-7298-4276-86d7-1873781733f1(jetbrains.mps.samples.lambdaCalculus.editor)/4530871765544139490">
     <file name="StringType_Editor.java">
-      <node id="4530871765544139490" at="11,79,12,76" concept="7" />
+      <node id="4530871765544139490" at="11,79,12,74" concept="7" />
       <node id="4530871765544139490" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4530871765544139490" at="11,79,12,76" />
+      <scope id="4530871765544139490" at="11,79,12,74" />
       <scope id="4530871765544139490" at="11,0,14,0">
         <var name="editorContext" id="4530871765544139490" />
         <var name="node" id="4530871765544139490" />
       </scope>
       <unit id="4530871765544139490" at="10,0,15,0" name="jetbrains.mps.samples.lambdaCalculus.editor.StringType_Editor" />
     </file>
-    <file name="StringType_EditorBuilder_a.java">
-      <node id="4530871765544139490" at="18,90,19,19" concept="12" />
+    <file name="StringType_EditorBuilder.java">
+      <node id="4530871765544139490" at="18,88,19,19" concept="12" />
       <node id="4530871765544139490" at="19,19,20,18" concept="1" />
       <node id="4530871765544139490" at="25,26,26,18" concept="7" />
       <node id="4530871765544139490" at="29,39,30,32" concept="7" />
@@ -2642,13 +2642,13 @@
       <node id="4530871765544139495" at="44,34,45,22" concept="7" />
       <node id="4530871765544139490" at="15,0,17,0" concept="2" trace="myNode" />
       <node id="4530871765544139490" at="29,0,32,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="4530871765544139490" at="18,0,22,0" concept="0" trace="StringType_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4530871765544139490" at="18,0,22,0" concept="0" trace="StringType_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4530871765544139490" at="23,0,28,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="4530871765544139495" at="41,0,47,0" concept="5" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4530871765544139490" at="33,0,41,0" concept="5" trace="createCollection_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="4530871765544139490" at="25,26,26,18" />
       <scope id="4530871765544139490" at="29,39,30,32" />
-      <scope id="4530871765544139490" at="18,90,20,18" />
+      <scope id="4530871765544139490" at="18,88,20,18" />
       <scope id="4530871765544139490" at="29,0,32,0" />
       <scope id="4530871765544139490" at="18,0,22,0">
         <var name="context" id="4530871765544139490" />
@@ -2663,22 +2663,22 @@
       </scope>
       <scope id="4530871765544139495" at="41,0,47,0" />
       <scope id="4530871765544139490" at="33,0,41,0" />
-      <unit id="4530871765544139490" at="14,0,48,0" name="jetbrains.mps.samples.lambdaCalculus.editor.StringType_EditorBuilder_a" />
+      <unit id="4530871765544139490" at="14,0,48,0" name="jetbrains.mps.samples.lambdaCalculus.editor.StringType_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:293510ad-7298-4276-86d7-1873781733f1(jetbrains.mps.samples.lambdaCalculus.editor)/4530871765544139499">
     <file name="FunctionType_Editor.java">
-      <node id="4530871765544139499" at="11,79,12,78" concept="7" />
+      <node id="4530871765544139499" at="11,79,12,76" concept="7" />
       <node id="4530871765544139499" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4530871765544139499" at="11,79,12,78" />
+      <scope id="4530871765544139499" at="11,79,12,76" />
       <scope id="4530871765544139499" at="11,0,14,0">
         <var name="editorContext" id="4530871765544139499" />
         <var name="node" id="4530871765544139499" />
       </scope>
       <unit id="4530871765544139499" at="10,0,15,0" name="jetbrains.mps.samples.lambdaCalculus.editor.FunctionType_Editor" />
     </file>
-    <file name="FunctionType_EditorBuilder_a.java">
-      <node id="4530871765544139499" at="27,92,28,19" concept="12" />
+    <file name="FunctionType_EditorBuilder.java">
+      <node id="4530871765544139499" at="27,90,28,19" concept="12" />
       <node id="4530871765544139499" at="28,19,29,18" concept="1" />
       <node id="4530871765544139499" at="34,26,35,18" concept="7" />
       <node id="4530871765544139499" at="38,39,39,32" concept="7" />
@@ -2748,7 +2748,7 @@
       <node id="4530871765544139499" at="142,87,145,7" concept="4" />
       <node id="4530871765544139499" at="145,7,148,7" concept="4" />
       <node id="4530871765544139499" at="164,0,167,0" concept="5" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="4530871765544139499" at="27,0,31,0" concept="0" trace="FunctionType_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4530871765544139499" at="27,0,31,0" concept="0" trace="FunctionType_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4530871765544139499" at="52,0,56,0" concept="5" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4530871765544139499" at="60,0,64,0" concept="0" trace="domainSingleRoleHandler_bqk3nx_a0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="4530871765544139499" at="113,0,117,0" concept="5" trace="createRefNode_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -2778,7 +2778,7 @@
       <scope id="4530871765544139499" at="146,42,147,46" />
       <scope id="4530871765544139499" at="160,17,161,42" />
       <scope id="4530871765544139499" at="164,40,165,26" />
-      <scope id="4530871765544139499" at="27,92,29,18" />
+      <scope id="4530871765544139499" at="27,90,29,18" />
       <scope id="4530871765544139499" at="52,40,54,33">
         <var name="provider" id="4530871765544139499" />
       </scope>
@@ -2851,25 +2851,25 @@
       <scope id="4530871765544139499" at="151,44,162,7" />
       <scope id="4530871765544139499" at="89,0,103,0" />
       <scope id="4530871765544139499" at="150,0,164,0" />
-      <unit id="4530871765544139499" at="169,0,173,0" name="jetbrains.mps.samples.lambdaCalculus.editor.FunctionType_EditorBuilder_a$LINKS" />
-      <unit id="4530871765544139499" at="56,0,107,0" name="jetbrains.mps.samples.lambdaCalculus.editor.FunctionType_EditorBuilder_a$domainSingleRoleHandler_bqk3nx_a0" />
-      <unit id="4530871765544139499" at="117,0,168,0" name="jetbrains.mps.samples.lambdaCalculus.editor.FunctionType_EditorBuilder_a$rangeSingleRoleHandler_bqk3nx_c0" />
-      <unit id="4530871765544139499" at="23,0,174,0" name="jetbrains.mps.samples.lambdaCalculus.editor.FunctionType_EditorBuilder_a" />
+      <unit id="4530871765544139499" at="169,0,173,0" name="jetbrains.mps.samples.lambdaCalculus.editor.FunctionType_EditorBuilder$LINKS" />
+      <unit id="4530871765544139499" at="56,0,107,0" name="jetbrains.mps.samples.lambdaCalculus.editor.FunctionType_EditorBuilder$domainSingleRoleHandler_bqk3nx_a0" />
+      <unit id="4530871765544139499" at="117,0,168,0" name="jetbrains.mps.samples.lambdaCalculus.editor.FunctionType_EditorBuilder$rangeSingleRoleHandler_bqk3nx_c0" />
+      <unit id="4530871765544139499" at="23,0,174,0" name="jetbrains.mps.samples.lambdaCalculus.editor.FunctionType_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:293510ad-7298-4276-86d7-1873781733f1(jetbrains.mps.samples.lambdaCalculus.editor)/4939219901991602651">
     <file name="LetExpression_Editor.java">
-      <node id="4939219901991602651" at="11,79,12,79" concept="7" />
+      <node id="4939219901991602651" at="11,79,12,77" concept="7" />
       <node id="4939219901991602651" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4939219901991602651" at="11,79,12,79" />
+      <scope id="4939219901991602651" at="11,79,12,77" />
       <scope id="4939219901991602651" at="11,0,14,0">
         <var name="editorContext" id="4939219901991602651" />
         <var name="node" id="4939219901991602651" />
       </scope>
       <unit id="4939219901991602651" at="10,0,15,0" name="jetbrains.mps.samples.lambdaCalculus.editor.LetExpression_Editor" />
     </file>
-    <file name="LetExpression_EditorBuilder_a.java">
-      <node id="4939219901991602651" at="27,93,28,19" concept="12" />
+    <file name="LetExpression_EditorBuilder.java">
+      <node id="4939219901991602651" at="27,91,28,19" concept="12" />
       <node id="4939219901991602651" at="28,19,29,18" concept="1" />
       <node id="4939219901991602651" at="34,26,35,18" concept="7" />
       <node id="4939219901991602651" at="38,39,39,32" concept="7" />
@@ -2976,7 +2976,7 @@
       <node id="4939219901991602651" at="212,87,215,7" concept="4" />
       <node id="4939219901991602651" at="215,7,218,7" concept="4" />
       <node id="4939219901991602651" at="234,0,237,0" concept="5" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="4939219901991602651" at="27,0,31,0" concept="0" trace="LetExpression_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4939219901991602651" at="27,0,31,0" concept="0" trace="LetExpression_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4939219901991602651" at="61,0,65,0" concept="5" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4939219901991602651" at="69,0,73,0" concept="0" trace="variableSingleRoleHandler_tphyk_b0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="4939219901991602651" at="122,0,126,0" concept="5" trace="createRefNode_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -3020,7 +3020,7 @@
       <scope id="4939219901991602651" at="216,42,217,51" />
       <scope id="4939219901991602651" at="230,17,231,42" />
       <scope id="4939219901991602651" at="234,40,235,31" />
-      <scope id="4939219901991602651" at="27,93,29,18" />
+      <scope id="4939219901991602651" at="27,91,29,18" />
       <scope id="4939219901991602651" at="61,40,63,33">
         <var name="provider" id="4939219901991602651" />
       </scope>
@@ -3130,11 +3130,11 @@
       <scope id="4939219901991602651" at="98,0,112,0" />
       <scope id="4939219901991602651" at="159,0,173,0" />
       <scope id="4939219901991602651" at="220,0,234,0" />
-      <unit id="4939219901991602651" at="239,0,244,0" name="jetbrains.mps.samples.lambdaCalculus.editor.LetExpression_EditorBuilder_a$LINKS" />
-      <unit id="4939219901991602651" at="65,0,116,0" name="jetbrains.mps.samples.lambdaCalculus.editor.LetExpression_EditorBuilder_a$variableSingleRoleHandler_tphyk_b0" />
-      <unit id="4939219901991602651" at="126,0,177,0" name="jetbrains.mps.samples.lambdaCalculus.editor.LetExpression_EditorBuilder_a$valueSingleRoleHandler_tphyk_d0" />
-      <unit id="4939219901991602651" at="187,0,238,0" name="jetbrains.mps.samples.lambdaCalculus.editor.LetExpression_EditorBuilder_a$expressionSingleRoleHandler_tphyk_f0" />
-      <unit id="4939219901991602651" at="23,0,245,0" name="jetbrains.mps.samples.lambdaCalculus.editor.LetExpression_EditorBuilder_a" />
+      <unit id="4939219901991602651" at="239,0,244,0" name="jetbrains.mps.samples.lambdaCalculus.editor.LetExpression_EditorBuilder$LINKS" />
+      <unit id="4939219901991602651" at="65,0,116,0" name="jetbrains.mps.samples.lambdaCalculus.editor.LetExpression_EditorBuilder$variableSingleRoleHandler_tphyk_b0" />
+      <unit id="4939219901991602651" at="126,0,177,0" name="jetbrains.mps.samples.lambdaCalculus.editor.LetExpression_EditorBuilder$valueSingleRoleHandler_tphyk_d0" />
+      <unit id="4939219901991602651" at="187,0,238,0" name="jetbrains.mps.samples.lambdaCalculus.editor.LetExpression_EditorBuilder$expressionSingleRoleHandler_tphyk_f0" />
+      <unit id="4939219901991602651" at="23,0,245,0" name="jetbrains.mps.samples.lambdaCalculus.editor.LetExpression_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:293510ad-7298-4276-86d7-1873781733f1(jetbrains.mps.samples.lambdaCalculus.editor)/6213838193799310583">
@@ -3319,17 +3319,17 @@
   </root>
   <root nodeRef="r:293510ad-7298-4276-86d7-1873781733f1(jetbrains.mps.samples.lambdaCalculus.editor)/8981808925914762646">
     <file name="Variable_Editor.java">
-      <node id="8981808925914762646" at="11,79,12,74" concept="7" />
+      <node id="8981808925914762646" at="11,79,12,72" concept="7" />
       <node id="8981808925914762646" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="8981808925914762646" at="11,79,12,74" />
+      <scope id="8981808925914762646" at="11,79,12,72" />
       <scope id="8981808925914762646" at="11,0,14,0">
         <var name="editorContext" id="8981808925914762646" />
         <var name="node" id="8981808925914762646" />
       </scope>
       <unit id="8981808925914762646" at="10,0,15,0" name="jetbrains.mps.samples.lambdaCalculus.editor.Variable_Editor" />
     </file>
-    <file name="Variable_EditorBuilder_a.java">
-      <node id="8981808925914762646" at="31,88,32,19" concept="12" />
+    <file name="Variable_EditorBuilder.java">
+      <node id="8981808925914762646" at="31,86,32,19" concept="12" />
       <node id="8981808925914762646" at="32,19,33,18" concept="1" />
       <node id="8981808925914762646" at="38,26,39,18" concept="7" />
       <node id="8981808925914762646" at="42,39,43,32" concept="7" />
@@ -3357,7 +3357,7 @@
       <node id="8981808925914762646" at="81,0,82,0" concept="10" trace="PropertyAttribute$Gb" />
       <node id="8981808925914762646" at="28,0,30,0" concept="2" trace="myNode" />
       <node id="8981808925914762646" at="42,0,45,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="8981808925914762646" at="31,0,35,0" concept="0" trace="Variable_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8981808925914762646" at="31,0,35,0" concept="0" trace="Variable_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8981808925914762646" at="36,0,41,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="8981808925914762651" at="65,208,70,24" concept="4" />
       <node id="8981808925914762646" at="46,0,54,0" concept="5" trace="createCollection_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -3366,7 +3366,7 @@
       <scope id="8981808925914762646" at="38,26,39,18" />
       <scope id="8981808925914762646" at="42,39,43,32" />
       <scope id="8981808925914762651" at="71,15,72,40" />
-      <scope id="8981808925914762646" at="31,88,33,18" />
+      <scope id="8981808925914762646" at="31,86,33,18" />
       <scope id="8981808925914762651" at="66,74,68,145">
         <var name="manager" id="8981808925914762651" />
       </scope>
@@ -3388,9 +3388,9 @@
       </scope>
       <scope id="8981808925914762651" at="54,41,73,5" />
       <scope id="8981808925914762651" at="54,0,75,0" />
-      <unit id="8981808925914762646" at="76,0,79,0" name="jetbrains.mps.samples.lambdaCalculus.editor.Variable_EditorBuilder_a$PROPS" />
-      <unit id="8981808925914762646" at="80,0,83,0" name="jetbrains.mps.samples.lambdaCalculus.editor.Variable_EditorBuilder_a$CONCEPTS" />
-      <unit id="8981808925914762646" at="27,0,84,0" name="jetbrains.mps.samples.lambdaCalculus.editor.Variable_EditorBuilder_a" />
+      <unit id="8981808925914762646" at="76,0,79,0" name="jetbrains.mps.samples.lambdaCalculus.editor.Variable_EditorBuilder$PROPS" />
+      <unit id="8981808925914762646" at="80,0,83,0" name="jetbrains.mps.samples.lambdaCalculus.editor.Variable_EditorBuilder$CONCEPTS" />
+      <unit id="8981808925914762646" at="27,0,84,0" name="jetbrains.mps.samples.lambdaCalculus.editor.Variable_EditorBuilder" />
     </file>
   </root>
 </debug-info>

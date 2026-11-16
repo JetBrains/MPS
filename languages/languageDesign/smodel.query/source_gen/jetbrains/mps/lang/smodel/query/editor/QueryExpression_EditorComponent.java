@@ -16,6 +16,6 @@ public class QueryExpression_EditorComponent implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new QueryExpression_EditorComponent_ComponentBuilder_a(editorContext, node).createCell();
+    return new QueryExpression_EditorComponent_ComponentBuilder(editorContext, node).createCell();
   }
 }

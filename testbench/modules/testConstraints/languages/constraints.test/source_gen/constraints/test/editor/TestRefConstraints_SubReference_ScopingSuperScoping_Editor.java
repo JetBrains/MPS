@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class TestRefConstraints_SubReference_ScopingSuperScoping_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new TestRefConstraints_SubReference_ScopingSuperScoping_EditorBuilder_a(editorContext, node).createCell();
+    return new TestRefConstraints_SubReference_ScopingSuperScoping_EditorBuilder(editorContext, node).createCell();
   }
 }

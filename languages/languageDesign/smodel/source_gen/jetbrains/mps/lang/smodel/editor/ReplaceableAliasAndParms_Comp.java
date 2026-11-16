@@ -16,6 +16,6 @@ public class ReplaceableAliasAndParms_Comp implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ReplaceableAliasAndParms_Comp_ComponentBuilder_a(editorContext, node).createCell();
+    return new ReplaceableAliasAndParms_Comp_ComponentBuilder(editorContext, node).createCell();
   }
 }

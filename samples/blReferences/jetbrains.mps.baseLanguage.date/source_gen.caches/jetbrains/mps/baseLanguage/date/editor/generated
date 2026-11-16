@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="c51velfqk2rnhj15j5i9bg8myv53kpl">
-  <files names="DateLiteral_Editor.java:DateLiteral_EditorBuilder_a.java:EditorAspectDescriptorImpl.java" />
+  <files names="DateLiteral_Editor.java:DateLiteral_EditorBuilder.java:EditorAspectDescriptorImpl.java" />
 </product>
 

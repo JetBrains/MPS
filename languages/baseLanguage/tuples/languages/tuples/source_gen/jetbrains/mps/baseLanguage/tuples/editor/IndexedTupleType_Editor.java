@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class IndexedTupleType_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new IndexedTupleType_EditorBuilder_a(editorContext, node).createCell();
+    return new IndexedTupleType_EditorBuilder(editorContext, node).createCell();
   }
 }

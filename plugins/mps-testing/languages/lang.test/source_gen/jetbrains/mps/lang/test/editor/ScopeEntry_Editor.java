@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ScopeEntry_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ScopeEntry_EditorBuilder_a(editorContext, node).createCell();
+    return new ScopeEntry_EditorBuilder(editorContext, node).createCell();
   }
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="-pgrmb81rnhs99y1ebt3imifq1qm3un">
-  <files names="ComeFromExpression_Editor.java:ComeFromExpression_EditorBuilder_a.java:CompositeWithParentScopeExpression_Editor.java:CompositeWithParentScopeExpression_EditorBuilder_a.java:EditorAspectDescriptorImpl.java:ParentScope_Editor.java:ParentScope_EditorBuilder_a.java" />
+  <files names="ComeFromExpression_Editor.java:ComeFromExpression_EditorBuilder.java:CompositeWithParentScopeExpression_Editor.java:CompositeWithParentScopeExpression_EditorBuilder.java:EditorAspectDescriptorImpl.java:ParentScope_Editor.java:ParentScope_EditorBuilder.java" />
 </product>
 

@@ -77,17 +77,17 @@
   </root>
   <root nodeRef="r:d919e39e-ef97-4541-8872-046b24e3733c(jetbrains.mps.lang.slanguage.editor)/2030416617761226517">
     <file name="Model_IsAspectOperation_Editor.java">
-      <node id="2030416617761226517" at="11,79,12,89" concept="6" />
+      <node id="2030416617761226517" at="11,79,12,87" concept="6" />
       <node id="2030416617761226517" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="2030416617761226517" at="11,79,12,89" />
+      <scope id="2030416617761226517" at="11,79,12,87" />
       <scope id="2030416617761226517" at="11,0,14,0">
         <var name="editorContext" id="2030416617761226517" />
         <var name="node" id="2030416617761226517" />
       </scope>
       <unit id="2030416617761226517" at="10,0,15,0" name="jetbrains.mps.lang.slanguage.editor.Model_IsAspectOperation_Editor" />
     </file>
-    <file name="Model_IsAspectOperation_EditorBuilder_a.java">
-      <node id="2030416617761226517" at="42,103,43,19" concept="9" />
+    <file name="Model_IsAspectOperation_EditorBuilder.java">
+      <node id="2030416617761226517" at="42,101,43,19" concept="9" />
       <node id="2030416617761226517" at="43,19,44,18" concept="1" />
       <node id="2030416617761226517" at="49,26,50,18" concept="6" />
       <node id="2030416617761226517" at="53,39,54,32" concept="6" />
@@ -165,7 +165,7 @@
       <node id="2030416617761226689" at="110,0,112,0" concept="2" trace="myNode" />
       <node id="2030416617761226517" at="53,0,56,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="2030416617761226689" at="120,0,123,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="2030416617761226517" at="42,0,46,0" concept="0" trace="Model_IsAspectOperation_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="2030416617761226517" at="42,0,46,0" concept="0" trace="Model_IsAspectOperation_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="2030416617761226520" at="68,0,72,0" concept="4" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="2030416617761226517" at="95,0,99,5" concept="3" />
       <node id="2030416617761226517" at="47,0,52,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -186,7 +186,7 @@
       <scope id="2030416617761226689" at="120,41,121,32" />
       <scope id="2030416617761226689" at="126,28,127,20" />
       <scope id="2030416617761226699" at="150,17,151,42" />
-      <scope id="2030416617761226517" at="42,103,44,18" />
+      <scope id="2030416617761226517" at="42,101,44,18" />
       <scope id="2030416617761226520" at="68,42,70,22">
         <var name="editorCell" id="2030416617761226520" />
       </scope>
@@ -249,27 +249,27 @@
         <var name="referenceLink" id="2030416617761226517" />
       </scope>
       <scope id="2030416617761226517" at="81,0,109,0" />
-      <unit id="2030416617761226517" at="165,0,168,0" name="jetbrains.mps.lang.slanguage.editor.Model_IsAspectOperation_EditorBuilder_a$LINKS" />
-      <unit id="2030416617761226517" at="174,0,177,0" name="jetbrains.mps.lang.slanguage.editor.Model_IsAspectOperation_EditorBuilder_a$PROPS" />
-      <unit id="2030416617761226517" at="169,0,173,0" name="jetbrains.mps.lang.slanguage.editor.Model_IsAspectOperation_EditorBuilder_a$CONCEPTS" />
-      <unit id="2030416617761226517" at="83,42,91,5" name="jetbrains.mps.lang.slanguage.editor.Model_IsAspectOperation_EditorBuilder_a$1" />
-      <unit id="2030416617761226689" at="109,0,155,0" name="jetbrains.mps.lang.slanguage.editor.Model_IsAspectOperation_EditorBuilder_a$Inline_Builder0" />
-      <unit id="2030416617761226517" at="38,0,178,0" name="jetbrains.mps.lang.slanguage.editor.Model_IsAspectOperation_EditorBuilder_a" />
+      <unit id="2030416617761226517" at="165,0,168,0" name="jetbrains.mps.lang.slanguage.editor.Model_IsAspectOperation_EditorBuilder$LINKS" />
+      <unit id="2030416617761226517" at="174,0,177,0" name="jetbrains.mps.lang.slanguage.editor.Model_IsAspectOperation_EditorBuilder$PROPS" />
+      <unit id="2030416617761226517" at="169,0,173,0" name="jetbrains.mps.lang.slanguage.editor.Model_IsAspectOperation_EditorBuilder$CONCEPTS" />
+      <unit id="2030416617761226517" at="83,42,91,5" name="jetbrains.mps.lang.slanguage.editor.Model_IsAspectOperation_EditorBuilder$1" />
+      <unit id="2030416617761226689" at="109,0,155,0" name="jetbrains.mps.lang.slanguage.editor.Model_IsAspectOperation_EditorBuilder$Inline_Builder0" />
+      <unit id="2030416617761226517" at="38,0,178,0" name="jetbrains.mps.lang.slanguage.editor.Model_IsAspectOperation_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:d919e39e-ef97-4541-8872-046b24e3733c(jetbrains.mps.lang.slanguage.editor)/5932042262275697533">
     <file name="OfAspectOperation_Editor.java">
-      <node id="5932042262275697533" at="11,79,12,83" concept="6" />
+      <node id="5932042262275697533" at="11,79,12,81" concept="6" />
       <node id="5932042262275697533" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="5932042262275697533" at="11,79,12,83" />
+      <scope id="5932042262275697533" at="11,79,12,81" />
       <scope id="5932042262275697533" at="11,0,14,0">
         <var name="editorContext" id="5932042262275697533" />
         <var name="node" id="5932042262275697533" />
       </scope>
       <unit id="5932042262275697533" at="10,0,15,0" name="jetbrains.mps.lang.slanguage.editor.OfAspectOperation_Editor" />
     </file>
-    <file name="OfAspectOperation_EditorBuilder_a.java">
-      <node id="5932042262275697533" at="43,97,44,19" concept="9" />
+    <file name="OfAspectOperation_EditorBuilder.java">
+      <node id="5932042262275697533" at="43,95,44,19" concept="9" />
       <node id="5932042262275697533" at="44,19,45,18" concept="1" />
       <node id="5932042262275697533" at="50,26,51,18" concept="6" />
       <node id="5932042262275697533" at="54,39,55,32" concept="6" />
@@ -350,7 +350,7 @@
       <node id="8994852683961283903" at="114,0,116,0" concept="2" trace="myNode" />
       <node id="5932042262275697533" at="54,0,57,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="8994852683961283903" at="124,0,127,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="5932042262275697533" at="43,0,47,0" concept="0" trace="OfAspectOperation_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="5932042262275697533" at="43,0,47,0" concept="0" trace="OfAspectOperation_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="5932042262275697533" at="99,0,103,5" concept="3" />
       <node id="5932042262275697533" at="48,0,53,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="5932042262275697533" at="106,205,111,22" concept="3" />
@@ -371,7 +371,7 @@
       <scope id="8994852683961283903" at="124,41,125,32" />
       <scope id="8994852683961283903" at="130,28,131,20" />
       <scope id="8994852683961283917" at="154,17,155,42" />
-      <scope id="5932042262275697533" at="43,97,45,18" />
+      <scope id="5932042262275697533" at="43,95,45,18" />
       <scope id="5932042262275697533" at="100,40,102,54" />
       <scope id="5932042262275697533" at="107,73,109,145">
         <var name="manager" id="5932042262275697533" />
@@ -435,27 +435,27 @@
         <var name="referenceLink" id="5932042262275697533" />
       </scope>
       <scope id="5932042262275697533" at="85,0,113,0" />
-      <unit id="5932042262275697533" at="169,0,172,0" name="jetbrains.mps.lang.slanguage.editor.OfAspectOperation_EditorBuilder_a$LINKS" />
-      <unit id="5932042262275697533" at="178,0,181,0" name="jetbrains.mps.lang.slanguage.editor.OfAspectOperation_EditorBuilder_a$PROPS" />
-      <unit id="5932042262275697533" at="173,0,177,0" name="jetbrains.mps.lang.slanguage.editor.OfAspectOperation_EditorBuilder_a$CONCEPTS" />
-      <unit id="5932042262275697533" at="87,42,95,5" name="jetbrains.mps.lang.slanguage.editor.OfAspectOperation_EditorBuilder_a$1" />
-      <unit id="8994852683961283903" at="113,0,159,0" name="jetbrains.mps.lang.slanguage.editor.OfAspectOperation_EditorBuilder_a$Inline_Builder0" />
-      <unit id="5932042262275697533" at="39,0,182,0" name="jetbrains.mps.lang.slanguage.editor.OfAspectOperation_EditorBuilder_a" />
+      <unit id="5932042262275697533" at="169,0,172,0" name="jetbrains.mps.lang.slanguage.editor.OfAspectOperation_EditorBuilder$LINKS" />
+      <unit id="5932042262275697533" at="178,0,181,0" name="jetbrains.mps.lang.slanguage.editor.OfAspectOperation_EditorBuilder$PROPS" />
+      <unit id="5932042262275697533" at="173,0,177,0" name="jetbrains.mps.lang.slanguage.editor.OfAspectOperation_EditorBuilder$CONCEPTS" />
+      <unit id="5932042262275697533" at="87,42,95,5" name="jetbrains.mps.lang.slanguage.editor.OfAspectOperation_EditorBuilder$1" />
+      <unit id="8994852683961283903" at="113,0,159,0" name="jetbrains.mps.lang.slanguage.editor.OfAspectOperation_EditorBuilder$Inline_Builder0" />
+      <unit id="5932042262275697533" at="39,0,182,0" name="jetbrains.mps.lang.slanguage.editor.OfAspectOperation_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:d919e39e-ef97-4541-8872-046b24e3733c(jetbrains.mps.lang.slanguage.editor)/6171083915388330120">
     <file name="AspectModelRefExpression_Editor.java">
-      <node id="6171083915388330120" at="11,79,12,90" concept="6" />
+      <node id="6171083915388330120" at="11,79,12,88" concept="6" />
       <node id="6171083915388330120" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="6171083915388330120" at="11,79,12,90" />
+      <scope id="6171083915388330120" at="11,79,12,88" />
       <scope id="6171083915388330120" at="11,0,14,0">
         <var name="editorContext" id="6171083915388330120" />
         <var name="node" id="6171083915388330120" />
       </scope>
       <unit id="6171083915388330120" at="10,0,15,0" name="jetbrains.mps.lang.slanguage.editor.AspectModelRefExpression_Editor" />
     </file>
-    <file name="AspectModelRefExpression_EditorBuilder_a.java">
-      <node id="6171083915388330120" at="50,104,51,19" concept="9" />
+    <file name="AspectModelRefExpression_EditorBuilder.java">
+      <node id="6171083915388330120" at="50,102,51,19" concept="9" />
       <node id="6171083915388330120" at="51,19,52,18" concept="1" />
       <node id="6171083915388330120" at="57,26,58,18" concept="6" />
       <node id="6171083915388330120" at="61,39,62,32" concept="6" />
@@ -565,7 +565,7 @@
       <node id="6171083915388330120" at="123,7,126,7" concept="3" />
       <node id="6171083915388330120" at="142,0,145,0" concept="4" trace="getNoTargetText#()Ljava/lang/String;" />
       <node id="6171083915388597787" at="191,0,194,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="6171083915388330120" at="50,0,54,0" concept="0" trace="AspectModelRefExpression_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="6171083915388330120" at="50,0,54,0" concept="0" trace="AspectModelRefExpression_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="6171083915388330132" at="78,0,82,0" concept="4" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="6171083915388330120" at="91,0,95,0" concept="4" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="6171083915388330120" at="99,0,103,0" concept="0" trace="langSingleRoleHandler_sdlbeh_c0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
@@ -599,7 +599,7 @@
       <scope id="6171083915388597787" at="191,41,192,32" />
       <scope id="6171083915388597787" at="197,28,198,20" />
       <scope id="6171083915388597802" at="221,17,222,42" />
-      <scope id="6171083915388330120" at="50,104,52,18" />
+      <scope id="6171083915388330120" at="50,102,52,18" />
       <scope id="6171083915388330132" at="78,42,80,22">
         <var name="editorCell" id="6171083915388330132" />
       </scope>
@@ -695,13 +695,13 @@
         <var name="referenceLink" id="6171083915388330120" />
       </scope>
       <scope id="6171083915388330120" at="152,0,180,0" />
-      <unit id="6171083915388330120" at="246,0,249,0" name="jetbrains.mps.lang.slanguage.editor.AspectModelRefExpression_EditorBuilder_a$PROPS" />
-      <unit id="6171083915388330120" at="236,0,240,0" name="jetbrains.mps.lang.slanguage.editor.AspectModelRefExpression_EditorBuilder_a$LINKS" />
-      <unit id="6171083915388330120" at="241,0,245,0" name="jetbrains.mps.lang.slanguage.editor.AspectModelRefExpression_EditorBuilder_a$CONCEPTS" />
-      <unit id="6171083915388330120" at="154,42,162,5" name="jetbrains.mps.lang.slanguage.editor.AspectModelRefExpression_EditorBuilder_a$1" />
-      <unit id="6171083915388597787" at="180,0,226,0" name="jetbrains.mps.lang.slanguage.editor.AspectModelRefExpression_EditorBuilder_a$Inline_Builder0" />
-      <unit id="6171083915388330120" at="95,0,146,0" name="jetbrains.mps.lang.slanguage.editor.AspectModelRefExpression_EditorBuilder_a$langSingleRoleHandler_sdlbeh_c0" />
-      <unit id="6171083915388330120" at="46,0,250,0" name="jetbrains.mps.lang.slanguage.editor.AspectModelRefExpression_EditorBuilder_a" />
+      <unit id="6171083915388330120" at="246,0,249,0" name="jetbrains.mps.lang.slanguage.editor.AspectModelRefExpression_EditorBuilder$PROPS" />
+      <unit id="6171083915388330120" at="236,0,240,0" name="jetbrains.mps.lang.slanguage.editor.AspectModelRefExpression_EditorBuilder$LINKS" />
+      <unit id="6171083915388330120" at="241,0,245,0" name="jetbrains.mps.lang.slanguage.editor.AspectModelRefExpression_EditorBuilder$CONCEPTS" />
+      <unit id="6171083915388330120" at="154,42,162,5" name="jetbrains.mps.lang.slanguage.editor.AspectModelRefExpression_EditorBuilder$1" />
+      <unit id="6171083915388597787" at="180,0,226,0" name="jetbrains.mps.lang.slanguage.editor.AspectModelRefExpression_EditorBuilder$Inline_Builder0" />
+      <unit id="6171083915388330120" at="95,0,146,0" name="jetbrains.mps.lang.slanguage.editor.AspectModelRefExpression_EditorBuilder$langSingleRoleHandler_sdlbeh_c0" />
+      <unit id="6171083915388330120" at="46,0,250,0" name="jetbrains.mps.lang.slanguage.editor.AspectModelRefExpression_EditorBuilder" />
     </file>
   </root>
 </debug-info>

@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class NF_Model_CreateNewRootNodeOperation_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new NF_Model_CreateNewRootNodeOperation_EditorBuilder_a(editorContext, node).createCell();
+    return new NF_Model_CreateNewRootNodeOperation_EditorBuilder(editorContext, node).createCell();
   }
 }

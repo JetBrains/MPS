@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class PlaceholderModifier_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new PlaceholderModifier_EditorBuilder_a(editorContext, node).createCell();
+    return new PlaceholderModifier_EditorBuilder(editorContext, node).createCell();
   }
 }

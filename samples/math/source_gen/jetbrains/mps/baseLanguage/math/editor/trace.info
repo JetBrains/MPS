@@ -39,17 +39,17 @@
   </root>
   <root nodeRef="r:93eafd6e-0a56-402c-930d-564027be226b(jetbrains.mps.baseLanguage.math.editor)/1235747377639">
     <file name="InIntervalExpression_Editor.java">
-      <node id="1235747377639" at="11,79,12,86" concept="8" />
+      <node id="1235747377639" at="11,79,12,84" concept="8" />
       <node id="1235747377639" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1235747377639" at="11,79,12,86" />
+      <scope id="1235747377639" at="11,79,12,84" />
       <scope id="1235747377639" at="11,0,14,0">
         <var name="editorContext" id="1235747377639" />
         <var name="node" id="1235747377639" />
       </scope>
       <unit id="1235747377639" at="10,0,15,0" name="jetbrains.mps.baseLanguage.math.editor.InIntervalExpression_Editor" />
     </file>
-    <file name="InIntervalExpression_EditorBuilder_a.java">
-      <node id="1235747377639" at="40,100,41,19" concept="13" />
+    <file name="InIntervalExpression_EditorBuilder.java">
+      <node id="1235747377639" at="40,98,41,19" concept="13" />
       <node id="1235747377639" at="41,19,42,18" concept="2" />
       <node id="1235747377639" at="47,26,48,18" concept="8" />
       <node id="1235747377639" at="51,39,52,32" concept="8" />
@@ -127,7 +127,7 @@
       <node id="1235747377639" at="168,87,171,7" concept="5" />
       <node id="1235747377639" at="171,7,174,7" concept="5" />
       <node id="1235747377639" at="191,0,194,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="1235747377639" at="40,0,44,0" concept="1" trace="InIntervalExpression_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1235747377639" at="40,0,44,0" concept="1" trace="InIntervalExpression_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1235747377639" at="65,0,69,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1235747377639" at="73,0,77,0" concept="1" trace="leftExpressionSingleRoleHandler_34pshx_a0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1235747377644" at="134,0,138,0" concept="6" trace="createEditorMenuDescriptor#(Ljetbrains/mps/nodeEditor/cellMenu/CellContext;Ljetbrains/mps/openapi/editor/EditorContext;)Ljetbrains/mps/openapi/editor/menus/EditorMenuDescriptor;" />
@@ -161,7 +161,7 @@
       <scope id="1235747377639" at="172,42,173,55" />
       <scope id="1235747377639" at="187,17,188,42" />
       <scope id="1235747377639" at="191,40,192,36" />
-      <scope id="1235747377639" at="40,100,42,18" />
+      <scope id="1235747377639" at="40,98,42,18" />
       <scope id="1235747377639" at="65,40,67,33">
         <var name="provider" id="1235747377639" />
       </scope>
@@ -240,27 +240,27 @@
       <scope id="1235747377639" at="178,44,189,7" />
       <scope id="1235747377639" at="103,0,117,0" />
       <scope id="1235747377639" at="177,0,191,0" />
-      <unit id="1235747377639" at="201,0,204,0" name="jetbrains.mps.baseLanguage.math.editor.InIntervalExpression_EditorBuilder_a$CONCEPTS" />
-      <unit id="1235747377639" at="196,0,200,0" name="jetbrains.mps.baseLanguage.math.editor.InIntervalExpression_EditorBuilder_a$LINKS" />
-      <unit id="1235747377644" at="128,0,139,0" name="jetbrains.mps.baseLanguage.math.editor.InIntervalExpression_EditorBuilder_a$ReplaceWith_BinaryOperation_cellMenu_34pshx_a0b0" />
-      <unit id="1235747377639" at="69,0,121,0" name="jetbrains.mps.baseLanguage.math.editor.InIntervalExpression_EditorBuilder_a$leftExpressionSingleRoleHandler_34pshx_a0" />
-      <unit id="1235747377639" at="143,0,195,0" name="jetbrains.mps.baseLanguage.math.editor.InIntervalExpression_EditorBuilder_a$rightExpressionSingleRoleHandler_34pshx_c0" />
-      <unit id="1235747377639" at="36,0,205,0" name="jetbrains.mps.baseLanguage.math.editor.InIntervalExpression_EditorBuilder_a" />
+      <unit id="1235747377639" at="201,0,204,0" name="jetbrains.mps.baseLanguage.math.editor.InIntervalExpression_EditorBuilder$CONCEPTS" />
+      <unit id="1235747377639" at="196,0,200,0" name="jetbrains.mps.baseLanguage.math.editor.InIntervalExpression_EditorBuilder$LINKS" />
+      <unit id="1235747377644" at="128,0,139,0" name="jetbrains.mps.baseLanguage.math.editor.InIntervalExpression_EditorBuilder$ReplaceWith_BinaryOperation_cellMenu_34pshx_a0b0" />
+      <unit id="1235747377639" at="69,0,121,0" name="jetbrains.mps.baseLanguage.math.editor.InIntervalExpression_EditorBuilder$leftExpressionSingleRoleHandler_34pshx_a0" />
+      <unit id="1235747377639" at="143,0,195,0" name="jetbrains.mps.baseLanguage.math.editor.InIntervalExpression_EditorBuilder$rightExpressionSingleRoleHandler_34pshx_c0" />
+      <unit id="1235747377639" at="36,0,205,0" name="jetbrains.mps.baseLanguage.math.editor.InIntervalExpression_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:93eafd6e-0a56-402c-930d-564027be226b(jetbrains.mps.baseLanguage.math.editor)/1235747377646">
     <file name="IntervalContainsExpression_Editor.java">
-      <node id="1235747377646" at="11,79,12,92" concept="8" />
+      <node id="1235747377646" at="11,79,12,90" concept="8" />
       <node id="1235747377646" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1235747377646" at="11,79,12,92" />
+      <scope id="1235747377646" at="11,79,12,90" />
       <scope id="1235747377646" at="11,0,14,0">
         <var name="editorContext" id="1235747377646" />
         <var name="node" id="1235747377646" />
       </scope>
       <unit id="1235747377646" at="10,0,15,0" name="jetbrains.mps.baseLanguage.math.editor.IntervalContainsExpression_Editor" />
     </file>
-    <file name="IntervalContainsExpression_EditorBuilder_a.java">
-      <node id="1235747377646" at="40,106,41,19" concept="13" />
+    <file name="IntervalContainsExpression_EditorBuilder.java">
+      <node id="1235747377646" at="40,104,41,19" concept="13" />
       <node id="1235747377646" at="41,19,42,18" concept="2" />
       <node id="1235747377646" at="47,26,48,18" concept="8" />
       <node id="1235747377646" at="51,39,52,32" concept="8" />
@@ -338,7 +338,7 @@
       <node id="1235747377646" at="168,87,171,7" concept="5" />
       <node id="1235747377646" at="171,7,174,7" concept="5" />
       <node id="1235747377646" at="191,0,194,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="1235747377646" at="40,0,44,0" concept="1" trace="IntervalContainsExpression_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1235747377646" at="40,0,44,0" concept="1" trace="IntervalContainsExpression_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1235747377646" at="65,0,69,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1235747377646" at="73,0,77,0" concept="1" trace="leftExpressionSingleRoleHandler_8gz0ko_a0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1235747377651" at="134,0,138,0" concept="6" trace="createEditorMenuDescriptor#(Ljetbrains/mps/nodeEditor/cellMenu/CellContext;Ljetbrains/mps/openapi/editor/EditorContext;)Ljetbrains/mps/openapi/editor/menus/EditorMenuDescriptor;" />
@@ -372,7 +372,7 @@
       <scope id="1235747377646" at="172,42,173,55" />
       <scope id="1235747377646" at="187,17,188,42" />
       <scope id="1235747377646" at="191,40,192,36" />
-      <scope id="1235747377646" at="40,106,42,18" />
+      <scope id="1235747377646" at="40,104,42,18" />
       <scope id="1235747377646" at="65,40,67,33">
         <var name="provider" id="1235747377646" />
       </scope>
@@ -451,22 +451,22 @@
       <scope id="1235747377646" at="178,44,189,7" />
       <scope id="1235747377646" at="103,0,117,0" />
       <scope id="1235747377646" at="177,0,191,0" />
-      <unit id="1235747377646" at="201,0,204,0" name="jetbrains.mps.baseLanguage.math.editor.IntervalContainsExpression_EditorBuilder_a$CONCEPTS" />
-      <unit id="1235747377646" at="196,0,200,0" name="jetbrains.mps.baseLanguage.math.editor.IntervalContainsExpression_EditorBuilder_a$LINKS" />
-      <unit id="1235747377651" at="128,0,139,0" name="jetbrains.mps.baseLanguage.math.editor.IntervalContainsExpression_EditorBuilder_a$ReplaceWith_BinaryOperation_cellMenu_8gz0ko_a0b0" />
-      <unit id="1235747377646" at="69,0,121,0" name="jetbrains.mps.baseLanguage.math.editor.IntervalContainsExpression_EditorBuilder_a$leftExpressionSingleRoleHandler_8gz0ko_a0" />
-      <unit id="1235747377646" at="143,0,195,0" name="jetbrains.mps.baseLanguage.math.editor.IntervalContainsExpression_EditorBuilder_a$rightExpressionSingleRoleHandler_8gz0ko_c0" />
-      <unit id="1235747377646" at="36,0,205,0" name="jetbrains.mps.baseLanguage.math.editor.IntervalContainsExpression_EditorBuilder_a" />
+      <unit id="1235747377646" at="201,0,204,0" name="jetbrains.mps.baseLanguage.math.editor.IntervalContainsExpression_EditorBuilder$CONCEPTS" />
+      <unit id="1235747377646" at="196,0,200,0" name="jetbrains.mps.baseLanguage.math.editor.IntervalContainsExpression_EditorBuilder$LINKS" />
+      <unit id="1235747377651" at="128,0,139,0" name="jetbrains.mps.baseLanguage.math.editor.IntervalContainsExpression_EditorBuilder$ReplaceWith_BinaryOperation_cellMenu_8gz0ko_a0b0" />
+      <unit id="1235747377646" at="69,0,121,0" name="jetbrains.mps.baseLanguage.math.editor.IntervalContainsExpression_EditorBuilder$leftExpressionSingleRoleHandler_8gz0ko_a0" />
+      <unit id="1235747377646" at="143,0,195,0" name="jetbrains.mps.baseLanguage.math.editor.IntervalContainsExpression_EditorBuilder$rightExpressionSingleRoleHandler_8gz0ko_c0" />
+      <unit id="1235747377646" at="36,0,205,0" name="jetbrains.mps.baseLanguage.math.editor.IntervalContainsExpression_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:93eafd6e-0a56-402c-930d-564027be226b(jetbrains.mps.baseLanguage.math.editor)/1235747377653">
     <file name="IntervalLiteral_Editor.java">
-      <node id="1235747377653" at="11,79,12,81" concept="8" />
-      <node id="1235747377653" at="14,82,15,84" concept="8" />
+      <node id="1235747377653" at="11,79,12,79" concept="8" />
+      <node id="1235747377653" at="14,82,15,82" concept="8" />
       <node id="1235747377653" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1235747377653" at="14,0,17,0" concept="6" trace="createInspectedCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1235747377653" at="11,79,12,81" />
-      <scope id="1235747377653" at="14,82,15,84" />
+      <scope id="1235747377653" at="11,79,12,79" />
+      <scope id="1235747377653" at="14,82,15,82" />
       <scope id="1235747377653" at="11,0,14,0">
         <var name="editorContext" id="1235747377653" />
         <var name="node" id="1235747377653" />
@@ -477,8 +477,8 @@
       </scope>
       <unit id="1235747377653" at="10,0,18,0" name="jetbrains.mps.baseLanguage.math.editor.IntervalLiteral_Editor" />
     </file>
-    <file name="IntervalLiteral_EditorBuilder_a.java">
-      <node id="1235747377653" at="52,95,53,19" concept="13" />
+    <file name="IntervalLiteral_EditorBuilder.java">
+      <node id="1235747377653" at="52,93,53,19" concept="13" />
       <node id="1235747377653" at="53,19,54,18" concept="2" />
       <node id="1235747377653" at="59,26,60,18" concept="8" />
       <node id="1235747377653" at="63,39,64,32" concept="8" />
@@ -621,7 +621,7 @@
       <node id="1235747377713" at="318,0,321,0" concept="6" trace="getMatchingText#()Ljava/lang/String;" />
       <node id="1235747377722" at="339,0,342,0" concept="6" trace="handleAction#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/model/SModel;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1235747377722" at="342,0,345,0" concept="6" trace="getMatchingText#()Ljava/lang/String;" />
-      <node id="1235747377653" at="52,0,56,0" concept="1" trace="IntervalLiteral_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1235747377653" at="52,0,56,0" concept="1" trace="IntervalLiteral_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1235747377653" at="147,0,151,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1235747377653" at="155,0,159,0" concept="1" trace="startSingleRoleHandler_yq81ip_b0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1235747377653" at="217,0,221,0" concept="6" trace="createRefNode_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -693,7 +693,7 @@
       <scope id="1235747377713" at="318,37,319,17" />
       <scope id="1235747377722" at="339,88,340,69" />
       <scope id="1235747377722" at="342,37,343,17" />
-      <scope id="1235747377653" at="52,95,54,18" />
+      <scope id="1235747377653" at="52,93,54,18" />
       <scope id="1235747377671" at="100,0,102,0" />
       <scope id="1235747377680" at="124,0,126,0" />
       <scope id="1235747377653" at="147,40,149,33">
@@ -855,24 +855,24 @@
       </scope>
       <scope id="1235747377653" at="279,0,298,0" />
       <scope id="1235747377653" at="79,0,99,0" />
-      <unit id="1235747377653" at="347,0,351,0" name="jetbrains.mps.baseLanguage.math.editor.IntervalLiteral_EditorBuilder_a$PROPS" />
-      <unit id="1235747377653" at="352,0,356,0" name="jetbrains.mps.baseLanguage.math.editor.IntervalLiteral_EditorBuilder_a$LINKS" />
-      <unit id="1235747377671" at="105,38,112,9" name="jetbrains.mps.baseLanguage.math.editor.IntervalLiteral_EditorBuilder_a$IntervalLiteral_generic_cellMenu_yq81ip_a0a0$1" />
-      <unit id="1235747377680" at="129,38,136,9" name="jetbrains.mps.baseLanguage.math.editor.IntervalLiteral_EditorBuilder_a$IntervalLiteral_generic_cellMenu_yq81ip_b0a0$1" />
-      <unit id="1235747377713" at="304,38,311,9" name="jetbrains.mps.baseLanguage.math.editor.IntervalLiteral_EditorBuilder_a$IntervalLiteral_generic_cellMenu_yq81ip_a0e0$1" />
-      <unit id="1235747377722" at="328,38,335,9" name="jetbrains.mps.baseLanguage.math.editor.IntervalLiteral_EditorBuilder_a$IntervalLiteral_generic_cellMenu_yq81ip_b0e0$1" />
-      <unit id="1235747377653" at="80,88,88,5" name="jetbrains.mps.baseLanguage.math.editor.IntervalLiteral_EditorBuilder_a$1" />
-      <unit id="1235747377653" at="280,88,288,5" name="jetbrains.mps.baseLanguage.math.editor.IntervalLiteral_EditorBuilder_a$2" />
-      <unit id="1235747377671" at="99,0,123,0" name="jetbrains.mps.baseLanguage.math.editor.IntervalLiteral_EditorBuilder_a$IntervalLiteral_generic_cellMenu_yq81ip_a0a0" />
-      <unit id="1235747377680" at="123,0,147,0" name="jetbrains.mps.baseLanguage.math.editor.IntervalLiteral_EditorBuilder_a$IntervalLiteral_generic_cellMenu_yq81ip_b0a0" />
-      <unit id="1235747377713" at="298,0,322,0" name="jetbrains.mps.baseLanguage.math.editor.IntervalLiteral_EditorBuilder_a$IntervalLiteral_generic_cellMenu_yq81ip_a0e0" />
-      <unit id="1235747377722" at="322,0,346,0" name="jetbrains.mps.baseLanguage.math.editor.IntervalLiteral_EditorBuilder_a$IntervalLiteral_generic_cellMenu_yq81ip_b0e0" />
-      <unit id="1235747377653" at="151,0,208,0" name="jetbrains.mps.baseLanguage.math.editor.IntervalLiteral_EditorBuilder_a$startSingleRoleHandler_yq81ip_b0" />
-      <unit id="1235747377653" at="221,0,279,0" name="jetbrains.mps.baseLanguage.math.editor.IntervalLiteral_EditorBuilder_a$endSingleRoleHandler_yq81ip_d0" />
-      <unit id="1235747377653" at="48,0,357,0" name="jetbrains.mps.baseLanguage.math.editor.IntervalLiteral_EditorBuilder_a" />
+      <unit id="1235747377653" at="347,0,351,0" name="jetbrains.mps.baseLanguage.math.editor.IntervalLiteral_EditorBuilder$PROPS" />
+      <unit id="1235747377653" at="352,0,356,0" name="jetbrains.mps.baseLanguage.math.editor.IntervalLiteral_EditorBuilder$LINKS" />
+      <unit id="1235747377671" at="105,38,112,9" name="jetbrains.mps.baseLanguage.math.editor.IntervalLiteral_EditorBuilder$IntervalLiteral_generic_cellMenu_yq81ip_a0a0$1" />
+      <unit id="1235747377680" at="129,38,136,9" name="jetbrains.mps.baseLanguage.math.editor.IntervalLiteral_EditorBuilder$IntervalLiteral_generic_cellMenu_yq81ip_b0a0$1" />
+      <unit id="1235747377713" at="304,38,311,9" name="jetbrains.mps.baseLanguage.math.editor.IntervalLiteral_EditorBuilder$IntervalLiteral_generic_cellMenu_yq81ip_a0e0$1" />
+      <unit id="1235747377722" at="328,38,335,9" name="jetbrains.mps.baseLanguage.math.editor.IntervalLiteral_EditorBuilder$IntervalLiteral_generic_cellMenu_yq81ip_b0e0$1" />
+      <unit id="1235747377653" at="80,88,88,5" name="jetbrains.mps.baseLanguage.math.editor.IntervalLiteral_EditorBuilder$1" />
+      <unit id="1235747377653" at="280,88,288,5" name="jetbrains.mps.baseLanguage.math.editor.IntervalLiteral_EditorBuilder$2" />
+      <unit id="1235747377671" at="99,0,123,0" name="jetbrains.mps.baseLanguage.math.editor.IntervalLiteral_EditorBuilder$IntervalLiteral_generic_cellMenu_yq81ip_a0a0" />
+      <unit id="1235747377680" at="123,0,147,0" name="jetbrains.mps.baseLanguage.math.editor.IntervalLiteral_EditorBuilder$IntervalLiteral_generic_cellMenu_yq81ip_b0a0" />
+      <unit id="1235747377713" at="298,0,322,0" name="jetbrains.mps.baseLanguage.math.editor.IntervalLiteral_EditorBuilder$IntervalLiteral_generic_cellMenu_yq81ip_a0e0" />
+      <unit id="1235747377722" at="322,0,346,0" name="jetbrains.mps.baseLanguage.math.editor.IntervalLiteral_EditorBuilder$IntervalLiteral_generic_cellMenu_yq81ip_b0e0" />
+      <unit id="1235747377653" at="151,0,208,0" name="jetbrains.mps.baseLanguage.math.editor.IntervalLiteral_EditorBuilder$startSingleRoleHandler_yq81ip_b0" />
+      <unit id="1235747377653" at="221,0,279,0" name="jetbrains.mps.baseLanguage.math.editor.IntervalLiteral_EditorBuilder$endSingleRoleHandler_yq81ip_d0" />
+      <unit id="1235747377653" at="48,0,357,0" name="jetbrains.mps.baseLanguage.math.editor.IntervalLiteral_EditorBuilder" />
     </file>
-    <file name="IntervalLiteral_InspectorBuilder_a.java">
-      <node id="1235747377653" at="35,98,36,19" concept="13" />
+    <file name="IntervalLiteral_InspectorBuilder.java">
+      <node id="1235747377653" at="35,96,36,19" concept="13" />
       <node id="1235747377653" at="36,19,37,18" concept="2" />
       <node id="1235747377653" at="42,26,43,18" concept="8" />
       <node id="1235747377653" at="46,39,47,32" concept="8" />
@@ -932,7 +932,7 @@
       <node id="1235747377653" at="128,0,129,0" concept="11" trace="PropertyAttribute$Gb" />
       <node id="1235747377653" at="32,0,34,0" concept="3" trace="myNode" />
       <node id="1235747377653" at="46,0,49,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="1235747377653" at="35,0,39,0" concept="1" trace="IntervalLiteral_InspectorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1235747377653" at="35,0,39,0" concept="1" trace="IntervalLiteral_InspectorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1235747377653" at="40,0,45,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1235747377735" at="81,208,86,24" concept="5" />
       <node id="1235747377740" at="111,208,116,24" concept="5" />
@@ -947,7 +947,7 @@
       <scope id="1235747377653" at="46,39,47,32" />
       <scope id="1235747377735" at="87,15,88,40" />
       <scope id="1235747377740" at="117,15,118,40" />
-      <scope id="1235747377653" at="35,98,37,18" />
+      <scope id="1235747377653" at="35,96,37,18" />
       <scope id="1235747377735" at="82,74,84,145">
         <var name="manager" id="1235747377735" />
       </scope>
@@ -990,24 +990,24 @@
       <scope id="1235747377740" at="97,41,119,5" />
       <scope id="1235747377735" at="67,0,91,0" />
       <scope id="1235747377740" at="97,0,121,0" />
-      <unit id="1235747377653" at="127,0,130,0" name="jetbrains.mps.baseLanguage.math.editor.IntervalLiteral_InspectorBuilder_a$CONCEPTS" />
-      <unit id="1235747377653" at="122,0,126,0" name="jetbrains.mps.baseLanguage.math.editor.IntervalLiteral_InspectorBuilder_a$PROPS" />
-      <unit id="1235747377653" at="31,0,131,0" name="jetbrains.mps.baseLanguage.math.editor.IntervalLiteral_InspectorBuilder_a" />
+      <unit id="1235747377653" at="127,0,130,0" name="jetbrains.mps.baseLanguage.math.editor.IntervalLiteral_InspectorBuilder$CONCEPTS" />
+      <unit id="1235747377653" at="122,0,126,0" name="jetbrains.mps.baseLanguage.math.editor.IntervalLiteral_InspectorBuilder$PROPS" />
+      <unit id="1235747377653" at="31,0,131,0" name="jetbrains.mps.baseLanguage.math.editor.IntervalLiteral_InspectorBuilder" />
     </file>
   </root>
   <root nodeRef="r:93eafd6e-0a56-402c-930d-564027be226b(jetbrains.mps.baseLanguage.math.editor)/1235747377742">
     <file name="IntervalType_Editor.java">
-      <node id="1235747377742" at="11,79,12,78" concept="8" />
+      <node id="1235747377742" at="11,79,12,76" concept="8" />
       <node id="1235747377742" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1235747377742" at="11,79,12,78" />
+      <scope id="1235747377742" at="11,79,12,76" />
       <scope id="1235747377742" at="11,0,14,0">
         <var name="editorContext" id="1235747377742" />
         <var name="node" id="1235747377742" />
       </scope>
       <unit id="1235747377742" at="10,0,15,0" name="jetbrains.mps.baseLanguage.math.editor.IntervalType_Editor" />
     </file>
-    <file name="IntervalType_EditorBuilder_a.java">
-      <node id="1235747377742" at="31,92,32,19" concept="13" />
+    <file name="IntervalType_EditorBuilder.java">
+      <node id="1235747377742" at="31,90,32,19" concept="13" />
       <node id="1235747377742" at="32,19,33,18" concept="2" />
       <node id="1235747377742" at="38,26,39,18" concept="8" />
       <node id="1235747377742" at="42,39,43,32" concept="8" />
@@ -1070,7 +1070,7 @@
       <node id="1235747377742" at="105,87,108,7" concept="5" />
       <node id="1235747377742" at="108,7,111,7" concept="5" />
       <node id="1235747377742" at="127,0,130,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="1235747377742" at="31,0,35,0" concept="1" trace="IntervalType_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1235747377742" at="31,0,35,0" concept="1" trace="IntervalType_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1235747377742" at="76,0,80,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1235747377742" at="84,0,88,0" concept="1" trace="elementTypeSingleRoleHandler_o8o2di_c0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1235747377742" at="36,0,41,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -1090,7 +1090,7 @@
       <scope id="1235747377742" at="109,42,110,52" />
       <scope id="1235747377742" at="123,17,124,42" />
       <scope id="1235747377742" at="127,40,128,32" />
-      <scope id="1235747377742" at="31,92,33,18" />
+      <scope id="1235747377742" at="31,90,33,18" />
       <scope id="1235747377742" at="76,40,78,33">
         <var name="provider" id="1235747377742" />
       </scope>
@@ -1145,19 +1145,19 @@
       <scope id="1235747377742" at="46,0,57,0" />
       <scope id="1235747377742" at="114,44,125,7" />
       <scope id="1235747377742" at="113,0,127,0" />
-      <unit id="1235747377742" at="141,0,144,0" name="jetbrains.mps.baseLanguage.math.editor.IntervalType_EditorBuilder_a$LINKS" />
-      <unit id="1235747377742" at="80,0,131,0" name="jetbrains.mps.baseLanguage.math.editor.IntervalType_EditorBuilder_a$elementTypeSingleRoleHandler_o8o2di_c0" />
-      <unit id="1235747377742" at="27,0,145,0" name="jetbrains.mps.baseLanguage.math.editor.IntervalType_EditorBuilder_a" />
+      <unit id="1235747377742" at="141,0,144,0" name="jetbrains.mps.baseLanguage.math.editor.IntervalType_EditorBuilder$LINKS" />
+      <unit id="1235747377742" at="80,0,131,0" name="jetbrains.mps.baseLanguage.math.editor.IntervalType_EditorBuilder$elementTypeSingleRoleHandler_o8o2di_c0" />
+      <unit id="1235747377742" at="27,0,145,0" name="jetbrains.mps.baseLanguage.math.editor.IntervalType_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:93eafd6e-0a56-402c-930d-564027be226b(jetbrains.mps.baseLanguage.math.editor)/1236427060571">
     <file name="MathSymbol_Editor.java">
-      <node id="1236427060571" at="11,79,12,76" concept="8" />
-      <node id="1236427060571" at="14,82,15,79" concept="8" />
+      <node id="1236427060571" at="11,79,12,74" concept="8" />
+      <node id="1236427060571" at="14,82,15,77" concept="8" />
       <node id="1236427060571" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1236427060571" at="14,0,17,0" concept="6" trace="createInspectedCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1236427060571" at="11,79,12,76" />
-      <scope id="1236427060571" at="14,82,15,79" />
+      <scope id="1236427060571" at="11,79,12,74" />
+      <scope id="1236427060571" at="14,82,15,77" />
       <scope id="1236427060571" at="11,0,14,0">
         <var name="editorContext" id="1236427060571" />
         <var name="node" id="1236427060571" />
@@ -1168,8 +1168,8 @@
       </scope>
       <unit id="1236427060571" at="10,0,18,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbol_Editor" />
     </file>
-    <file name="MathSymbol_EditorBuilder_a.java">
-      <node id="1236427060571" at="44,90,45,19" concept="13" />
+    <file name="MathSymbol_EditorBuilder.java">
+      <node id="1236427060571" at="44,88,45,19" concept="13" />
       <node id="1236427060571" at="45,19,46,18" concept="2" />
       <node id="1236427060571" at="51,26,52,18" concept="8" />
       <node id="1236427060571" at="55,39,56,32" concept="8" />
@@ -1360,7 +1360,7 @@
       <node id="1236427060571" at="342,87,345,7" concept="5" />
       <node id="1236427060571" at="345,7,348,7" concept="5" />
       <node id="1236427060571" at="367,0,370,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="1236427060571" at="44,0,48,0" concept="1" trace="MathSymbol_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1236427060571" at="44,0,48,0" concept="1" trace="MathSymbol_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1236427060571" at="110,0,114,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1236427060571" at="118,0,122,0" concept="1" trace="upperBoundSingleRoleHandler_b0ego6_a0b0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1236427060571" at="191,0,195,0" concept="6" trace="createRefNode_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -1426,7 +1426,7 @@
       <scope id="1236427060571" at="346,42,347,51" />
       <scope id="1236427060571" at="363,17,364,42" />
       <scope id="1236427060571" at="367,40,368,31" />
-      <scope id="1236427060571" at="44,90,46,18" />
+      <scope id="1236427060571" at="44,88,46,18" />
       <scope id="1236427060571" at="110,40,112,33">
         <var name="provider" id="1236427060571" />
       </scope>
@@ -1596,17 +1596,17 @@
       </scope>
       <scope id="1236427060571" at="81,0,98,0" />
       <scope id="1262430001742033594" at="168,0,185,0" />
-      <unit id="1236427060571" at="390,0,393,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbol_EditorBuilder_a$CONCEPTS" />
-      <unit id="1262430001742033594" at="169,88,173,5" name="jetbrains.mps.baseLanguage.math.editor.MathSymbol_EditorBuilder_a$1" />
-      <unit id="1236427060571" at="383,0,389,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbol_EditorBuilder_a$LINKS" />
-      <unit id="1236427060571" at="114,0,168,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbol_EditorBuilder_a$upperBoundSingleRoleHandler_b0ego6_a0b0" />
-      <unit id="1236427060571" at="195,0,249,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbol_EditorBuilder_a$varSingleRoleHandler_b0ego6_a2b0" />
-      <unit id="1236427060571" at="259,0,313,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbol_EditorBuilder_a$preconditionSingleRoleHandler_b0ego6_a3b0" />
-      <unit id="1236427060571" at="317,0,371,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbol_EditorBuilder_a$expressionSingleRoleHandler_b0ego6_c0" />
-      <unit id="1236427060571" at="40,0,394,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbol_EditorBuilder_a" />
+      <unit id="1236427060571" at="390,0,393,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbol_EditorBuilder$CONCEPTS" />
+      <unit id="1262430001742033594" at="169,88,173,5" name="jetbrains.mps.baseLanguage.math.editor.MathSymbol_EditorBuilder$1" />
+      <unit id="1236427060571" at="383,0,389,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbol_EditorBuilder$LINKS" />
+      <unit id="1236427060571" at="114,0,168,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbol_EditorBuilder$upperBoundSingleRoleHandler_b0ego6_a0b0" />
+      <unit id="1236427060571" at="195,0,249,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbol_EditorBuilder$varSingleRoleHandler_b0ego6_a2b0" />
+      <unit id="1236427060571" at="259,0,313,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbol_EditorBuilder$preconditionSingleRoleHandler_b0ego6_a3b0" />
+      <unit id="1236427060571" at="317,0,371,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbol_EditorBuilder$expressionSingleRoleHandler_b0ego6_c0" />
+      <unit id="1236427060571" at="40,0,394,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbol_EditorBuilder" />
     </file>
-    <file name="MathSymbol_InspectorBuilder_a.java">
-      <node id="1236427060571" at="34,93,35,19" concept="13" />
+    <file name="MathSymbol_InspectorBuilder.java">
+      <node id="1236427060571" at="34,91,35,19" concept="13" />
       <node id="1236427060571" at="35,19,36,18" concept="2" />
       <node id="1236427060571" at="41,26,42,18" concept="8" />
       <node id="1236427060571" at="45,39,46,32" concept="8" />
@@ -1657,7 +1657,7 @@
       <node id="1236427060571" at="106,87,109,7" concept="5" />
       <node id="1236427060571" at="109,7,112,7" concept="5" />
       <node id="1236427060571" at="128,0,131,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="1236427060571" at="34,0,38,0" concept="1" trace="MathSymbol_InspectorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1236427060571" at="34,0,38,0" concept="1" trace="MathSymbol_InspectorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="2886182022232399939" at="73,0,77,0" concept="6" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1236427060571" at="77,0,81,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1236427060571" at="85,0,89,0" concept="1" trace="preconditionSingleRoleHandler_b0ego6_c0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
@@ -1678,7 +1678,7 @@
       <scope id="1236427060571" at="110,42,111,53" />
       <scope id="1236427060571" at="124,17,125,42" />
       <scope id="1236427060571" at="128,40,129,33" />
-      <scope id="1236427060571" at="34,93,36,18" />
+      <scope id="1236427060571" at="34,91,36,18" />
       <scope id="2886182022232399939" at="73,42,75,22">
         <var name="editorCell" id="2886182022232399939" />
       </scope>
@@ -1728,25 +1728,25 @@
       </scope>
       <scope id="1262430001742033548" at="59,0,73,0" />
       <scope id="1236427060571" at="114,0,128,0" />
-      <unit id="1236427060571" at="133,0,136,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbol_InspectorBuilder_a$LINKS" />
-      <unit id="1262430001742033548" at="60,88,64,5" name="jetbrains.mps.baseLanguage.math.editor.MathSymbol_InspectorBuilder_a$1" />
-      <unit id="1236427060571" at="81,0,132,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbol_InspectorBuilder_a$preconditionSingleRoleHandler_b0ego6_c0" />
-      <unit id="1236427060571" at="30,0,137,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbol_InspectorBuilder_a" />
+      <unit id="1236427060571" at="133,0,136,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbol_InspectorBuilder$LINKS" />
+      <unit id="1262430001742033548" at="60,88,64,5" name="jetbrains.mps.baseLanguage.math.editor.MathSymbol_InspectorBuilder$1" />
+      <unit id="1236427060571" at="81,0,132,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbol_InspectorBuilder$preconditionSingleRoleHandler_b0ego6_c0" />
+      <unit id="1236427060571" at="30,0,137,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbol_InspectorBuilder" />
     </file>
   </root>
   <root nodeRef="r:93eafd6e-0a56-402c-930d-564027be226b(jetbrains.mps.baseLanguage.math.editor)/1236427864894">
     <file name="MathSymbolIndex_Editor.java">
-      <node id="1236427864894" at="11,79,12,81" concept="8" />
+      <node id="1236427864894" at="11,79,12,79" concept="8" />
       <node id="1236427864894" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1236427864894" at="11,79,12,81" />
+      <scope id="1236427864894" at="11,79,12,79" />
       <scope id="1236427864894" at="11,0,14,0">
         <var name="editorContext" id="1236427864894" />
         <var name="node" id="1236427864894" />
       </scope>
       <unit id="1236427864894" at="10,0,15,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbolIndex_Editor" />
     </file>
-    <file name="MathSymbolIndex_EditorBuilder_a.java">
-      <node id="1236427864894" at="40,95,41,19" concept="13" />
+    <file name="MathSymbolIndex_EditorBuilder.java">
+      <node id="1236427864894" at="40,93,41,19" concept="13" />
       <node id="1236427864894" at="41,19,42,18" concept="2" />
       <node id="1236427864894" at="47,26,48,18" concept="8" />
       <node id="1236427864894" at="51,39,52,32" concept="8" />
@@ -1806,7 +1806,7 @@
       <node id="1236427864894" at="121,87,124,7" concept="5" />
       <node id="1236427864894" at="124,7,127,7" concept="5" />
       <node id="1236427864894" at="143,0,146,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="1236427864894" at="40,0,44,0" concept="1" trace="MathSymbolIndex_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1236427864894" at="40,0,44,0" concept="1" trace="MathSymbolIndex_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1236427864894" at="92,0,96,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1236427864894" at="100,0,104,0" concept="1" trace="iterableSingleRoleHandler_hqsv2l_c0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1236427864894" at="45,0,50,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -1828,7 +1828,7 @@
       <scope id="1236427864894" at="125,42,126,49" />
       <scope id="1236427864894" at="139,17,140,42" />
       <scope id="1236427864894" at="143,40,144,29" />
-      <scope id="1236427864894" at="40,95,42,18" />
+      <scope id="1236427864894" at="40,93,42,18" />
       <scope id="1236427868961" at="77,74,79,145">
         <var name="manager" id="1236427868961" />
       </scope>
@@ -1883,26 +1883,26 @@
       <scope id="1236427864894" at="129,0,143,0" />
       <scope id="1236427868961" at="65,41,84,5" />
       <scope id="1236427868961" at="65,0,86,0" />
-      <unit id="1236427864894" at="148,0,151,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbolIndex_EditorBuilder_a$PROPS" />
-      <unit id="1236427864894" at="152,0,155,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbolIndex_EditorBuilder_a$CONCEPTS" />
-      <unit id="1236427864894" at="156,0,159,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbolIndex_EditorBuilder_a$LINKS" />
-      <unit id="1236427864894" at="96,0,147,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbolIndex_EditorBuilder_a$iterableSingleRoleHandler_hqsv2l_c0" />
-      <unit id="1236427864894" at="36,0,160,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbolIndex_EditorBuilder_a" />
+      <unit id="1236427864894" at="148,0,151,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbolIndex_EditorBuilder$PROPS" />
+      <unit id="1236427864894" at="152,0,155,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbolIndex_EditorBuilder$CONCEPTS" />
+      <unit id="1236427864894" at="156,0,159,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbolIndex_EditorBuilder$LINKS" />
+      <unit id="1236427864894" at="96,0,147,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbolIndex_EditorBuilder$iterableSingleRoleHandler_hqsv2l_c0" />
+      <unit id="1236427864894" at="36,0,160,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbolIndex_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:93eafd6e-0a56-402c-930d-564027be226b(jetbrains.mps.baseLanguage.math.editor)/1236427946821">
     <file name="MathSymbolIndexReference_Editor.java">
-      <node id="1236427946821" at="11,79,12,90" concept="8" />
+      <node id="1236427946821" at="11,79,12,88" concept="8" />
       <node id="1236427946821" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1236427946821" at="11,79,12,90" />
+      <scope id="1236427946821" at="11,79,12,88" />
       <scope id="1236427946821" at="11,0,14,0">
         <var name="editorContext" id="1236427946821" />
         <var name="node" id="1236427946821" />
       </scope>
       <unit id="1236427946821" at="10,0,15,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbolIndexReference_Editor" />
     </file>
-    <file name="MathSymbolIndexReference_EditorBuilder_a.java">
-      <node id="1236427946821" at="43,104,44,19" concept="13" />
+    <file name="MathSymbolIndexReference_EditorBuilder.java">
+      <node id="1236427946821" at="43,102,44,19" concept="13" />
       <node id="1236427946821" at="44,19,45,18" concept="2" />
       <node id="1236427946821" at="50,26,51,18" concept="8" />
       <node id="1236427946821" at="54,39,55,32" concept="8" />
@@ -1965,7 +1965,7 @@
       <node id="1236427972701" at="102,0,104,0" concept="3" trace="myNode" />
       <node id="1236427946821" at="54,0,57,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1236427972701" at="112,0,115,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="1236427946821" at="43,0,47,0" concept="1" trace="MathSymbolIndexReference_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1236427946821" at="43,0,47,0" concept="1" trace="MathSymbolIndexReference_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1236427946821" at="87,0,91,5" concept="5" />
       <node id="1236427946821" at="48,0,53,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1236427946821" at="94,205,99,22" concept="5" />
@@ -1984,7 +1984,7 @@
       <scope id="1236427972701" at="112,41,113,32" />
       <scope id="1236427972701" at="118,28,119,20" />
       <scope id="1236427978281" at="142,17,143,42" />
-      <scope id="1236427946821" at="43,104,45,18" />
+      <scope id="1236427946821" at="43,102,45,18" />
       <scope id="1236427946821" at="88,40,90,47" />
       <scope id="1236427946821" at="95,73,97,145">
         <var name="manager" id="1236427946821" />
@@ -2039,27 +2039,27 @@
         <var name="referenceLink" id="1236427946821" />
       </scope>
       <scope id="1236427946821" at="66,0,101,0" />
-      <unit id="1236427946821" at="148,0,151,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbolIndexReference_EditorBuilder_a$LINKS" />
-      <unit id="1236427946821" at="157,0,160,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbolIndexReference_EditorBuilder_a$PROPS" />
-      <unit id="1236427946821" at="152,0,156,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbolIndexReference_EditorBuilder_a$CONCEPTS" />
-      <unit id="1236427946821" at="68,42,83,5" name="jetbrains.mps.baseLanguage.math.editor.MathSymbolIndexReference_EditorBuilder_a$1" />
-      <unit id="1236427972701" at="101,0,147,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbolIndexReference_EditorBuilder_a$Inline_Builder0" />
-      <unit id="1236427946821" at="39,0,161,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbolIndexReference_EditorBuilder_a" />
+      <unit id="1236427946821" at="148,0,151,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbolIndexReference_EditorBuilder$LINKS" />
+      <unit id="1236427946821" at="157,0,160,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbolIndexReference_EditorBuilder$PROPS" />
+      <unit id="1236427946821" at="152,0,156,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbolIndexReference_EditorBuilder$CONCEPTS" />
+      <unit id="1236427946821" at="68,42,83,5" name="jetbrains.mps.baseLanguage.math.editor.MathSymbolIndexReference_EditorBuilder$1" />
+      <unit id="1236427972701" at="101,0,147,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbolIndexReference_EditorBuilder$Inline_Builder0" />
+      <unit id="1236427946821" at="39,0,161,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbolIndexReference_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:93eafd6e-0a56-402c-930d-564027be226b(jetbrains.mps.baseLanguage.math.editor)/1236589729677">
     <file name="MathSymbolFromToIndex_Editor.java">
-      <node id="1236589729677" at="11,79,12,87" concept="8" />
+      <node id="1236589729677" at="11,79,12,85" concept="8" />
       <node id="1236589729677" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1236589729677" at="11,79,12,87" />
+      <scope id="1236589729677" at="11,79,12,85" />
       <scope id="1236589729677" at="11,0,14,0">
         <var name="editorContext" id="1236589729677" />
         <var name="node" id="1236589729677" />
       </scope>
       <unit id="1236589729677" at="10,0,15,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbolFromToIndex_Editor" />
     </file>
-    <file name="MathSymbolFromToIndex_EditorBuilder_a.java">
-      <node id="1236589729677" at="40,101,41,19" concept="13" />
+    <file name="MathSymbolFromToIndex_EditorBuilder.java">
+      <node id="1236589729677" at="40,99,41,19" concept="13" />
       <node id="1236589729677" at="41,19,42,18" concept="2" />
       <node id="1236589729677" at="47,26,48,18" concept="8" />
       <node id="1236589729677" at="51,39,52,32" concept="8" />
@@ -2119,7 +2119,7 @@
       <node id="1236589729677" at="121,87,124,7" concept="5" />
       <node id="1236589729677" at="124,7,127,7" concept="5" />
       <node id="1236589729677" at="143,0,146,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="1236589729677" at="40,0,44,0" concept="1" trace="MathSymbolFromToIndex_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1236589729677" at="40,0,44,0" concept="1" trace="MathSymbolFromToIndex_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1236589729677" at="92,0,96,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1236589729677" at="100,0,104,0" concept="1" trace="fromSingleRoleHandler_wvq0lb_c0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1236589729677" at="45,0,50,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -2141,7 +2141,7 @@
       <scope id="1236589729677" at="125,42,126,45" />
       <scope id="1236589729677" at="139,17,140,42" />
       <scope id="1236589729677" at="143,40,144,25" />
-      <scope id="1236589729677" at="40,101,42,18" />
+      <scope id="1236589729677" at="40,99,42,18" />
       <scope id="1236589737665" at="77,74,79,145">
         <var name="manager" id="1236589737665" />
       </scope>
@@ -2196,26 +2196,26 @@
       <scope id="1236589729677" at="129,0,143,0" />
       <scope id="1236589737665" at="65,41,84,5" />
       <scope id="1236589737665" at="65,0,86,0" />
-      <unit id="1236589729677" at="148,0,151,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbolFromToIndex_EditorBuilder_a$PROPS" />
-      <unit id="1236589729677" at="152,0,155,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbolFromToIndex_EditorBuilder_a$CONCEPTS" />
-      <unit id="1236589729677" at="156,0,159,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbolFromToIndex_EditorBuilder_a$LINKS" />
-      <unit id="1236589729677" at="96,0,147,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbolFromToIndex_EditorBuilder_a$fromSingleRoleHandler_wvq0lb_c0" />
-      <unit id="1236589729677" at="36,0,160,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbolFromToIndex_EditorBuilder_a" />
+      <unit id="1236589729677" at="148,0,151,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbolFromToIndex_EditorBuilder$PROPS" />
+      <unit id="1236589729677" at="152,0,155,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbolFromToIndex_EditorBuilder$CONCEPTS" />
+      <unit id="1236589729677" at="156,0,159,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbolFromToIndex_EditorBuilder$LINKS" />
+      <unit id="1236589729677" at="96,0,147,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbolFromToIndex_EditorBuilder$fromSingleRoleHandler_wvq0lb_c0" />
+      <unit id="1236589729677" at="36,0,160,0" name="jetbrains.mps.baseLanguage.math.editor.MathSymbolFromToIndex_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:93eafd6e-0a56-402c-930d-564027be226b(jetbrains.mps.baseLanguage.math.editor)/1237100894352">
     <file name="DivExpressionFraction_Editor.java">
-      <node id="1237100894352" at="11,79,12,87" concept="8" />
+      <node id="1237100894352" at="11,79,12,85" concept="8" />
       <node id="1237100894352" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1237100894352" at="11,79,12,87" />
+      <scope id="1237100894352" at="11,79,12,85" />
       <scope id="1237100894352" at="11,0,14,0">
         <var name="editorContext" id="1237100894352" />
         <var name="node" id="1237100894352" />
       </scope>
       <unit id="1237100894352" at="10,0,15,0" name="jetbrains.mps.baseLanguage.math.editor.DivExpressionFraction_Editor" />
     </file>
-    <file name="DivExpressionFraction_EditorBuilder_a.java">
-      <node id="1237100894352" at="36,101,37,19" concept="13" />
+    <file name="DivExpressionFraction_EditorBuilder.java">
+      <node id="1237100894352" at="36,99,37,19" concept="13" />
       <node id="1237100894352" at="37,19,38,18" concept="2" />
       <node id="1237100894352" at="43,26,44,18" concept="8" />
       <node id="1237100894352" at="47,39,48,32" concept="8" />
@@ -2316,7 +2316,7 @@
       <node id="1237100894352" at="177,87,180,7" concept="5" />
       <node id="1237100894352" at="180,7,183,7" concept="5" />
       <node id="1237100894352" at="200,0,203,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="1237100894352" at="36,0,40,0" concept="1" trace="DivExpressionFraction_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1237100894352" at="36,0,40,0" concept="1" trace="DivExpressionFraction_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1237100894352" at="83,0,87,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1237100894352" at="91,0,95,0" concept="1" trace="numeratorSingleRoleHandler_ksgn1c_a1a#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1237100894352" at="148,0,152,0" concept="6" trace="createRefNode_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -2349,7 +2349,7 @@
       <scope id="1237100894352" at="181,42,182,52" />
       <scope id="1237100894352" at="196,17,197,42" />
       <scope id="1237100894352" at="200,40,201,32" />
-      <scope id="1237100894352" at="36,101,38,18" />
+      <scope id="1237100894352" at="36,99,38,18" />
       <scope id="1237100894352" at="83,40,85,33">
         <var name="provider" id="1237100894352" />
       </scope>
@@ -2439,25 +2439,25 @@
       <scope id="1237100894352" at="71,0,83,0" />
       <scope id="1237100894352" at="121,0,135,0" />
       <scope id="1237100894352" at="186,0,200,0" />
-      <unit id="1237100894352" at="215,0,219,0" name="jetbrains.mps.baseLanguage.math.editor.DivExpressionFraction_EditorBuilder_a$LINKS" />
-      <unit id="1237100894352" at="87,0,139,0" name="jetbrains.mps.baseLanguage.math.editor.DivExpressionFraction_EditorBuilder_a$numeratorSingleRoleHandler_ksgn1c_a1a" />
-      <unit id="1237100894352" at="152,0,204,0" name="jetbrains.mps.baseLanguage.math.editor.DivExpressionFraction_EditorBuilder_a$denominatorSingleRoleHandler_ksgn1c_c1a" />
-      <unit id="1237100894352" at="32,0,220,0" name="jetbrains.mps.baseLanguage.math.editor.DivExpressionFraction_EditorBuilder_a" />
+      <unit id="1237100894352" at="215,0,219,0" name="jetbrains.mps.baseLanguage.math.editor.DivExpressionFraction_EditorBuilder$LINKS" />
+      <unit id="1237100894352" at="87,0,139,0" name="jetbrains.mps.baseLanguage.math.editor.DivExpressionFraction_EditorBuilder$numeratorSingleRoleHandler_ksgn1c_a1a" />
+      <unit id="1237100894352" at="152,0,204,0" name="jetbrains.mps.baseLanguage.math.editor.DivExpressionFraction_EditorBuilder$denominatorSingleRoleHandler_ksgn1c_c1a" />
+      <unit id="1237100894352" at="32,0,220,0" name="jetbrains.mps.baseLanguage.math.editor.DivExpressionFraction_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:93eafd6e-0a56-402c-930d-564027be226b(jetbrains.mps.baseLanguage.math.editor)/1237214636558">
     <file name="MathTypeCast_Editor.java">
-      <node id="1237214636558" at="11,79,12,78" concept="8" />
+      <node id="1237214636558" at="11,79,12,76" concept="8" />
       <node id="1237214636558" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1237214636558" at="11,79,12,78" />
+      <scope id="1237214636558" at="11,79,12,76" />
       <scope id="1237214636558" at="11,0,14,0">
         <var name="editorContext" id="1237214636558" />
         <var name="node" id="1237214636558" />
       </scope>
       <unit id="1237214636558" at="10,0,15,0" name="jetbrains.mps.baseLanguage.math.editor.MathTypeCast_Editor" />
     </file>
-    <file name="MathTypeCast_EditorBuilder_a.java">
-      <node id="1237214636558" at="44,92,45,19" concept="13" />
+    <file name="MathTypeCast_EditorBuilder.java">
+      <node id="1237214636558" at="44,90,45,19" concept="13" />
       <node id="1237214636558" at="45,19,46,18" concept="2" />
       <node id="1237214636558" at="51,26,52,18" concept="8" />
       <node id="1237214636558" at="55,39,56,32" concept="8" />
@@ -2530,7 +2530,7 @@
       <node id="1237214636558" at="140,87,143,7" concept="5" />
       <node id="1237214636558" at="143,7,146,7" concept="5" />
       <node id="1237214636558" at="162,0,165,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="1237214636558" at="44,0,48,0" concept="1" trace="MathTypeCast_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1237214636558" at="44,0,48,0" concept="1" trace="MathTypeCast_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1237214636558" at="111,0,115,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1237214636558" at="119,0,123,0" concept="1" trace="castedExprSingleRoleHandler_gtxowl_d0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1237214636558" at="49,0,54,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -2553,7 +2553,7 @@
       <scope id="1237214636558" at="144,42,145,51" />
       <scope id="1237214636558" at="158,17,159,42" />
       <scope id="1237214636558" at="162,40,163,31" />
-      <scope id="1237214636558" at="44,92,46,18" />
+      <scope id="1237214636558" at="44,90,46,18" />
       <scope id="1237547334352" at="92,74,94,145">
         <var name="manager" id="1237547334352" />
       </scope>
@@ -2614,26 +2614,26 @@
       <scope id="1237214636558" at="148,0,162,0" />
       <scope id="1237547334352" at="80,41,99,5" />
       <scope id="1237547334352" at="80,0,101,0" />
-      <unit id="1237214636558" at="167,0,170,0" name="jetbrains.mps.baseLanguage.math.editor.MathTypeCast_EditorBuilder_a$PROPS" />
-      <unit id="1237214636558" at="171,0,174,0" name="jetbrains.mps.baseLanguage.math.editor.MathTypeCast_EditorBuilder_a$CONCEPTS" />
-      <unit id="1237214636558" at="175,0,178,0" name="jetbrains.mps.baseLanguage.math.editor.MathTypeCast_EditorBuilder_a$LINKS" />
-      <unit id="1237214636558" at="115,0,166,0" name="jetbrains.mps.baseLanguage.math.editor.MathTypeCast_EditorBuilder_a$castedExprSingleRoleHandler_gtxowl_d0" />
-      <unit id="1237214636558" at="40,0,179,0" name="jetbrains.mps.baseLanguage.math.editor.MathTypeCast_EditorBuilder_a" />
+      <unit id="1237214636558" at="167,0,170,0" name="jetbrains.mps.baseLanguage.math.editor.MathTypeCast_EditorBuilder$PROPS" />
+      <unit id="1237214636558" at="171,0,174,0" name="jetbrains.mps.baseLanguage.math.editor.MathTypeCast_EditorBuilder$CONCEPTS" />
+      <unit id="1237214636558" at="175,0,178,0" name="jetbrains.mps.baseLanguage.math.editor.MathTypeCast_EditorBuilder$LINKS" />
+      <unit id="1237214636558" at="115,0,166,0" name="jetbrains.mps.baseLanguage.math.editor.MathTypeCast_EditorBuilder$castedExprSingleRoleHandler_gtxowl_d0" />
+      <unit id="1237214636558" at="40,0,179,0" name="jetbrains.mps.baseLanguage.math.editor.MathTypeCast_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:93eafd6e-0a56-402c-930d-564027be226b(jetbrains.mps.baseLanguage.math.editor)/1238325185395">
     <file name="AbsExpression_Editor.java">
-      <node id="1238325185395" at="11,79,12,79" concept="8" />
+      <node id="1238325185395" at="11,79,12,77" concept="8" />
       <node id="1238325185395" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1238325185395" at="11,79,12,79" />
+      <scope id="1238325185395" at="11,79,12,77" />
       <scope id="1238325185395" at="11,0,14,0">
         <var name="editorContext" id="1238325185395" />
         <var name="node" id="1238325185395" />
       </scope>
       <unit id="1238325185395" at="10,0,15,0" name="jetbrains.mps.baseLanguage.math.editor.AbsExpression_Editor" />
     </file>
-    <file name="AbsExpression_EditorBuilder_a.java">
-      <node id="1238325185395" at="31,93,32,19" concept="13" />
+    <file name="AbsExpression_EditorBuilder.java">
+      <node id="1238325185395" at="31,91,32,19" concept="13" />
       <node id="1238325185395" at="32,19,33,18" concept="2" />
       <node id="1238325185395" at="38,26,39,18" concept="8" />
       <node id="1238325185395" at="42,39,43,32" concept="8" />
@@ -2689,7 +2689,7 @@
       <node id="1238325185395" at="95,87,98,7" concept="5" />
       <node id="1238325185395" at="98,7,101,7" concept="5" />
       <node id="1238325185395" at="117,0,120,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="1238325185395" at="31,0,35,0" concept="1" trace="AbsExpression_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1238325185395" at="31,0,35,0" concept="1" trace="AbsExpression_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1238325185395" at="66,0,70,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1238325185395" at="74,0,78,0" concept="1" trace="exprSingleRoleHandler_vounap_b0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1238325185395" at="36,0,41,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -2708,7 +2708,7 @@
       <scope id="1238325185395" at="99,42,100,45" />
       <scope id="1238325185395" at="113,17,114,42" />
       <scope id="1238325185395" at="117,40,118,25" />
-      <scope id="1238325185395" at="31,93,33,18" />
+      <scope id="1238325185395" at="31,91,33,18" />
       <scope id="1238325185395" at="66,40,68,33">
         <var name="provider" id="1238325185395" />
       </scope>
@@ -2758,24 +2758,24 @@
       <scope id="1238325209715" at="121,0,131,0" />
       <scope id="1238325185395" at="104,44,115,7" />
       <scope id="1238325185395" at="103,0,117,0" />
-      <unit id="1238325185395" at="132,0,135,0" name="jetbrains.mps.baseLanguage.math.editor.AbsExpression_EditorBuilder_a$LINKS" />
-      <unit id="1238325185395" at="70,0,121,0" name="jetbrains.mps.baseLanguage.math.editor.AbsExpression_EditorBuilder_a$exprSingleRoleHandler_vounap_b0" />
-      <unit id="1238325185395" at="27,0,136,0" name="jetbrains.mps.baseLanguage.math.editor.AbsExpression_EditorBuilder_a" />
+      <unit id="1238325185395" at="132,0,135,0" name="jetbrains.mps.baseLanguage.math.editor.AbsExpression_EditorBuilder$LINKS" />
+      <unit id="1238325185395" at="70,0,121,0" name="jetbrains.mps.baseLanguage.math.editor.AbsExpression_EditorBuilder$exprSingleRoleHandler_vounap_b0" />
+      <unit id="1238325185395" at="27,0,136,0" name="jetbrains.mps.baseLanguage.math.editor.AbsExpression_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:93eafd6e-0a56-402c-930d-564027be226b(jetbrains.mps.baseLanguage.math.editor)/1238326514749">
     <file name="LiteralI_Editor.java">
-      <node id="1238326514749" at="11,79,12,74" concept="8" />
+      <node id="1238326514749" at="11,79,12,72" concept="8" />
       <node id="1238326514749" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1238326514749" at="11,79,12,74" />
+      <scope id="1238326514749" at="11,79,12,72" />
       <scope id="1238326514749" at="11,0,14,0">
         <var name="editorContext" id="1238326514749" />
         <var name="node" id="1238326514749" />
       </scope>
       <unit id="1238326514749" at="10,0,15,0" name="jetbrains.mps.baseLanguage.math.editor.LiteralI_Editor" />
     </file>
-    <file name="LiteralI_EditorBuilder_a.java">
-      <node id="1238326514749" at="19,88,20,19" concept="13" />
+    <file name="LiteralI_EditorBuilder.java">
+      <node id="1238326514749" at="19,86,20,19" concept="13" />
       <node id="1238326514749" at="20,19,21,18" concept="2" />
       <node id="1238326514749" at="26,26,27,18" concept="8" />
       <node id="1238326514749" at="30,39,31,30" concept="8" />
@@ -2790,12 +2790,12 @@
       <node id="4815887568696959612" at="42,34,43,22" concept="8" />
       <node id="1238326514749" at="16,0,18,0" concept="3" trace="myNode" />
       <node id="1238326514749" at="30,0,33,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="1238326514749" at="19,0,23,0" concept="1" trace="LiteralI_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1238326514749" at="19,0,23,0" concept="1" trace="LiteralI_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1238326514749" at="24,0,29,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="4815887568696959612" at="34,0,45,0" concept="6" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="1238326514749" at="26,26,27,18" />
       <scope id="1238326514749" at="30,39,31,30" />
-      <scope id="1238326514749" at="19,88,21,18" />
+      <scope id="1238326514749" at="19,86,21,18" />
       <scope id="1238326514749" at="30,0,33,0" />
       <scope id="1238326514749" at="19,0,23,0">
         <var name="context" id="1238326514749" />
@@ -2807,22 +2807,22 @@
         <var name="style" id="4815887568696959612" />
       </scope>
       <scope id="4815887568696959612" at="34,0,45,0" />
-      <unit id="1238326514749" at="15,0,46,0" name="jetbrains.mps.baseLanguage.math.editor.LiteralI_EditorBuilder_a" />
+      <unit id="1238326514749" at="15,0,46,0" name="jetbrains.mps.baseLanguage.math.editor.LiteralI_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:93eafd6e-0a56-402c-930d-564027be226b(jetbrains.mps.baseLanguage.math.editor)/1238328611399">
     <file name="ComplexLiteral_Editor.java">
-      <node id="1238328611399" at="11,79,12,80" concept="8" />
+      <node id="1238328611399" at="11,79,12,78" concept="8" />
       <node id="1238328611399" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1238328611399" at="11,79,12,80" />
+      <scope id="1238328611399" at="11,79,12,78" />
       <scope id="1238328611399" at="11,0,14,0">
         <var name="editorContext" id="1238328611399" />
         <var name="node" id="1238328611399" />
       </scope>
       <unit id="1238328611399" at="10,0,15,0" name="jetbrains.mps.baseLanguage.math.editor.ComplexLiteral_Editor" />
     </file>
-    <file name="ComplexLiteral_EditorBuilder_a.java">
-      <node id="1238328611399" at="27,94,28,19" concept="13" />
+    <file name="ComplexLiteral_EditorBuilder.java">
+      <node id="1238328611399" at="27,92,28,19" concept="13" />
       <node id="1238328611399" at="28,19,29,18" concept="2" />
       <node id="1238328611399" at="34,26,35,18" concept="8" />
       <node id="1238328611399" at="38,39,39,32" concept="8" />
@@ -2892,7 +2892,7 @@
       <node id="1238328611399" at="142,87,145,7" concept="5" />
       <node id="1238328611399" at="145,7,148,7" concept="5" />
       <node id="1238328611399" at="164,0,167,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="1238328611399" at="27,0,31,0" concept="1" trace="ComplexLiteral_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1238328611399" at="27,0,31,0" concept="1" trace="ComplexLiteral_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1238328611399" at="52,0,56,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1238328611399" at="60,0,64,0" concept="1" trace="realSingleRoleHandler_g5m0o6_a0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1238328611399" at="113,0,117,0" concept="6" trace="createRefNode_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -2922,7 +2922,7 @@
       <scope id="1238328611399" at="146,42,147,45" />
       <scope id="1238328611399" at="160,17,161,42" />
       <scope id="1238328611399" at="164,40,165,25" />
-      <scope id="1238328611399" at="27,94,29,18" />
+      <scope id="1238328611399" at="27,92,29,18" />
       <scope id="1238328611399" at="52,40,54,33">
         <var name="provider" id="1238328611399" />
       </scope>
@@ -2995,25 +2995,25 @@
       <scope id="1238328611399" at="151,44,162,7" />
       <scope id="1238328611399" at="89,0,103,0" />
       <scope id="1238328611399" at="150,0,164,0" />
-      <unit id="1238328611399" at="169,0,173,0" name="jetbrains.mps.baseLanguage.math.editor.ComplexLiteral_EditorBuilder_a$LINKS" />
-      <unit id="1238328611399" at="56,0,107,0" name="jetbrains.mps.baseLanguage.math.editor.ComplexLiteral_EditorBuilder_a$realSingleRoleHandler_g5m0o6_a0" />
-      <unit id="1238328611399" at="117,0,168,0" name="jetbrains.mps.baseLanguage.math.editor.ComplexLiteral_EditorBuilder_a$imagSingleRoleHandler_g5m0o6_c0" />
-      <unit id="1238328611399" at="23,0,174,0" name="jetbrains.mps.baseLanguage.math.editor.ComplexLiteral_EditorBuilder_a" />
+      <unit id="1238328611399" at="169,0,173,0" name="jetbrains.mps.baseLanguage.math.editor.ComplexLiteral_EditorBuilder$LINKS" />
+      <unit id="1238328611399" at="56,0,107,0" name="jetbrains.mps.baseLanguage.math.editor.ComplexLiteral_EditorBuilder$realSingleRoleHandler_g5m0o6_a0" />
+      <unit id="1238328611399" at="117,0,168,0" name="jetbrains.mps.baseLanguage.math.editor.ComplexLiteral_EditorBuilder$imagSingleRoleHandler_g5m0o6_c0" />
+      <unit id="1238328611399" at="23,0,174,0" name="jetbrains.mps.baseLanguage.math.editor.ComplexLiteral_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:93eafd6e-0a56-402c-930d-564027be226b(jetbrains.mps.baseLanguage.math.editor)/1238341198038">
     <file name="PowExpression_Editor.java">
-      <node id="1238341198038" at="11,79,12,79" concept="8" />
+      <node id="1238341198038" at="11,79,12,77" concept="8" />
       <node id="1238341198038" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1238341198038" at="11,79,12,79" />
+      <scope id="1238341198038" at="11,79,12,77" />
       <scope id="1238341198038" at="11,0,14,0">
         <var name="editorContext" id="1238341198038" />
         <var name="node" id="1238341198038" />
       </scope>
       <unit id="1238341198038" at="10,0,15,0" name="jetbrains.mps.baseLanguage.math.editor.PowExpression_Editor" />
     </file>
-    <file name="PowExpression_EditorBuilder_a.java">
-      <node id="1238341198038" at="33,93,34,19" concept="13" />
+    <file name="PowExpression_EditorBuilder.java">
+      <node id="1238341198038" at="33,91,34,19" concept="13" />
       <node id="1238341198038" at="34,19,35,18" concept="2" />
       <node id="1238341198038" at="40,26,41,18" concept="8" />
       <node id="1238341198038" at="44,39,45,32" concept="8" />
@@ -3098,7 +3098,7 @@
       <node id="1238341198038" at="151,87,154,7" concept="5" />
       <node id="1238341198038" at="154,7,157,7" concept="5" />
       <node id="1238341198038" at="177,0,180,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="1238341198038" at="33,0,37,0" concept="1" trace="PowExpression_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1238341198038" at="33,0,37,0" concept="1" trace="PowExpression_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1238341198038" at="67,0,71,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1238341198038" at="75,0,79,0" concept="1" trace="baseSingleRoleHandler_ysso2m_a0a#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1238341198038" at="122,0,126,0" concept="6" trace="createRefNode_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -3129,7 +3129,7 @@
       <scope id="1238341198038" at="155,42,156,49" />
       <scope id="1238341198038" at="173,17,174,42" />
       <scope id="1238341198038" at="177,40,178,29" />
-      <scope id="1238341198038" at="33,93,35,18" />
+      <scope id="1238341198038" at="33,91,35,18" />
       <scope id="1238341198038" at="67,40,69,33">
         <var name="provider" id="1238341198038" />
       </scope>
@@ -3210,25 +3210,25 @@
       </scope>
       <scope id="1238341198038" at="104,0,118,0" />
       <scope id="1238341198038" at="163,0,177,0" />
-      <unit id="1238341198038" at="192,0,196,0" name="jetbrains.mps.baseLanguage.math.editor.PowExpression_EditorBuilder_a$LINKS" />
-      <unit id="1238341198038" at="71,0,122,0" name="jetbrains.mps.baseLanguage.math.editor.PowExpression_EditorBuilder_a$baseSingleRoleHandler_ysso2m_a0a" />
-      <unit id="1238341198038" at="126,0,181,0" name="jetbrains.mps.baseLanguage.math.editor.PowExpression_EditorBuilder_a$exponentSingleRoleHandler_ysso2m_b0a" />
-      <unit id="1238341198038" at="29,0,197,0" name="jetbrains.mps.baseLanguage.math.editor.PowExpression_EditorBuilder_a" />
+      <unit id="1238341198038" at="192,0,196,0" name="jetbrains.mps.baseLanguage.math.editor.PowExpression_EditorBuilder$LINKS" />
+      <unit id="1238341198038" at="71,0,122,0" name="jetbrains.mps.baseLanguage.math.editor.PowExpression_EditorBuilder$baseSingleRoleHandler_ysso2m_a0a" />
+      <unit id="1238341198038" at="126,0,181,0" name="jetbrains.mps.baseLanguage.math.editor.PowExpression_EditorBuilder$exponentSingleRoleHandler_ysso2m_b0a" />
+      <unit id="1238341198038" at="29,0,197,0" name="jetbrains.mps.baseLanguage.math.editor.PowExpression_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:93eafd6e-0a56-402c-930d-564027be226b(jetbrains.mps.baseLanguage.math.editor)/1238343907176">
     <file name="MathFuncExpression_Editor.java">
-      <node id="1238343907176" at="11,79,12,84" concept="8" />
+      <node id="1238343907176" at="11,79,12,82" concept="8" />
       <node id="1238343907176" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1238343907176" at="11,79,12,84" />
+      <scope id="1238343907176" at="11,79,12,82" />
       <scope id="1238343907176" at="11,0,14,0">
         <var name="editorContext" id="1238343907176" />
         <var name="node" id="1238343907176" />
       </scope>
       <unit id="1238343907176" at="10,0,15,0" name="jetbrains.mps.baseLanguage.math.editor.MathFuncExpression_Editor" />
     </file>
-    <file name="MathFuncExpression_EditorBuilder_a.java">
-      <node id="1238343907176" at="43,98,44,19" concept="13" />
+    <file name="MathFuncExpression_EditorBuilder.java">
+      <node id="1238343907176" at="43,96,44,19" concept="13" />
       <node id="1238343907176" at="44,19,45,18" concept="2" />
       <node id="1238343907176" at="50,26,51,18" concept="8" />
       <node id="1238343907176" at="54,39,55,32" concept="8" />
@@ -3297,7 +3297,7 @@
       <node id="1238343907176" at="128,87,131,7" concept="5" />
       <node id="1238343907176" at="131,7,134,7" concept="5" />
       <node id="1238343907176" at="150,0,153,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="1238343907176" at="43,0,47,0" concept="1" trace="MathFuncExpression_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1238343907176" at="43,0,47,0" concept="1" trace="MathFuncExpression_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="2886182022232400013" at="84,0,88,0" concept="6" trace="createEditorMenuDescriptor#(Ljetbrains/mps/nodeEditor/cellMenu/CellContext;Ljetbrains/mps/openapi/editor/EditorContext;)Ljetbrains/mps/openapi/editor/menus/EditorMenuDescriptor;" />
       <node id="1238343907176" at="99,0,103,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1238343907176" at="107,0,111,0" concept="1" trace="paramSingleRoleHandler_957ayc_c0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
@@ -3321,7 +3321,7 @@
       <scope id="1238343907176" at="132,42,133,46" />
       <scope id="1238343907176" at="146,17,147,42" />
       <scope id="1238343907176" at="150,40,151,26" />
-      <scope id="1238343907176" at="43,98,45,18" />
+      <scope id="1238343907176" at="43,96,45,18" />
       <scope id="2886182022232400013" at="79,0,81,0" />
       <scope id="1238343907176" at="99,40,101,33">
         <var name="provider" id="1238343907176" />
@@ -3382,21 +3382,21 @@
       <scope id="1238343907176" at="58,0,69,0" />
       <scope id="1238343907176" at="137,44,148,7" />
       <scope id="1238343907176" at="136,0,150,0" />
-      <unit id="1238343907176" at="165,0,168,0" name="jetbrains.mps.baseLanguage.math.editor.MathFuncExpression_EditorBuilder_a$CONCEPTS" />
-      <unit id="1238343907176" at="169,0,172,0" name="jetbrains.mps.baseLanguage.math.editor.MathFuncExpression_EditorBuilder_a$LINKS" />
-      <unit id="2886182022232400013" at="78,0,89,0" name="jetbrains.mps.baseLanguage.math.editor.MathFuncExpression_EditorBuilder_a$ReplaceWith_MathFuncExpression_cellMenu_957ayc_a0a0" />
-      <unit id="1238343907176" at="103,0,154,0" name="jetbrains.mps.baseLanguage.math.editor.MathFuncExpression_EditorBuilder_a$paramSingleRoleHandler_957ayc_c0" />
-      <unit id="1238343907176" at="39,0,173,0" name="jetbrains.mps.baseLanguage.math.editor.MathFuncExpression_EditorBuilder_a" />
+      <unit id="1238343907176" at="165,0,168,0" name="jetbrains.mps.baseLanguage.math.editor.MathFuncExpression_EditorBuilder$CONCEPTS" />
+      <unit id="1238343907176" at="169,0,172,0" name="jetbrains.mps.baseLanguage.math.editor.MathFuncExpression_EditorBuilder$LINKS" />
+      <unit id="2886182022232400013" at="78,0,89,0" name="jetbrains.mps.baseLanguage.math.editor.MathFuncExpression_EditorBuilder$ReplaceWith_MathFuncExpression_cellMenu_957ayc_a0a0" />
+      <unit id="1238343907176" at="103,0,154,0" name="jetbrains.mps.baseLanguage.math.editor.MathFuncExpression_EditorBuilder$paramSingleRoleHandler_957ayc_c0" />
+      <unit id="1238343907176" at="39,0,173,0" name="jetbrains.mps.baseLanguage.math.editor.MathFuncExpression_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:93eafd6e-0a56-402c-930d-564027be226b(jetbrains.mps.baseLanguage.math.editor)/1238403050830">
     <file name="DecimalBinaryOperation_Editor.java">
-      <node id="1238403050830" at="11,79,12,88" concept="8" />
-      <node id="1238403050830" at="14,82,15,91" concept="8" />
+      <node id="1238403050830" at="11,79,12,86" concept="8" />
+      <node id="1238403050830" at="14,82,15,89" concept="8" />
       <node id="1238403050830" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1238403050830" at="14,0,17,0" concept="6" trace="createInspectedCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1238403050830" at="11,79,12,88" />
-      <scope id="1238403050830" at="14,82,15,91" />
+      <scope id="1238403050830" at="11,79,12,86" />
+      <scope id="1238403050830" at="14,82,15,89" />
       <scope id="1238403050830" at="11,0,14,0">
         <var name="editorContext" id="1238403050830" />
         <var name="node" id="1238403050830" />
@@ -3407,8 +3407,8 @@
       </scope>
       <unit id="1238403050830" at="10,0,18,0" name="jetbrains.mps.baseLanguage.math.editor.DecimalBinaryOperation_Editor" />
     </file>
-    <file name="DecimalBinaryOperation_EditorBuilder_a.java">
-      <node id="1238403050830" at="41,102,42,19" concept="13" />
+    <file name="DecimalBinaryOperation_EditorBuilder.java">
+      <node id="1238403050830" at="41,100,42,19" concept="13" />
       <node id="1238403050830" at="42,19,43,18" concept="2" />
       <node id="1238403050830" at="48,26,49,18" concept="8" />
       <node id="1238403050830" at="52,39,53,32" concept="8" />
@@ -3487,7 +3487,7 @@
       <node id="1238403050830" at="171,87,174,7" concept="5" />
       <node id="1238403050830" at="174,7,177,7" concept="5" />
       <node id="1238403050830" at="193,0,196,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="1238403050830" at="41,0,45,0" concept="1" trace="DecimalBinaryOperation_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1238403050830" at="41,0,45,0" concept="1" trace="DecimalBinaryOperation_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1238403050830" at="66,0,70,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1238403050830" at="74,0,78,0" concept="1" trace="leftExpressionSingleRoleHandler_sl2ryj_a0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="2886182022232400532" at="137,0,141,0" concept="6" trace="createEditorMenuDescriptor#(Ljetbrains/mps/nodeEditor/cellMenu/CellContext;Ljetbrains/mps/openapi/editor/EditorContext;)Ljetbrains/mps/openapi/editor/menus/EditorMenuDescriptor;" />
@@ -3521,7 +3521,7 @@
       <scope id="1238403050830" at="175,42,176,55" />
       <scope id="1238403050830" at="189,17,190,42" />
       <scope id="1238403050830" at="193,40,194,36" />
-      <scope id="1238403050830" at="41,102,43,18" />
+      <scope id="1238403050830" at="41,100,43,18" />
       <scope id="1238403050830" at="66,40,68,33">
         <var name="provider" id="1238403050830" />
       </scope>
@@ -3601,15 +3601,15 @@
       <scope id="1238403050830" at="180,44,191,7" />
       <scope id="1238403050830" at="103,0,117,0" />
       <scope id="1238403050830" at="179,0,193,0" />
-      <unit id="1238403050830" at="203,0,206,0" name="jetbrains.mps.baseLanguage.math.editor.DecimalBinaryOperation_EditorBuilder_a$CONCEPTS" />
-      <unit id="1238403050830" at="198,0,202,0" name="jetbrains.mps.baseLanguage.math.editor.DecimalBinaryOperation_EditorBuilder_a$LINKS" />
-      <unit id="2886182022232400532" at="131,0,142,0" name="jetbrains.mps.baseLanguage.math.editor.DecimalBinaryOperation_EditorBuilder_a$ReplaceWith_BinaryOperation_cellMenu_sl2ryj_a0b0" />
-      <unit id="1238403050830" at="70,0,121,0" name="jetbrains.mps.baseLanguage.math.editor.DecimalBinaryOperation_EditorBuilder_a$leftExpressionSingleRoleHandler_sl2ryj_a0" />
-      <unit id="1238403050830" at="146,0,197,0" name="jetbrains.mps.baseLanguage.math.editor.DecimalBinaryOperation_EditorBuilder_a$rightExpressionSingleRoleHandler_sl2ryj_c0" />
-      <unit id="1238403050830" at="37,0,207,0" name="jetbrains.mps.baseLanguage.math.editor.DecimalBinaryOperation_EditorBuilder_a" />
+      <unit id="1238403050830" at="203,0,206,0" name="jetbrains.mps.baseLanguage.math.editor.DecimalBinaryOperation_EditorBuilder$CONCEPTS" />
+      <unit id="1238403050830" at="198,0,202,0" name="jetbrains.mps.baseLanguage.math.editor.DecimalBinaryOperation_EditorBuilder$LINKS" />
+      <unit id="2886182022232400532" at="131,0,142,0" name="jetbrains.mps.baseLanguage.math.editor.DecimalBinaryOperation_EditorBuilder$ReplaceWith_BinaryOperation_cellMenu_sl2ryj_a0b0" />
+      <unit id="1238403050830" at="70,0,121,0" name="jetbrains.mps.baseLanguage.math.editor.DecimalBinaryOperation_EditorBuilder$leftExpressionSingleRoleHandler_sl2ryj_a0" />
+      <unit id="1238403050830" at="146,0,197,0" name="jetbrains.mps.baseLanguage.math.editor.DecimalBinaryOperation_EditorBuilder$rightExpressionSingleRoleHandler_sl2ryj_c0" />
+      <unit id="1238403050830" at="37,0,207,0" name="jetbrains.mps.baseLanguage.math.editor.DecimalBinaryOperation_EditorBuilder" />
     </file>
-    <file name="DecimalBinaryOperation_InspectorBuilder_a.java">
-      <node id="1238403050830" at="23,105,24,19" concept="13" />
+    <file name="DecimalBinaryOperation_InspectorBuilder.java">
+      <node id="1238403050830" at="23,103,24,19" concept="13" />
       <node id="1238403050830" at="24,19,25,18" concept="2" />
       <node id="1238403050830" at="30,26,31,18" concept="8" />
       <node id="1238403050830" at="34,39,35,32" concept="8" />
@@ -3646,7 +3646,7 @@
       <node id="1904947163751462531" at="72,0,74,0" concept="3" trace="myNode" />
       <node id="1238403050830" at="34,0,37,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1904947163751462531" at="82,0,85,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="1238403050830" at="23,0,27,0" concept="1" trace="DecimalBinaryOperation_InspectorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1238403050830" at="23,0,27,0" concept="1" trace="DecimalBinaryOperation_InspectorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1238403050830" at="58,63,62,5" concept="5" />
       <node id="1904947163751462533" at="92,0,96,0" concept="6" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1238403050830" at="28,0,33,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -3661,7 +3661,7 @@
       <scope id="1238403050830" at="34,39,35,32" />
       <scope id="1904947163751462531" at="82,41,83,33" />
       <scope id="1904947163751462531" at="88,28,89,20" />
-      <scope id="1238403050830" at="23,105,25,18" />
+      <scope id="1238403050830" at="23,103,25,18" />
       <scope id="1238403050830" at="59,40,61,46" />
       <scope id="1238403050830" at="65,35,67,112">
         <var name="manager" id="1238403050830" />
@@ -3702,26 +3702,26 @@
         <var name="provider" id="1238403050830" />
       </scope>
       <scope id="1238403050830" at="46,0,71,0" />
-      <unit id="1238403050830" at="98,0,101,0" name="jetbrains.mps.baseLanguage.math.editor.DecimalBinaryOperation_InspectorBuilder_a$LINKS" />
-      <unit id="1238403050830" at="102,0,105,0" name="jetbrains.mps.baseLanguage.math.editor.DecimalBinaryOperation_InspectorBuilder_a$CONCEPTS" />
-      <unit id="1238403050830" at="47,40,55,5" name="jetbrains.mps.baseLanguage.math.editor.DecimalBinaryOperation_InspectorBuilder_a$1" />
-      <unit id="1904947163751462531" at="71,0,97,0" name="jetbrains.mps.baseLanguage.math.editor.DecimalBinaryOperation_InspectorBuilder_a$Inline_Builder0" />
-      <unit id="1238403050830" at="19,0,106,0" name="jetbrains.mps.baseLanguage.math.editor.DecimalBinaryOperation_InspectorBuilder_a" />
+      <unit id="1238403050830" at="98,0,101,0" name="jetbrains.mps.baseLanguage.math.editor.DecimalBinaryOperation_InspectorBuilder$LINKS" />
+      <unit id="1238403050830" at="102,0,105,0" name="jetbrains.mps.baseLanguage.math.editor.DecimalBinaryOperation_InspectorBuilder$CONCEPTS" />
+      <unit id="1238403050830" at="47,40,55,5" name="jetbrains.mps.baseLanguage.math.editor.DecimalBinaryOperation_InspectorBuilder$1" />
+      <unit id="1904947163751462531" at="71,0,97,0" name="jetbrains.mps.baseLanguage.math.editor.DecimalBinaryOperation_InspectorBuilder$Inline_Builder0" />
+      <unit id="1238403050830" at="19,0,106,0" name="jetbrains.mps.baseLanguage.math.editor.DecimalBinaryOperation_InspectorBuilder" />
     </file>
   </root>
   <root nodeRef="r:93eafd6e-0a56-402c-930d-564027be226b(jetbrains.mps.baseLanguage.math.editor)/1418611629041138657">
     <file name="MatrixUnit_Editor.java">
-      <node id="1418611629041138657" at="11,79,12,76" concept="8" />
+      <node id="1418611629041138657" at="11,79,12,74" concept="8" />
       <node id="1418611629041138657" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1418611629041138657" at="11,79,12,76" />
+      <scope id="1418611629041138657" at="11,79,12,74" />
       <scope id="1418611629041138657" at="11,0,14,0">
         <var name="editorContext" id="1418611629041138657" />
         <var name="node" id="1418611629041138657" />
       </scope>
       <unit id="1418611629041138657" at="10,0,15,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixUnit_Editor" />
     </file>
-    <file name="MatrixUnit_EditorBuilder_a.java">
-      <node id="1418611629041138657" at="32,90,33,19" concept="13" />
+    <file name="MatrixUnit_EditorBuilder.java">
+      <node id="1418611629041138657" at="32,88,33,19" concept="13" />
       <node id="1418611629041138657" at="33,19,34,18" concept="2" />
       <node id="1418611629041138657" at="39,26,40,18" concept="8" />
       <node id="1418611629041138657" at="43,39,44,32" concept="8" />
@@ -3770,7 +3770,7 @@
       <node id="1418611629041138657" at="94,87,97,7" concept="5" />
       <node id="1418611629041138657" at="97,7,100,7" concept="5" />
       <node id="1418611629041138657" at="119,0,122,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="1418611629041138657" at="32,0,36,0" concept="1" trace="MatrixUnit_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1418611629041138657" at="32,0,36,0" concept="1" trace="MatrixUnit_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1418611629041138657" at="65,0,69,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1418611629041138657" at="73,0,77,0" concept="1" trace="sizeSingleRoleHandler_unxbsz_b0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1418611629041138657" at="37,0,42,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -3788,7 +3788,7 @@
       <scope id="1418611629041138657" at="98,42,99,45" />
       <scope id="1418611629041138657" at="115,17,116,42" />
       <scope id="1418611629041138657" at="119,40,120,25" />
-      <scope id="1418611629041138657" at="32,90,34,18" />
+      <scope id="1418611629041138657" at="32,88,34,18" />
       <scope id="1418611629041138657" at="65,40,67,33">
         <var name="provider" id="1418611629041138657" />
       </scope>
@@ -3835,19 +3835,19 @@
       </scope>
       <scope id="1418611629041138657" at="106,44,117,7" />
       <scope id="1418611629041138657" at="105,0,119,0" />
-      <unit id="1418611629041138657" at="124,0,127,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixUnit_EditorBuilder_a$LINKS" />
-      <unit id="1418611629041138657" at="69,0,123,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixUnit_EditorBuilder_a$sizeSingleRoleHandler_unxbsz_b0" />
-      <unit id="1418611629041138657" at="28,0,128,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixUnit_EditorBuilder_a" />
+      <unit id="1418611629041138657" at="124,0,127,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixUnit_EditorBuilder$LINKS" />
+      <unit id="1418611629041138657" at="69,0,123,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixUnit_EditorBuilder$sizeSingleRoleHandler_unxbsz_b0" />
+      <unit id="1418611629041138657" at="28,0,128,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixUnit_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:93eafd6e-0a56-402c-930d-564027be226b(jetbrains.mps.baseLanguage.math.editor)/1418611629042457284">
     <file name="LinearSolveOperation_Editor.java">
-      <node id="1418611629042457284" at="11,79,12,86" concept="8" />
-      <node id="1418611629042457284" at="14,82,15,89" concept="8" />
+      <node id="1418611629042457284" at="11,79,12,84" concept="8" />
+      <node id="1418611629042457284" at="14,82,15,87" concept="8" />
       <node id="1418611629042457284" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1418611629042457284" at="14,0,17,0" concept="6" trace="createInspectedCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1418611629042457284" at="11,79,12,86" />
-      <scope id="1418611629042457284" at="14,82,15,89" />
+      <scope id="1418611629042457284" at="11,79,12,84" />
+      <scope id="1418611629042457284" at="14,82,15,87" />
       <scope id="1418611629042457284" at="11,0,14,0">
         <var name="editorContext" id="1418611629042457284" />
         <var name="node" id="1418611629042457284" />
@@ -3858,8 +3858,8 @@
       </scope>
       <unit id="1418611629042457284" at="10,0,18,0" name="jetbrains.mps.baseLanguage.math.editor.LinearSolveOperation_Editor" />
     </file>
-    <file name="LinearSolveOperation_EditorBuilder_a.java">
-      <node id="1418611629042457284" at="51,100,52,19" concept="13" />
+    <file name="LinearSolveOperation_EditorBuilder.java">
+      <node id="1418611629042457284" at="51,98,52,19" concept="13" />
       <node id="1418611629042457284" at="52,19,53,18" concept="2" />
       <node id="1418611629042457284" at="58,26,59,18" concept="8" />
       <node id="1418611629042457284" at="62,39,63,32" concept="8" />
@@ -4051,7 +4051,7 @@
       <node id="1418611629042457284" at="374,87,377,7" concept="5" />
       <node id="1418611629042457284" at="377,7,380,7" concept="5" />
       <node id="1418611629042457284" at="396,0,399,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="1418611629042457284" at="51,0,55,0" concept="1" trace="LinearSolveOperation_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1418611629042457284" at="51,0,55,0" concept="1" trace="LinearSolveOperation_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1418611629042457284" at="116,0,120,0" concept="1" trace="annotationListHandler_kydwvz_a0a#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1418611629042457284" at="121,0,125,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1418611629042457284" at="154,97,158,9" concept="5" />
@@ -4126,7 +4126,7 @@
       <scope id="1418611629042457284" at="378,42,379,47" />
       <scope id="1418611629042457284" at="392,17,393,42" />
       <scope id="1418611629042457284" at="396,40,397,27" />
-      <scope id="1418611629042457284" at="51,100,53,18" />
+      <scope id="1418611629042457284" at="51,98,53,18" />
       <scope id="1418611629042457284" at="116,85,118,25" />
       <scope id="1418611629042457284" at="155,122,157,146" />
       <scope id="1418611629042457284" at="161,34,163,142" />
@@ -4302,17 +4302,17 @@
         <var name="elementNode" id="1418611629042457284" />
         <var name="isEmptyCell" id="1418611629042457284" />
       </scope>
-      <unit id="1418611629042457284" at="408,0,412,0" name="jetbrains.mps.baseLanguage.math.editor.LinearSolveOperation_EditorBuilder_a$PROPS" />
-      <unit id="1418611629042457284" at="413,0,418,0" name="jetbrains.mps.baseLanguage.math.editor.LinearSolveOperation_EditorBuilder_a$CONCEPTS" />
-      <unit id="1418611629042457284" at="401,0,407,0" name="jetbrains.mps.baseLanguage.math.editor.LinearSolveOperation_EditorBuilder_a$LINKS" />
-      <unit id="1418611629042457284" at="261,0,312,0" name="jetbrains.mps.baseLanguage.math.editor.LinearSolveOperation_EditorBuilder_a$matrixSingleRoleHandler_kydwvz_f0" />
-      <unit id="1418611629042457284" at="349,0,400,0" name="jetbrains.mps.baseLanguage.math.editor.LinearSolveOperation_EditorBuilder_a$vectorSingleRoleHandler_kydwvz_j0" />
-      <unit id="1418611629042457284" at="193,0,247,0" name="jetbrains.mps.baseLanguage.math.editor.LinearSolveOperation_EditorBuilder_a$type_MSingleRoleHandler_kydwvz_c0" />
-      <unit id="1418611629042457284" at="112,0,179,0" name="jetbrains.mps.baseLanguage.math.editor.LinearSolveOperation_EditorBuilder_a$annotationListHandler_kydwvz_a0a" />
-      <unit id="1418611629042457284" at="47,0,419,0" name="jetbrains.mps.baseLanguage.math.editor.LinearSolveOperation_EditorBuilder_a" />
+      <unit id="1418611629042457284" at="408,0,412,0" name="jetbrains.mps.baseLanguage.math.editor.LinearSolveOperation_EditorBuilder$PROPS" />
+      <unit id="1418611629042457284" at="413,0,418,0" name="jetbrains.mps.baseLanguage.math.editor.LinearSolveOperation_EditorBuilder$CONCEPTS" />
+      <unit id="1418611629042457284" at="401,0,407,0" name="jetbrains.mps.baseLanguage.math.editor.LinearSolveOperation_EditorBuilder$LINKS" />
+      <unit id="1418611629042457284" at="261,0,312,0" name="jetbrains.mps.baseLanguage.math.editor.LinearSolveOperation_EditorBuilder$matrixSingleRoleHandler_kydwvz_f0" />
+      <unit id="1418611629042457284" at="349,0,400,0" name="jetbrains.mps.baseLanguage.math.editor.LinearSolveOperation_EditorBuilder$vectorSingleRoleHandler_kydwvz_j0" />
+      <unit id="1418611629042457284" at="193,0,247,0" name="jetbrains.mps.baseLanguage.math.editor.LinearSolveOperation_EditorBuilder$type_MSingleRoleHandler_kydwvz_c0" />
+      <unit id="1418611629042457284" at="112,0,179,0" name="jetbrains.mps.baseLanguage.math.editor.LinearSolveOperation_EditorBuilder$annotationListHandler_kydwvz_a0a" />
+      <unit id="1418611629042457284" at="47,0,419,0" name="jetbrains.mps.baseLanguage.math.editor.LinearSolveOperation_EditorBuilder" />
     </file>
-    <file name="LinearSolveOperation_InspectorBuilder_a.java">
-      <node id="1418611629042457284" at="23,103,24,19" concept="13" />
+    <file name="LinearSolveOperation_InspectorBuilder.java">
+      <node id="1418611629042457284" at="23,101,24,19" concept="13" />
       <node id="1418611629042457284" at="24,19,25,18" concept="2" />
       <node id="1418611629042457284" at="30,26,31,18" concept="8" />
       <node id="1418611629042457284" at="34,39,35,32" concept="8" />
@@ -4349,7 +4349,7 @@
       <node id="1904947163751468047" at="72,0,74,0" concept="3" trace="myNode" />
       <node id="1418611629042457284" at="34,0,37,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1904947163751468047" at="82,0,85,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="1418611629042457284" at="23,0,27,0" concept="1" trace="LinearSolveOperation_InspectorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1418611629042457284" at="23,0,27,0" concept="1" trace="LinearSolveOperation_InspectorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1418611629042457284" at="58,63,62,5" concept="5" />
       <node id="1904947163751468049" at="92,0,96,0" concept="6" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1418611629042457284" at="28,0,33,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -4364,7 +4364,7 @@
       <scope id="1418611629042457284" at="34,39,35,32" />
       <scope id="1904947163751468047" at="82,41,83,33" />
       <scope id="1904947163751468047" at="88,28,89,20" />
-      <scope id="1418611629042457284" at="23,103,25,18" />
+      <scope id="1418611629042457284" at="23,101,25,18" />
       <scope id="1418611629042457284" at="59,40,61,46" />
       <scope id="1418611629042457284" at="65,35,67,112">
         <var name="manager" id="1418611629042457284" />
@@ -4405,21 +4405,21 @@
         <var name="provider" id="1418611629042457284" />
       </scope>
       <scope id="1418611629042457284" at="46,0,71,0" />
-      <unit id="1418611629042457284" at="98,0,101,0" name="jetbrains.mps.baseLanguage.math.editor.LinearSolveOperation_InspectorBuilder_a$LINKS" />
-      <unit id="1418611629042457284" at="102,0,105,0" name="jetbrains.mps.baseLanguage.math.editor.LinearSolveOperation_InspectorBuilder_a$CONCEPTS" />
-      <unit id="1418611629042457284" at="47,40,55,5" name="jetbrains.mps.baseLanguage.math.editor.LinearSolveOperation_InspectorBuilder_a$1" />
-      <unit id="1904947163751468047" at="71,0,97,0" name="jetbrains.mps.baseLanguage.math.editor.LinearSolveOperation_InspectorBuilder_a$Inline_Builder0" />
-      <unit id="1418611629042457284" at="19,0,106,0" name="jetbrains.mps.baseLanguage.math.editor.LinearSolveOperation_InspectorBuilder_a" />
+      <unit id="1418611629042457284" at="98,0,101,0" name="jetbrains.mps.baseLanguage.math.editor.LinearSolveOperation_InspectorBuilder$LINKS" />
+      <unit id="1418611629042457284" at="102,0,105,0" name="jetbrains.mps.baseLanguage.math.editor.LinearSolveOperation_InspectorBuilder$CONCEPTS" />
+      <unit id="1418611629042457284" at="47,40,55,5" name="jetbrains.mps.baseLanguage.math.editor.LinearSolveOperation_InspectorBuilder$1" />
+      <unit id="1904947163751468047" at="71,0,97,0" name="jetbrains.mps.baseLanguage.math.editor.LinearSolveOperation_InspectorBuilder$Inline_Builder0" />
+      <unit id="1418611629042457284" at="19,0,106,0" name="jetbrains.mps.baseLanguage.math.editor.LinearSolveOperation_InspectorBuilder" />
     </file>
   </root>
   <root nodeRef="r:93eafd6e-0a56-402c-930d-564027be226b(jetbrains.mps.baseLanguage.math.editor)/1418611629042580034">
     <file name="MatrixInverseOperation_Editor.java">
-      <node id="1418611629042580034" at="11,79,12,88" concept="8" />
-      <node id="1418611629042580034" at="14,82,15,91" concept="8" />
+      <node id="1418611629042580034" at="11,79,12,86" concept="8" />
+      <node id="1418611629042580034" at="14,82,15,89" concept="8" />
       <node id="1418611629042580034" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1418611629042580034" at="14,0,17,0" concept="6" trace="createInspectedCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1418611629042580034" at="11,79,12,88" />
-      <scope id="1418611629042580034" at="14,82,15,91" />
+      <scope id="1418611629042580034" at="11,79,12,86" />
+      <scope id="1418611629042580034" at="14,82,15,89" />
       <scope id="1418611629042580034" at="11,0,14,0">
         <var name="editorContext" id="1418611629042580034" />
         <var name="node" id="1418611629042580034" />
@@ -4430,8 +4430,8 @@
       </scope>
       <unit id="1418611629042580034" at="10,0,18,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixInverseOperation_Editor" />
     </file>
-    <file name="MatrixInverseOperation_EditorBuilder_a.java">
-      <node id="1418611629042580034" at="16,102,17,19" concept="13" />
+    <file name="MatrixInverseOperation_EditorBuilder.java">
+      <node id="1418611629042580034" at="16,100,17,19" concept="13" />
       <node id="1418611629042580034" at="17,19,18,18" concept="2" />
       <node id="1418611629042580034" at="23,26,24,18" concept="8" />
       <node id="1418611629042580034" at="27,39,28,31" concept="8" />
@@ -4442,13 +4442,13 @@
       <node id="7255837154369796307" at="37,5,38,22" concept="8" />
       <node id="1418611629042580034" at="13,0,15,0" concept="3" trace="myNode" />
       <node id="1418611629042580034" at="27,0,30,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="1418611629042580034" at="16,0,20,0" concept="1" trace="MatrixInverseOperation_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1418611629042580034" at="16,0,20,0" concept="1" trace="MatrixInverseOperation_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="7255837154369796307" at="33,72,37,5" concept="5" />
       <node id="1418611629042580034" at="21,0,26,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="7255837154369796307" at="31,0,40,0" concept="6" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="1418611629042580034" at="23,26,24,18" />
       <scope id="1418611629042580034" at="27,39,28,31" />
-      <scope id="1418611629042580034" at="16,102,18,18" />
+      <scope id="1418611629042580034" at="16,100,18,18" />
       <scope id="7255837154369796307" at="34,26,36,30" />
       <scope id="1418611629042580034" at="27,0,30,0" />
       <scope id="1418611629042580034" at="16,0,20,0">
@@ -4461,10 +4461,10 @@
         <var name="editorCell" id="7255837154369796307" />
       </scope>
       <scope id="7255837154369796307" at="31,0,40,0" />
-      <unit id="1418611629042580034" at="12,0,41,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixInverseOperation_EditorBuilder_a" />
+      <unit id="1418611629042580034" at="12,0,41,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixInverseOperation_EditorBuilder" />
     </file>
-    <file name="MatrixInverseOperation_InspectorBuilder_a.java">
-      <node id="1418611629042580034" at="24,105,25,19" concept="13" />
+    <file name="MatrixInverseOperation_InspectorBuilder.java">
+      <node id="1418611629042580034" at="24,103,25,19" concept="13" />
       <node id="1418611629042580034" at="25,19,26,18" concept="2" />
       <node id="1418611629042580034" at="31,26,32,18" concept="8" />
       <node id="1418611629042580034" at="35,39,36,32" concept="8" />
@@ -4506,7 +4506,7 @@
       <node id="1904947163751464669" at="80,0,82,0" concept="3" trace="myNode" />
       <node id="1418611629042580034" at="35,0,38,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1904947163751464669" at="90,0,93,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="1418611629042580034" at="24,0,28,0" concept="1" trace="MatrixInverseOperation_InspectorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1418611629042580034" at="24,0,28,0" concept="1" trace="MatrixInverseOperation_InspectorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1418611629042580034" at="66,63,70,5" concept="5" />
       <node id="1904947163751464671" at="100,0,104,0" concept="6" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1418611629042580034" at="29,0,34,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -4522,7 +4522,7 @@
       <scope id="1418611629042580034" at="35,39,36,32" />
       <scope id="1904947163751464669" at="90,41,91,33" />
       <scope id="1904947163751464669" at="96,28,97,20" />
-      <scope id="1418611629042580034" at="24,105,26,18" />
+      <scope id="1418611629042580034" at="24,103,26,18" />
       <scope id="1418611629042580034" at="67,40,69,46" />
       <scope id="1418611629042580034" at="73,35,75,112">
         <var name="manager" id="1418611629042580034" />
@@ -4567,11 +4567,11 @@
         <var name="provider" id="1418611629042580034" />
       </scope>
       <scope id="1418611629042580034" at="54,0,79,0" />
-      <unit id="1418611629042580034" at="106,0,109,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixInverseOperation_InspectorBuilder_a$LINKS" />
-      <unit id="1418611629042580034" at="110,0,113,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixInverseOperation_InspectorBuilder_a$CONCEPTS" />
-      <unit id="1418611629042580034" at="55,40,63,5" name="jetbrains.mps.baseLanguage.math.editor.MatrixInverseOperation_InspectorBuilder_a$1" />
-      <unit id="1904947163751464669" at="79,0,105,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixInverseOperation_InspectorBuilder_a$Inline_Builder0" />
-      <unit id="1418611629042580034" at="20,0,114,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixInverseOperation_InspectorBuilder_a" />
+      <unit id="1418611629042580034" at="106,0,109,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixInverseOperation_InspectorBuilder$LINKS" />
+      <unit id="1418611629042580034" at="110,0,113,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixInverseOperation_InspectorBuilder$CONCEPTS" />
+      <unit id="1418611629042580034" at="55,40,63,5" name="jetbrains.mps.baseLanguage.math.editor.MatrixInverseOperation_InspectorBuilder$1" />
+      <unit id="1904947163751464669" at="79,0,105,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixInverseOperation_InspectorBuilder$Inline_Builder0" />
+      <unit id="1418611629042580034" at="20,0,114,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixInverseOperation_InspectorBuilder" />
     </file>
   </root>
   <root nodeRef="r:93eafd6e-0a56-402c-930d-564027be226b(jetbrains.mps.baseLanguage.math.editor)/1418611629042593538">
@@ -4662,11 +4662,11 @@
   <root nodeRef="r:93eafd6e-0a56-402c-930d-564027be226b(jetbrains.mps.baseLanguage.math.editor)/1904947163751448713">
     <file name="MathContextEditorPart.java">
       <node id="1904947163751448713" at="15,47,16,35" concept="8" />
-      <node id="1904947163751448713" at="18,79,19,90" concept="8" />
+      <node id="1904947163751448713" at="18,79,19,88" concept="8" />
       <node id="1904947163751448713" at="18,0,21,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1904947163751448713" at="14,0,18,0" concept="6" trace="getContextHints#()Ljava/util/Collection;" />
       <scope id="1904947163751448713" at="15,47,16,35" />
-      <scope id="1904947163751448713" at="18,79,19,90" />
+      <scope id="1904947163751448713" at="18,79,19,88" />
       <scope id="1904947163751448713" at="18,0,21,0">
         <var name="editorContext" id="1904947163751448713" />
         <var name="node" id="1904947163751448713" />
@@ -4674,8 +4674,8 @@
       <scope id="1904947163751448713" at="14,0,18,0" />
       <unit id="1904947163751448713" at="13,0,22,0" name="jetbrains.mps.baseLanguage.math.editor.MathContextEditorPart" />
     </file>
-    <file name="MathContextEditorPart_ComponentBuilder_a.java">
-      <node id="1904947163751448713" at="37,104,38,19" concept="13" />
+    <file name="MathContextEditorPart_ComponentBuilder.java">
+      <node id="1904947163751448713" at="37,102,38,19" concept="13" />
       <node id="1904947163751448713" at="38,19,39,18" concept="2" />
       <node id="1904947163751448713" at="44,26,45,18" concept="8" />
       <node id="1904947163751448713" at="48,39,49,32" concept="8" />
@@ -4778,7 +4778,7 @@
       <node id="1904947163751462218" at="58,5,61,5" concept="5" />
       <node id="1904947163751462210" at="64,0,67,0" concept="6" trace="nodeCondition0#()Z" />
       <node id="1904947163751462223" at="67,0,70,0" concept="6" trace="nodeCondition1#()Z" />
-      <node id="1904947163751448713" at="37,0,41,0" concept="1" trace="MathContextEditorPart_ComponentBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1904947163751448713" at="37,0,41,0" concept="1" trace="MathContextEditorPart_ComponentBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1904947163751448713" at="42,0,47,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1904947163751462203" at="98,208,103,24" concept="5" />
       <node id="1904947163751462208" at="136,208,141,24" concept="5" />
@@ -4805,7 +4805,7 @@
       <scope id="1904947163751462203" at="104,15,105,40" />
       <scope id="1904947163751462208" at="142,15,143,40" />
       <scope id="1904947163751462221" at="180,15,181,40" />
-      <scope id="1904947163751448713" at="37,104,39,18" />
+      <scope id="1904947163751448713" at="37,102,39,18" />
       <scope id="1904947163751462203" at="99,74,101,145">
         <var name="manager" id="1904947163751462203" />
       </scope>
@@ -4878,9 +4878,9 @@
       <scope id="1904947163751462203" at="87,0,108,0" />
       <scope id="1904947163751462208" at="125,0,146,0" />
       <scope id="1904947163751462221" at="163,0,184,0" />
-      <unit id="1904947163751448713" at="191,0,194,0" name="jetbrains.mps.baseLanguage.math.editor.MathContextEditorPart_ComponentBuilder_a$CONCEPTS" />
-      <unit id="1904947163751448713" at="185,0,190,0" name="jetbrains.mps.baseLanguage.math.editor.MathContextEditorPart_ComponentBuilder_a$PROPS" />
-      <unit id="1904947163751448713" at="33,0,195,0" name="jetbrains.mps.baseLanguage.math.editor.MathContextEditorPart_ComponentBuilder_a" />
+      <unit id="1904947163751448713" at="191,0,194,0" name="jetbrains.mps.baseLanguage.math.editor.MathContextEditorPart_ComponentBuilder$CONCEPTS" />
+      <unit id="1904947163751448713" at="185,0,190,0" name="jetbrains.mps.baseLanguage.math.editor.MathContextEditorPart_ComponentBuilder$PROPS" />
+      <unit id="1904947163751448713" at="33,0,195,0" name="jetbrains.mps.baseLanguage.math.editor.MathContextEditorPart_ComponentBuilder" />
     </file>
   </root>
   <root nodeRef="r:93eafd6e-0a56-402c-930d-564027be226b(jetbrains.mps.baseLanguage.math.editor)/3425189563111377433">
@@ -5815,12 +5815,12 @@
   </root>
   <root nodeRef="r:93eafd6e-0a56-402c-930d-564027be226b(jetbrains.mps.baseLanguage.math.editor)/3922637823318870911">
     <file name="MatrixZero_Editor.java">
-      <node id="3922637823318870911" at="11,79,12,76" concept="8" />
-      <node id="3922637823318870911" at="14,82,15,79" concept="8" />
+      <node id="3922637823318870911" at="11,79,12,74" concept="8" />
+      <node id="3922637823318870911" at="14,82,15,77" concept="8" />
       <node id="3922637823318870911" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="3922637823318870911" at="14,0,17,0" concept="6" trace="createInspectedCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="3922637823318870911" at="11,79,12,76" />
-      <scope id="3922637823318870911" at="14,82,15,79" />
+      <scope id="3922637823318870911" at="11,79,12,74" />
+      <scope id="3922637823318870911" at="14,82,15,77" />
       <scope id="3922637823318870911" at="11,0,14,0">
         <var name="editorContext" id="3922637823318870911" />
         <var name="node" id="3922637823318870911" />
@@ -5831,8 +5831,8 @@
       </scope>
       <unit id="3922637823318870911" at="10,0,18,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixZero_Editor" />
     </file>
-    <file name="MatrixZero_EditorBuilder_a.java">
-      <node id="3922637823318870911" at="34,90,35,19" concept="13" />
+    <file name="MatrixZero_EditorBuilder.java">
+      <node id="3922637823318870911" at="34,88,35,19" concept="13" />
       <node id="3922637823318870911" at="35,19,36,18" concept="2" />
       <node id="3922637823318870911" at="41,26,42,18" concept="8" />
       <node id="3922637823318870911" at="45,39,46,32" concept="8" />
@@ -5927,7 +5927,7 @@
       <node id="3922637823318870911" at="176,87,179,7" concept="5" />
       <node id="3922637823318870911" at="179,7,182,7" concept="5" />
       <node id="3922637823318870911" at="201,0,204,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="3922637823318870911" at="34,0,38,0" concept="1" trace="MatrixZero_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="3922637823318870911" at="34,0,38,0" concept="1" trace="MatrixZero_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="3922637823318870911" at="79,0,83,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="3922637823318870911" at="87,0,91,0" concept="1" trace="rowsSingleRoleHandler_d13tpt_b0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="3922637823318870911" at="147,0,151,0" concept="6" trace="createRefNode_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -5962,7 +5962,7 @@
       <scope id="3922637823318870911" at="180,42,181,48" />
       <scope id="3922637823318870911" at="197,17,198,42" />
       <scope id="3922637823318870911" at="201,40,202,28" />
-      <scope id="3922637823318870911" at="34,90,36,18" />
+      <scope id="3922637823318870911" at="34,88,36,18" />
       <scope id="3922637823318870911" at="79,40,81,33">
         <var name="provider" id="3922637823318870911" />
       </scope>
@@ -6047,14 +6047,14 @@
       <scope id="3922637823318870911" at="119,0,133,0" />
       <scope id="3922637823318870911" at="187,0,201,0" />
       <scope id="3922637823318870911" at="49,0,64,0" />
-      <unit id="3922637823318870911" at="206,0,209,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixZero_EditorBuilder_a$PROPS" />
-      <unit id="3922637823318870911" at="210,0,214,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixZero_EditorBuilder_a$LINKS" />
-      <unit id="3922637823318870911" at="83,0,137,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixZero_EditorBuilder_a$rowsSingleRoleHandler_d13tpt_b0" />
-      <unit id="3922637823318870911" at="151,0,205,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixZero_EditorBuilder_a$columnsSingleRoleHandler_d13tpt_d0" />
-      <unit id="3922637823318870911" at="30,0,215,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixZero_EditorBuilder_a" />
+      <unit id="3922637823318870911" at="206,0,209,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixZero_EditorBuilder$PROPS" />
+      <unit id="3922637823318870911" at="210,0,214,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixZero_EditorBuilder$LINKS" />
+      <unit id="3922637823318870911" at="83,0,137,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixZero_EditorBuilder$rowsSingleRoleHandler_d13tpt_b0" />
+      <unit id="3922637823318870911" at="151,0,205,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixZero_EditorBuilder$columnsSingleRoleHandler_d13tpt_d0" />
+      <unit id="3922637823318870911" at="30,0,215,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixZero_EditorBuilder" />
     </file>
-    <file name="MatrixZero_InspectorBuilder_a.java">
-      <node id="3922637823318870911" at="43,93,44,19" concept="13" />
+    <file name="MatrixZero_InspectorBuilder.java">
+      <node id="3922637823318870911" at="43,91,44,19" concept="13" />
       <node id="3922637823318870911" at="44,19,45,18" concept="2" />
       <node id="3922637823318870911" at="50,26,51,18" concept="8" />
       <node id="3922637823318870911" at="54,39,55,32" concept="8" />
@@ -6157,7 +6157,7 @@
       <node id="3922637823318870911" at="200,87,203,7" concept="5" />
       <node id="3922637823318870911" at="203,7,206,7" concept="5" />
       <node id="3922637823318870911" at="222,0,225,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="3922637823318870911" at="43,0,47,0" concept="1" trace="MatrixZero_InspectorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="3922637823318870911" at="43,0,47,0" concept="1" trace="MatrixZero_InspectorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="3922637823318870911" at="107,0,111,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="3922637823318870911" at="115,0,119,0" concept="1" trace="rowsSingleRoleHandler_d13tpt_d0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="3922637823318870911" at="171,0,175,0" concept="6" trace="createRefNode_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -6193,7 +6193,7 @@
       <scope id="3922637823318870911" at="204,42,205,48" />
       <scope id="3922637823318870911" at="218,17,219,42" />
       <scope id="3922637823318870911" at="222,40,223,28" />
-      <scope id="3922637823318870911" at="43,93,45,18" />
+      <scope id="3922637823318870911" at="43,91,45,18" />
       <scope id="3922637823319028573" at="92,74,94,145">
         <var name="manager" id="3922637823319028573" />
       </scope>
@@ -6288,22 +6288,22 @@
       </scope>
       <scope id="3922637823319028573" at="77,41,99,5" />
       <scope id="3922637823319028573" at="77,0,101,0" />
-      <unit id="3922637823318870911" at="227,0,230,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixZero_InspectorBuilder_a$PROPS" />
-      <unit id="3922637823318870911" at="231,0,234,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixZero_InspectorBuilder_a$CONCEPTS" />
-      <unit id="3922637823318870911" at="235,0,239,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixZero_InspectorBuilder_a$LINKS" />
-      <unit id="3922637823318870911" at="175,0,226,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixZero_InspectorBuilder_a$columnsSingleRoleHandler_d13tpt_f0" />
-      <unit id="3922637823318870911" at="111,0,165,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixZero_InspectorBuilder_a$rowsSingleRoleHandler_d13tpt_d0" />
-      <unit id="3922637823318870911" at="39,0,240,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixZero_InspectorBuilder_a" />
+      <unit id="3922637823318870911" at="227,0,230,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixZero_InspectorBuilder$PROPS" />
+      <unit id="3922637823318870911" at="231,0,234,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixZero_InspectorBuilder$CONCEPTS" />
+      <unit id="3922637823318870911" at="235,0,239,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixZero_InspectorBuilder$LINKS" />
+      <unit id="3922637823318870911" at="175,0,226,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixZero_InspectorBuilder$columnsSingleRoleHandler_d13tpt_f0" />
+      <unit id="3922637823318870911" at="111,0,165,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixZero_InspectorBuilder$rowsSingleRoleHandler_d13tpt_d0" />
+      <unit id="3922637823318870911" at="39,0,240,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixZero_InspectorBuilder" />
     </file>
   </root>
   <root nodeRef="r:93eafd6e-0a56-402c-930d-564027be226b(jetbrains.mps.baseLanguage.math.editor)/4815887568697035002">
     <file name="MatrixType_Editor.java">
-      <node id="4815887568697035002" at="11,79,12,76" concept="8" />
-      <node id="4815887568697035002" at="14,82,15,79" concept="8" />
+      <node id="4815887568697035002" at="11,79,12,74" concept="8" />
+      <node id="4815887568697035002" at="14,82,15,77" concept="8" />
       <node id="4815887568697035002" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4815887568697035002" at="14,0,17,0" concept="6" trace="createInspectedCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4815887568697035002" at="11,79,12,76" />
-      <scope id="4815887568697035002" at="14,82,15,79" />
+      <scope id="4815887568697035002" at="11,79,12,74" />
+      <scope id="4815887568697035002" at="14,82,15,77" />
       <scope id="4815887568697035002" at="11,0,14,0">
         <var name="editorContext" id="4815887568697035002" />
         <var name="node" id="4815887568697035002" />
@@ -6314,8 +6314,8 @@
       </scope>
       <unit id="4815887568697035002" at="10,0,18,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixType_Editor" />
     </file>
-    <file name="MatrixType_EditorBuilder_a.java">
-      <node id="4815887568697035002" at="45,90,46,19" concept="13" />
+    <file name="MatrixType_EditorBuilder.java">
+      <node id="4815887568697035002" at="45,88,46,19" concept="13" />
       <node id="4815887568697035002" at="46,19,47,18" concept="2" />
       <node id="4815887568697035002" at="52,26,53,18" concept="8" />
       <node id="4815887568697035002" at="56,39,57,32" concept="8" />
@@ -6438,7 +6438,7 @@
       <node id="4815887568697035002" at="125,87,128,7" concept="5" />
       <node id="4815887568697035002" at="128,7,131,7" concept="5" />
       <node id="4815887568697035002" at="147,0,150,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="4815887568697035002" at="45,0,49,0" concept="1" trace="MatrixType_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4815887568697035002" at="45,0,49,0" concept="1" trace="MatrixType_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4815887568697035002" at="96,0,100,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4815887568697035002" at="104,0,108,0" concept="1" trace="elementTypeSingleRoleHandler_qhskw8_c0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="4815887568697035002" at="50,0,55,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -6471,7 +6471,7 @@
       <scope id="4815887568697035002" at="147,40,148,32" />
       <scope id="4815887568697050719" at="189,15,190,40" />
       <scope id="4815887568697050720" at="220,15,221,40" />
-      <scope id="4815887568697035002" at="45,90,47,18" />
+      <scope id="4815887568697035002" at="45,88,47,18" />
       <scope id="4815887568697035002" at="96,40,98,33">
         <var name="provider" id="4815887568697035002" />
       </scope>
@@ -6564,14 +6564,14 @@
       <scope id="4815887568697050720" at="203,41,222,5" />
       <scope id="4815887568697050719" at="172,0,193,0" />
       <scope id="4815887568697050720" at="203,0,224,0" />
-      <unit id="4815887568697035002" at="239,0,242,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixType_EditorBuilder_a$LINKS" />
-      <unit id="4815887568697035002" at="243,0,246,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixType_EditorBuilder_a$CONCEPTS" />
-      <unit id="4815887568697035002" at="234,0,238,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixType_EditorBuilder_a$PROPS" />
-      <unit id="4815887568697035002" at="100,0,151,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixType_EditorBuilder_a$elementTypeSingleRoleHandler_qhskw8_c0" />
-      <unit id="4815887568697035002" at="41,0,247,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixType_EditorBuilder_a" />
+      <unit id="4815887568697035002" at="239,0,242,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixType_EditorBuilder$LINKS" />
+      <unit id="4815887568697035002" at="243,0,246,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixType_EditorBuilder$CONCEPTS" />
+      <unit id="4815887568697035002" at="234,0,238,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixType_EditorBuilder$PROPS" />
+      <unit id="4815887568697035002" at="100,0,151,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixType_EditorBuilder$elementTypeSingleRoleHandler_qhskw8_c0" />
+      <unit id="4815887568697035002" at="41,0,247,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixType_EditorBuilder" />
     </file>
-    <file name="MatrixType_InspectorBuilder_a.java">
-      <node id="4815887568697035002" at="43,93,44,19" concept="13" />
+    <file name="MatrixType_InspectorBuilder.java">
+      <node id="4815887568697035002" at="43,91,44,19" concept="13" />
       <node id="4815887568697035002" at="44,19,45,18" concept="2" />
       <node id="4815887568697035002" at="50,26,51,18" concept="8" />
       <node id="4815887568697035002" at="54,39,55,32" concept="8" />
@@ -6671,7 +6671,7 @@
       <node id="4815887568697035002" at="176,87,179,7" concept="5" />
       <node id="4815887568697035002" at="179,7,182,7" concept="5" />
       <node id="4815887568697035002" at="198,0,201,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="4815887568697035002" at="43,0,47,0" concept="1" trace="MatrixType_InspectorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4815887568697035002" at="43,0,47,0" concept="1" trace="MatrixType_InspectorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4815887568697035002" at="147,0,151,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4815887568697035002" at="155,0,159,0" concept="1" trace="elementTypeSingleRoleHandler_qhskw8_g0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="4815887568697035002" at="48,0,53,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -6700,7 +6700,7 @@
       <scope id="4815887568697035002" at="180,42,181,52" />
       <scope id="4815887568697035002" at="194,17,195,42" />
       <scope id="4815887568697035002" at="198,40,199,32" />
-      <scope id="4815887568697035002" at="43,93,45,18" />
+      <scope id="4815887568697035002" at="43,91,45,18" />
       <scope id="4815887568697048522" at="102,74,104,145">
         <var name="manager" id="4815887568697048522" />
       </scope>
@@ -6781,21 +6781,21 @@
       <scope id="4815887568697048525" at="117,41,139,5" />
       <scope id="4815887568697048522" at="87,0,111,0" />
       <scope id="4815887568697048525" at="117,0,141,0" />
-      <unit id="4815887568697035002" at="208,0,211,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixType_InspectorBuilder_a$CONCEPTS" />
-      <unit id="4815887568697035002" at="212,0,215,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixType_InspectorBuilder_a$LINKS" />
-      <unit id="4815887568697035002" at="203,0,207,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixType_InspectorBuilder_a$PROPS" />
-      <unit id="4815887568697035002" at="151,0,202,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixType_InspectorBuilder_a$elementTypeSingleRoleHandler_qhskw8_g0" />
-      <unit id="4815887568697035002" at="39,0,216,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixType_InspectorBuilder_a" />
+      <unit id="4815887568697035002" at="208,0,211,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixType_InspectorBuilder$CONCEPTS" />
+      <unit id="4815887568697035002" at="212,0,215,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixType_InspectorBuilder$LINKS" />
+      <unit id="4815887568697035002" at="203,0,207,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixType_InspectorBuilder$PROPS" />
+      <unit id="4815887568697035002" at="151,0,202,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixType_InspectorBuilder$elementTypeSingleRoleHandler_qhskw8_g0" />
+      <unit id="4815887568697035002" at="39,0,216,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixType_InspectorBuilder" />
     </file>
   </root>
   <root nodeRef="r:93eafd6e-0a56-402c-930d-564027be226b(jetbrains.mps.baseLanguage.math.editor)/4815887568697050725">
     <file name="VectorType_Editor.java">
-      <node id="4815887568697050725" at="11,79,12,76" concept="8" />
-      <node id="4815887568697050725" at="14,82,15,79" concept="8" />
+      <node id="4815887568697050725" at="11,79,12,74" concept="8" />
+      <node id="4815887568697050725" at="14,82,15,77" concept="8" />
       <node id="4815887568697050725" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4815887568697050725" at="14,0,17,0" concept="6" trace="createInspectedCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4815887568697050725" at="11,79,12,76" />
-      <scope id="4815887568697050725" at="14,82,15,79" />
+      <scope id="4815887568697050725" at="11,79,12,74" />
+      <scope id="4815887568697050725" at="14,82,15,77" />
       <scope id="4815887568697050725" at="11,0,14,0">
         <var name="editorContext" id="4815887568697050725" />
         <var name="node" id="4815887568697050725" />
@@ -6806,8 +6806,8 @@
       </scope>
       <unit id="4815887568697050725" at="10,0,18,0" name="jetbrains.mps.baseLanguage.math.editor.VectorType_Editor" />
     </file>
-    <file name="VectorType_EditorBuilder_a.java">
-      <node id="4815887568697050725" at="45,90,46,19" concept="13" />
+    <file name="VectorType_EditorBuilder.java">
+      <node id="4815887568697050725" at="45,88,46,19" concept="13" />
       <node id="4815887568697050725" at="46,19,47,18" concept="2" />
       <node id="4815887568697050725" at="52,26,53,18" concept="8" />
       <node id="4815887568697050725" at="56,39,57,32" concept="8" />
@@ -6905,7 +6905,7 @@
       <node id="4815887568697050725" at="125,87,128,7" concept="5" />
       <node id="4815887568697050725" at="128,7,131,7" concept="5" />
       <node id="4815887568697050725" at="147,0,150,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="4815887568697050725" at="45,0,49,0" concept="1" trace="VectorType_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4815887568697050725" at="45,0,49,0" concept="1" trace="VectorType_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4815887568697050725" at="96,0,100,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4815887568697050725" at="104,0,108,0" concept="1" trace="elementTypeSingleRoleHandler_b50r53_c0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="4815887568697050725" at="50,0,55,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -6933,7 +6933,7 @@
       <scope id="4815887568697050725" at="143,17,144,42" />
       <scope id="4815887568697050725" at="147,40,148,32" />
       <scope id="4815887568697050871" at="187,15,188,40" />
-      <scope id="4815887568697050725" at="45,90,47,18" />
+      <scope id="4815887568697050725" at="45,88,47,18" />
       <scope id="4815887568697050725" at="96,40,98,33">
         <var name="provider" id="4815887568697050725" />
       </scope>
@@ -7010,14 +7010,14 @@
       </scope>
       <scope id="4815887568697050871" at="170,41,189,5" />
       <scope id="4815887568697050871" at="170,0,191,0" />
-      <unit id="4815887568697050725" at="201,0,204,0" name="jetbrains.mps.baseLanguage.math.editor.VectorType_EditorBuilder_a$PROPS" />
-      <unit id="4815887568697050725" at="205,0,208,0" name="jetbrains.mps.baseLanguage.math.editor.VectorType_EditorBuilder_a$LINKS" />
-      <unit id="4815887568697050725" at="209,0,212,0" name="jetbrains.mps.baseLanguage.math.editor.VectorType_EditorBuilder_a$CONCEPTS" />
-      <unit id="4815887568697050725" at="100,0,151,0" name="jetbrains.mps.baseLanguage.math.editor.VectorType_EditorBuilder_a$elementTypeSingleRoleHandler_b50r53_c0" />
-      <unit id="4815887568697050725" at="41,0,213,0" name="jetbrains.mps.baseLanguage.math.editor.VectorType_EditorBuilder_a" />
+      <unit id="4815887568697050725" at="201,0,204,0" name="jetbrains.mps.baseLanguage.math.editor.VectorType_EditorBuilder$PROPS" />
+      <unit id="4815887568697050725" at="205,0,208,0" name="jetbrains.mps.baseLanguage.math.editor.VectorType_EditorBuilder$LINKS" />
+      <unit id="4815887568697050725" at="209,0,212,0" name="jetbrains.mps.baseLanguage.math.editor.VectorType_EditorBuilder$CONCEPTS" />
+      <unit id="4815887568697050725" at="100,0,151,0" name="jetbrains.mps.baseLanguage.math.editor.VectorType_EditorBuilder$elementTypeSingleRoleHandler_b50r53_c0" />
+      <unit id="4815887568697050725" at="41,0,213,0" name="jetbrains.mps.baseLanguage.math.editor.VectorType_EditorBuilder" />
     </file>
-    <file name="VectorType_InspectorBuilder_a.java">
-      <node id="4815887568697050725" at="43,93,44,19" concept="13" />
+    <file name="VectorType_InspectorBuilder.java">
+      <node id="4815887568697050725" at="43,91,44,19" concept="13" />
       <node id="4815887568697050725" at="44,19,45,18" concept="2" />
       <node id="4815887568697050725" at="50,26,51,18" concept="8" />
       <node id="4815887568697050725" at="54,39,55,32" concept="8" />
@@ -7088,7 +7088,7 @@
       <node id="4815887568697050725" at="134,87,137,7" concept="5" />
       <node id="4815887568697050725" at="137,7,140,7" concept="5" />
       <node id="4815887568697050725" at="159,0,162,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="4815887568697050725" at="43,0,47,0" concept="1" trace="VectorType_InspectorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4815887568697050725" at="43,0,47,0" concept="1" trace="VectorType_InspectorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4815887568697050725" at="105,0,109,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4815887568697050725" at="113,0,117,0" concept="1" trace="elementTypeSingleRoleHandler_b50r53_d0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="4815887568697050725" at="48,0,53,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -7111,7 +7111,7 @@
       <scope id="4815887568697050725" at="138,42,139,52" />
       <scope id="4815887568697050725" at="155,17,156,42" />
       <scope id="4815887568697050725" at="159,40,160,32" />
-      <scope id="4815887568697050725" at="43,93,45,18" />
+      <scope id="4815887568697050725" at="43,91,45,18" />
       <scope id="4815887568697050858" at="90,74,92,145">
         <var name="manager" id="4815887568697050858" />
       </scope>
@@ -7173,21 +7173,21 @@
       </scope>
       <scope id="4815887568697050858" at="75,41,97,5" />
       <scope id="4815887568697050858" at="75,0,99,0" />
-      <unit id="4815887568697050725" at="164,0,167,0" name="jetbrains.mps.baseLanguage.math.editor.VectorType_InspectorBuilder_a$PROPS" />
-      <unit id="4815887568697050725" at="168,0,171,0" name="jetbrains.mps.baseLanguage.math.editor.VectorType_InspectorBuilder_a$CONCEPTS" />
-      <unit id="4815887568697050725" at="172,0,175,0" name="jetbrains.mps.baseLanguage.math.editor.VectorType_InspectorBuilder_a$LINKS" />
-      <unit id="4815887568697050725" at="109,0,163,0" name="jetbrains.mps.baseLanguage.math.editor.VectorType_InspectorBuilder_a$elementTypeSingleRoleHandler_b50r53_d0" />
-      <unit id="4815887568697050725" at="39,0,176,0" name="jetbrains.mps.baseLanguage.math.editor.VectorType_InspectorBuilder_a" />
+      <unit id="4815887568697050725" at="164,0,167,0" name="jetbrains.mps.baseLanguage.math.editor.VectorType_InspectorBuilder$PROPS" />
+      <unit id="4815887568697050725" at="168,0,171,0" name="jetbrains.mps.baseLanguage.math.editor.VectorType_InspectorBuilder$CONCEPTS" />
+      <unit id="4815887568697050725" at="172,0,175,0" name="jetbrains.mps.baseLanguage.math.editor.VectorType_InspectorBuilder$LINKS" />
+      <unit id="4815887568697050725" at="109,0,163,0" name="jetbrains.mps.baseLanguage.math.editor.VectorType_InspectorBuilder$elementTypeSingleRoleHandler_b50r53_d0" />
+      <unit id="4815887568697050725" at="39,0,176,0" name="jetbrains.mps.baseLanguage.math.editor.VectorType_InspectorBuilder" />
     </file>
   </root>
   <root nodeRef="r:93eafd6e-0a56-402c-930d-564027be226b(jetbrains.mps.baseLanguage.math.editor)/4815887568697232016">
     <file name="MatrixConstructor_Editor.java">
-      <node id="4815887568697232016" at="11,79,12,83" concept="8" />
-      <node id="4815887568697232016" at="14,82,15,86" concept="8" />
+      <node id="4815887568697232016" at="11,79,12,81" concept="8" />
+      <node id="4815887568697232016" at="14,82,15,84" concept="8" />
       <node id="4815887568697232016" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4815887568697232016" at="14,0,17,0" concept="6" trace="createInspectedCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4815887568697232016" at="11,79,12,83" />
-      <scope id="4815887568697232016" at="14,82,15,86" />
+      <scope id="4815887568697232016" at="11,79,12,81" />
+      <scope id="4815887568697232016" at="14,82,15,84" />
       <scope id="4815887568697232016" at="11,0,14,0">
         <var name="editorContext" id="4815887568697232016" />
         <var name="node" id="4815887568697232016" />
@@ -7198,8 +7198,8 @@
       </scope>
       <unit id="4815887568697232016" at="10,0,18,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixConstructor_Editor" />
     </file>
-    <file name="MatrixConstructor_EditorBuilder_a.java">
-      <node id="4815887568697232016" at="43,97,44,19" concept="13" />
+    <file name="MatrixConstructor_EditorBuilder.java">
+      <node id="4815887568697232016" at="43,95,44,19" concept="13" />
       <node id="4815887568697232016" at="44,19,45,18" concept="2" />
       <node id="4815887568697232016" at="50,26,51,18" concept="8" />
       <node id="4815887568697232016" at="54,39,55,33" concept="8" />
@@ -7355,7 +7355,7 @@
       <node id="4815887568697232016" at="232,0,235,0" concept="6" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="4815887568697232016" at="235,0,238,0" concept="6" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="5856988183233498906" at="299,0,302,0" concept="6" trace="_StyleParameter_QueryFunction_lhhqxl_a3b0a_0#()Ljetbrains/mps/util/Pair;" />
-      <node id="4815887568697232016" at="43,0,47,0" concept="1" trace="MatrixConstructor_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4815887568697232016" at="43,0,47,0" concept="1" trace="MatrixConstructor_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4815887568697232016" at="67,72,71,5" concept="5" />
       <node id="4815887568697232016" at="112,0,116,0" concept="1" trace="componentsListHandler_lhhqxl_b0a#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="4815887568697232016" at="117,0,121,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -7412,7 +7412,7 @@
       <scope id="4815887568697232016" at="235,48,236,36" />
       <scope id="4815887568697232016" at="253,17,254,42" />
       <scope id="5856988183233498908" at="299,77,300,76" />
-      <scope id="4815887568697232016" at="43,97,45,18" />
+      <scope id="4815887568697232016" at="43,95,45,18" />
       <scope id="4815887568697232016" at="68,26,70,30" />
       <scope id="4815887568697232016" at="112,85,114,25" />
       <scope id="4815887568697232016" at="151,122,153,146" />
@@ -7542,15 +7542,15 @@
         <var name="elementNode" id="4815887568697232016" />
         <var name="isEmptyCell" id="4815887568697232016" />
       </scope>
-      <unit id="4815887568697232016" at="313,0,316,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixConstructor_EditorBuilder_a$PROPS" />
-      <unit id="4815887568697232016" at="317,0,320,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixConstructor_EditorBuilder_a$LINKS" />
-      <unit id="4815887568697232016" at="321,0,324,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixConstructor_EditorBuilder_a$CONCEPTS" />
-      <unit id="4815887568697232016" at="108,0,175,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixConstructor_EditorBuilder_a$componentsListHandler_lhhqxl_b0a" />
-      <unit id="4815887568697232016" at="219,0,299,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixConstructor_EditorBuilder_a$componentsListHandler_lhhqxl_b0a_0" />
-      <unit id="4815887568697232016" at="39,0,325,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixConstructor_EditorBuilder_a" />
+      <unit id="4815887568697232016" at="313,0,316,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixConstructor_EditorBuilder$PROPS" />
+      <unit id="4815887568697232016" at="317,0,320,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixConstructor_EditorBuilder$LINKS" />
+      <unit id="4815887568697232016" at="321,0,324,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixConstructor_EditorBuilder$CONCEPTS" />
+      <unit id="4815887568697232016" at="108,0,175,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixConstructor_EditorBuilder$componentsListHandler_lhhqxl_b0a" />
+      <unit id="4815887568697232016" at="219,0,299,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixConstructor_EditorBuilder$componentsListHandler_lhhqxl_b0a_0" />
+      <unit id="4815887568697232016" at="39,0,325,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixConstructor_EditorBuilder" />
     </file>
-    <file name="MatrixConstructor_InspectorBuilder_a.java">
-      <node id="4815887568697232016" at="32,100,33,19" concept="13" />
+    <file name="MatrixConstructor_InspectorBuilder.java">
+      <node id="4815887568697232016" at="32,98,33,19" concept="13" />
       <node id="4815887568697232016" at="33,19,34,18" concept="2" />
       <node id="4815887568697232016" at="39,26,40,18" concept="8" />
       <node id="4815887568697232016" at="43,39,44,32" concept="8" />
@@ -7583,7 +7583,7 @@
       <node id="4815887568697232016" at="89,0,90,0" concept="11" trace="PropertyAttribute$Gb" />
       <node id="4815887568697232016" at="29,0,31,0" concept="3" trace="myNode" />
       <node id="4815887568697232016" at="43,0,46,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="4815887568697232016" at="32,0,36,0" concept="1" trace="MatrixConstructor_InspectorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4815887568697232016" at="32,0,36,0" concept="1" trace="MatrixConstructor_InspectorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4815887568697232016" at="37,0,42,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="3498370411873438956" at="73,208,78,24" concept="5" />
       <node id="3498370411873438958" at="56,0,62,0" concept="6" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -7593,7 +7593,7 @@
       <scope id="4815887568697232016" at="39,26,40,18" />
       <scope id="4815887568697232016" at="43,39,44,32" />
       <scope id="3498370411873438956" at="79,15,80,40" />
-      <scope id="4815887568697232016" at="32,100,34,18" />
+      <scope id="4815887568697232016" at="32,98,34,18" />
       <scope id="3498370411873438956" at="74,74,76,145">
         <var name="manager" id="3498370411873438956" />
       </scope>
@@ -7619,9 +7619,9 @@
       </scope>
       <scope id="3498370411873438956" at="62,41,81,5" />
       <scope id="3498370411873438956" at="62,0,83,0" />
-      <unit id="4815887568697232016" at="84,0,87,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixConstructor_InspectorBuilder_a$PROPS" />
-      <unit id="4815887568697232016" at="88,0,91,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixConstructor_InspectorBuilder_a$CONCEPTS" />
-      <unit id="4815887568697232016" at="28,0,92,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixConstructor_InspectorBuilder_a" />
+      <unit id="4815887568697232016" at="84,0,87,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixConstructor_InspectorBuilder$PROPS" />
+      <unit id="4815887568697232016" at="88,0,91,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixConstructor_InspectorBuilder$CONCEPTS" />
+      <unit id="4815887568697232016" at="28,0,92,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixConstructor_InspectorBuilder" />
     </file>
   </root>
   <root nodeRef="r:93eafd6e-0a56-402c-930d-564027be226b(jetbrains.mps.baseLanguage.math.editor)/5123146117298459565">
@@ -8374,17 +8374,17 @@
   </root>
   <root nodeRef="r:93eafd6e-0a56-402c-930d-564027be226b(jetbrains.mps.baseLanguage.math.editor)/6219660258344738889">
     <file name="MatrixInitializer_Editor.java">
-      <node id="6219660258344738889" at="11,79,12,83" concept="8" />
+      <node id="6219660258344738889" at="11,79,12,81" concept="8" />
       <node id="6219660258344738889" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="6219660258344738889" at="11,79,12,83" />
+      <scope id="6219660258344738889" at="11,79,12,81" />
       <scope id="6219660258344738889" at="11,0,14,0">
         <var name="editorContext" id="6219660258344738889" />
         <var name="node" id="6219660258344738889" />
       </scope>
       <unit id="6219660258344738889" at="10,0,15,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixInitializer_Editor" />
     </file>
-    <file name="MatrixInitializer_EditorBuilder_a.java">
-      <node id="6219660258344738889" at="31,97,32,19" concept="13" />
+    <file name="MatrixInitializer_EditorBuilder.java">
+      <node id="6219660258344738889" at="31,95,32,19" concept="13" />
       <node id="6219660258344738889" at="32,19,33,18" concept="2" />
       <node id="6219660258344738889" at="38,26,39,18" concept="8" />
       <node id="6219660258344738889" at="42,39,43,32" concept="8" />
@@ -8600,7 +8600,7 @@
       <node id="6219660258344738889" at="386,87,389,7" concept="5" />
       <node id="6219660258344738889" at="389,7,392,7" concept="5" />
       <node id="6219660258344738889" at="408,0,411,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="6219660258344738889" at="31,0,35,0" concept="1" trace="MatrixInitializer_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="6219660258344738889" at="31,0,35,0" concept="1" trace="MatrixInitializer_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="6219660258344738889" at="85,0,89,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="6219660258344738889" at="93,0,97,0" concept="1" trace="rowsCountSingleRoleHandler_g16ylh_c0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="6219660258344738889" at="150,0,154,0" concept="6" trace="createRefNode_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -8674,7 +8674,7 @@
       <scope id="6219660258344738889" at="390,42,391,51" />
       <scope id="6219660258344738889" at="404,17,405,42" />
       <scope id="6219660258344738889" at="408,40,409,31" />
-      <scope id="6219660258344738889" at="31,97,33,18" />
+      <scope id="6219660258344738889" at="31,95,33,18" />
       <scope id="6219660258344738889" at="85,40,87,33">
         <var name="provider" id="6219660258344738889" />
       </scope>
@@ -8874,28 +8874,28 @@
         <var name="editorCell" id="6219660258344738889" />
       </scope>
       <scope id="6219660258344738889" at="46,0,67,0" />
-      <unit id="6219660258344738889" at="422,0,429,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixInitializer_EditorBuilder_a$LINKS" />
-      <unit id="6219660258344738889" at="89,0,140,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixInitializer_EditorBuilder_a$rowsCountSingleRoleHandler_g16ylh_c0" />
-      <unit id="6219660258344738889" at="154,0,205,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixInitializer_EditorBuilder_a$colsCountSingleRoleHandler_g16ylh_e0" />
-      <unit id="6219660258344738889" at="227,0,278,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixInitializer_EditorBuilder_a$rowIndexSingleRoleHandler_g16ylh_h0" />
-      <unit id="6219660258344738889" at="291,0,342,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixInitializer_EditorBuilder_a$colIndexSingleRoleHandler_g16ylh_j0" />
-      <unit id="6219660258344738889" at="361,0,412,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixInitializer_EditorBuilder_a$expressionSingleRoleHandler_g16ylh_m0" />
-      <unit id="6219660258344738889" at="27,0,430,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixInitializer_EditorBuilder_a" />
+      <unit id="6219660258344738889" at="422,0,429,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixInitializer_EditorBuilder$LINKS" />
+      <unit id="6219660258344738889" at="89,0,140,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixInitializer_EditorBuilder$rowsCountSingleRoleHandler_g16ylh_c0" />
+      <unit id="6219660258344738889" at="154,0,205,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixInitializer_EditorBuilder$colsCountSingleRoleHandler_g16ylh_e0" />
+      <unit id="6219660258344738889" at="227,0,278,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixInitializer_EditorBuilder$rowIndexSingleRoleHandler_g16ylh_h0" />
+      <unit id="6219660258344738889" at="291,0,342,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixInitializer_EditorBuilder$colIndexSingleRoleHandler_g16ylh_j0" />
+      <unit id="6219660258344738889" at="361,0,412,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixInitializer_EditorBuilder$expressionSingleRoleHandler_g16ylh_m0" />
+      <unit id="6219660258344738889" at="27,0,430,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixInitializer_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:93eafd6e-0a56-402c-930d-564027be226b(jetbrains.mps.baseLanguage.math.editor)/6219660258344759891">
     <file name="MatrixInitializerIndexReference_Editor.java">
-      <node id="6219660258344759891" at="11,79,12,97" concept="8" />
+      <node id="6219660258344759891" at="11,79,12,95" concept="8" />
       <node id="6219660258344759891" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="6219660258344759891" at="11,79,12,97" />
+      <scope id="6219660258344759891" at="11,79,12,95" />
       <scope id="6219660258344759891" at="11,0,14,0">
         <var name="editorContext" id="6219660258344759891" />
         <var name="node" id="6219660258344759891" />
       </scope>
       <unit id="6219660258344759891" at="10,0,15,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixInitializerIndexReference_Editor" />
     </file>
-    <file name="MatrixInitializerIndexReference_EditorBuilder_a.java">
-      <node id="6219660258344759891" at="43,111,44,19" concept="13" />
+    <file name="MatrixInitializerIndexReference_EditorBuilder.java">
+      <node id="6219660258344759891" at="43,109,44,19" concept="13" />
       <node id="6219660258344759891" at="44,19,45,18" concept="2" />
       <node id="6219660258344759891" at="50,26,51,18" concept="8" />
       <node id="6219660258344759891" at="54,39,55,32" concept="8" />
@@ -8958,7 +8958,7 @@
       <node id="6219660258344759927" at="102,0,104,0" concept="3" trace="myNode" />
       <node id="6219660258344759891" at="54,0,57,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="6219660258344759927" at="112,0,115,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="6219660258344759891" at="43,0,47,0" concept="1" trace="MatrixInitializerIndexReference_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="6219660258344759891" at="43,0,47,0" concept="1" trace="MatrixInitializerIndexReference_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="6219660258344759891" at="87,0,91,5" concept="5" />
       <node id="6219660258344759891" at="48,0,53,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="6219660258344759891" at="94,205,99,22" concept="5" />
@@ -8977,7 +8977,7 @@
       <scope id="6219660258344759927" at="112,41,113,32" />
       <scope id="6219660258344759927" at="118,28,119,20" />
       <scope id="6219660258344759929" at="142,17,143,42" />
-      <scope id="6219660258344759891" at="43,111,45,18" />
+      <scope id="6219660258344759891" at="43,109,45,18" />
       <scope id="6219660258344759891" at="88,40,90,44" />
       <scope id="6219660258344759891" at="95,73,97,145">
         <var name="manager" id="6219660258344759891" />
@@ -9032,27 +9032,27 @@
         <var name="referenceLink" id="6219660258344759891" />
       </scope>
       <scope id="6219660258344759891" at="66,0,101,0" />
-      <unit id="6219660258344759891" at="148,0,151,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixInitializerIndexReference_EditorBuilder_a$LINKS" />
-      <unit id="6219660258344759891" at="157,0,160,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixInitializerIndexReference_EditorBuilder_a$PROPS" />
-      <unit id="6219660258344759891" at="152,0,156,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixInitializerIndexReference_EditorBuilder_a$CONCEPTS" />
-      <unit id="6219660258344759891" at="68,42,83,5" name="jetbrains.mps.baseLanguage.math.editor.MatrixInitializerIndexReference_EditorBuilder_a$1" />
-      <unit id="6219660258344759927" at="101,0,147,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixInitializerIndexReference_EditorBuilder_a$Inline_Builder0" />
-      <unit id="6219660258344759891" at="39,0,161,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixInitializerIndexReference_EditorBuilder_a" />
+      <unit id="6219660258344759891" at="148,0,151,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixInitializerIndexReference_EditorBuilder$LINKS" />
+      <unit id="6219660258344759891" at="157,0,160,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixInitializerIndexReference_EditorBuilder$PROPS" />
+      <unit id="6219660258344759891" at="152,0,156,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixInitializerIndexReference_EditorBuilder$CONCEPTS" />
+      <unit id="6219660258344759891" at="68,42,83,5" name="jetbrains.mps.baseLanguage.math.editor.MatrixInitializerIndexReference_EditorBuilder$1" />
+      <unit id="6219660258344759927" at="101,0,147,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixInitializerIndexReference_EditorBuilder$Inline_Builder0" />
+      <unit id="6219660258344759891" at="39,0,161,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixInitializerIndexReference_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:93eafd6e-0a56-402c-930d-564027be226b(jetbrains.mps.baseLanguage.math.editor)/6219660258344759895">
     <file name="MatrixInitializerIndex_Editor.java">
-      <node id="6219660258344759895" at="11,79,12,88" concept="8" />
+      <node id="6219660258344759895" at="11,79,12,86" concept="8" />
       <node id="6219660258344759895" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="6219660258344759895" at="11,79,12,88" />
+      <scope id="6219660258344759895" at="11,79,12,86" />
       <scope id="6219660258344759895" at="11,0,14,0">
         <var name="editorContext" id="6219660258344759895" />
         <var name="node" id="6219660258344759895" />
       </scope>
       <unit id="6219660258344759895" at="10,0,15,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixInitializerIndex_Editor" />
     </file>
-    <file name="MatrixInitializerIndex_EditorBuilder_a.java">
-      <node id="6219660258344759895" at="29,102,30,19" concept="13" />
+    <file name="MatrixInitializerIndex_EditorBuilder.java">
+      <node id="6219660258344759895" at="29,100,30,19" concept="13" />
       <node id="6219660258344759895" at="30,19,31,18" concept="2" />
       <node id="6219660258344759895" at="36,26,37,18" concept="8" />
       <node id="6219660258344759895" at="40,39,41,30" concept="8" />
@@ -9076,7 +9076,7 @@
       <node id="6219660258344759895" at="73,0,74,0" concept="11" trace="PropertyAttribute$Gb" />
       <node id="6219660258344759895" at="26,0,28,0" concept="3" trace="myNode" />
       <node id="6219660258344759895" at="40,0,43,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="6219660258344759895" at="29,0,33,0" concept="1" trace="MatrixInitializerIndex_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="6219660258344759895" at="29,0,33,0" concept="1" trace="MatrixInitializerIndex_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="6219660258344759895" at="34,0,39,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="6219660258344759897" at="57,208,62,24" concept="5" />
       <node id="6219660258344759897" at="45,39,65,5" concept="14" />
@@ -9084,7 +9084,7 @@
       <scope id="6219660258344759895" at="36,26,37,18" />
       <scope id="6219660258344759895" at="40,39,41,30" />
       <scope id="6219660258344759897" at="63,15,64,40" />
-      <scope id="6219660258344759895" at="29,102,31,18" />
+      <scope id="6219660258344759895" at="29,100,31,18" />
       <scope id="6219660258344759897" at="58,74,60,145">
         <var name="manager" id="6219660258344759897" />
       </scope>
@@ -9102,24 +9102,24 @@
       </scope>
       <scope id="6219660258344759897" at="44,41,65,5" />
       <scope id="6219660258344759897" at="44,0,67,0" />
-      <unit id="6219660258344759895" at="68,0,71,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixInitializerIndex_EditorBuilder_a$PROPS" />
-      <unit id="6219660258344759895" at="72,0,75,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixInitializerIndex_EditorBuilder_a$CONCEPTS" />
-      <unit id="6219660258344759895" at="25,0,76,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixInitializerIndex_EditorBuilder_a" />
+      <unit id="6219660258344759895" at="68,0,71,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixInitializerIndex_EditorBuilder$PROPS" />
+      <unit id="6219660258344759895" at="72,0,75,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixInitializerIndex_EditorBuilder$CONCEPTS" />
+      <unit id="6219660258344759895" at="25,0,76,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixInitializerIndex_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:93eafd6e-0a56-402c-930d-564027be226b(jetbrains.mps.baseLanguage.math.editor)/6219660258345553850">
     <file name="VectorInitializer_Editor.java">
-      <node id="6219660258345553850" at="11,79,12,83" concept="8" />
+      <node id="6219660258345553850" at="11,79,12,81" concept="8" />
       <node id="6219660258345553850" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="6219660258345553850" at="11,79,12,83" />
+      <scope id="6219660258345553850" at="11,79,12,81" />
       <scope id="6219660258345553850" at="11,0,14,0">
         <var name="editorContext" id="6219660258345553850" />
         <var name="node" id="6219660258345553850" />
       </scope>
       <unit id="6219660258345553850" at="10,0,15,0" name="jetbrains.mps.baseLanguage.math.editor.VectorInitializer_Editor" />
     </file>
-    <file name="VectorInitializer_EditorBuilder_a.java">
-      <node id="6219660258345553850" at="31,97,32,19" concept="13" />
+    <file name="VectorInitializer_EditorBuilder.java">
+      <node id="6219660258345553850" at="31,95,32,19" concept="13" />
       <node id="6219660258345553850" at="32,19,33,18" concept="2" />
       <node id="6219660258345553850" at="38,26,39,18" concept="8" />
       <node id="6219660258345553850" at="42,39,43,32" concept="8" />
@@ -9248,7 +9248,7 @@
       <node id="6219660258345553850" at="233,87,236,7" concept="5" />
       <node id="6219660258345553850" at="236,7,239,7" concept="5" />
       <node id="6219660258345553850" at="255,0,258,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="6219660258345553850" at="31,0,35,0" concept="1" trace="VectorInitializer_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="6219660258345553850" at="31,0,35,0" concept="1" trace="VectorInitializer_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="6219660258345553850" at="79,0,83,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="6219660258345553850" at="87,0,91,0" concept="1" trace="rowsCountSingleRoleHandler_8o7ns6_c0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="6219660258345553850" at="143,0,147,0" concept="6" trace="createRefNode_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -9294,7 +9294,7 @@
       <scope id="6219660258345553850" at="237,42,238,51" />
       <scope id="6219660258345553850" at="251,17,252,42" />
       <scope id="6219660258345553850" at="255,40,256,31" />
-      <scope id="6219660258345553850" at="31,97,33,18" />
+      <scope id="6219660258345553850" at="31,95,33,18" />
       <scope id="6219660258345553850" at="79,40,81,33">
         <var name="provider" id="6219660258345553850" />
       </scope>
@@ -9416,26 +9416,26 @@
       <scope id="6219660258345553850" at="180,0,194,0" />
       <scope id="6219660258345553850" at="241,0,255,0" />
       <scope id="6219660258345553850" at="46,0,61,0" />
-      <unit id="6219660258345553850" at="269,0,274,0" name="jetbrains.mps.baseLanguage.math.editor.VectorInitializer_EditorBuilder_a$LINKS" />
-      <unit id="6219660258345553850" at="83,0,134,0" name="jetbrains.mps.baseLanguage.math.editor.VectorInitializer_EditorBuilder_a$rowsCountSingleRoleHandler_8o7ns6_c0" />
-      <unit id="6219660258345553850" at="147,0,198,0" name="jetbrains.mps.baseLanguage.math.editor.VectorInitializer_EditorBuilder_a$rowIndexSingleRoleHandler_8o7ns6_e0" />
-      <unit id="6219660258345553850" at="208,0,259,0" name="jetbrains.mps.baseLanguage.math.editor.VectorInitializer_EditorBuilder_a$expressionSingleRoleHandler_8o7ns6_g0" />
-      <unit id="6219660258345553850" at="27,0,275,0" name="jetbrains.mps.baseLanguage.math.editor.VectorInitializer_EditorBuilder_a" />
+      <unit id="6219660258345553850" at="269,0,274,0" name="jetbrains.mps.baseLanguage.math.editor.VectorInitializer_EditorBuilder$LINKS" />
+      <unit id="6219660258345553850" at="83,0,134,0" name="jetbrains.mps.baseLanguage.math.editor.VectorInitializer_EditorBuilder$rowsCountSingleRoleHandler_8o7ns6_c0" />
+      <unit id="6219660258345553850" at="147,0,198,0" name="jetbrains.mps.baseLanguage.math.editor.VectorInitializer_EditorBuilder$rowIndexSingleRoleHandler_8o7ns6_e0" />
+      <unit id="6219660258345553850" at="208,0,259,0" name="jetbrains.mps.baseLanguage.math.editor.VectorInitializer_EditorBuilder$expressionSingleRoleHandler_8o7ns6_g0" />
+      <unit id="6219660258345553850" at="27,0,275,0" name="jetbrains.mps.baseLanguage.math.editor.VectorInitializer_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:93eafd6e-0a56-402c-930d-564027be226b(jetbrains.mps.baseLanguage.math.editor)/6389121991274611521">
     <file name="MatrixElementAccessExpression_Editor.java">
-      <node id="6389121991274611521" at="11,79,12,95" concept="8" />
+      <node id="6389121991274611521" at="11,79,12,93" concept="8" />
       <node id="6389121991274611521" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="6389121991274611521" at="11,79,12,95" />
+      <scope id="6389121991274611521" at="11,79,12,93" />
       <scope id="6389121991274611521" at="11,0,14,0">
         <var name="editorContext" id="6389121991274611521" />
         <var name="node" id="6389121991274611521" />
       </scope>
       <unit id="6389121991274611521" at="10,0,15,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixElementAccessExpression_Editor" />
     </file>
-    <file name="MatrixElementAccessExpression_EditorBuilder_a.java">
-      <node id="6389121991274611521" at="38,109,39,19" concept="13" />
+    <file name="MatrixElementAccessExpression_EditorBuilder.java">
+      <node id="6389121991274611521" at="38,107,39,19" concept="13" />
       <node id="6389121991274611521" at="39,19,40,18" concept="2" />
       <node id="6389121991274611521" at="45,26,46,18" concept="8" />
       <node id="6389121991274611521" at="49,39,50,32" concept="8" />
@@ -9589,7 +9589,7 @@
       <node id="6389121991274611521" at="268,87,271,7" concept="5" />
       <node id="6389121991274611521" at="271,7,274,7" concept="5" />
       <node id="6389121991274611521" at="290,0,293,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="6389121991274611521" at="38,0,42,0" concept="1" trace="MatrixElementAccessExpression_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="6389121991274611521" at="38,0,42,0" concept="1" trace="MatrixElementAccessExpression_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="6389121991274611521" at="98,0,102,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="6389121991274611521" at="106,0,110,0" concept="1" trace="expressionSingleRoleHandler_x06od6_b0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="6389121991274611521" at="174,0,178,0" concept="6" trace="createRefNode_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -9643,7 +9643,7 @@
       <scope id="6389121991274611521" at="272,42,273,49" />
       <scope id="6389121991274611521" at="286,17,287,42" />
       <scope id="6389121991274611521" at="290,40,291,29" />
-      <scope id="6389121991274611521" at="38,109,40,18" />
+      <scope id="6389121991274611521" at="38,107,40,18" />
       <scope id="6389121991274611521" at="98,40,100,33">
         <var name="provider" id="6389121991274611521" />
       </scope>
@@ -9770,27 +9770,27 @@
         <var name="editorCell" id="6389121991274611521" />
       </scope>
       <scope id="6389121991274611521" at="53,0,76,0" />
-      <unit id="6389121991274611521" at="312,0,317,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixElementAccessExpression_EditorBuilder_a$CONCEPTS" />
-      <unit id="6389121991274611521" at="305,0,311,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixElementAccessExpression_EditorBuilder_a$LINKS" />
-      <unit id="6389121991274611521" at="102,0,153,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixElementAccessExpression_EditorBuilder_a$expressionSingleRoleHandler_x06od6_b0" />
-      <unit id="6389121991274611521" at="178,0,229,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixElementAccessExpression_EditorBuilder_a$rowIndexSingleRoleHandler_x06od6_e0" />
-      <unit id="6389121991274611521" at="243,0,294,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixElementAccessExpression_EditorBuilder_a$colIndexSingleRoleHandler_x06od6_g0" />
-      <unit id="6389121991274611521" at="34,0,318,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixElementAccessExpression_EditorBuilder_a" />
+      <unit id="6389121991274611521" at="312,0,317,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixElementAccessExpression_EditorBuilder$CONCEPTS" />
+      <unit id="6389121991274611521" at="305,0,311,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixElementAccessExpression_EditorBuilder$LINKS" />
+      <unit id="6389121991274611521" at="102,0,153,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixElementAccessExpression_EditorBuilder$expressionSingleRoleHandler_x06od6_b0" />
+      <unit id="6389121991274611521" at="178,0,229,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixElementAccessExpression_EditorBuilder$rowIndexSingleRoleHandler_x06od6_e0" />
+      <unit id="6389121991274611521" at="243,0,294,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixElementAccessExpression_EditorBuilder$colIndexSingleRoleHandler_x06od6_g0" />
+      <unit id="6389121991274611521" at="34,0,318,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixElementAccessExpression_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:93eafd6e-0a56-402c-930d-564027be226b(jetbrains.mps.baseLanguage.math.editor)/6389121991274897156">
     <file name="MatrixIndexWildcard_Editor.java">
-      <node id="6389121991274897156" at="11,79,12,85" concept="8" />
+      <node id="6389121991274897156" at="11,79,12,83" concept="8" />
       <node id="6389121991274897156" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="6389121991274897156" at="11,79,12,85" />
+      <scope id="6389121991274897156" at="11,79,12,83" />
       <scope id="6389121991274897156" at="11,0,14,0">
         <var name="editorContext" id="6389121991274897156" />
         <var name="node" id="6389121991274897156" />
       </scope>
       <unit id="6389121991274897156" at="10,0,15,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixIndexWildcard_Editor" />
     </file>
-    <file name="MatrixIndexWildcard_EditorBuilder_a.java">
-      <node id="6389121991274897156" at="19,99,20,19" concept="13" />
+    <file name="MatrixIndexWildcard_EditorBuilder.java">
+      <node id="6389121991274897156" at="19,97,20,19" concept="13" />
       <node id="6389121991274897156" at="20,19,21,18" concept="2" />
       <node id="6389121991274897156" at="26,26,27,18" concept="8" />
       <node id="6389121991274897156" at="30,39,31,30" concept="8" />
@@ -9805,12 +9805,12 @@
       <node id="6389121991274910637" at="42,34,43,22" concept="8" />
       <node id="6389121991274897156" at="16,0,18,0" concept="3" trace="myNode" />
       <node id="6389121991274897156" at="30,0,33,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="6389121991274897156" at="19,0,23,0" concept="1" trace="MatrixIndexWildcard_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="6389121991274897156" at="19,0,23,0" concept="1" trace="MatrixIndexWildcard_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="6389121991274897156" at="24,0,29,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="6389121991274910637" at="34,0,45,0" concept="6" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="6389121991274897156" at="26,26,27,18" />
       <scope id="6389121991274897156" at="30,39,31,30" />
-      <scope id="6389121991274897156" at="19,99,21,18" />
+      <scope id="6389121991274897156" at="19,97,21,18" />
       <scope id="6389121991274897156" at="30,0,33,0" />
       <scope id="6389121991274897156" at="19,0,23,0">
         <var name="context" id="6389121991274897156" />
@@ -9822,22 +9822,22 @@
         <var name="style" id="6389121991274910637" />
       </scope>
       <scope id="6389121991274910637" at="34,0,45,0" />
-      <unit id="6389121991274897156" at="15,0,46,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixIndexWildcard_EditorBuilder_a" />
+      <unit id="6389121991274897156" at="15,0,46,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixIndexWildcard_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:93eafd6e-0a56-402c-930d-564027be226b(jetbrains.mps.baseLanguage.math.editor)/7255837154369354279">
     <file name="ExponentialOperation_Editor.java">
-      <node id="7255837154369354279" at="11,79,12,86" concept="8" />
+      <node id="7255837154369354279" at="11,79,12,84" concept="8" />
       <node id="7255837154369354279" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="7255837154369354279" at="11,79,12,86" />
+      <scope id="7255837154369354279" at="11,79,12,84" />
       <scope id="7255837154369354279" at="11,0,14,0">
         <var name="editorContext" id="7255837154369354279" />
         <var name="node" id="7255837154369354279" />
       </scope>
       <unit id="7255837154369354279" at="10,0,15,0" name="jetbrains.mps.baseLanguage.math.editor.ExponentialOperation_Editor" />
     </file>
-    <file name="ExponentialOperation_EditorBuilder_a.java">
-      <node id="7255837154369354279" at="16,100,17,19" concept="13" />
+    <file name="ExponentialOperation_EditorBuilder.java">
+      <node id="7255837154369354279" at="16,98,17,19" concept="13" />
       <node id="7255837154369354279" at="17,19,18,18" concept="2" />
       <node id="7255837154369354279" at="23,26,24,18" concept="8" />
       <node id="7255837154369354279" at="27,39,28,31" concept="8" />
@@ -9848,13 +9848,13 @@
       <node id="7255837154369796306" at="37,5,38,22" concept="8" />
       <node id="7255837154369354279" at="13,0,15,0" concept="3" trace="myNode" />
       <node id="7255837154369354279" at="27,0,30,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="7255837154369354279" at="16,0,20,0" concept="1" trace="ExponentialOperation_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="7255837154369354279" at="16,0,20,0" concept="1" trace="ExponentialOperation_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="7255837154369796306" at="33,72,37,5" concept="5" />
       <node id="7255837154369354279" at="21,0,26,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="7255837154369796306" at="31,0,40,0" concept="6" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="7255837154369354279" at="23,26,24,18" />
       <scope id="7255837154369354279" at="27,39,28,31" />
-      <scope id="7255837154369354279" at="16,100,18,18" />
+      <scope id="7255837154369354279" at="16,98,18,18" />
       <scope id="7255837154369796306" at="34,26,36,30" />
       <scope id="7255837154369354279" at="27,0,30,0" />
       <scope id="7255837154369354279" at="16,0,20,0">
@@ -9867,17 +9867,17 @@
         <var name="editorCell" id="7255837154369796306" />
       </scope>
       <scope id="7255837154369796306" at="31,0,40,0" />
-      <unit id="7255837154369354279" at="12,0,41,0" name="jetbrains.mps.baseLanguage.math.editor.ExponentialOperation_EditorBuilder_a" />
+      <unit id="7255837154369354279" at="12,0,41,0" name="jetbrains.mps.baseLanguage.math.editor.ExponentialOperation_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:93eafd6e-0a56-402c-930d-564027be226b(jetbrains.mps.baseLanguage.math.editor)/7255837154369782738">
     <file name="ExponentOperation_Component.java">
       <node id="7255837154369782738" at="15,47,16,35" concept="8" />
-      <node id="7255837154369782738" at="18,79,19,96" concept="8" />
+      <node id="7255837154369782738" at="18,79,19,94" concept="8" />
       <node id="7255837154369782738" at="18,0,21,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="7255837154369782738" at="14,0,18,0" concept="6" trace="getContextHints#()Ljava/util/Collection;" />
       <scope id="7255837154369782738" at="15,47,16,35" />
-      <scope id="7255837154369782738" at="18,79,19,96" />
+      <scope id="7255837154369782738" at="18,79,19,94" />
       <scope id="7255837154369782738" at="18,0,21,0">
         <var name="editorContext" id="7255837154369782738" />
         <var name="node" id="7255837154369782738" />
@@ -9885,8 +9885,8 @@
       <scope id="7255837154369782738" at="14,0,18,0" />
       <unit id="7255837154369782738" at="13,0,22,0" name="jetbrains.mps.baseLanguage.math.editor.ExponentOperation_Component" />
     </file>
-    <file name="ExponentOperation_Component_ComponentBuilder_a.java">
-      <node id="7255837154369782738" at="52,110,53,19" concept="13" />
+    <file name="ExponentOperation_Component_ComponentBuilder.java">
+      <node id="7255837154369782738" at="52,108,53,19" concept="13" />
       <node id="7255837154369782738" at="53,19,54,18" concept="2" />
       <node id="7255837154369782738" at="59,26,60,18" concept="8" />
       <node id="7255837154369782738" at="63,39,64,32" concept="8" />
@@ -9959,7 +9959,7 @@
       <node id="1262430001742033319" at="155,0,158,0" concept="6" trace="handleAction#(Ljava/lang/Object;Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/model/SModel;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1262430001742033319" at="158,0,161,0" concept="6" trace="handleAction_impl#(Lorg/jetbrains/mps/openapi/language/SConcept;Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/model/SModel;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1262430001742033319" at="161,0,164,0" concept="6" trace="isReferentPresentation#()Z" />
-      <node id="7255837154369782738" at="52,0,56,0" concept="1" trace="ExponentOperation_Component_ComponentBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="7255837154369782738" at="52,0,56,0" concept="1" trace="ExponentOperation_Component_ComponentBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="7255837154369782738" at="75,0,79,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="7255837154369782738" at="83,0,87,0" concept="1" trace="exprSingleRoleHandler_spngij_a0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1262430001742033319" at="151,0,155,0" concept="6" trace="createParameterObjects#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)Ljava/util/List;" />
@@ -9989,7 +9989,7 @@
       <scope id="1262430001742033319" at="158,117,159,152" />
       <scope id="1262430001742033319" at="161,48,162,19" />
       <scope id="1262430001742033319" at="174,84,175,267" />
-      <scope id="7255837154369782738" at="52,110,54,18" />
+      <scope id="7255837154369782738" at="52,108,54,18" />
       <scope id="7255837154369782738" at="75,40,77,33">
         <var name="provider" id="7255837154369782738" />
       </scope>
@@ -10074,27 +10074,27 @@
         <var name="style" id="7255837154369782738" />
       </scope>
       <scope id="7255837154369782738" at="130,0,147,0" />
-      <unit id="7255837154369782738" at="189,0,192,0" name="jetbrains.mps.baseLanguage.math.editor.ExponentOperation_Component_ComponentBuilder_a$LINKS" />
-      <unit id="7255837154369782738" at="193,0,196,0" name="jetbrains.mps.baseLanguage.math.editor.ExponentOperation_Component_ComponentBuilder_a$CONCEPTS" />
-      <unit id="7255837154369782738" at="131,88,135,5" name="jetbrains.mps.baseLanguage.math.editor.ExponentOperation_Component_ComponentBuilder_a$1" />
-      <unit id="1262430001742033319" at="147,0,178,0" name="jetbrains.mps.baseLanguage.math.editor.ExponentOperation_Component_ComponentBuilder_a$ExponentialOperation_generic_cellMenu_spngij_a0b0" />
-      <unit id="7255837154369782738" at="79,0,130,0" name="jetbrains.mps.baseLanguage.math.editor.ExponentOperation_Component_ComponentBuilder_a$exprSingleRoleHandler_spngij_a0" />
-      <unit id="7255837154369782738" at="48,0,197,0" name="jetbrains.mps.baseLanguage.math.editor.ExponentOperation_Component_ComponentBuilder_a" />
+      <unit id="7255837154369782738" at="189,0,192,0" name="jetbrains.mps.baseLanguage.math.editor.ExponentOperation_Component_ComponentBuilder$LINKS" />
+      <unit id="7255837154369782738" at="193,0,196,0" name="jetbrains.mps.baseLanguage.math.editor.ExponentOperation_Component_ComponentBuilder$CONCEPTS" />
+      <unit id="7255837154369782738" at="131,88,135,5" name="jetbrains.mps.baseLanguage.math.editor.ExponentOperation_Component_ComponentBuilder$1" />
+      <unit id="1262430001742033319" at="147,0,178,0" name="jetbrains.mps.baseLanguage.math.editor.ExponentOperation_Component_ComponentBuilder$ExponentialOperation_generic_cellMenu_spngij_a0b0" />
+      <unit id="7255837154369782738" at="79,0,130,0" name="jetbrains.mps.baseLanguage.math.editor.ExponentOperation_Component_ComponentBuilder$exprSingleRoleHandler_spngij_a0" />
+      <unit id="7255837154369782738" at="48,0,197,0" name="jetbrains.mps.baseLanguage.math.editor.ExponentOperation_Component_ComponentBuilder" />
     </file>
   </root>
   <root nodeRef="r:93eafd6e-0a56-402c-930d-564027be226b(jetbrains.mps.baseLanguage.math.editor)/920952925470358964">
     <file name="MatrixNorm_Editor.java">
-      <node id="920952925470358964" at="11,79,12,76" concept="8" />
+      <node id="920952925470358964" at="11,79,12,74" concept="8" />
       <node id="920952925470358964" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="920952925470358964" at="11,79,12,76" />
+      <scope id="920952925470358964" at="11,79,12,74" />
       <scope id="920952925470358964" at="11,0,14,0">
         <var name="editorContext" id="920952925470358964" />
         <var name="node" id="920952925470358964" />
       </scope>
       <unit id="920952925470358964" at="10,0,15,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixNorm_Editor" />
     </file>
-    <file name="MatrixNorm_EditorBuilder_a.java">
-      <node id="920952925470358964" at="44,90,45,19" concept="13" />
+    <file name="MatrixNorm_EditorBuilder.java">
+      <node id="920952925470358964" at="44,88,45,19" concept="13" />
       <node id="920952925470358964" at="45,19,46,18" concept="2" />
       <node id="920952925470358964" at="51,26,52,18" concept="8" />
       <node id="920952925470358964" at="55,39,56,32" concept="8" />
@@ -10163,7 +10163,7 @@
       <node id="920952925470358964" at="105,87,108,7" concept="5" />
       <node id="920952925470358964" at="108,7,111,7" concept="5" />
       <node id="920952925470358964" at="127,0,130,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="920952925470358964" at="44,0,48,0" concept="1" trace="MatrixNorm_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="920952925470358964" at="44,0,48,0" concept="1" trace="MatrixNorm_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="920952925470358964" at="76,0,80,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="920952925470358964" at="84,0,88,0" concept="1" trace="matSingleRoleHandler_47eu07_b0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="920952925470358964" at="49,0,54,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -10186,7 +10186,7 @@
       <scope id="920952925470358964" at="123,17,124,42" />
       <scope id="920952925470358964" at="127,40,128,24" />
       <scope id="758819215871666413" at="158,15,159,40" />
-      <scope id="920952925470358964" at="44,90,46,18" />
+      <scope id="920952925470358964" at="44,88,46,18" />
       <scope id="920952925470358964" at="76,40,78,33">
         <var name="provider" id="920952925470358964" />
       </scope>
@@ -10246,11 +10246,11 @@
       </scope>
       <scope id="758819215871666413" at="137,41,160,5" />
       <scope id="758819215871666413" at="137,0,162,0" />
-      <unit id="920952925470358964" at="163,0,166,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixNorm_EditorBuilder_a$LINKS" />
-      <unit id="920952925470358964" at="167,0,170,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixNorm_EditorBuilder_a$PROPS" />
-      <unit id="920952925470358964" at="171,0,174,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixNorm_EditorBuilder_a$CONCEPTS" />
-      <unit id="920952925470358964" at="80,0,131,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixNorm_EditorBuilder_a$matSingleRoleHandler_47eu07_b0" />
-      <unit id="920952925470358964" at="40,0,175,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixNorm_EditorBuilder_a" />
+      <unit id="920952925470358964" at="163,0,166,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixNorm_EditorBuilder$LINKS" />
+      <unit id="920952925470358964" at="167,0,170,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixNorm_EditorBuilder$PROPS" />
+      <unit id="920952925470358964" at="171,0,174,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixNorm_EditorBuilder$CONCEPTS" />
+      <unit id="920952925470358964" at="80,0,131,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixNorm_EditorBuilder$matSingleRoleHandler_47eu07_b0" />
+      <unit id="920952925470358964" at="40,0,175,0" name="jetbrains.mps.baseLanguage.math.editor.MatrixNorm_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:93eafd6e-0a56-402c-930d-564027be226b(jetbrains.mps.baseLanguage.math.editor)/963844843316139392">

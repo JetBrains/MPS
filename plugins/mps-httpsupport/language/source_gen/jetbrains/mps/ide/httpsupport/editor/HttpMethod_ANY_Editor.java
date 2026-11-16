@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class HttpMethod_ANY_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new HttpMethod_ANY_EditorBuilder_a(editorContext, node).createCell();
+    return new HttpMethod_ANY_EditorBuilder(editorContext, node).createCell();
   }
 }

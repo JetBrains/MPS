@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class StockSymbol_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new StockSymbol_EditorBuilder_a(editorContext, node).createCell();
+    return new StockSymbol_EditorBuilder(editorContext, node).createCell();
   }
 }

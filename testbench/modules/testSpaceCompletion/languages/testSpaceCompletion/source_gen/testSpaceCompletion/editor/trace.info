@@ -14,17 +14,17 @@
   </root>
   <root nodeRef="r:06189444-c0d9-4e18-8ce5-a0f3e9b2c913(testSpaceCompletion.editor)/3586175963764954371">
     <file name="TABC_Editor.java">
-      <node id="3586175963764954371" at="11,79,12,70" concept="5" />
+      <node id="3586175963764954371" at="11,79,12,68" concept="5" />
       <node id="3586175963764954371" at="11,0,14,0" concept="3" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="3586175963764954371" at="11,79,12,70" />
+      <scope id="3586175963764954371" at="11,79,12,68" />
       <scope id="3586175963764954371" at="11,0,14,0">
         <var name="editorContext" id="3586175963764954371" />
         <var name="node" id="3586175963764954371" />
       </scope>
       <unit id="3586175963764954371" at="10,0,15,0" name="testSpaceCompletion.editor.TABC_Editor" />
     </file>
-    <file name="TABC_EditorBuilder_a.java">
-      <node id="3586175963764954371" at="21,84,22,19" concept="6" />
+    <file name="TABC_EditorBuilder.java">
+      <node id="3586175963764954371" at="21,82,22,19" concept="6" />
       <node id="3586175963764954371" at="22,19,23,18" concept="1" />
       <node id="3586175963764954371" at="28,26,29,18" concept="5" />
       <node id="3586175963764954371" at="32,39,33,32" concept="5" />
@@ -59,7 +59,7 @@
       <node id="3586175963764954384" at="70,34,71,22" concept="5" />
       <node id="3586175963764954371" at="18,0,20,0" concept="2" trace="myNode" />
       <node id="3586175963764954371" at="32,0,35,0" concept="3" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="3586175963764954371" at="21,0,25,0" concept="0" trace="TABC_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="3586175963764954371" at="21,0,25,0" concept="0" trace="TABC_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="3586175963764954371" at="26,0,31,0" concept="3" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="3586175963764954379" at="46,0,52,0" concept="3" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="3586175963764954371" at="36,0,46,0" concept="3" trace="createCollection_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -67,7 +67,7 @@
       <node id="3586175963764954380" at="52,0,63,0" concept="3" trace="createConstant_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="3586175963764954371" at="28,26,29,18" />
       <scope id="3586175963764954371" at="32,39,33,32" />
-      <scope id="3586175963764954371" at="21,84,23,18" />
+      <scope id="3586175963764954371" at="21,82,23,18" />
       <scope id="3586175963764954371" at="32,0,35,0" />
       <scope id="3586175963764954371" at="21,0,25,0">
         <var name="context" id="3586175963764954371" />
@@ -92,22 +92,22 @@
       <scope id="3586175963764954371" at="36,0,46,0" />
       <scope id="3586175963764954384" at="63,0,73,0" />
       <scope id="3586175963764954380" at="52,0,63,0" />
-      <unit id="3586175963764954371" at="17,0,74,0" name="testSpaceCompletion.editor.TABC_EditorBuilder_a" />
+      <unit id="3586175963764954371" at="17,0,74,0" name="testSpaceCompletion.editor.TABC_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:06189444-c0d9-4e18-8ce5-a0f3e9b2c913(testSpaceCompletion.editor)/3586175963764954992">
     <file name="TABCDE_Editor.java">
-      <node id="3586175963764954992" at="11,79,12,72" concept="5" />
+      <node id="3586175963764954992" at="11,79,12,70" concept="5" />
       <node id="3586175963764954992" at="11,0,14,0" concept="3" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="3586175963764954992" at="11,79,12,72" />
+      <scope id="3586175963764954992" at="11,79,12,70" />
       <scope id="3586175963764954992" at="11,0,14,0">
         <var name="editorContext" id="3586175963764954992" />
         <var name="node" id="3586175963764954992" />
       </scope>
       <unit id="3586175963764954992" at="10,0,15,0" name="testSpaceCompletion.editor.TABCDE_Editor" />
     </file>
-    <file name="TABCDE_EditorBuilder_a.java">
-      <node id="3586175963764954992" at="21,86,22,19" concept="6" />
+    <file name="TABCDE_EditorBuilder.java">
+      <node id="3586175963764954992" at="21,84,22,19" concept="6" />
       <node id="3586175963764954992" at="22,19,23,18" concept="1" />
       <node id="3586175963764954992" at="28,26,29,18" concept="5" />
       <node id="3586175963764954992" at="32,39,33,32" concept="5" />
@@ -142,7 +142,7 @@
       <node id="3586175963764955062" at="70,34,71,22" concept="5" />
       <node id="3586175963764954992" at="18,0,20,0" concept="2" trace="myNode" />
       <node id="3586175963764954992" at="32,0,35,0" concept="3" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="3586175963764954992" at="21,0,25,0" concept="0" trace="TABCDE_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="3586175963764954992" at="21,0,25,0" concept="0" trace="TABCDE_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="3586175963764954992" at="26,0,31,0" concept="3" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="3586175963764955057" at="46,0,52,0" concept="3" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="3586175963764954992" at="36,0,46,0" concept="3" trace="createCollection_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -150,7 +150,7 @@
       <node id="3586175963764955058" at="52,0,63,0" concept="3" trace="createConstant_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="3586175963764954992" at="28,26,29,18" />
       <scope id="3586175963764954992" at="32,39,33,32" />
-      <scope id="3586175963764954992" at="21,86,23,18" />
+      <scope id="3586175963764954992" at="21,84,23,18" />
       <scope id="3586175963764954992" at="32,0,35,0" />
       <scope id="3586175963764954992" at="21,0,25,0">
         <var name="context" id="3586175963764954992" />
@@ -175,22 +175,22 @@
       <scope id="3586175963764954992" at="36,0,46,0" />
       <scope id="3586175963764955062" at="63,0,73,0" />
       <scope id="3586175963764955058" at="52,0,63,0" />
-      <unit id="3586175963764954992" at="17,0,74,0" name="testSpaceCompletion.editor.TABCDE_EditorBuilder_a" />
+      <unit id="3586175963764954992" at="17,0,74,0" name="testSpaceCompletion.editor.TABCDE_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:06189444-c0d9-4e18-8ce5-a0f3e9b2c913(testSpaceCompletion.editor)/3586175963764955098">
     <file name="TABCDEF_Editor.java">
-      <node id="3586175963764955098" at="11,79,12,73" concept="5" />
+      <node id="3586175963764955098" at="11,79,12,71" concept="5" />
       <node id="3586175963764955098" at="11,0,14,0" concept="3" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="3586175963764955098" at="11,79,12,73" />
+      <scope id="3586175963764955098" at="11,79,12,71" />
       <scope id="3586175963764955098" at="11,0,14,0">
         <var name="editorContext" id="3586175963764955098" />
         <var name="node" id="3586175963764955098" />
       </scope>
       <unit id="3586175963764955098" at="10,0,15,0" name="testSpaceCompletion.editor.TABCDEF_Editor" />
     </file>
-    <file name="TABCDEF_EditorBuilder_a.java">
-      <node id="3586175963764955098" at="21,87,22,19" concept="6" />
+    <file name="TABCDEF_EditorBuilder.java">
+      <node id="3586175963764955098" at="21,85,22,19" concept="6" />
       <node id="3586175963764955098" at="22,19,23,18" concept="1" />
       <node id="3586175963764955098" at="28,26,29,18" concept="5" />
       <node id="3586175963764955098" at="32,39,33,32" concept="5" />
@@ -225,7 +225,7 @@
       <node id="3586175963764955107" at="70,34,71,22" concept="5" />
       <node id="3586175963764955098" at="18,0,20,0" concept="2" trace="myNode" />
       <node id="3586175963764955098" at="32,0,35,0" concept="3" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="3586175963764955098" at="21,0,25,0" concept="0" trace="TABCDEF_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="3586175963764955098" at="21,0,25,0" concept="0" trace="TABCDEF_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="3586175963764955098" at="26,0,31,0" concept="3" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="3586175963764955102" at="46,0,52,0" concept="3" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="3586175963764955098" at="36,0,46,0" concept="3" trace="createCollection_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -233,7 +233,7 @@
       <node id="3586175963764955103" at="52,0,63,0" concept="3" trace="createConstant_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="3586175963764955098" at="28,26,29,18" />
       <scope id="3586175963764955098" at="32,39,33,32" />
-      <scope id="3586175963764955098" at="21,87,23,18" />
+      <scope id="3586175963764955098" at="21,85,23,18" />
       <scope id="3586175963764955098" at="32,0,35,0" />
       <scope id="3586175963764955098" at="21,0,25,0">
         <var name="context" id="3586175963764955098" />
@@ -258,22 +258,22 @@
       <scope id="3586175963764955098" at="36,0,46,0" />
       <scope id="3586175963764955107" at="63,0,73,0" />
       <scope id="3586175963764955103" at="52,0,63,0" />
-      <unit id="3586175963764955098" at="17,0,74,0" name="testSpaceCompletion.editor.TABCDEF_EditorBuilder_a" />
+      <unit id="3586175963764955098" at="17,0,74,0" name="testSpaceCompletion.editor.TABCDEF_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:06189444-c0d9-4e18-8ce5-a0f3e9b2c913(testSpaceCompletion.editor)/3586175963764955143">
     <file name="TABCDEG_Editor.java">
-      <node id="3586175963764955143" at="11,79,12,73" concept="5" />
+      <node id="3586175963764955143" at="11,79,12,71" concept="5" />
       <node id="3586175963764955143" at="11,0,14,0" concept="3" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="3586175963764955143" at="11,79,12,73" />
+      <scope id="3586175963764955143" at="11,79,12,71" />
       <scope id="3586175963764955143" at="11,0,14,0">
         <var name="editorContext" id="3586175963764955143" />
         <var name="node" id="3586175963764955143" />
       </scope>
       <unit id="3586175963764955143" at="10,0,15,0" name="testSpaceCompletion.editor.TABCDEG_Editor" />
     </file>
-    <file name="TABCDEG_EditorBuilder_a.java">
-      <node id="3586175963764955143" at="21,87,22,19" concept="6" />
+    <file name="TABCDEG_EditorBuilder.java">
+      <node id="3586175963764955143" at="21,85,22,19" concept="6" />
       <node id="3586175963764955143" at="22,19,23,18" concept="1" />
       <node id="3586175963764955143" at="28,26,29,18" concept="5" />
       <node id="3586175963764955143" at="32,39,33,32" concept="5" />
@@ -308,7 +308,7 @@
       <node id="3586175963764955152" at="70,34,71,22" concept="5" />
       <node id="3586175963764955143" at="18,0,20,0" concept="2" trace="myNode" />
       <node id="3586175963764955143" at="32,0,35,0" concept="3" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="3586175963764955143" at="21,0,25,0" concept="0" trace="TABCDEG_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="3586175963764955143" at="21,0,25,0" concept="0" trace="TABCDEG_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="3586175963764955143" at="26,0,31,0" concept="3" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="3586175963764955147" at="46,0,52,0" concept="3" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="3586175963764955143" at="36,0,46,0" concept="3" trace="createCollection_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -316,7 +316,7 @@
       <node id="3586175963764955148" at="52,0,63,0" concept="3" trace="createConstant_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="3586175963764955143" at="28,26,29,18" />
       <scope id="3586175963764955143" at="32,39,33,32" />
-      <scope id="3586175963764955143" at="21,87,23,18" />
+      <scope id="3586175963764955143" at="21,85,23,18" />
       <scope id="3586175963764955143" at="32,0,35,0" />
       <scope id="3586175963764955143" at="21,0,25,0">
         <var name="context" id="3586175963764955143" />
@@ -341,22 +341,22 @@
       <scope id="3586175963764955143" at="36,0,46,0" />
       <scope id="3586175963764955152" at="63,0,73,0" />
       <scope id="3586175963764955148" at="52,0,63,0" />
-      <unit id="3586175963764955143" at="17,0,74,0" name="testSpaceCompletion.editor.TABCDEG_EditorBuilder_a" />
+      <unit id="3586175963764955143" at="17,0,74,0" name="testSpaceCompletion.editor.TABCDEG_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:06189444-c0d9-4e18-8ce5-a0f3e9b2c913(testSpaceCompletion.editor)/7653661050353915554">
     <file name="TABCEEG_Editor.java">
-      <node id="7653661050353915554" at="11,79,12,73" concept="5" />
+      <node id="7653661050353915554" at="11,79,12,71" concept="5" />
       <node id="7653661050353915554" at="11,0,14,0" concept="3" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="7653661050353915554" at="11,79,12,73" />
+      <scope id="7653661050353915554" at="11,79,12,71" />
       <scope id="7653661050353915554" at="11,0,14,0">
         <var name="editorContext" id="7653661050353915554" />
         <var name="node" id="7653661050353915554" />
       </scope>
       <unit id="7653661050353915554" at="10,0,15,0" name="testSpaceCompletion.editor.TABCEEG_Editor" />
     </file>
-    <file name="TABCEEG_EditorBuilder_a.java">
-      <node id="7653661050353915554" at="21,87,22,19" concept="6" />
+    <file name="TABCEEG_EditorBuilder.java">
+      <node id="7653661050353915554" at="21,85,22,19" concept="6" />
       <node id="7653661050353915554" at="22,19,23,18" concept="1" />
       <node id="7653661050353915554" at="28,26,29,18" concept="5" />
       <node id="7653661050353915554" at="32,39,33,32" concept="5" />
@@ -391,7 +391,7 @@
       <node id="7653661050353915611" at="70,34,71,22" concept="5" />
       <node id="7653661050353915554" at="18,0,20,0" concept="2" trace="myNode" />
       <node id="7653661050353915554" at="32,0,35,0" concept="3" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="7653661050353915554" at="21,0,25,0" concept="0" trace="TABCEEG_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="7653661050353915554" at="21,0,25,0" concept="0" trace="TABCEEG_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="7653661050353915554" at="26,0,31,0" concept="3" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="7653661050353915606" at="46,0,52,0" concept="3" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="7653661050353915554" at="36,0,46,0" concept="3" trace="createCollection_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -399,7 +399,7 @@
       <node id="7653661050353915607" at="52,0,63,0" concept="3" trace="createConstant_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="7653661050353915554" at="28,26,29,18" />
       <scope id="7653661050353915554" at="32,39,33,32" />
-      <scope id="7653661050353915554" at="21,87,23,18" />
+      <scope id="7653661050353915554" at="21,85,23,18" />
       <scope id="7653661050353915554" at="32,0,35,0" />
       <scope id="7653661050353915554" at="21,0,25,0">
         <var name="context" id="7653661050353915554" />
@@ -424,22 +424,22 @@
       <scope id="7653661050353915554" at="36,0,46,0" />
       <scope id="7653661050353915611" at="63,0,73,0" />
       <scope id="7653661050353915607" at="52,0,63,0" />
-      <unit id="7653661050353915554" at="17,0,74,0" name="testSpaceCompletion.editor.TABCEEG_EditorBuilder_a" />
+      <unit id="7653661050353915554" at="17,0,74,0" name="testSpaceCompletion.editor.TABCEEG_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:06189444-c0d9-4e18-8ce5-a0f3e9b2c913(testSpaceCompletion.editor)/8933061889659252141">
     <file name="TBAC_Editor.java">
-      <node id="8933061889659252141" at="11,79,12,70" concept="5" />
+      <node id="8933061889659252141" at="11,79,12,68" concept="5" />
       <node id="8933061889659252141" at="11,0,14,0" concept="3" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="8933061889659252141" at="11,79,12,70" />
+      <scope id="8933061889659252141" at="11,79,12,68" />
       <scope id="8933061889659252141" at="11,0,14,0">
         <var name="editorContext" id="8933061889659252141" />
         <var name="node" id="8933061889659252141" />
       </scope>
       <unit id="8933061889659252141" at="10,0,15,0" name="testSpaceCompletion.editor.TBAC_Editor" />
     </file>
-    <file name="TBAC_EditorBuilder_a.java">
-      <node id="8933061889659252141" at="21,84,22,19" concept="6" />
+    <file name="TBAC_EditorBuilder.java">
+      <node id="8933061889659252141" at="21,82,22,19" concept="6" />
       <node id="8933061889659252141" at="22,19,23,18" concept="1" />
       <node id="8933061889659252141" at="28,26,29,18" concept="5" />
       <node id="8933061889659252141" at="32,39,33,32" concept="5" />
@@ -474,7 +474,7 @@
       <node id="8933061889659252209" at="70,34,71,22" concept="5" />
       <node id="8933061889659252141" at="18,0,20,0" concept="2" trace="myNode" />
       <node id="8933061889659252141" at="32,0,35,0" concept="3" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="8933061889659252141" at="21,0,25,0" concept="0" trace="TBAC_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8933061889659252141" at="21,0,25,0" concept="0" trace="TBAC_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8933061889659252141" at="26,0,31,0" concept="3" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="8933061889659252204" at="46,0,52,0" concept="3" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="8933061889659252141" at="36,0,46,0" concept="3" trace="createCollection_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -482,7 +482,7 @@
       <node id="8933061889659252205" at="52,0,63,0" concept="3" trace="createConstant_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="8933061889659252141" at="28,26,29,18" />
       <scope id="8933061889659252141" at="32,39,33,32" />
-      <scope id="8933061889659252141" at="21,84,23,18" />
+      <scope id="8933061889659252141" at="21,82,23,18" />
       <scope id="8933061889659252141" at="32,0,35,0" />
       <scope id="8933061889659252141" at="21,0,25,0">
         <var name="context" id="8933061889659252141" />
@@ -507,22 +507,22 @@
       <scope id="8933061889659252141" at="36,0,46,0" />
       <scope id="8933061889659252209" at="63,0,73,0" />
       <scope id="8933061889659252205" at="52,0,63,0" />
-      <unit id="8933061889659252141" at="17,0,74,0" name="testSpaceCompletion.editor.TBAC_EditorBuilder_a" />
+      <unit id="8933061889659252141" at="17,0,74,0" name="testSpaceCompletion.editor.TBAC_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:06189444-c0d9-4e18-8ce5-a0f3e9b2c913(testSpaceCompletion.editor)/8933061889659259115">
     <file name="TBCA_Editor.java">
-      <node id="8933061889659259115" at="11,79,12,70" concept="5" />
+      <node id="8933061889659259115" at="11,79,12,68" concept="5" />
       <node id="8933061889659259115" at="11,0,14,0" concept="3" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="8933061889659259115" at="11,79,12,70" />
+      <scope id="8933061889659259115" at="11,79,12,68" />
       <scope id="8933061889659259115" at="11,0,14,0">
         <var name="editorContext" id="8933061889659259115" />
         <var name="node" id="8933061889659259115" />
       </scope>
       <unit id="8933061889659259115" at="10,0,15,0" name="testSpaceCompletion.editor.TBCA_Editor" />
     </file>
-    <file name="TBCA_EditorBuilder_a.java">
-      <node id="8933061889659259115" at="21,84,22,19" concept="6" />
+    <file name="TBCA_EditorBuilder.java">
+      <node id="8933061889659259115" at="21,82,22,19" concept="6" />
       <node id="8933061889659259115" at="22,19,23,18" concept="1" />
       <node id="8933061889659259115" at="28,26,29,18" concept="5" />
       <node id="8933061889659259115" at="32,39,33,32" concept="5" />
@@ -557,7 +557,7 @@
       <node id="8933061889659259124" at="70,34,71,22" concept="5" />
       <node id="8933061889659259115" at="18,0,20,0" concept="2" trace="myNode" />
       <node id="8933061889659259115" at="32,0,35,0" concept="3" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="8933061889659259115" at="21,0,25,0" concept="0" trace="TBCA_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8933061889659259115" at="21,0,25,0" concept="0" trace="TBCA_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8933061889659259115" at="26,0,31,0" concept="3" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="8933061889659259119" at="46,0,52,0" concept="3" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="8933061889659259115" at="36,0,46,0" concept="3" trace="createCollection_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -565,7 +565,7 @@
       <node id="8933061889659259120" at="52,0,63,0" concept="3" trace="createConstant_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="8933061889659259115" at="28,26,29,18" />
       <scope id="8933061889659259115" at="32,39,33,32" />
-      <scope id="8933061889659259115" at="21,84,23,18" />
+      <scope id="8933061889659259115" at="21,82,23,18" />
       <scope id="8933061889659259115" at="32,0,35,0" />
       <scope id="8933061889659259115" at="21,0,25,0">
         <var name="context" id="8933061889659259115" />
@@ -590,7 +590,7 @@
       <scope id="8933061889659259115" at="36,0,46,0" />
       <scope id="8933061889659259124" at="63,0,73,0" />
       <scope id="8933061889659259120" at="52,0,63,0" />
-      <unit id="8933061889659259115" at="17,0,74,0" name="testSpaceCompletion.editor.TBCA_EditorBuilder_a" />
+      <unit id="8933061889659259115" at="17,0,74,0" name="testSpaceCompletion.editor.TBCA_EditorBuilder" />
     </file>
   </root>
 </debug-info>

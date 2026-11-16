@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class BuildVariableMacro_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new BuildVariableMacro_EditorBuilder_a(editorContext, node).createCell();
+    return new BuildVariableMacro_EditorBuilder(editorContext, node).createCell();
   }
 }

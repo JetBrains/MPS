@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class DeclaredCheckpointSpec_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new DeclaredCheckpointSpec_EditorBuilder_a(editorContext, node).createCell();
+    return new DeclaredCheckpointSpec_EditorBuilder(editorContext, node).createCell();
   }
 }

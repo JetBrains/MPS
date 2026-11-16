@@ -16,6 +16,6 @@ public class VariableDeclaration_NameCellComponent implements ConceptEditorCompo
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new VariableDeclaration_NameCellComponent_ComponentBuilder_a(editorContext, node).createCell();
+    return new VariableDeclaration_NameCellComponent_ComponentBuilder(editorContext, node).createCell();
   }
 }

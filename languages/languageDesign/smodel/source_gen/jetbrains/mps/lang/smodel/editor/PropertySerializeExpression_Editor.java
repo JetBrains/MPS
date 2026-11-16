@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class PropertySerializeExpression_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new PropertySerializeExpression_EditorBuilder_a(editorContext, node).createCell();
+    return new PropertySerializeExpression_EditorBuilder(editorContext, node).createCell();
   }
 }

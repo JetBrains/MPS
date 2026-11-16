@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class NodeIconResourceExpression_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new NodeIconResourceExpression_EditorBuilder_a(editorContext, node).createCell();
+    return new NodeIconResourceExpression_EditorBuilder(editorContext, node).createCell();
   }
 }

@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class EscapeOperation_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new EscapeOperation_EditorBuilder_a(editorContext, node).createCell();
+    return new EscapeOperation_EditorBuilder(editorContext, node).createCell();
   }
 }

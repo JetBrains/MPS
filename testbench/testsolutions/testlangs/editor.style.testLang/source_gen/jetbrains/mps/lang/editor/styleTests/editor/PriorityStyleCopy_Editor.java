@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class PriorityStyleCopy_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new PriorityStyleCopy_EditorBuilder_a(editorContext, node).createCell();
+    return new PriorityStyleCopy_EditorBuilder(editorContext, node).createCell();
   }
 }

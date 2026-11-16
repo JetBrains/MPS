@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class BootstrapActionReference_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new BootstrapActionReference_EditorBuilder_a(editorContext, node).createCell();
+    return new BootstrapActionReference_EditorBuilder(editorContext, node).createCell();
   }
 }

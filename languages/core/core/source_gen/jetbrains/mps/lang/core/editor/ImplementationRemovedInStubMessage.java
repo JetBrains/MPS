@@ -16,6 +16,6 @@ public class ImplementationRemovedInStubMessage implements ConceptEditorComponen
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ImplementationRemovedInStubMessage_ComponentBuilder_a(editorContext, node).createCell();
+    return new ImplementationRemovedInStubMessage_ComponentBuilder(editorContext, node).createCell();
   }
 }

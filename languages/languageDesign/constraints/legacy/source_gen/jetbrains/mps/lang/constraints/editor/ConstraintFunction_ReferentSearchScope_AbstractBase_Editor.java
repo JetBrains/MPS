@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ConstraintFunction_ReferentSearchScope_AbstractBase_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ConstraintFunction_ReferentSearchScope_AbstractBase_EditorBuilder_a(editorContext, node).createCell();
+    return new ConstraintFunction_ReferentSearchScope_AbstractBase_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new ConstraintFunction_ReferentSearchScope_AbstractBase_InspectorBuilder_a(editorContext, node).createCell();
+    return new ConstraintFunction_ReferentSearchScope_AbstractBase_InspectorBuilder(editorContext, node).createCell();
   }
 }

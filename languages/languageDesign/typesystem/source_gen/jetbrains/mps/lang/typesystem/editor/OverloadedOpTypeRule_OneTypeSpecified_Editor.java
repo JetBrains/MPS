@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class OverloadedOpTypeRule_OneTypeSpecified_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new OverloadedOpTypeRule_OneTypeSpecified_EditorBuilder_a(editorContext, node).createCell();
+    return new OverloadedOpTypeRule_OneTypeSpecified_EditorBuilder(editorContext, node).createCell();
   }
 }

@@ -16,6 +16,6 @@ public class DocumentationEntryContent implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new DocumentationEntryContent_ComponentBuilder_a(editorContext, node).createCell();
+    return new DocumentationEntryContent_ComponentBuilder(editorContext, node).createCell();
   }
 }

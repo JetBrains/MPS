@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ParameterBlockDocTag_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ParameterBlockDocTag_EditorBuilder_a(editorContext, node).createCell();
+    return new ParameterBlockDocTag_EditorBuilder(editorContext, node).createCell();
   }
 }

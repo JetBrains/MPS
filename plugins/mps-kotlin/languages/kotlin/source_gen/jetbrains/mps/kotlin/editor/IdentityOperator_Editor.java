@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class IdentityOperator_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new IdentityOperator_EditorBuilder_a(editorContext, node).createCell();
+    return new IdentityOperator_EditorBuilder(editorContext, node).createCell();
   }
 }

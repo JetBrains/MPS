@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class RuntimeErrorType_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new RuntimeErrorType_EditorBuilder_a(editorContext, node).createCell();
+    return new RuntimeErrorType_EditorBuilder(editorContext, node).createCell();
   }
 }

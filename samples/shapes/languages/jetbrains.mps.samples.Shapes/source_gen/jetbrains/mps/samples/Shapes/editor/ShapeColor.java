@@ -16,6 +16,6 @@ public class ShapeColor implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ShapeColor_ComponentBuilder_a(editorContext, node).createCell();
+    return new ShapeColor_ComponentBuilder(editorContext, node).createCell();
   }
 }

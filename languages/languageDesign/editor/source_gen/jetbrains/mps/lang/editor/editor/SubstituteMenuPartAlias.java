@@ -16,6 +16,6 @@ public class SubstituteMenuPartAlias implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new SubstituteMenuPartAlias_ComponentBuilder_a(editorContext, node).createCell();
+    return new SubstituteMenuPartAlias_ComponentBuilder(editorContext, node).createCell();
   }
 }

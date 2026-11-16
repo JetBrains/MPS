@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class Flow_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new Flow_EditorBuilder_a(editorContext, node).createCell();
+    return new Flow_EditorBuilder(editorContext, node).createCell();
   }
 }

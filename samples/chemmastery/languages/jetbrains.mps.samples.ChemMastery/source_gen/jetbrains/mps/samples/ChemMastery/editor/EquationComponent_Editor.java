@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class EquationComponent_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new EquationComponent_EditorBuilder_a(editorContext, node).createCell();
+    return new EquationComponent_EditorBuilder(editorContext, node).createCell();
   }
 }

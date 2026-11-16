@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ParensRegexp_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ParensRegexp_EditorBuilder_a(editorContext, node).createCell();
+    return new ParensRegexp_EditorBuilder(editorContext, node).createCell();
   }
 }

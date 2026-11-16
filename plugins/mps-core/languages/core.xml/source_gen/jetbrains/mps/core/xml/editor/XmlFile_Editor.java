@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class XmlFile_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new XmlFile_EditorBuilder_a(editorContext, node).createCell();
+    return new XmlFile_EditorBuilder(editorContext, node).createCell();
   }
 }

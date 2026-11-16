@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="8pryavz2pq2km8v9wh9qs25cmubw0i7">
-  <files names="EditorAspectDescriptorImpl.java:EntityReference_Editor.java:EntityReference_EditorBuilder_a.java:EntityReference_SubstituteMenu.java:Entity_Editor.java:Entity_EditorBuilder_a.java:Relationship_Editor.java:Relationship_EditorBuilder_a.java" />
+  <files names="EditorAspectDescriptorImpl.java:EntityReference_Editor.java:EntityReference_EditorBuilder.java:EntityReference_SubstituteMenu.java:Entity_Editor.java:Entity_EditorBuilder.java:Relationship_Editor.java:Relationship_EditorBuilder.java" />
 </product>
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="a2qwt7u2batopqcyq8uyxrnrbxb0swv">
-  <files names="Complex_RightTransform_Contribution.java:DegreeComplexExpression_Editor.java:DegreeComplexExpression_EditorBuilder_a.java:EditorAspectDescriptorImpl.java:ImaginaryUnit_Editor.java:ImaginaryUnit_EditorBuilder_a.java:SingleComplexExpression_Editor.java:SingleComplexExpression_EditorBuilder_a.java" />
+  <files names="Complex_RightTransform_Contribution.java:DegreeComplexExpression_Editor.java:DegreeComplexExpression_EditorBuilder.java:EditorAspectDescriptorImpl.java:ImaginaryUnit_Editor.java:ImaginaryUnit_EditorBuilder.java:SingleComplexExpression_Editor.java:SingleComplexExpression_EditorBuilder.java" />
 </product>
 

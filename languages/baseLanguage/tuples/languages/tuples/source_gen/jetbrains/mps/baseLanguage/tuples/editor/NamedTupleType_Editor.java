@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class NamedTupleType_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new NamedTupleType_EditorBuilder_a(editorContext, node).createCell();
+    return new NamedTupleType_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new NamedTupleType_InspectorBuilder_a(editorContext, node).createCell();
+    return new NamedTupleType_InspectorBuilder(editorContext, node).createCell();
   }
 }

@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class BaseEmitVariableStatement_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new BaseEmitVariableStatement_EditorBuilder_a(editorContext, node).createCell();
+    return new BaseEmitVariableStatement_EditorBuilder(editorContext, node).createCell();
   }
 }

@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class MatrixInitializerIndex_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new MatrixInitializerIndex_EditorBuilder_a(editorContext, node).createCell();
+    return new MatrixInitializerIndex_EditorBuilder(editorContext, node).createCell();
   }
 }

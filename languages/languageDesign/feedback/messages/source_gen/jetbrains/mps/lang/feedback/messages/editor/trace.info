@@ -99,17 +99,17 @@
   </root>
   <root nodeRef="r:0c439b35-97f7-4a6a-9add-6619e8c46f29(jetbrains.mps.lang.feedback.messages.editor)/7291380803381892719">
     <file name="ShowMessage_Editor.java">
-      <node id="7291380803381892719" at="11,79,12,77" concept="6" />
+      <node id="7291380803381892719" at="11,79,12,75" concept="6" />
       <node id="7291380803381892719" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="7291380803381892719" at="11,79,12,77" />
+      <scope id="7291380803381892719" at="11,79,12,75" />
       <scope id="7291380803381892719" at="11,0,14,0">
         <var name="editorContext" id="7291380803381892719" />
         <var name="node" id="7291380803381892719" />
       </scope>
       <unit id="7291380803381892719" at="10,0,15,0" name="jetbrains.mps.lang.feedback.messages.editor.ShowMessage_Editor" />
     </file>
-    <file name="ShowMessage_EditorBuilder_a.java">
-      <node id="7291380803381892719" at="33,91,34,19" concept="8" />
+    <file name="ShowMessage_EditorBuilder.java">
+      <node id="7291380803381892719" at="33,89,34,19" concept="8" />
       <node id="7291380803381892719" at="34,19,35,18" concept="1" />
       <node id="7291380803381892719" at="40,26,41,18" concept="6" />
       <node id="7291380803381892719" at="44,39,45,32" concept="6" />
@@ -191,7 +191,7 @@
       <node id="7291380803381892719" at="162,87,165,7" concept="3" />
       <node id="7291380803381892719" at="165,7,168,7" concept="3" />
       <node id="7291380803381892719" at="184,0,187,0" concept="4" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="7291380803381892719" at="33,0,37,0" concept="0" trace="ShowMessage_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="7291380803381892719" at="33,0,37,0" concept="0" trace="ShowMessage_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="7291380803381892719" at="59,0,63,0" concept="4" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="7291380803381892719" at="67,0,71,0" concept="0" trace="problemSingleRoleHandler_r9q5r5_a0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="7291380803381892719" at="133,0,137,0" concept="4" trace="createRefNode_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -222,7 +222,7 @@
       <scope id="7291380803381892719" at="166,42,167,48" />
       <scope id="7291380803381892719" at="180,17,181,42" />
       <scope id="7291380803381892719" at="184,40,185,28" />
-      <scope id="7291380803381892719" at="33,91,35,18" />
+      <scope id="7291380803381892719" at="33,89,35,18" />
       <scope id="7291380803381892719" at="59,40,61,33">
         <var name="provider" id="7291380803381892719" />
       </scope>
@@ -301,10 +301,10 @@
       <scope id="7291380803381892719" at="171,44,182,7" />
       <scope id="7291380803381892719" at="96,0,110,0" />
       <scope id="7291380803381892719" at="170,0,184,0" />
-      <unit id="7291380803381892719" at="189,0,193,0" name="jetbrains.mps.lang.feedback.messages.editor.ShowMessage_EditorBuilder_a$LINKS" />
-      <unit id="7291380803381892719" at="63,0,114,0" name="jetbrains.mps.lang.feedback.messages.editor.ShowMessage_EditorBuilder_a$problemSingleRoleHandler_r9q5r5_a0" />
-      <unit id="7291380803381892719" at="137,0,188,0" name="jetbrains.mps.lang.feedback.messages.editor.ShowMessage_EditorBuilder_a$messageSingleRoleHandler_r9q5r5_d0" />
-      <unit id="7291380803381892719" at="29,0,194,0" name="jetbrains.mps.lang.feedback.messages.editor.ShowMessage_EditorBuilder_a" />
+      <unit id="7291380803381892719" at="189,0,193,0" name="jetbrains.mps.lang.feedback.messages.editor.ShowMessage_EditorBuilder$LINKS" />
+      <unit id="7291380803381892719" at="63,0,114,0" name="jetbrains.mps.lang.feedback.messages.editor.ShowMessage_EditorBuilder$problemSingleRoleHandler_r9q5r5_a0" />
+      <unit id="7291380803381892719" at="137,0,188,0" name="jetbrains.mps.lang.feedback.messages.editor.ShowMessage_EditorBuilder$messageSingleRoleHandler_r9q5r5_d0" />
+      <unit id="7291380803381892719" at="29,0,194,0" name="jetbrains.mps.lang.feedback.messages.editor.ShowMessage_EditorBuilder" />
     </file>
   </root>
 </debug-info>

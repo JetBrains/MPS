@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class LineStartRegexp_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new LineStartRegexp_EditorBuilder_a(editorContext, node).createCell();
+    return new LineStartRegexp_EditorBuilder(editorContext, node).createCell();
   }
 }

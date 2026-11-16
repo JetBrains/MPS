@@ -25,17 +25,17 @@
   </root>
   <root nodeRef="r:322cf3da-5abf-4bd1-9dec-f21af259347a(jetbrains.mps.lang.extension.editor)/126958800891275564">
     <file name="Extension_Editor.java">
-      <node id="126958800891275564" at="11,79,12,75" concept="6" />
+      <node id="126958800891275564" at="11,79,12,73" concept="6" />
       <node id="126958800891275564" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="126958800891275564" at="11,79,12,75" />
+      <scope id="126958800891275564" at="11,79,12,73" />
       <scope id="126958800891275564" at="11,0,14,0">
         <var name="editorContext" id="126958800891275564" />
         <var name="node" id="126958800891275564" />
       </scope>
       <unit id="126958800891275564" at="10,0,15,0" name="jetbrains.mps.lang.extension.editor.Extension_Editor" />
     </file>
-    <file name="Extension_EditorBuilder_a.java">
-      <node id="126958800891275564" at="43,89,44,19" concept="9" />
+    <file name="Extension_EditorBuilder.java">
+      <node id="126958800891275564" at="43,87,44,19" concept="9" />
       <node id="126958800891275564" at="44,19,45,18" concept="1" />
       <node id="126958800891275564" at="50,26,51,18" concept="6" />
       <node id="126958800891275564" at="54,39,55,32" concept="6" />
@@ -143,7 +143,7 @@
       <node id="126958800891277320" at="138,0,140,0" concept="2" trace="myNode" />
       <node id="126958800891275564" at="54,0,57,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="126958800891277320" at="148,0,151,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="126958800891275564" at="43,0,47,0" concept="0" trace="Extension_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="126958800891275564" at="43,0,47,0" concept="0" trace="Extension_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="126958800891275564" at="123,0,127,5" concept="3" />
       <node id="126958800891275564" at="48,0,53,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="4103205777865615139" at="90,208,95,24" concept="3" />
@@ -170,7 +170,7 @@
       <scope id="126958800891277320" at="148,41,149,32" />
       <scope id="126958800891277320" at="154,28,155,20" />
       <scope id="126958800891277406" at="175,17,176,42" />
-      <scope id="126958800891275564" at="43,89,45,18" />
+      <scope id="126958800891275564" at="43,87,45,18" />
       <scope id="4103205777865615139" at="91,74,93,145">
         <var name="manager" id="4103205777865615139" />
       </scope>
@@ -254,27 +254,27 @@
         <var name="referenceLink" id="126958800891275564" />
       </scope>
       <scope id="126958800891275564" at="109,0,137,0" />
-      <unit id="126958800891275564" at="207,0,210,0" name="jetbrains.mps.lang.extension.editor.Extension_EditorBuilder_a$PROPS" />
-      <unit id="126958800891275564" at="216,0,219,0" name="jetbrains.mps.lang.extension.editor.Extension_EditorBuilder_a$LINKS" />
-      <unit id="126958800891275564" at="211,0,215,0" name="jetbrains.mps.lang.extension.editor.Extension_EditorBuilder_a$CONCEPTS" />
-      <unit id="126958800891275564" at="111,42,119,5" name="jetbrains.mps.lang.extension.editor.Extension_EditorBuilder_a$1" />
-      <unit id="126958800891277320" at="137,0,180,0" name="jetbrains.mps.lang.extension.editor.Extension_EditorBuilder_a$Inline_Builder0" />
-      <unit id="126958800891275564" at="39,0,220,0" name="jetbrains.mps.lang.extension.editor.Extension_EditorBuilder_a" />
+      <unit id="126958800891275564" at="207,0,210,0" name="jetbrains.mps.lang.extension.editor.Extension_EditorBuilder$PROPS" />
+      <unit id="126958800891275564" at="216,0,219,0" name="jetbrains.mps.lang.extension.editor.Extension_EditorBuilder$LINKS" />
+      <unit id="126958800891275564" at="211,0,215,0" name="jetbrains.mps.lang.extension.editor.Extension_EditorBuilder$CONCEPTS" />
+      <unit id="126958800891275564" at="111,42,119,5" name="jetbrains.mps.lang.extension.editor.Extension_EditorBuilder$1" />
+      <unit id="126958800891277320" at="137,0,180,0" name="jetbrains.mps.lang.extension.editor.Extension_EditorBuilder$Inline_Builder0" />
+      <unit id="126958800891275564" at="39,0,220,0" name="jetbrains.mps.lang.extension.editor.Extension_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:322cf3da-5abf-4bd1-9dec-f21af259347a(jetbrains.mps.lang.extension.editor)/159138114258531796">
     <file name="ExtensionRegistrar_Editor.java">
-      <node id="159138114258531796" at="11,79,12,84" concept="6" />
+      <node id="159138114258531796" at="11,79,12,82" concept="6" />
       <node id="159138114258531796" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="159138114258531796" at="11,79,12,84" />
+      <scope id="159138114258531796" at="11,79,12,82" />
       <scope id="159138114258531796" at="11,0,14,0">
         <var name="editorContext" id="159138114258531796" />
         <var name="node" id="159138114258531796" />
       </scope>
       <unit id="159138114258531796" at="10,0,15,0" name="jetbrains.mps.lang.extension.editor.ExtensionRegistrar_Editor" />
     </file>
-    <file name="ExtensionRegistrar_EditorBuilder_a.java">
-      <node id="159138114258531796" at="38,98,39,19" concept="9" />
+    <file name="ExtensionRegistrar_EditorBuilder.java">
+      <node id="159138114258531796" at="38,96,39,19" concept="9" />
       <node id="159138114258531796" at="39,19,40,18" concept="1" />
       <node id="159138114258531796" at="45,26,46,18" concept="6" />
       <node id="159138114258531796" at="49,39,50,32" concept="6" />
@@ -326,7 +326,7 @@
       <node id="159138114258531908" at="104,0,106,0" concept="2" trace="myNode" />
       <node id="159138114258531796" at="49,0,52,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="159138114258531908" at="114,0,117,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="159138114258531796" at="38,0,42,0" concept="0" trace="ExtensionRegistrar_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="159138114258531796" at="38,0,42,0" concept="0" trace="ExtensionRegistrar_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="159138114258531796" at="89,0,93,5" concept="3" />
       <node id="159138114258531796" at="43,0,48,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="159138114258531796" at="96,205,101,22" concept="3" />
@@ -343,7 +343,7 @@
       <scope id="159138114258531796" at="49,39,50,32" />
       <scope id="159138114258531908" at="114,41,115,45" />
       <scope id="159138114258531908" at="120,28,121,20" />
-      <scope id="159138114258531796" at="38,98,40,18" />
+      <scope id="159138114258531796" at="38,96,40,18" />
       <scope id="159138114258531796" at="90,40,92,42" />
       <scope id="159138114258531796" at="97,73,99,145">
         <var name="manager" id="159138114258531796" />
@@ -394,26 +394,26 @@
         <var name="referenceLink" id="159138114258531796" />
       </scope>
       <scope id="159138114258531796" at="68,0,103,0" />
-      <unit id="159138114258531796" at="131,0,134,0" name="jetbrains.mps.lang.extension.editor.ExtensionRegistrar_EditorBuilder_a$LINKS" />
-      <unit id="159138114258531796" at="135,0,138,0" name="jetbrains.mps.lang.extension.editor.ExtensionRegistrar_EditorBuilder_a$CONCEPTS" />
-      <unit id="159138114258531796" at="70,42,85,5" name="jetbrains.mps.lang.extension.editor.ExtensionRegistrar_EditorBuilder_a$1" />
-      <unit id="159138114258531908" at="103,0,130,0" name="jetbrains.mps.lang.extension.editor.ExtensionRegistrar_EditorBuilder_a$Inline_Builder0" />
-      <unit id="159138114258531796" at="34,0,139,0" name="jetbrains.mps.lang.extension.editor.ExtensionRegistrar_EditorBuilder_a" />
+      <unit id="159138114258531796" at="131,0,134,0" name="jetbrains.mps.lang.extension.editor.ExtensionRegistrar_EditorBuilder$LINKS" />
+      <unit id="159138114258531796" at="135,0,138,0" name="jetbrains.mps.lang.extension.editor.ExtensionRegistrar_EditorBuilder$CONCEPTS" />
+      <unit id="159138114258531796" at="70,42,85,5" name="jetbrains.mps.lang.extension.editor.ExtensionRegistrar_EditorBuilder$1" />
+      <unit id="159138114258531908" at="103,0,130,0" name="jetbrains.mps.lang.extension.editor.ExtensionRegistrar_EditorBuilder$Inline_Builder0" />
+      <unit id="159138114258531796" at="34,0,139,0" name="jetbrains.mps.lang.extension.editor.ExtensionRegistrar_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:322cf3da-5abf-4bd1-9dec-f21af259347a(jetbrains.mps.lang.extension.editor)/3175313036448569274">
     <file name="ExtensionPointType_Editor.java">
-      <node id="3175313036448569274" at="11,79,12,84" concept="6" />
+      <node id="3175313036448569274" at="11,79,12,82" concept="6" />
       <node id="3175313036448569274" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="3175313036448569274" at="11,79,12,84" />
+      <scope id="3175313036448569274" at="11,79,12,82" />
       <scope id="3175313036448569274" at="11,0,14,0">
         <var name="editorContext" id="3175313036448569274" />
         <var name="node" id="3175313036448569274" />
       </scope>
       <unit id="3175313036448569274" at="10,0,15,0" name="jetbrains.mps.lang.extension.editor.ExtensionPointType_Editor" />
     </file>
-    <file name="ExtensionPointType_EditorBuilder_a.java">
-      <node id="3175313036448569274" at="43,98,44,19" concept="9" />
+    <file name="ExtensionPointType_EditorBuilder.java">
+      <node id="3175313036448569274" at="43,96,44,19" concept="9" />
       <node id="3175313036448569274" at="44,19,45,18" concept="1" />
       <node id="3175313036448569274" at="50,26,51,18" concept="6" />
       <node id="3175313036448569274" at="54,39,55,32" concept="6" />
@@ -493,7 +493,7 @@
       <node id="195736285283019316" at="115,0,117,0" concept="2" trace="myNode" />
       <node id="3175313036448569274" at="54,0,57,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="195736285283019316" at="125,0,128,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="3175313036448569274" at="43,0,47,0" concept="0" trace="ExtensionPointType_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="3175313036448569274" at="43,0,47,0" concept="0" trace="ExtensionPointType_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="3175313036448569274" at="100,0,104,5" concept="3" />
       <node id="3175313036448569274" at="48,0,53,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="3175313036448569274" at="107,205,112,22" concept="3" />
@@ -514,7 +514,7 @@
       <scope id="195736285283019316" at="125,41,126,32" />
       <scope id="195736285283019316" at="131,28,132,20" />
       <scope id="195736285283028462" at="152,17,153,42" />
-      <scope id="3175313036448569274" at="43,98,45,18" />
+      <scope id="3175313036448569274" at="43,96,45,18" />
       <scope id="3175313036448569274" at="101,40,103,53" />
       <scope id="3175313036448569274" at="108,73,110,145">
         <var name="manager" id="3175313036448569274" />
@@ -577,27 +577,27 @@
         <var name="referenceLink" id="3175313036448569274" />
       </scope>
       <scope id="3175313036448569274" at="86,0,114,0" />
-      <unit id="3175313036448569274" at="168,0,171,0" name="jetbrains.mps.lang.extension.editor.ExtensionPointType_EditorBuilder_a$LINKS" />
-      <unit id="3175313036448569274" at="177,0,180,0" name="jetbrains.mps.lang.extension.editor.ExtensionPointType_EditorBuilder_a$PROPS" />
-      <unit id="3175313036448569274" at="172,0,176,0" name="jetbrains.mps.lang.extension.editor.ExtensionPointType_EditorBuilder_a$CONCEPTS" />
-      <unit id="3175313036448569274" at="88,42,96,5" name="jetbrains.mps.lang.extension.editor.ExtensionPointType_EditorBuilder_a$1" />
-      <unit id="195736285283019316" at="114,0,157,0" name="jetbrains.mps.lang.extension.editor.ExtensionPointType_EditorBuilder_a$Inline_Builder0" />
-      <unit id="3175313036448569274" at="39,0,181,0" name="jetbrains.mps.lang.extension.editor.ExtensionPointType_EditorBuilder_a" />
+      <unit id="3175313036448569274" at="168,0,171,0" name="jetbrains.mps.lang.extension.editor.ExtensionPointType_EditorBuilder$LINKS" />
+      <unit id="3175313036448569274" at="177,0,180,0" name="jetbrains.mps.lang.extension.editor.ExtensionPointType_EditorBuilder$PROPS" />
+      <unit id="3175313036448569274" at="172,0,176,0" name="jetbrains.mps.lang.extension.editor.ExtensionPointType_EditorBuilder$CONCEPTS" />
+      <unit id="3175313036448569274" at="88,42,96,5" name="jetbrains.mps.lang.extension.editor.ExtensionPointType_EditorBuilder$1" />
+      <unit id="195736285283019316" at="114,0,157,0" name="jetbrains.mps.lang.extension.editor.ExtensionPointType_EditorBuilder$Inline_Builder0" />
+      <unit id="3175313036448569274" at="39,0,181,0" name="jetbrains.mps.lang.extension.editor.ExtensionPointType_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:322cf3da-5abf-4bd1-9dec-f21af259347a(jetbrains.mps.lang.extension.editor)/3175313036448577248">
     <file name="GetExtensionObjectsOperation_Editor.java">
-      <node id="3175313036448577248" at="11,79,12,94" concept="6" />
+      <node id="3175313036448577248" at="11,79,12,92" concept="6" />
       <node id="3175313036448577248" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="3175313036448577248" at="11,79,12,94" />
+      <scope id="3175313036448577248" at="11,79,12,92" />
       <scope id="3175313036448577248" at="11,0,14,0">
         <var name="editorContext" id="3175313036448577248" />
         <var name="node" id="3175313036448577248" />
       </scope>
       <unit id="3175313036448577248" at="10,0,15,0" name="jetbrains.mps.lang.extension.editor.GetExtensionObjectsOperation_Editor" />
     </file>
-    <file name="GetExtensionObjectsOperation_EditorBuilder_a.java">
-      <node id="3175313036448577248" at="17,108,18,19" concept="9" />
+    <file name="GetExtensionObjectsOperation_EditorBuilder.java">
+      <node id="3175313036448577248" at="17,106,18,19" concept="9" />
       <node id="3175313036448577248" at="18,19,19,18" concept="1" />
       <node id="3175313036448577248" at="24,26,25,18" concept="6" />
       <node id="3175313036448577248" at="28,39,29,32" concept="6" />
@@ -611,13 +611,13 @@
       <node id="2886182022232400042" at="41,119,42,22" concept="6" />
       <node id="3175313036448577248" at="14,0,16,0" concept="2" trace="myNode" />
       <node id="3175313036448577248" at="28,0,31,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="3175313036448577248" at="17,0,21,0" concept="0" trace="GetExtensionObjectsOperation_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="3175313036448577248" at="17,0,21,0" concept="0" trace="GetExtensionObjectsOperation_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="2886182022232400042" at="40,0,44,0" concept="4" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="3175313036448577248" at="22,0,27,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="3175313036448577248" at="32,0,40,0" concept="4" trace="createCollection_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="3175313036448577248" at="24,26,25,18" />
       <scope id="3175313036448577248" at="28,39,29,32" />
-      <scope id="3175313036448577248" at="17,108,19,18" />
+      <scope id="3175313036448577248" at="17,106,19,18" />
       <scope id="2886182022232400042" at="40,42,42,22">
         <var name="editorCell" id="2886182022232400042" />
       </scope>
@@ -632,22 +632,22 @@
         <var name="editorCell" id="3175313036448577248" />
       </scope>
       <scope id="3175313036448577248" at="32,0,40,0" />
-      <unit id="3175313036448577248" at="13,0,45,0" name="jetbrains.mps.lang.extension.editor.GetExtensionObjectsOperation_EditorBuilder_a" />
+      <unit id="3175313036448577248" at="13,0,45,0" name="jetbrains.mps.lang.extension.editor.GetExtensionObjectsOperation_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:322cf3da-5abf-4bd1-9dec-f21af259347a(jetbrains.mps.lang.extension.editor)/3729007189729192408">
     <file name="ExtensionPointDeclaration_Editor.java">
-      <node id="3729007189729192408" at="11,79,12,91" concept="6" />
+      <node id="3729007189729192408" at="11,79,12,89" concept="6" />
       <node id="3729007189729192408" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="3729007189729192408" at="11,79,12,91" />
+      <scope id="3729007189729192408" at="11,79,12,89" />
       <scope id="3729007189729192408" at="11,0,14,0">
         <var name="editorContext" id="3729007189729192408" />
         <var name="node" id="3729007189729192408" />
       </scope>
       <unit id="3729007189729192408" at="10,0,15,0" name="jetbrains.mps.lang.extension.editor.ExtensionPointDeclaration_Editor" />
     </file>
-    <file name="ExtensionPointDeclaration_EditorBuilder_a.java">
-      <node id="3729007189729192408" at="44,105,45,19" concept="9" />
+    <file name="ExtensionPointDeclaration_EditorBuilder.java">
+      <node id="3729007189729192408" at="44,103,45,19" concept="9" />
       <node id="3729007189729192408" at="45,19,46,18" concept="1" />
       <node id="3729007189729192408" at="51,26,52,18" concept="6" />
       <node id="3729007189729192408" at="55,39,56,32" concept="6" />
@@ -736,7 +736,7 @@
       <node id="3729007189729192408" at="150,87,153,7" concept="3" />
       <node id="3729007189729192408" at="153,7,156,7" concept="3" />
       <node id="3729007189729192408" at="172,0,175,0" concept="4" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="3729007189729192408" at="44,0,48,0" concept="0" trace="ExtensionPointDeclaration_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="3729007189729192408" at="44,0,48,0" concept="0" trace="ExtensionPointDeclaration_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="3729007189729192408" at="121,0,125,0" concept="4" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="3729007189729192408" at="129,0,133,0" concept="0" trace="objectTypeSingleRoleHandler_obn5mp_e0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="3729007189729192408" at="49,0,54,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -761,7 +761,7 @@
       <scope id="3729007189729192408" at="154,42,155,51" />
       <scope id="3729007189729192408" at="168,17,169,42" />
       <scope id="3729007189729192408" at="172,40,173,31" />
-      <scope id="3729007189729192408" at="44,105,46,18" />
+      <scope id="3729007189729192408" at="44,103,46,18" />
       <scope id="195736285282773025" at="102,74,104,145">
         <var name="manager" id="195736285282773025" />
       </scope>
@@ -832,26 +832,26 @@
       <scope id="3729007189729192408" at="158,0,172,0" />
       <scope id="195736285282773025" at="90,41,109,5" />
       <scope id="195736285282773025" at="90,0,111,0" />
-      <unit id="3729007189729192408" at="187,0,190,0" name="jetbrains.mps.lang.extension.editor.ExtensionPointDeclaration_EditorBuilder_a$PROPS" />
-      <unit id="3729007189729192408" at="191,0,194,0" name="jetbrains.mps.lang.extension.editor.ExtensionPointDeclaration_EditorBuilder_a$CONCEPTS" />
-      <unit id="3729007189729192408" at="195,0,198,0" name="jetbrains.mps.lang.extension.editor.ExtensionPointDeclaration_EditorBuilder_a$LINKS" />
-      <unit id="3729007189729192408" at="125,0,176,0" name="jetbrains.mps.lang.extension.editor.ExtensionPointDeclaration_EditorBuilder_a$objectTypeSingleRoleHandler_obn5mp_e0" />
-      <unit id="3729007189729192408" at="40,0,199,0" name="jetbrains.mps.lang.extension.editor.ExtensionPointDeclaration_EditorBuilder_a" />
+      <unit id="3729007189729192408" at="187,0,190,0" name="jetbrains.mps.lang.extension.editor.ExtensionPointDeclaration_EditorBuilder$PROPS" />
+      <unit id="3729007189729192408" at="191,0,194,0" name="jetbrains.mps.lang.extension.editor.ExtensionPointDeclaration_EditorBuilder$CONCEPTS" />
+      <unit id="3729007189729192408" at="195,0,198,0" name="jetbrains.mps.lang.extension.editor.ExtensionPointDeclaration_EditorBuilder$LINKS" />
+      <unit id="3729007189729192408" at="125,0,176,0" name="jetbrains.mps.lang.extension.editor.ExtensionPointDeclaration_EditorBuilder$objectTypeSingleRoleHandler_obn5mp_e0" />
+      <unit id="3729007189729192408" at="40,0,199,0" name="jetbrains.mps.lang.extension.editor.ExtensionPointDeclaration_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:322cf3da-5abf-4bd1-9dec-f21af259347a(jetbrains.mps.lang.extension.editor)/4907674970866646076">
     <file name="TagsSelector_Editor.java">
-      <node id="4907674970866646076" at="11,79,12,78" concept="6" />
+      <node id="4907674970866646076" at="11,79,12,76" concept="6" />
       <node id="4907674970866646076" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4907674970866646076" at="11,79,12,78" />
+      <scope id="4907674970866646076" at="11,79,12,76" />
       <scope id="4907674970866646076" at="11,0,14,0">
         <var name="editorContext" id="4907674970866646076" />
         <var name="node" id="4907674970866646076" />
       </scope>
       <unit id="4907674970866646076" at="10,0,15,0" name="jetbrains.mps.lang.extension.editor.TagsSelector_Editor" />
     </file>
-    <file name="TagsSelector_EditorBuilder_a.java">
-      <node id="4907674970866646076" at="35,92,36,19" concept="9" />
+    <file name="TagsSelector_EditorBuilder.java">
+      <node id="4907674970866646076" at="35,90,36,19" concept="9" />
       <node id="4907674970866646076" at="36,19,37,18" concept="1" />
       <node id="4907674970866646076" at="42,26,43,18" concept="6" />
       <node id="4907674970866646076" at="46,39,47,32" concept="6" />
@@ -923,7 +923,7 @@
       <node id="4907674970866646076" at="46,0,49,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4907674970866646076" at="89,0,92,0" concept="4" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="4907674970866646076" at="92,0,95,0" concept="4" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
-      <node id="4907674970866646076" at="35,0,39,0" concept="0" trace="TagsSelector_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4907674970866646076" at="35,0,39,0" concept="0" trace="TagsSelector_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4907674970866646076" at="80,0,84,0" concept="0" trace="tagsListHandler_kr63i2_b0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="4907674970866646076" at="85,0,89,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="4907674970866646076" at="118,97,122,9" concept="3" />
@@ -950,7 +950,7 @@
       <scope id="4907674970866646076" at="89,40,90,29" />
       <scope id="4907674970866646076" at="92,48,93,29" />
       <scope id="4907674970866646076" at="110,17,111,42" />
-      <scope id="4907674970866646076" at="35,92,37,18" />
+      <scope id="4907674970866646076" at="35,90,37,18" />
       <scope id="4907674970866646076" at="80,78,82,25" />
       <scope id="4907674970866646076" at="119,122,121,146" />
       <scope id="4907674970866646076" at="125,34,127,142" />
@@ -1017,25 +1017,25 @@
         <var name="elementNode" id="4907674970866646076" />
         <var name="isEmptyCell" id="4907674970866646076" />
       </scope>
-      <unit id="4907674970866646076" at="166,0,169,0" name="jetbrains.mps.lang.extension.editor.TagsSelector_EditorBuilder_a$LINKS" />
-      <unit id="4907674970866646076" at="170,0,173,0" name="jetbrains.mps.lang.extension.editor.TagsSelector_EditorBuilder_a$CONCEPTS" />
-      <unit id="4907674970866646076" at="76,0,156,0" name="jetbrains.mps.lang.extension.editor.TagsSelector_EditorBuilder_a$tagsListHandler_kr63i2_b0" />
-      <unit id="4907674970866646076" at="31,0,174,0" name="jetbrains.mps.lang.extension.editor.TagsSelector_EditorBuilder_a" />
+      <unit id="4907674970866646076" at="166,0,169,0" name="jetbrains.mps.lang.extension.editor.TagsSelector_EditorBuilder$LINKS" />
+      <unit id="4907674970866646076" at="170,0,173,0" name="jetbrains.mps.lang.extension.editor.TagsSelector_EditorBuilder$CONCEPTS" />
+      <unit id="4907674970866646076" at="76,0,156,0" name="jetbrains.mps.lang.extension.editor.TagsSelector_EditorBuilder$tagsListHandler_kr63i2_b0" />
+      <unit id="4907674970866646076" at="31,0,174,0" name="jetbrains.mps.lang.extension.editor.TagsSelector_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:322cf3da-5abf-4bd1-9dec-f21af259347a(jetbrains.mps.lang.extension.editor)/4907674970866646112">
     <file name="BasicExtensionDeclaration_Editor.java">
-      <node id="4907674970866646112" at="11,79,12,91" concept="6" />
+      <node id="4907674970866646112" at="11,79,12,89" concept="6" />
       <node id="4907674970866646112" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4907674970866646112" at="11,79,12,91" />
+      <scope id="4907674970866646112" at="11,79,12,89" />
       <scope id="4907674970866646112" at="11,0,14,0">
         <var name="editorContext" id="4907674970866646112" />
         <var name="node" id="4907674970866646112" />
       </scope>
       <unit id="4907674970866646112" at="10,0,15,0" name="jetbrains.mps.lang.extension.editor.BasicExtensionDeclaration_Editor" />
     </file>
-    <file name="BasicExtensionDeclaration_EditorBuilder_a.java">
-      <node id="4907674970866646112" at="43,105,44,19" concept="9" />
+    <file name="BasicExtensionDeclaration_EditorBuilder.java">
+      <node id="4907674970866646112" at="43,103,44,19" concept="9" />
       <node id="4907674970866646112" at="44,19,45,18" concept="1" />
       <node id="4907674970866646112" at="50,26,51,18" concept="6" />
       <node id="4907674970866646112" at="54,39,55,32" concept="6" />
@@ -1139,7 +1139,7 @@
       <node id="4907674970866646135" at="119,0,122,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4907674970866646148" at="131,0,134,0" concept="4" trace="getText#()Ljava/lang/String;" />
       <node id="4907674970866656406" at="202,0,205,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="4907674970866646112" at="43,0,47,0" concept="0" trace="BasicExtensionDeclaration_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4907674970866646112" at="43,0,47,0" concept="0" trace="BasicExtensionDeclaration_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4907674970866646112" at="94,0,98,5" concept="3" />
       <node id="4907674970866646112" at="177,0,181,5" concept="3" />
       <node id="4907674970866646112" at="48,0,53,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -1170,7 +1170,7 @@
       <scope id="4907674970866646151" at="131,33,132,95" />
       <scope id="4907674970866656406" at="202,41,203,45" />
       <scope id="4907674970866656406" at="208,28,209,20" />
-      <scope id="4907674970866646112" at="43,105,45,18" />
+      <scope id="4907674970866646112" at="43,103,45,18" />
       <scope id="4907674970866646112" at="95,40,97,42" />
       <scope id="4907674970866646112" at="102,73,104,145">
         <var name="manager" id="4907674970866646112" />
@@ -1261,24 +1261,24 @@
       </scope>
       <scope id="4907674970866646112" at="80,0,108,0" />
       <scope id="4907674970866646112" at="163,0,191,0" />
-      <unit id="4907674970866646112" at="224,0,227,0" name="jetbrains.mps.lang.extension.editor.BasicExtensionDeclaration_EditorBuilder_a$CONCEPTS" />
-      <unit id="4907674970866646148" at="130,90,134,7" name="jetbrains.mps.lang.extension.editor.BasicExtensionDeclaration_EditorBuilder_a$Inline_Builder0$1" />
-      <unit id="4907674970866646112" at="219,0,223,0" name="jetbrains.mps.lang.extension.editor.BasicExtensionDeclaration_EditorBuilder_a$LINKS" />
-      <unit id="4907674970866646112" at="82,42,90,5" name="jetbrains.mps.lang.extension.editor.BasicExtensionDeclaration_EditorBuilder_a$1" />
-      <unit id="4907674970866646112" at="165,42,173,5" name="jetbrains.mps.lang.extension.editor.BasicExtensionDeclaration_EditorBuilder_a$2" />
-      <unit id="4907674970866656406" at="191,0,218,0" name="jetbrains.mps.lang.extension.editor.BasicExtensionDeclaration_EditorBuilder_a$Inline_Builder1" />
-      <unit id="4907674970866646135" at="108,0,144,0" name="jetbrains.mps.lang.extension.editor.BasicExtensionDeclaration_EditorBuilder_a$Inline_Builder0" />
-      <unit id="4907674970866646112" at="39,0,228,0" name="jetbrains.mps.lang.extension.editor.BasicExtensionDeclaration_EditorBuilder_a" />
+      <unit id="4907674970866646112" at="224,0,227,0" name="jetbrains.mps.lang.extension.editor.BasicExtensionDeclaration_EditorBuilder$CONCEPTS" />
+      <unit id="4907674970866646148" at="130,90,134,7" name="jetbrains.mps.lang.extension.editor.BasicExtensionDeclaration_EditorBuilder$Inline_Builder0$1" />
+      <unit id="4907674970866646112" at="219,0,223,0" name="jetbrains.mps.lang.extension.editor.BasicExtensionDeclaration_EditorBuilder$LINKS" />
+      <unit id="4907674970866646112" at="82,42,90,5" name="jetbrains.mps.lang.extension.editor.BasicExtensionDeclaration_EditorBuilder$1" />
+      <unit id="4907674970866646112" at="165,42,173,5" name="jetbrains.mps.lang.extension.editor.BasicExtensionDeclaration_EditorBuilder$2" />
+      <unit id="4907674970866656406" at="191,0,218,0" name="jetbrains.mps.lang.extension.editor.BasicExtensionDeclaration_EditorBuilder$Inline_Builder1" />
+      <unit id="4907674970866646135" at="108,0,144,0" name="jetbrains.mps.lang.extension.editor.BasicExtensionDeclaration_EditorBuilder$Inline_Builder0" />
+      <unit id="4907674970866646112" at="39,0,228,0" name="jetbrains.mps.lang.extension.editor.BasicExtensionDeclaration_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:322cf3da-5abf-4bd1-9dec-f21af259347a(jetbrains.mps.lang.extension.editor)/6626851894249711938">
     <file name="ExtensionPointExpression_Editor.java">
-      <node id="6626851894249711938" at="11,79,12,90" concept="6" />
-      <node id="6626851894249711938" at="14,82,15,93" concept="6" />
+      <node id="6626851894249711938" at="11,79,12,88" concept="6" />
+      <node id="6626851894249711938" at="14,82,15,91" concept="6" />
       <node id="6626851894249711938" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="6626851894249711938" at="14,0,17,0" concept="4" trace="createInspectedCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="6626851894249711938" at="11,79,12,90" />
-      <scope id="6626851894249711938" at="14,82,15,93" />
+      <scope id="6626851894249711938" at="11,79,12,88" />
+      <scope id="6626851894249711938" at="14,82,15,91" />
       <scope id="6626851894249711938" at="11,0,14,0">
         <var name="editorContext" id="6626851894249711938" />
         <var name="node" id="6626851894249711938" />
@@ -1289,8 +1289,8 @@
       </scope>
       <unit id="6626851894249711938" at="10,0,18,0" name="jetbrains.mps.lang.extension.editor.ExtensionPointExpression_Editor" />
     </file>
-    <file name="ExtensionPointExpression_EditorBuilder_a.java">
-      <node id="6626851894249711938" at="43,104,44,19" concept="9" />
+    <file name="ExtensionPointExpression_EditorBuilder.java">
+      <node id="6626851894249711938" at="43,102,44,19" concept="9" />
       <node id="6626851894249711938" at="44,19,45,18" concept="1" />
       <node id="6626851894249711938" at="50,26,51,18" concept="6" />
       <node id="6626851894249711938" at="54,39,55,32" concept="6" />
@@ -1374,7 +1374,7 @@
       <node id="6626851894249712472" at="117,0,119,0" concept="2" trace="myNode" />
       <node id="6626851894249711938" at="54,0,57,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="6626851894249712472" at="127,0,130,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="6626851894249711938" at="43,0,47,0" concept="0" trace="ExtensionPointExpression_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="6626851894249711938" at="43,0,47,0" concept="0" trace="ExtensionPointExpression_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="6626851894249711938" at="99,0,103,5" concept="3" />
       <node id="6626851894249711938" at="48,0,53,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="6626851894249711938" at="109,205,114,22" concept="3" />
@@ -1395,7 +1395,7 @@
       <scope id="6626851894249712472" at="127,41,128,32" />
       <scope id="6626851894249712472" at="133,28,134,20" />
       <scope id="6626851894249712474" at="157,17,158,42" />
-      <scope id="6626851894249711938" at="43,104,45,18" />
+      <scope id="6626851894249711938" at="43,102,45,18" />
       <scope id="6626851894249711938" at="100,40,102,53" />
       <scope id="6626851894249711938" at="110,73,112,145">
         <var name="manager" id="6626851894249711938" />
@@ -1460,15 +1460,15 @@
         <var name="style" id="6626851894249711938" />
       </scope>
       <scope id="6626851894249711938" at="85,0,116,0" />
-      <unit id="6626851894249711938" at="172,0,175,0" name="jetbrains.mps.lang.extension.editor.ExtensionPointExpression_EditorBuilder_a$LINKS" />
-      <unit id="6626851894249711938" at="181,0,184,0" name="jetbrains.mps.lang.extension.editor.ExtensionPointExpression_EditorBuilder_a$PROPS" />
-      <unit id="6626851894249711938" at="176,0,180,0" name="jetbrains.mps.lang.extension.editor.ExtensionPointExpression_EditorBuilder_a$CONCEPTS" />
-      <unit id="6626851894249711938" at="87,42,95,5" name="jetbrains.mps.lang.extension.editor.ExtensionPointExpression_EditorBuilder_a$1" />
-      <unit id="6626851894249712472" at="116,0,162,0" name="jetbrains.mps.lang.extension.editor.ExtensionPointExpression_EditorBuilder_a$Inline_Builder0" />
-      <unit id="6626851894249711938" at="39,0,185,0" name="jetbrains.mps.lang.extension.editor.ExtensionPointExpression_EditorBuilder_a" />
+      <unit id="6626851894249711938" at="172,0,175,0" name="jetbrains.mps.lang.extension.editor.ExtensionPointExpression_EditorBuilder$LINKS" />
+      <unit id="6626851894249711938" at="181,0,184,0" name="jetbrains.mps.lang.extension.editor.ExtensionPointExpression_EditorBuilder$PROPS" />
+      <unit id="6626851894249711938" at="176,0,180,0" name="jetbrains.mps.lang.extension.editor.ExtensionPointExpression_EditorBuilder$CONCEPTS" />
+      <unit id="6626851894249711938" at="87,42,95,5" name="jetbrains.mps.lang.extension.editor.ExtensionPointExpression_EditorBuilder$1" />
+      <unit id="6626851894249712472" at="116,0,162,0" name="jetbrains.mps.lang.extension.editor.ExtensionPointExpression_EditorBuilder$Inline_Builder0" />
+      <unit id="6626851894249711938" at="39,0,185,0" name="jetbrains.mps.lang.extension.editor.ExtensionPointExpression_EditorBuilder" />
     </file>
-    <file name="ExtensionPointExpression_InspectorBuilder_a.java">
-      <node id="6626851894249711938" at="39,107,40,19" concept="9" />
+    <file name="ExtensionPointExpression_InspectorBuilder.java">
+      <node id="6626851894249711938" at="39,105,40,19" concept="9" />
       <node id="6626851894249711938" at="40,19,41,18" concept="1" />
       <node id="6626851894249711938" at="46,26,47,18" concept="6" />
       <node id="6626851894249711938" at="50,39,51,32" concept="6" />
@@ -1522,7 +1522,7 @@
       <node id="6626851894249711938" at="50,0,53,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="6626851894249712482" at="108,0,111,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="6626851894249712484" at="120,0,123,0" concept="4" trace="getText#()Ljava/lang/String;" />
-      <node id="6626851894249711938" at="39,0,43,0" concept="0" trace="ExtensionPointExpression_InspectorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="6626851894249711938" at="39,0,43,0" concept="0" trace="ExtensionPointExpression_InspectorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="6626851894249711938" at="83,0,87,5" concept="3" />
       <node id="6626851894249711938" at="44,0,49,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="6626851894249711938" at="90,205,95,22" concept="3" />
@@ -1540,7 +1540,7 @@
       <scope id="6626851894249712482" at="108,41,109,45" />
       <scope id="6626851894249712482" at="114,28,115,20" />
       <scope id="6626851894249712487" at="120,33,121,100" />
-      <scope id="6626851894249711938" at="39,107,41,18" />
+      <scope id="6626851894249711938" at="39,105,41,18" />
       <scope id="6626851894249711938" at="84,40,86,53" />
       <scope id="6626851894249711938" at="91,73,93,145">
         <var name="manager" id="6626851894249711938" />
@@ -1587,12 +1587,12 @@
         <var name="referenceLink" id="6626851894249711938" />
       </scope>
       <scope id="6626851894249711938" at="69,0,97,0" />
-      <unit id="6626851894249711938" at="134,0,137,0" name="jetbrains.mps.lang.extension.editor.ExtensionPointExpression_InspectorBuilder_a$LINKS" />
-      <unit id="6626851894249711938" at="138,0,141,0" name="jetbrains.mps.lang.extension.editor.ExtensionPointExpression_InspectorBuilder_a$CONCEPTS" />
-      <unit id="6626851894249712484" at="119,90,123,7" name="jetbrains.mps.lang.extension.editor.ExtensionPointExpression_InspectorBuilder_a$Inline_Builder0$1" />
-      <unit id="6626851894249711938" at="71,42,79,5" name="jetbrains.mps.lang.extension.editor.ExtensionPointExpression_InspectorBuilder_a$1" />
-      <unit id="6626851894249712482" at="97,0,133,0" name="jetbrains.mps.lang.extension.editor.ExtensionPointExpression_InspectorBuilder_a$Inline_Builder0" />
-      <unit id="6626851894249711938" at="35,0,142,0" name="jetbrains.mps.lang.extension.editor.ExtensionPointExpression_InspectorBuilder_a" />
+      <unit id="6626851894249711938" at="134,0,137,0" name="jetbrains.mps.lang.extension.editor.ExtensionPointExpression_InspectorBuilder$LINKS" />
+      <unit id="6626851894249711938" at="138,0,141,0" name="jetbrains.mps.lang.extension.editor.ExtensionPointExpression_InspectorBuilder$CONCEPTS" />
+      <unit id="6626851894249712484" at="119,90,123,7" name="jetbrains.mps.lang.extension.editor.ExtensionPointExpression_InspectorBuilder$Inline_Builder0$1" />
+      <unit id="6626851894249711938" at="71,42,79,5" name="jetbrains.mps.lang.extension.editor.ExtensionPointExpression_InspectorBuilder$1" />
+      <unit id="6626851894249712482" at="97,0,133,0" name="jetbrains.mps.lang.extension.editor.ExtensionPointExpression_InspectorBuilder$Inline_Builder0" />
+      <unit id="6626851894249711938" at="35,0,142,0" name="jetbrains.mps.lang.extension.editor.ExtensionPointExpression_InspectorBuilder" />
     </file>
   </root>
 </debug-info>

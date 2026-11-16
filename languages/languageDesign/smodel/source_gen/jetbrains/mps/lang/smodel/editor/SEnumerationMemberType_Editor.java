@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class SEnumerationMemberType_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new SEnumerationMemberType_EditorBuilder_a(editorContext, node).createCell();
+    return new SEnumerationMemberType_EditorBuilder(editorContext, node).createCell();
   }
 }

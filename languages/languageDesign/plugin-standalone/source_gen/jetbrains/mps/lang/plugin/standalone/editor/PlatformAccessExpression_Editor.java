@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class PlatformAccessExpression_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new PlatformAccessExpression_EditorBuilder_a(editorContext, node).createCell();
+    return new PlatformAccessExpression_EditorBuilder(editorContext, node).createCell();
   }
 }

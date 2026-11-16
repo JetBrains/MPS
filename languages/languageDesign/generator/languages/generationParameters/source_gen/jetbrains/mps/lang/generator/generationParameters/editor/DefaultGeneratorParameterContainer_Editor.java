@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class DefaultGeneratorParameterContainer_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new DefaultGeneratorParameterContainer_EditorBuilder_a(editorContext, node).createCell();
+    return new DefaultGeneratorParameterContainer_EditorBuilder(editorContext, node).createCell();
   }
 }

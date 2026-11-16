@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class StatCommand_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new StatCommand_EditorBuilder_a(editorContext, node).createCell();
+    return new StatCommand_EditorBuilder(editorContext, node).createCell();
   }
 }

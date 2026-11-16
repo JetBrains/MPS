@@ -16,6 +16,6 @@ public class alias implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new alias_ComponentBuilder_a(editorContext, node).createCell();
+    return new alias_ComponentBuilder(editorContext, node).createCell();
   }
 }

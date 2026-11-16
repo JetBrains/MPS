@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class SLinkImplicitSelect_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new SLinkImplicitSelect_EditorBuilder_a(editorContext, node).createCell();
+    return new SLinkImplicitSelect_EditorBuilder(editorContext, node).createCell();
   }
 }

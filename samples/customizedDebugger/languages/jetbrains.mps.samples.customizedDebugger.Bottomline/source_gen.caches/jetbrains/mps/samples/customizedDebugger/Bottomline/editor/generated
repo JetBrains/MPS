@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="-39l5j82ka9sd5pglwnyie1izq2mo6sd">
-  <files names="EditorAspectDescriptorImpl.java:MessageSequence_Editor.java:MessageSequence_EditorBuilder_a.java:OutputMessage_Editor.java:OutputMessage_EditorBuilder_a.java" />
+  <files names="EditorAspectDescriptorImpl.java:MessageSequence_Editor.java:MessageSequence_EditorBuilder.java:OutputMessage_Editor.java:OutputMessage_EditorBuilder.java" />
 </product>
 

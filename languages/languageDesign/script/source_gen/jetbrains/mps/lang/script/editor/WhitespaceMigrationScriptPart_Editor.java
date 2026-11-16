@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class WhitespaceMigrationScriptPart_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new WhitespaceMigrationScriptPart_EditorBuilder_a(editorContext, node).createCell();
+    return new WhitespaceMigrationScriptPart_EditorBuilder(editorContext, node).createCell();
   }
 }

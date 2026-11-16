@@ -16,6 +16,6 @@ public class StateChartContents implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new StateChartContents_ComponentBuilder_a(editorContext, node).createCell();
+    return new StateChartContents_ComponentBuilder(editorContext, node).createCell();
   }
 }

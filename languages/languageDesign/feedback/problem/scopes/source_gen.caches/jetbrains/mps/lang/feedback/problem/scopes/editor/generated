@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="93fbasaljas8w24m39sob96ocvpx01h">
-  <files names="EditorAspectDescriptorImpl.java:RefOutOfScopeProblem_Editor.java:RefOutOfScopeProblem_EditorBuilder_a.java:RefOutOfScopeProblem_InspectorBuilder_a.java" />
+  <files names="EditorAspectDescriptorImpl.java:RefOutOfScopeProblem_Editor.java:RefOutOfScopeProblem_EditorBuilder.java:RefOutOfScopeProblem_InspectorBuilder.java" />
 </product>
 

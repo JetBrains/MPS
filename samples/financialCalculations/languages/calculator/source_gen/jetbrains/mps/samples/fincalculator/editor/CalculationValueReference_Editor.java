@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class CalculationValueReference_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new CalculationValueReference_EditorBuilder_a(editorContext, node).createCell();
+    return new CalculationValueReference_EditorBuilder(editorContext, node).createCell();
   }
 }

@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class BreakpointCreator_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new BreakpointCreator_EditorBuilder_a(editorContext, node).createCell();
+    return new BreakpointCreator_EditorBuilder(editorContext, node).createCell();
   }
 }

@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class Table_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new Table_EditorBuilder_a(editorContext, node).createCell();
+    return new Table_EditorBuilder(editorContext, node).createCell();
   }
 }

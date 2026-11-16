@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class PickMark_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new PickMark_EditorBuilder_a(editorContext, node).createCell();
+    return new PickMark_EditorBuilder(editorContext, node).createCell();
   }
 }

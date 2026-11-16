@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class TemplatePersistentConfigurationType_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new TemplatePersistentConfigurationType_EditorBuilder_a(editorContext, node).createCell();
+    return new TemplatePersistentConfigurationType_EditorBuilder(editorContext, node).createCell();
   }
 }

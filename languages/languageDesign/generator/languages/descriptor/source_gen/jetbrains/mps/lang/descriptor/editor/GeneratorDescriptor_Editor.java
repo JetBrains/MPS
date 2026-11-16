@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class GeneratorDescriptor_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new GeneratorDescriptor_EditorBuilder_a(editorContext, node).createCell();
+    return new GeneratorDescriptor_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new GeneratorDescriptor_InspectorBuilder_a(editorContext, node).createCell();
+    return new GeneratorDescriptor_InspectorBuilder(editorContext, node).createCell();
   }
 }

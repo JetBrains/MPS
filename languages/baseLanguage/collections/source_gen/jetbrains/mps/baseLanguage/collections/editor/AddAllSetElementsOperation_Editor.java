@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class AddAllSetElementsOperation_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new AddAllSetElementsOperation_EditorBuilder_a(editorContext, node).createCell();
+    return new AddAllSetElementsOperation_EditorBuilder(editorContext, node).createCell();
   }
 }

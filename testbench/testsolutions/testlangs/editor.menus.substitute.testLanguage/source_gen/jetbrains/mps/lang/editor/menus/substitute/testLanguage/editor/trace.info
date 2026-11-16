@@ -176,17 +176,17 @@
   </root>
   <root nodeRef="r:d793eea9-8b7b-4c58-a7a2-62336f54dcce(jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor)/1732536015065177744">
     <file name="TestSubstituteChildWithConstraints1_Editor.java">
-      <node id="1732536015065177744" at="11,79,12,101" concept="8" />
+      <node id="1732536015065177744" at="11,79,12,99" concept="8" />
       <node id="1732536015065177744" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1732536015065177744" at="11,79,12,101" />
+      <scope id="1732536015065177744" at="11,79,12,99" />
       <scope id="1732536015065177744" at="11,0,14,0">
         <var name="editorContext" id="1732536015065177744" />
         <var name="node" id="1732536015065177744" />
       </scope>
       <unit id="1732536015065177744" at="10,0,15,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteChildWithConstraints1_Editor" />
     </file>
-    <file name="TestSubstituteChildWithConstraints1_EditorBuilder_a.java">
-      <node id="1732536015065177744" at="43,115,44,19" concept="12" />
+    <file name="TestSubstituteChildWithConstraints1_EditorBuilder.java">
+      <node id="1732536015065177744" at="43,113,44,19" concept="12" />
       <node id="1732536015065177744" at="44,19,45,18" concept="2" />
       <node id="1732536015065177744" at="50,26,51,18" concept="8" />
       <node id="1732536015065177744" at="54,39,55,32" concept="8" />
@@ -288,7 +288,7 @@
       <node id="1732536015065177744" at="163,87,166,7" concept="5" />
       <node id="1732536015065177744" at="166,7,169,7" concept="5" />
       <node id="1732536015065177744" at="189,0,192,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="1732536015065177744" at="43,0,47,0" concept="1" trace="TestSubstituteChildWithConstraints1_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1732536015065177744" at="43,0,47,0" concept="1" trace="TestSubstituteChildWithConstraints1_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1732536015065177744" at="134,0,138,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1732536015065177744" at="142,0,146,0" concept="1" trace="childSingleRoleHandler_5u6q3h_c3a#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1732536015065177744" at="48,0,53,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -315,7 +315,7 @@
       <scope id="1732536015065177744" at="167,42,168,46" />
       <scope id="1732536015065177744" at="185,17,186,42" />
       <scope id="1732536015065177744" at="189,40,190,26" />
-      <scope id="1732536015065177744" at="43,115,45,18" />
+      <scope id="1732536015065177744" at="43,113,45,18" />
       <scope id="1732536015065177749" at="88,74,90,145">
         <var name="manager" id="1732536015065177749" />
       </scope>
@@ -396,26 +396,26 @@
       <scope id="1732536015065177744" at="175,0,189,0" />
       <scope id="1732536015065177749" at="76,41,95,5" />
       <scope id="1732536015065177749" at="76,0,97,0" />
-      <unit id="1732536015065177744" at="203,0,206,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteChildWithConstraints1_EditorBuilder_a$PROPS" />
-      <unit id="1732536015065177744" at="207,0,210,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteChildWithConstraints1_EditorBuilder_a$CONCEPTS" />
-      <unit id="1732536015065177744" at="211,0,214,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteChildWithConstraints1_EditorBuilder_a$LINKS" />
-      <unit id="1732536015065177744" at="138,0,193,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteChildWithConstraints1_EditorBuilder_a$childSingleRoleHandler_5u6q3h_c3a" />
-      <unit id="1732536015065177744" at="39,0,215,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteChildWithConstraints1_EditorBuilder_a" />
+      <unit id="1732536015065177744" at="203,0,206,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteChildWithConstraints1_EditorBuilder$PROPS" />
+      <unit id="1732536015065177744" at="207,0,210,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteChildWithConstraints1_EditorBuilder$CONCEPTS" />
+      <unit id="1732536015065177744" at="211,0,214,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteChildWithConstraints1_EditorBuilder$LINKS" />
+      <unit id="1732536015065177744" at="138,0,193,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteChildWithConstraints1_EditorBuilder$childSingleRoleHandler_5u6q3h_c3a" />
+      <unit id="1732536015065177744" at="39,0,215,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteChildWithConstraints1_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:d793eea9-8b7b-4c58-a7a2-62336f54dcce(jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor)/1732536015065202841">
     <file name="TestSubstituteChildWithConstraints2_Editor.java">
-      <node id="1732536015065202841" at="11,79,12,101" concept="8" />
+      <node id="1732536015065202841" at="11,79,12,99" concept="8" />
       <node id="1732536015065202841" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1732536015065202841" at="11,79,12,101" />
+      <scope id="1732536015065202841" at="11,79,12,99" />
       <scope id="1732536015065202841" at="11,0,14,0">
         <var name="editorContext" id="1732536015065202841" />
         <var name="node" id="1732536015065202841" />
       </scope>
       <unit id="1732536015065202841" at="10,0,15,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteChildWithConstraints2_Editor" />
     </file>
-    <file name="TestSubstituteChildWithConstraints2_EditorBuilder_a.java">
-      <node id="1732536015065202841" at="43,115,44,19" concept="12" />
+    <file name="TestSubstituteChildWithConstraints2_EditorBuilder.java">
+      <node id="1732536015065202841" at="43,113,44,19" concept="12" />
       <node id="1732536015065202841" at="44,19,45,18" concept="2" />
       <node id="1732536015065202841" at="50,26,51,18" concept="8" />
       <node id="1732536015065202841" at="54,39,55,32" concept="8" />
@@ -517,7 +517,7 @@
       <node id="1732536015065202841" at="163,87,166,7" concept="5" />
       <node id="1732536015065202841" at="166,7,169,7" concept="5" />
       <node id="1732536015065202841" at="189,0,192,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="1732536015065202841" at="43,0,47,0" concept="1" trace="TestSubstituteChildWithConstraints2_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1732536015065202841" at="43,0,47,0" concept="1" trace="TestSubstituteChildWithConstraints2_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1732536015065202841" at="134,0,138,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1732536015065202841" at="142,0,146,0" concept="1" trace="childSingleRoleHandler_k8zyml_c3a#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1732536015065202841" at="48,0,53,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -544,7 +544,7 @@
       <scope id="1732536015065202841" at="167,42,168,46" />
       <scope id="1732536015065202841" at="185,17,186,42" />
       <scope id="1732536015065202841" at="189,40,190,26" />
-      <scope id="1732536015065202841" at="43,115,45,18" />
+      <scope id="1732536015065202841" at="43,113,45,18" />
       <scope id="1732536015065202846" at="88,74,90,145">
         <var name="manager" id="1732536015065202846" />
       </scope>
@@ -625,26 +625,26 @@
       <scope id="1732536015065202841" at="175,0,189,0" />
       <scope id="1732536015065202846" at="76,41,95,5" />
       <scope id="1732536015065202846" at="76,0,97,0" />
-      <unit id="1732536015065202841" at="203,0,206,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteChildWithConstraints2_EditorBuilder_a$PROPS" />
-      <unit id="1732536015065202841" at="207,0,210,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteChildWithConstraints2_EditorBuilder_a$CONCEPTS" />
-      <unit id="1732536015065202841" at="211,0,214,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteChildWithConstraints2_EditorBuilder_a$LINKS" />
-      <unit id="1732536015065202841" at="138,0,193,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteChildWithConstraints2_EditorBuilder_a$childSingleRoleHandler_k8zyml_c3a" />
-      <unit id="1732536015065202841" at="39,0,215,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteChildWithConstraints2_EditorBuilder_a" />
+      <unit id="1732536015065202841" at="203,0,206,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteChildWithConstraints2_EditorBuilder$PROPS" />
+      <unit id="1732536015065202841" at="207,0,210,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteChildWithConstraints2_EditorBuilder$CONCEPTS" />
+      <unit id="1732536015065202841" at="211,0,214,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteChildWithConstraints2_EditorBuilder$LINKS" />
+      <unit id="1732536015065202841" at="138,0,193,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteChildWithConstraints2_EditorBuilder$childSingleRoleHandler_k8zyml_c3a" />
+      <unit id="1732536015065202841" at="39,0,215,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteChildWithConstraints2_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:d793eea9-8b7b-4c58-a7a2-62336f54dcce(jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor)/1732536015065202889">
     <file name="TestSubstituteChildWithConstraints3_Editor.java">
-      <node id="1732536015065202889" at="11,79,12,101" concept="8" />
+      <node id="1732536015065202889" at="11,79,12,99" concept="8" />
       <node id="1732536015065202889" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1732536015065202889" at="11,79,12,101" />
+      <scope id="1732536015065202889" at="11,79,12,99" />
       <scope id="1732536015065202889" at="11,0,14,0">
         <var name="editorContext" id="1732536015065202889" />
         <var name="node" id="1732536015065202889" />
       </scope>
       <unit id="1732536015065202889" at="10,0,15,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteChildWithConstraints3_Editor" />
     </file>
-    <file name="TestSubstituteChildWithConstraints3_EditorBuilder_a.java">
-      <node id="1732536015065202889" at="30,115,31,19" concept="12" />
+    <file name="TestSubstituteChildWithConstraints3_EditorBuilder.java">
+      <node id="1732536015065202889" at="30,113,31,19" concept="12" />
       <node id="1732536015065202889" at="31,19,32,18" concept="2" />
       <node id="1732536015065202889" at="37,26,38,18" concept="8" />
       <node id="1732536015065202889" at="41,39,42,32" concept="8" />
@@ -729,7 +729,7 @@
       <node id="1732536015065202889" at="128,87,131,7" concept="5" />
       <node id="1732536015065202889" at="131,7,134,7" concept="5" />
       <node id="1732536015065202889" at="154,0,157,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="1732536015065202889" at="30,0,34,0" concept="1" trace="TestSubstituteChildWithConstraints3_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1732536015065202889" at="30,0,34,0" concept="1" trace="TestSubstituteChildWithConstraints3_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1732536015065202889" at="99,0,103,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1732536015065202889" at="107,0,111,0" concept="1" trace="childSingleRoleHandler_ynt75o_c2a#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1732536015065202889" at="35,0,40,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -752,7 +752,7 @@
       <scope id="1732536015065202889" at="132,42,133,46" />
       <scope id="1732536015065202889" at="150,17,151,42" />
       <scope id="1732536015065202889" at="154,40,155,26" />
-      <scope id="1732536015065202889" at="30,115,32,18" />
+      <scope id="1732536015065202889" at="30,113,32,18" />
       <scope id="1732536015065202889" at="99,40,101,33">
         <var name="provider" id="1732536015065202889" />
       </scope>
@@ -822,9 +822,9 @@
         <var name="isEmpty" id="1732536015065202889" />
       </scope>
       <scope id="1732536015065202889" at="140,0,154,0" />
-      <unit id="1732536015065202889" at="168,0,171,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteChildWithConstraints3_EditorBuilder_a$LINKS" />
-      <unit id="1732536015065202889" at="103,0,158,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteChildWithConstraints3_EditorBuilder_a$childSingleRoleHandler_ynt75o_c2a" />
-      <unit id="1732536015065202889" at="26,0,172,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteChildWithConstraints3_EditorBuilder_a" />
+      <unit id="1732536015065202889" at="168,0,171,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteChildWithConstraints3_EditorBuilder$LINKS" />
+      <unit id="1732536015065202889" at="103,0,158,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteChildWithConstraints3_EditorBuilder$childSingleRoleHandler_ynt75o_c2a" />
+      <unit id="1732536015065202889" at="26,0,172,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteChildWithConstraints3_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:d793eea9-8b7b-4c58-a7a2-62336f54dcce(jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor)/1892012100483551670">
@@ -1512,17 +1512,17 @@
   </root>
   <root nodeRef="r:d793eea9-8b7b-4c58-a7a2-62336f54dcce(jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor)/3553171620717635905">
     <file name="TestSubstituteParentPropertyAndReference_Subconcept_Editor.java">
-      <node id="3553171620717635905" at="11,79,12,117" concept="8" />
+      <node id="3553171620717635905" at="11,79,12,115" concept="8" />
       <node id="3553171620717635905" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="3553171620717635905" at="11,79,12,117" />
+      <scope id="3553171620717635905" at="11,79,12,115" />
       <scope id="3553171620717635905" at="11,0,14,0">
         <var name="editorContext" id="3553171620717635905" />
         <var name="node" id="3553171620717635905" />
       </scope>
       <unit id="3553171620717635905" at="10,0,15,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentPropertyAndReference_Subconcept_Editor" />
     </file>
-    <file name="TestSubstituteParentPropertyAndReference_Subconcept_EditorBuilder_a.java">
-      <node id="3553171620717635905" at="42,131,43,19" concept="12" />
+    <file name="TestSubstituteParentPropertyAndReference_Subconcept_EditorBuilder.java">
+      <node id="3553171620717635905" at="42,129,43,19" concept="12" />
       <node id="3553171620717635905" at="43,19,44,18" concept="2" />
       <node id="3553171620717635905" at="49,26,50,18" concept="8" />
       <node id="3553171620717635905" at="53,39,54,32" concept="8" />
@@ -1694,7 +1694,7 @@
       <node id="3553171620717635905" at="53,0,56,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="3553171620717636133" at="175,0,178,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="3553171620717636146" at="258,0,261,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="3553171620717635905" at="42,0,46,0" concept="1" trace="TestSubstituteParentPropertyAndReference_Subconcept_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="3553171620717635905" at="42,0,46,0" concept="1" trace="TestSubstituteParentPropertyAndReference_Subconcept_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="3553171620717635905" at="150,0,154,5" concept="5" />
       <node id="3553171620717635905" at="232,0,236,5" concept="5" />
       <node id="3553171620717635905" at="47,0,52,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -1736,7 +1736,7 @@
       <scope id="3553171620717636146" at="258,41,259,32" />
       <scope id="3553171620717636146" at="264,28,265,20" />
       <scope id="3553171620717636147" at="285,17,286,42" />
-      <scope id="3553171620717635905" at="42,131,44,18" />
+      <scope id="3553171620717635905" at="42,129,44,18" />
       <scope id="3553171620717636079" at="86,74,88,145">
         <var name="manager" id="3553171620717636079" />
       </scope>
@@ -1865,14 +1865,14 @@
       </scope>
       <scope id="3553171620717635905" at="135,0,164,0" />
       <scope id="3553171620717635905" at="217,0,247,0" />
-      <unit id="3553171620717635905" at="300,0,303,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentPropertyAndReference_Subconcept_EditorBuilder_a$PROPS" />
-      <unit id="3553171620717635905" at="304,0,310,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentPropertyAndReference_Subconcept_EditorBuilder_a$CONCEPTS" />
-      <unit id="3553171620717635905" at="311,0,317,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentPropertyAndReference_Subconcept_EditorBuilder_a$LINKS" />
-      <unit id="3553171620717635905" at="137,42,145,5" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentPropertyAndReference_Subconcept_EditorBuilder_a$1" />
-      <unit id="3553171620717635905" at="219,42,227,5" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentPropertyAndReference_Subconcept_EditorBuilder_a$2" />
-      <unit id="3553171620717636133" at="164,0,207,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentPropertyAndReference_Subconcept_EditorBuilder_a$Inline_Builder0" />
-      <unit id="3553171620717636146" at="247,0,290,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentPropertyAndReference_Subconcept_EditorBuilder_a$Inline_Builder1" />
-      <unit id="3553171620717635905" at="38,0,318,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentPropertyAndReference_Subconcept_EditorBuilder_a" />
+      <unit id="3553171620717635905" at="300,0,303,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentPropertyAndReference_Subconcept_EditorBuilder$PROPS" />
+      <unit id="3553171620717635905" at="304,0,310,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentPropertyAndReference_Subconcept_EditorBuilder$CONCEPTS" />
+      <unit id="3553171620717635905" at="311,0,317,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentPropertyAndReference_Subconcept_EditorBuilder$LINKS" />
+      <unit id="3553171620717635905" at="137,42,145,5" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentPropertyAndReference_Subconcept_EditorBuilder$1" />
+      <unit id="3553171620717635905" at="219,42,227,5" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentPropertyAndReference_Subconcept_EditorBuilder$2" />
+      <unit id="3553171620717636133" at="164,0,207,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentPropertyAndReference_Subconcept_EditorBuilder$Inline_Builder0" />
+      <unit id="3553171620717636146" at="247,0,290,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentPropertyAndReference_Subconcept_EditorBuilder$Inline_Builder1" />
+      <unit id="3553171620717635905" at="38,0,318,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentPropertyAndReference_Subconcept_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:d793eea9-8b7b-4c58-a7a2-62336f54dcce(jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor)/3553171620717959090">
@@ -1968,17 +1968,17 @@
   </root>
   <root nodeRef="r:d793eea9-8b7b-4c58-a7a2-62336f54dcce(jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor)/368966953912091589">
     <file name="TestSubstituteSpecialChildAttribute_Editor.java">
-      <node id="368966953912091589" at="11,79,12,101" concept="8" />
+      <node id="368966953912091589" at="11,79,12,99" concept="8" />
       <node id="368966953912091589" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="368966953912091589" at="11,79,12,101" />
+      <scope id="368966953912091589" at="11,79,12,99" />
       <scope id="368966953912091589" at="11,0,14,0">
         <var name="editorContext" id="368966953912091589" />
         <var name="node" id="368966953912091589" />
       </scope>
       <unit id="368966953912091589" at="10,0,15,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialChildAttribute_Editor" />
     </file>
-    <file name="TestSubstituteSpecialChildAttribute_EditorBuilder_a.java">
-      <node id="368966953912091589" at="20,115,21,19" concept="12" />
+    <file name="TestSubstituteSpecialChildAttribute_EditorBuilder.java">
+      <node id="368966953912091589" at="20,113,21,19" concept="12" />
       <node id="368966953912091589" at="21,19,22,18" concept="2" />
       <node id="368966953912091589" at="27,26,28,18" concept="8" />
       <node id="368966953912091589" at="31,39,32,32" concept="8" />
@@ -2003,7 +2003,7 @@
       <node id="368966953912091616" at="59,34,60,22" concept="8" />
       <node id="368966953912091589" at="17,0,19,0" concept="3" trace="myNode" />
       <node id="368966953912091589" at="31,0,34,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="368966953912091589" at="20,0,24,0" concept="1" trace="TestSubstituteSpecialChildAttribute_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="368966953912091589" at="20,0,24,0" concept="1" trace="TestSubstituteSpecialChildAttribute_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="368966953912091589" at="25,0,30,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="368966953912091608" at="51,0,56,0" concept="6" trace="createAttributedNodeCell_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="368966953912091598" at="45,0,51,0" concept="6" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -2011,7 +2011,7 @@
       <node id="368966953912091589" at="35,0,45,0" concept="6" trace="createCollection_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="368966953912091589" at="27,26,28,18" />
       <scope id="368966953912091589" at="31,39,32,32" />
-      <scope id="368966953912091589" at="20,115,22,18" />
+      <scope id="368966953912091589" at="20,113,22,18" />
       <scope id="368966953912091589" at="31,0,34,0" />
       <scope id="368966953912091608" at="51,51,54,22">
         <var name="editorCell" id="368966953912091608" />
@@ -2035,22 +2035,22 @@
         <var name="editorCell" id="368966953912091589" />
       </scope>
       <scope id="368966953912091589" at="35,0,45,0" />
-      <unit id="368966953912091589" at="16,0,63,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialChildAttribute_EditorBuilder_a" />
+      <unit id="368966953912091589" at="16,0,63,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialChildAttribute_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:d793eea9-8b7b-4c58-a7a2-62336f54dcce(jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor)/3765314946602924796">
     <file name="TestSubstituteSpecialChild_Editor.java">
-      <node id="3765314946602924796" at="11,79,12,92" concept="8" />
+      <node id="3765314946602924796" at="11,79,12,90" concept="8" />
       <node id="3765314946602924796" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="3765314946602924796" at="11,79,12,92" />
+      <scope id="3765314946602924796" at="11,79,12,90" />
       <scope id="3765314946602924796" at="11,0,14,0">
         <var name="editorContext" id="3765314946602924796" />
         <var name="node" id="3765314946602924796" />
       </scope>
       <unit id="3765314946602924796" at="10,0,15,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialChild_Editor" />
     </file>
-    <file name="TestSubstituteSpecialChild_EditorBuilder_a.java">
-      <node id="3765314946602924796" at="30,106,31,19" concept="12" />
+    <file name="TestSubstituteSpecialChild_EditorBuilder.java">
+      <node id="3765314946602924796" at="30,104,31,19" concept="12" />
       <node id="3765314946602924796" at="31,19,32,18" concept="2" />
       <node id="3765314946602924796" at="37,26,38,18" concept="8" />
       <node id="3765314946602924796" at="41,39,42,32" concept="8" />
@@ -2101,7 +2101,7 @@
       <node id="3765314946602924796" at="98,87,101,7" concept="5" />
       <node id="3765314946602924796" at="101,7,104,7" concept="5" />
       <node id="3765314946602924796" at="120,0,123,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="3765314946602924796" at="30,0,34,0" concept="1" trace="TestSubstituteSpecialChild_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="3765314946602924796" at="30,0,34,0" concept="1" trace="TestSubstituteSpecialChild_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="3765314946602924796" at="69,0,73,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="3765314946602924796" at="77,0,81,0" concept="1" trace="subChildSingleRoleHandler_4v04fi_c0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="3765314946602924796" at="35,0,40,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -2120,7 +2120,7 @@
       <scope id="3765314946602924796" at="102,42,103,49" />
       <scope id="3765314946602924796" at="116,17,117,42" />
       <scope id="3765314946602924796" at="120,40,121,29" />
-      <scope id="3765314946602924796" at="30,106,32,18" />
+      <scope id="3765314946602924796" at="30,104,32,18" />
       <scope id="3765314946602924796" at="69,40,71,33">
         <var name="provider" id="3765314946602924796" />
       </scope>
@@ -2168,10 +2168,10 @@
       <scope id="3765314946602924796" at="45,0,55,0" />
       <scope id="3765314946602924796" at="107,44,118,7" />
       <scope id="3765314946602924796" at="106,0,120,0" />
-      <unit id="3765314946602924796" at="125,0,128,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialChild_EditorBuilder_a$CONCEPTS" />
-      <unit id="3765314946602924796" at="129,0,132,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialChild_EditorBuilder_a$LINKS" />
-      <unit id="3765314946602924796" at="73,0,124,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialChild_EditorBuilder_a$subChildSingleRoleHandler_4v04fi_c0" />
-      <unit id="3765314946602924796" at="26,0,133,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialChild_EditorBuilder_a" />
+      <unit id="3765314946602924796" at="125,0,128,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialChild_EditorBuilder$CONCEPTS" />
+      <unit id="3765314946602924796" at="129,0,132,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialChild_EditorBuilder$LINKS" />
+      <unit id="3765314946602924796" at="73,0,124,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialChild_EditorBuilder$subChildSingleRoleHandler_4v04fi_c0" />
+      <unit id="3765314946602924796" at="26,0,133,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialChild_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:d793eea9-8b7b-4c58-a7a2-62336f54dcce(jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor)/3765314946602950383">
@@ -2407,17 +2407,17 @@
   </root>
   <root nodeRef="r:d793eea9-8b7b-4c58-a7a2-62336f54dcce(jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor)/4085424218237852326">
     <file name="TestSubstituteSpecialParent_Editor.java">
-      <node id="4085424218237852326" at="11,79,12,93" concept="8" />
+      <node id="4085424218237852326" at="11,79,12,91" concept="8" />
       <node id="4085424218237852326" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4085424218237852326" at="11,79,12,93" />
+      <scope id="4085424218237852326" at="11,79,12,91" />
       <scope id="4085424218237852326" at="11,0,14,0">
         <var name="editorContext" id="4085424218237852326" />
         <var name="node" id="4085424218237852326" />
       </scope>
       <unit id="4085424218237852326" at="10,0,15,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialParent_Editor" />
     </file>
-    <file name="TestSubstituteSpecialParent_EditorBuilder_a.java">
-      <node id="4085424218237852326" at="56,107,57,19" concept="12" />
+    <file name="TestSubstituteSpecialParent_EditorBuilder.java">
+      <node id="4085424218237852326" at="56,105,57,19" concept="12" />
       <node id="4085424218237852326" at="57,19,58,18" concept="2" />
       <node id="4085424218237852326" at="63,26,64,18" concept="8" />
       <node id="4085424218237852326" at="67,39,68,32" concept="8" />
@@ -2884,7 +2884,7 @@
       <node id="7688582785734929304" at="882,0,885,0" concept="6" trace="getMatchingText#()Ljava/lang/String;" />
       <node id="7688582785734929304" at="885,0,888,0" concept="6" trace="isCustomCreateChildNode#()Z" />
       <node id="7688582785734929304" at="888,0,891,0" concept="6" trace="customCreateChildNode#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SAbstractConcept;Lorg/jetbrains/mps/openapi/model/SModel;Ljetbrains/mps/openapi/editor/EditorContext;)Lorg/jetbrains/mps/openapi/model/SNode;" />
-      <node id="4085424218237852326" at="56,0,60,0" concept="1" trace="TestSubstituteSpecialParent_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4085424218237852326" at="56,0,60,0" concept="1" trace="TestSubstituteSpecialParent_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4085424218237852326" at="143,0,147,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4085424218237852326" at="151,0,155,0" concept="1" trace="singleSpecialChildSingleRoleHandler_6as8ui_c2a#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="4085424218237852326" at="236,0,240,0" concept="1" trace="multipleSpecialChildListHandler_6as8ui_f2a#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
@@ -3058,7 +3058,7 @@
       <scope id="7688582785734929304" at="882,37,883,27" />
       <scope id="7688582785734929304" at="885,49,886,18" />
       <scope id="7688582785734929304" at="888,156,889,236" />
-      <scope id="4085424218237852326" at="56,107,58,18" />
+      <scope id="4085424218237852326" at="56,105,58,18" />
       <scope id="4085424218237852326" at="143,40,145,33">
         <var name="provider" id="4085424218237852326" />
       </scope>
@@ -3494,23 +3494,23 @@
         <var name="style" id="4085424218237852326" />
       </scope>
       <scope id="4085424218237852326" at="98,0,127,0" />
-      <unit id="4085424218237852326" at="914,0,918,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialParent_EditorBuilder_a$CONCEPTS" />
-      <unit id="7688582785734923417" at="738,21,745,11" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialParent_EditorBuilder_a$singleSpecialChildWithPrimaryReplaceGroupSingleRoleHandler_6as8ui_r2a$TestSubstituteSpecialParent_singleSpecialChildWithPrimaryReplaceGroup_cellMenu_6as8ui_b0r2a$1" />
-      <unit id="7688582785734929304" at="870,19,877,9" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialParent_EditorBuilder_a$TestSubstituteSpecialParent_multipleSpecialChildWithPrimaryReplaceGroup_cellMenu_6as8ui_b0u2a$1" />
-      <unit id="7688582785734923412" at="723,0,732,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialParent_EditorBuilder_a$singleSpecialChildWithPrimaryReplaceGroupSingleRoleHandler_6as8ui_r2a$TestSubstituteSpecialParent_singleSpecialChildWithPrimaryReplaceGroup_cellMenu_6as8ui_a0r2a" />
-      <unit id="7688582785734929303" at="855,0,864,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialParent_EditorBuilder_a$TestSubstituteSpecialParent_multipleSpecialChildWithPrimaryReplaceGroup_cellMenu_6as8ui_a0u2a" />
-      <unit id="4085424218237852326" at="903,0,913,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialParent_EditorBuilder_a$LINKS" />
-      <unit id="7688582785734923417" at="732,0,760,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialParent_EditorBuilder_a$singleSpecialChildWithPrimaryReplaceGroupSingleRoleHandler_6as8ui_r2a$TestSubstituteSpecialParent_singleSpecialChildWithPrimaryReplaceGroup_cellMenu_6as8ui_b0r2a" />
-      <unit id="7688582785734929304" at="864,0,892,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialParent_EditorBuilder_a$TestSubstituteSpecialParent_multipleSpecialChildWithPrimaryReplaceGroup_cellMenu_6as8ui_b0u2a" />
-      <unit id="4085424218237852326" at="147,0,205,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialParent_EditorBuilder_a$singleSpecialChildSingleRoleHandler_6as8ui_c2a" />
-      <unit id="4085424218237852326" at="321,0,381,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialParent_EditorBuilder_a$singleSpecialChildInCustomEmptyCellSingleRoleHandler_6as8ui_i2a" />
-      <unit id="4085424218237852326" at="394,0,456,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialParent_EditorBuilder_a$singleSpecialChildInCustomEmptyCellWithCustomMenuSingleRoleHandler_6as8ui_k2a" />
-      <unit id="4085424218237852326" at="232,0,299,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialParent_EditorBuilder_a$multipleSpecialChildListHandler_6as8ui_f2a" />
-      <unit id="4085424218237852326" at="788,0,855,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialParent_EditorBuilder_a$multipleSpecialChildWithPrimaryReplaceGroupListHandler_6as8ui_u2a" />
-      <unit id="4085424218237852326" at="475,0,548,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialParent_EditorBuilder_a$multipleSpecialChildInCustomEmptyCellListHandler_6as8ui_m2a" />
-      <unit id="4085424218237852326" at="568,0,643,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialParent_EditorBuilder_a$multipleSpecialChildInCustomEmptyCellWithCustomMenuListHandler_6as8ui_o2a" />
-      <unit id="4085424218237852326" at="666,0,761,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialParent_EditorBuilder_a$singleSpecialChildWithPrimaryReplaceGroupSingleRoleHandler_6as8ui_r2a" />
-      <unit id="4085424218237852326" at="52,0,919,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialParent_EditorBuilder_a" />
+      <unit id="4085424218237852326" at="914,0,918,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialParent_EditorBuilder$CONCEPTS" />
+      <unit id="7688582785734923417" at="738,21,745,11" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialParent_EditorBuilder$singleSpecialChildWithPrimaryReplaceGroupSingleRoleHandler_6as8ui_r2a$TestSubstituteSpecialParent_singleSpecialChildWithPrimaryReplaceGroup_cellMenu_6as8ui_b0r2a$1" />
+      <unit id="7688582785734929304" at="870,19,877,9" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialParent_EditorBuilder$TestSubstituteSpecialParent_multipleSpecialChildWithPrimaryReplaceGroup_cellMenu_6as8ui_b0u2a$1" />
+      <unit id="7688582785734923412" at="723,0,732,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialParent_EditorBuilder$singleSpecialChildWithPrimaryReplaceGroupSingleRoleHandler_6as8ui_r2a$TestSubstituteSpecialParent_singleSpecialChildWithPrimaryReplaceGroup_cellMenu_6as8ui_a0r2a" />
+      <unit id="7688582785734929303" at="855,0,864,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialParent_EditorBuilder$TestSubstituteSpecialParent_multipleSpecialChildWithPrimaryReplaceGroup_cellMenu_6as8ui_a0u2a" />
+      <unit id="4085424218237852326" at="903,0,913,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialParent_EditorBuilder$LINKS" />
+      <unit id="7688582785734923417" at="732,0,760,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialParent_EditorBuilder$singleSpecialChildWithPrimaryReplaceGroupSingleRoleHandler_6as8ui_r2a$TestSubstituteSpecialParent_singleSpecialChildWithPrimaryReplaceGroup_cellMenu_6as8ui_b0r2a" />
+      <unit id="7688582785734929304" at="864,0,892,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialParent_EditorBuilder$TestSubstituteSpecialParent_multipleSpecialChildWithPrimaryReplaceGroup_cellMenu_6as8ui_b0u2a" />
+      <unit id="4085424218237852326" at="147,0,205,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialParent_EditorBuilder$singleSpecialChildSingleRoleHandler_6as8ui_c2a" />
+      <unit id="4085424218237852326" at="321,0,381,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialParent_EditorBuilder$singleSpecialChildInCustomEmptyCellSingleRoleHandler_6as8ui_i2a" />
+      <unit id="4085424218237852326" at="394,0,456,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialParent_EditorBuilder$singleSpecialChildInCustomEmptyCellWithCustomMenuSingleRoleHandler_6as8ui_k2a" />
+      <unit id="4085424218237852326" at="232,0,299,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialParent_EditorBuilder$multipleSpecialChildListHandler_6as8ui_f2a" />
+      <unit id="4085424218237852326" at="788,0,855,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialParent_EditorBuilder$multipleSpecialChildWithPrimaryReplaceGroupListHandler_6as8ui_u2a" />
+      <unit id="4085424218237852326" at="475,0,548,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialParent_EditorBuilder$multipleSpecialChildInCustomEmptyCellListHandler_6as8ui_m2a" />
+      <unit id="4085424218237852326" at="568,0,643,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialParent_EditorBuilder$multipleSpecialChildInCustomEmptyCellWithCustomMenuListHandler_6as8ui_o2a" />
+      <unit id="4085424218237852326" at="666,0,761,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialParent_EditorBuilder$singleSpecialChildWithPrimaryReplaceGroupSingleRoleHandler_6as8ui_r2a" />
+      <unit id="4085424218237852326" at="52,0,919,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialParent_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:d793eea9-8b7b-4c58-a7a2-62336f54dcce(jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor)/4290896314625874638">
@@ -3588,17 +3588,17 @@
   </root>
   <root nodeRef="r:d793eea9-8b7b-4c58-a7a2-62336f54dcce(jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor)/4572725119287324753">
     <file name="TestSubstitute_Parent_Editor.java">
-      <node id="4572725119287324753" at="11,79,12,87" concept="8" />
+      <node id="4572725119287324753" at="11,79,12,85" concept="8" />
       <node id="4572725119287324753" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4572725119287324753" at="11,79,12,87" />
+      <scope id="4572725119287324753" at="11,79,12,85" />
       <scope id="4572725119287324753" at="11,0,14,0">
         <var name="editorContext" id="4572725119287324753" />
         <var name="node" id="4572725119287324753" />
       </scope>
       <unit id="4572725119287324753" at="10,0,15,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstitute_Parent_Editor" />
     </file>
-    <file name="TestSubstitute_Parent_EditorBuilder_a.java">
-      <node id="4572725119287324753" at="30,101,31,19" concept="12" />
+    <file name="TestSubstitute_Parent_EditorBuilder.java">
+      <node id="4572725119287324753" at="30,99,31,19" concept="12" />
       <node id="4572725119287324753" at="31,19,32,18" concept="2" />
       <node id="4572725119287324753" at="37,26,38,18" concept="8" />
       <node id="4572725119287324753" at="41,39,42,32" concept="8" />
@@ -3948,7 +3948,7 @@
       <node id="4572725119287324753" at="568,87,571,7" concept="5" />
       <node id="4572725119287324753" at="571,7,574,7" concept="5" />
       <node id="4572725119287324753" at="594,0,597,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="4572725119287324753" at="30,0,34,0" concept="1" trace="TestSubstitute_Parent_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4572725119287324753" at="30,0,34,0" concept="1" trace="TestSubstitute_Parent_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4572725119287324753" at="119,0,123,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4572725119287324753" at="127,0,131,0" concept="1" trace="childSubconceptSingleRoleHandler_vf2xxj_c2a#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="4572725119287324753" at="203,0,207,0" concept="6" trace="createRefNode_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -4046,7 +4046,7 @@
       <scope id="4572725119287324753" at="572,42,573,64" />
       <scope id="4572725119287324753" at="590,17,591,42" />
       <scope id="4572725119287324753" at="594,40,595,44" />
-      <scope id="4572725119287324753" at="30,101,32,18" />
+      <scope id="4572725119287324753" at="30,99,32,18" />
       <scope id="4572725119287324753" at="119,40,121,33">
         <var name="provider" id="4572725119287324753" />
       </scope>
@@ -4341,14 +4341,14 @@
         <var name="style" id="4572725119287324753" />
       </scope>
       <scope id="4572725119287324753" at="72,0,103,0" />
-      <unit id="4572725119287324753" at="608,0,616,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstitute_Parent_EditorBuilder_a$LINKS" />
-      <unit id="4572725119287324753" at="123,0,178,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstitute_Parent_EditorBuilder_a$childSubconceptSingleRoleHandler_vf2xxj_c2a" />
-      <unit id="4572725119287324753" at="207,0,262,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstitute_Parent_EditorBuilder_a$childIncludeSameMenuTwiceSingleRoleHandler_vf2xxj_g2a" />
-      <unit id="4572725119287324753" at="291,0,346,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstitute_Parent_EditorBuilder_a$childIncludeDifferentMenusSingleRoleHandler_vf2xxj_k2a" />
-      <unit id="4572725119287324753" at="375,0,430,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstitute_Parent_EditorBuilder_a$childIncludeDefaultAndNullMenuSingleRoleHandler_vf2xxj_o2a" />
-      <unit id="4572725119287324753" at="459,0,514,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstitute_Parent_EditorBuilder_a$childWrapSameMenuTwiceSingleRoleHandler_vf2xxj_s2a" />
-      <unit id="4572725119287324753" at="543,0,598,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstitute_Parent_EditorBuilder_a$childWrapDifferentMenusSingleRoleHandler_vf2xxj_w2a" />
-      <unit id="4572725119287324753" at="26,0,617,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstitute_Parent_EditorBuilder_a" />
+      <unit id="4572725119287324753" at="608,0,616,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstitute_Parent_EditorBuilder$LINKS" />
+      <unit id="4572725119287324753" at="123,0,178,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstitute_Parent_EditorBuilder$childSubconceptSingleRoleHandler_vf2xxj_c2a" />
+      <unit id="4572725119287324753" at="207,0,262,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstitute_Parent_EditorBuilder$childIncludeSameMenuTwiceSingleRoleHandler_vf2xxj_g2a" />
+      <unit id="4572725119287324753" at="291,0,346,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstitute_Parent_EditorBuilder$childIncludeDifferentMenusSingleRoleHandler_vf2xxj_k2a" />
+      <unit id="4572725119287324753" at="375,0,430,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstitute_Parent_EditorBuilder$childIncludeDefaultAndNullMenuSingleRoleHandler_vf2xxj_o2a" />
+      <unit id="4572725119287324753" at="459,0,514,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstitute_Parent_EditorBuilder$childWrapSameMenuTwiceSingleRoleHandler_vf2xxj_s2a" />
+      <unit id="4572725119287324753" at="543,0,598,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstitute_Parent_EditorBuilder$childWrapDifferentMenusSingleRoleHandler_vf2xxj_w2a" />
+      <unit id="4572725119287324753" at="26,0,617,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstitute_Parent_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:d793eea9-8b7b-4c58-a7a2-62336f54dcce(jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor)/4572725119287548662">
@@ -4679,17 +4679,17 @@
   </root>
   <root nodeRef="r:d793eea9-8b7b-4c58-a7a2-62336f54dcce(jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor)/4616565815313123089">
     <file name="TestSubstituteWrapper_Editor.java">
-      <node id="4616565815313123089" at="11,79,12,87" concept="8" />
+      <node id="4616565815313123089" at="11,79,12,85" concept="8" />
       <node id="4616565815313123089" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4616565815313123089" at="11,79,12,87" />
+      <scope id="4616565815313123089" at="11,79,12,85" />
       <scope id="4616565815313123089" at="11,0,14,0">
         <var name="editorContext" id="4616565815313123089" />
         <var name="node" id="4616565815313123089" />
       </scope>
       <unit id="4616565815313123089" at="10,0,15,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteWrapper_Editor" />
     </file>
-    <file name="TestSubstituteWrapper_EditorBuilder_a.java">
-      <node id="4616565815313123089" at="43,101,44,19" concept="12" />
+    <file name="TestSubstituteWrapper_EditorBuilder.java">
+      <node id="4616565815313123089" at="43,99,44,19" concept="12" />
       <node id="4616565815313123089" at="44,19,45,18" concept="2" />
       <node id="4616565815313123089" at="50,26,51,18" concept="8" />
       <node id="4616565815313123089" at="54,39,55,32" concept="8" />
@@ -4847,7 +4847,7 @@
       <node id="4616565815313123089" at="237,87,240,7" concept="5" />
       <node id="4616565815313123089" at="240,7,243,7" concept="5" />
       <node id="4616565815313123089" at="263,0,266,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="4616565815313123089" at="43,0,47,0" concept="1" trace="TestSubstituteWrapper_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4616565815313123089" at="43,0,47,0" concept="1" trace="TestSubstituteWrapper_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4616565815313123089" at="208,0,212,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4616565815313123089" at="216,0,220,0" concept="1" trace="childSingleRoleHandler_svk57m_c5a#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="4616565815313123089" at="48,0,53,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -4885,7 +4885,7 @@
       <scope id="4616565815313123089" at="241,42,242,46" />
       <scope id="4616565815313123089" at="259,17,260,42" />
       <scope id="4616565815313123089" at="263,40,264,26" />
-      <scope id="4616565815313123089" at="43,101,45,18" />
+      <scope id="4616565815313123089" at="43,99,45,18" />
       <scope id="5957872731948463920" at="100,74,102,145">
         <var name="manager" id="5957872731948463920" />
       </scope>
@@ -5003,26 +5003,26 @@
       <scope id="5957872731948463920" at="88,0,109,0" />
       <scope id="5957872731948463972" at="119,0,140,0" />
       <scope id="5957872731948464003" at="150,0,171,0" />
-      <unit id="4616565815313123089" at="283,0,286,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteWrapper_EditorBuilder_a$CONCEPTS" />
-      <unit id="4616565815313123089" at="287,0,290,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteWrapper_EditorBuilder_a$LINKS" />
-      <unit id="4616565815313123089" at="277,0,282,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteWrapper_EditorBuilder_a$PROPS" />
-      <unit id="4616565815313123089" at="212,0,267,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteWrapper_EditorBuilder_a$childSingleRoleHandler_svk57m_c5a" />
-      <unit id="4616565815313123089" at="39,0,291,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteWrapper_EditorBuilder_a" />
+      <unit id="4616565815313123089" at="283,0,286,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteWrapper_EditorBuilder$CONCEPTS" />
+      <unit id="4616565815313123089" at="287,0,290,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteWrapper_EditorBuilder$LINKS" />
+      <unit id="4616565815313123089" at="277,0,282,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteWrapper_EditorBuilder$PROPS" />
+      <unit id="4616565815313123089" at="212,0,267,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteWrapper_EditorBuilder$childSingleRoleHandler_svk57m_c5a" />
+      <unit id="4616565815313123089" at="39,0,291,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteWrapper_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:d793eea9-8b7b-4c58-a7a2-62336f54dcce(jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor)/4616565815313123164">
     <file name="TestSubstituteParentOfWrapper_Editor.java">
-      <node id="4616565815313123164" at="11,79,12,95" concept="8" />
+      <node id="4616565815313123164" at="11,79,12,93" concept="8" />
       <node id="4616565815313123164" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4616565815313123164" at="11,79,12,95" />
+      <scope id="4616565815313123164" at="11,79,12,93" />
       <scope id="4616565815313123164" at="11,0,14,0">
         <var name="editorContext" id="4616565815313123164" />
         <var name="node" id="4616565815313123164" />
       </scope>
       <unit id="4616565815313123164" at="10,0,15,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentOfWrapper_Editor" />
     </file>
-    <file name="TestSubstituteParentOfWrapper_EditorBuilder_a.java">
-      <node id="4616565815313123164" at="30,109,31,19" concept="12" />
+    <file name="TestSubstituteParentOfWrapper_EditorBuilder.java">
+      <node id="4616565815313123164" at="30,107,31,19" concept="12" />
       <node id="4616565815313123164" at="31,19,32,18" concept="2" />
       <node id="4616565815313123164" at="37,26,38,18" concept="8" />
       <node id="4616565815313123164" at="41,39,42,32" concept="8" />
@@ -5107,7 +5107,7 @@
       <node id="4616565815313123164" at="128,87,131,7" concept="5" />
       <node id="4616565815313123164" at="131,7,134,7" concept="5" />
       <node id="4616565815313123164" at="154,0,157,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="4616565815313123164" at="30,0,34,0" concept="1" trace="TestSubstituteParentOfWrapper_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4616565815313123164" at="30,0,34,0" concept="1" trace="TestSubstituteParentOfWrapper_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4616565815313123164" at="99,0,103,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4616565815313123164" at="107,0,111,0" concept="1" trace="wrapperSingleRoleHandler_d4fjc3_c2a#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="4616565815313123164" at="35,0,40,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -5130,7 +5130,7 @@
       <scope id="4616565815313123164" at="132,42,133,48" />
       <scope id="4616565815313123164" at="150,17,151,42" />
       <scope id="4616565815313123164" at="154,40,155,28" />
-      <scope id="4616565815313123164" at="30,109,32,18" />
+      <scope id="4616565815313123164" at="30,107,32,18" />
       <scope id="4616565815313123164" at="99,40,101,33">
         <var name="provider" id="4616565815313123164" />
       </scope>
@@ -5200,24 +5200,24 @@
         <var name="isEmpty" id="4616565815313123164" />
       </scope>
       <scope id="4616565815313123164" at="140,0,154,0" />
-      <unit id="4616565815313123164" at="168,0,171,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentOfWrapper_EditorBuilder_a$LINKS" />
-      <unit id="4616565815313123164" at="103,0,158,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentOfWrapper_EditorBuilder_a$wrapperSingleRoleHandler_d4fjc3_c2a" />
-      <unit id="4616565815313123164" at="26,0,172,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentOfWrapper_EditorBuilder_a" />
+      <unit id="4616565815313123164" at="168,0,171,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentOfWrapper_EditorBuilder$LINKS" />
+      <unit id="4616565815313123164" at="103,0,158,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentOfWrapper_EditorBuilder$wrapperSingleRoleHandler_d4fjc3_c2a" />
+      <unit id="4616565815313123164" at="26,0,172,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentOfWrapper_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:d793eea9-8b7b-4c58-a7a2-62336f54dcce(jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor)/4616565815313123202">
     <file name="TestSubstituteChildOfWrapper_Editor.java">
-      <node id="4616565815313123202" at="11,79,12,94" concept="8" />
+      <node id="4616565815313123202" at="11,79,12,92" concept="8" />
       <node id="4616565815313123202" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4616565815313123202" at="11,79,12,94" />
+      <scope id="4616565815313123202" at="11,79,12,92" />
       <scope id="4616565815313123202" at="11,0,14,0">
         <var name="editorContext" id="4616565815313123202" />
         <var name="node" id="4616565815313123202" />
       </scope>
       <unit id="4616565815313123202" at="10,0,15,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteChildOfWrapper_Editor" />
     </file>
-    <file name="TestSubstituteChildOfWrapper_EditorBuilder_a.java">
-      <node id="4616565815313123202" at="21,108,22,19" concept="12" />
+    <file name="TestSubstituteChildOfWrapper_EditorBuilder.java">
+      <node id="4616565815313123202" at="21,106,22,19" concept="12" />
       <node id="4616565815313123202" at="22,19,23,18" concept="2" />
       <node id="4616565815313123202" at="28,26,29,18" concept="8" />
       <node id="4616565815313123202" at="32,39,33,32" concept="8" />
@@ -5241,14 +5241,14 @@
       <node id="4616565815313123207" at="57,34,58,22" concept="8" />
       <node id="4616565815313123202" at="18,0,20,0" concept="3" trace="myNode" />
       <node id="4616565815313123202" at="32,0,35,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="4616565815313123202" at="21,0,25,0" concept="1" trace="TestSubstituteChildOfWrapper_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4616565815313123202" at="21,0,25,0" concept="1" trace="TestSubstituteChildOfWrapper_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4616565815313123202" at="26,0,31,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="4616565815313123206" at="45,0,51,0" concept="6" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4616565815313123202" at="36,0,45,0" concept="6" trace="createCollection_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4616565815313123207" at="51,0,60,0" concept="6" trace="createConstant_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="4616565815313123202" at="28,26,29,18" />
       <scope id="4616565815313123202" at="32,39,33,32" />
-      <scope id="4616565815313123202" at="21,108,23,18" />
+      <scope id="4616565815313123202" at="21,106,23,18" />
       <scope id="4616565815313123202" at="32,0,35,0" />
       <scope id="4616565815313123202" at="21,0,25,0">
         <var name="context" id="4616565815313123202" />
@@ -5268,7 +5268,7 @@
       </scope>
       <scope id="4616565815313123202" at="36,0,45,0" />
       <scope id="4616565815313123207" at="51,0,60,0" />
-      <unit id="4616565815313123202" at="17,0,61,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteChildOfWrapper_EditorBuilder_a" />
+      <unit id="4616565815313123202" at="17,0,61,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteChildOfWrapper_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:d793eea9-8b7b-4c58-a7a2-62336f54dcce(jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor)/4616565815313123318">
@@ -5834,17 +5834,17 @@
   </root>
   <root nodeRef="r:d793eea9-8b7b-4c58-a7a2-62336f54dcce(jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor)/476103360378640413">
     <file name="TestSubstituteParentPropertyAndReference_Editor.java">
-      <node id="476103360378640413" at="11,79,12,106" concept="8" />
+      <node id="476103360378640413" at="11,79,12,104" concept="8" />
       <node id="476103360378640413" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="476103360378640413" at="11,79,12,106" />
+      <scope id="476103360378640413" at="11,79,12,104" />
       <scope id="476103360378640413" at="11,0,14,0">
         <var name="editorContext" id="476103360378640413" />
         <var name="node" id="476103360378640413" />
       </scope>
       <unit id="476103360378640413" at="10,0,15,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentPropertyAndReference_Editor" />
     </file>
-    <file name="TestSubstituteParentPropertyAndReference_EditorBuilder_a.java">
-      <node id="476103360378640413" at="42,120,43,19" concept="12" />
+    <file name="TestSubstituteParentPropertyAndReference_EditorBuilder.java">
+      <node id="476103360378640413" at="42,118,43,19" concept="12" />
       <node id="476103360378640413" at="43,19,44,18" concept="2" />
       <node id="476103360378640413" at="49,26,50,18" concept="8" />
       <node id="476103360378640413" at="53,39,54,32" concept="8" />
@@ -6453,7 +6453,7 @@
       <node id="8135300941718541191" at="723,0,726,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1588042961787749406" at="804,0,807,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1588042961787749441" at="885,0,888,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="476103360378640413" at="42,0,46,0" concept="1" trace="TestSubstituteParentPropertyAndReference_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="476103360378640413" at="42,0,46,0" concept="1" trace="TestSubstituteParentPropertyAndReference_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="476103360378640413" at="534,0,538,5" concept="5" />
       <node id="476103360378640413" at="615,0,619,5" concept="5" />
       <node id="476103360378640413" at="697,0,701,5" concept="5" />
@@ -6588,7 +6588,7 @@
       <scope id="1588042961787749441" at="885,41,886,33" />
       <scope id="1588042961787749441" at="891,28,892,20" />
       <scope id="1588042961787749442" at="912,17,913,42" />
-      <scope id="476103360378640413" at="42,120,44,18" />
+      <scope id="476103360378640413" at="42,118,44,18" />
       <scope id="8135300941719023463" at="87,74,89,145">
         <var name="manager" id="8135300941719023463" />
       </scope>
@@ -7017,20 +7017,20 @@
       <scope id="476103360378640413" at="106,0,135,0" />
       <scope id="476103360378640413" at="601,0,630,0" />
       <scope id="476103360378640413" at="683,0,712,0" />
-      <unit id="476103360378640413" at="932,0,937,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentPropertyAndReference_EditorBuilder_a$CONCEPTS" />
-      <unit id="476103360378640413" at="938,0,945,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentPropertyAndReference_EditorBuilder_a$LINKS" />
-      <unit id="476103360378640413" at="522,42,530,5" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentPropertyAndReference_EditorBuilder_a$1" />
-      <unit id="476103360378640413" at="603,42,611,5" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentPropertyAndReference_EditorBuilder_a$2" />
-      <unit id="476103360378640413" at="685,42,693,5" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentPropertyAndReference_EditorBuilder_a$3" />
-      <unit id="476103360378640413" at="767,42,775,5" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentPropertyAndReference_EditorBuilder_a$4" />
-      <unit id="476103360378640413" at="848,42,856,5" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentPropertyAndReference_EditorBuilder_a$5" />
-      <unit id="476103360378640413" at="918,0,931,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentPropertyAndReference_EditorBuilder_a$PROPS" />
-      <unit id="476103360378641418" at="548,0,591,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentPropertyAndReference_EditorBuilder_a$Inline_Builder0" />
-      <unit id="476103360378641457" at="630,0,673,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentPropertyAndReference_EditorBuilder_a$Inline_Builder1" />
-      <unit id="8135300941718541191" at="712,0,755,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentPropertyAndReference_EditorBuilder_a$Inline_Builder2" />
-      <unit id="1588042961787749406" at="793,0,836,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentPropertyAndReference_EditorBuilder_a$Inline_Builder3" />
-      <unit id="1588042961787749441" at="874,0,917,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentPropertyAndReference_EditorBuilder_a$Inline_Builder4" />
-      <unit id="476103360378640413" at="38,0,946,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentPropertyAndReference_EditorBuilder_a" />
+      <unit id="476103360378640413" at="932,0,937,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentPropertyAndReference_EditorBuilder$CONCEPTS" />
+      <unit id="476103360378640413" at="938,0,945,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentPropertyAndReference_EditorBuilder$LINKS" />
+      <unit id="476103360378640413" at="522,42,530,5" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentPropertyAndReference_EditorBuilder$1" />
+      <unit id="476103360378640413" at="603,42,611,5" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentPropertyAndReference_EditorBuilder$2" />
+      <unit id="476103360378640413" at="685,42,693,5" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentPropertyAndReference_EditorBuilder$3" />
+      <unit id="476103360378640413" at="767,42,775,5" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentPropertyAndReference_EditorBuilder$4" />
+      <unit id="476103360378640413" at="848,42,856,5" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentPropertyAndReference_EditorBuilder$5" />
+      <unit id="476103360378640413" at="918,0,931,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentPropertyAndReference_EditorBuilder$PROPS" />
+      <unit id="476103360378641418" at="548,0,591,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentPropertyAndReference_EditorBuilder$Inline_Builder0" />
+      <unit id="476103360378641457" at="630,0,673,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentPropertyAndReference_EditorBuilder$Inline_Builder1" />
+      <unit id="8135300941718541191" at="712,0,755,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentPropertyAndReference_EditorBuilder$Inline_Builder2" />
+      <unit id="1588042961787749406" at="793,0,836,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentPropertyAndReference_EditorBuilder$Inline_Builder3" />
+      <unit id="1588042961787749441" at="874,0,917,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentPropertyAndReference_EditorBuilder$Inline_Builder4" />
+      <unit id="476103360378640413" at="38,0,946,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentPropertyAndReference_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:d793eea9-8b7b-4c58-a7a2-62336f54dcce(jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor)/476103360378641500">
@@ -7401,17 +7401,17 @@
   </root>
   <root nodeRef="r:d793eea9-8b7b-4c58-a7a2-62336f54dcce(jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor)/4930188782568041415">
     <file name="TestSubstituteParentForChildrenWithAttibute_Editor.java">
-      <node id="4930188782568041415" at="11,79,12,109" concept="8" />
+      <node id="4930188782568041415" at="11,79,12,107" concept="8" />
       <node id="4930188782568041415" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4930188782568041415" at="11,79,12,109" />
+      <scope id="4930188782568041415" at="11,79,12,107" />
       <scope id="4930188782568041415" at="11,0,14,0">
         <var name="editorContext" id="4930188782568041415" />
         <var name="node" id="4930188782568041415" />
       </scope>
       <unit id="4930188782568041415" at="10,0,15,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentForChildrenWithAttibute_Editor" />
     </file>
-    <file name="TestSubstituteParentForChildrenWithAttibute_EditorBuilder_a.java">
-      <node id="4930188782568041415" at="30,123,31,19" concept="12" />
+    <file name="TestSubstituteParentForChildrenWithAttibute_EditorBuilder.java">
+      <node id="4930188782568041415" at="30,121,31,19" concept="12" />
       <node id="4930188782568041415" at="31,19,32,18" concept="2" />
       <node id="4930188782568041415" at="37,26,38,18" concept="8" />
       <node id="4930188782568041415" at="41,39,42,32" concept="8" />
@@ -7496,7 +7496,7 @@
       <node id="4930188782568041415" at="128,87,131,7" concept="5" />
       <node id="4930188782568041415" at="131,7,134,7" concept="5" />
       <node id="4930188782568041415" at="154,0,157,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="4930188782568041415" at="30,0,34,0" concept="1" trace="TestSubstituteParentForChildrenWithAttibute_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4930188782568041415" at="30,0,34,0" concept="1" trace="TestSubstituteParentForChildrenWithAttibute_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4930188782568041415" at="99,0,103,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4930188782568041415" at="107,0,111,0" concept="1" trace="childWithAttributeSingleRoleHandler_4fskms_c2a#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="4930188782568041415" at="35,0,40,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -7519,7 +7519,7 @@
       <scope id="4930188782568041415" at="132,42,133,59" />
       <scope id="4930188782568041415" at="150,17,151,42" />
       <scope id="4930188782568041415" at="154,40,155,39" />
-      <scope id="4930188782568041415" at="30,123,32,18" />
+      <scope id="4930188782568041415" at="30,121,32,18" />
       <scope id="4930188782568041415" at="99,40,101,33">
         <var name="provider" id="4930188782568041415" />
       </scope>
@@ -7589,24 +7589,24 @@
         <var name="isEmpty" id="4930188782568041415" />
       </scope>
       <scope id="4930188782568041415" at="140,0,154,0" />
-      <unit id="4930188782568041415" at="168,0,171,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentForChildrenWithAttibute_EditorBuilder_a$LINKS" />
-      <unit id="4930188782568041415" at="103,0,158,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentForChildrenWithAttibute_EditorBuilder_a$childWithAttributeSingleRoleHandler_4fskms_c2a" />
-      <unit id="4930188782568041415" at="26,0,172,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentForChildrenWithAttibute_EditorBuilder_a" />
+      <unit id="4930188782568041415" at="168,0,171,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentForChildrenWithAttibute_EditorBuilder$LINKS" />
+      <unit id="4930188782568041415" at="103,0,158,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentForChildrenWithAttibute_EditorBuilder$childWithAttributeSingleRoleHandler_4fskms_c2a" />
+      <unit id="4930188782568041415" at="26,0,172,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentForChildrenWithAttibute_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:d793eea9-8b7b-4c58-a7a2-62336f54dcce(jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor)/4930188782568041478">
     <file name="TestSubstituteChildWithAttibute_Editor.java">
-      <node id="4930188782568041478" at="11,79,12,97" concept="8" />
+      <node id="4930188782568041478" at="11,79,12,95" concept="8" />
       <node id="4930188782568041478" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4930188782568041478" at="11,79,12,97" />
+      <scope id="4930188782568041478" at="11,79,12,95" />
       <scope id="4930188782568041478" at="11,0,14,0">
         <var name="editorContext" id="4930188782568041478" />
         <var name="node" id="4930188782568041478" />
       </scope>
       <unit id="4930188782568041478" at="10,0,15,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteChildWithAttibute_Editor" />
     </file>
-    <file name="TestSubstituteChildWithAttibute_EditorBuilder_a.java">
-      <node id="4930188782568041478" at="32,111,33,19" concept="12" />
+    <file name="TestSubstituteChildWithAttibute_EditorBuilder.java">
+      <node id="4930188782568041478" at="32,109,33,19" concept="12" />
       <node id="4930188782568041478" at="33,19,34,18" concept="2" />
       <node id="4930188782568041478" at="39,26,40,18" concept="8" />
       <node id="4930188782568041478" at="43,39,44,32" concept="8" />
@@ -7639,7 +7639,7 @@
       <node id="4930188782568041478" at="89,0,90,0" concept="11" trace="PropertyAttribute$Gb" />
       <node id="4930188782568041478" at="29,0,31,0" concept="3" trace="myNode" />
       <node id="4930188782568041478" at="43,0,46,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="4930188782568041478" at="32,0,36,0" concept="1" trace="TestSubstituteChildWithAttibute_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4930188782568041478" at="32,0,36,0" concept="1" trace="TestSubstituteChildWithAttibute_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4930188782568041478" at="37,0,42,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="4930188782568582532" at="73,208,78,24" concept="5" />
       <node id="4930188782568041482" at="56,0,62,0" concept="6" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -7649,7 +7649,7 @@
       <scope id="4930188782568041478" at="39,26,40,18" />
       <scope id="4930188782568041478" at="43,39,44,32" />
       <scope id="4930188782568582532" at="79,15,80,40" />
-      <scope id="4930188782568041478" at="32,111,34,18" />
+      <scope id="4930188782568041478" at="32,109,34,18" />
       <scope id="4930188782568582532" at="74,74,76,145">
         <var name="manager" id="4930188782568582532" />
       </scope>
@@ -7675,24 +7675,24 @@
       </scope>
       <scope id="4930188782568582532" at="62,41,81,5" />
       <scope id="4930188782568582532" at="62,0,83,0" />
-      <unit id="4930188782568041478" at="84,0,87,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteChildWithAttibute_EditorBuilder_a$PROPS" />
-      <unit id="4930188782568041478" at="88,0,91,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteChildWithAttibute_EditorBuilder_a$CONCEPTS" />
-      <unit id="4930188782568041478" at="28,0,92,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteChildWithAttibute_EditorBuilder_a" />
+      <unit id="4930188782568041478" at="84,0,87,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteChildWithAttibute_EditorBuilder$PROPS" />
+      <unit id="4930188782568041478" at="88,0,91,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteChildWithAttibute_EditorBuilder$CONCEPTS" />
+      <unit id="4930188782568041478" at="28,0,92,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteChildWithAttibute_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:d793eea9-8b7b-4c58-a7a2-62336f54dcce(jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor)/4930188782568043320">
     <file name="TestSubstituteAttribute_TransparentEditor_Editor.java">
-      <node id="4930188782568043320" at="11,79,12,107" concept="8" />
+      <node id="4930188782568043320" at="11,79,12,105" concept="8" />
       <node id="4930188782568043320" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4930188782568043320" at="11,79,12,107" />
+      <scope id="4930188782568043320" at="11,79,12,105" />
       <scope id="4930188782568043320" at="11,0,14,0">
         <var name="editorContext" id="4930188782568043320" />
         <var name="node" id="4930188782568043320" />
       </scope>
       <unit id="4930188782568043320" at="10,0,15,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteAttribute_TransparentEditor_Editor" />
     </file>
-    <file name="TestSubstituteAttribute_TransparentEditor_EditorBuilder_a.java">
-      <node id="4930188782568043320" at="19,121,20,19" concept="12" />
+    <file name="TestSubstituteAttribute_TransparentEditor_EditorBuilder.java">
+      <node id="4930188782568043320" at="19,119,20,19" concept="12" />
       <node id="4930188782568043320" at="20,19,21,18" concept="2" />
       <node id="4930188782568043320" at="26,26,27,18" concept="8" />
       <node id="4930188782568043320" at="30,39,31,32" concept="8" />
@@ -7707,13 +7707,13 @@
       <node id="4930188782568043328" at="44,93,45,22" concept="8" />
       <node id="4930188782568043320" at="16,0,18,0" concept="3" trace="myNode" />
       <node id="4930188782568043320" at="30,0,33,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="4930188782568043320" at="19,0,23,0" concept="1" trace="TestSubstituteAttribute_TransparentEditor_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4930188782568043320" at="19,0,23,0" concept="1" trace="TestSubstituteAttribute_TransparentEditor_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4930188782568043320" at="24,0,29,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="4930188782568043328" at="42,0,47,0" concept="6" trace="createAttributedNodeCell_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4930188782568043320" at="34,0,42,0" concept="6" trace="createCollection_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="4930188782568043320" at="26,26,27,18" />
       <scope id="4930188782568043320" at="30,39,31,32" />
-      <scope id="4930188782568043320" at="19,121,21,18" />
+      <scope id="4930188782568043320" at="19,119,21,18" />
       <scope id="4930188782568043320" at="30,0,33,0" />
       <scope id="4930188782568043328" at="42,51,45,22">
         <var name="editorCell" id="4930188782568043328" />
@@ -7729,22 +7729,22 @@
         <var name="editorCell" id="4930188782568043320" />
       </scope>
       <scope id="4930188782568043320" at="34,0,42,0" />
-      <unit id="4930188782568043320" at="15,0,48,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteAttribute_TransparentEditor_EditorBuilder_a" />
+      <unit id="4930188782568043320" at="15,0,48,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteAttribute_TransparentEditor_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:d793eea9-8b7b-4c58-a7a2-62336f54dcce(jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor)/4930188782568043364">
     <file name="TestSubstituteAttribute_WithReference_Editor.java">
-      <node id="4930188782568043364" at="11,79,12,103" concept="8" />
+      <node id="4930188782568043364" at="11,79,12,101" concept="8" />
       <node id="4930188782568043364" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4930188782568043364" at="11,79,12,103" />
+      <scope id="4930188782568043364" at="11,79,12,101" />
       <scope id="4930188782568043364" at="11,0,14,0">
         <var name="editorContext" id="4930188782568043364" />
         <var name="node" id="4930188782568043364" />
       </scope>
       <unit id="4930188782568043364" at="10,0,15,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteAttribute_WithReference_Editor" />
     </file>
-    <file name="TestSubstituteAttribute_WithReference_EditorBuilder_a.java">
-      <node id="4930188782568043364" at="40,117,41,19" concept="12" />
+    <file name="TestSubstituteAttribute_WithReference_EditorBuilder.java">
+      <node id="4930188782568043364" at="40,115,41,19" concept="12" />
       <node id="4930188782568043364" at="41,19,42,18" concept="2" />
       <node id="4930188782568043364" at="47,26,48,18" concept="8" />
       <node id="4930188782568043364" at="51,39,52,32" concept="8" />
@@ -7812,7 +7812,7 @@
       <node id="4930188782568043388" at="100,0,102,0" concept="3" trace="myNode" />
       <node id="4930188782568043364" at="51,0,54,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4930188782568043388" at="110,0,113,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="4930188782568043364" at="40,0,44,0" concept="1" trace="TestSubstituteAttribute_WithReference_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4930188782568043364" at="40,0,44,0" concept="1" trace="TestSubstituteAttribute_WithReference_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4930188782568043364" at="85,0,89,5" concept="5" />
       <node id="4930188782568043364" at="45,0,50,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="4930188782568043364" at="92,205,97,22" concept="5" />
@@ -7832,7 +7832,7 @@
       <scope id="4930188782568043388" at="110,41,111,32" />
       <scope id="4930188782568043388" at="116,28,117,20" />
       <scope id="4930188782568043396" at="137,17,138,42" />
-      <scope id="4930188782568043364" at="40,117,42,18" />
+      <scope id="4930188782568043364" at="40,115,42,18" />
       <scope id="4930188782568043364" at="86,40,88,54" />
       <scope id="4930188782568043364" at="93,73,95,145">
         <var name="manager" id="4930188782568043364" />
@@ -7890,27 +7890,27 @@
         <var name="referenceLink" id="4930188782568043364" />
       </scope>
       <scope id="4930188782568043364" at="71,0,99,0" />
-      <unit id="4930188782568043364" at="151,0,154,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteAttribute_WithReference_EditorBuilder_a$LINKS" />
-      <unit id="4930188782568043364" at="160,0,163,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteAttribute_WithReference_EditorBuilder_a$PROPS" />
-      <unit id="4930188782568043364" at="155,0,159,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteAttribute_WithReference_EditorBuilder_a$CONCEPTS" />
-      <unit id="4930188782568043364" at="73,42,81,5" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteAttribute_WithReference_EditorBuilder_a$1" />
-      <unit id="4930188782568043388" at="99,0,142,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteAttribute_WithReference_EditorBuilder_a$Inline_Builder0" />
-      <unit id="4930188782568043364" at="36,0,164,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteAttribute_WithReference_EditorBuilder_a" />
+      <unit id="4930188782568043364" at="151,0,154,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteAttribute_WithReference_EditorBuilder$LINKS" />
+      <unit id="4930188782568043364" at="160,0,163,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteAttribute_WithReference_EditorBuilder$PROPS" />
+      <unit id="4930188782568043364" at="155,0,159,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteAttribute_WithReference_EditorBuilder$CONCEPTS" />
+      <unit id="4930188782568043364" at="73,42,81,5" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteAttribute_WithReference_EditorBuilder$1" />
+      <unit id="4930188782568043388" at="99,0,142,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteAttribute_WithReference_EditorBuilder$Inline_Builder0" />
+      <unit id="4930188782568043364" at="36,0,164,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteAttribute_WithReference_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:d793eea9-8b7b-4c58-a7a2-62336f54dcce(jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor)/4930188782568043443">
     <file name="TestSubstituteAttribute_RegularEditor_Editor.java">
-      <node id="4930188782568043443" at="11,79,12,103" concept="8" />
+      <node id="4930188782568043443" at="11,79,12,101" concept="8" />
       <node id="4930188782568043443" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4930188782568043443" at="11,79,12,103" />
+      <scope id="4930188782568043443" at="11,79,12,101" />
       <scope id="4930188782568043443" at="11,0,14,0">
         <var name="editorContext" id="4930188782568043443" />
         <var name="node" id="4930188782568043443" />
       </scope>
       <unit id="4930188782568043443" at="10,0,15,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteAttribute_RegularEditor_Editor" />
     </file>
-    <file name="TestSubstituteAttribute_RegularEditor_EditorBuilder_a.java">
-      <node id="4930188782568043443" at="23,117,24,19" concept="12" />
+    <file name="TestSubstituteAttribute_RegularEditor_EditorBuilder.java">
+      <node id="4930188782568043443" at="23,115,24,19" concept="12" />
       <node id="4930188782568043443" at="24,19,25,18" concept="2" />
       <node id="4930188782568043443" at="30,26,31,18" concept="8" />
       <node id="4930188782568043443" at="34,39,35,32" concept="8" />
@@ -7933,14 +7933,14 @@
       <node id="4930188782568043494" at="58,40,59,22" concept="8" />
       <node id="4930188782568043443" at="20,0,22,0" concept="3" trace="myNode" />
       <node id="4930188782568043443" at="34,0,37,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="4930188782568043443" at="23,0,27,0" concept="1" trace="TestSubstituteAttribute_RegularEditor_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4930188782568043443" at="23,0,27,0" concept="1" trace="TestSubstituteAttribute_RegularEditor_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4930188782568043443" at="28,0,33,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="4930188782568043474" at="47,0,53,0" concept="6" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4930188782568043494" at="53,0,61,0" concept="6" trace="createAttributedNodeCell_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4930188782568043443" at="38,0,47,0" concept="6" trace="createCollection_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="4930188782568043443" at="30,26,31,18" />
       <scope id="4930188782568043443" at="34,39,35,32" />
-      <scope id="4930188782568043443" at="23,117,25,18" />
+      <scope id="4930188782568043443" at="23,115,25,18" />
       <scope id="4930188782568043443" at="34,0,37,0" />
       <scope id="4930188782568043443" at="23,0,27,0">
         <var name="context" id="4930188782568043443" />
@@ -7961,7 +7961,7 @@
       </scope>
       <scope id="4930188782568043494" at="53,0,61,0" />
       <scope id="4930188782568043443" at="38,0,47,0" />
-      <unit id="4930188782568043443" at="19,0,62,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteAttribute_RegularEditor_EditorBuilder_a" />
+      <unit id="4930188782568043443" at="19,0,62,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteAttribute_RegularEditor_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:d793eea9-8b7b-4c58-a7a2-62336f54dcce(jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor)/4930188782568372173">
@@ -8112,17 +8112,17 @@
   </root>
   <root nodeRef="r:d793eea9-8b7b-4c58-a7a2-62336f54dcce(jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor)/705057939849506470">
     <file name="TestSubstituteParentWithConstraints_Editor.java">
-      <node id="705057939849506470" at="11,79,12,101" concept="8" />
+      <node id="705057939849506470" at="11,79,12,99" concept="8" />
       <node id="705057939849506470" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="705057939849506470" at="11,79,12,101" />
+      <scope id="705057939849506470" at="11,79,12,99" />
       <scope id="705057939849506470" at="11,0,14,0">
         <var name="editorContext" id="705057939849506470" />
         <var name="node" id="705057939849506470" />
       </scope>
       <unit id="705057939849506470" at="10,0,15,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentWithConstraints_Editor" />
     </file>
-    <file name="TestSubstituteParentWithConstraints_EditorBuilder_a.java">
-      <node id="705057939849506470" at="30,115,31,19" concept="12" />
+    <file name="TestSubstituteParentWithConstraints_EditorBuilder.java">
+      <node id="705057939849506470" at="30,113,31,19" concept="12" />
       <node id="705057939849506470" at="31,19,32,18" concept="2" />
       <node id="705057939849506470" at="37,26,38,18" concept="8" />
       <node id="705057939849506470" at="41,39,42,32" concept="8" />
@@ -8472,7 +8472,7 @@
       <node id="705057939849506470" at="568,87,571,7" concept="5" />
       <node id="705057939849506470" at="571,7,574,7" concept="5" />
       <node id="705057939849506470" at="594,0,597,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="705057939849506470" at="30,0,34,0" concept="1" trace="TestSubstituteParentWithConstraints_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="705057939849506470" at="30,0,34,0" concept="1" trace="TestSubstituteParentWithConstraints_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="705057939849506470" at="119,0,123,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="705057939849506470" at="127,0,131,0" concept="1" trace="childCanBeParentSingleRoleHandler_yhoiih_c2a#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="705057939849506470" at="203,0,207,0" concept="6" trace="createRefNode_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -8570,7 +8570,7 @@
       <scope id="705057939849506470" at="572,42,573,63" />
       <scope id="705057939849506470" at="590,17,591,42" />
       <scope id="705057939849506470" at="594,40,595,43" />
-      <scope id="705057939849506470" at="30,115,32,18" />
+      <scope id="705057939849506470" at="30,113,32,18" />
       <scope id="705057939849506470" at="119,40,121,33">
         <var name="provider" id="705057939849506470" />
       </scope>
@@ -8865,14 +8865,14 @@
         <var name="style" id="705057939849506470" />
       </scope>
       <scope id="705057939849506470" at="72,0,103,0" />
-      <unit id="705057939849506470" at="608,0,616,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentWithConstraints_EditorBuilder_a$LINKS" />
-      <unit id="705057939849506470" at="123,0,178,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentWithConstraints_EditorBuilder_a$childCanBeParentSingleRoleHandler_yhoiih_c2a" />
-      <unit id="705057939849506470" at="207,0,262,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentWithConstraints_EditorBuilder_a$childCanBeAncestorSingleRoleHandler_yhoiih_g2a" />
-      <unit id="705057939849506470" at="291,0,346,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentWithConstraints_EditorBuilder_a$childCanBeChildSingleRoleHandler_yhoiih_k2a" />
-      <unit id="705057939849506470" at="375,0,430,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentWithConstraints_EditorBuilder_a$childWrapperCanBeParentSingleRoleHandler_yhoiih_o2a" />
-      <unit id="705057939849506470" at="459,0,514,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentWithConstraints_EditorBuilder_a$childWrapperCanBeAncestorSingleRoleHandler_yhoiih_s2a" />
-      <unit id="705057939849506470" at="543,0,598,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentWithConstraints_EditorBuilder_a$childWrapperCanBeChildSingleRoleHandler_yhoiih_w2a" />
-      <unit id="705057939849506470" at="26,0,617,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentWithConstraints_EditorBuilder_a" />
+      <unit id="705057939849506470" at="608,0,616,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentWithConstraints_EditorBuilder$LINKS" />
+      <unit id="705057939849506470" at="123,0,178,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentWithConstraints_EditorBuilder$childCanBeParentSingleRoleHandler_yhoiih_c2a" />
+      <unit id="705057939849506470" at="207,0,262,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentWithConstraints_EditorBuilder$childCanBeAncestorSingleRoleHandler_yhoiih_g2a" />
+      <unit id="705057939849506470" at="291,0,346,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentWithConstraints_EditorBuilder$childCanBeChildSingleRoleHandler_yhoiih_k2a" />
+      <unit id="705057939849506470" at="375,0,430,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentWithConstraints_EditorBuilder$childWrapperCanBeParentSingleRoleHandler_yhoiih_o2a" />
+      <unit id="705057939849506470" at="459,0,514,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentWithConstraints_EditorBuilder$childWrapperCanBeAncestorSingleRoleHandler_yhoiih_s2a" />
+      <unit id="705057939849506470" at="543,0,598,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentWithConstraints_EditorBuilder$childWrapperCanBeChildSingleRoleHandler_yhoiih_w2a" />
+      <unit id="705057939849506470" at="26,0,617,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentWithConstraints_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:d793eea9-8b7b-4c58-a7a2-62336f54dcce(jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor)/705057939849877141">
@@ -9505,17 +9505,17 @@
   </root>
   <root nodeRef="r:d793eea9-8b7b-4c58-a7a2-62336f54dcce(jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor)/7153261420283491157">
     <file name="TestSubstituteExceptionParent_Editor.java">
-      <node id="7153261420283491157" at="11,79,12,95" concept="8" />
+      <node id="7153261420283491157" at="11,79,12,93" concept="8" />
       <node id="7153261420283491157" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="7153261420283491157" at="11,79,12,95" />
+      <scope id="7153261420283491157" at="11,79,12,93" />
       <scope id="7153261420283491157" at="11,0,14,0">
         <var name="editorContext" id="7153261420283491157" />
         <var name="node" id="7153261420283491157" />
       </scope>
       <unit id="7153261420283491157" at="10,0,15,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteExceptionParent_Editor" />
     </file>
-    <file name="TestSubstituteExceptionParent_EditorBuilder_a.java">
-      <node id="7153261420283491157" at="30,109,31,19" concept="12" />
+    <file name="TestSubstituteExceptionParent_EditorBuilder.java">
+      <node id="7153261420283491157" at="30,107,31,19" concept="12" />
       <node id="7153261420283491157" at="31,19,32,18" concept="2" />
       <node id="7153261420283491157" at="37,26,38,18" concept="8" />
       <node id="7153261420283491157" at="41,39,42,32" concept="8" />
@@ -10289,7 +10289,7 @@
       <node id="7153261420283491157" at="1272,87,1275,7" concept="5" />
       <node id="7153261420283491157" at="1275,7,1278,7" concept="5" />
       <node id="7153261420283491157" at="1298,0,1301,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="7153261420283491157" at="30,0,34,0" concept="1" trace="TestSubstituteExceptionParent_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="7153261420283491157" at="30,0,34,0" concept="1" trace="TestSubstituteExceptionParent_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="7153261420283491157" at="151,0,155,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="7153261420283491157" at="159,0,163,0" concept="1" trace="actionCanSubstituteSingleRoleHandler_23e2cf_c2a#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="7153261420283491157" at="235,0,239,0" concept="6" trace="createRefNode_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -10507,7 +10507,7 @@
       <scope id="7153261420283491157" at="1276,42,1277,69" />
       <scope id="7153261420283491157" at="1294,17,1295,42" />
       <scope id="7153261420283491157" at="1298,40,1299,49" />
-      <scope id="7153261420283491157" at="30,109,32,18" />
+      <scope id="7153261420283491157" at="30,107,32,18" />
       <scope id="7153261420283491157" at="151,40,153,33">
         <var name="provider" id="7153261420283491157" />
       </scope>
@@ -11162,22 +11162,22 @@
         <var name="style" id="7153261420283491157" />
       </scope>
       <scope id="7153261420283491157" at="72,0,135,0" />
-      <unit id="7153261420283491157" at="1312,0,1328,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteExceptionParent_EditorBuilder_a$LINKS" />
-      <unit id="7153261420283491157" at="155,0,210,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteExceptionParent_EditorBuilder_a$actionCanSubstituteSingleRoleHandler_23e2cf_c2a" />
-      <unit id="7153261420283491157" at="239,0,294,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteExceptionParent_EditorBuilder_a$actionDescriptionTextSingleRoleHandler_23e2cf_g2a" />
-      <unit id="7153261420283491157" at="323,0,378,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteExceptionParent_EditorBuilder_a$actionIconSingleRoleHandler_23e2cf_k2a" />
-      <unit id="7153261420283491157" at="407,0,462,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteExceptionParent_EditorBuilder_a$actionMatchingTextSingleRoleHandler_23e2cf_o2a" />
-      <unit id="7153261420283491157" at="491,0,546,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteExceptionParent_EditorBuilder_a$actionTypeSingleRoleHandler_23e2cf_s2a" />
-      <unit id="7153261420283491157" at="575,0,630,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteExceptionParent_EditorBuilder_a$conceptListSingleRoleHandler_23e2cf_w2a" />
-      <unit id="7153261420283491157" at="659,0,714,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteExceptionParent_EditorBuilder_a$groupSingleRoleHandler_23e2cf_ab2a" />
-      <unit id="7153261420283491157" at="743,0,798,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteExceptionParent_EditorBuilder_a$includeMenuSingleRoleHandler_23e2cf_eb2a" />
-      <unit id="7153261420283491157" at="827,0,882,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteExceptionParent_EditorBuilder_a$wrapMenuSingleRoleHandler_23e2cf_ib2a" />
-      <unit id="7153261420283491157" at="911,0,966,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteExceptionParent_EditorBuilder_a$subconceptsSingleRoleHandler_23e2cf_mb2a" />
-      <unit id="7153261420283491157" at="995,0,1050,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteExceptionParent_EditorBuilder_a$parameterizedSingleRoleHandler_23e2cf_qb2a" />
-      <unit id="7153261420283491157" at="1079,0,1134,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteExceptionParent_EditorBuilder_a$referenceDescriptionTextSingleRoleHandler_23e2cf_ub2a" />
-      <unit id="7153261420283491157" at="1163,0,1218,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteExceptionParent_EditorBuilder_a$referenceMatchingTextSingleRoleHandler_23e2cf_yb2a" />
-      <unit id="7153261420283491157" at="1247,0,1302,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteExceptionParent_EditorBuilder_a$referenceVisibleMatchingTextSingleRoleHandler_23e2cf_cc2a" />
-      <unit id="7153261420283491157" at="26,0,1329,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteExceptionParent_EditorBuilder_a" />
+      <unit id="7153261420283491157" at="1312,0,1328,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteExceptionParent_EditorBuilder$LINKS" />
+      <unit id="7153261420283491157" at="155,0,210,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteExceptionParent_EditorBuilder$actionCanSubstituteSingleRoleHandler_23e2cf_c2a" />
+      <unit id="7153261420283491157" at="239,0,294,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteExceptionParent_EditorBuilder$actionDescriptionTextSingleRoleHandler_23e2cf_g2a" />
+      <unit id="7153261420283491157" at="323,0,378,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteExceptionParent_EditorBuilder$actionIconSingleRoleHandler_23e2cf_k2a" />
+      <unit id="7153261420283491157" at="407,0,462,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteExceptionParent_EditorBuilder$actionMatchingTextSingleRoleHandler_23e2cf_o2a" />
+      <unit id="7153261420283491157" at="491,0,546,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteExceptionParent_EditorBuilder$actionTypeSingleRoleHandler_23e2cf_s2a" />
+      <unit id="7153261420283491157" at="575,0,630,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteExceptionParent_EditorBuilder$conceptListSingleRoleHandler_23e2cf_w2a" />
+      <unit id="7153261420283491157" at="659,0,714,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteExceptionParent_EditorBuilder$groupSingleRoleHandler_23e2cf_ab2a" />
+      <unit id="7153261420283491157" at="743,0,798,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteExceptionParent_EditorBuilder$includeMenuSingleRoleHandler_23e2cf_eb2a" />
+      <unit id="7153261420283491157" at="827,0,882,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteExceptionParent_EditorBuilder$wrapMenuSingleRoleHandler_23e2cf_ib2a" />
+      <unit id="7153261420283491157" at="911,0,966,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteExceptionParent_EditorBuilder$subconceptsSingleRoleHandler_23e2cf_mb2a" />
+      <unit id="7153261420283491157" at="995,0,1050,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteExceptionParent_EditorBuilder$parameterizedSingleRoleHandler_23e2cf_qb2a" />
+      <unit id="7153261420283491157" at="1079,0,1134,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteExceptionParent_EditorBuilder$referenceDescriptionTextSingleRoleHandler_23e2cf_ub2a" />
+      <unit id="7153261420283491157" at="1163,0,1218,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteExceptionParent_EditorBuilder$referenceMatchingTextSingleRoleHandler_23e2cf_yb2a" />
+      <unit id="7153261420283491157" at="1247,0,1302,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteExceptionParent_EditorBuilder$referenceVisibleMatchingTextSingleRoleHandler_23e2cf_cc2a" />
+      <unit id="7153261420283491157" at="26,0,1329,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteExceptionParent_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:d793eea9-8b7b-4c58-a7a2-62336f54dcce(jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor)/7153261420283491203">
@@ -12307,17 +12307,17 @@
   </root>
   <root nodeRef="r:d793eea9-8b7b-4c58-a7a2-62336f54dcce(jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor)/7432042996949069421">
     <file name="TestSubstituteSmartRef_WithoutExplicitMenu_Editor.java">
-      <node id="7432042996949069421" at="11,79,12,108" concept="8" />
+      <node id="7432042996949069421" at="11,79,12,106" concept="8" />
       <node id="7432042996949069421" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="7432042996949069421" at="11,79,12,108" />
+      <scope id="7432042996949069421" at="11,79,12,106" />
       <scope id="7432042996949069421" at="11,0,14,0">
         <var name="editorContext" id="7432042996949069421" />
         <var name="node" id="7432042996949069421" />
       </scope>
       <unit id="7432042996949069421" at="10,0,15,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSmartRef_WithoutExplicitMenu_Editor" />
     </file>
-    <file name="TestSubstituteSmartRef_WithoutExplicitMenu_EditorBuilder_a.java">
-      <node id="7432042996949069421" at="44,122,45,19" concept="12" />
+    <file name="TestSubstituteSmartRef_WithoutExplicitMenu_EditorBuilder.java">
+      <node id="7432042996949069421" at="44,120,45,19" concept="12" />
       <node id="7432042996949069421" at="45,19,46,18" concept="2" />
       <node id="7432042996949069421" at="51,26,52,18" concept="8" />
       <node id="7432042996949069421" at="55,39,56,32" concept="8" />
@@ -12401,7 +12401,7 @@
       <node id="7432042996949069426" at="112,0,114,0" concept="3" trace="myNode" />
       <node id="7432042996949069421" at="55,0,58,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="7432042996949069426" at="122,0,125,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="7432042996949069421" at="44,0,48,0" concept="1" trace="TestSubstituteSmartRef_WithoutExplicitMenu_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="7432042996949069421" at="44,0,48,0" concept="1" trace="TestSubstituteSmartRef_WithoutExplicitMenu_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="7432042996949069421" at="97,0,101,5" concept="5" />
       <node id="7432042996949069421" at="49,0,54,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="7432042996949069421" at="104,205,109,22" concept="5" />
@@ -12423,7 +12423,7 @@
       <scope id="7432042996949069426" at="122,41,123,32" />
       <scope id="7432042996949069426" at="128,28,129,20" />
       <scope id="7432042996949069427" at="149,17,150,42" />
-      <scope id="7432042996949069421" at="44,122,46,18" />
+      <scope id="7432042996949069421" at="44,120,46,18" />
       <scope id="7432042996949069421" at="98,40,100,55" />
       <scope id="7432042996949069421" at="105,73,107,145">
         <var name="manager" id="7432042996949069421" />
@@ -12491,12 +12491,12 @@
         <var name="referenceLink" id="7432042996949069421" />
       </scope>
       <scope id="7432042996949069421" at="76,0,111,0" />
-      <unit id="7432042996949069421" at="176,0,179,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSmartRef_WithoutExplicitMenu_EditorBuilder_a$LINKS" />
-      <unit id="7432042996949069421" at="185,0,188,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSmartRef_WithoutExplicitMenu_EditorBuilder_a$PROPS" />
-      <unit id="7432042996949069421" at="180,0,184,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSmartRef_WithoutExplicitMenu_EditorBuilder_a$CONCEPTS" />
-      <unit id="7432042996949069421" at="78,42,93,5" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSmartRef_WithoutExplicitMenu_EditorBuilder_a$1" />
-      <unit id="7432042996949069426" at="111,0,154,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSmartRef_WithoutExplicitMenu_EditorBuilder_a$Inline_Builder0" />
-      <unit id="7432042996949069421" at="40,0,189,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSmartRef_WithoutExplicitMenu_EditorBuilder_a" />
+      <unit id="7432042996949069421" at="176,0,179,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSmartRef_WithoutExplicitMenu_EditorBuilder$LINKS" />
+      <unit id="7432042996949069421" at="185,0,188,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSmartRef_WithoutExplicitMenu_EditorBuilder$PROPS" />
+      <unit id="7432042996949069421" at="180,0,184,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSmartRef_WithoutExplicitMenu_EditorBuilder$CONCEPTS" />
+      <unit id="7432042996949069421" at="78,42,93,5" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSmartRef_WithoutExplicitMenu_EditorBuilder$1" />
+      <unit id="7432042996949069426" at="111,0,154,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSmartRef_WithoutExplicitMenu_EditorBuilder$Inline_Builder0" />
+      <unit id="7432042996949069421" at="40,0,189,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSmartRef_WithoutExplicitMenu_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:d793eea9-8b7b-4c58-a7a2-62336f54dcce(jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor)/7577899271409421186">
@@ -12903,17 +12903,17 @@
   </root>
   <root nodeRef="r:d793eea9-8b7b-4c58-a7a2-62336f54dcce(jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor)/8292814565107678860">
     <file name="TestSubstituteToWrapFromTransformMenu_Editor.java">
-      <node id="8292814565107678860" at="11,79,12,103" concept="8" />
+      <node id="8292814565107678860" at="11,79,12,101" concept="8" />
       <node id="8292814565107678860" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="8292814565107678860" at="11,79,12,103" />
+      <scope id="8292814565107678860" at="11,79,12,101" />
       <scope id="8292814565107678860" at="11,0,14,0">
         <var name="editorContext" id="8292814565107678860" />
         <var name="node" id="8292814565107678860" />
       </scope>
       <unit id="8292814565107678860" at="10,0,15,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteToWrapFromTransformMenu_Editor" />
     </file>
-    <file name="TestSubstituteToWrapFromTransformMenu_EditorBuilder_a.java">
-      <node id="8292814565107678860" at="32,117,33,19" concept="12" />
+    <file name="TestSubstituteToWrapFromTransformMenu_EditorBuilder.java">
+      <node id="8292814565107678860" at="32,115,33,19" concept="12" />
       <node id="8292814565107678860" at="33,19,34,18" concept="2" />
       <node id="8292814565107678860" at="39,26,40,18" concept="8" />
       <node id="8292814565107678860" at="43,39,44,32" concept="8" />
@@ -12946,7 +12946,7 @@
       <node id="8292814565107678860" at="89,0,90,0" concept="11" trace="PropertyAttribute$Gb" />
       <node id="8292814565107678860" at="29,0,31,0" concept="3" trace="myNode" />
       <node id="8292814565107678860" at="43,0,46,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="8292814565107678860" at="32,0,36,0" concept="1" trace="TestSubstituteToWrapFromTransformMenu_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8292814565107678860" at="32,0,36,0" concept="1" trace="TestSubstituteToWrapFromTransformMenu_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8292814565107678860" at="37,0,42,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="8292814565107678865" at="73,208,78,24" concept="5" />
       <node id="8292814565107678864" at="56,0,62,0" concept="6" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -12956,7 +12956,7 @@
       <scope id="8292814565107678860" at="39,26,40,18" />
       <scope id="8292814565107678860" at="43,39,44,32" />
       <scope id="8292814565107678865" at="79,15,80,40" />
-      <scope id="8292814565107678860" at="32,117,34,18" />
+      <scope id="8292814565107678860" at="32,115,34,18" />
       <scope id="8292814565107678865" at="74,74,76,145">
         <var name="manager" id="8292814565107678865" />
       </scope>
@@ -12982,9 +12982,9 @@
       </scope>
       <scope id="8292814565107678865" at="62,41,81,5" />
       <scope id="8292814565107678865" at="62,0,83,0" />
-      <unit id="8292814565107678860" at="84,0,87,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteToWrapFromTransformMenu_EditorBuilder_a$PROPS" />
-      <unit id="8292814565107678860" at="88,0,91,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteToWrapFromTransformMenu_EditorBuilder_a$CONCEPTS" />
-      <unit id="8292814565107678860" at="28,0,92,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteToWrapFromTransformMenu_EditorBuilder_a" />
+      <unit id="8292814565107678860" at="84,0,87,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteToWrapFromTransformMenu_EditorBuilder$PROPS" />
+      <unit id="8292814565107678860" at="88,0,91,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteToWrapFromTransformMenu_EditorBuilder$CONCEPTS" />
+      <unit id="8292814565107678860" at="28,0,92,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteToWrapFromTransformMenu_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:d793eea9-8b7b-4c58-a7a2-62336f54dcce(jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor)/8292814565107685294">
@@ -13210,17 +13210,17 @@
   </root>
   <root nodeRef="r:d793eea9-8b7b-4c58-a7a2-62336f54dcce(jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor)/8629363476786122296">
     <file name="TestSubstituteSpecialSubChild_Editor.java">
-      <node id="8629363476786122296" at="11,79,12,95" concept="8" />
+      <node id="8629363476786122296" at="11,79,12,93" concept="8" />
       <node id="8629363476786122296" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="8629363476786122296" at="11,79,12,95" />
+      <scope id="8629363476786122296" at="11,79,12,93" />
       <scope id="8629363476786122296" at="11,0,14,0">
         <var name="editorContext" id="8629363476786122296" />
         <var name="node" id="8629363476786122296" />
       </scope>
       <unit id="8629363476786122296" at="10,0,15,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialSubChild_Editor" />
     </file>
-    <file name="TestSubstituteSpecialSubChild_EditorBuilder_a.java">
-      <node id="8629363476786122296" at="16,109,17,19" concept="12" />
+    <file name="TestSubstituteSpecialSubChild_EditorBuilder.java">
+      <node id="8629363476786122296" at="16,107,17,19" concept="12" />
       <node id="8629363476786122296" at="17,19,18,18" concept="2" />
       <node id="8629363476786122296" at="23,26,24,18" concept="8" />
       <node id="8629363476786122296" at="27,39,28,30" concept="8" />
@@ -13232,12 +13232,12 @@
       <node id="8629363476786122298" at="36,34,37,22" concept="8" />
       <node id="8629363476786122296" at="13,0,15,0" concept="3" trace="myNode" />
       <node id="8629363476786122296" at="27,0,30,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="8629363476786122296" at="16,0,20,0" concept="1" trace="TestSubstituteSpecialSubChild_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8629363476786122296" at="16,0,20,0" concept="1" trace="TestSubstituteSpecialSubChild_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8629363476786122296" at="21,0,26,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="8629363476786122298" at="31,0,39,0" concept="6" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="8629363476786122296" at="23,26,24,18" />
       <scope id="8629363476786122296" at="27,39,28,30" />
-      <scope id="8629363476786122296" at="16,109,18,18" />
+      <scope id="8629363476786122296" at="16,107,18,18" />
       <scope id="8629363476786122296" at="27,0,30,0" />
       <scope id="8629363476786122296" at="16,0,20,0">
         <var name="context" id="8629363476786122296" />
@@ -13248,22 +13248,22 @@
         <var name="editorCell" id="8629363476786122298" />
       </scope>
       <scope id="8629363476786122298" at="31,0,39,0" />
-      <unit id="8629363476786122296" at="12,0,40,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialSubChild_EditorBuilder_a" />
+      <unit id="8629363476786122296" at="12,0,40,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSpecialSubChild_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:d793eea9-8b7b-4c58-a7a2-62336f54dcce(jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor)/8998492695587447553">
     <file name="TestSubstituteParent_Editor.java">
-      <node id="8998492695587447553" at="11,79,12,86" concept="8" />
+      <node id="8998492695587447553" at="11,79,12,84" concept="8" />
       <node id="8998492695587447553" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="8998492695587447553" at="11,79,12,86" />
+      <scope id="8998492695587447553" at="11,79,12,84" />
       <scope id="8998492695587447553" at="11,0,14,0">
         <var name="editorContext" id="8998492695587447553" />
         <var name="node" id="8998492695587447553" />
       </scope>
       <unit id="8998492695587447553" at="10,0,15,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_Editor" />
     </file>
-    <file name="TestSubstituteParent_EditorBuilder_a.java">
-      <node id="8998492695587447553" at="36,100,37,19" concept="12" />
+    <file name="TestSubstituteParent_EditorBuilder.java">
+      <node id="8998492695587447553" at="36,98,37,19" concept="12" />
       <node id="8998492695587447553" at="37,19,38,18" concept="2" />
       <node id="8998492695587447553" at="43,26,44,18" concept="8" />
       <node id="8998492695587447553" at="47,39,48,32" concept="8" />
@@ -14480,7 +14480,7 @@
       <node id="8998492695587447553" at="2190,0,2193,0" concept="6" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="8998492695587447553" at="2193,0,2196,0" concept="6" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="8998492695587447553" at="2237,96,2240,9" concept="5" />
-      <node id="8998492695587447553" at="36,0,40,0" concept="1" trace="TestSubstituteParent_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8998492695587447553" at="36,0,40,0" concept="1" trace="TestSubstituteParent_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8998492695587447553" at="171,0,175,0" concept="1" trace="simpleActionListHandler_tkqw7v_c2a#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="8998492695587447553" at="176,0,180,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="8998492695587447553" at="209,97,213,9" concept="5" />
@@ -14960,7 +14960,7 @@
       <scope id="8998492695587447553" at="2193,48,2194,69" />
       <scope id="8998492695587447553" at="2211,17,2212,42" />
       <scope id="8998492695587447553" at="2238,34,2239,91" />
-      <scope id="8998492695587447553" at="36,100,38,18" />
+      <scope id="8998492695587447553" at="36,98,38,18" />
       <scope id="8998492695587447553" at="171,87,173,25" />
       <scope id="8998492695587447553" at="210,122,212,146" />
       <scope id="8998492695587447553" at="216,34,218,142" />
@@ -16023,32 +16023,32 @@
         <var name="style" id="8998492695587447553" />
       </scope>
       <scope id="8998492695587447553" at="78,0,139,0" />
-      <unit id="8998492695587447553" at="2280,0,2289,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder_a$CONCEPTS" />
-      <unit id="8998492695587447553" at="2254,0,2279,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder_a$LINKS" />
-      <unit id="8998492695587447553" at="167,0,234,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder_a$simpleActionListHandler_tkqw7v_c2a" />
-      <unit id="8998492695587447553" at="262,0,329,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder_a$parameterizedQueryListHandler_tkqw7v_f2a" />
-      <unit id="8998492695587447553" at="357,0,424,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder_a$wrapDefaultSubstituteMenuFromSubsituteListHandler_tkqw7v_i2a" />
-      <unit id="8998492695587447553" at="452,0,519,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder_a$wrapDefaultSubstituteMenuWithFunctionFromSubsituteListHandler_tkqw7v_l2a" />
-      <unit id="8998492695587447553" at="547,0,614,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder_a$wrapNamedSubstituteMenuFromSubsituteListHandler_tkqw7v_o2a" />
-      <unit id="8998492695587447553" at="642,0,709,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder_a$conceptsMenuListHandler_tkqw7v_r2a" />
-      <unit id="8998492695587447553" at="737,0,804,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder_a$addConceptListHandler_tkqw7v_u2a" />
-      <unit id="8998492695587447553" at="825,0,892,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder_a$subconceptsListHandler_tkqw7v_w2a" />
-      <unit id="8998492695587447553" at="913,0,980,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder_a$smartReferenceWithMenuListHandler_tkqw7v_y2a" />
-      <unit id="8998492695587447553" at="1001,0,1068,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder_a$smartReferenceWithoutMenuListHandler_tkqw7v_ab2a" />
-      <unit id="8998492695587447553" at="1089,0,1156,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder_a$smartReferenceWithoutMenuSubconceptListHandler_tkqw7v_cb2a" />
-      <unit id="8998492695587447553" at="1177,0,1244,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder_a$smartReferenceInterfaceListHandler_tkqw7v_eb2a" />
-      <unit id="8998492695587447553" at="1361,0,1428,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder_a$childrenToContributeMenuListHandler_tkqw7v_ib2a" />
-      <unit id="8998492695587447553" at="1737,0,1804,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder_a$superChildListHandler_tkqw7v_qb2a" />
-      <unit id="8998492695587447553" at="1825,0,1892,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder_a$notSubconceptListHandler_tkqw7v_sb2a" />
-      <unit id="8998492695587447553" at="1913,0,1980,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder_a$ambigousSameConceptsListHandler_tkqw7v_ub2a" />
-      <unit id="8998492695587447553" at="2001,0,2068,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder_a$ambigousWrapSameConceptsListHandler_tkqw7v_wb2a" />
-      <unit id="8998492695587447553" at="2089,0,2156,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder_a$ambigousDifferentConceptsListHandler_tkqw7v_yb2a" />
-      <unit id="8998492695587447553" at="2177,0,2244,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder_a$ambigousWrapDifferentConceptsListHandler_tkqw7v_ac2a" />
-      <unit id="8998492695587447553" at="1265,0,1340,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder_a$childrenForEmptyCellListHandler_tkqw7v_gb2a" />
-      <unit id="8998492695587447553" at="1449,0,1524,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder_a$wrapDefaultSubstituteMenuFromTransformListHandler_tkqw7v_kb2a" />
-      <unit id="8998492695587447553" at="1545,0,1620,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder_a$wrapDefaultSubstituteMenuWithFunctionFromTransformListHandler_tkqw7v_mb2a" />
-      <unit id="8998492695587447553" at="1641,0,1716,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder_a$wrapNamedSubstituteMenuFromTransformMenuListHandler_tkqw7v_ob2a" />
-      <unit id="8998492695587447553" at="32,0,2290,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder_a" />
+      <unit id="8998492695587447553" at="2280,0,2289,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder$CONCEPTS" />
+      <unit id="8998492695587447553" at="2254,0,2279,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder$LINKS" />
+      <unit id="8998492695587447553" at="167,0,234,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder$simpleActionListHandler_tkqw7v_c2a" />
+      <unit id="8998492695587447553" at="262,0,329,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder$parameterizedQueryListHandler_tkqw7v_f2a" />
+      <unit id="8998492695587447553" at="357,0,424,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder$wrapDefaultSubstituteMenuFromSubsituteListHandler_tkqw7v_i2a" />
+      <unit id="8998492695587447553" at="452,0,519,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder$wrapDefaultSubstituteMenuWithFunctionFromSubsituteListHandler_tkqw7v_l2a" />
+      <unit id="8998492695587447553" at="547,0,614,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder$wrapNamedSubstituteMenuFromSubsituteListHandler_tkqw7v_o2a" />
+      <unit id="8998492695587447553" at="642,0,709,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder$conceptsMenuListHandler_tkqw7v_r2a" />
+      <unit id="8998492695587447553" at="737,0,804,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder$addConceptListHandler_tkqw7v_u2a" />
+      <unit id="8998492695587447553" at="825,0,892,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder$subconceptsListHandler_tkqw7v_w2a" />
+      <unit id="8998492695587447553" at="913,0,980,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder$smartReferenceWithMenuListHandler_tkqw7v_y2a" />
+      <unit id="8998492695587447553" at="1001,0,1068,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder$smartReferenceWithoutMenuListHandler_tkqw7v_ab2a" />
+      <unit id="8998492695587447553" at="1089,0,1156,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder$smartReferenceWithoutMenuSubconceptListHandler_tkqw7v_cb2a" />
+      <unit id="8998492695587447553" at="1177,0,1244,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder$smartReferenceInterfaceListHandler_tkqw7v_eb2a" />
+      <unit id="8998492695587447553" at="1361,0,1428,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder$childrenToContributeMenuListHandler_tkqw7v_ib2a" />
+      <unit id="8998492695587447553" at="1737,0,1804,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder$superChildListHandler_tkqw7v_qb2a" />
+      <unit id="8998492695587447553" at="1825,0,1892,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder$notSubconceptListHandler_tkqw7v_sb2a" />
+      <unit id="8998492695587447553" at="1913,0,1980,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder$ambigousSameConceptsListHandler_tkqw7v_ub2a" />
+      <unit id="8998492695587447553" at="2001,0,2068,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder$ambigousWrapSameConceptsListHandler_tkqw7v_wb2a" />
+      <unit id="8998492695587447553" at="2089,0,2156,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder$ambigousDifferentConceptsListHandler_tkqw7v_yb2a" />
+      <unit id="8998492695587447553" at="2177,0,2244,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder$ambigousWrapDifferentConceptsListHandler_tkqw7v_ac2a" />
+      <unit id="8998492695587447553" at="1265,0,1340,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder$childrenForEmptyCellListHandler_tkqw7v_gb2a" />
+      <unit id="8998492695587447553" at="1449,0,1524,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder$wrapDefaultSubstituteMenuFromTransformListHandler_tkqw7v_kb2a" />
+      <unit id="8998492695587447553" at="1545,0,1620,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder$wrapDefaultSubstituteMenuWithFunctionFromTransformListHandler_tkqw7v_mb2a" />
+      <unit id="8998492695587447553" at="1641,0,1716,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder$wrapNamedSubstituteMenuFromTransformMenuListHandler_tkqw7v_ob2a" />
+      <unit id="8998492695587447553" at="32,0,2290,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParent_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:d793eea9-8b7b-4c58-a7a2-62336f54dcce(jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor)/8998492695587447825">
@@ -17156,17 +17156,17 @@
   </root>
   <root nodeRef="r:d793eea9-8b7b-4c58-a7a2-62336f54dcce(jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor)/8998492695587456021">
     <file name="TestSubstituteChild_Editor.java">
-      <node id="8998492695587456021" at="11,79,12,85" concept="8" />
+      <node id="8998492695587456021" at="11,79,12,83" concept="8" />
       <node id="8998492695587456021" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="8998492695587456021" at="11,79,12,85" />
+      <scope id="8998492695587456021" at="11,79,12,83" />
       <scope id="8998492695587456021" at="11,0,14,0">
         <var name="editorContext" id="8998492695587456021" />
         <var name="node" id="8998492695587456021" />
       </scope>
       <unit id="8998492695587456021" at="10,0,15,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteChild_Editor" />
     </file>
-    <file name="TestSubstituteChild_EditorBuilder_a.java">
-      <node id="8998492695587456021" at="38,99,39,19" concept="12" />
+    <file name="TestSubstituteChild_EditorBuilder.java">
+      <node id="8998492695587456021" at="38,97,39,19" concept="12" />
       <node id="8998492695587456021" at="39,19,40,18" concept="2" />
       <node id="8998492695587456021" at="45,26,46,18" concept="8" />
       <node id="8998492695587456021" at="49,39,50,32" concept="8" />
@@ -17221,7 +17221,7 @@
       <node id="8998492695587456021" at="121,0,122,0" concept="11" trace="name$MnvL" />
       <node id="8998492695587456021" at="35,0,37,0" concept="3" trace="myNode" />
       <node id="8998492695587456021" at="49,0,52,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="8998492695587456021" at="38,0,42,0" concept="1" trace="TestSubstituteChild_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8998492695587456021" at="38,0,42,0" concept="1" trace="TestSubstituteChild_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8998492695587456021" at="43,0,48,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="8998492695587456040" at="83,208,88,24" concept="5" />
       <node id="8998492695587456039" at="64,0,72,0" concept="6" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -17233,7 +17233,7 @@
       <scope id="8998492695587456021" at="45,26,46,18" />
       <scope id="8998492695587456021" at="49,39,50,32" />
       <scope id="8998492695587456040" at="89,15,90,40" />
-      <scope id="8998492695587456021" at="38,99,40,18" />
+      <scope id="8998492695587456021" at="38,97,40,18" />
       <scope id="8998492695587456040" at="84,74,86,145">
         <var name="manager" id="8998492695587456040" />
       </scope>
@@ -17269,9 +17269,9 @@
       </scope>
       <scope id="8998492695587456040" at="72,41,91,5" />
       <scope id="8998492695587456040" at="72,0,93,0" />
-      <unit id="8998492695587456021" at="120,0,123,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteChild_EditorBuilder_a$PROPS" />
-      <unit id="8998492695587456021" at="115,0,119,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteChild_EditorBuilder_a$CONCEPTS" />
-      <unit id="8998492695587456021" at="34,0,124,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteChild_EditorBuilder_a" />
+      <unit id="8998492695587456021" at="120,0,123,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteChild_EditorBuilder$PROPS" />
+      <unit id="8998492695587456021" at="115,0,119,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteChild_EditorBuilder$CONCEPTS" />
+      <unit id="8998492695587456021" at="34,0,124,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteChild_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:d793eea9-8b7b-4c58-a7a2-62336f54dcce(jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor)/8998492695587525063">
@@ -17429,17 +17429,17 @@
   </root>
   <root nodeRef="r:d793eea9-8b7b-4c58-a7a2-62336f54dcce(jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor)/8998492695590967200">
     <file name="TestSubstituteSubChild1_Editor.java">
-      <node id="8998492695590967200" at="11,79,12,89" concept="8" />
+      <node id="8998492695590967200" at="11,79,12,87" concept="8" />
       <node id="8998492695590967200" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="8998492695590967200" at="11,79,12,89" />
+      <scope id="8998492695590967200" at="11,79,12,87" />
       <scope id="8998492695590967200" at="11,0,14,0">
         <var name="editorContext" id="8998492695590967200" />
         <var name="node" id="8998492695590967200" />
       </scope>
       <unit id="8998492695590967200" at="10,0,15,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSubChild1_Editor" />
     </file>
-    <file name="TestSubstituteSubChild1_EditorBuilder_a.java">
-      <node id="8998492695590967200" at="43,103,44,19" concept="12" />
+    <file name="TestSubstituteSubChild1_EditorBuilder.java">
+      <node id="8998492695590967200" at="43,101,44,19" concept="12" />
       <node id="8998492695590967200" at="44,19,45,18" concept="2" />
       <node id="8998492695590967200" at="50,26,51,18" concept="8" />
       <node id="8998492695590967200" at="54,39,55,32" concept="8" />
@@ -17531,7 +17531,7 @@
       <node id="8998492695590967200" at="154,87,157,7" concept="5" />
       <node id="8998492695590967200" at="157,7,160,7" concept="5" />
       <node id="8998492695590967200" at="176,0,179,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="8998492695590967200" at="43,0,47,0" concept="1" trace="TestSubstituteSubChild1_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8998492695590967200" at="43,0,47,0" concept="1" trace="TestSubstituteSubChild1_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8998492695590967200" at="125,0,129,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="8998492695590967200" at="133,0,137,0" concept="1" trace="conceptToWrapSingleRoleHandler_paj2j5_f0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="8998492695590967200" at="48,0,53,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -17557,7 +17557,7 @@
       <scope id="8998492695590967200" at="158,42,159,54" />
       <scope id="8998492695590967200" at="172,17,173,42" />
       <scope id="8998492695590967200" at="176,40,177,34" />
-      <scope id="8998492695590967200" at="43,103,45,18" />
+      <scope id="8998492695590967200" at="43,101,45,18" />
       <scope id="8998492695590967205" at="90,74,92,145">
         <var name="manager" id="8998492695590967205" />
       </scope>
@@ -17631,26 +17631,26 @@
       <scope id="8998492695590967200" at="162,0,176,0" />
       <scope id="8998492695590967205" at="78,41,97,5" />
       <scope id="8998492695590967205" at="78,0,99,0" />
-      <unit id="8998492695590967200" at="191,0,194,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSubChild1_EditorBuilder_a$PROPS" />
-      <unit id="8998492695590967200" at="195,0,198,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSubChild1_EditorBuilder_a$CONCEPTS" />
-      <unit id="8998492695590967200" at="199,0,202,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSubChild1_EditorBuilder_a$LINKS" />
-      <unit id="8998492695590967200" at="129,0,180,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSubChild1_EditorBuilder_a$conceptToWrapSingleRoleHandler_paj2j5_f0" />
-      <unit id="8998492695590967200" at="39,0,203,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSubChild1_EditorBuilder_a" />
+      <unit id="8998492695590967200" at="191,0,194,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSubChild1_EditorBuilder$PROPS" />
+      <unit id="8998492695590967200" at="195,0,198,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSubChild1_EditorBuilder$CONCEPTS" />
+      <unit id="8998492695590967200" at="199,0,202,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSubChild1_EditorBuilder$LINKS" />
+      <unit id="8998492695590967200" at="129,0,180,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSubChild1_EditorBuilder$conceptToWrapSingleRoleHandler_paj2j5_f0" />
+      <unit id="8998492695590967200" at="39,0,203,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSubChild1_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:d793eea9-8b7b-4c58-a7a2-62336f54dcce(jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor)/8998492695590967246">
     <file name="TestSubstituteSubChild2_Editor.java">
-      <node id="8998492695590967246" at="11,79,12,89" concept="8" />
+      <node id="8998492695590967246" at="11,79,12,87" concept="8" />
       <node id="8998492695590967246" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="8998492695590967246" at="11,79,12,89" />
+      <scope id="8998492695590967246" at="11,79,12,87" />
       <scope id="8998492695590967246" at="11,0,14,0">
         <var name="editorContext" id="8998492695590967246" />
         <var name="node" id="8998492695590967246" />
       </scope>
       <unit id="8998492695590967246" at="10,0,15,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSubChild2_Editor" />
     </file>
-    <file name="TestSubstituteSubChild2_EditorBuilder_a.java">
-      <node id="8998492695590967246" at="35,103,36,19" concept="12" />
+    <file name="TestSubstituteSubChild2_EditorBuilder.java">
+      <node id="8998492695590967246" at="35,101,36,19" concept="12" />
       <node id="8998492695590967246" at="36,19,37,18" concept="2" />
       <node id="8998492695590967246" at="42,26,43,18" concept="8" />
       <node id="8998492695590967246" at="46,39,47,32" concept="8" />
@@ -17702,7 +17702,7 @@
       <node id="8998492695590967246" at="115,0,116,0" concept="11" trace="PropertyAttribute$Gb" />
       <node id="8998492695590967246" at="32,0,34,0" concept="3" trace="myNode" />
       <node id="8998492695590967246" at="46,0,49,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="8998492695590967246" at="35,0,39,0" concept="1" trace="TestSubstituteSubChild2_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8998492695590967246" at="35,0,39,0" concept="1" trace="TestSubstituteSubChild2_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8998492695590967246" at="40,0,45,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="8998492695590967251" at="78,208,83,24" concept="5" />
       <node id="8998492695590967250" at="61,0,67,0" concept="6" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -17714,7 +17714,7 @@
       <scope id="8998492695590967246" at="42,26,43,18" />
       <scope id="8998492695590967246" at="46,39,47,32" />
       <scope id="8998492695590967251" at="84,15,85,40" />
-      <scope id="8998492695590967246" at="35,103,37,18" />
+      <scope id="8998492695590967246" at="35,101,37,18" />
       <scope id="8998492695590967251" at="79,74,81,145">
         <var name="manager" id="8998492695590967251" />
       </scope>
@@ -17750,24 +17750,24 @@
       </scope>
       <scope id="8998492695590967251" at="67,41,86,5" />
       <scope id="8998492695590967251" at="67,0,88,0" />
-      <unit id="8998492695590967246" at="110,0,113,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSubChild2_EditorBuilder_a$PROPS" />
-      <unit id="8998492695590967246" at="114,0,117,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSubChild2_EditorBuilder_a$CONCEPTS" />
-      <unit id="8998492695590967246" at="31,0,118,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSubChild2_EditorBuilder_a" />
+      <unit id="8998492695590967246" at="110,0,113,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSubChild2_EditorBuilder$PROPS" />
+      <unit id="8998492695590967246" at="114,0,117,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSubChild2_EditorBuilder$CONCEPTS" />
+      <unit id="8998492695590967246" at="31,0,118,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSubChild2_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:d793eea9-8b7b-4c58-a7a2-62336f54dcce(jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor)/8998492695590967283">
     <file name="TestSubstituteSubChildSmartReference_WithMenu_Editor.java">
-      <node id="8998492695590967283" at="11,79,12,111" concept="8" />
+      <node id="8998492695590967283" at="11,79,12,109" concept="8" />
       <node id="8998492695590967283" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="8998492695590967283" at="11,79,12,111" />
+      <scope id="8998492695590967283" at="11,79,12,109" />
       <scope id="8998492695590967283" at="11,0,14,0">
         <var name="editorContext" id="8998492695590967283" />
         <var name="node" id="8998492695590967283" />
       </scope>
       <unit id="8998492695590967283" at="10,0,15,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSubChildSmartReference_WithMenu_Editor" />
     </file>
-    <file name="TestSubstituteSubChildSmartReference_WithMenu_EditorBuilder_a.java">
-      <node id="8998492695590967283" at="44,125,45,19" concept="12" />
+    <file name="TestSubstituteSubChildSmartReference_WithMenu_EditorBuilder.java">
+      <node id="8998492695590967283" at="44,123,45,19" concept="12" />
       <node id="8998492695590967283" at="45,19,46,18" concept="2" />
       <node id="8998492695590967283" at="51,26,52,18" concept="8" />
       <node id="8998492695590967283" at="55,39,56,32" concept="8" />
@@ -17851,7 +17851,7 @@
       <node id="8998492695591022758" at="112,0,114,0" concept="3" trace="myNode" />
       <node id="8998492695590967283" at="55,0,58,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="8998492695591022758" at="122,0,125,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="8998492695590967283" at="44,0,48,0" concept="1" trace="TestSubstituteSubChildSmartReference_WithMenu_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8998492695590967283" at="44,0,48,0" concept="1" trace="TestSubstituteSubChildSmartReference_WithMenu_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8998492695590967283" at="97,0,101,5" concept="5" />
       <node id="8998492695590967283" at="49,0,54,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="8998492695590967283" at="104,205,109,22" concept="5" />
@@ -17873,7 +17873,7 @@
       <scope id="8998492695591022758" at="122,41,123,32" />
       <scope id="8998492695591022758" at="128,28,129,20" />
       <scope id="8998492695591022773" at="149,17,150,42" />
-      <scope id="8998492695590967283" at="44,125,46,18" />
+      <scope id="8998492695590967283" at="44,123,46,18" />
       <scope id="8998492695590967283" at="98,40,100,55" />
       <scope id="8998492695590967283" at="105,73,107,145">
         <var name="manager" id="8998492695590967283" />
@@ -17941,12 +17941,12 @@
         <var name="referenceLink" id="8998492695590967283" />
       </scope>
       <scope id="8998492695590967283" at="76,0,111,0" />
-      <unit id="8998492695590967283" at="176,0,179,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSubChildSmartReference_WithMenu_EditorBuilder_a$LINKS" />
-      <unit id="8998492695590967283" at="185,0,188,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSubChildSmartReference_WithMenu_EditorBuilder_a$PROPS" />
-      <unit id="8998492695590967283" at="180,0,184,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSubChildSmartReference_WithMenu_EditorBuilder_a$CONCEPTS" />
-      <unit id="8998492695590967283" at="78,42,93,5" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSubChildSmartReference_WithMenu_EditorBuilder_a$1" />
-      <unit id="8998492695591022758" at="111,0,154,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSubChildSmartReference_WithMenu_EditorBuilder_a$Inline_Builder0" />
-      <unit id="8998492695590967283" at="40,0,189,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSubChildSmartReference_WithMenu_EditorBuilder_a" />
+      <unit id="8998492695590967283" at="176,0,179,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSubChildSmartReference_WithMenu_EditorBuilder$LINKS" />
+      <unit id="8998492695590967283" at="185,0,188,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSubChildSmartReference_WithMenu_EditorBuilder$PROPS" />
+      <unit id="8998492695590967283" at="180,0,184,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSubChildSmartReference_WithMenu_EditorBuilder$CONCEPTS" />
+      <unit id="8998492695590967283" at="78,42,93,5" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSubChildSmartReference_WithMenu_EditorBuilder$1" />
+      <unit id="8998492695591022758" at="111,0,154,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSubChildSmartReference_WithMenu_EditorBuilder$Inline_Builder0" />
+      <unit id="8998492695590967283" at="40,0,189,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSubChildSmartReference_WithMenu_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:d793eea9-8b7b-4c58-a7a2-62336f54dcce(jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor)/8998492695591040559">
@@ -18095,17 +18095,17 @@
   </root>
   <root nodeRef="r:d793eea9-8b7b-4c58-a7a2-62336f54dcce(jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor)/8998492695591110518">
     <file name="TestSubstituteParentToReference_Editor.java">
-      <node id="8998492695591110518" at="11,79,12,97" concept="8" />
+      <node id="8998492695591110518" at="11,79,12,95" concept="8" />
       <node id="8998492695591110518" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="8998492695591110518" at="11,79,12,97" />
+      <scope id="8998492695591110518" at="11,79,12,95" />
       <scope id="8998492695591110518" at="11,0,14,0">
         <var name="editorContext" id="8998492695591110518" />
         <var name="node" id="8998492695591110518" />
       </scope>
       <unit id="8998492695591110518" at="10,0,15,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentToReference_Editor" />
     </file>
-    <file name="TestSubstituteParentToReference_EditorBuilder_a.java">
-      <node id="8998492695591110518" at="45,111,46,19" concept="12" />
+    <file name="TestSubstituteParentToReference_EditorBuilder.java">
+      <node id="8998492695591110518" at="45,109,46,19" concept="12" />
       <node id="8998492695591110518" at="46,19,47,18" concept="2" />
       <node id="8998492695591110518" at="52,26,53,18" concept="8" />
       <node id="8998492695591110518" at="56,39,57,32" concept="8" />
@@ -18272,7 +18272,7 @@
       <node id="8998492695591110518" at="259,0,262,0" concept="6" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="8998492695591110518" at="262,0,265,0" concept="6" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="8998492695591110518" at="306,96,309,9" concept="5" />
-      <node id="8998492695591110518" at="45,0,49,0" concept="1" trace="TestSubstituteParentToReference_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8998492695591110518" at="45,0,49,0" concept="1" trace="TestSubstituteParentToReference_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8998492695591110518" at="155,0,159,0" concept="1" trace="childrenListHandler_86wpkp_c3a#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="8998492695591110518" at="160,0,164,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="8998492695591110518" at="193,97,197,9" concept="5" />
@@ -18327,7 +18327,7 @@
       <scope id="8998492695591110518" at="262,48,263,66" />
       <scope id="8998492695591110518" at="280,17,281,42" />
       <scope id="8998492695591110518" at="307,34,308,91" />
-      <scope id="8998492695591110518" at="45,111,47,18" />
+      <scope id="8998492695591110518" at="45,109,47,18" />
       <scope id="8998492695591110576" at="90,74,92,145">
         <var name="manager" id="8998492695591110576" />
       </scope>
@@ -18462,27 +18462,27 @@
         <var name="elementNode" id="8998492695591110518" />
         <var name="isEmptyCell" id="8998492695591110518" />
       </scope>
-      <unit id="8998492695591110518" at="323,0,326,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentToReference_EditorBuilder_a$PROPS" />
-      <unit id="8998492695591110518" at="333,0,337,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentToReference_EditorBuilder_a$LINKS" />
-      <unit id="8998492695591110518" at="327,0,332,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentToReference_EditorBuilder_a$CONCEPTS" />
-      <unit id="8998492695591110518" at="151,0,218,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentToReference_EditorBuilder_a$childrenListHandler_86wpkp_c3a" />
-      <unit id="8998492695591110518" at="246,0,313,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentToReference_EditorBuilder_a$childrenSubconceptListHandler_86wpkp_f3a" />
-      <unit id="8998492695591110518" at="41,0,338,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentToReference_EditorBuilder_a" />
+      <unit id="8998492695591110518" at="323,0,326,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentToReference_EditorBuilder$PROPS" />
+      <unit id="8998492695591110518" at="333,0,337,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentToReference_EditorBuilder$LINKS" />
+      <unit id="8998492695591110518" at="327,0,332,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentToReference_EditorBuilder$CONCEPTS" />
+      <unit id="8998492695591110518" at="151,0,218,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentToReference_EditorBuilder$childrenListHandler_86wpkp_c3a" />
+      <unit id="8998492695591110518" at="246,0,313,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentToReference_EditorBuilder$childrenSubconceptListHandler_86wpkp_f3a" />
+      <unit id="8998492695591110518" at="41,0,338,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteParentToReference_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:d793eea9-8b7b-4c58-a7a2-62336f54dcce(jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor)/9067909425367276857">
     <file name="TestSubstituteSmartRef_Interface_Editor.java">
-      <node id="9067909425367276857" at="11,79,12,98" concept="8" />
+      <node id="9067909425367276857" at="11,79,12,96" concept="8" />
       <node id="9067909425367276857" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="9067909425367276857" at="11,79,12,98" />
+      <scope id="9067909425367276857" at="11,79,12,96" />
       <scope id="9067909425367276857" at="11,0,14,0">
         <var name="editorContext" id="9067909425367276857" />
         <var name="node" id="9067909425367276857" />
       </scope>
       <unit id="9067909425367276857" at="10,0,15,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSmartRef_Interface_Editor" />
     </file>
-    <file name="TestSubstituteSmartRef_Interface_EditorBuilder_a.java">
-      <node id="9067909425367276857" at="40,112,41,19" concept="12" />
+    <file name="TestSubstituteSmartRef_Interface_EditorBuilder.java">
+      <node id="9067909425367276857" at="40,110,41,19" concept="12" />
       <node id="9067909425367276857" at="41,19,42,18" concept="2" />
       <node id="9067909425367276857" at="47,26,48,18" concept="8" />
       <node id="9067909425367276857" at="51,39,52,32" concept="8" />
@@ -18562,7 +18562,7 @@
       <node id="9067909425367276866" at="101,0,103,0" concept="3" trace="myNode" />
       <node id="9067909425367276857" at="51,0,54,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="9067909425367276866" at="111,0,114,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="9067909425367276857" at="40,0,44,0" concept="1" trace="TestSubstituteSmartRef_Interface_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="9067909425367276857" at="40,0,44,0" concept="1" trace="TestSubstituteSmartRef_Interface_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="9067909425367276857" at="86,0,90,5" concept="5" />
       <node id="9067909425367276857" at="45,0,50,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="9067909425367276857" at="93,205,98,22" concept="5" />
@@ -18583,7 +18583,7 @@
       <scope id="9067909425367276866" at="111,41,112,32" />
       <scope id="9067909425367276866" at="117,28,118,20" />
       <scope id="9067909425367276868" at="138,17,139,42" />
-      <scope id="9067909425367276857" at="40,112,42,18" />
+      <scope id="9067909425367276857" at="40,110,42,18" />
       <scope id="9067909425367276857" at="87,40,89,55" />
       <scope id="9067909425367276857" at="94,73,96,145">
         <var name="manager" id="9067909425367276857" />
@@ -18645,12 +18645,12 @@
         <var name="referenceLink" id="9067909425367276857" />
       </scope>
       <scope id="9067909425367276857" at="72,0,100,0" />
-      <unit id="9067909425367276857" at="165,0,168,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSmartRef_Interface_EditorBuilder_a$LINKS" />
-      <unit id="9067909425367276857" at="174,0,177,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSmartRef_Interface_EditorBuilder_a$PROPS" />
-      <unit id="9067909425367276857" at="169,0,173,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSmartRef_Interface_EditorBuilder_a$CONCEPTS" />
-      <unit id="9067909425367276857" at="74,42,82,5" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSmartRef_Interface_EditorBuilder_a$1" />
-      <unit id="9067909425367276866" at="100,0,143,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSmartRef_Interface_EditorBuilder_a$Inline_Builder0" />
-      <unit id="9067909425367276857" at="36,0,178,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSmartRef_Interface_EditorBuilder_a" />
+      <unit id="9067909425367276857" at="165,0,168,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSmartRef_Interface_EditorBuilder$LINKS" />
+      <unit id="9067909425367276857" at="174,0,177,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSmartRef_Interface_EditorBuilder$PROPS" />
+      <unit id="9067909425367276857" at="169,0,173,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSmartRef_Interface_EditorBuilder$CONCEPTS" />
+      <unit id="9067909425367276857" at="74,42,82,5" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSmartRef_Interface_EditorBuilder$1" />
+      <unit id="9067909425367276866" at="100,0,143,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSmartRef_Interface_EditorBuilder$Inline_Builder0" />
+      <unit id="9067909425367276857" at="36,0,178,0" name="jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor.TestSubstituteSmartRef_Interface_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:d793eea9-8b7b-4c58-a7a2-62336f54dcce(jetbrains.mps.lang.editor.menus.substitute.testLanguage.editor)/9067909425367278794">

@@ -18,9 +18,9 @@ public class ClassConcept_include_deprecated_elements_Editor extends DefaultNode
     return myContextHints;
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ClassConcept_include_deprecated_elements_EditorBuilder_a(editorContext, node).createCell();
+    return new ClassConcept_include_deprecated_elements_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new ClassConcept_include_deprecated_elements_InspectorBuilder_a(editorContext, node).createCell();
+    return new ClassConcept_include_deprecated_elements_InspectorBuilder(editorContext, node).createCell();
   }
 }

@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class SimpleMathFloatConstant_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new SimpleMathFloatConstant_EditorBuilder_a(editorContext, node).createCell();
+    return new SimpleMathFloatConstant_EditorBuilder(editorContext, node).createCell();
   }
 }

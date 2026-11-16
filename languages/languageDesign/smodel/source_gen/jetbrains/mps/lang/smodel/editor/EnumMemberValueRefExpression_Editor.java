@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class EnumMemberValueRefExpression_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new EnumMemberValueRefExpression_EditorBuilder_a(editorContext, node).createCell();
+    return new EnumMemberValueRefExpression_EditorBuilder(editorContext, node).createCell();
   }
 }

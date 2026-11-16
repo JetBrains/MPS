@@ -16,6 +16,6 @@ public class RequestHandlerDescription implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new RequestHandlerDescription_ComponentBuilder_a(editorContext, node).createCell();
+    return new RequestHandlerDescription_ComponentBuilder(editorContext, node).createCell();
   }
 }

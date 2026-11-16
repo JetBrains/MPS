@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="809uujkey1u8xwj7dgrg3afpfdtq6y0">
-  <files names="Canvas_Editor.java:Canvas_EditorBuilder_a.java:Canvas_ScenePreview_Editor.java:Canvas_ScenePreview_EditorBuilder_a.java:Circle_Editor.java:Circle_EditorBuilder_a.java:Circle_ShapePreview_Editor.java:Circle_ShapePreview_EditorBuilder_a.java:ColorReference_Editor.java:ColorReference_EditorBuilder_a.java:ColorReference_SubstituteMenu.java:Color_Editor.java:Color_EditorBuilder_a.java:EditorAspectDescriptorImpl.java:ShapeColor.java:ShapeColor_ComponentBuilder_a.java:Square_Editor.java:Square_EditorBuilder_a.java:Square_ShapePreview_Editor.java:Square_ShapePreview_EditorBuilder_a.java" />
+  <files names="Canvas_Editor.java:Canvas_EditorBuilder.java:Canvas_ScenePreview_Editor.java:Canvas_ScenePreview_EditorBuilder.java:Circle_Editor.java:Circle_EditorBuilder.java:Circle_ShapePreview_Editor.java:Circle_ShapePreview_EditorBuilder.java:ColorReference_Editor.java:ColorReference_EditorBuilder.java:ColorReference_SubstituteMenu.java:Color_Editor.java:Color_EditorBuilder.java:EditorAspectDescriptorImpl.java:ShapeColor.java:ShapeColor_ComponentBuilder.java:Square_Editor.java:Square_EditorBuilder.java:Square_ShapePreview_Editor.java:Square_ShapePreview_EditorBuilder.java" />
 </product>
 

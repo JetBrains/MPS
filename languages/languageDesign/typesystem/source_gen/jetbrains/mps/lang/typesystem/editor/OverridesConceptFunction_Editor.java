@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class OverridesConceptFunction_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new OverridesConceptFunction_EditorBuilder_a(editorContext, node).createCell();
+    return new OverridesConceptFunction_EditorBuilder(editorContext, node).createCell();
   }
 }

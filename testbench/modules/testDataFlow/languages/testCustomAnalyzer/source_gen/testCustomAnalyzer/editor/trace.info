@@ -17,17 +17,17 @@
   </root>
   <root nodeRef="r:ab9bdb28-46f4-4abc-86dd-ddf6694490af(testCustomAnalyzer.editor)/7078910619969181383">
     <file name="OtherRoot_Editor.java">
-      <node id="7078910619969181383" at="11,79,12,75" concept="6" />
+      <node id="7078910619969181383" at="11,79,12,73" concept="6" />
       <node id="7078910619969181383" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="7078910619969181383" at="11,79,12,75" />
+      <scope id="7078910619969181383" at="11,79,12,73" />
       <scope id="7078910619969181383" at="11,0,14,0">
         <var name="editorContext" id="7078910619969181383" />
         <var name="node" id="7078910619969181383" />
       </scope>
       <unit id="7078910619969181383" at="10,0,15,0" name="testCustomAnalyzer.editor.OtherRoot_Editor" />
     </file>
-    <file name="OtherRoot_EditorBuilder_a.java">
-      <node id="7078910619969181383" at="33,89,34,19" concept="8" />
+    <file name="OtherRoot_EditorBuilder.java">
+      <node id="7078910619969181383" at="33,87,34,19" concept="8" />
       <node id="7078910619969181383" at="34,19,35,18" concept="1" />
       <node id="7078910619969181383" at="40,26,41,18" concept="6" />
       <node id="7078910619969181383" at="44,39,45,32" concept="6" />
@@ -122,7 +122,7 @@
       <node id="7078910619969181383" at="127,0,130,0" concept="4" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="7078910619969181383" at="130,0,133,0" concept="4" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="7078910619969181383" at="174,96,177,9" concept="3" />
-      <node id="7078910619969181383" at="33,0,37,0" concept="0" trace="OtherRoot_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="7078910619969181383" at="33,0,37,0" concept="0" trace="OtherRoot_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="7078910619969181383" at="118,0,122,0" concept="0" trace="childListHandler_op3r5p_c2a#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="7078910619969181383" at="123,0,127,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="7078910619969181383" at="156,97,160,9" concept="3" />
@@ -152,7 +152,7 @@
       <scope id="7078910619969181383" at="130,48,131,36" />
       <scope id="7078910619969181383" at="148,17,149,42" />
       <scope id="7078910619969181383" at="175,34,176,91" />
-      <scope id="7078910619969181383" at="33,89,35,18" />
+      <scope id="7078910619969181383" at="33,87,35,18" />
       <scope id="7078910619969181383" at="118,80,120,25" />
       <scope id="7078910619969181383" at="157,122,159,146" />
       <scope id="7078910619969181383" at="163,34,165,142" />
@@ -229,25 +229,25 @@
         <var name="elementNode" id="7078910619969181383" />
         <var name="isEmptyCell" id="7078910619969181383" />
       </scope>
-      <unit id="7078910619969181383" at="191,0,194,0" name="testCustomAnalyzer.editor.OtherRoot_EditorBuilder_a$LINKS" />
-      <unit id="7078910619969181383" at="195,0,198,0" name="testCustomAnalyzer.editor.OtherRoot_EditorBuilder_a$CONCEPTS" />
-      <unit id="7078910619969181383" at="114,0,181,0" name="testCustomAnalyzer.editor.OtherRoot_EditorBuilder_a$childListHandler_op3r5p_c2a" />
-      <unit id="7078910619969181383" at="29,0,199,0" name="testCustomAnalyzer.editor.OtherRoot_EditorBuilder_a" />
+      <unit id="7078910619969181383" at="191,0,194,0" name="testCustomAnalyzer.editor.OtherRoot_EditorBuilder$LINKS" />
+      <unit id="7078910619969181383" at="195,0,198,0" name="testCustomAnalyzer.editor.OtherRoot_EditorBuilder$CONCEPTS" />
+      <unit id="7078910619969181383" at="114,0,181,0" name="testCustomAnalyzer.editor.OtherRoot_EditorBuilder$childListHandler_op3r5p_c2a" />
+      <unit id="7078910619969181383" at="29,0,199,0" name="testCustomAnalyzer.editor.OtherRoot_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:ab9bdb28-46f4-4abc-86dd-ddf6694490af(testCustomAnalyzer.editor)/7078910619969181436">
     <file name="OtherChild_Editor.java">
-      <node id="7078910619969181436" at="11,79,12,76" concept="6" />
+      <node id="7078910619969181436" at="11,79,12,74" concept="6" />
       <node id="7078910619969181436" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="7078910619969181436" at="11,79,12,76" />
+      <scope id="7078910619969181436" at="11,79,12,74" />
       <scope id="7078910619969181436" at="11,0,14,0">
         <var name="editorContext" id="7078910619969181436" />
         <var name="node" id="7078910619969181436" />
       </scope>
       <unit id="7078910619969181436" at="10,0,15,0" name="testCustomAnalyzer.editor.OtherChild_Editor" />
     </file>
-    <file name="OtherChild_EditorBuilder_a.java">
-      <node id="7078910619969181436" at="30,90,31,19" concept="8" />
+    <file name="OtherChild_EditorBuilder.java">
+      <node id="7078910619969181436" at="30,88,31,19" concept="8" />
       <node id="7078910619969181436" at="31,19,32,18" concept="1" />
       <node id="7078910619969181436" at="37,26,38,18" concept="6" />
       <node id="7078910619969181436" at="41,39,42,32" concept="6" />
@@ -332,7 +332,7 @@
       <node id="7078910619969181436" at="128,87,131,7" concept="3" />
       <node id="7078910619969181436" at="131,7,134,7" concept="3" />
       <node id="7078910619969181436" at="154,0,157,0" concept="4" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="7078910619969181436" at="30,0,34,0" concept="0" trace="OtherChild_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="7078910619969181436" at="30,0,34,0" concept="0" trace="OtherChild_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="7078910619969181436" at="99,0,103,0" concept="4" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="7078910619969181436" at="107,0,111,0" concept="0" trace="childSingleRoleHandler_uwf7o0_c2a#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="7078910619969181436" at="35,0,40,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -355,7 +355,7 @@
       <scope id="7078910619969181436" at="132,42,133,46" />
       <scope id="7078910619969181436" at="150,17,151,42" />
       <scope id="7078910619969181436" at="154,40,155,26" />
-      <scope id="7078910619969181436" at="30,90,32,18" />
+      <scope id="7078910619969181436" at="30,88,32,18" />
       <scope id="7078910619969181436" at="99,40,101,33">
         <var name="provider" id="7078910619969181436" />
       </scope>
@@ -425,24 +425,24 @@
         <var name="isEmpty" id="7078910619969181436" />
       </scope>
       <scope id="7078910619969181436" at="140,0,154,0" />
-      <unit id="7078910619969181436" at="168,0,171,0" name="testCustomAnalyzer.editor.OtherChild_EditorBuilder_a$LINKS" />
-      <unit id="7078910619969181436" at="103,0,158,0" name="testCustomAnalyzer.editor.OtherChild_EditorBuilder_a$childSingleRoleHandler_uwf7o0_c2a" />
-      <unit id="7078910619969181436" at="26,0,172,0" name="testCustomAnalyzer.editor.OtherChild_EditorBuilder_a" />
+      <unit id="7078910619969181436" at="168,0,171,0" name="testCustomAnalyzer.editor.OtherChild_EditorBuilder$LINKS" />
+      <unit id="7078910619969181436" at="103,0,158,0" name="testCustomAnalyzer.editor.OtherChild_EditorBuilder$childSingleRoleHandler_uwf7o0_c2a" />
+      <unit id="7078910619969181436" at="26,0,172,0" name="testCustomAnalyzer.editor.OtherChild_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:ab9bdb28-46f4-4abc-86dd-ddf6694490af(testCustomAnalyzer.editor)/7078910619969191637">
     <file name="OtherSubChild_Editor.java">
-      <node id="7078910619969191637" at="11,79,12,79" concept="6" />
+      <node id="7078910619969191637" at="11,79,12,77" concept="6" />
       <node id="7078910619969191637" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="7078910619969191637" at="11,79,12,79" />
+      <scope id="7078910619969191637" at="11,79,12,77" />
       <scope id="7078910619969191637" at="11,0,14,0">
         <var name="editorContext" id="7078910619969191637" />
         <var name="node" id="7078910619969191637" />
       </scope>
       <unit id="7078910619969191637" at="10,0,15,0" name="testCustomAnalyzer.editor.OtherSubChild_Editor" />
     </file>
-    <file name="OtherSubChild_EditorBuilder_a.java">
-      <node id="7078910619969191637" at="21,93,22,19" concept="8" />
+    <file name="OtherSubChild_EditorBuilder.java">
+      <node id="7078910619969191637" at="21,91,22,19" concept="8" />
       <node id="7078910619969191637" at="22,19,23,18" concept="1" />
       <node id="7078910619969191637" at="28,26,29,18" concept="6" />
       <node id="7078910619969191637" at="32,39,33,32" concept="6" />
@@ -477,7 +477,7 @@
       <node id="7078910619969191646" at="70,34,71,22" concept="6" />
       <node id="7078910619969191637" at="18,0,20,0" concept="2" trace="myNode" />
       <node id="7078910619969191637" at="32,0,35,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="7078910619969191637" at="21,0,25,0" concept="0" trace="OtherSubChild_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="7078910619969191637" at="21,0,25,0" concept="0" trace="OtherSubChild_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="7078910619969191637" at="26,0,31,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="7078910619969191641" at="46,0,52,0" concept="4" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="7078910619969191637" at="36,0,46,0" concept="4" trace="createCollection_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -485,7 +485,7 @@
       <node id="7078910619969191642" at="52,0,63,0" concept="4" trace="createConstant_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="7078910619969191637" at="28,26,29,18" />
       <scope id="7078910619969191637" at="32,39,33,32" />
-      <scope id="7078910619969191637" at="21,93,23,18" />
+      <scope id="7078910619969191637" at="21,91,23,18" />
       <scope id="7078910619969191637" at="32,0,35,0" />
       <scope id="7078910619969191637" at="21,0,25,0">
         <var name="context" id="7078910619969191637" />
@@ -510,22 +510,22 @@
       <scope id="7078910619969191637" at="36,0,46,0" />
       <scope id="7078910619969191646" at="63,0,73,0" />
       <scope id="7078910619969191642" at="52,0,63,0" />
-      <unit id="7078910619969191637" at="17,0,74,0" name="testCustomAnalyzer.editor.OtherSubChild_EditorBuilder_a" />
+      <unit id="7078910619969191637" at="17,0,74,0" name="testCustomAnalyzer.editor.OtherSubChild_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:ab9bdb28-46f4-4abc-86dd-ddf6694490af(testCustomAnalyzer.editor)/8332528989793324765">
     <file name="Root_Editor.java">
-      <node id="8332528989793324765" at="11,79,12,70" concept="6" />
+      <node id="8332528989793324765" at="11,79,12,68" concept="6" />
       <node id="8332528989793324765" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="8332528989793324765" at="11,79,12,70" />
+      <scope id="8332528989793324765" at="11,79,12,68" />
       <scope id="8332528989793324765" at="11,0,14,0">
         <var name="editorContext" id="8332528989793324765" />
         <var name="node" id="8332528989793324765" />
       </scope>
       <unit id="8332528989793324765" at="10,0,15,0" name="testCustomAnalyzer.editor.Root_Editor" />
     </file>
-    <file name="Root_EditorBuilder_a.java">
-      <node id="8332528989793324765" at="45,84,46,19" concept="8" />
+    <file name="Root_EditorBuilder.java">
+      <node id="8332528989793324765" at="45,82,46,19" concept="8" />
       <node id="8332528989793324765" at="46,19,47,18" concept="1" />
       <node id="8332528989793324765" at="52,26,53,18" concept="6" />
       <node id="8332528989793324765" at="56,39,57,32" concept="6" />
@@ -669,7 +669,7 @@
       <node id="8332528989793324765" at="203,0,206,0" concept="4" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="8332528989793324765" at="206,0,209,0" concept="4" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="8332528989793324765" at="250,96,253,9" concept="3" />
-      <node id="8332528989793324765" at="45,0,49,0" concept="0" trace="Root_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8332528989793324765" at="45,0,49,0" concept="0" trace="Root_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8332528989793324765" at="194,0,198,0" concept="0" trace="childListHandler_30aiet_g2a#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="8332528989793324765" at="199,0,203,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="8332528989793324765" at="232,97,236,9" concept="3" />
@@ -709,7 +709,7 @@
       <scope id="8332528989793324765" at="206,48,207,31" />
       <scope id="8332528989793324765" at="224,17,225,42" />
       <scope id="8332528989793324765" at="251,34,252,91" />
-      <scope id="8332528989793324765" at="45,84,47,18" />
+      <scope id="8332528989793324765" at="45,82,47,18" />
       <scope id="8332528989793484545" at="120,74,122,145">
         <var name="manager" id="8332528989793484545" />
       </scope>
@@ -818,26 +818,26 @@
         <var name="elementNode" id="8332528989793324765" />
         <var name="isEmptyCell" id="8332528989793324765" />
       </scope>
-      <unit id="8332528989793324765" at="277,0,280,0" name="testCustomAnalyzer.editor.Root_EditorBuilder_a$LINKS" />
-      <unit id="8332528989793324765" at="267,0,271,0" name="testCustomAnalyzer.editor.Root_EditorBuilder_a$PROPS" />
-      <unit id="8332528989793324765" at="272,0,276,0" name="testCustomAnalyzer.editor.Root_EditorBuilder_a$CONCEPTS" />
-      <unit id="8332528989793324765" at="190,0,257,0" name="testCustomAnalyzer.editor.Root_EditorBuilder_a$childListHandler_30aiet_g2a" />
-      <unit id="8332528989793324765" at="41,0,281,0" name="testCustomAnalyzer.editor.Root_EditorBuilder_a" />
+      <unit id="8332528989793324765" at="277,0,280,0" name="testCustomAnalyzer.editor.Root_EditorBuilder$LINKS" />
+      <unit id="8332528989793324765" at="267,0,271,0" name="testCustomAnalyzer.editor.Root_EditorBuilder$PROPS" />
+      <unit id="8332528989793324765" at="272,0,276,0" name="testCustomAnalyzer.editor.Root_EditorBuilder$CONCEPTS" />
+      <unit id="8332528989793324765" at="190,0,257,0" name="testCustomAnalyzer.editor.Root_EditorBuilder$childListHandler_30aiet_g2a" />
+      <unit id="8332528989793324765" at="41,0,281,0" name="testCustomAnalyzer.editor.Root_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:ab9bdb28-46f4-4abc-86dd-ddf6694490af(testCustomAnalyzer.editor)/8332528989793324821">
     <file name="Child_Editor.java">
-      <node id="8332528989793324821" at="11,79,12,71" concept="6" />
+      <node id="8332528989793324821" at="11,79,12,69" concept="6" />
       <node id="8332528989793324821" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="8332528989793324821" at="11,79,12,71" />
+      <scope id="8332528989793324821" at="11,79,12,69" />
       <scope id="8332528989793324821" at="11,0,14,0">
         <var name="editorContext" id="8332528989793324821" />
         <var name="node" id="8332528989793324821" />
       </scope>
       <unit id="8332528989793324821" at="10,0,15,0" name="testCustomAnalyzer.editor.Child_Editor" />
     </file>
-    <file name="Child_EditorBuilder_a.java">
-      <node id="8332528989793324821" at="16,85,17,19" concept="8" />
+    <file name="Child_EditorBuilder.java">
+      <node id="8332528989793324821" at="16,83,17,19" concept="8" />
       <node id="8332528989793324821" at="17,19,18,18" concept="1" />
       <node id="8332528989793324821" at="23,26,24,18" concept="6" />
       <node id="8332528989793324821" at="27,39,28,30" concept="6" />
@@ -849,12 +849,12 @@
       <node id="8332528989793324823" at="36,34,37,22" concept="6" />
       <node id="8332528989793324821" at="13,0,15,0" concept="2" trace="myNode" />
       <node id="8332528989793324821" at="27,0,30,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="8332528989793324821" at="16,0,20,0" concept="0" trace="Child_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8332528989793324821" at="16,0,20,0" concept="0" trace="Child_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8332528989793324821" at="21,0,26,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="8332528989793324823" at="31,0,39,0" concept="4" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="8332528989793324821" at="23,26,24,18" />
       <scope id="8332528989793324821" at="27,39,28,30" />
-      <scope id="8332528989793324821" at="16,85,18,18" />
+      <scope id="8332528989793324821" at="16,83,18,18" />
       <scope id="8332528989793324821" at="27,0,30,0" />
       <scope id="8332528989793324821" at="16,0,20,0">
         <var name="context" id="8332528989793324821" />
@@ -865,7 +865,7 @@
         <var name="editorCell" id="8332528989793324823" />
       </scope>
       <scope id="8332528989793324823" at="31,0,39,0" />
-      <unit id="8332528989793324821" at="12,0,40,0" name="testCustomAnalyzer.editor.Child_EditorBuilder_a" />
+      <unit id="8332528989793324821" at="12,0,40,0" name="testCustomAnalyzer.editor.Child_EditorBuilder" />
     </file>
   </root>
 </debug-info>

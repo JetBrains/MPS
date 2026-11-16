@@ -181,17 +181,17 @@
   </root>
   <root nodeRef="r:4b82218b-d47e-4120-8b44-e2530c2efcf5(jetbrains.mps.samples.heating.editor)/4664795093170436393">
     <file name="Applicability_Editor.java">
-      <node id="4664795093170436393" at="11,79,12,79" concept="7" />
+      <node id="4664795093170436393" at="11,79,12,77" concept="7" />
       <node id="4664795093170436393" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4664795093170436393" at="11,79,12,79" />
+      <scope id="4664795093170436393" at="11,79,12,77" />
       <scope id="4664795093170436393" at="11,0,14,0">
         <var name="editorContext" id="4664795093170436393" />
         <var name="node" id="4664795093170436393" />
       </scope>
       <unit id="4664795093170436393" at="10,0,15,0" name="jetbrains.mps.samples.heating.editor.Applicability_Editor" />
     </file>
-    <file name="Applicability_EditorBuilder_a.java">
-      <node id="4664795093170436393" at="34,93,35,19" concept="12" />
+    <file name="Applicability_EditorBuilder.java">
+      <node id="4664795093170436393" at="34,91,35,19" concept="12" />
       <node id="4664795093170436393" at="35,19,36,18" concept="1" />
       <node id="4664795093170436393" at="41,26,42,18" concept="7" />
       <node id="4664795093170436393" at="45,39,46,32" concept="7" />
@@ -222,7 +222,7 @@
       <node id="4664795093170775878" at="76,0,78,0" concept="0" trace="ReplaceWith_Applicability_cellMenu_j44m5v_a0b0#()V" />
       <node id="4664795093170436393" at="45,0,48,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4664795093170775878" at="78,0,81,0" concept="5" trace="getReplacementConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
-      <node id="4664795093170436393" at="34,0,38,0" concept="0" trace="Applicability_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4664795093170436393" at="34,0,38,0" concept="0" trace="Applicability_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4664795093170775878" at="81,0,85,0" concept="5" trace="createEditorMenuDescriptor#(Ljetbrains/mps/nodeEditor/cellMenu/CellContext;Ljetbrains/mps/openapi/editor/EditorContext;)Ljetbrains/mps/openapi/editor/menus/EditorMenuDescriptor;" />
       <node id="4664795093170436393" at="39,0,44,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="4664795093170436393" at="67,0,75,0" concept="5" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -233,7 +233,7 @@
       <scope id="4664795093170436393" at="45,39,46,32" />
       <scope id="4664795093170775878" at="78,53,79,39" />
       <scope id="4664795093170775878" at="82,117,83,226" />
-      <scope id="4664795093170436393" at="34,93,36,18" />
+      <scope id="4664795093170436393" at="34,91,36,18" />
       <scope id="4664795093170775878" at="76,0,78,0" />
       <scope id="4664795093170436393" at="45,0,48,0" />
       <scope id="4664795093170775878" at="78,0,81,0" />
@@ -260,24 +260,24 @@
       <scope id="4664795093170436393" at="67,0,75,0" />
       <scope id="4664795093170436393" at="49,0,58,0" />
       <scope id="4664795093170725665" at="58,0,67,0" />
-      <unit id="4664795093170436393" at="87,0,90,0" name="jetbrains.mps.samples.heating.editor.Applicability_EditorBuilder_a$CONCEPTS" />
-      <unit id="4664795093170775878" at="75,0,86,0" name="jetbrains.mps.samples.heating.editor.Applicability_EditorBuilder_a$ReplaceWith_Applicability_cellMenu_j44m5v_a0b0" />
-      <unit id="4664795093170436393" at="30,0,91,0" name="jetbrains.mps.samples.heating.editor.Applicability_EditorBuilder_a" />
+      <unit id="4664795093170436393" at="87,0,90,0" name="jetbrains.mps.samples.heating.editor.Applicability_EditorBuilder$CONCEPTS" />
+      <unit id="4664795093170775878" at="75,0,86,0" name="jetbrains.mps.samples.heating.editor.Applicability_EditorBuilder$ReplaceWith_Applicability_cellMenu_j44m5v_a0b0" />
+      <unit id="4664795093170436393" at="30,0,91,0" name="jetbrains.mps.samples.heating.editor.Applicability_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:4b82218b-d47e-4120-8b44-e2530c2efcf5(jetbrains.mps.samples.heating.editor)/4664795093170605760">
     <file name="SpecificDay_Editor.java">
-      <node id="4664795093170605760" at="11,79,12,77" concept="7" />
+      <node id="4664795093170605760" at="11,79,12,75" concept="7" />
       <node id="4664795093170605760" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4664795093170605760" at="11,79,12,77" />
+      <scope id="4664795093170605760" at="11,79,12,75" />
       <scope id="4664795093170605760" at="11,0,14,0">
         <var name="editorContext" id="4664795093170605760" />
         <var name="node" id="4664795093170605760" />
       </scope>
       <unit id="4664795093170605760" at="10,0,15,0" name="jetbrains.mps.samples.heating.editor.SpecificDay_Editor" />
     </file>
-    <file name="SpecificDay_EditorBuilder_a.java">
-      <node id="4664795093170605760" at="45,91,46,19" concept="12" />
+    <file name="SpecificDay_EditorBuilder.java">
+      <node id="4664795093170605760" at="45,89,46,19" concept="12" />
       <node id="4664795093170605760" at="46,19,47,18" concept="1" />
       <node id="4664795093170605760" at="52,26,53,18" concept="7" />
       <node id="4664795093170605760" at="56,39,57,32" concept="7" />
@@ -319,7 +319,7 @@
       <node id="4001397103658746243" at="77,0,79,0" concept="0" trace="ReplaceWith_Applicability_cellMenu_g4jrcx_a0a0#()V" />
       <node id="4664795093170605760" at="56,0,59,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4001397103658746243" at="79,0,82,0" concept="5" trace="getReplacementConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
-      <node id="4664795093170605760" at="45,0,49,0" concept="0" trace="SpecificDay_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4664795093170605760" at="45,0,49,0" concept="0" trace="SpecificDay_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4001397103658746243" at="82,0,86,0" concept="5" trace="createEditorMenuDescriptor#(Ljetbrains/mps/nodeEditor/cellMenu/CellContext;Ljetbrains/mps/openapi/editor/EditorContext;)Ljetbrains/mps/openapi/editor/menus/EditorMenuDescriptor;" />
       <node id="4664795093170605760" at="50,0,55,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="4664795093170605769" at="101,208,106,24" concept="4" />
@@ -333,7 +333,7 @@
       <scope id="4001397103658746243" at="79,53,80,39" />
       <scope id="4001397103658746243" at="83,117,84,226" />
       <scope id="4664795093170605769" at="107,15,108,40" />
-      <scope id="4664795093170605760" at="45,91,47,18" />
+      <scope id="4664795093170605760" at="45,89,47,18" />
       <scope id="4001397103658746243" at="77,0,79,0" />
       <scope id="4664795093170605769" at="102,74,104,145">
         <var name="manager" id="4664795093170605769" />
@@ -366,25 +366,25 @@
       </scope>
       <scope id="4664795093170605769" at="87,41,109,5" />
       <scope id="4664795093170605769" at="87,0,111,0" />
-      <unit id="4664795093170605760" at="117,0,120,0" name="jetbrains.mps.samples.heating.editor.SpecificDay_EditorBuilder_a$PROPS" />
-      <unit id="4664795093170605760" at="112,0,116,0" name="jetbrains.mps.samples.heating.editor.SpecificDay_EditorBuilder_a$CONCEPTS" />
-      <unit id="4001397103658746243" at="76,0,87,0" name="jetbrains.mps.samples.heating.editor.SpecificDay_EditorBuilder_a$ReplaceWith_Applicability_cellMenu_g4jrcx_a0a0" />
-      <unit id="4664795093170605760" at="41,0,121,0" name="jetbrains.mps.samples.heating.editor.SpecificDay_EditorBuilder_a" />
+      <unit id="4664795093170605760" at="117,0,120,0" name="jetbrains.mps.samples.heating.editor.SpecificDay_EditorBuilder$PROPS" />
+      <unit id="4664795093170605760" at="112,0,116,0" name="jetbrains.mps.samples.heating.editor.SpecificDay_EditorBuilder$CONCEPTS" />
+      <unit id="4001397103658746243" at="76,0,87,0" name="jetbrains.mps.samples.heating.editor.SpecificDay_EditorBuilder$ReplaceWith_Applicability_cellMenu_g4jrcx_a0a0" />
+      <unit id="4664795093170605760" at="41,0,121,0" name="jetbrains.mps.samples.heating.editor.SpecificDay_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:4b82218b-d47e-4120-8b44-e2530c2efcf5(jetbrains.mps.samples.heating.editor)/4664795093170636242">
     <file name="DayRange_Editor.java">
-      <node id="4664795093170636242" at="11,79,12,74" concept="7" />
+      <node id="4664795093170636242" at="11,79,12,72" concept="7" />
       <node id="4664795093170636242" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4664795093170636242" at="11,79,12,74" />
+      <scope id="4664795093170636242" at="11,79,12,72" />
       <scope id="4664795093170636242" at="11,0,14,0">
         <var name="editorContext" id="4664795093170636242" />
         <var name="node" id="4664795093170636242" />
       </scope>
       <unit id="4664795093170636242" at="10,0,15,0" name="jetbrains.mps.samples.heating.editor.DayRange_Editor" />
     </file>
-    <file name="DayRange_EditorBuilder_a.java">
-      <node id="4664795093170636242" at="45,88,46,19" concept="12" />
+    <file name="DayRange_EditorBuilder.java">
+      <node id="4664795093170636242" at="45,86,46,19" concept="12" />
       <node id="4664795093170636242" at="46,19,47,18" concept="1" />
       <node id="4664795093170636242" at="52,26,53,18" concept="7" />
       <node id="4664795093170636242" at="56,39,57,32" concept="7" />
@@ -450,7 +450,7 @@
       <node id="4001397103658720674" at="79,0,81,0" concept="0" trace="ReplaceWith_Applicability_cellMenu_rtxy5x_a0a0#()V" />
       <node id="4664795093170636242" at="56,0,59,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4001397103658720674" at="81,0,84,0" concept="5" trace="getReplacementConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
-      <node id="4664795093170636242" at="45,0,49,0" concept="0" trace="DayRange_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4664795093170636242" at="45,0,49,0" concept="0" trace="DayRange_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4001397103658720674" at="84,0,88,0" concept="5" trace="createEditorMenuDescriptor#(Ljetbrains/mps/nodeEditor/cellMenu/CellContext;Ljetbrains/mps/openapi/editor/EditorContext;)Ljetbrains/mps/openapi/editor/menus/EditorMenuDescriptor;" />
       <node id="4664795093170636242" at="50,0,55,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="4664795093170636257" at="103,208,108,24" concept="4" />
@@ -469,7 +469,7 @@
       <scope id="4001397103658720674" at="85,117,86,226" />
       <scope id="4664795093170636257" at="109,15,110,40" />
       <scope id="4664795093170636274" at="139,15,140,40" />
-      <scope id="4664795093170636242" at="45,88,47,18" />
+      <scope id="4664795093170636242" at="45,86,47,18" />
       <scope id="4001397103658720674" at="79,0,81,0" />
       <scope id="4664795093170636257" at="104,74,106,145">
         <var name="manager" id="4664795093170636257" />
@@ -518,25 +518,25 @@
       <scope id="4664795093170636274" at="119,41,141,5" />
       <scope id="4664795093170636257" at="89,0,113,0" />
       <scope id="4664795093170636274" at="119,0,143,0" />
-      <unit id="4664795093170636242" at="144,0,148,0" name="jetbrains.mps.samples.heating.editor.DayRange_EditorBuilder_a$CONCEPTS" />
-      <unit id="4664795093170636242" at="149,0,153,0" name="jetbrains.mps.samples.heating.editor.DayRange_EditorBuilder_a$PROPS" />
-      <unit id="4001397103658720674" at="78,0,89,0" name="jetbrains.mps.samples.heating.editor.DayRange_EditorBuilder_a$ReplaceWith_Applicability_cellMenu_rtxy5x_a0a0" />
-      <unit id="4664795093170636242" at="41,0,154,0" name="jetbrains.mps.samples.heating.editor.DayRange_EditorBuilder_a" />
+      <unit id="4664795093170636242" at="144,0,148,0" name="jetbrains.mps.samples.heating.editor.DayRange_EditorBuilder$CONCEPTS" />
+      <unit id="4664795093170636242" at="149,0,153,0" name="jetbrains.mps.samples.heating.editor.DayRange_EditorBuilder$PROPS" />
+      <unit id="4001397103658720674" at="78,0,89,0" name="jetbrains.mps.samples.heating.editor.DayRange_EditorBuilder$ReplaceWith_Applicability_cellMenu_rtxy5x_a0a0" />
+      <unit id="4664795093170636242" at="41,0,154,0" name="jetbrains.mps.samples.heating.editor.DayRange_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:4b82218b-d47e-4120-8b44-e2530c2efcf5(jetbrains.mps.samples.heating.editor)/4664795093170802633">
     <file name="NotSpecified_Editor.java">
-      <node id="4664795093170802633" at="11,79,12,78" concept="7" />
+      <node id="4664795093170802633" at="11,79,12,76" concept="7" />
       <node id="4664795093170802633" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4664795093170802633" at="11,79,12,78" />
+      <scope id="4664795093170802633" at="11,79,12,76" />
       <scope id="4664795093170802633" at="11,0,14,0">
         <var name="editorContext" id="4664795093170802633" />
         <var name="node" id="4664795093170802633" />
       </scope>
       <unit id="4664795093170802633" at="10,0,15,0" name="jetbrains.mps.samples.heating.editor.NotSpecified_Editor" />
     </file>
-    <file name="NotSpecified_EditorBuilder_a.java">
-      <node id="4664795093170802633" at="33,92,34,19" concept="12" />
+    <file name="NotSpecified_EditorBuilder.java">
+      <node id="4664795093170802633" at="33,90,34,19" concept="12" />
       <node id="4664795093170802633" at="34,19,35,18" concept="1" />
       <node id="4664795093170802633" at="40,26,41,18" concept="7" />
       <node id="4664795093170802633" at="44,39,45,32" concept="7" />
@@ -564,7 +564,7 @@
       <node id="2161719505004948412" at="66,0,68,0" concept="0" trace="ReplaceWith_Applicability_cellMenu_3ok5bb_a0a0#()V" />
       <node id="4664795093170802633" at="44,0,47,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="2161719505004948412" at="68,0,71,0" concept="5" trace="getReplacementConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
-      <node id="4664795093170802633" at="33,0,37,0" concept="0" trace="NotSpecified_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4664795093170802633" at="33,0,37,0" concept="0" trace="NotSpecified_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="2161719505004948412" at="71,0,75,0" concept="5" trace="createEditorMenuDescriptor#(Ljetbrains/mps/nodeEditor/cellMenu/CellContext;Ljetbrains/mps/openapi/editor/EditorContext;)Ljetbrains/mps/openapi/editor/menus/EditorMenuDescriptor;" />
       <node id="4664795093170802633" at="38,0,43,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="2161719505005122750" at="76,0,82,0" concept="5" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -575,7 +575,7 @@
       <scope id="4664795093170802633" at="44,39,45,32" />
       <scope id="2161719505004948412" at="68,53,69,39" />
       <scope id="2161719505004948412" at="72,117,73,226" />
-      <scope id="4664795093170802633" at="33,92,35,18" />
+      <scope id="4664795093170802633" at="33,90,35,18" />
       <scope id="2161719505004948412" at="66,0,68,0" />
       <scope id="4664795093170802633" at="44,0,47,0" />
       <scope id="2161719505004948412" at="68,0,71,0" />
@@ -601,9 +601,9 @@
       </scope>
       <scope id="4664795093170802633" at="57,0,65,0" />
       <scope id="4664795093170802633" at="48,0,57,0" />
-      <unit id="4664795093170802633" at="83,0,86,0" name="jetbrains.mps.samples.heating.editor.NotSpecified_EditorBuilder_a$CONCEPTS" />
-      <unit id="2161719505004948412" at="65,0,76,0" name="jetbrains.mps.samples.heating.editor.NotSpecified_EditorBuilder_a$ReplaceWith_Applicability_cellMenu_3ok5bb_a0a0" />
-      <unit id="4664795093170802633" at="29,0,87,0" name="jetbrains.mps.samples.heating.editor.NotSpecified_EditorBuilder_a" />
+      <unit id="4664795093170802633" at="83,0,86,0" name="jetbrains.mps.samples.heating.editor.NotSpecified_EditorBuilder$CONCEPTS" />
+      <unit id="2161719505004948412" at="65,0,76,0" name="jetbrains.mps.samples.heating.editor.NotSpecified_EditorBuilder$ReplaceWith_Applicability_cellMenu_3ok5bb_a0a0" />
+      <unit id="4664795093170802633" at="29,0,87,0" name="jetbrains.mps.samples.heating.editor.NotSpecified_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:4b82218b-d47e-4120-8b44-e2530c2efcf5(jetbrains.mps.samples.heating.editor)/4747359941571312134">
@@ -743,17 +743,17 @@
   </root>
   <root nodeRef="r:4b82218b-d47e-4120-8b44-e2530c2efcf5(jetbrains.mps.samples.heating.editor)/5063359128232940655">
     <file name="ChangeEvent_Editor.java">
-      <node id="5063359128232940655" at="11,79,12,77" concept="7" />
+      <node id="5063359128232940655" at="11,79,12,75" concept="7" />
       <node id="5063359128232940655" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="5063359128232940655" at="11,79,12,77" />
+      <scope id="5063359128232940655" at="11,79,12,75" />
       <scope id="5063359128232940655" at="11,0,14,0">
         <var name="editorContext" id="5063359128232940655" />
         <var name="node" id="5063359128232940655" />
       </scope>
       <unit id="5063359128232940655" at="10,0,15,0" name="jetbrains.mps.samples.heating.editor.ChangeEvent_Editor" />
     </file>
-    <file name="ChangeEvent_EditorBuilder_a.java">
-      <node id="5063359128232940655" at="36,91,37,19" concept="12" />
+    <file name="ChangeEvent_EditorBuilder.java">
+      <node id="5063359128232940655" at="36,89,37,19" concept="12" />
       <node id="5063359128232940655" at="37,19,38,18" concept="1" />
       <node id="5063359128232940655" at="43,26,44,18" concept="7" />
       <node id="5063359128232940655" at="47,39,48,32" concept="7" />
@@ -797,7 +797,7 @@
       <node id="5063359128232940655" at="106,0,107,0" concept="10" trace="PropertyAttribute$Gb" />
       <node id="5063359128232940655" at="33,0,35,0" concept="2" trace="myNode" />
       <node id="5063359128232940655" at="47,0,50,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="5063359128232940655" at="36,0,40,0" concept="0" trace="ChangeEvent_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="5063359128232940655" at="36,0,40,0" concept="0" trace="ChangeEvent_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="5063359128232940655" at="41,0,46,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="5063359128232942978" at="81,208,86,24" concept="4" />
       <node id="5063359128232942964" at="61,0,70,0" concept="5" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -808,7 +808,7 @@
       <scope id="5063359128232940655" at="43,26,44,18" />
       <scope id="5063359128232940655" at="47,39,48,32" />
       <scope id="5063359128232942978" at="87,15,88,40" />
-      <scope id="5063359128232940655" at="36,91,38,18" />
+      <scope id="5063359128232940655" at="36,89,38,18" />
       <scope id="5063359128232942978" at="82,74,84,145">
         <var name="manager" id="5063359128232942978" />
       </scope>
@@ -840,24 +840,24 @@
       </scope>
       <scope id="5063359128232942978" at="70,41,89,5" />
       <scope id="5063359128232942978" at="70,0,91,0" />
-      <unit id="5063359128232940655" at="101,0,104,0" name="jetbrains.mps.samples.heating.editor.ChangeEvent_EditorBuilder_a$PROPS" />
-      <unit id="5063359128232940655" at="105,0,108,0" name="jetbrains.mps.samples.heating.editor.ChangeEvent_EditorBuilder_a$CONCEPTS" />
-      <unit id="5063359128232940655" at="32,0,109,0" name="jetbrains.mps.samples.heating.editor.ChangeEvent_EditorBuilder_a" />
+      <unit id="5063359128232940655" at="101,0,104,0" name="jetbrains.mps.samples.heating.editor.ChangeEvent_EditorBuilder$PROPS" />
+      <unit id="5063359128232940655" at="105,0,108,0" name="jetbrains.mps.samples.heating.editor.ChangeEvent_EditorBuilder$CONCEPTS" />
+      <unit id="5063359128232940655" at="32,0,109,0" name="jetbrains.mps.samples.heating.editor.ChangeEvent_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:4b82218b-d47e-4120-8b44-e2530c2efcf5(jetbrains.mps.samples.heating.editor)/5063359128232955353">
     <file name="DailyPlan_Editor.java">
-      <node id="5063359128232955353" at="11,79,12,75" concept="7" />
+      <node id="5063359128232955353" at="11,79,12,73" concept="7" />
       <node id="5063359128232955353" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="5063359128232955353" at="11,79,12,75" />
+      <scope id="5063359128232955353" at="11,79,12,73" />
       <scope id="5063359128232955353" at="11,0,14,0">
         <var name="editorContext" id="5063359128232955353" />
         <var name="node" id="5063359128232955353" />
       </scope>
       <unit id="5063359128232955353" at="10,0,15,0" name="jetbrains.mps.samples.heating.editor.DailyPlan_Editor" />
     </file>
-    <file name="DailyPlan_EditorBuilder_a.java">
-      <node id="5063359128232955353" at="44,89,45,19" concept="12" />
+    <file name="DailyPlan_EditorBuilder.java">
+      <node id="5063359128232955353" at="44,87,45,19" concept="12" />
       <node id="5063359128232955353" at="45,19,46,18" concept="1" />
       <node id="5063359128232955353" at="51,26,52,18" concept="7" />
       <node id="5063359128232955353" at="55,39,56,32" concept="7" />
@@ -1041,7 +1041,7 @@
       <node id="5063359128232955353" at="287,0,290,0" concept="5" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="5063359128232955353" at="290,0,293,0" concept="5" trace="createNodeToInsert#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/model/SNode;I)Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="5063359128232955353" at="340,96,343,9" concept="4" />
-      <node id="5063359128232955353" at="44,0,48,0" concept="0" trace="DailyPlan_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="5063359128232955353" at="44,0,48,0" concept="0" trace="DailyPlan_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="5063359128232955353" at="80,0,84,0" concept="5" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="5063359128232955353" at="88,0,92,0" concept="0" trace="applicabilitySingleRoleHandler_dgzt1x_b0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="5063359128232955353" at="169,0,173,0" concept="5" trace="createRefNode_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -1104,7 +1104,7 @@
       <scope id="5063359128232955353" at="290,109,291,52" />
       <scope id="5063359128232955353" at="314,17,315,42" />
       <scope id="5063359128232955353" at="341,34,342,91" />
-      <scope id="5063359128232955353" at="44,89,46,18" />
+      <scope id="5063359128232955353" at="44,87,46,18" />
       <scope id="5063359128232955353" at="80,40,82,33">
         <var name="provider" id="5063359128232955353" />
       </scope>
@@ -1267,28 +1267,28 @@
         <var name="elementNode" id="5063359128232955353" />
         <var name="isEmptyCell" id="5063359128232955353" />
       </scope>
-      <unit id="5063359128232955353" at="364,0,368,0" name="jetbrains.mps.samples.heating.editor.DailyPlan_EditorBuilder_a$CONCEPTS" />
-      <unit id="5063359128232955353" at="369,0,373,0" name="jetbrains.mps.samples.heating.editor.DailyPlan_EditorBuilder_a$PROPS" />
-      <unit id="5063359128232955353" at="357,0,363,0" name="jetbrains.mps.samples.heating.editor.DailyPlan_EditorBuilder_a$LINKS" />
-      <unit id="5063359128232955353" at="84,0,135,0" name="jetbrains.mps.samples.heating.editor.DailyPlan_EditorBuilder_a$applicabilitySingleRoleHandler_dgzt1x_b0" />
-      <unit id="5063359128232955353" at="173,0,231,0" name="jetbrains.mps.samples.heating.editor.DailyPlan_EditorBuilder_a$customizesSingleRoleHandler_dgzt1x_b2a" />
-      <unit id="5063359128232955353" at="271,0,347,0" name="jetbrains.mps.samples.heating.editor.DailyPlan_EditorBuilder_a$itemsListHandler_dgzt1x_a3a" />
-      <unit id="5063359128232955353" at="40,0,374,0" name="jetbrains.mps.samples.heating.editor.DailyPlan_EditorBuilder_a" />
+      <unit id="5063359128232955353" at="364,0,368,0" name="jetbrains.mps.samples.heating.editor.DailyPlan_EditorBuilder$CONCEPTS" />
+      <unit id="5063359128232955353" at="369,0,373,0" name="jetbrains.mps.samples.heating.editor.DailyPlan_EditorBuilder$PROPS" />
+      <unit id="5063359128232955353" at="357,0,363,0" name="jetbrains.mps.samples.heating.editor.DailyPlan_EditorBuilder$LINKS" />
+      <unit id="5063359128232955353" at="84,0,135,0" name="jetbrains.mps.samples.heating.editor.DailyPlan_EditorBuilder$applicabilitySingleRoleHandler_dgzt1x_b0" />
+      <unit id="5063359128232955353" at="173,0,231,0" name="jetbrains.mps.samples.heating.editor.DailyPlan_EditorBuilder$customizesSingleRoleHandler_dgzt1x_b2a" />
+      <unit id="5063359128232955353" at="271,0,347,0" name="jetbrains.mps.samples.heating.editor.DailyPlan_EditorBuilder$itemsListHandler_dgzt1x_a3a" />
+      <unit id="5063359128232955353" at="40,0,374,0" name="jetbrains.mps.samples.heating.editor.DailyPlan_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:4b82218b-d47e-4120-8b44-e2530c2efcf5(jetbrains.mps.samples.heating.editor)/5063359128232955516">
     <file name="HeatingPlan_Editor.java">
-      <node id="5063359128232955516" at="11,79,12,77" concept="7" />
+      <node id="5063359128232955516" at="11,79,12,75" concept="7" />
       <node id="5063359128232955516" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="5063359128232955516" at="11,79,12,77" />
+      <scope id="5063359128232955516" at="11,79,12,75" />
       <scope id="5063359128232955516" at="11,0,14,0">
         <var name="editorContext" id="5063359128232955516" />
         <var name="node" id="5063359128232955516" />
       </scope>
       <unit id="5063359128232955516" at="10,0,15,0" name="jetbrains.mps.samples.heating.editor.HeatingPlan_Editor" />
     </file>
-    <file name="HeatingPlan_EditorBuilder_a.java">
-      <node id="5063359128232955516" at="47,91,48,19" concept="12" />
+    <file name="HeatingPlan_EditorBuilder.java">
+      <node id="5063359128232955516" at="47,89,48,19" concept="12" />
       <node id="5063359128232955516" at="48,19,49,18" concept="1" />
       <node id="5063359128232955516" at="54,26,55,18" concept="7" />
       <node id="5063359128232955516" at="58,39,59,32" concept="7" />
@@ -1377,7 +1377,7 @@
       <node id="5063359128232955516" at="58,0,61,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="5063359128232955516" at="132,0,135,0" concept="5" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="5063359128232955516" at="135,0,138,0" concept="5" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
-      <node id="5063359128232955516" at="47,0,51,0" concept="0" trace="HeatingPlan_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="5063359128232955516" at="47,0,51,0" concept="0" trace="HeatingPlan_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="5063359128232955516" at="123,0,127,0" concept="0" trace="dailyPlansListHandler_16fuhk_d0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="5063359128232955516" at="128,0,132,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="5063359128232955516" at="161,97,165,9" concept="4" />
@@ -1408,7 +1408,7 @@
       <scope id="5063359128232955516" at="132,40,133,35" />
       <scope id="5063359128232955516" at="135,48,136,35" />
       <scope id="5063359128232955516" at="153,17,154,42" />
-      <scope id="5063359128232955516" at="47,91,49,18" />
+      <scope id="5063359128232955516" at="47,89,49,18" />
       <scope id="5063359128232955531" at="94,74,96,145">
         <var name="manager" id="5063359128232955531" />
       </scope>
@@ -1486,26 +1486,26 @@
         <var name="elementNode" id="5063359128232955516" />
         <var name="isEmptyCell" id="5063359128232955516" />
       </scope>
-      <unit id="5063359128232955516" at="200,0,203,0" name="jetbrains.mps.samples.heating.editor.HeatingPlan_EditorBuilder_a$PROPS" />
-      <unit id="5063359128232955516" at="209,0,212,0" name="jetbrains.mps.samples.heating.editor.HeatingPlan_EditorBuilder_a$LINKS" />
-      <unit id="5063359128232955516" at="204,0,208,0" name="jetbrains.mps.samples.heating.editor.HeatingPlan_EditorBuilder_a$CONCEPTS" />
-      <unit id="5063359128232955516" at="119,0,199,0" name="jetbrains.mps.samples.heating.editor.HeatingPlan_EditorBuilder_a$dailyPlansListHandler_16fuhk_d0" />
-      <unit id="5063359128232955516" at="43,0,213,0" name="jetbrains.mps.samples.heating.editor.HeatingPlan_EditorBuilder_a" />
+      <unit id="5063359128232955516" at="200,0,203,0" name="jetbrains.mps.samples.heating.editor.HeatingPlan_EditorBuilder$PROPS" />
+      <unit id="5063359128232955516" at="209,0,212,0" name="jetbrains.mps.samples.heating.editor.HeatingPlan_EditorBuilder$LINKS" />
+      <unit id="5063359128232955516" at="204,0,208,0" name="jetbrains.mps.samples.heating.editor.HeatingPlan_EditorBuilder$CONCEPTS" />
+      <unit id="5063359128232955516" at="119,0,199,0" name="jetbrains.mps.samples.heating.editor.HeatingPlan_EditorBuilder$dailyPlansListHandler_16fuhk_d0" />
+      <unit id="5063359128232955516" at="43,0,213,0" name="jetbrains.mps.samples.heating.editor.HeatingPlan_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:4b82218b-d47e-4120-8b44-e2530c2efcf5(jetbrains.mps.samples.heating.editor)/5726447348463731349">
     <file name="Slot_Editor.java">
-      <node id="5726447348463731349" at="11,79,12,70" concept="7" />
+      <node id="5726447348463731349" at="11,79,12,68" concept="7" />
       <node id="5726447348463731349" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="5726447348463731349" at="11,79,12,70" />
+      <scope id="5726447348463731349" at="11,79,12,68" />
       <scope id="5726447348463731349" at="11,0,14,0">
         <var name="editorContext" id="5726447348463731349" />
         <var name="node" id="5726447348463731349" />
       </scope>
       <unit id="5726447348463731349" at="10,0,15,0" name="jetbrains.mps.samples.heating.editor.Slot_Editor" />
     </file>
-    <file name="Slot_EditorBuilder_a.java">
-      <node id="5726447348463731349" at="44,84,45,19" concept="12" />
+    <file name="Slot_EditorBuilder.java">
+      <node id="5726447348463731349" at="44,82,45,19" concept="12" />
       <node id="5726447348463731349" at="45,19,46,18" concept="1" />
       <node id="5726447348463731349" at="51,26,52,18" concept="7" />
       <node id="5726447348463731349" at="55,39,56,32" concept="7" />
@@ -1581,7 +1581,7 @@
       <node id="5726447348463731349" at="147,87,150,7" concept="4" />
       <node id="5726447348463731349" at="150,7,153,7" concept="4" />
       <node id="5726447348463731349" at="169,0,172,0" concept="5" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="5726447348463731349" at="44,0,48,0" concept="0" trace="Slot_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="5726447348463731349" at="44,0,48,0" concept="0" trace="Slot_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="5726447348463731349" at="118,0,122,0" concept="5" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="5726447348463731349" at="126,0,130,0" concept="0" trace="eventSingleRoleHandler_sjf1bb_e0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="5726447348463731349" at="49,0,54,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -1607,7 +1607,7 @@
       <scope id="5726447348463731349" at="151,42,152,46" />
       <scope id="5726447348463731349" at="165,17,166,42" />
       <scope id="5726447348463731349" at="169,40,170,26" />
-      <scope id="5726447348463731349" at="44,84,46,18" />
+      <scope id="5726447348463731349" at="44,82,46,18" />
       <scope id="5726447348463738298" at="103,74,105,145">
         <var name="manager" id="5726447348463738298" />
       </scope>
@@ -1672,26 +1672,26 @@
       <scope id="5726447348463731349" at="155,0,169,0" />
       <scope id="5726447348463738298" at="91,41,110,5" />
       <scope id="5726447348463738298" at="91,0,112,0" />
-      <unit id="5726447348463731349" at="174,0,177,0" name="jetbrains.mps.samples.heating.editor.Slot_EditorBuilder_a$PROPS" />
-      <unit id="5726447348463731349" at="178,0,181,0" name="jetbrains.mps.samples.heating.editor.Slot_EditorBuilder_a$CONCEPTS" />
-      <unit id="5726447348463731349" at="182,0,185,0" name="jetbrains.mps.samples.heating.editor.Slot_EditorBuilder_a$LINKS" />
-      <unit id="5726447348463731349" at="122,0,173,0" name="jetbrains.mps.samples.heating.editor.Slot_EditorBuilder_a$eventSingleRoleHandler_sjf1bb_e0" />
-      <unit id="5726447348463731349" at="40,0,186,0" name="jetbrains.mps.samples.heating.editor.Slot_EditorBuilder_a" />
+      <unit id="5726447348463731349" at="174,0,177,0" name="jetbrains.mps.samples.heating.editor.Slot_EditorBuilder$PROPS" />
+      <unit id="5726447348463731349" at="178,0,181,0" name="jetbrains.mps.samples.heating.editor.Slot_EditorBuilder$CONCEPTS" />
+      <unit id="5726447348463731349" at="182,0,185,0" name="jetbrains.mps.samples.heating.editor.Slot_EditorBuilder$LINKS" />
+      <unit id="5726447348463731349" at="122,0,173,0" name="jetbrains.mps.samples.heating.editor.Slot_EditorBuilder$eventSingleRoleHandler_sjf1bb_e0" />
+      <unit id="5726447348463731349" at="40,0,186,0" name="jetbrains.mps.samples.heating.editor.Slot_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:4b82218b-d47e-4120-8b44-e2530c2efcf5(jetbrains.mps.samples.heating.editor)/935069066462619722">
     <file name="DailyPlanReference_Editor.java">
-      <node id="935069066462619722" at="11,79,12,84" concept="7" />
+      <node id="935069066462619722" at="11,79,12,82" concept="7" />
       <node id="935069066462619722" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="935069066462619722" at="11,79,12,84" />
+      <scope id="935069066462619722" at="11,79,12,82" />
       <scope id="935069066462619722" at="11,0,14,0">
         <var name="editorContext" id="935069066462619722" />
         <var name="node" id="935069066462619722" />
       </scope>
       <unit id="935069066462619722" at="10,0,15,0" name="jetbrains.mps.samples.heating.editor.DailyPlanReference_Editor" />
     </file>
-    <file name="DailyPlanReference_EditorBuilder_a.java">
-      <node id="935069066462619722" at="47,98,48,19" concept="12" />
+    <file name="DailyPlanReference_EditorBuilder.java">
+      <node id="935069066462619722" at="47,96,48,19" concept="12" />
       <node id="935069066462619722" at="48,19,49,18" concept="1" />
       <node id="935069066462619722" at="54,26,55,18" concept="7" />
       <node id="935069066462619722" at="58,39,59,32" concept="7" />
@@ -1757,7 +1757,7 @@
       <node id="4747359941571315529" at="152,0,154,0" concept="0" trace="DailyPlanReference_target_cellMenu_e3jrht_a0a0#()V" />
       <node id="935069066462619722" at="58,0,61,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="2161719505004888342" at="116,0,119,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="935069066462619722" at="47,0,51,0" concept="0" trace="DailyPlanReference_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="935069066462619722" at="47,0,51,0" concept="0" trace="DailyPlanReference_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="935069066462619722" at="91,0,95,5" concept="4" />
       <node id="935069066462619722" at="52,0,57,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="935069066462619722" at="98,205,103,22" concept="4" />
@@ -1781,7 +1781,7 @@
       <scope id="2161719505004888347" at="146,17,147,42" />
       <scope id="4747359941571315529" at="156,71,157,61" />
       <scope id="4747359941571315529" at="161,78,162,61" />
-      <scope id="935069066462619722" at="47,98,49,18" />
+      <scope id="935069066462619722" at="47,96,49,18" />
       <scope id="935069066462619722" at="92,40,94,45" />
       <scope id="935069066462619722" at="99,73,101,145">
         <var name="manager" id="935069066462619722" />
@@ -1839,13 +1839,13 @@
         <var name="referenceLink" id="935069066462619722" />
       </scope>
       <scope id="935069066462619722" at="70,0,105,0" />
-      <unit id="935069066462619722" at="166,0,169,0" name="jetbrains.mps.samples.heating.editor.DailyPlanReference_EditorBuilder_a$LINKS" />
-      <unit id="935069066462619722" at="175,0,178,0" name="jetbrains.mps.samples.heating.editor.DailyPlanReference_EditorBuilder_a$PROPS" />
-      <unit id="935069066462619722" at="170,0,174,0" name="jetbrains.mps.samples.heating.editor.DailyPlanReference_EditorBuilder_a$CONCEPTS" />
-      <unit id="4747359941571315529" at="151,0,165,0" name="jetbrains.mps.samples.heating.editor.DailyPlanReference_EditorBuilder_a$DailyPlanReference_target_cellMenu_e3jrht_a0a0" />
-      <unit id="935069066462619722" at="72,42,87,5" name="jetbrains.mps.samples.heating.editor.DailyPlanReference_EditorBuilder_a$1" />
-      <unit id="2161719505004888342" at="105,0,151,0" name="jetbrains.mps.samples.heating.editor.DailyPlanReference_EditorBuilder_a$Inline_Builder0" />
-      <unit id="935069066462619722" at="43,0,179,0" name="jetbrains.mps.samples.heating.editor.DailyPlanReference_EditorBuilder_a" />
+      <unit id="935069066462619722" at="166,0,169,0" name="jetbrains.mps.samples.heating.editor.DailyPlanReference_EditorBuilder$LINKS" />
+      <unit id="935069066462619722" at="175,0,178,0" name="jetbrains.mps.samples.heating.editor.DailyPlanReference_EditorBuilder$PROPS" />
+      <unit id="935069066462619722" at="170,0,174,0" name="jetbrains.mps.samples.heating.editor.DailyPlanReference_EditorBuilder$CONCEPTS" />
+      <unit id="4747359941571315529" at="151,0,165,0" name="jetbrains.mps.samples.heating.editor.DailyPlanReference_EditorBuilder$DailyPlanReference_target_cellMenu_e3jrht_a0a0" />
+      <unit id="935069066462619722" at="72,42,87,5" name="jetbrains.mps.samples.heating.editor.DailyPlanReference_EditorBuilder$1" />
+      <unit id="2161719505004888342" at="105,0,151,0" name="jetbrains.mps.samples.heating.editor.DailyPlanReference_EditorBuilder$Inline_Builder0" />
+      <unit id="935069066462619722" at="43,0,179,0" name="jetbrains.mps.samples.heating.editor.DailyPlanReference_EditorBuilder" />
     </file>
     <file name="PresentationProviders.java">
       <node id="4747359941571315531" at="11,0,12,0" concept="10" trace="PRESENTATION_e3jrht_a0a0a" />

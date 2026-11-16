@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class SimplePropertyAttribute_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new SimplePropertyAttribute_EditorBuilder_a(editorContext, node).createCell();
+    return new SimplePropertyAttribute_EditorBuilder(editorContext, node).createCell();
   }
 }

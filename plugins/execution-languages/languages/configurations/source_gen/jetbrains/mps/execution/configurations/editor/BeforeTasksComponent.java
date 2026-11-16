@@ -16,6 +16,6 @@ public class BeforeTasksComponent implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new BeforeTasksComponent_ComponentBuilder_a(editorContext, node).createCell();
+    return new BeforeTasksComponent_ComponentBuilder(editorContext, node).createCell();
   }
 }

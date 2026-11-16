@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class LowLevelVariableReference_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new LowLevelVariableReference_EditorBuilder_a(editorContext, node).createCell();
+    return new LowLevelVariableReference_EditorBuilder(editorContext, node).createCell();
   }
 }

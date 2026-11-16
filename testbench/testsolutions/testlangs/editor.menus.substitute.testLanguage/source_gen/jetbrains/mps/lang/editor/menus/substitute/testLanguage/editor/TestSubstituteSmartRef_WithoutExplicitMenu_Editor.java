@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class TestSubstituteSmartRef_WithoutExplicitMenu_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new TestSubstituteSmartRef_WithoutExplicitMenu_EditorBuilder_a(editorContext, node).createCell();
+    return new TestSubstituteSmartRef_WithoutExplicitMenu_EditorBuilder(editorContext, node).createCell();
   }
 }

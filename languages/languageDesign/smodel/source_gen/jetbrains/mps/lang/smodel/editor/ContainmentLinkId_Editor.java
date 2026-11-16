@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ContainmentLinkId_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ContainmentLinkId_EditorBuilder_a(editorContext, node).createCell();
+    return new ContainmentLinkId_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new ContainmentLinkId_InspectorBuilder_a(editorContext, node).createCell();
+    return new ContainmentLinkId_InspectorBuilder(editorContext, node).createCell();
   }
 }

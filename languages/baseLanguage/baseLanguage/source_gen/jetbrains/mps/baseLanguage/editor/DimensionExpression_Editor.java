@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class DimensionExpression_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new DimensionExpression_EditorBuilder_a(editorContext, node).createCell();
+    return new DimensionExpression_EditorBuilder(editorContext, node).createCell();
   }
 }

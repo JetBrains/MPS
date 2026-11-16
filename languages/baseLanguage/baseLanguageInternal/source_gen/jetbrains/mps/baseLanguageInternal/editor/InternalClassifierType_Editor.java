@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class InternalClassifierType_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new InternalClassifierType_EditorBuilder_a(editorContext, node).createCell();
+    return new InternalClassifierType_EditorBuilder(editorContext, node).createCell();
   }
 }

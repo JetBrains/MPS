@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class BuildMpsLayout_ModuleXml_CustomJarLocation_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new BuildMpsLayout_ModuleXml_CustomJarLocation_EditorBuilder_a(editorContext, node).createCell();
+    return new BuildMpsLayout_ModuleXml_CustomJarLocation_EditorBuilder(editorContext, node).createCell();
   }
 }

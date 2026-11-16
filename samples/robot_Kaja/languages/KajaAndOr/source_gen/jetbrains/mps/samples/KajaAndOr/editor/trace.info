@@ -752,17 +752,17 @@
   </root>
   <root nodeRef="r:6aa6f228-56c3-4d3a-b03e-4204df10c967(jetbrains.mps.samples.KajaAndOr.editor)/1904811872814253787">
     <file name="LogicalOperator_Editor.java">
-      <node id="1904811872814253787" at="11,79,12,81" concept="8" />
+      <node id="1904811872814253787" at="11,79,12,79" concept="8" />
       <node id="1904811872814253787" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1904811872814253787" at="11,79,12,81" />
+      <scope id="1904811872814253787" at="11,79,12,79" />
       <scope id="1904811872814253787" at="11,0,14,0">
         <var name="editorContext" id="1904811872814253787" />
         <var name="node" id="1904811872814253787" />
       </scope>
       <unit id="1904811872814253787" at="10,0,15,0" name="jetbrains.mps.samples.KajaAndOr.editor.LogicalOperator_Editor" />
     </file>
-    <file name="LogicalOperator_EditorBuilder_a.java">
-      <node id="1904811872814253787" at="46,95,47,19" concept="13" />
+    <file name="LogicalOperator_EditorBuilder.java">
+      <node id="1904811872814253787" at="46,93,47,19" concept="13" />
       <node id="1904811872814253787" at="47,19,48,18" concept="2" />
       <node id="1904811872814253787" at="53,26,54,18" concept="8" />
       <node id="1904811872814253787" at="57,39,58,32" concept="8" />
@@ -864,7 +864,7 @@
       <node id="1904811872814253787" at="190,87,193,7" concept="5" />
       <node id="1904811872814253787" at="193,7,196,7" concept="5" />
       <node id="1904811872814253787" at="213,0,216,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="1904811872814253787" at="46,0,50,0" concept="1" trace="LogicalOperator_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1904811872814253787" at="46,0,50,0" concept="1" trace="LogicalOperator_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1904811872814253787" at="84,0,88,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1904811872814253787" at="92,0,96,0" concept="1" trace="leftSingleRoleHandler_iyfdbj_b0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="642541832606587452" at="156,0,160,0" concept="6" trace="createEditorMenuDescriptor#(Ljetbrains/mps/nodeEditor/cellMenu/CellContext;Ljetbrains/mps/openapi/editor/EditorContext;)Ljetbrains/mps/openapi/editor/menus/EditorMenuDescriptor;" />
@@ -900,7 +900,7 @@
       <scope id="1904811872814253787" at="194,42,195,46" />
       <scope id="1904811872814253787" at="209,17,210,42" />
       <scope id="1904811872814253787" at="213,40,214,26" />
-      <scope id="1904811872814253787" at="46,95,48,18" />
+      <scope id="1904811872814253787" at="46,93,48,18" />
       <scope id="1904811872814253787" at="84,40,86,33">
         <var name="provider" id="1904811872814253787" />
       </scope>
@@ -990,12 +990,12 @@
       <scope id="1904811872814253787" at="61,0,73,0" />
       <scope id="1904811872814253787" at="122,0,136,0" />
       <scope id="1904811872814253787" at="199,0,213,0" />
-      <unit id="1904811872814253787" at="229,0,233,0" name="jetbrains.mps.samples.KajaAndOr.editor.LogicalOperator_EditorBuilder_a$CONCEPTS" />
-      <unit id="1904811872814253787" at="234,0,238,0" name="jetbrains.mps.samples.KajaAndOr.editor.LogicalOperator_EditorBuilder_a$LINKS" />
-      <unit id="642541832606587452" at="150,0,161,0" name="jetbrains.mps.samples.KajaAndOr.editor.LogicalOperator_EditorBuilder_a$ReplaceWith_LogicalOperator_cellMenu_iyfdbj_a0c0" />
-      <unit id="1904811872814253787" at="88,0,140,0" name="jetbrains.mps.samples.KajaAndOr.editor.LogicalOperator_EditorBuilder_a$leftSingleRoleHandler_iyfdbj_b0" />
-      <unit id="1904811872814253787" at="165,0,217,0" name="jetbrains.mps.samples.KajaAndOr.editor.LogicalOperator_EditorBuilder_a$rightSingleRoleHandler_iyfdbj_d0" />
-      <unit id="1904811872814253787" at="42,0,239,0" name="jetbrains.mps.samples.KajaAndOr.editor.LogicalOperator_EditorBuilder_a" />
+      <unit id="1904811872814253787" at="229,0,233,0" name="jetbrains.mps.samples.KajaAndOr.editor.LogicalOperator_EditorBuilder$CONCEPTS" />
+      <unit id="1904811872814253787" at="234,0,238,0" name="jetbrains.mps.samples.KajaAndOr.editor.LogicalOperator_EditorBuilder$LINKS" />
+      <unit id="642541832606587452" at="150,0,161,0" name="jetbrains.mps.samples.KajaAndOr.editor.LogicalOperator_EditorBuilder$ReplaceWith_LogicalOperator_cellMenu_iyfdbj_a0c0" />
+      <unit id="1904811872814253787" at="88,0,140,0" name="jetbrains.mps.samples.KajaAndOr.editor.LogicalOperator_EditorBuilder$leftSingleRoleHandler_iyfdbj_b0" />
+      <unit id="1904811872814253787" at="165,0,217,0" name="jetbrains.mps.samples.KajaAndOr.editor.LogicalOperator_EditorBuilder$rightSingleRoleHandler_iyfdbj_d0" />
+      <unit id="1904811872814253787" at="42,0,239,0" name="jetbrains.mps.samples.KajaAndOr.editor.LogicalOperator_EditorBuilder" />
     </file>
   </root>
 </debug-info>

@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class BuildMpsLayout_Plugin_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new BuildMpsLayout_Plugin_EditorBuilder_a(editorContext, node).createCell();
+    return new BuildMpsLayout_Plugin_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new BuildMpsLayout_Plugin_InspectorBuilder_a(editorContext, node).createCell();
+    return new BuildMpsLayout_Plugin_InspectorBuilder(editorContext, node).createCell();
   }
 }

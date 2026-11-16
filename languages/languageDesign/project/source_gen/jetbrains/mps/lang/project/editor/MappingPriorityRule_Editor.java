@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class MappingPriorityRule_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new MappingPriorityRule_EditorBuilder_a(editorContext, node).createCell();
+    return new MappingPriorityRule_EditorBuilder(editorContext, node).createCell();
   }
 }

@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class MathFuncExpression_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new MathFuncExpression_EditorBuilder_a(editorContext, node).createCell();
+    return new MathFuncExpression_EditorBuilder(editorContext, node).createCell();
   }
 }

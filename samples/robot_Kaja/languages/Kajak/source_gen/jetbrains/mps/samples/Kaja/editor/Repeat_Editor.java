@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class Repeat_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new Repeat_EditorBuilder_a(editorContext, node).createCell();
+    return new Repeat_EditorBuilder(editorContext, node).createCell();
   }
 }

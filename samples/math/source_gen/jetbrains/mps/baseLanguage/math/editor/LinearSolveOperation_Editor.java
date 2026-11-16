@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class LinearSolveOperation_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new LinearSolveOperation_EditorBuilder_a(editorContext, node).createCell();
+    return new LinearSolveOperation_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new LinearSolveOperation_InspectorBuilder_a(editorContext, node).createCell();
+    return new LinearSolveOperation_InspectorBuilder(editorContext, node).createCell();
   }
 }

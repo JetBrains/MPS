@@ -16,6 +16,6 @@ public class TransactionalProperty_Default implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new TransactionalProperty_Default_ComponentBuilder_a(editorContext, node).createCell();
+    return new TransactionalProperty_Default_ComponentBuilder(editorContext, node).createCell();
   }
 }

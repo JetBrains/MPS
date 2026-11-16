@@ -17,6 +17,6 @@ public class MultipleEditorsTestEditorComponentChild_rich implements ConceptEdit
     return myContextHints;
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new MultipleEditorsTestEditorComponentChild_rich_ComponentBuilder_a(editorContext, node).createCell();
+    return new MultipleEditorsTestEditorComponentChild_rich_ComponentBuilder(editorContext, node).createCell();
   }
 }

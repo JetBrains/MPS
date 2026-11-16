@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class CatchClause_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new CatchClause_EditorBuilder_a(editorContext, node).createCell();
+    return new CatchClause_EditorBuilder(editorContext, node).createCell();
   }
 }

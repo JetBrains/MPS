@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class BaseURLLiteral_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new BaseURLLiteral_EditorBuilder_a(editorContext, node).createCell();
+    return new BaseURLLiteral_EditorBuilder(editorContext, node).createCell();
   }
 }

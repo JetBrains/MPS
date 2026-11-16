@@ -16,6 +16,6 @@ public class TestInheritedAttibute_EditorComponent implements ConceptEditorCompo
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new TestInheritedAttibute_EditorComponent_ComponentBuilder_a(editorContext, node).createCell();
+    return new TestInheritedAttibute_EditorComponent_ComponentBuilder(editorContext, node).createCell();
   }
 }

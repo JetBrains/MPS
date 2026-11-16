@@ -16,6 +16,6 @@ public class ISubstituteMenu_PartsComponent implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ISubstituteMenu_PartsComponent_ComponentBuilder_a(editorContext, node).createCell();
+    return new ISubstituteMenu_PartsComponent_ComponentBuilder(editorContext, node).createCell();
   }
 }

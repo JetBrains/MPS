@@ -16,6 +16,6 @@ public class TruckProperties implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new TruckProperties_ComponentBuilder_a(editorContext, node).createCell();
+    return new TruckProperties_ComponentBuilder(editorContext, node).createCell();
   }
 }

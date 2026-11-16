@@ -16,6 +16,6 @@ public class INodeWithReference_EditorComponent implements ConceptEditorComponen
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new INodeWithReference_EditorComponent_ComponentBuilder_a(editorContext, node).createCell();
+    return new INodeWithReference_EditorComponent_ComponentBuilder(editorContext, node).createCell();
   }
 }

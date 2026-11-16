@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="-3bk960ku0637d512jgc26y48r341n4u">
-  <files names="AllRepoModels_MenuContrib.java:EditorAspectDescriptorImpl.java:TestModuleManifestRef_Editor.java:TestModuleManifestRef_EditorBuilder_a.java:TestModuleManifestRef_SubstituteMenu.java:TestModuleManifest_Editor.java:TestModuleManifest_EditorBuilder_a.java:TestProjectConfiguration_Editor.java:TestProjectConfiguration_EditorBuilder_a.java" />
+  <files names="AllRepoModels_MenuContrib.java:EditorAspectDescriptorImpl.java:TestModuleManifestRef_Editor.java:TestModuleManifestRef_EditorBuilder.java:TestModuleManifestRef_SubstituteMenu.java:TestModuleManifest_Editor.java:TestModuleManifest_EditorBuilder.java:TestProjectConfiguration_Editor.java:TestProjectConfiguration_EditorBuilder.java" />
 </product>
 

@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class CompletionStyling_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new CompletionStyling_EditorBuilder_a(editorContext, node).createCell();
+    return new CompletionStyling_EditorBuilder(editorContext, node).createCell();
   }
 }

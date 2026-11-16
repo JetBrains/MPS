@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class AnonymousFunction_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new AnonymousFunction_EditorBuilder_a(editorContext, node).createCell();
+    return new AnonymousFunction_EditorBuilder(editorContext, node).createCell();
   }
 }

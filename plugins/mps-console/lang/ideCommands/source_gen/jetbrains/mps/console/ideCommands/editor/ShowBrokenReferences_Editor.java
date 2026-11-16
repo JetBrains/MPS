@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ShowBrokenReferences_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ShowBrokenReferences_EditorBuilder_a(editorContext, node).createCell();
+    return new ShowBrokenReferences_EditorBuilder(editorContext, node).createCell();
   }
 }

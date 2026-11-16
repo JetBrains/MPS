@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ReportFeedbackStatement_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ReportFeedbackStatement_EditorBuilder_a(editorContext, node).createCell();
+    return new ReportFeedbackStatement_EditorBuilder(editorContext, node).createCell();
   }
 }

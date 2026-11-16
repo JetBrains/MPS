@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class SEnum_MemberForValueOperation_Old_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new SEnum_MemberForValueOperation_Old_EditorBuilder_a(editorContext, node).createCell();
+    return new SEnum_MemberForValueOperation_Old_EditorBuilder(editorContext, node).createCell();
   }
 }

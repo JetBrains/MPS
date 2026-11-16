@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ConceptIdRefExpression_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ConceptIdRefExpression_EditorBuilder_a(editorContext, node).createCell();
+    return new ConceptIdRefExpression_EditorBuilder(editorContext, node).createCell();
   }
 }

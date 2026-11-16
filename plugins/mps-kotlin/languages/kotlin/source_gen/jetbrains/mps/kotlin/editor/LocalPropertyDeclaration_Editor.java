@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class LocalPropertyDeclaration_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new LocalPropertyDeclaration_EditorBuilder_a(editorContext, node).createCell();
+    return new LocalPropertyDeclaration_EditorBuilder(editorContext, node).createCell();
   }
 }

@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ParameterizedIntentionDeclaration_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ParameterizedIntentionDeclaration_EditorBuilder_a(editorContext, node).createCell();
+    return new ParameterizedIntentionDeclaration_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new ParameterizedIntentionDeclaration_InspectorBuilder_a(editorContext, node).createCell();
+    return new ParameterizedIntentionDeclaration_InspectorBuilder(editorContext, node).createCell();
   }
 }

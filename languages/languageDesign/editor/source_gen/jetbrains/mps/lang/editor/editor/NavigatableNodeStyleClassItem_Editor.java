@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class NavigatableNodeStyleClassItem_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new NavigatableNodeStyleClassItem_EditorBuilder_a(editorContext, node).createCell();
+    return new NavigatableNodeStyleClassItem_EditorBuilder(editorContext, node).createCell();
   }
 }

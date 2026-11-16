@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class TypeClause_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new TypeClause_EditorBuilder_a(editorContext, node).createCell();
+    return new TypeClause_EditorBuilder(editorContext, node).createCell();
   }
 }

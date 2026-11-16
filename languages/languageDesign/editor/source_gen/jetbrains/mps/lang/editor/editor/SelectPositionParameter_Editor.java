@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class SelectPositionParameter_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new SelectPositionParameter_EditorBuilder_a(editorContext, node).createCell();
+    return new SelectPositionParameter_EditorBuilder(editorContext, node).createCell();
   }
 }

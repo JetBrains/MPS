@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class RelayQueryExpression_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new RelayQueryExpression_EditorBuilder_a(editorContext, node).createCell();
+    return new RelayQueryExpression_EditorBuilder(editorContext, node).createCell();
   }
 }

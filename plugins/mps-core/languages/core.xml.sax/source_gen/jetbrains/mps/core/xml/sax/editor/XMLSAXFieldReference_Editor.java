@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class XMLSAXFieldReference_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new XMLSAXFieldReference_EditorBuilder_a(editorContext, node).createCell();
+    return new XMLSAXFieldReference_EditorBuilder(editorContext, node).createCell();
   }
 }

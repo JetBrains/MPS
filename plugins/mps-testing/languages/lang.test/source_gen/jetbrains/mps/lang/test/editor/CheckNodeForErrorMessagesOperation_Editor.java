@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class CheckNodeForErrorMessagesOperation_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new CheckNodeForErrorMessagesOperation_EditorBuilder_a(editorContext, node).createCell();
+    return new CheckNodeForErrorMessagesOperation_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new CheckNodeForErrorMessagesOperation_InspectorBuilder_a(editorContext, node).createCell();
+    return new CheckNodeForErrorMessagesOperation_InspectorBuilder(editorContext, node).createCell();
   }
 }

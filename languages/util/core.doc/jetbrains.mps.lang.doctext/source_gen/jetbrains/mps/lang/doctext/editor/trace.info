@@ -260,17 +260,17 @@
   </root>
   <root nodeRef="r:046cec61-f2b4-4f20-bfa8-eb52d1fed80d(jetbrains.mps.lang.doctext.editor)/747542936069611588">
     <file name="DocText_Editor.java">
-      <node id="747542936069611588" at="11,79,12,73" concept="6" />
+      <node id="747542936069611588" at="11,79,12,71" concept="6" />
       <node id="747542936069611588" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="747542936069611588" at="11,79,12,73" />
+      <scope id="747542936069611588" at="11,79,12,71" />
       <scope id="747542936069611588" at="11,0,14,0">
         <var name="editorContext" id="747542936069611588" />
         <var name="node" id="747542936069611588" />
       </scope>
       <unit id="747542936069611588" at="10,0,15,0" name="jetbrains.mps.lang.doctext.editor.DocText_Editor" />
     </file>
-    <file name="DocText_EditorBuilder_a.java">
-      <node id="747542936069611588" at="36,87,37,19" concept="11" />
+    <file name="DocText_EditorBuilder.java">
+      <node id="747542936069611588" at="36,85,37,19" concept="11" />
       <node id="747542936069611588" at="37,19,38,18" concept="1" />
       <node id="747542936069611588" at="43,26,44,18" concept="6" />
       <node id="747542936069611588" at="47,39,48,32" concept="6" />
@@ -338,7 +338,7 @@
       <node id="747542936069611588" at="100,0,103,0" concept="4" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="747542936069611588" at="103,0,106,0" concept="4" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="747542936069611588" at="147,96,150,9" concept="3" />
-      <node id="747542936069611588" at="36,0,40,0" concept="0" trace="DocText_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="747542936069611588" at="36,0,40,0" concept="0" trace="DocText_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="747542936069611588" at="91,0,95,0" concept="0" trace="linesListHandler_avpfmb_a0a#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="747542936069611588" at="96,0,100,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="747542936069611588" at="129,97,133,9" concept="3" />
@@ -367,7 +367,7 @@
       <scope id="747542936069611588" at="103,48,104,30" />
       <scope id="747542936069611588" at="121,17,122,42" />
       <scope id="747542936069611588" at="148,34,149,91" />
-      <scope id="747542936069611588" at="36,87,38,18" />
+      <scope id="747542936069611588" at="36,85,38,18" />
       <scope id="747542936069611588" at="91,80,93,25" />
       <scope id="747542936069611588" at="130,122,132,146" />
       <scope id="747542936069611588" at="136,34,138,142" />
@@ -426,10 +426,10 @@
         <var name="elementNode" id="747542936069611588" />
         <var name="isEmptyCell" id="747542936069611588" />
       </scope>
-      <unit id="747542936069611588" at="163,0,166,0" name="jetbrains.mps.lang.doctext.editor.DocText_EditorBuilder_a$LINKS" />
-      <unit id="747542936069611588" at="167,0,170,0" name="jetbrains.mps.lang.doctext.editor.DocText_EditorBuilder_a$CONCEPTS" />
-      <unit id="747542936069611588" at="87,0,162,0" name="jetbrains.mps.lang.doctext.editor.DocText_EditorBuilder_a$linesListHandler_avpfmb_a0a" />
-      <unit id="747542936069611588" at="32,0,171,0" name="jetbrains.mps.lang.doctext.editor.DocText_EditorBuilder_a" />
+      <unit id="747542936069611588" at="163,0,166,0" name="jetbrains.mps.lang.doctext.editor.DocText_EditorBuilder$LINKS" />
+      <unit id="747542936069611588" at="167,0,170,0" name="jetbrains.mps.lang.doctext.editor.DocText_EditorBuilder$CONCEPTS" />
+      <unit id="747542936069611588" at="87,0,162,0" name="jetbrains.mps.lang.doctext.editor.DocText_EditorBuilder$linesListHandler_avpfmb_a0a" />
+      <unit id="747542936069611588" at="32,0,171,0" name="jetbrains.mps.lang.doctext.editor.DocText_EditorBuilder" />
     </file>
   </root>
 </debug-info>

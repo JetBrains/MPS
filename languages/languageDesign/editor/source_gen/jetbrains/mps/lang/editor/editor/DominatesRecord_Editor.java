@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class DominatesRecord_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new DominatesRecord_EditorBuilder_a(editorContext, node).createCell();
+    return new DominatesRecord_EditorBuilder(editorContext, node).createCell();
   }
 }

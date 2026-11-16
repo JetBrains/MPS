@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ProjectedConceptParameterizedType_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ProjectedConceptParameterizedType_EditorBuilder_a(editorContext, node).createCell();
+    return new ProjectedConceptParameterizedType_EditorBuilder(editorContext, node).createCell();
   }
 }

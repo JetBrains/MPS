@@ -18,12 +18,12 @@
   </root>
   <root nodeRef="r:39e4685e-7d37-44fe-a3ff-80e8bd32b61e(jetbrains.mps.lang.feedback.problem.scopes.editor)/1592627013225788461">
     <file name="RefOutOfScopeProblem_Editor.java">
-      <node id="1592627013225788461" at="11,79,12,86" concept="6" />
-      <node id="1592627013225788461" at="14,82,15,89" concept="6" />
+      <node id="1592627013225788461" at="11,79,12,84" concept="6" />
+      <node id="1592627013225788461" at="14,82,15,87" concept="6" />
       <node id="1592627013225788461" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1592627013225788461" at="14,0,17,0" concept="4" trace="createInspectedCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1592627013225788461" at="11,79,12,86" />
-      <scope id="1592627013225788461" at="14,82,15,89" />
+      <scope id="1592627013225788461" at="11,79,12,84" />
+      <scope id="1592627013225788461" at="14,82,15,87" />
       <scope id="1592627013225788461" at="11,0,14,0">
         <var name="editorContext" id="1592627013225788461" />
         <var name="node" id="1592627013225788461" />
@@ -34,8 +34,8 @@
       </scope>
       <unit id="1592627013225788461" at="10,0,18,0" name="jetbrains.mps.lang.feedback.problem.scopes.editor.RefOutOfScopeProblem_Editor" />
     </file>
-    <file name="RefOutOfScopeProblem_EditorBuilder_a.java">
-      <node id="1592627013225788461" at="41,100,42,19" concept="9" />
+    <file name="RefOutOfScopeProblem_EditorBuilder.java">
+      <node id="1592627013225788461" at="41,98,42,19" concept="9" />
       <node id="1592627013225788461" at="42,19,43,18" concept="1" />
       <node id="1592627013225788461" at="48,26,49,18" concept="6" />
       <node id="1592627013225788461" at="52,39,53,32" concept="6" />
@@ -107,7 +107,7 @@
       <node id="5258059200641869328" at="104,0,106,0" concept="2" trace="myNode" />
       <node id="1592627013225788461" at="52,0,55,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="5258059200641869328" at="114,0,117,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="1592627013225788461" at="41,0,45,0" concept="0" trace="RefOutOfScopeProblem_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1592627013225788461" at="41,0,45,0" concept="0" trace="RefOutOfScopeProblem_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1592627013225788461" at="86,0,90,5" concept="3" />
       <node id="1592627013225788461" at="46,0,51,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1592627013225788461" at="96,205,101,22" concept="3" />
@@ -127,7 +127,7 @@
       <scope id="5258059200641869328" at="114,41,115,32" />
       <scope id="5258059200641869328" at="120,28,121,20" />
       <scope id="5258059200641869338" at="144,17,145,42" />
-      <scope id="1592627013225788461" at="41,100,43,18" />
+      <scope id="1592627013225788461" at="41,98,43,18" />
       <scope id="1592627013225788461" at="87,40,89,42" />
       <scope id="1592627013225788461" at="97,73,99,145">
         <var name="manager" id="1592627013225788461" />
@@ -185,15 +185,15 @@
         <var name="style" id="1592627013225788461" />
       </scope>
       <scope id="1592627013225788461" at="72,0,103,0" />
-      <unit id="1592627013225788461" at="156,0,159,0" name="jetbrains.mps.lang.feedback.problem.scopes.editor.RefOutOfScopeProblem_EditorBuilder_a$LINKS" />
-      <unit id="1592627013225788461" at="165,0,168,0" name="jetbrains.mps.lang.feedback.problem.scopes.editor.RefOutOfScopeProblem_EditorBuilder_a$PROPS" />
-      <unit id="1592627013225788461" at="160,0,164,0" name="jetbrains.mps.lang.feedback.problem.scopes.editor.RefOutOfScopeProblem_EditorBuilder_a$CONCEPTS" />
-      <unit id="1592627013225788461" at="74,42,82,5" name="jetbrains.mps.lang.feedback.problem.scopes.editor.RefOutOfScopeProblem_EditorBuilder_a$1" />
-      <unit id="5258059200641869328" at="103,0,149,0" name="jetbrains.mps.lang.feedback.problem.scopes.editor.RefOutOfScopeProblem_EditorBuilder_a$Inline_Builder0" />
-      <unit id="1592627013225788461" at="37,0,169,0" name="jetbrains.mps.lang.feedback.problem.scopes.editor.RefOutOfScopeProblem_EditorBuilder_a" />
+      <unit id="1592627013225788461" at="156,0,159,0" name="jetbrains.mps.lang.feedback.problem.scopes.editor.RefOutOfScopeProblem_EditorBuilder$LINKS" />
+      <unit id="1592627013225788461" at="165,0,168,0" name="jetbrains.mps.lang.feedback.problem.scopes.editor.RefOutOfScopeProblem_EditorBuilder$PROPS" />
+      <unit id="1592627013225788461" at="160,0,164,0" name="jetbrains.mps.lang.feedback.problem.scopes.editor.RefOutOfScopeProblem_EditorBuilder$CONCEPTS" />
+      <unit id="1592627013225788461" at="74,42,82,5" name="jetbrains.mps.lang.feedback.problem.scopes.editor.RefOutOfScopeProblem_EditorBuilder$1" />
+      <unit id="5258059200641869328" at="103,0,149,0" name="jetbrains.mps.lang.feedback.problem.scopes.editor.RefOutOfScopeProblem_EditorBuilder$Inline_Builder0" />
+      <unit id="1592627013225788461" at="37,0,169,0" name="jetbrains.mps.lang.feedback.problem.scopes.editor.RefOutOfScopeProblem_EditorBuilder" />
     </file>
-    <file name="RefOutOfScopeProblem_InspectorBuilder_a.java">
-      <node id="1592627013225788461" at="40,103,41,19" concept="9" />
+    <file name="RefOutOfScopeProblem_InspectorBuilder.java">
+      <node id="1592627013225788461" at="40,101,41,19" concept="9" />
       <node id="1592627013225788461" at="41,19,42,18" concept="1" />
       <node id="1592627013225788461" at="47,26,48,18" concept="6" />
       <node id="1592627013225788461" at="51,39,52,32" concept="6" />
@@ -260,7 +260,7 @@
       <node id="2554379189374329855" at="102,0,104,0" concept="2" trace="myNode" />
       <node id="1592627013225788461" at="51,0,54,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="2554379189374329855" at="112,0,115,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="1592627013225788461" at="40,0,44,0" concept="0" trace="RefOutOfScopeProblem_InspectorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1592627013225788461" at="40,0,44,0" concept="0" trace="RefOutOfScopeProblem_InspectorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1592627013225788461" at="84,0,88,5" concept="3" />
       <node id="1592627013225788461" at="45,0,50,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1592627013225788461" at="94,205,99,22" concept="3" />
@@ -279,7 +279,7 @@
       <scope id="2554379189374329855" at="112,41,113,32" />
       <scope id="2554379189374329855" at="118,28,119,20" />
       <scope id="2554379189374329856" at="142,17,143,42" />
-      <scope id="1592627013225788461" at="40,103,42,18" />
+      <scope id="1592627013225788461" at="40,101,42,18" />
       <scope id="1592627013225788461" at="85,40,87,43" />
       <scope id="1592627013225788461" at="95,73,97,145">
         <var name="manager" id="1592627013225788461" />
@@ -333,12 +333,12 @@
         <var name="style" id="1592627013225788461" />
       </scope>
       <scope id="1592627013225788461" at="70,0,101,0" />
-      <unit id="1592627013225788461" at="148,0,151,0" name="jetbrains.mps.lang.feedback.problem.scopes.editor.RefOutOfScopeProblem_InspectorBuilder_a$LINKS" />
-      <unit id="1592627013225788461" at="157,0,160,0" name="jetbrains.mps.lang.feedback.problem.scopes.editor.RefOutOfScopeProblem_InspectorBuilder_a$PROPS" />
-      <unit id="1592627013225788461" at="152,0,156,0" name="jetbrains.mps.lang.feedback.problem.scopes.editor.RefOutOfScopeProblem_InspectorBuilder_a$CONCEPTS" />
-      <unit id="1592627013225788461" at="72,42,80,5" name="jetbrains.mps.lang.feedback.problem.scopes.editor.RefOutOfScopeProblem_InspectorBuilder_a$1" />
-      <unit id="2554379189374329855" at="101,0,147,0" name="jetbrains.mps.lang.feedback.problem.scopes.editor.RefOutOfScopeProblem_InspectorBuilder_a$Inline_Builder0" />
-      <unit id="1592627013225788461" at="36,0,161,0" name="jetbrains.mps.lang.feedback.problem.scopes.editor.RefOutOfScopeProblem_InspectorBuilder_a" />
+      <unit id="1592627013225788461" at="148,0,151,0" name="jetbrains.mps.lang.feedback.problem.scopes.editor.RefOutOfScopeProblem_InspectorBuilder$LINKS" />
+      <unit id="1592627013225788461" at="157,0,160,0" name="jetbrains.mps.lang.feedback.problem.scopes.editor.RefOutOfScopeProblem_InspectorBuilder$PROPS" />
+      <unit id="1592627013225788461" at="152,0,156,0" name="jetbrains.mps.lang.feedback.problem.scopes.editor.RefOutOfScopeProblem_InspectorBuilder$CONCEPTS" />
+      <unit id="1592627013225788461" at="72,42,80,5" name="jetbrains.mps.lang.feedback.problem.scopes.editor.RefOutOfScopeProblem_InspectorBuilder$1" />
+      <unit id="2554379189374329855" at="101,0,147,0" name="jetbrains.mps.lang.feedback.problem.scopes.editor.RefOutOfScopeProblem_InspectorBuilder$Inline_Builder0" />
+      <unit id="1592627013225788461" at="36,0,161,0" name="jetbrains.mps.lang.feedback.problem.scopes.editor.RefOutOfScopeProblem_InspectorBuilder" />
     </file>
   </root>
 </debug-info>

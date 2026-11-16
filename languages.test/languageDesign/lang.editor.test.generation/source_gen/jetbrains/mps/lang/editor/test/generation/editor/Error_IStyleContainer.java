@@ -16,6 +16,6 @@ public class Error_IStyleContainer implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new Error_IStyleContainer_ComponentBuilder_a(editorContext, node).createCell();
+    return new Error_IStyleContainer_ComponentBuilder(editorContext, node).createCell();
   }
 }

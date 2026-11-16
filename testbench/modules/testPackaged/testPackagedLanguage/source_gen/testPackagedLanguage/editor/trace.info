@@ -14,17 +14,17 @@
   </root>
   <root nodeRef="r:a452678f-d6ee-4b32-bf46-38f81da9225e(testPackagedLanguage.editor)/6919151941181560080">
     <file name="TestConcept_Editor.java">
-      <node id="6919151941181560080" at="11,79,12,77" concept="5" />
+      <node id="6919151941181560080" at="11,79,12,75" concept="5" />
       <node id="6919151941181560080" at="11,0,14,0" concept="3" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="6919151941181560080" at="11,79,12,77" />
+      <scope id="6919151941181560080" at="11,79,12,75" />
       <scope id="6919151941181560080" at="11,0,14,0">
         <var name="editorContext" id="6919151941181560080" />
         <var name="node" id="6919151941181560080" />
       </scope>
       <unit id="6919151941181560080" at="10,0,15,0" name="testPackagedLanguage.editor.TestConcept_Editor" />
     </file>
-    <file name="TestConcept_EditorBuilder_a.java">
-      <node id="6919151941181560080" at="18,91,19,19" concept="6" />
+    <file name="TestConcept_EditorBuilder.java">
+      <node id="6919151941181560080" at="18,89,19,19" concept="6" />
       <node id="6919151941181560080" at="19,19,20,18" concept="1" />
       <node id="6919151941181560080" at="25,26,26,18" concept="5" />
       <node id="6919151941181560080" at="29,39,30,32" concept="5" />
@@ -40,13 +40,13 @@
       <node id="6919151941181560084" at="44,34,45,22" concept="5" />
       <node id="6919151941181560080" at="15,0,17,0" concept="2" trace="myNode" />
       <node id="6919151941181560080" at="29,0,32,0" concept="3" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="6919151941181560080" at="18,0,22,0" concept="0" trace="TestConcept_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="6919151941181560080" at="18,0,22,0" concept="0" trace="TestConcept_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="6919151941181560080" at="23,0,28,0" concept="3" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="6919151941181560084" at="41,0,47,0" concept="3" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="6919151941181560080" at="33,0,41,0" concept="3" trace="createCollection_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="6919151941181560080" at="25,26,26,18" />
       <scope id="6919151941181560080" at="29,39,30,32" />
-      <scope id="6919151941181560080" at="18,91,20,18" />
+      <scope id="6919151941181560080" at="18,89,20,18" />
       <scope id="6919151941181560080" at="29,0,32,0" />
       <scope id="6919151941181560080" at="18,0,22,0">
         <var name="context" id="6919151941181560080" />
@@ -61,7 +61,7 @@
       </scope>
       <scope id="6919151941181560084" at="41,0,47,0" />
       <scope id="6919151941181560080" at="33,0,41,0" />
-      <unit id="6919151941181560080" at="14,0,48,0" name="testPackagedLanguage.editor.TestConcept_EditorBuilder_a" />
+      <unit id="6919151941181560080" at="14,0,48,0" name="testPackagedLanguage.editor.TestConcept_EditorBuilder" />
     </file>
   </root>
 </debug-info>

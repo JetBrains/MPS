@@ -16,6 +16,6 @@ public class ConstraintsDef_isDefined implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ConstraintsDef_isDefined_ComponentBuilder_a(editorContext, node).createCell();
+    return new ConstraintsDef_isDefined_ComponentBuilder(editorContext, node).createCell();
   }
 }

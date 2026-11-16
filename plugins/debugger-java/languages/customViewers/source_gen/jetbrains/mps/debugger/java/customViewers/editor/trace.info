@@ -20,17 +20,17 @@
   </root>
   <root nodeRef="r:5b646244-9348-4892-8868-7e2e5cb2c7d9(jetbrains.mps.debugger.java.customViewers.editor)/1842653058274900916">
     <file name="WatchableListType_Editor.java">
-      <node id="1842653058274900916" at="11,79,12,83" concept="7" />
+      <node id="1842653058274900916" at="11,79,12,81" concept="7" />
       <node id="1842653058274900916" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1842653058274900916" at="11,79,12,83" />
+      <scope id="1842653058274900916" at="11,79,12,81" />
       <scope id="1842653058274900916" at="11,0,14,0">
         <var name="editorContext" id="1842653058274900916" />
         <var name="node" id="1842653058274900916" />
       </scope>
       <unit id="1842653058274900916" at="10,0,15,0" name="jetbrains.mps.debugger.java.customViewers.editor.WatchableListType_Editor" />
     </file>
-    <file name="WatchableListType_EditorBuilder_a.java">
-      <node id="1842653058274900916" at="16,97,17,19" concept="11" />
+    <file name="WatchableListType_EditorBuilder.java">
+      <node id="1842653058274900916" at="16,95,17,19" concept="11" />
       <node id="1842653058274900916" at="17,19,18,18" concept="2" />
       <node id="1842653058274900916" at="23,26,24,18" concept="7" />
       <node id="1842653058274900916" at="27,39,28,31" concept="7" />
@@ -41,13 +41,13 @@
       <node id="2886182022232400015" at="37,5,38,22" concept="7" />
       <node id="1842653058274900916" at="13,0,15,0" concept="3" trace="myNode" />
       <node id="1842653058274900916" at="27,0,30,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="1842653058274900916" at="16,0,20,0" concept="1" trace="WatchableListType_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1842653058274900916" at="16,0,20,0" concept="1" trace="WatchableListType_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="2886182022232400015" at="33,72,37,5" concept="4" />
       <node id="1842653058274900916" at="21,0,26,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="2886182022232400015" at="31,0,40,0" concept="5" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="1842653058274900916" at="23,26,24,18" />
       <scope id="1842653058274900916" at="27,39,28,31" />
-      <scope id="1842653058274900916" at="16,97,18,18" />
+      <scope id="1842653058274900916" at="16,95,18,18" />
       <scope id="2886182022232400015" at="34,26,36,30" />
       <scope id="1842653058274900916" at="27,0,30,0" />
       <scope id="1842653058274900916" at="16,0,20,0">
@@ -60,22 +60,22 @@
         <var name="editorCell" id="2886182022232400015" />
       </scope>
       <scope id="2886182022232400015" at="31,0,40,0" />
-      <unit id="1842653058274900916" at="12,0,41,0" name="jetbrains.mps.debugger.java.customViewers.editor.WatchableListType_EditorBuilder_a" />
+      <unit id="1842653058274900916" at="12,0,41,0" name="jetbrains.mps.debugger.java.customViewers.editor.WatchableListType_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:5b646244-9348-4892-8868-7e2e5cb2c7d9(jetbrains.mps.debugger.java.customViewers.editor)/1842653058274918911">
     <file name="WatchablesListCreator_Editor.java">
-      <node id="1842653058274918911" at="11,79,12,87" concept="7" />
+      <node id="1842653058274918911" at="11,79,12,85" concept="7" />
       <node id="1842653058274918911" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1842653058274918911" at="11,79,12,87" />
+      <scope id="1842653058274918911" at="11,79,12,85" />
       <scope id="1842653058274918911" at="11,0,14,0">
         <var name="editorContext" id="1842653058274918911" />
         <var name="node" id="1842653058274918911" />
       </scope>
       <unit id="1842653058274918911" at="10,0,15,0" name="jetbrains.mps.debugger.java.customViewers.editor.WatchablesListCreator_Editor" />
     </file>
-    <file name="WatchablesListCreator_EditorBuilder_a.java">
-      <node id="1842653058274918911" at="17,101,18,19" concept="11" />
+    <file name="WatchablesListCreator_EditorBuilder.java">
+      <node id="1842653058274918911" at="17,99,18,19" concept="11" />
       <node id="1842653058274918911" at="18,19,19,18" concept="2" />
       <node id="1842653058274918911" at="24,26,25,18" concept="7" />
       <node id="1842653058274918911" at="28,39,29,32" concept="7" />
@@ -89,13 +89,13 @@
       <node id="2886182022232400307" at="41,119,42,22" concept="7" />
       <node id="1842653058274918911" at="14,0,16,0" concept="3" trace="myNode" />
       <node id="1842653058274918911" at="28,0,31,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="1842653058274918911" at="17,0,21,0" concept="1" trace="WatchablesListCreator_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1842653058274918911" at="17,0,21,0" concept="1" trace="WatchablesListCreator_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="2886182022232400307" at="40,0,44,0" concept="5" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1842653058274918911" at="22,0,27,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1842653058274918911" at="32,0,40,0" concept="5" trace="createCollection_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="1842653058274918911" at="24,26,25,18" />
       <scope id="1842653058274918911" at="28,39,29,32" />
-      <scope id="1842653058274918911" at="17,101,19,18" />
+      <scope id="1842653058274918911" at="17,99,19,18" />
       <scope id="2886182022232400307" at="40,42,42,22">
         <var name="editorCell" id="2886182022232400307" />
       </scope>
@@ -110,22 +110,22 @@
         <var name="editorCell" id="1842653058274918911" />
       </scope>
       <scope id="1842653058274918911" at="32,0,40,0" />
-      <unit id="1842653058274918911" at="13,0,45,0" name="jetbrains.mps.debugger.java.customViewers.editor.WatchablesListCreator_EditorBuilder_a" />
+      <unit id="1842653058274918911" at="13,0,45,0" name="jetbrains.mps.debugger.java.customViewers.editor.WatchablesListCreator_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:5b646244-9348-4892-8868-7e2e5cb2c7d9(jetbrains.mps.debugger.java.customViewers.editor)/3473983539747127457">
     <file name="ToProcessMethod_Editor.java">
-      <node id="3473983539747127457" at="11,79,12,81" concept="7" />
+      <node id="3473983539747127457" at="11,79,12,79" concept="7" />
       <node id="3473983539747127457" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="3473983539747127457" at="11,79,12,81" />
+      <scope id="3473983539747127457" at="11,79,12,79" />
       <scope id="3473983539747127457" at="11,0,14,0">
         <var name="editorContext" id="3473983539747127457" />
         <var name="node" id="3473983539747127457" />
       </scope>
       <unit id="3473983539747127457" at="10,0,15,0" name="jetbrains.mps.debugger.java.customViewers.editor.ToProcessMethod_Editor" />
     </file>
-    <file name="ToProcessMethod_EditorBuilder_a.java">
-      <node id="3473983539747127457" at="19,95,20,19" concept="11" />
+    <file name="ToProcessMethod_EditorBuilder.java">
+      <node id="3473983539747127457" at="19,93,20,19" concept="11" />
       <node id="3473983539747127457" at="20,19,21,18" concept="2" />
       <node id="3473983539747127457" at="26,26,27,18" concept="7" />
       <node id="3473983539747127457" at="30,39,31,32" concept="7" />
@@ -143,14 +143,14 @@
       <node id="3473983539747127461" at="49,93,50,22" concept="7" />
       <node id="3473983539747127457" at="16,0,18,0" concept="3" trace="myNode" />
       <node id="3473983539747127457" at="30,0,33,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="3473983539747127457" at="19,0,23,0" concept="1" trace="ToProcessMethod_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="3473983539747127457" at="19,0,23,0" concept="1" trace="ToProcessMethod_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="2886182022232400033" at="43,0,47,0" concept="5" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="3473983539747127457" at="24,0,29,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="3473983539747127461" at="47,0,52,0" concept="5" trace="createAttributedNodeCell_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="3473983539747127457" at="34,0,43,0" concept="5" trace="createCollection_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="3473983539747127457" at="26,26,27,18" />
       <scope id="3473983539747127457" at="30,39,31,32" />
-      <scope id="3473983539747127457" at="19,95,21,18" />
+      <scope id="3473983539747127457" at="19,93,21,18" />
       <scope id="2886182022232400033" at="43,42,45,22">
         <var name="editorCell" id="2886182022232400033" />
       </scope>
@@ -170,22 +170,22 @@
         <var name="editorCell" id="3473983539747127457" />
       </scope>
       <scope id="3473983539747127457" at="34,0,43,0" />
-      <unit id="3473983539747127457" at="15,0,53,0" name="jetbrains.mps.debugger.java.customViewers.editor.ToProcessMethod_EditorBuilder_a" />
+      <unit id="3473983539747127457" at="15,0,53,0" name="jetbrains.mps.debugger.java.customViewers.editor.ToProcessMethod_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:5b646244-9348-4892-8868-7e2e5cb2c7d9(jetbrains.mps.debugger.java.customViewers.editor)/43370322128311453">
     <file name="HighLevelWatchableCreator_Editor.java">
-      <node id="43370322128311453" at="11,79,12,91" concept="7" />
+      <node id="43370322128311453" at="11,79,12,89" concept="7" />
       <node id="43370322128311453" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="43370322128311453" at="11,79,12,91" />
+      <scope id="43370322128311453" at="11,79,12,89" />
       <scope id="43370322128311453" at="11,0,14,0">
         <var name="editorContext" id="43370322128311453" />
         <var name="node" id="43370322128311453" />
       </scope>
       <unit id="43370322128311453" at="10,0,15,0" name="jetbrains.mps.debugger.java.customViewers.editor.HighLevelWatchableCreator_Editor" />
     </file>
-    <file name="HighLevelWatchableCreator_EditorBuilder_a.java">
-      <node id="43370322128311453" at="45,105,46,19" concept="11" />
+    <file name="HighLevelWatchableCreator_EditorBuilder.java">
+      <node id="43370322128311453" at="45,103,46,19" concept="11" />
       <node id="43370322128311453" at="46,19,47,18" concept="2" />
       <node id="43370322128311453" at="52,26,53,18" concept="7" />
       <node id="43370322128311453" at="56,39,57,32" concept="7" />
@@ -281,7 +281,7 @@
       <node id="43370322128311453" at="182,87,185,7" concept="4" />
       <node id="43370322128311453" at="185,7,188,7" concept="4" />
       <node id="43370322128311453" at="204,0,207,0" concept="5" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="43370322128311453" at="45,0,49,0" concept="1" trace="HighLevelWatchableCreator_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="43370322128311453" at="45,0,49,0" concept="1" trace="HighLevelWatchableCreator_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="2886182022232400333" at="72,0,76,0" concept="5" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="43370322128311453" at="90,0,94,5" concept="4" />
       <node id="43370322128311453" at="153,0,157,0" concept="5" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -314,7 +314,7 @@
       <scope id="43370322128311453" at="186,42,187,46" />
       <scope id="43370322128311453" at="200,17,201,42" />
       <scope id="43370322128311453" at="204,40,205,26" />
-      <scope id="43370322128311453" at="45,105,47,18" />
+      <scope id="43370322128311453" at="45,103,47,18" />
       <scope id="2886182022232400333" at="72,42,74,22">
         <var name="editorCell" id="2886182022232400333" />
       </scope>
@@ -403,28 +403,28 @@
         <var name="referenceLink" id="43370322128311453" />
       </scope>
       <scope id="43370322128311453" at="76,0,104,0" />
-      <unit id="43370322128311453" at="225,0,228,0" name="jetbrains.mps.debugger.java.customViewers.editor.HighLevelWatchableCreator_EditorBuilder_a$PROPS" />
-      <unit id="43370322128311453" at="215,0,219,0" name="jetbrains.mps.debugger.java.customViewers.editor.HighLevelWatchableCreator_EditorBuilder_a$LINKS" />
-      <unit id="43370322128311453" at="220,0,224,0" name="jetbrains.mps.debugger.java.customViewers.editor.HighLevelWatchableCreator_EditorBuilder_a$CONCEPTS" />
-      <unit id="43370322128311453" at="78,42,86,5" name="jetbrains.mps.debugger.java.customViewers.editor.HighLevelWatchableCreator_EditorBuilder_a$1" />
-      <unit id="43370322128311458" at="104,0,147,0" name="jetbrains.mps.debugger.java.customViewers.editor.HighLevelWatchableCreator_EditorBuilder_a$Inline_Builder0" />
-      <unit id="43370322128311453" at="157,0,208,0" name="jetbrains.mps.debugger.java.customViewers.editor.HighLevelWatchableCreator_EditorBuilder_a$valueSingleRoleHandler_h88a5f_d0" />
-      <unit id="43370322128311453" at="41,0,229,0" name="jetbrains.mps.debugger.java.customViewers.editor.HighLevelWatchableCreator_EditorBuilder_a" />
+      <unit id="43370322128311453" at="225,0,228,0" name="jetbrains.mps.debugger.java.customViewers.editor.HighLevelWatchableCreator_EditorBuilder$PROPS" />
+      <unit id="43370322128311453" at="215,0,219,0" name="jetbrains.mps.debugger.java.customViewers.editor.HighLevelWatchableCreator_EditorBuilder$LINKS" />
+      <unit id="43370322128311453" at="220,0,224,0" name="jetbrains.mps.debugger.java.customViewers.editor.HighLevelWatchableCreator_EditorBuilder$CONCEPTS" />
+      <unit id="43370322128311453" at="78,42,86,5" name="jetbrains.mps.debugger.java.customViewers.editor.HighLevelWatchableCreator_EditorBuilder$1" />
+      <unit id="43370322128311458" at="104,0,147,0" name="jetbrains.mps.debugger.java.customViewers.editor.HighLevelWatchableCreator_EditorBuilder$Inline_Builder0" />
+      <unit id="43370322128311453" at="157,0,208,0" name="jetbrains.mps.debugger.java.customViewers.editor.HighLevelWatchableCreator_EditorBuilder$valueSingleRoleHandler_h88a5f_d0" />
+      <unit id="43370322128311453" at="41,0,229,0" name="jetbrains.mps.debugger.java.customViewers.editor.HighLevelWatchableCreator_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:5b646244-9348-4892-8868-7e2e5cb2c7d9(jetbrains.mps.debugger.java.customViewers.editor)/43370322128323844">
     <file name="HighLevelCustomViewer_Editor.java">
-      <node id="43370322128323844" at="11,79,12,87" concept="7" />
+      <node id="43370322128323844" at="11,79,12,85" concept="7" />
       <node id="43370322128323844" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="43370322128323844" at="11,79,12,87" />
+      <scope id="43370322128323844" at="11,79,12,85" />
       <scope id="43370322128323844" at="11,0,14,0">
         <var name="editorContext" id="43370322128323844" />
         <var name="node" id="43370322128323844" />
       </scope>
       <unit id="43370322128323844" at="10,0,15,0" name="jetbrains.mps.debugger.java.customViewers.editor.HighLevelCustomViewer_Editor" />
     </file>
-    <file name="HighLevelCustomViewer_EditorBuilder_a.java">
-      <node id="43370322128323844" at="44,101,45,19" concept="11" />
+    <file name="HighLevelCustomViewer_EditorBuilder.java">
+      <node id="43370322128323844" at="44,99,45,19" concept="11" />
       <node id="43370322128323844" at="45,19,46,18" concept="2" />
       <node id="43370322128323844" at="51,26,52,18" concept="7" />
       <node id="43370322128323844" at="55,39,56,32" concept="7" />
@@ -644,7 +644,7 @@
       <node id="43370322128323844" at="402,87,405,7" concept="4" />
       <node id="43370322128323844" at="405,7,408,7" concept="4" />
       <node id="43370322128323844" at="424,0,427,0" concept="5" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="43370322128323844" at="44,0,48,0" concept="1" trace="HighLevelCustomViewer_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="43370322128323844" at="44,0,48,0" concept="1" trace="HighLevelCustomViewer_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="43370322128323844" at="172,0,176,0" concept="5" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="43370322128323844" at="180,0,184,0" concept="1" trace="valueTypeSingleRoleHandler_5jxfrn_b3a#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="43370322128323844" at="239,0,243,0" concept="5" trace="createRefNode_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -718,7 +718,7 @@
       <scope id="43370322128323844" at="406,42,407,54" />
       <scope id="43370322128323844" at="420,17,421,42" />
       <scope id="43370322128323844" at="424,40,425,34" />
-      <scope id="43370322128323844" at="44,101,46,18" />
+      <scope id="43370322128323844" at="44,99,46,18" />
       <scope id="43370322128323855" at="107,74,109,145">
         <var name="manager" id="43370322128323855" />
       </scope>
@@ -921,29 +921,29 @@
       <scope id="43370322128323844" at="59,0,79,0" />
       <scope id="43370322128323855" at="95,0,116,0" />
       <scope id="8903462855138557058" at="138,0,159,0" />
-      <unit id="43370322128323844" at="434,0,437,0" name="jetbrains.mps.debugger.java.customViewers.editor.HighLevelCustomViewer_EditorBuilder_a$CONCEPTS" />
-      <unit id="43370322128323844" at="429,0,433,0" name="jetbrains.mps.debugger.java.customViewers.editor.HighLevelCustomViewer_EditorBuilder_a$PROPS" />
-      <unit id="43370322128323844" at="438,0,444,0" name="jetbrains.mps.debugger.java.customViewers.editor.HighLevelCustomViewer_EditorBuilder_a$LINKS" />
-      <unit id="43370322128323844" at="176,0,227,0" name="jetbrains.mps.debugger.java.customViewers.editor.HighLevelCustomViewer_EditorBuilder_a$valueTypeSingleRoleHandler_5jxfrn_b3a" />
-      <unit id="43370322128323844" at="243,0,294,0" name="jetbrains.mps.debugger.java.customViewers.editor.HighLevelCustomViewer_EditorBuilder_a$canWrapSingleRoleHandler_5jxfrn_g0" />
-      <unit id="43370322128323844" at="310,0,361,0" name="jetbrains.mps.debugger.java.customViewers.editor.HighLevelCustomViewer_EditorBuilder_a$getPresentationSingleRoleHandler_5jxfrn_j0" />
-      <unit id="43370322128323844" at="377,0,428,0" name="jetbrains.mps.debugger.java.customViewers.editor.HighLevelCustomViewer_EditorBuilder_a$getWatchablesSingleRoleHandler_5jxfrn_m0" />
-      <unit id="43370322128323844" at="40,0,445,0" name="jetbrains.mps.debugger.java.customViewers.editor.HighLevelCustomViewer_EditorBuilder_a" />
+      <unit id="43370322128323844" at="434,0,437,0" name="jetbrains.mps.debugger.java.customViewers.editor.HighLevelCustomViewer_EditorBuilder$CONCEPTS" />
+      <unit id="43370322128323844" at="429,0,433,0" name="jetbrains.mps.debugger.java.customViewers.editor.HighLevelCustomViewer_EditorBuilder$PROPS" />
+      <unit id="43370322128323844" at="438,0,444,0" name="jetbrains.mps.debugger.java.customViewers.editor.HighLevelCustomViewer_EditorBuilder$LINKS" />
+      <unit id="43370322128323844" at="176,0,227,0" name="jetbrains.mps.debugger.java.customViewers.editor.HighLevelCustomViewer_EditorBuilder$valueTypeSingleRoleHandler_5jxfrn_b3a" />
+      <unit id="43370322128323844" at="243,0,294,0" name="jetbrains.mps.debugger.java.customViewers.editor.HighLevelCustomViewer_EditorBuilder$canWrapSingleRoleHandler_5jxfrn_g0" />
+      <unit id="43370322128323844" at="310,0,361,0" name="jetbrains.mps.debugger.java.customViewers.editor.HighLevelCustomViewer_EditorBuilder$getPresentationSingleRoleHandler_5jxfrn_j0" />
+      <unit id="43370322128323844" at="377,0,428,0" name="jetbrains.mps.debugger.java.customViewers.editor.HighLevelCustomViewer_EditorBuilder$getWatchablesSingleRoleHandler_5jxfrn_m0" />
+      <unit id="43370322128323844" at="40,0,445,0" name="jetbrains.mps.debugger.java.customViewers.editor.HighLevelCustomViewer_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:5b646244-9348-4892-8868-7e2e5cb2c7d9(jetbrains.mps.debugger.java.customViewers.editor)/5117350825036235733">
     <file name="CustomWatchable_Editor.java">
-      <node id="5117350825036235733" at="11,79,12,81" concept="7" />
+      <node id="5117350825036235733" at="11,79,12,79" concept="7" />
       <node id="5117350825036235733" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="5117350825036235733" at="11,79,12,81" />
+      <scope id="5117350825036235733" at="11,79,12,79" />
       <scope id="5117350825036235733" at="11,0,14,0">
         <var name="editorContext" id="5117350825036235733" />
         <var name="node" id="5117350825036235733" />
       </scope>
       <unit id="5117350825036235733" at="10,0,15,0" name="jetbrains.mps.debugger.java.customViewers.editor.CustomWatchable_Editor" />
     </file>
-    <file name="CustomWatchable_EditorBuilder_a.java">
-      <node id="5117350825036235733" at="43,95,44,19" concept="11" />
+    <file name="CustomWatchable_EditorBuilder.java">
+      <node id="5117350825036235733" at="43,93,44,19" concept="11" />
       <node id="5117350825036235733" at="44,19,45,18" concept="2" />
       <node id="5117350825036235733" at="50,26,51,18" concept="7" />
       <node id="5117350825036235733" at="54,39,55,32" concept="7" />
@@ -1052,7 +1052,7 @@
       <node id="5117350825036256258" at="135,0,138,0" concept="5" trace="nodeCondition0#()Z" />
       <node id="6644923865057393768" at="193,0,196,0" concept="5" trace="_QueryFunction_JComponent_rpujt6_a2b0#()Ljavax/swing/JComponent;" />
       <node id="6644923865059688383" at="196,0,199,0" concept="10" trace="isNotEmptyString#(Ljava/lang/String;)Z" />
-      <node id="5117350825036235733" at="43,0,47,0" concept="1" trace="CustomWatchable_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="5117350825036235733" at="43,0,47,0" concept="1" trace="CustomWatchable_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="5117350825036235733" at="154,0,158,0" concept="5" trace="fromImageCellProvider0#()Ljetbrains/mps/nodeEditor/cells/EditorCell_Image;" />
       <node id="5117350825036235733" at="48,0,53,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="5117350825036235748" at="94,208,99,24" concept="4" />
@@ -1081,7 +1081,7 @@
       <scope id="5117350825036256303" at="175,15,176,40" />
       <scope id="6644923865057393770" at="193,62,194,95" />
       <scope id="6644923865059688383" at="196,55,197,43" />
-      <scope id="5117350825036235733" at="43,95,45,18" />
+      <scope id="5117350825036235733" at="43,93,45,18" />
       <scope id="5117350825036235748" at="95,74,97,145">
         <var name="manager" id="5117350825036235748" />
       </scope>
@@ -1165,24 +1165,24 @@
       <scope id="5117350825036256303" at="158,41,177,5" />
       <scope id="5117350825036235748" at="83,0,104,0" />
       <scope id="5117350825036256303" at="158,0,179,0" />
-      <unit id="5117350825036235733" at="205,0,208,0" name="jetbrains.mps.debugger.java.customViewers.editor.CustomWatchable_EditorBuilder_a$CONCEPTS" />
-      <unit id="5117350825036235733" at="200,0,204,0" name="jetbrains.mps.debugger.java.customViewers.editor.CustomWatchable_EditorBuilder_a$PROPS" />
-      <unit id="5117350825036235733" at="39,0,209,0" name="jetbrains.mps.debugger.java.customViewers.editor.CustomWatchable_EditorBuilder_a" />
+      <unit id="5117350825036235733" at="205,0,208,0" name="jetbrains.mps.debugger.java.customViewers.editor.CustomWatchable_EditorBuilder$CONCEPTS" />
+      <unit id="5117350825036235733" at="200,0,204,0" name="jetbrains.mps.debugger.java.customViewers.editor.CustomWatchable_EditorBuilder$PROPS" />
+      <unit id="5117350825036235733" at="39,0,209,0" name="jetbrains.mps.debugger.java.customViewers.editor.CustomWatchable_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:5b646244-9348-4892-8868-7e2e5cb2c7d9(jetbrains.mps.debugger.java.customViewers.editor)/5117350825036256319">
     <file name="CustomWatchablesContainer_Editor.java">
-      <node id="5117350825036256319" at="11,79,12,91" concept="7" />
+      <node id="5117350825036256319" at="11,79,12,89" concept="7" />
       <node id="5117350825036256319" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="5117350825036256319" at="11,79,12,91" />
+      <scope id="5117350825036256319" at="11,79,12,89" />
       <scope id="5117350825036256319" at="11,0,14,0">
         <var name="editorContext" id="5117350825036256319" />
         <var name="node" id="5117350825036256319" />
       </scope>
       <unit id="5117350825036256319" at="10,0,15,0" name="jetbrains.mps.debugger.java.customViewers.editor.CustomWatchablesContainer_Editor" />
     </file>
-    <file name="CustomWatchablesContainer_EditorBuilder_a.java">
-      <node id="5117350825036256319" at="46,105,47,19" concept="11" />
+    <file name="CustomWatchablesContainer_EditorBuilder.java">
+      <node id="5117350825036256319" at="46,103,47,19" concept="11" />
       <node id="5117350825036256319" at="47,19,48,18" concept="2" />
       <node id="5117350825036256319" at="53,26,54,18" concept="7" />
       <node id="5117350825036256319" at="57,39,58,32" concept="7" />
@@ -1263,7 +1263,7 @@
       <node id="5117350825036256319" at="134,0,137,0" concept="5" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="5117350825036256319" at="137,0,140,0" concept="5" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="5117350825036256319" at="181,96,184,9" concept="4" />
-      <node id="5117350825036256319" at="46,0,50,0" concept="1" trace="CustomWatchablesContainer_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="5117350825036256319" at="46,0,50,0" concept="1" trace="CustomWatchablesContainer_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="5117350825036256319" at="125,0,129,0" concept="1" trace="watchableListHandler_8ahkcj_c0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="5117350825036256319" at="130,0,134,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="5117350825036256319" at="163,97,167,9" concept="4" />
@@ -1294,7 +1294,7 @@
       <scope id="5117350825036256319" at="137,48,138,41" />
       <scope id="5117350825036256319" at="155,17,156,42" />
       <scope id="5117350825036256319" at="182,34,183,91" />
-      <scope id="5117350825036256319" at="46,105,48,18" />
+      <scope id="5117350825036256319" at="46,103,48,18" />
       <scope id="4089989733346843035" at="99,74,101,145">
         <var name="manager" id="4089989733346843035" />
       </scope>
@@ -1366,26 +1366,26 @@
         <var name="elementNode" id="5117350825036256319" />
         <var name="isEmptyCell" id="5117350825036256319" />
       </scope>
-      <unit id="5117350825036256319" at="189,0,192,0" name="jetbrains.mps.debugger.java.customViewers.editor.CustomWatchablesContainer_EditorBuilder_a$PROPS" />
-      <unit id="5117350825036256319" at="198,0,201,0" name="jetbrains.mps.debugger.java.customViewers.editor.CustomWatchablesContainer_EditorBuilder_a$LINKS" />
-      <unit id="5117350825036256319" at="193,0,197,0" name="jetbrains.mps.debugger.java.customViewers.editor.CustomWatchablesContainer_EditorBuilder_a$CONCEPTS" />
-      <unit id="5117350825036256319" at="121,0,188,0" name="jetbrains.mps.debugger.java.customViewers.editor.CustomWatchablesContainer_EditorBuilder_a$watchableListHandler_8ahkcj_c0" />
-      <unit id="5117350825036256319" at="42,0,202,0" name="jetbrains.mps.debugger.java.customViewers.editor.CustomWatchablesContainer_EditorBuilder_a" />
+      <unit id="5117350825036256319" at="189,0,192,0" name="jetbrains.mps.debugger.java.customViewers.editor.CustomWatchablesContainer_EditorBuilder$PROPS" />
+      <unit id="5117350825036256319" at="198,0,201,0" name="jetbrains.mps.debugger.java.customViewers.editor.CustomWatchablesContainer_EditorBuilder$LINKS" />
+      <unit id="5117350825036256319" at="193,0,197,0" name="jetbrains.mps.debugger.java.customViewers.editor.CustomWatchablesContainer_EditorBuilder$CONCEPTS" />
+      <unit id="5117350825036256319" at="121,0,188,0" name="jetbrains.mps.debugger.java.customViewers.editor.CustomWatchablesContainer_EditorBuilder$watchableListHandler_8ahkcj_c0" />
+      <unit id="5117350825036256319" at="42,0,202,0" name="jetbrains.mps.debugger.java.customViewers.editor.CustomWatchablesContainer_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:5b646244-9348-4892-8868-7e2e5cb2c7d9(jetbrains.mps.debugger.java.customViewers.editor)/5117350825036256335">
     <file name="WatchableType_Editor.java">
-      <node id="5117350825036256335" at="11,79,12,79" concept="7" />
+      <node id="5117350825036256335" at="11,79,12,77" concept="7" />
       <node id="5117350825036256335" at="11,0,14,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="5117350825036256335" at="11,79,12,79" />
+      <scope id="5117350825036256335" at="11,79,12,77" />
       <scope id="5117350825036256335" at="11,0,14,0">
         <var name="editorContext" id="5117350825036256335" />
         <var name="node" id="5117350825036256335" />
       </scope>
       <unit id="5117350825036256335" at="10,0,15,0" name="jetbrains.mps.debugger.java.customViewers.editor.WatchableType_Editor" />
     </file>
-    <file name="WatchableType_EditorBuilder_a.java">
-      <node id="5117350825036256335" at="16,93,17,19" concept="11" />
+    <file name="WatchableType_EditorBuilder.java">
+      <node id="5117350825036256335" at="16,91,17,19" concept="11" />
       <node id="5117350825036256335" at="17,19,18,18" concept="2" />
       <node id="5117350825036256335" at="23,26,24,18" concept="7" />
       <node id="5117350825036256335" at="27,39,28,31" concept="7" />
@@ -1396,13 +1396,13 @@
       <node id="2886182022232400539" at="37,5,38,22" concept="7" />
       <node id="5117350825036256335" at="13,0,15,0" concept="3" trace="myNode" />
       <node id="5117350825036256335" at="27,0,30,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="5117350825036256335" at="16,0,20,0" concept="1" trace="WatchableType_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="5117350825036256335" at="16,0,20,0" concept="1" trace="WatchableType_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="2886182022232400539" at="33,72,37,5" concept="4" />
       <node id="5117350825036256335" at="21,0,26,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="2886182022232400539" at="31,0,40,0" concept="5" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="5117350825036256335" at="23,26,24,18" />
       <scope id="5117350825036256335" at="27,39,28,31" />
-      <scope id="5117350825036256335" at="16,93,18,18" />
+      <scope id="5117350825036256335" at="16,91,18,18" />
       <scope id="2886182022232400539" at="34,26,36,30" />
       <scope id="5117350825036256335" at="27,0,30,0" />
       <scope id="5117350825036256335" at="16,0,20,0">
@@ -1415,7 +1415,7 @@
         <var name="editorCell" id="2886182022232400539" />
       </scope>
       <scope id="2886182022232400539" at="31,0,40,0" />
-      <unit id="5117350825036256335" at="12,0,41,0" name="jetbrains.mps.debugger.java.customViewers.editor.WatchableType_EditorBuilder_a" />
+      <unit id="5117350825036256335" at="12,0,41,0" name="jetbrains.mps.debugger.java.customViewers.editor.WatchableType_EditorBuilder" />
     </file>
   </root>
 </debug-info>

@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class JobDeclaration_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new JobDeclaration_EditorBuilder_a(editorContext, node).createCell();
+    return new JobDeclaration_EditorBuilder(editorContext, node).createCell();
   }
 }

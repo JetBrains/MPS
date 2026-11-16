@@ -16,6 +16,6 @@ public class RefactoringTarget implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new RefactoringTarget_ComponentBuilder_a(editorContext, node).createCell();
+    return new RefactoringTarget_ComponentBuilder(editorContext, node).createCell();
   }
 }

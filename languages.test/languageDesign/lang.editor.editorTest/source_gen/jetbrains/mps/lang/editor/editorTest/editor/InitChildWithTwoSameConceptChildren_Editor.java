@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class InitChildWithTwoSameConceptChildren_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new InitChildWithTwoSameConceptChildren_EditorBuilder_a(editorContext, node).createCell();
+    return new InitChildWithTwoSameConceptChildren_EditorBuilder(editorContext, node).createCell();
   }
 }

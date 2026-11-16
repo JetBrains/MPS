@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class BooleanStyleSheetItem_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new BooleanStyleSheetItem_EditorBuilder_a(editorContext, node).createCell();
+    return new BooleanStyleSheetItem_EditorBuilder(editorContext, node).createCell();
   }
 }

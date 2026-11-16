@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ShowBoundariesInStyleClassItem_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ShowBoundariesInStyleClassItem_EditorBuilder_a(editorContext, node).createCell();
+    return new ShowBoundariesInStyleClassItem_EditorBuilder(editorContext, node).createCell();
   }
 }

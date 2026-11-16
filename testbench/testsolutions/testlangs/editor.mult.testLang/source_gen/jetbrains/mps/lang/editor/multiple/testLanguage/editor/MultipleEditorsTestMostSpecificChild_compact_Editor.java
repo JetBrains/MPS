@@ -18,6 +18,6 @@ public class MultipleEditorsTestMostSpecificChild_compact_Editor extends Default
     return myContextHints;
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new MultipleEditorsTestMostSpecificChild_compact_EditorBuilder_a(editorContext, node).createCell();
+    return new MultipleEditorsTestMostSpecificChild_compact_EditorBuilder(editorContext, node).createCell();
   }
 }

@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class PatternCondition_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new PatternCondition_EditorBuilder_a(editorContext, node).createCell();
+    return new PatternCondition_EditorBuilder(editorContext, node).createCell();
   }
 }

@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class QueryPath_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new QueryPath_EditorBuilder_a(editorContext, node).createCell();
+    return new QueryPath_EditorBuilder(editorContext, node).createCell();
   }
 }

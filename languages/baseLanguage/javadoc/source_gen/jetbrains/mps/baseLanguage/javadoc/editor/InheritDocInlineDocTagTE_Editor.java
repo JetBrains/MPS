@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class InheritDocInlineDocTagTE_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new InheritDocInlineDocTagTE_EditorBuilder_a(editorContext, node).createCell();
+    return new InheritDocInlineDocTagTE_EditorBuilder(editorContext, node).createCell();
   }
 }

@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ExtractToConstantRefExpression_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ExtractToConstantRefExpression_EditorBuilder_a(editorContext, node).createCell();
+    return new ExtractToConstantRefExpression_EditorBuilder(editorContext, node).createCell();
   }
 }

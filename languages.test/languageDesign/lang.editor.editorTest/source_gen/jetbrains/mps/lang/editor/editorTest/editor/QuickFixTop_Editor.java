@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class QuickFixTop_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new QuickFixTop_EditorBuilder_a(editorContext, node).createCell();
+    return new QuickFixTop_EditorBuilder(editorContext, node).createCell();
   }
 }

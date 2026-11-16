@@ -17,17 +17,17 @@
   </root>
   <root nodeRef="r:f182152e-78cd-4b54-aaf7-262020867a9b(constraints.rules.test.editor)/8859736031789706656">
     <file name="ChildConcept_Editor.java">
-      <node id="8859736031789706656" at="11,79,12,78" concept="6" />
+      <node id="8859736031789706656" at="11,79,12,76" concept="6" />
       <node id="8859736031789706656" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="8859736031789706656" at="11,79,12,78" />
+      <scope id="8859736031789706656" at="11,79,12,76" />
       <scope id="8859736031789706656" at="11,0,14,0">
         <var name="editorContext" id="8859736031789706656" />
         <var name="node" id="8859736031789706656" />
       </scope>
       <unit id="8859736031789706656" at="10,0,15,0" name="constraints.rules.test.editor.ChildConcept_Editor" />
     </file>
-    <file name="ChildConcept_EditorBuilder_a.java">
-      <node id="8859736031789706656" at="38,92,39,19" concept="8" />
+    <file name="ChildConcept_EditorBuilder.java">
+      <node id="8859736031789706656" at="38,90,39,19" concept="8" />
       <node id="8859736031789706656" at="39,19,40,18" concept="1" />
       <node id="8859736031789706656" at="45,26,46,18" concept="6" />
       <node id="8859736031789706656" at="49,39,50,32" concept="6" />
@@ -102,7 +102,7 @@
       <node id="8859736031789706656" at="150,0,151,0" concept="7" trace="PropertyAttribute$Gb" />
       <node id="8859736031789706656" at="35,0,37,0" concept="2" trace="myNode" />
       <node id="8859736031789706656" at="49,0,52,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="8859736031789706656" at="38,0,42,0" concept="0" trace="ChildConcept_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8859736031789706656" at="38,0,42,0" concept="0" trace="ChildConcept_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8859736031789706656" at="43,0,48,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="2740527090601268176" at="92,208,97,24" concept="3" />
       <node id="8859736031789706672" at="133,208,138,24" concept="3" />
@@ -119,7 +119,7 @@
       <scope id="8859736031789706656" at="49,39,50,32" />
       <scope id="2740527090601268176" at="98,15,99,40" />
       <scope id="8859736031789706672" at="139,15,140,40" />
-      <scope id="8859736031789706656" at="38,92,40,18" />
+      <scope id="8859736031789706656" at="38,90,40,18" />
       <scope id="2740527090601268176" at="93,74,95,145">
         <var name="manager" id="2740527090601268176" />
       </scope>
@@ -171,19 +171,19 @@
       <scope id="8859736031789706672" at="122,41,141,5" />
       <scope id="2740527090601268176" at="81,0,102,0" />
       <scope id="8859736031789706672" at="122,0,143,0" />
-      <unit id="8859736031789706656" at="149,0,152,0" name="constraints.rules.test.editor.ChildConcept_EditorBuilder_a$CONCEPTS" />
-      <unit id="8859736031789706656" at="144,0,148,0" name="constraints.rules.test.editor.ChildConcept_EditorBuilder_a$PROPS" />
-      <unit id="8859736031789706656" at="34,0,153,0" name="constraints.rules.test.editor.ChildConcept_EditorBuilder_a" />
+      <unit id="8859736031789706656" at="149,0,152,0" name="constraints.rules.test.editor.ChildConcept_EditorBuilder$CONCEPTS" />
+      <unit id="8859736031789706656" at="144,0,148,0" name="constraints.rules.test.editor.ChildConcept_EditorBuilder$PROPS" />
+      <unit id="8859736031789706656" at="34,0,153,0" name="constraints.rules.test.editor.ChildConcept_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:f182152e-78cd-4b54-aaf7-262020867a9b(constraints.rules.test.editor)/8859736031789718065">
     <file name="ParentConcept_Editor.java">
-      <node id="8859736031789718065" at="11,79,12,79" concept="6" />
-      <node id="8859736031789718065" at="14,82,15,82" concept="6" />
+      <node id="8859736031789718065" at="11,79,12,77" concept="6" />
+      <node id="8859736031789718065" at="14,82,15,80" concept="6" />
       <node id="8859736031789718065" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="8859736031789718065" at="14,0,17,0" concept="4" trace="createInspectedCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="8859736031789718065" at="11,79,12,79" />
-      <scope id="8859736031789718065" at="14,82,15,82" />
+      <scope id="8859736031789718065" at="11,79,12,77" />
+      <scope id="8859736031789718065" at="14,82,15,80" />
       <scope id="8859736031789718065" at="11,0,14,0">
         <var name="editorContext" id="8859736031789718065" />
         <var name="node" id="8859736031789718065" />
@@ -194,8 +194,8 @@
       </scope>
       <unit id="8859736031789718065" at="10,0,18,0" name="constraints.rules.test.editor.ParentConcept_Editor" />
     </file>
-    <file name="ParentConcept_EditorBuilder_a.java">
-      <node id="8859736031789718065" at="49,93,50,19" concept="8" />
+    <file name="ParentConcept_EditorBuilder.java">
+      <node id="8859736031789718065" at="49,91,50,19" concept="8" />
       <node id="8859736031789718065" at="50,19,51,18" concept="1" />
       <node id="8859736031789718065" at="56,26,57,18" concept="6" />
       <node id="8859736031789718065" at="60,39,61,32" concept="6" />
@@ -302,7 +302,7 @@
       <node id="8859736031789718065" at="167,0,170,0" concept="4" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="8859736031789718065" at="170,0,173,0" concept="4" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="8859736031789718065" at="214,96,217,9" concept="3" />
-      <node id="8859736031789718065" at="49,0,53,0" concept="0" trace="ParentConcept_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8859736031789718065" at="49,0,53,0" concept="0" trace="ParentConcept_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8859736031789718065" at="158,0,162,0" concept="0" trace="childrenListHandler_5n4rx3_a1a#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="8859736031789718065" at="163,0,167,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="8859736031789718065" at="196,97,200,9" concept="3" />
@@ -335,7 +335,7 @@
       <scope id="8859736031789718065" at="170,48,171,42" />
       <scope id="8859736031789718065" at="188,17,189,42" />
       <scope id="8859736031789718065" at="215,34,216,91" />
-      <scope id="8859736031789718065" at="49,93,51,18" />
+      <scope id="8859736031789718065" at="49,91,51,18" />
       <scope id="2740527090601268250" at="104,74,106,145">
         <var name="manager" id="2740527090601268250" />
       </scope>
@@ -419,14 +419,14 @@
         <var name="elementNode" id="8859736031789718065" />
         <var name="isEmptyCell" id="8859736031789718065" />
       </scope>
-      <unit id="8859736031789718065" at="222,0,225,0" name="constraints.rules.test.editor.ParentConcept_EditorBuilder_a$PROPS" />
-      <unit id="8859736031789718065" at="231,0,234,0" name="constraints.rules.test.editor.ParentConcept_EditorBuilder_a$LINKS" />
-      <unit id="8859736031789718065" at="226,0,230,0" name="constraints.rules.test.editor.ParentConcept_EditorBuilder_a$CONCEPTS" />
-      <unit id="8859736031789718065" at="154,0,221,0" name="constraints.rules.test.editor.ParentConcept_EditorBuilder_a$childrenListHandler_5n4rx3_a1a" />
-      <unit id="8859736031789718065" at="45,0,235,0" name="constraints.rules.test.editor.ParentConcept_EditorBuilder_a" />
+      <unit id="8859736031789718065" at="222,0,225,0" name="constraints.rules.test.editor.ParentConcept_EditorBuilder$PROPS" />
+      <unit id="8859736031789718065" at="231,0,234,0" name="constraints.rules.test.editor.ParentConcept_EditorBuilder$LINKS" />
+      <unit id="8859736031789718065" at="226,0,230,0" name="constraints.rules.test.editor.ParentConcept_EditorBuilder$CONCEPTS" />
+      <unit id="8859736031789718065" at="154,0,221,0" name="constraints.rules.test.editor.ParentConcept_EditorBuilder$childrenListHandler_5n4rx3_a1a" />
+      <unit id="8859736031789718065" at="45,0,235,0" name="constraints.rules.test.editor.ParentConcept_EditorBuilder" />
     </file>
-    <file name="ParentConcept_InspectorBuilder_a.java">
-      <node id="8859736031789718065" at="32,96,33,19" concept="8" />
+    <file name="ParentConcept_InspectorBuilder.java">
+      <node id="8859736031789718065" at="32,94,33,19" concept="8" />
       <node id="8859736031789718065" at="33,19,34,18" concept="1" />
       <node id="8859736031789718065" at="39,26,40,18" concept="6" />
       <node id="8859736031789718065" at="43,39,44,32" concept="6" />
@@ -459,7 +459,7 @@
       <node id="8859736031789718065" at="89,0,90,0" concept="7" trace="PropertyAttribute$Gb" />
       <node id="8859736031789718065" at="29,0,31,0" concept="2" trace="myNode" />
       <node id="8859736031789718065" at="43,0,46,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="8859736031789718065" at="32,0,36,0" concept="0" trace="ParentConcept_InspectorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8859736031789718065" at="32,0,36,0" concept="0" trace="ParentConcept_InspectorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8859736031789718065" at="37,0,42,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="7247338141359979107" at="73,208,78,24" concept="3" />
       <node id="7247338141359979118" at="56,0,62,0" concept="4" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -469,7 +469,7 @@
       <scope id="8859736031789718065" at="39,26,40,18" />
       <scope id="8859736031789718065" at="43,39,44,32" />
       <scope id="7247338141359979107" at="79,15,80,40" />
-      <scope id="8859736031789718065" at="32,96,34,18" />
+      <scope id="8859736031789718065" at="32,94,34,18" />
       <scope id="7247338141359979107" at="74,74,76,145">
         <var name="manager" id="7247338141359979107" />
       </scope>
@@ -495,9 +495,9 @@
       </scope>
       <scope id="7247338141359979107" at="62,41,81,5" />
       <scope id="7247338141359979107" at="62,0,83,0" />
-      <unit id="8859736031789718065" at="84,0,87,0" name="constraints.rules.test.editor.ParentConcept_InspectorBuilder_a$PROPS" />
-      <unit id="8859736031789718065" at="88,0,91,0" name="constraints.rules.test.editor.ParentConcept_InspectorBuilder_a$CONCEPTS" />
-      <unit id="8859736031789718065" at="28,0,92,0" name="constraints.rules.test.editor.ParentConcept_InspectorBuilder_a" />
+      <unit id="8859736031789718065" at="84,0,87,0" name="constraints.rules.test.editor.ParentConcept_InspectorBuilder$PROPS" />
+      <unit id="8859736031789718065" at="88,0,91,0" name="constraints.rules.test.editor.ParentConcept_InspectorBuilder$CONCEPTS" />
+      <unit id="8859736031789718065" at="28,0,92,0" name="constraints.rules.test.editor.ParentConcept_InspectorBuilder" />
     </file>
   </root>
 </debug-info>

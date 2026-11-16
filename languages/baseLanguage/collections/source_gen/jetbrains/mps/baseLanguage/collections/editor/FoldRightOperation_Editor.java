@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class FoldRightOperation_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new FoldRightOperation_EditorBuilder_a(editorContext, node).createCell();
+    return new FoldRightOperation_EditorBuilder(editorContext, node).createCell();
   }
 }

@@ -16,6 +16,6 @@ public class Constant_IStyleContainer implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new Constant_IStyleContainer_ComponentBuilder_a(editorContext, node).createCell();
+    return new Constant_IStyleContainer_ComponentBuilder(editorContext, node).createCell();
   }
 }

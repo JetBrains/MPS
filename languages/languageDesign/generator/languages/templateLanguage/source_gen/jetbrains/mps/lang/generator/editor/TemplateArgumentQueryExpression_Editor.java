@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class TemplateArgumentQueryExpression_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new TemplateArgumentQueryExpression_EditorBuilder_a(editorContext, node).createCell();
+    return new TemplateArgumentQueryExpression_EditorBuilder(editorContext, node).createCell();
   }
 }

@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class AnnotationList_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new AnnotationList_EditorBuilder_a(editorContext, node).createCell();
+    return new AnnotationList_EditorBuilder(editorContext, node).createCell();
   }
 }

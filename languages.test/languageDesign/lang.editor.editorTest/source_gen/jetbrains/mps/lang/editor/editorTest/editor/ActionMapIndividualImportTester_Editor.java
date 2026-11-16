@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ActionMapIndividualImportTester_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ActionMapIndividualImportTester_EditorBuilder_a(editorContext, node).createCell();
+    return new ActionMapIndividualImportTester_EditorBuilder(editorContext, node).createCell();
   }
 }

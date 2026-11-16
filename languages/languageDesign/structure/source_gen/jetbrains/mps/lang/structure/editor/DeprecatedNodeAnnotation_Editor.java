@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class DeprecatedNodeAnnotation_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new DeprecatedNodeAnnotation_EditorBuilder_a(editorContext, node).createCell();
+    return new DeprecatedNodeAnnotation_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new DeprecatedNodeAnnotation_InspectorBuilder_a(editorContext, node).createCell();
+    return new DeprecatedNodeAnnotation_InspectorBuilder(editorContext, node).createCell();
   }
 }

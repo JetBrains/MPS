@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ExtractStatementListInnerExpression_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ExtractStatementListInnerExpression_EditorBuilder_a(editorContext, node).createCell();
+    return new ExtractStatementListInnerExpression_EditorBuilder(editorContext, node).createCell();
   }
 }

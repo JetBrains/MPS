@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class IgnoreChildrenRule_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new IgnoreChildrenRule_EditorBuilder_a(editorContext, node).createCell();
+    return new IgnoreChildrenRule_EditorBuilder(editorContext, node).createCell();
   }
 }

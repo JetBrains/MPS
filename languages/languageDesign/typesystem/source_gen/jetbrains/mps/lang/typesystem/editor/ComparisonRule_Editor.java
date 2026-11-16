@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ComparisonRule_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ComparisonRule_EditorBuilder_a(editorContext, node).createCell();
+    return new ComparisonRule_EditorBuilder(editorContext, node).createCell();
   }
 }

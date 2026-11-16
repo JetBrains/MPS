@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class EnumMember_PresentationOperation_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new EnumMember_PresentationOperation_EditorBuilder_a(editorContext, node).createCell();
+    return new EnumMember_PresentationOperation_EditorBuilder(editorContext, node).createCell();
   }
 }

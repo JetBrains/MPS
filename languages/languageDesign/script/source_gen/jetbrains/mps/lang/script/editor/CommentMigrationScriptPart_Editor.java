@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class CommentMigrationScriptPart_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new CommentMigrationScriptPart_EditorBuilder_a(editorContext, node).createCell();
+    return new CommentMigrationScriptPart_EditorBuilder(editorContext, node).createCell();
   }
 }

@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class AssertMatch_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new AssertMatch_EditorBuilder_a(editorContext, node).createCell();
+    return new AssertMatch_EditorBuilder(editorContext, node).createCell();
   }
 }

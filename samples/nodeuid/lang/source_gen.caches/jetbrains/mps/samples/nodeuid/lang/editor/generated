@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="utv1vuqx7fbcllta4on3f7x8cr1xh1">
-  <files names="EditorAspectDescriptorImpl.java:ExpressionWithId_Editor.java:ExpressionWithId_EditorBuilder_a.java:ExpressionWithId_InspectorBuilder_a.java" />
+  <files names="EditorAspectDescriptorImpl.java:ExpressionWithId_Editor.java:ExpressionWithId_EditorBuilder.java:ExpressionWithId_InspectorBuilder.java" />
 </product>
 

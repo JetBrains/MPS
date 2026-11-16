@@ -16,6 +16,6 @@ public class CarProperties implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new CarProperties_ComponentBuilder_a(editorContext, node).createCell();
+    return new CarProperties_ComponentBuilder(editorContext, node).createCell();
   }
 }

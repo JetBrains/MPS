@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class AttributeInfo_IsMultiple_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new AttributeInfo_IsMultiple_EditorBuilder_a(editorContext, node).createCell();
+    return new AttributeInfo_IsMultiple_EditorBuilder(editorContext, node).createCell();
   }
 }

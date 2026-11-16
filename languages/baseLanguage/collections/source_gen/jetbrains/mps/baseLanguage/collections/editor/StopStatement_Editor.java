@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class StopStatement_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new StopStatement_EditorBuilder_a(editorContext, node).createCell();
+    return new StopStatement_EditorBuilder(editorContext, node).createCell();
   }
 }

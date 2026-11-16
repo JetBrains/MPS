@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class SortOperation_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new SortOperation_EditorBuilder_a(editorContext, node).createCell();
+    return new SortOperation_EditorBuilder(editorContext, node).createCell();
   }
 }

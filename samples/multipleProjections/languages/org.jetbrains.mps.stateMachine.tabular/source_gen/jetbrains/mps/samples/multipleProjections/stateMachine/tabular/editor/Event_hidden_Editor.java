@@ -18,6 +18,6 @@ public class Event_hidden_Editor extends DefaultNodeEditor {
     return myContextHints;
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new Event_hidden_EditorBuilder_a(editorContext, node).createCell();
+    return new Event_hidden_EditorBuilder(editorContext, node).createCell();
   }
 }

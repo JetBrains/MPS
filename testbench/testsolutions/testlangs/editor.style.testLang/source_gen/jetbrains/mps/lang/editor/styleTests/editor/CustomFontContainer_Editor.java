@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class CustomFontContainer_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new CustomFontContainer_EditorBuilder_a(editorContext, node).createCell();
+    return new CustomFontContainer_EditorBuilder(editorContext, node).createCell();
   }
 }

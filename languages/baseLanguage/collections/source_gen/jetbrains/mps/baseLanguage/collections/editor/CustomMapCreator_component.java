@@ -16,6 +16,6 @@ public class CustomMapCreator_component implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new CustomMapCreator_component_ComponentBuilder_a(editorContext, node).createCell();
+    return new CustomMapCreator_component_ComponentBuilder(editorContext, node).createCell();
   }
 }

@@ -23,11 +23,11 @@
     <file name="ChangeEvent_tabular_Editor.java">
       <node id="1185481067857141563" at="14,0,15,0" concept="3" trace="myContextHints" />
       <node id="1185481067857141563" at="17,47,18,26" concept="7" />
-      <node id="1185481067857141563" at="20,79,21,85" concept="7" />
+      <node id="1185481067857141563" at="20,79,21,83" concept="7" />
       <node id="1185481067857141563" at="20,0,23,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1185481067857141563" at="15,0,20,0" concept="5" trace="getContextHints#()Ljava/util/Collection;" />
       <scope id="1185481067857141563" at="17,47,18,26" />
-      <scope id="1185481067857141563" at="20,79,21,85" />
+      <scope id="1185481067857141563" at="20,79,21,83" />
       <scope id="1185481067857141563" at="20,0,23,0">
         <var name="editorContext" id="1185481067857141563" />
         <var name="node" id="1185481067857141563" />
@@ -35,8 +35,8 @@
       <scope id="1185481067857141563" at="15,0,20,0" />
       <unit id="1185481067857141563" at="13,0,24,0" name="jetbrains.mps.samples.heating.tabular.editor.ChangeEvent_tabular_Editor" />
     </file>
-    <file name="ChangeEvent_tabular_EditorBuilder_a.java">
-      <node id="1185481067857141563" at="32,99,33,19" concept="12" />
+    <file name="ChangeEvent_tabular_EditorBuilder.java">
+      <node id="1185481067857141563" at="32,97,33,19" concept="12" />
       <node id="1185481067857141563" at="33,19,34,18" concept="2" />
       <node id="1185481067857141563" at="39,26,40,18" concept="7" />
       <node id="1185481067857141563" at="43,39,44,32" concept="7" />
@@ -69,7 +69,7 @@
       <node id="1185481067857141563" at="89,0,90,0" concept="10" trace="PropertyAttribute$Gb" />
       <node id="1185481067857141563" at="29,0,31,0" concept="3" trace="myNode" />
       <node id="1185481067857141563" at="43,0,46,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="1185481067857141563" at="32,0,36,0" concept="1" trace="ChangeEvent_tabular_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1185481067857141563" at="32,0,36,0" concept="1" trace="ChangeEvent_tabular_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1185481067857141563" at="37,0,42,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1185481067857160718" at="67,208,72,24" concept="4" />
       <node id="1185481067857160727" at="77,0,83,0" concept="5" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -79,7 +79,7 @@
       <scope id="1185481067857141563" at="39,26,40,18" />
       <scope id="1185481067857141563" at="43,39,44,32" />
       <scope id="1185481067857160718" at="73,15,74,40" />
-      <scope id="1185481067857141563" at="32,99,34,18" />
+      <scope id="1185481067857141563" at="32,97,34,18" />
       <scope id="1185481067857160718" at="68,74,70,145">
         <var name="manager" id="1185481067857160718" />
       </scope>
@@ -105,9 +105,9 @@
       </scope>
       <scope id="1185481067857160718" at="56,41,75,5" />
       <scope id="1185481067857160718" at="56,0,77,0" />
-      <unit id="1185481067857141563" at="84,0,87,0" name="jetbrains.mps.samples.heating.tabular.editor.ChangeEvent_tabular_EditorBuilder_a$PROPS" />
-      <unit id="1185481067857141563" at="88,0,91,0" name="jetbrains.mps.samples.heating.tabular.editor.ChangeEvent_tabular_EditorBuilder_a$CONCEPTS" />
-      <unit id="1185481067857141563" at="28,0,92,0" name="jetbrains.mps.samples.heating.tabular.editor.ChangeEvent_tabular_EditorBuilder_a" />
+      <unit id="1185481067857141563" at="84,0,87,0" name="jetbrains.mps.samples.heating.tabular.editor.ChangeEvent_tabular_EditorBuilder$PROPS" />
+      <unit id="1185481067857141563" at="88,0,91,0" name="jetbrains.mps.samples.heating.tabular.editor.ChangeEvent_tabular_EditorBuilder$CONCEPTS" />
+      <unit id="1185481067857141563" at="28,0,92,0" name="jetbrains.mps.samples.heating.tabular.editor.ChangeEvent_tabular_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:95e92d5c-6235-488e-83d6-2c12aa581230(jetbrains.mps.samples.heating.tabular.editor)/1741258697587239262">
@@ -257,11 +257,11 @@
     <file name="HeatingPlan_tabular_Editor.java">
       <node id="3409470686614952150" at="14,0,15,0" concept="3" trace="myContextHints" />
       <node id="3409470686614952150" at="17,47,18,26" concept="7" />
-      <node id="3409470686614952150" at="20,79,21,85" concept="7" />
+      <node id="3409470686614952150" at="20,79,21,83" concept="7" />
       <node id="3409470686614952150" at="20,0,23,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="3409470686614952150" at="15,0,20,0" concept="5" trace="getContextHints#()Ljava/util/Collection;" />
       <scope id="3409470686614952150" at="17,47,18,26" />
-      <scope id="3409470686614952150" at="20,79,21,85" />
+      <scope id="3409470686614952150" at="20,79,21,83" />
       <scope id="3409470686614952150" at="20,0,23,0">
         <var name="editorContext" id="3409470686614952150" />
         <var name="node" id="3409470686614952150" />
@@ -269,8 +269,8 @@
       <scope id="3409470686614952150" at="15,0,20,0" />
       <unit id="3409470686614952150" at="13,0,24,0" name="jetbrains.mps.samples.heating.tabular.editor.HeatingPlan_tabular_Editor" />
     </file>
-    <file name="HeatingPlan_tabular_EditorBuilder_a.java">
-      <node id="3409470686614952150" at="45,99,46,19" concept="12" />
+    <file name="HeatingPlan_tabular_EditorBuilder.java">
+      <node id="3409470686614952150" at="45,97,46,19" concept="12" />
       <node id="3409470686614952150" at="46,19,47,18" concept="2" />
       <node id="3409470686614952150" at="52,26,53,18" concept="7" />
       <node id="3409470686614952150" at="56,39,57,32" concept="7" />
@@ -355,7 +355,7 @@
       <node id="3409470686614952150" at="137,0,140,0" concept="5" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="3409470686614952150" at="140,0,143,0" concept="5" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="3409470686614952150" at="184,96,187,9" concept="4" />
-      <node id="3409470686614952150" at="45,0,49,0" concept="1" trace="HeatingPlan_tabular_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="3409470686614952150" at="45,0,49,0" concept="1" trace="HeatingPlan_tabular_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="3409470686614952150" at="128,0,132,0" concept="1" trace="dailyPlansListHandler_wlaatl_e0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="3409470686614952150" at="133,0,137,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="3409470686614952150" at="166,97,170,9" concept="4" />
@@ -386,7 +386,7 @@
       <scope id="3409470686614952150" at="140,48,141,35" />
       <scope id="3409470686614952150" at="158,17,159,42" />
       <scope id="3409470686614952150" at="185,34,186,91" />
-      <scope id="3409470686614952150" at="45,99,47,18" />
+      <scope id="3409470686614952150" at="45,97,47,18" />
       <scope id="5063359128232955531" at="93,74,95,145">
         <var name="manager" id="5063359128232955531" />
       </scope>
@@ -459,22 +459,22 @@
         <var name="elementNode" id="3409470686614952150" />
         <var name="isEmptyCell" id="3409470686614952150" />
       </scope>
-      <unit id="3409470686614952150" at="192,0,195,0" name="jetbrains.mps.samples.heating.tabular.editor.HeatingPlan_tabular_EditorBuilder_a$PROPS" />
-      <unit id="3409470686614952150" at="201,0,204,0" name="jetbrains.mps.samples.heating.tabular.editor.HeatingPlan_tabular_EditorBuilder_a$LINKS" />
-      <unit id="3409470686614952150" at="196,0,200,0" name="jetbrains.mps.samples.heating.tabular.editor.HeatingPlan_tabular_EditorBuilder_a$CONCEPTS" />
-      <unit id="3409470686614952150" at="124,0,191,0" name="jetbrains.mps.samples.heating.tabular.editor.HeatingPlan_tabular_EditorBuilder_a$dailyPlansListHandler_wlaatl_e0" />
-      <unit id="3409470686614952150" at="41,0,205,0" name="jetbrains.mps.samples.heating.tabular.editor.HeatingPlan_tabular_EditorBuilder_a" />
+      <unit id="3409470686614952150" at="192,0,195,0" name="jetbrains.mps.samples.heating.tabular.editor.HeatingPlan_tabular_EditorBuilder$PROPS" />
+      <unit id="3409470686614952150" at="201,0,204,0" name="jetbrains.mps.samples.heating.tabular.editor.HeatingPlan_tabular_EditorBuilder$LINKS" />
+      <unit id="3409470686614952150" at="196,0,200,0" name="jetbrains.mps.samples.heating.tabular.editor.HeatingPlan_tabular_EditorBuilder$CONCEPTS" />
+      <unit id="3409470686614952150" at="124,0,191,0" name="jetbrains.mps.samples.heating.tabular.editor.HeatingPlan_tabular_EditorBuilder$dailyPlansListHandler_wlaatl_e0" />
+      <unit id="3409470686614952150" at="41,0,205,0" name="jetbrains.mps.samples.heating.tabular.editor.HeatingPlan_tabular_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:95e92d5c-6235-488e-83d6-2c12aa581230(jetbrains.mps.samples.heating.tabular.editor)/4383917556650626168">
     <file name="DailyPlan_tabular_Editor.java">
       <node id="4383917556650626168" at="14,0,15,0" concept="3" trace="myContextHints" />
       <node id="4383917556650626168" at="17,47,18,26" concept="7" />
-      <node id="4383917556650626168" at="20,79,21,83" concept="7" />
+      <node id="4383917556650626168" at="20,79,21,81" concept="7" />
       <node id="4383917556650626168" at="20,0,23,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4383917556650626168" at="15,0,20,0" concept="5" trace="getContextHints#()Ljava/util/Collection;" />
       <scope id="4383917556650626168" at="17,47,18,26" />
-      <scope id="4383917556650626168" at="20,79,21,83" />
+      <scope id="4383917556650626168" at="20,79,21,81" />
       <scope id="4383917556650626168" at="20,0,23,0">
         <var name="editorContext" id="4383917556650626168" />
         <var name="node" id="4383917556650626168" />
@@ -482,8 +482,8 @@
       <scope id="4383917556650626168" at="15,0,20,0" />
       <unit id="4383917556650626168" at="13,0,24,0" name="jetbrains.mps.samples.heating.tabular.editor.DailyPlan_tabular_Editor" />
     </file>
-    <file name="DailyPlan_tabular_EditorBuilder_a.java">
-      <node id="4383917556650626168" at="48,97,49,19" concept="12" />
+    <file name="DailyPlan_tabular_EditorBuilder.java">
+      <node id="4383917556650626168" at="48,95,49,19" concept="12" />
       <node id="4383917556650626168" at="49,19,50,18" concept="2" />
       <node id="4383917556650626168" at="55,26,56,18" concept="7" />
       <node id="4383917556650626168" at="59,39,60,32" concept="7" />
@@ -636,7 +636,7 @@
       <node id="4383917556650626989" at="232,13,235,13" concept="4" />
       <node id="4383917556650627124" at="258,48,261,13" concept="4" />
       <node id="4383917556650627166" at="278,48,281,13" concept="4" />
-      <node id="4383917556650626168" at="48,0,52,0" concept="1" trace="DailyPlan_tabular_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4383917556650626168" at="48,0,52,0" concept="1" trace="DailyPlan_tabular_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4383917556650626168" at="131,0,135,0" concept="5" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4383917556650626168" at="139,0,143,0" concept="1" trace="customizesSingleRoleHandler_dgsw3q_b1a0a#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="4383917556650626946" at="220,0,224,0" concept="5" trace="getColumnCount#()I" />
@@ -693,7 +693,7 @@
       <scope id="4383917556651001574" at="267,20,268,65" />
       <scope id="4383917556650627137" at="274,54,275,19" />
       <scope id="4383917556650627167" at="279,33,280,21" />
-      <scope id="4383917556650626168" at="48,97,50,18" />
+      <scope id="4383917556650626168" at="48,95,50,18" />
       <scope id="4383917556650626168" at="131,40,133,33">
         <var name="provider" id="4383917556650626168" />
       </scope>
@@ -824,24 +824,24 @@
         <var name="editorCell" id="4383917556650626191" />
       </scope>
       <scope id="4383917556650626191" at="216,0,292,0" />
-      <unit id="4383917556650626168" at="302,0,306,0" name="jetbrains.mps.samples.heating.tabular.editor.DailyPlan_tabular_EditorBuilder_a$CONCEPTS" />
-      <unit id="4383917556650626168" at="314,0,318,0" name="jetbrains.mps.samples.heating.tabular.editor.DailyPlan_tabular_EditorBuilder_a$PROPS" />
-      <unit id="4383917556650626168" at="307,0,313,0" name="jetbrains.mps.samples.heating.tabular.editor.DailyPlan_tabular_EditorBuilder_a$LINKS" />
-      <unit id="4383917556650626168" at="135,0,194,0" name="jetbrains.mps.samples.heating.tabular.editor.DailyPlan_tabular_EditorBuilder_a$customizesSingleRoleHandler_dgsw3q_b1a0a" />
-      <unit id="4383917556650626945" at="219,19,285,9" name="jetbrains.mps.samples.heating.tabular.editor.DailyPlan_tabular_EditorBuilder_a$1$1" />
-      <unit id="4383917556650626191" at="217,36,287,5" name="jetbrains.mps.samples.heating.tabular.editor.DailyPlan_tabular_EditorBuilder_a$1" />
-      <unit id="4383917556650626168" at="44,0,319,0" name="jetbrains.mps.samples.heating.tabular.editor.DailyPlan_tabular_EditorBuilder_a" />
+      <unit id="4383917556650626168" at="302,0,306,0" name="jetbrains.mps.samples.heating.tabular.editor.DailyPlan_tabular_EditorBuilder$CONCEPTS" />
+      <unit id="4383917556650626168" at="314,0,318,0" name="jetbrains.mps.samples.heating.tabular.editor.DailyPlan_tabular_EditorBuilder$PROPS" />
+      <unit id="4383917556650626168" at="307,0,313,0" name="jetbrains.mps.samples.heating.tabular.editor.DailyPlan_tabular_EditorBuilder$LINKS" />
+      <unit id="4383917556650626168" at="135,0,194,0" name="jetbrains.mps.samples.heating.tabular.editor.DailyPlan_tabular_EditorBuilder$customizesSingleRoleHandler_dgsw3q_b1a0a" />
+      <unit id="4383917556650626945" at="219,19,285,9" name="jetbrains.mps.samples.heating.tabular.editor.DailyPlan_tabular_EditorBuilder$1$1" />
+      <unit id="4383917556650626191" at="217,36,287,5" name="jetbrains.mps.samples.heating.tabular.editor.DailyPlan_tabular_EditorBuilder$1" />
+      <unit id="4383917556650626168" at="44,0,319,0" name="jetbrains.mps.samples.heating.tabular.editor.DailyPlan_tabular_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:95e92d5c-6235-488e-83d6-2c12aa581230(jetbrains.mps.samples.heating.tabular.editor)/4383917556650816775">
     <file name="Slot_tabular_Editor.java">
       <node id="4383917556650816775" at="14,0,15,0" concept="3" trace="myContextHints" />
       <node id="4383917556650816775" at="17,47,18,26" concept="7" />
-      <node id="4383917556650816775" at="20,79,21,78" concept="7" />
+      <node id="4383917556650816775" at="20,79,21,76" concept="7" />
       <node id="4383917556650816775" at="20,0,23,0" concept="5" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4383917556650816775" at="15,0,20,0" concept="5" trace="getContextHints#()Ljava/util/Collection;" />
       <scope id="4383917556650816775" at="17,47,18,26" />
-      <scope id="4383917556650816775" at="20,79,21,78" />
+      <scope id="4383917556650816775" at="20,79,21,76" />
       <scope id="4383917556650816775" at="20,0,23,0">
         <var name="editorContext" id="4383917556650816775" />
         <var name="node" id="4383917556650816775" />
@@ -849,8 +849,8 @@
       <scope id="4383917556650816775" at="15,0,20,0" />
       <unit id="4383917556650816775" at="13,0,24,0" name="jetbrains.mps.samples.heating.tabular.editor.Slot_tabular_Editor" />
     </file>
-    <file name="Slot_tabular_EditorBuilder_a.java">
-      <node id="4383917556650816775" at="36,92,37,19" concept="12" />
+    <file name="Slot_tabular_EditorBuilder.java">
+      <node id="4383917556650816775" at="36,90,37,19" concept="12" />
       <node id="4383917556650816775" at="37,19,38,18" concept="2" />
       <node id="4383917556650816775" at="43,26,44,18" concept="7" />
       <node id="4383917556650816775" at="47,39,48,32" concept="7" />
@@ -894,7 +894,7 @@
       <node id="4383917556650816775" at="47,0,50,0" concept="5" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="935069066463671829" at="55,31,58,5" concept="4" />
       <node id="935069066463671881" at="63,0,66,0" concept="5" trace="nodeCondition0#()Z" />
-      <node id="4383917556650816775" at="36,0,40,0" concept="1" trace="Slot_tabular_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4383917556650816775" at="36,0,40,0" concept="1" trace="Slot_tabular_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4383917556650816775" at="41,0,46,0" concept="5" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="5726447348463738298" at="86,208,91,24" concept="4" />
       <node id="5726447348463738311" at="96,0,102,0" concept="5" trace="createConstant_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -907,7 +907,7 @@
       <scope id="935069066463671829" at="56,27,57,51" />
       <scope id="935069066463671882" at="63,36,64,88" />
       <scope id="5726447348463738298" at="92,15,93,40" />
-      <scope id="4383917556650816775" at="36,92,38,18" />
+      <scope id="4383917556650816775" at="36,90,38,18" />
       <scope id="5726447348463738298" at="87,74,89,145">
         <var name="manager" id="5726447348463738298" />
       </scope>
@@ -939,9 +939,9 @@
       </scope>
       <scope id="5726447348463738298" at="75,41,94,5" />
       <scope id="5726447348463738298" at="75,0,96,0" />
-      <unit id="4383917556650816775" at="103,0,106,0" name="jetbrains.mps.samples.heating.tabular.editor.Slot_tabular_EditorBuilder_a$PROPS" />
-      <unit id="4383917556650816775" at="107,0,110,0" name="jetbrains.mps.samples.heating.tabular.editor.Slot_tabular_EditorBuilder_a$CONCEPTS" />
-      <unit id="4383917556650816775" at="32,0,111,0" name="jetbrains.mps.samples.heating.tabular.editor.Slot_tabular_EditorBuilder_a" />
+      <unit id="4383917556650816775" at="103,0,106,0" name="jetbrains.mps.samples.heating.tabular.editor.Slot_tabular_EditorBuilder$PROPS" />
+      <unit id="4383917556650816775" at="107,0,110,0" name="jetbrains.mps.samples.heating.tabular.editor.Slot_tabular_EditorBuilder$CONCEPTS" />
+      <unit id="4383917556650816775" at="32,0,111,0" name="jetbrains.mps.samples.heating.tabular.editor.Slot_tabular_EditorBuilder" />
     </file>
   </root>
 </debug-info>

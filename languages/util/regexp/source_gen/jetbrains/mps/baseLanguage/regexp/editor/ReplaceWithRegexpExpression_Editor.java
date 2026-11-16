@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ReplaceWithRegexpExpression_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ReplaceWithRegexpExpression_EditorBuilder_a(editorContext, node).createCell();
+    return new ReplaceWithRegexpExpression_EditorBuilder(editorContext, node).createCell();
   }
 }

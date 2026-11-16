@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class SubConceptToTransformNested_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new SubConceptToTransformNested_EditorBuilder_a(editorContext, node).createCell();
+    return new SubConceptToTransformNested_EditorBuilder(editorContext, node).createCell();
   }
 }

@@ -18,17 +18,17 @@
   </root>
   <root nodeRef="r:deb6d2ec-081d-477c-be0d-cb6048dca9ea(jetbrains.mps.lang.generator.generationParameters.editor)/1646518082434566195">
     <file name="DefaultGeneratorParameterContainer_Editor.java">
-      <node id="1646518082434566195" at="11,79,12,100" concept="6" />
+      <node id="1646518082434566195" at="11,79,12,98" concept="6" />
       <node id="1646518082434566195" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1646518082434566195" at="11,79,12,100" />
+      <scope id="1646518082434566195" at="11,79,12,98" />
       <scope id="1646518082434566195" at="11,0,14,0">
         <var name="editorContext" id="1646518082434566195" />
         <var name="node" id="1646518082434566195" />
       </scope>
       <unit id="1646518082434566195" at="10,0,15,0" name="jetbrains.mps.lang.generator.generationParameters.editor.DefaultGeneratorParameterContainer_Editor" />
     </file>
-    <file name="DefaultGeneratorParameterContainer_EditorBuilder_a.java">
-      <node id="1646518082434566195" at="45,114,46,19" concept="9" />
+    <file name="DefaultGeneratorParameterContainer_EditorBuilder.java">
+      <node id="1646518082434566195" at="45,112,46,19" concept="9" />
       <node id="1646518082434566195" at="46,19,47,18" concept="1" />
       <node id="1646518082434566195" at="52,26,53,18" concept="6" />
       <node id="1646518082434566195" at="56,39,57,32" concept="6" />
@@ -111,7 +111,7 @@
       <node id="1646518082434566195" at="133,0,136,0" concept="4" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="1646518082434566195" at="136,0,139,0" concept="4" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="1646518082434566195" at="180,96,183,9" concept="3" />
-      <node id="1646518082434566195" at="45,0,49,0" concept="0" trace="DefaultGeneratorParameterContainer_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1646518082434566195" at="45,0,49,0" concept="0" trace="DefaultGeneratorParameterContainer_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1646518082434566195" at="124,0,128,0" concept="0" trace="parametersListHandler_lay3s1_d0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1646518082434566195" at="129,0,133,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1646518082434566195" at="162,97,166,9" concept="3" />
@@ -141,7 +141,7 @@
       <scope id="1646518082434566195" at="136,48,137,51" />
       <scope id="1646518082434566195" at="154,17,155,42" />
       <scope id="1646518082434566195" at="181,34,182,91" />
-      <scope id="1646518082434566195" at="45,114,47,18" />
+      <scope id="1646518082434566195" at="45,112,47,18" />
       <scope id="1646518082434566202" at="92,74,94,145">
         <var name="manager" id="1646518082434566202" />
       </scope>
@@ -211,26 +211,26 @@
         <var name="elementNode" id="1646518082434566195" />
         <var name="isEmptyCell" id="1646518082434566195" />
       </scope>
-      <unit id="1646518082434566195" at="188,0,191,0" name="jetbrains.mps.lang.generator.generationParameters.editor.DefaultGeneratorParameterContainer_EditorBuilder_a$PROPS" />
-      <unit id="1646518082434566195" at="197,0,200,0" name="jetbrains.mps.lang.generator.generationParameters.editor.DefaultGeneratorParameterContainer_EditorBuilder_a$LINKS" />
-      <unit id="1646518082434566195" at="192,0,196,0" name="jetbrains.mps.lang.generator.generationParameters.editor.DefaultGeneratorParameterContainer_EditorBuilder_a$CONCEPTS" />
-      <unit id="1646518082434566195" at="120,0,187,0" name="jetbrains.mps.lang.generator.generationParameters.editor.DefaultGeneratorParameterContainer_EditorBuilder_a$parametersListHandler_lay3s1_d0" />
-      <unit id="1646518082434566195" at="41,0,201,0" name="jetbrains.mps.lang.generator.generationParameters.editor.DefaultGeneratorParameterContainer_EditorBuilder_a" />
+      <unit id="1646518082434566195" at="188,0,191,0" name="jetbrains.mps.lang.generator.generationParameters.editor.DefaultGeneratorParameterContainer_EditorBuilder$PROPS" />
+      <unit id="1646518082434566195" at="197,0,200,0" name="jetbrains.mps.lang.generator.generationParameters.editor.DefaultGeneratorParameterContainer_EditorBuilder$LINKS" />
+      <unit id="1646518082434566195" at="192,0,196,0" name="jetbrains.mps.lang.generator.generationParameters.editor.DefaultGeneratorParameterContainer_EditorBuilder$CONCEPTS" />
+      <unit id="1646518082434566195" at="120,0,187,0" name="jetbrains.mps.lang.generator.generationParameters.editor.DefaultGeneratorParameterContainer_EditorBuilder$parametersListHandler_lay3s1_d0" />
+      <unit id="1646518082434566195" at="41,0,201,0" name="jetbrains.mps.lang.generator.generationParameters.editor.DefaultGeneratorParameterContainer_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:deb6d2ec-081d-477c-be0d-cb6048dca9ea(jetbrains.mps.lang.generator.generationParameters.editor)/3064182000795631812">
     <file name="DefaultGenerationParameterId_Editor.java">
-      <node id="3064182000795631812" at="11,79,12,94" concept="6" />
+      <node id="3064182000795631812" at="11,79,12,92" concept="6" />
       <node id="3064182000795631812" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="3064182000795631812" at="11,79,12,94" />
+      <scope id="3064182000795631812" at="11,79,12,92" />
       <scope id="3064182000795631812" at="11,0,14,0">
         <var name="editorContext" id="3064182000795631812" />
         <var name="node" id="3064182000795631812" />
       </scope>
       <unit id="3064182000795631812" at="10,0,15,0" name="jetbrains.mps.lang.generator.generationParameters.editor.DefaultGenerationParameterId_Editor" />
     </file>
-    <file name="DefaultGenerationParameterId_EditorBuilder_a.java">
-      <node id="3064182000795631812" at="42,108,43,19" concept="9" />
+    <file name="DefaultGenerationParameterId_EditorBuilder.java">
+      <node id="3064182000795631812" at="42,106,43,19" concept="9" />
       <node id="3064182000795631812" at="43,19,44,18" concept="1" />
       <node id="3064182000795631812" at="49,26,50,18" concept="6" />
       <node id="3064182000795631812" at="53,39,54,32" concept="6" />
@@ -354,7 +354,7 @@
       <node id="3064182000795631812" at="53,0,56,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="3064182000795631824" at="117,0,120,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="3064182000795631829" at="202,0,205,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="3064182000795631812" at="42,0,46,0" concept="0" trace="DefaultGenerationParameterId_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="3064182000795631812" at="42,0,46,0" concept="0" trace="DefaultGenerationParameterId_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="3064182000795631812" at="92,0,96,5" concept="3" />
       <node id="3064182000795631812" at="177,0,181,5" concept="3" />
       <node id="3064182000795631812" at="47,0,52,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -387,7 +387,7 @@
       <scope id="3064182000795631829" at="202,41,203,32" />
       <scope id="3064182000795631829" at="208,28,209,20" />
       <scope id="3064182000795631831" at="233,17,234,42" />
-      <scope id="3064182000795631812" at="42,108,44,18" />
+      <scope id="3064182000795631812" at="42,106,44,18" />
       <scope id="3064182000795631812" at="93,40,95,48" />
       <scope id="3064182000795631812" at="100,73,102,145">
         <var name="manager" id="3064182000795631812" />
@@ -484,24 +484,24 @@
       </scope>
       <scope id="3064182000795631812" at="78,0,106,0" />
       <scope id="3064182000795631812" at="163,0,191,0" />
-      <unit id="3064182000795631812" at="249,0,252,0" name="jetbrains.mps.lang.generator.generationParameters.editor.DefaultGenerationParameterId_EditorBuilder_a$PROPS" />
-      <unit id="3064182000795631812" at="239,0,243,0" name="jetbrains.mps.lang.generator.generationParameters.editor.DefaultGenerationParameterId_EditorBuilder_a$LINKS" />
-      <unit id="3064182000795631812" at="244,0,248,0" name="jetbrains.mps.lang.generator.generationParameters.editor.DefaultGenerationParameterId_EditorBuilder_a$CONCEPTS" />
-      <unit id="3064182000795631812" at="80,42,88,5" name="jetbrains.mps.lang.generator.generationParameters.editor.DefaultGenerationParameterId_EditorBuilder_a$1" />
-      <unit id="3064182000795631812" at="165,42,173,5" name="jetbrains.mps.lang.generator.generationParameters.editor.DefaultGenerationParameterId_EditorBuilder_a$2" />
-      <unit id="3064182000795631824" at="106,0,152,0" name="jetbrains.mps.lang.generator.generationParameters.editor.DefaultGenerationParameterId_EditorBuilder_a$Inline_Builder0" />
-      <unit id="3064182000795631829" at="191,0,238,0" name="jetbrains.mps.lang.generator.generationParameters.editor.DefaultGenerationParameterId_EditorBuilder_a$Inline_Builder1" />
-      <unit id="3064182000795631812" at="38,0,253,0" name="jetbrains.mps.lang.generator.generationParameters.editor.DefaultGenerationParameterId_EditorBuilder_a" />
+      <unit id="3064182000795631812" at="249,0,252,0" name="jetbrains.mps.lang.generator.generationParameters.editor.DefaultGenerationParameterId_EditorBuilder$PROPS" />
+      <unit id="3064182000795631812" at="239,0,243,0" name="jetbrains.mps.lang.generator.generationParameters.editor.DefaultGenerationParameterId_EditorBuilder$LINKS" />
+      <unit id="3064182000795631812" at="244,0,248,0" name="jetbrains.mps.lang.generator.generationParameters.editor.DefaultGenerationParameterId_EditorBuilder$CONCEPTS" />
+      <unit id="3064182000795631812" at="80,42,88,5" name="jetbrains.mps.lang.generator.generationParameters.editor.DefaultGenerationParameterId_EditorBuilder$1" />
+      <unit id="3064182000795631812" at="165,42,173,5" name="jetbrains.mps.lang.generator.generationParameters.editor.DefaultGenerationParameterId_EditorBuilder$2" />
+      <unit id="3064182000795631824" at="106,0,152,0" name="jetbrains.mps.lang.generator.generationParameters.editor.DefaultGenerationParameterId_EditorBuilder$Inline_Builder0" />
+      <unit id="3064182000795631829" at="191,0,238,0" name="jetbrains.mps.lang.generator.generationParameters.editor.DefaultGenerationParameterId_EditorBuilder$Inline_Builder1" />
+      <unit id="3064182000795631812" at="38,0,253,0" name="jetbrains.mps.lang.generator.generationParameters.editor.DefaultGenerationParameterId_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:deb6d2ec-081d-477c-be0d-cb6048dca9ea(jetbrains.mps.lang.generator.generationParameters.editor)/8484425748929510077">
     <file name="DefaultGeneratorParameter_Editor.java">
-      <node id="8484425748929510077" at="11,79,12,91" concept="6" />
-      <node id="8484425748929510077" at="14,82,15,94" concept="6" />
+      <node id="8484425748929510077" at="11,79,12,89" concept="6" />
+      <node id="8484425748929510077" at="14,82,15,92" concept="6" />
       <node id="8484425748929510077" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="8484425748929510077" at="14,0,17,0" concept="4" trace="createInspectedCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="8484425748929510077" at="11,79,12,91" />
-      <scope id="8484425748929510077" at="14,82,15,94" />
+      <scope id="8484425748929510077" at="11,79,12,89" />
+      <scope id="8484425748929510077" at="14,82,15,92" />
       <scope id="8484425748929510077" at="11,0,14,0">
         <var name="editorContext" id="8484425748929510077" />
         <var name="node" id="8484425748929510077" />
@@ -512,8 +512,8 @@
       </scope>
       <unit id="8484425748929510077" at="10,0,18,0" name="jetbrains.mps.lang.generator.generationParameters.editor.DefaultGeneratorParameter_Editor" />
     </file>
-    <file name="DefaultGeneratorParameter_EditorBuilder_a.java">
-      <node id="8484425748929510077" at="44,105,45,19" concept="9" />
+    <file name="DefaultGeneratorParameter_EditorBuilder.java">
+      <node id="8484425748929510077" at="44,103,45,19" concept="9" />
       <node id="8484425748929510077" at="45,19,46,18" concept="1" />
       <node id="8484425748929510077" at="51,26,52,18" concept="6" />
       <node id="8484425748929510077" at="55,39,56,32" concept="6" />
@@ -576,7 +576,7 @@
       <node id="8484425748929510077" at="128,87,131,7" concept="3" />
       <node id="8484425748929510077" at="131,7,134,7" concept="3" />
       <node id="8484425748929510077" at="150,0,153,0" concept="4" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="8484425748929510077" at="44,0,48,0" concept="0" trace="DefaultGeneratorParameter_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8484425748929510077" at="44,0,48,0" concept="0" trace="DefaultGeneratorParameter_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8484425748929510077" at="99,0,103,0" concept="4" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="8484425748929510077" at="107,0,111,0" concept="0" trace="typeSingleRoleHandler_95jom2_c0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="8484425748929510077" at="49,0,54,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -598,7 +598,7 @@
       <scope id="8484425748929510077" at="132,42,133,45" />
       <scope id="8484425748929510077" at="146,17,147,42" />
       <scope id="8484425748929510077" at="150,40,151,25" />
-      <scope id="8484425748929510077" at="44,105,46,18" />
+      <scope id="8484425748929510077" at="44,103,46,18" />
       <scope id="8484425748929510079" at="84,74,86,145">
         <var name="manager" id="8484425748929510079" />
       </scope>
@@ -654,14 +654,14 @@
       </scope>
       <scope id="8484425748929510079" at="69,41,91,5" />
       <scope id="8484425748929510079" at="69,0,93,0" />
-      <unit id="8484425748929510077" at="155,0,158,0" name="jetbrains.mps.lang.generator.generationParameters.editor.DefaultGeneratorParameter_EditorBuilder_a$PROPS" />
-      <unit id="8484425748929510077" at="159,0,162,0" name="jetbrains.mps.lang.generator.generationParameters.editor.DefaultGeneratorParameter_EditorBuilder_a$CONCEPTS" />
-      <unit id="8484425748929510077" at="163,0,166,0" name="jetbrains.mps.lang.generator.generationParameters.editor.DefaultGeneratorParameter_EditorBuilder_a$LINKS" />
-      <unit id="8484425748929510077" at="103,0,154,0" name="jetbrains.mps.lang.generator.generationParameters.editor.DefaultGeneratorParameter_EditorBuilder_a$typeSingleRoleHandler_95jom2_c0" />
-      <unit id="8484425748929510077" at="40,0,167,0" name="jetbrains.mps.lang.generator.generationParameters.editor.DefaultGeneratorParameter_EditorBuilder_a" />
+      <unit id="8484425748929510077" at="155,0,158,0" name="jetbrains.mps.lang.generator.generationParameters.editor.DefaultGeneratorParameter_EditorBuilder$PROPS" />
+      <unit id="8484425748929510077" at="159,0,162,0" name="jetbrains.mps.lang.generator.generationParameters.editor.DefaultGeneratorParameter_EditorBuilder$CONCEPTS" />
+      <unit id="8484425748929510077" at="163,0,166,0" name="jetbrains.mps.lang.generator.generationParameters.editor.DefaultGeneratorParameter_EditorBuilder$LINKS" />
+      <unit id="8484425748929510077" at="103,0,154,0" name="jetbrains.mps.lang.generator.generationParameters.editor.DefaultGeneratorParameter_EditorBuilder$typeSingleRoleHandler_95jom2_c0" />
+      <unit id="8484425748929510077" at="40,0,167,0" name="jetbrains.mps.lang.generator.generationParameters.editor.DefaultGeneratorParameter_EditorBuilder" />
     </file>
-    <file name="DefaultGeneratorParameter_InspectorBuilder_a.java">
-      <node id="8484425748929510077" at="27,108,28,19" concept="9" />
+    <file name="DefaultGeneratorParameter_InspectorBuilder.java">
+      <node id="8484425748929510077" at="27,106,28,19" concept="9" />
       <node id="8484425748929510077" at="28,19,29,18" concept="1" />
       <node id="8484425748929510077" at="34,26,35,18" concept="6" />
       <node id="8484425748929510077" at="38,39,39,32" concept="6" />
@@ -690,7 +690,7 @@
       <node id="8484425748929510077" at="24,0,26,0" concept="2" trace="myNode" />
       <node id="8484425748929510077" at="38,0,41,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4700935326594654865" at="62,0,65,0" concept="4" trace="getText#()Ljava/lang/String;" />
-      <node id="8484425748929510077" at="27,0,31,0" concept="0" trace="DefaultGeneratorParameter_InspectorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8484425748929510077" at="27,0,31,0" concept="0" trace="DefaultGeneratorParameter_InspectorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8484425748929510077" at="32,0,37,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="4700935326594654865" at="60,54,65,15" concept="5" />
       <node id="8484425748929510077" at="42,0,51,0" concept="4" trace="createCollection_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -699,7 +699,7 @@
       <scope id="8484425748929510077" at="34,26,35,18" />
       <scope id="8484425748929510077" at="38,39,39,32" />
       <scope id="4700935326594654868" at="62,31,63,104" />
-      <scope id="8484425748929510077" at="27,108,29,18" />
+      <scope id="8484425748929510077" at="27,106,29,18" />
       <scope id="8484425748929510077" at="38,0,41,0" />
       <scope id="4700935326594654865" at="62,0,65,0" />
       <scope id="8484425748929510077" at="27,0,31,0">
@@ -721,8 +721,8 @@
         <var name="style" id="4700935326594654865" />
       </scope>
       <scope id="4700935326594654865" at="60,0,74,0" />
-      <unit id="4700935326594654865" at="61,88,65,5" name="jetbrains.mps.lang.generator.generationParameters.editor.DefaultGeneratorParameter_InspectorBuilder_a$1" />
-      <unit id="8484425748929510077" at="23,0,75,0" name="jetbrains.mps.lang.generator.generationParameters.editor.DefaultGeneratorParameter_InspectorBuilder_a" />
+      <unit id="4700935326594654865" at="61,88,65,5" name="jetbrains.mps.lang.generator.generationParameters.editor.DefaultGeneratorParameter_InspectorBuilder$1" />
+      <unit id="8484425748929510077" at="23,0,75,0" name="jetbrains.mps.lang.generator.generationParameters.editor.DefaultGeneratorParameter_InspectorBuilder" />
     </file>
   </root>
 </debug-info>

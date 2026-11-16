@@ -16,6 +16,6 @@ public class CommonFruitProperties implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new CommonFruitProperties_ComponentBuilder_a(editorContext, node).createCell();
+    return new CommonFruitProperties_ComponentBuilder(editorContext, node).createCell();
   }
 }

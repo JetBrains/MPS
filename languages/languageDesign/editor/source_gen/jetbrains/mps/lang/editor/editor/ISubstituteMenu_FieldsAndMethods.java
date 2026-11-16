@@ -16,6 +16,6 @@ public class ISubstituteMenu_FieldsAndMethods implements ConceptEditorComponent 
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ISubstituteMenu_FieldsAndMethods_ComponentBuilder_a(editorContext, node).createCell();
+    return new ISubstituteMenu_FieldsAndMethods_ComponentBuilder(editorContext, node).createCell();
   }
 }

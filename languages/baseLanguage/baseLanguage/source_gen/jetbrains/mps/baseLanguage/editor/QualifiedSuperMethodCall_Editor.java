@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class QualifiedSuperMethodCall_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new QualifiedSuperMethodCall_EditorBuilder_a(editorContext, node).createCell();
+    return new QualifiedSuperMethodCall_EditorBuilder(editorContext, node).createCell();
   }
 }

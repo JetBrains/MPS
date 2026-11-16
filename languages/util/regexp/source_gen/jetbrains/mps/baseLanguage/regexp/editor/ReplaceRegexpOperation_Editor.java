@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ReplaceRegexpOperation_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ReplaceRegexpOperation_EditorBuilder_a(editorContext, node).createCell();
+    return new ReplaceRegexpOperation_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new ReplaceRegexpOperation_InspectorBuilder_a(editorContext, node).createCell();
+    return new ReplaceRegexpOperation_InspectorBuilder(editorContext, node).createCell();
   }
 }

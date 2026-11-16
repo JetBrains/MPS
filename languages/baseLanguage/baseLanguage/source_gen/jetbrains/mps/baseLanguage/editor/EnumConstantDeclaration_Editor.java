@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class EnumConstantDeclaration_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new EnumConstantDeclaration_EditorBuilder_a(editorContext, node).createCell();
+    return new EnumConstantDeclaration_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new EnumConstantDeclaration_InspectorBuilder_a(editorContext, node).createCell();
+    return new EnumConstantDeclaration_InspectorBuilder(editorContext, node).createCell();
   }
 }

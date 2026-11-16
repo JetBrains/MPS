@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class TransactionalProperty_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new TransactionalProperty_EditorBuilder_a(editorContext, node).createCell();
+    return new TransactionalProperty_EditorBuilder(editorContext, node).createCell();
   }
 }

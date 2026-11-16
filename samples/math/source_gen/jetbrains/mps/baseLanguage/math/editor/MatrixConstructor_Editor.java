@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class MatrixConstructor_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new MatrixConstructor_EditorBuilder_a(editorContext, node).createCell();
+    return new MatrixConstructor_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new MatrixConstructor_InspectorBuilder_a(editorContext, node).createCell();
+    return new MatrixConstructor_InspectorBuilder(editorContext, node).createCell();
   }
 }

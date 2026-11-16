@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="75xujdrh4rkyk73ncjbygxp965p1b5f">
-  <files names="EditorAspectDescriptorImpl.java:FailingPropertyConstraintsProblem_Editor.java:FailingPropertyConstraintsProblem_EditorBuilder_a.java:FailingPropertyConstraintsProblem_InspectorBuilder_a.java" />
+  <files names="EditorAspectDescriptorImpl.java:FailingPropertyConstraintsProblem_Editor.java:FailingPropertyConstraintsProblem_EditorBuilder.java:FailingPropertyConstraintsProblem_InspectorBuilder.java" />
 </product>
 

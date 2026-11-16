@@ -16,6 +16,6 @@ public class PersistentPropertiesComponent implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new PersistentPropertiesComponent_ComponentBuilder_a(editorContext, node).createCell();
+    return new PersistentPropertiesComponent_ComponentBuilder(editorContext, node).createCell();
   }
 }

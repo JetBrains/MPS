@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="4c71mjn56h7dzlnvjgqwqkm2vm93pzp">
-  <files names="EditorAspectDescriptorImpl.java:FailingRuleProblem_Delete.java:FailingRuleProblem_Editor.java:FailingRuleProblem_EditorBuilder_a.java:FailingRuleProblem_SubstituteMenu.java:FailingRuleProblem_TransformationMenu.java" />
+  <files names="EditorAspectDescriptorImpl.java:FailingRuleProblem_Delete.java:FailingRuleProblem_Editor.java:FailingRuleProblem_EditorBuilder.java:FailingRuleProblem_SubstituteMenu.java:FailingRuleProblem_TransformationMenu.java" />
 </product>
 

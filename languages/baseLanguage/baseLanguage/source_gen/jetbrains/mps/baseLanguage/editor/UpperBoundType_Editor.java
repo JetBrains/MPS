@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class UpperBoundType_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new UpperBoundType_EditorBuilder_a(editorContext, node).createCell();
+    return new UpperBoundType_EditorBuilder(editorContext, node).createCell();
   }
 }

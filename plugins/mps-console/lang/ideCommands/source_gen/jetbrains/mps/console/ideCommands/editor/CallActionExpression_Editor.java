@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class CallActionExpression_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new CallActionExpression_EditorBuilder_a(editorContext, node).createCell();
+    return new CallActionExpression_EditorBuilder(editorContext, node).createCell();
   }
 }

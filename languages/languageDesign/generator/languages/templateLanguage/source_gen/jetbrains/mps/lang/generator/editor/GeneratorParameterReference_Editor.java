@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class GeneratorParameterReference_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new GeneratorParameterReference_EditorBuilder_a(editorContext, node).createCell();
+    return new GeneratorParameterReference_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new GeneratorParameterReference_InspectorBuilder_a(editorContext, node).createCell();
+    return new GeneratorParameterReference_InspectorBuilder(editorContext, node).createCell();
   }
 }

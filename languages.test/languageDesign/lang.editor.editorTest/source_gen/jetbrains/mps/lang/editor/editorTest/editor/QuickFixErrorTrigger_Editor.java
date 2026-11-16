@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class QuickFixErrorTrigger_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new QuickFixErrorTrigger_EditorBuilder_a(editorContext, node).createCell();
+    return new QuickFixErrorTrigger_EditorBuilder(editorContext, node).createCell();
   }
 }

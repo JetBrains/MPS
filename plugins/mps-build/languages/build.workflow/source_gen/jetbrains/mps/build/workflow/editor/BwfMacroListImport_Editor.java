@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class BwfMacroListImport_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new BwfMacroListImport_EditorBuilder_a(editorContext, node).createCell();
+    return new BwfMacroListImport_EditorBuilder(editorContext, node).createCell();
   }
 }

@@ -16,6 +16,6 @@ public class TransformationFeatureAlias implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new TransformationFeatureAlias_ComponentBuilder_a(editorContext, node).createCell();
+    return new TransformationFeatureAlias_ComponentBuilder(editorContext, node).createCell();
   }
 }

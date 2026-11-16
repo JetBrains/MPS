@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class SimpleMathVarReference_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new SimpleMathVarReference_EditorBuilder_a(editorContext, node).createCell();
+    return new SimpleMathVarReference_EditorBuilder(editorContext, node).createCell();
   }
 }

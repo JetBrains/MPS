@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ForEachNodeFoundClosureParameterDeclaration_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ForEachNodeFoundClosureParameterDeclaration_EditorBuilder_a(editorContext, node).createCell();
+    return new ForEachNodeFoundClosureParameterDeclaration_EditorBuilder(editorContext, node).createCell();
   }
 }

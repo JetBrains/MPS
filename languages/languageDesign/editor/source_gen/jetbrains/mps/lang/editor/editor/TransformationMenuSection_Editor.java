@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class TransformationMenuSection_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new TransformationMenuSection_EditorBuilder_a(editorContext, node).createCell();
+    return new TransformationMenuSection_EditorBuilder(editorContext, node).createCell();
   }
 }

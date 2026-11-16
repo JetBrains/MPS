@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ExtractInterfaceMigration_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ExtractInterfaceMigration_EditorBuilder_a(editorContext, node).createCell();
+    return new ExtractInterfaceMigration_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new ExtractInterfaceMigration_InspectorBuilder_a(editorContext, node).createCell();
+    return new ExtractInterfaceMigration_InspectorBuilder(editorContext, node).createCell();
   }
 }

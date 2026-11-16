@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="7gzl6d4bb3bg62rualvcxs1pmndh7ng">
-  <files names="EditorAspectDescriptorImpl.java:ProblemKindStyle_StyleSheet.java:ProblemKind_Editor.java:ProblemKind_EditorBuilder_a.java:ProblemPointsToKindRoot_Editor.java:ProblemPointsToKindRoot_EditorBuilder_a.java:ProblemPointsToKindRoot_InspectorBuilder_a.java:ProblemPointsToKindRoot_SubstituteMenu.java:paremeterized_with_type.java:paremeterized_with_type_ComponentBuilder_a.java" />
+  <files names="EditorAspectDescriptorImpl.java:ProblemKindStyle_StyleSheet.java:ProblemKind_Editor.java:ProblemKind_EditorBuilder.java:ProblemPointsToKindRoot_Editor.java:ProblemPointsToKindRoot_EditorBuilder.java:ProblemPointsToKindRoot_InspectorBuilder.java:ProblemPointsToKindRoot_SubstituteMenu.java:paremeterized_with_type.java:paremeterized_with_type_ComponentBuilder.java" />
 </product>
 

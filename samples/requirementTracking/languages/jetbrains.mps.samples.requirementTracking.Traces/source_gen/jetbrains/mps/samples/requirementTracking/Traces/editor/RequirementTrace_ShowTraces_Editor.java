@@ -18,6 +18,6 @@ public class RequirementTrace_ShowTraces_Editor extends DefaultNodeEditor {
     return myContextHints;
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new RequirementTrace_ShowTraces_EditorBuilder_a(editorContext, node).createCell();
+    return new RequirementTrace_ShowTraces_EditorBuilder(editorContext, node).createCell();
   }
 }

@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class RuntimeTypeVariable_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new RuntimeTypeVariable_EditorBuilder_a(editorContext, node).createCell();
+    return new RuntimeTypeVariable_EditorBuilder(editorContext, node).createCell();
   }
 }

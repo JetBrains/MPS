@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class LambdaApplication_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new LambdaApplication_EditorBuilder_a(editorContext, node).createCell();
+    return new LambdaApplication_EditorBuilder(editorContext, node).createCell();
   }
 }

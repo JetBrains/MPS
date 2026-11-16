@@ -18,6 +18,6 @@ public class Square_ShapePreview_Editor extends DefaultNodeEditor {
     return myContextHints;
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new Square_ShapePreview_EditorBuilder_a(editorContext, node).createCell();
+    return new Square_ShapePreview_EditorBuilder(editorContext, node).createCell();
   }
 }

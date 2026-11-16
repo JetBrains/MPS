@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class TestSideTransform_NodeToReference_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new TestSideTransform_NodeToReference_EditorBuilder_a(editorContext, node).createCell();
+    return new TestSideTransform_NodeToReference_EditorBuilder(editorContext, node).createCell();
   }
 }

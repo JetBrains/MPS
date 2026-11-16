@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class MathSymbol_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new MathSymbol_EditorBuilder_a(editorContext, node).createCell();
+    return new MathSymbol_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new MathSymbol_InspectorBuilder_a(editorContext, node).createCell();
+    return new MathSymbol_InspectorBuilder(editorContext, node).createCell();
   }
 }

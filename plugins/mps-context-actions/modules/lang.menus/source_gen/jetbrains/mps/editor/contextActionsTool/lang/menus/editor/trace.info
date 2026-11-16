@@ -17,17 +17,17 @@
   </root>
   <root nodeRef="r:73f208e6-2a8c-404d-bce0-f43dff4cbeb6(jetbrains.mps.editor.contextActionsTool.lang.menus.editor)/8954657570917410485">
     <file name="TransformationFeature_Icon_Editor.java">
-      <node id="8954657570917410485" at="11,79,12,92" concept="6" />
+      <node id="8954657570917410485" at="11,79,12,90" concept="6" />
       <node id="8954657570917410485" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="8954657570917410485" at="11,79,12,92" />
+      <scope id="8954657570917410485" at="11,79,12,90" />
       <scope id="8954657570917410485" at="11,0,14,0">
         <var name="editorContext" id="8954657570917410485" />
         <var name="node" id="8954657570917410485" />
       </scope>
       <unit id="8954657570917410485" at="10,0,15,0" name="jetbrains.mps.editor.contextActionsTool.lang.menus.editor.TransformationFeature_Icon_Editor" />
     </file>
-    <file name="TransformationFeature_Icon_EditorBuilder_a.java">
-      <node id="8954657570917410485" at="26,106,27,19" concept="8" />
+    <file name="TransformationFeature_Icon_EditorBuilder.java">
+      <node id="8954657570917410485" at="26,104,27,19" concept="8" />
       <node id="8954657570917410485" at="27,19,28,18" concept="1" />
       <node id="8954657570917410485" at="33,26,34,18" concept="6" />
       <node id="8954657570917410485" at="37,39,38,32" concept="6" />
@@ -68,7 +68,7 @@
       <node id="8954657570917410485" at="83,87,86,7" concept="3" />
       <node id="8954657570917410485" at="86,7,89,7" concept="3" />
       <node id="8954657570917410485" at="105,0,108,0" concept="4" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="8954657570917410485" at="26,0,30,0" concept="0" trace="TransformationFeature_Icon_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8954657570917410485" at="26,0,30,0" concept="0" trace="TransformationFeature_Icon_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8954657570917561420" at="50,0,54,0" concept="4" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="8954657570917410485" at="54,0,58,0" concept="4" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="8954657570917410485" at="62,0,66,0" concept="0" trace="querySingleRoleHandler_vgye8_b0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
@@ -86,7 +86,7 @@
       <scope id="8954657570917410485" at="87,42,88,46" />
       <scope id="8954657570917410485" at="101,17,102,42" />
       <scope id="8954657570917410485" at="105,40,106,22" />
-      <scope id="8954657570917410485" at="26,106,28,18" />
+      <scope id="8954657570917410485" at="26,104,28,18" />
       <scope id="8954657570917561420" at="50,42,52,22">
         <var name="editorCell" id="8954657570917561420" />
       </scope>
@@ -130,24 +130,24 @@
       <scope id="8954657570917410485" at="41,0,50,0" />
       <scope id="8954657570917410485" at="92,44,103,7" />
       <scope id="8954657570917410485" at="91,0,105,0" />
-      <unit id="8954657570917410485" at="110,0,113,0" name="jetbrains.mps.editor.contextActionsTool.lang.menus.editor.TransformationFeature_Icon_EditorBuilder_a$LINKS" />
-      <unit id="8954657570917410485" at="58,0,109,0" name="jetbrains.mps.editor.contextActionsTool.lang.menus.editor.TransformationFeature_Icon_EditorBuilder_a$querySingleRoleHandler_vgye8_b0" />
-      <unit id="8954657570917410485" at="22,0,114,0" name="jetbrains.mps.editor.contextActionsTool.lang.menus.editor.TransformationFeature_Icon_EditorBuilder_a" />
+      <unit id="8954657570917410485" at="110,0,113,0" name="jetbrains.mps.editor.contextActionsTool.lang.menus.editor.TransformationFeature_Icon_EditorBuilder$LINKS" />
+      <unit id="8954657570917410485" at="58,0,109,0" name="jetbrains.mps.editor.contextActionsTool.lang.menus.editor.TransformationFeature_Icon_EditorBuilder$querySingleRoleHandler_vgye8_b0" />
+      <unit id="8954657570917410485" at="22,0,114,0" name="jetbrains.mps.editor.contextActionsTool.lang.menus.editor.TransformationFeature_Icon_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:73f208e6-2a8c-404d-bce0-f43dff4cbeb6(jetbrains.mps.editor.contextActionsTool.lang.menus.editor)/8954657570917410496">
     <file name="TransformationFeature_Tooltip_Editor.java">
-      <node id="8954657570917410496" at="11,79,12,95" concept="6" />
+      <node id="8954657570917410496" at="11,79,12,93" concept="6" />
       <node id="8954657570917410496" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="8954657570917410496" at="11,79,12,95" />
+      <scope id="8954657570917410496" at="11,79,12,93" />
       <scope id="8954657570917410496" at="11,0,14,0">
         <var name="editorContext" id="8954657570917410496" />
         <var name="node" id="8954657570917410496" />
       </scope>
       <unit id="8954657570917410496" at="10,0,15,0" name="jetbrains.mps.editor.contextActionsTool.lang.menus.editor.TransformationFeature_Tooltip_Editor" />
     </file>
-    <file name="TransformationFeature_Tooltip_EditorBuilder_a.java">
-      <node id="8954657570917410496" at="26,109,27,19" concept="8" />
+    <file name="TransformationFeature_Tooltip_EditorBuilder.java">
+      <node id="8954657570917410496" at="26,107,27,19" concept="8" />
       <node id="8954657570917410496" at="27,19,28,18" concept="1" />
       <node id="8954657570917410496" at="33,26,34,18" concept="6" />
       <node id="8954657570917410496" at="37,39,38,32" concept="6" />
@@ -188,7 +188,7 @@
       <node id="8954657570917410496" at="83,87,86,7" concept="3" />
       <node id="8954657570917410496" at="86,7,89,7" concept="3" />
       <node id="8954657570917410496" at="105,0,108,0" concept="4" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="8954657570917410496" at="26,0,30,0" concept="0" trace="TransformationFeature_Tooltip_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="8954657570917410496" at="26,0,30,0" concept="0" trace="TransformationFeature_Tooltip_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8954657570917561438" at="50,0,54,0" concept="4" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="8954657570917410496" at="54,0,58,0" concept="4" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="8954657570917410496" at="62,0,66,0" concept="0" trace="querySingleRoleHandler_dsjynh_b0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
@@ -206,7 +206,7 @@
       <scope id="8954657570917410496" at="87,42,88,46" />
       <scope id="8954657570917410496" at="101,17,102,42" />
       <scope id="8954657570917410496" at="105,40,106,22" />
-      <scope id="8954657570917410496" at="26,109,28,18" />
+      <scope id="8954657570917410496" at="26,107,28,18" />
       <scope id="8954657570917561438" at="50,42,52,22">
         <var name="editorCell" id="8954657570917561438" />
       </scope>
@@ -250,9 +250,9 @@
       <scope id="8954657570917410496" at="41,0,50,0" />
       <scope id="8954657570917410496" at="92,44,103,7" />
       <scope id="8954657570917410496" at="91,0,105,0" />
-      <unit id="8954657570917410496" at="110,0,113,0" name="jetbrains.mps.editor.contextActionsTool.lang.menus.editor.TransformationFeature_Tooltip_EditorBuilder_a$LINKS" />
-      <unit id="8954657570917410496" at="58,0,109,0" name="jetbrains.mps.editor.contextActionsTool.lang.menus.editor.TransformationFeature_Tooltip_EditorBuilder_a$querySingleRoleHandler_dsjynh_b0" />
-      <unit id="8954657570917410496" at="22,0,114,0" name="jetbrains.mps.editor.contextActionsTool.lang.menus.editor.TransformationFeature_Tooltip_EditorBuilder_a" />
+      <unit id="8954657570917410496" at="110,0,113,0" name="jetbrains.mps.editor.contextActionsTool.lang.menus.editor.TransformationFeature_Tooltip_EditorBuilder$LINKS" />
+      <unit id="8954657570917410496" at="58,0,109,0" name="jetbrains.mps.editor.contextActionsTool.lang.menus.editor.TransformationFeature_Tooltip_EditorBuilder$querySingleRoleHandler_dsjynh_b0" />
+      <unit id="8954657570917410496" at="22,0,114,0" name="jetbrains.mps.editor.contextActionsTool.lang.menus.editor.TransformationFeature_Tooltip_EditorBuilder" />
     </file>
   </root>
 </debug-info>

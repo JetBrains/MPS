@@ -25,17 +25,17 @@
   </root>
   <root nodeRef="r:e334d3cd-5673-450f-8ba2-6a08949884ac(jetbrains.mps.samples.customAspect.documentation.editor)/2897519568668511754">
     <file name="ConceptDocumentation_Editor.java">
-      <node id="2897519568668511754" at="11,79,12,86" concept="6" />
+      <node id="2897519568668511754" at="11,79,12,84" concept="6" />
       <node id="2897519568668511754" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="2897519568668511754" at="11,79,12,86" />
+      <scope id="2897519568668511754" at="11,79,12,84" />
       <scope id="2897519568668511754" at="11,0,14,0">
         <var name="editorContext" id="2897519568668511754" />
         <var name="node" id="2897519568668511754" />
       </scope>
       <unit id="2897519568668511754" at="10,0,15,0" name="jetbrains.mps.samples.customAspect.documentation.editor.ConceptDocumentation_Editor" />
     </file>
-    <file name="ConceptDocumentation_EditorBuilder_a.java">
-      <node id="2897519568668511754" at="46,100,47,19" concept="9" />
+    <file name="ConceptDocumentation_EditorBuilder.java">
+      <node id="2897519568668511754" at="46,98,47,19" concept="9" />
       <node id="2897519568668511754" at="47,19,48,18" concept="1" />
       <node id="2897519568668511754" at="53,26,54,18" concept="6" />
       <node id="2897519568668511754" at="57,39,58,32" concept="6" />
@@ -135,7 +135,7 @@
       <node id="2897519568668513371" at="122,0,124,0" concept="2" trace="myNode" />
       <node id="2897519568668511754" at="57,0,60,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="2897519568668513371" at="132,0,135,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="2897519568668511754" at="46,0,50,0" concept="0" trace="ConceptDocumentation_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="2897519568668511754" at="46,0,50,0" concept="0" trace="ConceptDocumentation_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="2897519568668511754" at="107,0,111,5" concept="3" />
       <node id="2897519568668513401" at="172,0,176,0" concept="4" trace="createIndentCell_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="2897519568668511754" at="51,0,56,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -163,7 +163,7 @@
       <scope id="2897519568668513371" at="138,28,139,20" />
       <scope id="2897519568668513379" at="159,17,160,42" />
       <scope id="2897519568668513435" at="199,15,200,40" />
-      <scope id="2897519568668511754" at="46,100,48,18" />
+      <scope id="2897519568668511754" at="46,98,48,18" />
       <scope id="2897519568668511754" at="108,40,110,44" />
       <scope id="2897519568668511754" at="115,73,117,145">
         <var name="manager" id="2897519568668511754" />
@@ -249,12 +249,12 @@
         <var name="referenceLink" id="2897519568668511754" />
       </scope>
       <scope id="2897519568668511754" at="86,0,121,0" />
-      <unit id="2897519568668511754" at="204,0,207,0" name="jetbrains.mps.samples.customAspect.documentation.editor.ConceptDocumentation_EditorBuilder_a$LINKS" />
-      <unit id="2897519568668511754" at="208,0,212,0" name="jetbrains.mps.samples.customAspect.documentation.editor.ConceptDocumentation_EditorBuilder_a$CONCEPTS" />
-      <unit id="2897519568668511754" at="213,0,217,0" name="jetbrains.mps.samples.customAspect.documentation.editor.ConceptDocumentation_EditorBuilder_a$PROPS" />
-      <unit id="2897519568668511754" at="88,42,103,5" name="jetbrains.mps.samples.customAspect.documentation.editor.ConceptDocumentation_EditorBuilder_a$1" />
-      <unit id="2897519568668513371" at="121,0,164,0" name="jetbrains.mps.samples.customAspect.documentation.editor.ConceptDocumentation_EditorBuilder_a$Inline_Builder0" />
-      <unit id="2897519568668511754" at="42,0,218,0" name="jetbrains.mps.samples.customAspect.documentation.editor.ConceptDocumentation_EditorBuilder_a" />
+      <unit id="2897519568668511754" at="204,0,207,0" name="jetbrains.mps.samples.customAspect.documentation.editor.ConceptDocumentation_EditorBuilder$LINKS" />
+      <unit id="2897519568668511754" at="208,0,212,0" name="jetbrains.mps.samples.customAspect.documentation.editor.ConceptDocumentation_EditorBuilder$CONCEPTS" />
+      <unit id="2897519568668511754" at="213,0,217,0" name="jetbrains.mps.samples.customAspect.documentation.editor.ConceptDocumentation_EditorBuilder$PROPS" />
+      <unit id="2897519568668511754" at="88,42,103,5" name="jetbrains.mps.samples.customAspect.documentation.editor.ConceptDocumentation_EditorBuilder$1" />
+      <unit id="2897519568668513371" at="121,0,164,0" name="jetbrains.mps.samples.customAspect.documentation.editor.ConceptDocumentation_EditorBuilder$Inline_Builder0" />
+      <unit id="2897519568668511754" at="42,0,218,0" name="jetbrains.mps.samples.customAspect.documentation.editor.ConceptDocumentation_EditorBuilder" />
     </file>
   </root>
 </debug-info>

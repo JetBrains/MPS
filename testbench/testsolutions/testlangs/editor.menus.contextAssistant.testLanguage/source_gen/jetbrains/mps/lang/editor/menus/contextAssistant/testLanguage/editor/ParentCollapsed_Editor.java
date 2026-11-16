@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ParentCollapsed_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ParentCollapsed_EditorBuilder_a(editorContext, node).createCell();
+    return new ParentCollapsed_EditorBuilder(editorContext, node).createCell();
   }
 }

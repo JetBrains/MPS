@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="4k33j4z9ji5gm988qywe9u7fux4qq3c">
-  <files names="EditorAspectDescriptorImpl.java:File2_Editor.java:File2_EditorBuilder_a.java:File_Editor.java:File_EditorBuilder_a.java:File_InspectorBuilder_a.java:Folder_Editor.java:Folder_EditorBuilder_a.java" />
+  <files names="EditorAspectDescriptorImpl.java:File2_Editor.java:File2_EditorBuilder.java:File_Editor.java:File_EditorBuilder.java:File_InspectorBuilder.java:Folder_Editor.java:Folder_EditorBuilder.java" />
 </product>
 

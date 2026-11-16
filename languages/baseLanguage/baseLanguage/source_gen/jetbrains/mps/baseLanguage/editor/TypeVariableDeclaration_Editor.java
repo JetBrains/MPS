@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class TypeVariableDeclaration_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new TypeVariableDeclaration_EditorBuilder_a(editorContext, node).createCell();
+    return new TypeVariableDeclaration_EditorBuilder(editorContext, node).createCell();
   }
 }

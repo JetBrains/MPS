@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class NativeTypedConceptDef_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new NativeTypedConceptDef_EditorBuilder_a(editorContext, node).createCell();
+    return new NativeTypedConceptDef_EditorBuilder(editorContext, node).createCell();
   }
 }

@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class MapInitializer_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new MapInitializer_EditorBuilder_a(editorContext, node).createCell();
+    return new MapInitializer_EditorBuilder(editorContext, node).createCell();
   }
 }

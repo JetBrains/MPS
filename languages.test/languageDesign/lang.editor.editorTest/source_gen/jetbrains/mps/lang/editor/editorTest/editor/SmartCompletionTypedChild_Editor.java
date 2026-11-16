@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class SmartCompletionTypedChild_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new SmartCompletionTypedChild_EditorBuilder_a(editorContext, node).createCell();
+    return new SmartCompletionTypedChild_EditorBuilder(editorContext, node).createCell();
   }
 }

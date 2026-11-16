@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class KotlinFileClassifierType_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new KotlinFileClassifierType_EditorBuilder_a(editorContext, node).createCell();
+    return new KotlinFileClassifierType_EditorBuilder(editorContext, node).createCell();
   }
 }

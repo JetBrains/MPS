@@ -18,9 +18,9 @@ public class SuppressErrorsAnnotation_ShowSuppressedErrors_Editor extends Defaul
     return myContextHints;
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new SuppressErrorsAnnotation_ShowSuppressedErrors_EditorBuilder_a(editorContext, node).createCell();
+    return new SuppressErrorsAnnotation_ShowSuppressedErrors_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new SuppressErrorsAnnotation_ShowSuppressedErrors_InspectorBuilder_a(editorContext, node).createCell();
+    return new SuppressErrorsAnnotation_ShowSuppressedErrors_InspectorBuilder(editorContext, node).createCell();
   }
 }

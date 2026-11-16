@@ -16,6 +16,6 @@ public class _CloseTag implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new _CloseTag_ComponentBuilder_a(editorContext, node).createCell();
+    return new _CloseTag_ComponentBuilder(editorContext, node).createCell();
   }
 }

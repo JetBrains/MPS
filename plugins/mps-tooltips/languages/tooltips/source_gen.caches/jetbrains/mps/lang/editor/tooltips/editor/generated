@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="-8307z6aikkvixnyhilayz18iitpok7d">
-  <files names="AuxEditorCellWithRefToGeneratedHint_Editor.java:AuxEditorCellWithRefToGeneratedHint_EditorBuilder_a.java:AuxEditorCellWithRefToGeneratedHint_SubstituteMenu.java:CellModel_Tooltip_Editor.java:CellModel_Tooltip_EditorBuilder_a.java:CellModel_Tooltip_InspectorBuilder_a.java:EditorAspectDescriptorImpl.java" />
+  <files names="AuxEditorCellWithRefToGeneratedHint_Editor.java:AuxEditorCellWithRefToGeneratedHint_EditorBuilder.java:AuxEditorCellWithRefToGeneratedHint_SubstituteMenu.java:CellModel_Tooltip_Editor.java:CellModel_Tooltip_EditorBuilder.java:CellModel_Tooltip_InspectorBuilder.java:EditorAspectDescriptorImpl.java" />
 </product>
 

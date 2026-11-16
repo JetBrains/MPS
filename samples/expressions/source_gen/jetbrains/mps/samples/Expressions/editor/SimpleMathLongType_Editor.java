@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class SimpleMathLongType_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new SimpleMathLongType_EditorBuilder_a(editorContext, node).createCell();
+    return new SimpleMathLongType_EditorBuilder(editorContext, node).createCell();
   }
 }

@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class StartProcessHandlerStatement_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new StartProcessHandlerStatement_EditorBuilder_a(editorContext, node).createCell();
+    return new StartProcessHandlerStatement_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new StartProcessHandlerStatement_InspectorBuilder_a(editorContext, node).createCell();
+    return new StartProcessHandlerStatement_InspectorBuilder(editorContext, node).createCell();
   }
 }

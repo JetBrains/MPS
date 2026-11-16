@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="-aqf9bkvx7xoyudzn1y0dwplf5d2iqb3">
-  <files names="DummyBlock_Editor.java:DummyBlock_EditorBuilder_a.java:EditorAspectDescriptorImpl.java:ManyStatementsContainer_Editor.java:ManyStatementsContainer_EditorBuilder_a.java:ManyStatements_Editor.java:ManyStatements_EditorBuilder_a.java" />
+  <files names="DummyBlock_Editor.java:DummyBlock_EditorBuilder.java:EditorAspectDescriptorImpl.java:ManyStatementsContainer_Editor.java:ManyStatementsContainer_EditorBuilder.java:ManyStatements_Editor.java:ManyStatements_EditorBuilder.java" />
 </product>
 

@@ -17,17 +17,17 @@
   </root>
   <root nodeRef="r:94330202-b33f-456a-85ea-8a2bb978933f(jetbrains.mps.samples.multipleProjections.requestTracking.editor)/3675491646420733859">
     <file name="WorkflowContainer_Editor.java">
-      <node id="3675491646420733859" at="11,79,12,83" concept="6" />
+      <node id="3675491646420733859" at="11,79,12,81" concept="6" />
       <node id="3675491646420733859" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="3675491646420733859" at="11,79,12,83" />
+      <scope id="3675491646420733859" at="11,79,12,81" />
       <scope id="3675491646420733859" at="11,0,14,0">
         <var name="editorContext" id="3675491646420733859" />
         <var name="node" id="3675491646420733859" />
       </scope>
       <unit id="3675491646420733859" at="10,0,15,0" name="jetbrains.mps.samples.multipleProjections.requestTracking.editor.WorkflowContainer_Editor" />
     </file>
-    <file name="WorkflowContainer_EditorBuilder_a.java">
-      <node id="3675491646420733859" at="45,97,46,19" concept="8" />
+    <file name="WorkflowContainer_EditorBuilder.java">
+      <node id="3675491646420733859" at="45,95,46,19" concept="8" />
       <node id="3675491646420733859" at="46,19,47,18" concept="1" />
       <node id="3675491646420733859" at="52,26,53,18" concept="6" />
       <node id="3675491646420733859" at="56,39,57,32" concept="6" />
@@ -104,7 +104,7 @@
       <node id="3675491646420733859" at="125,0,128,0" concept="4" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="3675491646420733859" at="128,0,131,0" concept="4" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="3675491646420733859" at="172,96,175,9" concept="3" />
-      <node id="3675491646420733859" at="45,0,49,0" concept="0" trace="WorkflowContainer_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="3675491646420733859" at="45,0,49,0" concept="0" trace="WorkflowContainer_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="3675491646420733859" at="116,0,120,0" concept="0" trace="workflowsListHandler_p8hb45_c0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="3675491646420733859" at="121,0,125,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="3675491646420733859" at="154,97,158,9" concept="3" />
@@ -133,7 +133,7 @@
       <scope id="3675491646420733859" at="128,48,129,34" />
       <scope id="3675491646420733859" at="146,17,147,42" />
       <scope id="3675491646420733859" at="173,34,174,91" />
-      <scope id="3675491646420733859" at="45,97,47,18" />
+      <scope id="3675491646420733859" at="45,95,47,18" />
       <scope id="3675491646420739449" at="91,74,93,145">
         <var name="manager" id="3675491646420739449" />
       </scope>
@@ -198,26 +198,26 @@
         <var name="elementNode" id="3675491646420733859" />
         <var name="isEmptyCell" id="3675491646420733859" />
       </scope>
-      <unit id="3675491646420733859" at="180,0,183,0" name="jetbrains.mps.samples.multipleProjections.requestTracking.editor.WorkflowContainer_EditorBuilder_a$PROPS" />
-      <unit id="3675491646420733859" at="189,0,192,0" name="jetbrains.mps.samples.multipleProjections.requestTracking.editor.WorkflowContainer_EditorBuilder_a$LINKS" />
-      <unit id="3675491646420733859" at="184,0,188,0" name="jetbrains.mps.samples.multipleProjections.requestTracking.editor.WorkflowContainer_EditorBuilder_a$CONCEPTS" />
-      <unit id="3675491646420733859" at="112,0,179,0" name="jetbrains.mps.samples.multipleProjections.requestTracking.editor.WorkflowContainer_EditorBuilder_a$workflowsListHandler_p8hb45_c0" />
-      <unit id="3675491646420733859" at="41,0,193,0" name="jetbrains.mps.samples.multipleProjections.requestTracking.editor.WorkflowContainer_EditorBuilder_a" />
+      <unit id="3675491646420733859" at="180,0,183,0" name="jetbrains.mps.samples.multipleProjections.requestTracking.editor.WorkflowContainer_EditorBuilder$PROPS" />
+      <unit id="3675491646420733859" at="189,0,192,0" name="jetbrains.mps.samples.multipleProjections.requestTracking.editor.WorkflowContainer_EditorBuilder$LINKS" />
+      <unit id="3675491646420733859" at="184,0,188,0" name="jetbrains.mps.samples.multipleProjections.requestTracking.editor.WorkflowContainer_EditorBuilder$CONCEPTS" />
+      <unit id="3675491646420733859" at="112,0,179,0" name="jetbrains.mps.samples.multipleProjections.requestTracking.editor.WorkflowContainer_EditorBuilder$workflowsListHandler_p8hb45_c0" />
+      <unit id="3675491646420733859" at="41,0,193,0" name="jetbrains.mps.samples.multipleProjections.requestTracking.editor.WorkflowContainer_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:94330202-b33f-456a-85ea-8a2bb978933f(jetbrains.mps.samples.multipleProjections.requestTracking.editor)/3675491646420739356">
     <file name="Workflow_Editor.java">
-      <node id="3675491646420739356" at="11,79,12,74" concept="6" />
+      <node id="3675491646420739356" at="11,79,12,72" concept="6" />
       <node id="3675491646420739356" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="3675491646420739356" at="11,79,12,74" />
+      <scope id="3675491646420739356" at="11,79,12,72" />
       <scope id="3675491646420739356" at="11,0,14,0">
         <var name="editorContext" id="3675491646420739356" />
         <var name="node" id="3675491646420739356" />
       </scope>
       <unit id="3675491646420739356" at="10,0,15,0" name="jetbrains.mps.samples.multipleProjections.requestTracking.editor.Workflow_Editor" />
     </file>
-    <file name="Workflow_EditorBuilder_a.java">
-      <node id="3675491646420739356" at="48,88,49,19" concept="8" />
+    <file name="Workflow_EditorBuilder.java">
+      <node id="3675491646420739356" at="48,86,49,19" concept="8" />
       <node id="3675491646420739356" at="49,19,50,18" concept="1" />
       <node id="3675491646420739356" at="55,26,56,18" concept="6" />
       <node id="3675491646420739356" at="59,39,60,32" concept="6" />
@@ -314,7 +314,7 @@
       <node id="3675491646420739356" at="171,87,174,7" concept="3" />
       <node id="3675491646420739356" at="174,7,177,7" concept="3" />
       <node id="3675491646420739356" at="196,0,199,0" concept="4" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="3675491646420739356" at="48,0,52,0" concept="0" trace="Workflow_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="3675491646420739356" at="48,0,52,0" concept="0" trace="Workflow_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="3675491646420739356" at="142,0,146,0" concept="4" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="3675491646420739356" at="150,0,154,0" concept="0" trace="stateMachineSingleRoleHandler_yhw0dy_a3a#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="3675491646420739356" at="53,0,58,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -345,7 +345,7 @@
       <scope id="3675491646420739356" at="175,42,176,53" />
       <scope id="3675491646420739356" at="192,17,193,42" />
       <scope id="3675491646420739356" at="196,40,197,33" />
-      <scope id="3675491646420739356" at="48,88,50,18" />
+      <scope id="3675491646420739356" at="48,86,50,18" />
       <scope id="3675491646420872302" at="87,74,89,145">
         <var name="manager" id="3675491646420872302" />
       </scope>
@@ -424,11 +424,11 @@
       <scope id="3675491646420872302" at="75,0,96,0" />
       <scope id="3675491646420739361" at="102,41,124,5" />
       <scope id="3675491646420739361" at="102,0,126,0" />
-      <unit id="3675491646420739356" at="212,0,215,0" name="jetbrains.mps.samples.multipleProjections.requestTracking.editor.Workflow_EditorBuilder_a$CONCEPTS" />
-      <unit id="3675491646420739356" at="216,0,219,0" name="jetbrains.mps.samples.multipleProjections.requestTracking.editor.Workflow_EditorBuilder_a$LINKS" />
-      <unit id="3675491646420739356" at="207,0,211,0" name="jetbrains.mps.samples.multipleProjections.requestTracking.editor.Workflow_EditorBuilder_a$PROPS" />
-      <unit id="3675491646420739356" at="146,0,200,0" name="jetbrains.mps.samples.multipleProjections.requestTracking.editor.Workflow_EditorBuilder_a$stateMachineSingleRoleHandler_yhw0dy_a3a" />
-      <unit id="3675491646420739356" at="44,0,220,0" name="jetbrains.mps.samples.multipleProjections.requestTracking.editor.Workflow_EditorBuilder_a" />
+      <unit id="3675491646420739356" at="212,0,215,0" name="jetbrains.mps.samples.multipleProjections.requestTracking.editor.Workflow_EditorBuilder$CONCEPTS" />
+      <unit id="3675491646420739356" at="216,0,219,0" name="jetbrains.mps.samples.multipleProjections.requestTracking.editor.Workflow_EditorBuilder$LINKS" />
+      <unit id="3675491646420739356" at="207,0,211,0" name="jetbrains.mps.samples.multipleProjections.requestTracking.editor.Workflow_EditorBuilder$PROPS" />
+      <unit id="3675491646420739356" at="146,0,200,0" name="jetbrains.mps.samples.multipleProjections.requestTracking.editor.Workflow_EditorBuilder$stateMachineSingleRoleHandler_yhw0dy_a3a" />
+      <unit id="3675491646420739356" at="44,0,220,0" name="jetbrains.mps.samples.multipleProjections.requestTracking.editor.Workflow_EditorBuilder" />
     </file>
   </root>
 </debug-info>

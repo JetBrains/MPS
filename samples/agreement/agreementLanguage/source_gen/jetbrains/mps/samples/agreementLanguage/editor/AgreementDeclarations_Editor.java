@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class AgreementDeclarations_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new AgreementDeclarations_EditorBuilder_a(editorContext, node).createCell();
+    return new AgreementDeclarations_EditorBuilder(editorContext, node).createCell();
   }
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="85mpaj1ew676uin2g94bzkvfz5usivx">
-  <files names="EditorAspectDescriptorImpl.java:Field_Editor.java:Field_EditorBuilder_a.java:Mapping_Editor.java:Mapping_EditorBuilder_a.java:ReaderConfiguration_Editor.java:ReaderConfiguration_EditorBuilder_a.java" />
+  <files names="EditorAspectDescriptorImpl.java:Field_Editor.java:Field_EditorBuilder.java:Mapping_Editor.java:Mapping_EditorBuilder.java:ReaderConfiguration_Editor.java:ReaderConfiguration_EditorBuilder.java" />
 </product>
 

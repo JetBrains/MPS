@@ -18,17 +18,17 @@
   </root>
   <root nodeRef="r:908dfefb-9454-4702-8da4-1ce2a1dc1656(jetbrains.mps.lang.feedback.problem.editor)/24399255755751876">
     <file name="ProblemKind_Editor.java">
-      <node id="24399255755751876" at="11,79,12,77" concept="6" />
+      <node id="24399255755751876" at="11,79,12,75" concept="6" />
       <node id="24399255755751876" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="24399255755751876" at="11,79,12,77" />
+      <scope id="24399255755751876" at="11,79,12,75" />
       <scope id="24399255755751876" at="11,0,14,0">
         <var name="editorContext" id="24399255755751876" />
         <var name="node" id="24399255755751876" />
       </scope>
       <unit id="24399255755751876" at="10,0,15,0" name="jetbrains.mps.lang.feedback.problem.editor.ProblemKind_Editor" />
     </file>
-    <file name="ProblemKind_EditorBuilder_a.java">
-      <node id="24399255755751876" at="50,91,51,19" concept="9" />
+    <file name="ProblemKind_EditorBuilder.java">
+      <node id="24399255755751876" at="50,89,51,19" concept="9" />
       <node id="24399255755751876" at="51,19,52,18" concept="1" />
       <node id="24399255755751876" at="57,26,58,18" concept="6" />
       <node id="24399255755751876" at="61,39,62,32" concept="6" />
@@ -135,7 +135,7 @@
       <node id="24399255755751943" at="187,0,190,0" concept="4" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="24399255755751943" at="190,0,193,0" concept="4" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="24399255755751943" at="234,98,237,11" concept="3" />
-      <node id="24399255755751876" at="50,0,54,0" concept="0" trace="ProblemKind_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="24399255755751876" at="50,0,54,0" concept="0" trace="ProblemKind_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="693143365153253893" at="106,0,110,0" concept="4" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="24399255755751876" at="122,63,126,5" concept="3" />
       <node id="24399255755751943" at="178,0,182,0" concept="0" trace="defsListHandler_fd2qmk_a0a3a#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
@@ -175,7 +175,7 @@
       <scope id="24399255755751943" at="190,50,191,37" />
       <scope id="24399255755751943" at="208,19,209,44" />
       <scope id="24399255755751943" at="235,36,236,93" />
-      <scope id="24399255755751876" at="50,91,52,18" />
+      <scope id="24399255755751876" at="50,89,52,18" />
       <scope id="7291380803376071477" at="97,74,99,145">
         <var name="manager" id="7291380803376071477" />
       </scope>
@@ -274,13 +274,13 @@
         <var name="style" id="24399255755751876" />
       </scope>
       <scope id="24399255755751876" at="110,0,140,0" />
-      <unit id="24399255755751876" at="243,0,246,0" name="jetbrains.mps.lang.feedback.problem.editor.ProblemKind_EditorBuilder_a$PROPS" />
-      <unit id="24399255755751876" at="253,0,257,0" name="jetbrains.mps.lang.feedback.problem.editor.ProblemKind_EditorBuilder_a$LINKS" />
-      <unit id="24399255755751876" at="247,0,252,0" name="jetbrains.mps.lang.feedback.problem.editor.ProblemKind_EditorBuilder_a$CONCEPTS" />
-      <unit id="24399255755751876" at="111,40,119,5" name="jetbrains.mps.lang.feedback.problem.editor.ProblemKind_EditorBuilder_a$1" />
-      <unit id="24399255755751943" at="174,0,241,0" name="jetbrains.mps.lang.feedback.problem.editor.ProblemKind_EditorBuilder_a$Inline_Builder0$defsListHandler_fd2qmk_a0a3a" />
-      <unit id="24399255755751943" at="140,0,242,0" name="jetbrains.mps.lang.feedback.problem.editor.ProblemKind_EditorBuilder_a$Inline_Builder0" />
-      <unit id="24399255755751876" at="46,0,258,0" name="jetbrains.mps.lang.feedback.problem.editor.ProblemKind_EditorBuilder_a" />
+      <unit id="24399255755751876" at="243,0,246,0" name="jetbrains.mps.lang.feedback.problem.editor.ProblemKind_EditorBuilder$PROPS" />
+      <unit id="24399255755751876" at="253,0,257,0" name="jetbrains.mps.lang.feedback.problem.editor.ProblemKind_EditorBuilder$LINKS" />
+      <unit id="24399255755751876" at="247,0,252,0" name="jetbrains.mps.lang.feedback.problem.editor.ProblemKind_EditorBuilder$CONCEPTS" />
+      <unit id="24399255755751876" at="111,40,119,5" name="jetbrains.mps.lang.feedback.problem.editor.ProblemKind_EditorBuilder$1" />
+      <unit id="24399255755751943" at="174,0,241,0" name="jetbrains.mps.lang.feedback.problem.editor.ProblemKind_EditorBuilder$Inline_Builder0$defsListHandler_fd2qmk_a0a3a" />
+      <unit id="24399255755751943" at="140,0,242,0" name="jetbrains.mps.lang.feedback.problem.editor.ProblemKind_EditorBuilder$Inline_Builder0" />
+      <unit id="24399255755751876" at="46,0,258,0" name="jetbrains.mps.lang.feedback.problem.editor.ProblemKind_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:908dfefb-9454-4702-8da4-1ce2a1dc1656(jetbrains.mps.lang.feedback.problem.editor)/24399255755751902">
@@ -307,11 +307,11 @@
   <root nodeRef="r:908dfefb-9454-4702-8da4-1ce2a1dc1656(jetbrains.mps.lang.feedback.problem.editor)/693143365153253883">
     <file name="paremeterized_with_type.java">
       <node id="693143365153253883" at="15,47,16,35" concept="6" />
-      <node id="693143365153253883" at="18,79,19,92" concept="6" />
+      <node id="693143365153253883" at="18,79,19,90" concept="6" />
       <node id="693143365153253883" at="18,0,21,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="693143365153253883" at="14,0,18,0" concept="4" trace="getContextHints#()Ljava/util/Collection;" />
       <scope id="693143365153253883" at="15,47,16,35" />
-      <scope id="693143365153253883" at="18,79,19,92" />
+      <scope id="693143365153253883" at="18,79,19,90" />
       <scope id="693143365153253883" at="18,0,21,0">
         <var name="editorContext" id="693143365153253883" />
         <var name="node" id="693143365153253883" />
@@ -319,8 +319,8 @@
       <scope id="693143365153253883" at="14,0,18,0" />
       <unit id="693143365153253883" at="13,0,22,0" name="jetbrains.mps.lang.feedback.problem.editor.paremeterized_with_type" />
     </file>
-    <file name="paremeterized_with_type_ComponentBuilder_a.java">
-      <node id="693143365153253883" at="32,106,33,19" concept="9" />
+    <file name="paremeterized_with_type_ComponentBuilder.java">
+      <node id="693143365153253883" at="32,104,33,19" concept="9" />
       <node id="693143365153253883" at="33,19,34,18" concept="1" />
       <node id="693143365153253883" at="39,26,40,18" concept="6" />
       <node id="693143365153253883" at="43,39,44,32" concept="6" />
@@ -388,7 +388,7 @@
       <node id="693143365153253888" at="141,89,144,9" concept="3" />
       <node id="693143365153253888" at="144,9,147,9" concept="3" />
       <node id="693143365153253888" at="163,0,166,0" concept="4" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="693143365153253883" at="32,0,36,0" concept="0" trace="paremeterized_with_type_ComponentBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="693143365153253883" at="32,0,36,0" concept="0" trace="paremeterized_with_type_ComponentBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="693143365153253883" at="72,63,76,5" concept="3" />
       <node id="693143365153253888" at="112,0,116,0" concept="4" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="693143365153253888" at="120,0,124,0" concept="0" trace="conceptParameterSingleRoleHandler_gy2khw_a0a1a#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
@@ -416,7 +416,7 @@
       <scope id="693143365153253888" at="145,44,146,59" />
       <scope id="693143365153253888" at="159,19,160,44" />
       <scope id="693143365153253888" at="163,42,164,39" />
-      <scope id="693143365153253883" at="32,106,34,18" />
+      <scope id="693143365153253883" at="32,104,34,18" />
       <scope id="693143365153253883" at="73,40,75,46" />
       <scope id="693143365153253883" at="79,35,81,112">
         <var name="manager" id="693143365153253883" />
@@ -490,22 +490,22 @@
         <var name="provider" id="693143365153253883" />
       </scope>
       <scope id="693143365153253883" at="60,0,85,0" />
-      <unit id="693143365153253883" at="174,0,177,0" name="jetbrains.mps.lang.feedback.problem.editor.paremeterized_with_type_ComponentBuilder_a$CONCEPTS" />
-      <unit id="693143365153253883" at="169,0,173,0" name="jetbrains.mps.lang.feedback.problem.editor.paremeterized_with_type_ComponentBuilder_a$LINKS" />
-      <unit id="693143365153253883" at="61,40,69,5" name="jetbrains.mps.lang.feedback.problem.editor.paremeterized_with_type_ComponentBuilder_a$1" />
-      <unit id="693143365153253888" at="116,0,167,0" name="jetbrains.mps.lang.feedback.problem.editor.paremeterized_with_type_ComponentBuilder_a$Inline_Builder0$conceptParameterSingleRoleHandler_gy2khw_a0a1a" />
-      <unit id="693143365153253888" at="85,0,168,0" name="jetbrains.mps.lang.feedback.problem.editor.paremeterized_with_type_ComponentBuilder_a$Inline_Builder0" />
-      <unit id="693143365153253883" at="28,0,178,0" name="jetbrains.mps.lang.feedback.problem.editor.paremeterized_with_type_ComponentBuilder_a" />
+      <unit id="693143365153253883" at="174,0,177,0" name="jetbrains.mps.lang.feedback.problem.editor.paremeterized_with_type_ComponentBuilder$CONCEPTS" />
+      <unit id="693143365153253883" at="169,0,173,0" name="jetbrains.mps.lang.feedback.problem.editor.paremeterized_with_type_ComponentBuilder$LINKS" />
+      <unit id="693143365153253883" at="61,40,69,5" name="jetbrains.mps.lang.feedback.problem.editor.paremeterized_with_type_ComponentBuilder$1" />
+      <unit id="693143365153253888" at="116,0,167,0" name="jetbrains.mps.lang.feedback.problem.editor.paremeterized_with_type_ComponentBuilder$Inline_Builder0$conceptParameterSingleRoleHandler_gy2khw_a0a1a" />
+      <unit id="693143365153253888" at="85,0,168,0" name="jetbrains.mps.lang.feedback.problem.editor.paremeterized_with_type_ComponentBuilder$Inline_Builder0" />
+      <unit id="693143365153253883" at="28,0,178,0" name="jetbrains.mps.lang.feedback.problem.editor.paremeterized_with_type_ComponentBuilder" />
     </file>
   </root>
   <root nodeRef="r:908dfefb-9454-4702-8da4-1ce2a1dc1656(jetbrains.mps.lang.feedback.problem.editor)/7574732359718316426">
     <file name="ProblemPointsToKindRoot_Editor.java">
-      <node id="7574732359718316426" at="11,79,12,89" concept="6" />
-      <node id="7574732359718316426" at="14,82,15,92" concept="6" />
+      <node id="7574732359718316426" at="11,79,12,87" concept="6" />
+      <node id="7574732359718316426" at="14,82,15,90" concept="6" />
       <node id="7574732359718316426" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="7574732359718316426" at="14,0,17,0" concept="4" trace="createInspectedCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="7574732359718316426" at="11,79,12,89" />
-      <scope id="7574732359718316426" at="14,82,15,92" />
+      <scope id="7574732359718316426" at="11,79,12,87" />
+      <scope id="7574732359718316426" at="14,82,15,90" />
       <scope id="7574732359718316426" at="11,0,14,0">
         <var name="editorContext" id="7574732359718316426" />
         <var name="node" id="7574732359718316426" />
@@ -516,8 +516,8 @@
       </scope>
       <unit id="7574732359718316426" at="10,0,18,0" name="jetbrains.mps.lang.feedback.problem.editor.ProblemPointsToKindRoot_Editor" />
     </file>
-    <file name="ProblemPointsToKindRoot_EditorBuilder_a.java">
-      <node id="7574732359718316426" at="17,103,18,19" concept="9" />
+    <file name="ProblemPointsToKindRoot_EditorBuilder.java">
+      <node id="7574732359718316426" at="17,101,18,19" concept="9" />
       <node id="7574732359718316426" at="18,19,19,18" concept="1" />
       <node id="7574732359718316426" at="24,26,25,18" concept="6" />
       <node id="7574732359718316426" at="28,39,29,32" concept="6" />
@@ -531,13 +531,13 @@
       <node id="3899121472971925651" at="41,119,42,22" concept="6" />
       <node id="7574732359718316426" at="14,0,16,0" concept="2" trace="myNode" />
       <node id="7574732359718316426" at="28,0,31,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="7574732359718316426" at="17,0,21,0" concept="0" trace="ProblemPointsToKindRoot_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="7574732359718316426" at="17,0,21,0" concept="0" trace="ProblemPointsToKindRoot_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="3899121472971925651" at="40,0,44,0" concept="4" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="7574732359718316426" at="22,0,27,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="7574732359718316426" at="32,0,40,0" concept="4" trace="createCollection_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="7574732359718316426" at="24,26,25,18" />
       <scope id="7574732359718316426" at="28,39,29,32" />
-      <scope id="7574732359718316426" at="17,103,19,18" />
+      <scope id="7574732359718316426" at="17,101,19,18" />
       <scope id="3899121472971925651" at="40,42,42,22">
         <var name="editorCell" id="3899121472971925651" />
       </scope>
@@ -552,10 +552,10 @@
         <var name="editorCell" id="7574732359718316426" />
       </scope>
       <scope id="7574732359718316426" at="32,0,40,0" />
-      <unit id="7574732359718316426" at="13,0,45,0" name="jetbrains.mps.lang.feedback.problem.editor.ProblemPointsToKindRoot_EditorBuilder_a" />
+      <unit id="7574732359718316426" at="13,0,45,0" name="jetbrains.mps.lang.feedback.problem.editor.ProblemPointsToKindRoot_EditorBuilder" />
     </file>
-    <file name="ProblemPointsToKindRoot_InspectorBuilder_a.java">
-      <node id="7574732359718316426" at="44,106,45,19" concept="9" />
+    <file name="ProblemPointsToKindRoot_InspectorBuilder.java">
+      <node id="7574732359718316426" at="44,104,45,19" concept="9" />
       <node id="7574732359718316426" at="45,19,46,18" concept="1" />
       <node id="7574732359718316426" at="51,26,52,18" concept="6" />
       <node id="7574732359718316426" at="55,39,56,32" concept="6" />
@@ -626,7 +626,7 @@
       <node id="2554379189374329855" at="113,0,115,0" concept="2" trace="myNode" />
       <node id="7574732359718316426" at="55,0,58,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="2554379189374329855" at="123,0,126,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="7574732359718316426" at="44,0,48,0" concept="0" trace="ProblemPointsToKindRoot_InspectorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="7574732359718316426" at="44,0,48,0" concept="0" trace="ProblemPointsToKindRoot_InspectorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="7574732359718316426" at="95,0,99,5" concept="3" />
       <node id="7574732359718316426" at="49,0,54,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="7574732359718316426" at="105,205,110,22" concept="3" />
@@ -646,7 +646,7 @@
       <scope id="2554379189374329855" at="123,41,124,32" />
       <scope id="2554379189374329855" at="129,28,130,20" />
       <scope id="2554379189374329856" at="153,17,154,42" />
-      <scope id="7574732359718316426" at="44,106,46,18" />
+      <scope id="7574732359718316426" at="44,104,46,18" />
       <scope id="7574732359718316426" at="96,40,98,43" />
       <scope id="7574732359718316426" at="106,73,108,145">
         <var name="manager" id="7574732359718316426" />
@@ -706,12 +706,12 @@
         <var name="style" id="7574732359718316426" />
       </scope>
       <scope id="7574732359718316426" at="74,0,112,0" />
-      <unit id="7574732359718316426" at="159,0,162,0" name="jetbrains.mps.lang.feedback.problem.editor.ProblemPointsToKindRoot_InspectorBuilder_a$LINKS" />
-      <unit id="7574732359718316426" at="168,0,171,0" name="jetbrains.mps.lang.feedback.problem.editor.ProblemPointsToKindRoot_InspectorBuilder_a$PROPS" />
-      <unit id="7574732359718316426" at="163,0,167,0" name="jetbrains.mps.lang.feedback.problem.editor.ProblemPointsToKindRoot_InspectorBuilder_a$CONCEPTS" />
-      <unit id="7574732359718316426" at="76,42,91,5" name="jetbrains.mps.lang.feedback.problem.editor.ProblemPointsToKindRoot_InspectorBuilder_a$1" />
-      <unit id="2554379189374329855" at="112,0,158,0" name="jetbrains.mps.lang.feedback.problem.editor.ProblemPointsToKindRoot_InspectorBuilder_a$Inline_Builder0" />
-      <unit id="7574732359718316426" at="40,0,172,0" name="jetbrains.mps.lang.feedback.problem.editor.ProblemPointsToKindRoot_InspectorBuilder_a" />
+      <unit id="7574732359718316426" at="159,0,162,0" name="jetbrains.mps.lang.feedback.problem.editor.ProblemPointsToKindRoot_InspectorBuilder$LINKS" />
+      <unit id="7574732359718316426" at="168,0,171,0" name="jetbrains.mps.lang.feedback.problem.editor.ProblemPointsToKindRoot_InspectorBuilder$PROPS" />
+      <unit id="7574732359718316426" at="163,0,167,0" name="jetbrains.mps.lang.feedback.problem.editor.ProblemPointsToKindRoot_InspectorBuilder$CONCEPTS" />
+      <unit id="7574732359718316426" at="76,42,91,5" name="jetbrains.mps.lang.feedback.problem.editor.ProblemPointsToKindRoot_InspectorBuilder$1" />
+      <unit id="2554379189374329855" at="112,0,158,0" name="jetbrains.mps.lang.feedback.problem.editor.ProblemPointsToKindRoot_InspectorBuilder$Inline_Builder0" />
+      <unit id="7574732359718316426" at="40,0,172,0" name="jetbrains.mps.lang.feedback.problem.editor.ProblemPointsToKindRoot_InspectorBuilder" />
     </file>
   </root>
   <root nodeRef="r:908dfefb-9454-4702-8da4-1ce2a1dc1656(jetbrains.mps.lang.feedback.problem.editor)/7716791493893615836">

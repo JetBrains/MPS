@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class SortDirection_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new SortDirection_EditorBuilder_a(editorContext, node).createCell();
+    return new SortDirection_EditorBuilder(editorContext, node).createCell();
   }
 }

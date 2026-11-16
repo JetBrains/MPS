@@ -16,6 +16,6 @@ public class Property_Default implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new Property_Default_ComponentBuilder_a(editorContext, node).createCell();
+    return new Property_Default_ComponentBuilder(editorContext, node).createCell();
   }
 }

@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class TypeProjection_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new TypeProjection_EditorBuilder_a(editorContext, node).createCell();
+    return new TypeProjection_EditorBuilder(editorContext, node).createCell();
   }
 }

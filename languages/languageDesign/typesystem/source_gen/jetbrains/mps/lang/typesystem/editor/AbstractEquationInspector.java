@@ -16,6 +16,6 @@ public class AbstractEquationInspector implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new AbstractEquationInspector_ComponentBuilder_a(editorContext, node).createCell();
+    return new AbstractEquationInspector_ComponentBuilder(editorContext, node).createCell();
   }
 }

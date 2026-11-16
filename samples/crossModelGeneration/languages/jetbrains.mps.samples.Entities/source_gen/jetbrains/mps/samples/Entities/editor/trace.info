@@ -25,17 +25,17 @@
   </root>
   <root nodeRef="r:b9045035-fa47-4278-b3d0-1c7995da53ee(jetbrains.mps.samples.Entities.editor)/4053600266038192388">
     <file name="Entity_Editor.java">
-      <node id="4053600266038192388" at="11,79,12,72" concept="6" />
+      <node id="4053600266038192388" at="11,79,12,70" concept="6" />
       <node id="4053600266038192388" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4053600266038192388" at="11,79,12,72" />
+      <scope id="4053600266038192388" at="11,79,12,70" />
       <scope id="4053600266038192388" at="11,0,14,0">
         <var name="editorContext" id="4053600266038192388" />
         <var name="node" id="4053600266038192388" />
       </scope>
       <unit id="4053600266038192388" at="10,0,15,0" name="jetbrains.mps.samples.Entities.editor.Entity_Editor" />
     </file>
-    <file name="Entity_EditorBuilder_a.java">
-      <node id="4053600266038192388" at="45,86,46,19" concept="9" />
+    <file name="Entity_EditorBuilder.java">
+      <node id="4053600266038192388" at="45,84,46,19" concept="9" />
       <node id="4053600266038192388" at="46,19,47,18" concept="1" />
       <node id="4053600266038192388" at="52,26,53,18" concept="6" />
       <node id="4053600266038192388" at="56,39,57,32" concept="6" />
@@ -111,7 +111,7 @@
       <node id="4053600266038192388" at="124,0,127,0" concept="4" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="4053600266038192388" at="127,0,130,0" concept="4" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="4053600266038192388" at="171,96,174,9" concept="3" />
-      <node id="4053600266038192388" at="45,0,49,0" concept="0" trace="Entity_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4053600266038192388" at="45,0,49,0" concept="0" trace="Entity_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4053600266038192388" at="115,0,119,0" concept="0" trace="relationshipsListHandler_n4nctg_c0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="4053600266038192388" at="120,0,124,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="4053600266038192388" at="153,97,157,9" concept="3" />
@@ -140,7 +140,7 @@
       <scope id="4053600266038192388" at="127,48,128,38" />
       <scope id="4053600266038192388" at="145,17,146,42" />
       <scope id="4053600266038192388" at="172,34,173,91" />
-      <scope id="4053600266038192388" at="45,86,47,18" />
+      <scope id="4053600266038192388" at="45,84,47,18" />
       <scope id="4053600266038192407" at="91,74,93,145">
         <var name="manager" id="4053600266038192407" />
       </scope>
@@ -205,26 +205,26 @@
         <var name="elementNode" id="4053600266038192388" />
         <var name="isEmptyCell" id="4053600266038192388" />
       </scope>
-      <unit id="4053600266038192388" at="179,0,182,0" name="jetbrains.mps.samples.Entities.editor.Entity_EditorBuilder_a$PROPS" />
-      <unit id="4053600266038192388" at="188,0,191,0" name="jetbrains.mps.samples.Entities.editor.Entity_EditorBuilder_a$LINKS" />
-      <unit id="4053600266038192388" at="183,0,187,0" name="jetbrains.mps.samples.Entities.editor.Entity_EditorBuilder_a$CONCEPTS" />
-      <unit id="4053600266038192388" at="111,0,178,0" name="jetbrains.mps.samples.Entities.editor.Entity_EditorBuilder_a$relationshipsListHandler_n4nctg_c0" />
-      <unit id="4053600266038192388" at="41,0,192,0" name="jetbrains.mps.samples.Entities.editor.Entity_EditorBuilder_a" />
+      <unit id="4053600266038192388" at="179,0,182,0" name="jetbrains.mps.samples.Entities.editor.Entity_EditorBuilder$PROPS" />
+      <unit id="4053600266038192388" at="188,0,191,0" name="jetbrains.mps.samples.Entities.editor.Entity_EditorBuilder$LINKS" />
+      <unit id="4053600266038192388" at="183,0,187,0" name="jetbrains.mps.samples.Entities.editor.Entity_EditorBuilder$CONCEPTS" />
+      <unit id="4053600266038192388" at="111,0,178,0" name="jetbrains.mps.samples.Entities.editor.Entity_EditorBuilder$relationshipsListHandler_n4nctg_c0" />
+      <unit id="4053600266038192388" at="41,0,192,0" name="jetbrains.mps.samples.Entities.editor.Entity_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:b9045035-fa47-4278-b3d0-1c7995da53ee(jetbrains.mps.samples.Entities.editor)/4053600266038192439">
     <file name="EntityReference_Editor.java">
-      <node id="4053600266038192439" at="11,79,12,81" concept="6" />
+      <node id="4053600266038192439" at="11,79,12,79" concept="6" />
       <node id="4053600266038192439" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4053600266038192439" at="11,79,12,81" />
+      <scope id="4053600266038192439" at="11,79,12,79" />
       <scope id="4053600266038192439" at="11,0,14,0">
         <var name="editorContext" id="4053600266038192439" />
         <var name="node" id="4053600266038192439" />
       </scope>
       <unit id="4053600266038192439" at="10,0,15,0" name="jetbrains.mps.samples.Entities.editor.EntityReference_Editor" />
     </file>
-    <file name="EntityReference_EditorBuilder_a.java">
-      <node id="4053600266038192439" at="43,95,44,19" concept="9" />
+    <file name="EntityReference_EditorBuilder.java">
+      <node id="4053600266038192439" at="43,93,44,19" concept="9" />
       <node id="4053600266038192439" at="44,19,45,18" concept="1" />
       <node id="4053600266038192439" at="50,26,51,18" concept="6" />
       <node id="4053600266038192439" at="54,39,55,32" concept="6" />
@@ -287,7 +287,7 @@
       <node id="4053600266038192443" at="102,0,104,0" concept="2" trace="myNode" />
       <node id="4053600266038192439" at="54,0,57,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4053600266038192443" at="112,0,115,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="4053600266038192439" at="43,0,47,0" concept="0" trace="EntityReference_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4053600266038192439" at="43,0,47,0" concept="0" trace="EntityReference_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4053600266038192439" at="87,0,91,5" concept="3" />
       <node id="4053600266038192439" at="48,0,53,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="4053600266038192439" at="94,205,99,22" concept="3" />
@@ -306,7 +306,7 @@
       <scope id="4053600266038192443" at="112,41,113,32" />
       <scope id="4053600266038192443" at="118,28,119,20" />
       <scope id="4053600266038192453" at="142,17,143,42" />
-      <scope id="4053600266038192439" at="43,95,45,18" />
+      <scope id="4053600266038192439" at="43,93,45,18" />
       <scope id="4053600266038192439" at="88,40,90,45" />
       <scope id="4053600266038192439" at="95,73,97,145">
         <var name="manager" id="4053600266038192439" />
@@ -361,27 +361,27 @@
         <var name="referenceLink" id="4053600266038192439" />
       </scope>
       <scope id="4053600266038192439" at="66,0,101,0" />
-      <unit id="4053600266038192439" at="148,0,151,0" name="jetbrains.mps.samples.Entities.editor.EntityReference_EditorBuilder_a$LINKS" />
-      <unit id="4053600266038192439" at="157,0,160,0" name="jetbrains.mps.samples.Entities.editor.EntityReference_EditorBuilder_a$PROPS" />
-      <unit id="4053600266038192439" at="152,0,156,0" name="jetbrains.mps.samples.Entities.editor.EntityReference_EditorBuilder_a$CONCEPTS" />
-      <unit id="4053600266038192439" at="68,42,83,5" name="jetbrains.mps.samples.Entities.editor.EntityReference_EditorBuilder_a$1" />
-      <unit id="4053600266038192443" at="101,0,147,0" name="jetbrains.mps.samples.Entities.editor.EntityReference_EditorBuilder_a$Inline_Builder0" />
-      <unit id="4053600266038192439" at="39,0,161,0" name="jetbrains.mps.samples.Entities.editor.EntityReference_EditorBuilder_a" />
+      <unit id="4053600266038192439" at="148,0,151,0" name="jetbrains.mps.samples.Entities.editor.EntityReference_EditorBuilder$LINKS" />
+      <unit id="4053600266038192439" at="157,0,160,0" name="jetbrains.mps.samples.Entities.editor.EntityReference_EditorBuilder$PROPS" />
+      <unit id="4053600266038192439" at="152,0,156,0" name="jetbrains.mps.samples.Entities.editor.EntityReference_EditorBuilder$CONCEPTS" />
+      <unit id="4053600266038192439" at="68,42,83,5" name="jetbrains.mps.samples.Entities.editor.EntityReference_EditorBuilder$1" />
+      <unit id="4053600266038192443" at="101,0,147,0" name="jetbrains.mps.samples.Entities.editor.EntityReference_EditorBuilder$Inline_Builder0" />
+      <unit id="4053600266038192439" at="39,0,161,0" name="jetbrains.mps.samples.Entities.editor.EntityReference_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:b9045035-fa47-4278-b3d0-1c7995da53ee(jetbrains.mps.samples.Entities.editor)/4053600266038195195">
     <file name="Relationship_Editor.java">
-      <node id="4053600266038195195" at="11,79,12,78" concept="6" />
+      <node id="4053600266038195195" at="11,79,12,76" concept="6" />
       <node id="4053600266038195195" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4053600266038195195" at="11,79,12,78" />
+      <scope id="4053600266038195195" at="11,79,12,76" />
       <scope id="4053600266038195195" at="11,0,14,0">
         <var name="editorContext" id="4053600266038195195" />
         <var name="node" id="4053600266038195195" />
       </scope>
       <unit id="4053600266038195195" at="10,0,15,0" name="jetbrains.mps.samples.Entities.editor.Relationship_Editor" />
     </file>
-    <file name="Relationship_EditorBuilder_a.java">
-      <node id="4053600266038195195" at="40,92,41,19" concept="9" />
+    <file name="Relationship_EditorBuilder.java">
+      <node id="4053600266038195195" at="40,90,41,19" concept="9" />
       <node id="4053600266038195195" at="41,19,42,18" concept="1" />
       <node id="4053600266038195195" at="47,26,48,18" concept="6" />
       <node id="4053600266038195195" at="51,39,52,32" concept="6" />
@@ -441,7 +441,7 @@
       <node id="4053600266038195195" at="121,87,124,7" concept="3" />
       <node id="4053600266038195195" at="124,7,127,7" concept="3" />
       <node id="4053600266038195195" at="143,0,146,0" concept="4" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="4053600266038195195" at="40,0,44,0" concept="0" trace="Relationship_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4053600266038195195" at="40,0,44,0" concept="0" trace="Relationship_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4053600266038195195" at="92,0,96,0" concept="4" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4053600266038195195" at="100,0,104,0" concept="0" trace="referenceSingleRoleHandler_i4eze2_c0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="4053600266038195195" at="45,0,50,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -463,7 +463,7 @@
       <scope id="4053600266038195195" at="125,42,126,50" />
       <scope id="4053600266038195195" at="139,17,140,42" />
       <scope id="4053600266038195195" at="143,40,144,30" />
-      <scope id="4053600266038195195" at="40,92,42,18" />
+      <scope id="4053600266038195195" at="40,90,42,18" />
       <scope id="4053600266038195204" at="77,74,79,145">
         <var name="manager" id="4053600266038195204" />
       </scope>
@@ -518,11 +518,11 @@
       <scope id="4053600266038195195" at="129,0,143,0" />
       <scope id="4053600266038195204" at="65,41,84,5" />
       <scope id="4053600266038195204" at="65,0,86,0" />
-      <unit id="4053600266038195195" at="148,0,151,0" name="jetbrains.mps.samples.Entities.editor.Relationship_EditorBuilder_a$PROPS" />
-      <unit id="4053600266038195195" at="152,0,155,0" name="jetbrains.mps.samples.Entities.editor.Relationship_EditorBuilder_a$CONCEPTS" />
-      <unit id="4053600266038195195" at="156,0,159,0" name="jetbrains.mps.samples.Entities.editor.Relationship_EditorBuilder_a$LINKS" />
-      <unit id="4053600266038195195" at="96,0,147,0" name="jetbrains.mps.samples.Entities.editor.Relationship_EditorBuilder_a$referenceSingleRoleHandler_i4eze2_c0" />
-      <unit id="4053600266038195195" at="36,0,160,0" name="jetbrains.mps.samples.Entities.editor.Relationship_EditorBuilder_a" />
+      <unit id="4053600266038195195" at="148,0,151,0" name="jetbrains.mps.samples.Entities.editor.Relationship_EditorBuilder$PROPS" />
+      <unit id="4053600266038195195" at="152,0,155,0" name="jetbrains.mps.samples.Entities.editor.Relationship_EditorBuilder$CONCEPTS" />
+      <unit id="4053600266038195195" at="156,0,159,0" name="jetbrains.mps.samples.Entities.editor.Relationship_EditorBuilder$LINKS" />
+      <unit id="4053600266038195195" at="96,0,147,0" name="jetbrains.mps.samples.Entities.editor.Relationship_EditorBuilder$referenceSingleRoleHandler_i4eze2_c0" />
+      <unit id="4053600266038195195" at="36,0,160,0" name="jetbrains.mps.samples.Entities.editor.Relationship_EditorBuilder" />
     </file>
   </root>
 </debug-info>

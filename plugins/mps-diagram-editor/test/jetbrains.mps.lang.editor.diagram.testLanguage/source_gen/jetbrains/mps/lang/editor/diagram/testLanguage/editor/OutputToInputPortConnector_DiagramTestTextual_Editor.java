@@ -18,6 +18,6 @@ public class OutputToInputPortConnector_DiagramTestTextual_Editor extends Defaul
     return myContextHints;
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new OutputToInputPortConnector_DiagramTestTextual_EditorBuilder_a(editorContext, node).createCell();
+    return new OutputToInputPortConnector_DiagramTestTextual_EditorBuilder(editorContext, node).createCell();
   }
 }

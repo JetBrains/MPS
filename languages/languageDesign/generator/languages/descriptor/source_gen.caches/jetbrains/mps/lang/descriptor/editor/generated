@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="-42odtjcu8fo5jqjd44mu931ig3xf1gi">
-  <files names="EditorAspectDescriptorImpl.java:GeneratorDescriptor_Editor.java:GeneratorDescriptor_EditorBuilder_a.java:GeneratorDescriptor_InspectorBuilder_a.java:GeneratorInternal_Aspect_SubstituteMenu.java:LanguageDescriptor_Editor.java:LanguageDescriptor_EditorBuilder_a.java:ModuleActivator_Editor.java:ModuleActivator_EditorBuilder_a.java" />
+  <files names="EditorAspectDescriptorImpl.java:GeneratorDescriptor_Editor.java:GeneratorDescriptor_EditorBuilder.java:GeneratorDescriptor_InspectorBuilder.java:GeneratorInternal_Aspect_SubstituteMenu.java:LanguageDescriptor_Editor.java:LanguageDescriptor_EditorBuilder.java:ModuleActivator_Editor.java:ModuleActivator_EditorBuilder.java" />
 </product>
 

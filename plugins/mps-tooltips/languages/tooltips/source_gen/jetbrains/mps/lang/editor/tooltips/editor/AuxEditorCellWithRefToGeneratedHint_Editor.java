@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class AuxEditorCellWithRefToGeneratedHint_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new AuxEditorCellWithRefToGeneratedHint_EditorBuilder_a(editorContext, node).createCell();
+    return new AuxEditorCellWithRefToGeneratedHint_EditorBuilder(editorContext, node).createCell();
   }
 }

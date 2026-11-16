@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="evbvah2afmzdh6c559p3ozlawvvh8p3">
-  <files names="BoxCreator_Editor.java:BoxCreator_EditorBuilder_a.java:BoxType_Editor.java:BoxType_EditorBuilder_a.java:Box_ValueOperation_Editor.java:Box_ValueOperation_EditorBuilder_a.java:EditorAspectDescriptorImpl.java" />
+  <files names="BoxCreator_Editor.java:BoxCreator_EditorBuilder.java:BoxType_Editor.java:BoxType_EditorBuilder.java:Box_ValueOperation_Editor.java:Box_ValueOperation_EditorBuilder.java:EditorAspectDescriptorImpl.java" />
 </product>
 

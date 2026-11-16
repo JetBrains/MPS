@@ -16,6 +16,6 @@ public class HintIsApplicable implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new HintIsApplicable_ComponentBuilder_a(editorContext, node).createCell();
+    return new HintIsApplicable_ComponentBuilder(editorContext, node).createCell();
   }
 }

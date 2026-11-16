@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class MigrationReference_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new MigrationReference_EditorBuilder_a(editorContext, node).createCell();
+    return new MigrationReference_EditorBuilder(editorContext, node).createCell();
   }
 }

@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class WeaveMacro_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new WeaveMacro_EditorBuilder_a(editorContext, node).createCell();
+    return new WeaveMacro_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new WeaveMacro_InspectorBuilder_a(editorContext, node).createCell();
+    return new WeaveMacro_InspectorBuilder(editorContext, node).createCell();
   }
 }

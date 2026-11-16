@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class CustomWatchablesContainer_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new CustomWatchablesContainer_EditorBuilder_a(editorContext, node).createCell();
+    return new CustomWatchablesContainer_EditorBuilder(editorContext, node).createCell();
   }
 }

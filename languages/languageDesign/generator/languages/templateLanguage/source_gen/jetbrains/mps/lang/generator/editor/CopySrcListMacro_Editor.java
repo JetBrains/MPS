@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class CopySrcListMacro_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new CopySrcListMacro_EditorBuilder_a(editorContext, node).createCell();
+    return new CopySrcListMacro_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new CopySrcListMacro_InspectorBuilder_a(editorContext, node).createCell();
+    return new CopySrcListMacro_InspectorBuilder(editorContext, node).createCell();
   }
 }

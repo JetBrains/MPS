@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class SuperExpression_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new SuperExpression_EditorBuilder_a(editorContext, node).createCell();
+    return new SuperExpression_EditorBuilder(editorContext, node).createCell();
   }
 }

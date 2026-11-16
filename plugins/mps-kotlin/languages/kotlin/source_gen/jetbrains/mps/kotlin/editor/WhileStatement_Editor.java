@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class WhileStatement_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new WhileStatement_EditorBuilder_a(editorContext, node).createCell();
+    return new WhileStatement_EditorBuilder(editorContext, node).createCell();
   }
 }

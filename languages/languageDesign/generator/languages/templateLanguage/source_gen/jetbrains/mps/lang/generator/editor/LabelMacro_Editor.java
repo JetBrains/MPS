@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class LabelMacro_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new LabelMacro_EditorBuilder_a(editorContext, node).createCell();
+    return new LabelMacro_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new LabelMacro_InspectorBuilder_a(editorContext, node).createCell();
+    return new LabelMacro_InspectorBuilder(editorContext, node).createCell();
   }
 }

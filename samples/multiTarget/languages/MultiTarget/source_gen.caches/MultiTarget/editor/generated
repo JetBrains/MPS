@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="id89kn8gi6d8gl03mcvjbrgifl77bq">
-  <files names="Container_Editor.java:Container_EditorBuilder_a.java:EditorAspectDescriptorImpl.java:NumericValue_Editor.java:NumericValue_EditorBuilder_a.java:StringValue_Editor.java:StringValue_EditorBuilder_a.java" />
+  <files names="Container_Editor.java:Container_EditorBuilder.java:EditorAspectDescriptorImpl.java:NumericValue_Editor.java:NumericValue_EditorBuilder.java:StringValue_Editor.java:StringValue_EditorBuilder.java" />
 </product>
 

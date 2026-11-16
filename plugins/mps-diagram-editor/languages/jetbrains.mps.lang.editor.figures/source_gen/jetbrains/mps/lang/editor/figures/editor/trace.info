@@ -34,17 +34,17 @@
   </root>
   <root nodeRef="r:e4d83561-5cd9-4b01-bf95-b441a061d0de(jetbrains.mps.lang.editor.figures.editor)/2178507174411801757">
     <file name="ExternalViewFigure_Editor.java">
-      <node id="2178507174411801757" at="11,79,12,84" concept="6" />
+      <node id="2178507174411801757" at="11,79,12,82" concept="6" />
       <node id="2178507174411801757" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="2178507174411801757" at="11,79,12,84" />
+      <scope id="2178507174411801757" at="11,79,12,82" />
       <scope id="2178507174411801757" at="11,0,14,0">
         <var name="editorContext" id="2178507174411801757" />
         <var name="node" id="2178507174411801757" />
       </scope>
       <unit id="2178507174411801757" at="10,0,15,0" name="jetbrains.mps.lang.editor.figures.editor.ExternalViewFigure_Editor" />
     </file>
-    <file name="ExternalViewFigure_EditorBuilder_a.java">
-      <node id="2178507174411801757" at="52,98,53,19" concept="11" />
+    <file name="ExternalViewFigure_EditorBuilder.java">
+      <node id="2178507174411801757" at="52,96,53,19" concept="11" />
       <node id="2178507174411801757" at="53,19,54,18" concept="1" />
       <node id="2178507174411801757" at="59,26,60,18" concept="6" />
       <node id="2178507174411801757" at="63,39,64,32" concept="6" />
@@ -171,7 +171,7 @@
       <node id="2178507174411801757" at="198,0,201,0" concept="4" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="2178507174411801757" at="201,0,204,0" concept="4" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="2178507174411801757" at="245,96,248,9" concept="3" />
-      <node id="2178507174411801757" at="52,0,56,0" concept="0" trace="ExternalViewFigure_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="2178507174411801757" at="52,0,56,0" concept="0" trace="ExternalViewFigure_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="2178507174411801757" at="106,0,110,5" concept="3" />
       <node id="2178507174411801757" at="189,0,193,0" concept="0" trace="fieldsListHandler_jnzu2k_d0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="2178507174411801757" at="194,0,198,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -213,7 +213,7 @@
       <scope id="2178507174411801757" at="201,48,202,53" />
       <scope id="2178507174411801757" at="219,17,220,42" />
       <scope id="2178507174411801757" at="246,34,247,91" />
-      <scope id="2178507174411801757" at="52,98,54,18" />
+      <scope id="2178507174411801757" at="52,96,54,18" />
       <scope id="2178507174411801757" at="107,40,109,49" />
       <scope id="2178507174411801757" at="114,73,116,145">
         <var name="manager" id="2178507174411801757" />
@@ -323,28 +323,28 @@
         <var name="referenceLink" id="2178507174411801757" />
       </scope>
       <scope id="2178507174411801757" at="85,0,120,0" />
-      <unit id="2178507174411801757" at="279,0,282,0" name="jetbrains.mps.lang.editor.figures.editor.ExternalViewFigure_EditorBuilder_a$PROPS" />
-      <unit id="2178507174411801757" at="268,0,272,0" name="jetbrains.mps.lang.editor.figures.editor.ExternalViewFigure_EditorBuilder_a$LINKS" />
-      <unit id="2178507174411801757" at="273,0,278,0" name="jetbrains.mps.lang.editor.figures.editor.ExternalViewFigure_EditorBuilder_a$CONCEPTS" />
-      <unit id="2178507174411801757" at="87,42,102,5" name="jetbrains.mps.lang.editor.figures.editor.ExternalViewFigure_EditorBuilder_a$1" />
-      <unit id="2178507174411801860" at="120,0,163,0" name="jetbrains.mps.lang.editor.figures.editor.ExternalViewFigure_EditorBuilder_a$Inline_Builder0" />
-      <unit id="2178507174411801757" at="185,0,258,0" name="jetbrains.mps.lang.editor.figures.editor.ExternalViewFigure_EditorBuilder_a$fieldsListHandler_jnzu2k_d0" />
-      <unit id="2178507174411801757" at="48,0,283,0" name="jetbrains.mps.lang.editor.figures.editor.ExternalViewFigure_EditorBuilder_a" />
+      <unit id="2178507174411801757" at="279,0,282,0" name="jetbrains.mps.lang.editor.figures.editor.ExternalViewFigure_EditorBuilder$PROPS" />
+      <unit id="2178507174411801757" at="268,0,272,0" name="jetbrains.mps.lang.editor.figures.editor.ExternalViewFigure_EditorBuilder$LINKS" />
+      <unit id="2178507174411801757" at="273,0,278,0" name="jetbrains.mps.lang.editor.figures.editor.ExternalViewFigure_EditorBuilder$CONCEPTS" />
+      <unit id="2178507174411801757" at="87,42,102,5" name="jetbrains.mps.lang.editor.figures.editor.ExternalViewFigure_EditorBuilder$1" />
+      <unit id="2178507174411801860" at="120,0,163,0" name="jetbrains.mps.lang.editor.figures.editor.ExternalViewFigure_EditorBuilder$Inline_Builder0" />
+      <unit id="2178507174411801757" at="185,0,258,0" name="jetbrains.mps.lang.editor.figures.editor.ExternalViewFigure_EditorBuilder$fieldsListHandler_jnzu2k_d0" />
+      <unit id="2178507174411801757" at="48,0,283,0" name="jetbrains.mps.lang.editor.figures.editor.ExternalViewFigure_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:e4d83561-5cd9-4b01-bf95-b441a061d0de(jetbrains.mps.lang.editor.figures.editor)/2178507174411802073">
     <file name="ExternalViewFigureParameter_Editor.java">
-      <node id="2178507174411802073" at="11,79,12,93" concept="6" />
+      <node id="2178507174411802073" at="11,79,12,91" concept="6" />
       <node id="2178507174411802073" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="2178507174411802073" at="11,79,12,93" />
+      <scope id="2178507174411802073" at="11,79,12,91" />
       <scope id="2178507174411802073" at="11,0,14,0">
         <var name="editorContext" id="2178507174411802073" />
         <var name="node" id="2178507174411802073" />
       </scope>
       <unit id="2178507174411802073" at="10,0,15,0" name="jetbrains.mps.lang.editor.figures.editor.ExternalViewFigureParameter_Editor" />
     </file>
-    <file name="ExternalViewFigureParameter_EditorBuilder_a.java">
-      <node id="2178507174411802073" at="44,107,45,19" concept="11" />
+    <file name="ExternalViewFigureParameter_EditorBuilder.java">
+      <node id="2178507174411802073" at="44,105,45,19" concept="11" />
       <node id="2178507174411802073" at="45,19,46,18" concept="1" />
       <node id="2178507174411802073" at="51,26,52,18" concept="6" />
       <node id="2178507174411802073" at="55,39,56,32" concept="6" />
@@ -412,7 +412,7 @@
       <node id="2178507174411802123" at="104,0,106,0" concept="2" trace="myNode" />
       <node id="2178507174411802073" at="55,0,58,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="2178507174411802123" at="114,0,117,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="2178507174411802073" at="44,0,48,0" concept="0" trace="ExternalViewFigureParameter_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="2178507174411802073" at="44,0,48,0" concept="0" trace="ExternalViewFigureParameter_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="2178507174411802073" at="89,0,93,5" concept="3" />
       <node id="2178507174411802073" at="49,0,54,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="2178507174411802073" at="96,205,101,22" concept="3" />
@@ -432,7 +432,7 @@
       <scope id="2178507174411802123" at="114,41,115,32" />
       <scope id="2178507174411802123" at="120,28,121,20" />
       <scope id="2178507174411802124" at="141,17,142,42" />
-      <scope id="2178507174411802073" at="44,107,46,18" />
+      <scope id="2178507174411802073" at="44,105,46,18" />
       <scope id="2178507174411802073" at="90,40,92,55" />
       <scope id="2178507174411802073" at="97,73,99,145">
         <var name="manager" id="2178507174411802073" />
@@ -491,27 +491,27 @@
         <var name="referenceLink" id="2178507174411802073" />
       </scope>
       <scope id="2178507174411802073" at="68,0,103,0" />
-      <unit id="2178507174411802073" at="156,0,159,0" name="jetbrains.mps.lang.editor.figures.editor.ExternalViewFigureParameter_EditorBuilder_a$LINKS" />
-      <unit id="2178507174411802073" at="165,0,168,0" name="jetbrains.mps.lang.editor.figures.editor.ExternalViewFigureParameter_EditorBuilder_a$PROPS" />
-      <unit id="2178507174411802073" at="160,0,164,0" name="jetbrains.mps.lang.editor.figures.editor.ExternalViewFigureParameter_EditorBuilder_a$CONCEPTS" />
-      <unit id="2178507174411802073" at="70,42,85,5" name="jetbrains.mps.lang.editor.figures.editor.ExternalViewFigureParameter_EditorBuilder_a$1" />
-      <unit id="2178507174411802123" at="103,0,146,0" name="jetbrains.mps.lang.editor.figures.editor.ExternalViewFigureParameter_EditorBuilder_a$Inline_Builder0" />
-      <unit id="2178507174411802073" at="40,0,169,0" name="jetbrains.mps.lang.editor.figures.editor.ExternalViewFigureParameter_EditorBuilder_a" />
+      <unit id="2178507174411802073" at="156,0,159,0" name="jetbrains.mps.lang.editor.figures.editor.ExternalViewFigureParameter_EditorBuilder$LINKS" />
+      <unit id="2178507174411802073" at="165,0,168,0" name="jetbrains.mps.lang.editor.figures.editor.ExternalViewFigureParameter_EditorBuilder$PROPS" />
+      <unit id="2178507174411802073" at="160,0,164,0" name="jetbrains.mps.lang.editor.figures.editor.ExternalViewFigureParameter_EditorBuilder$CONCEPTS" />
+      <unit id="2178507174411802073" at="70,42,85,5" name="jetbrains.mps.lang.editor.figures.editor.ExternalViewFigureParameter_EditorBuilder$1" />
+      <unit id="2178507174411802123" at="103,0,146,0" name="jetbrains.mps.lang.editor.figures.editor.ExternalViewFigureParameter_EditorBuilder$Inline_Builder0" />
+      <unit id="2178507174411802073" at="40,0,169,0" name="jetbrains.mps.lang.editor.figures.editor.ExternalViewFigureParameter_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:e4d83561-5cd9-4b01-bf95-b441a061d0de(jetbrains.mps.lang.editor.figures.editor)/5422656561926750065">
     <file name="FigureAttribute_Editor.java">
-      <node id="5422656561926750065" at="11,79,12,81" concept="6" />
+      <node id="5422656561926750065" at="11,79,12,79" concept="6" />
       <node id="5422656561926750065" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="5422656561926750065" at="11,79,12,81" />
+      <scope id="5422656561926750065" at="11,79,12,79" />
       <scope id="5422656561926750065" at="11,0,14,0">
         <var name="editorContext" id="5422656561926750065" />
         <var name="node" id="5422656561926750065" />
       </scope>
       <unit id="5422656561926750065" at="10,0,15,0" name="jetbrains.mps.lang.editor.figures.editor.FigureAttribute_Editor" />
     </file>
-    <file name="FigureAttribute_EditorBuilder_a.java">
-      <node id="5422656561926750065" at="22,95,23,19" concept="11" />
+    <file name="FigureAttribute_EditorBuilder.java">
+      <node id="5422656561926750065" at="22,93,23,19" concept="11" />
       <node id="5422656561926750065" at="23,19,24,18" concept="1" />
       <node id="5422656561926750065" at="29,26,30,18" concept="6" />
       <node id="5422656561926750065" at="33,39,34,32" concept="6" />
@@ -534,14 +534,14 @@
       <node id="5422656561926752228" at="57,93,58,22" concept="6" />
       <node id="5422656561926750065" at="19,0,21,0" concept="2" trace="myNode" />
       <node id="5422656561926750065" at="33,0,36,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="5422656561926750065" at="22,0,26,0" concept="0" trace="FigureAttribute_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="5422656561926750065" at="22,0,26,0" concept="0" trace="FigureAttribute_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="5422656561926750065" at="27,0,32,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="5422656561926752228" at="55,0,60,0" concept="4" trace="createAttributedNodeCell_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="5422656561926750065" at="37,0,46,0" concept="4" trace="createCollection_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="5422656561930928633" at="46,0,55,0" concept="4" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="5422656561926750065" at="29,26,30,18" />
       <scope id="5422656561926750065" at="33,39,34,32" />
-      <scope id="5422656561926750065" at="22,95,24,18" />
+      <scope id="5422656561926750065" at="22,93,24,18" />
       <scope id="5422656561926750065" at="33,0,36,0" />
       <scope id="5422656561926752228" at="55,51,58,22">
         <var name="editorCell" id="5422656561926752228" />
@@ -562,7 +562,7 @@
       </scope>
       <scope id="5422656561926750065" at="37,0,46,0" />
       <scope id="5422656561930928633" at="46,0,55,0" />
-      <unit id="5422656561926750065" at="18,0,61,0" name="jetbrains.mps.lang.editor.figures.editor.FigureAttribute_EditorBuilder_a" />
+      <unit id="5422656561926750065" at="18,0,61,0" name="jetbrains.mps.lang.editor.figures.editor.FigureAttribute_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:e4d83561-5cd9-4b01-bf95-b441a061d0de(jetbrains.mps.lang.editor.figures.editor)/5422656561928696623">
@@ -657,17 +657,17 @@
   </root>
   <root nodeRef="r:e4d83561-5cd9-4b01-bf95-b441a061d0de(jetbrains.mps.lang.editor.figures.editor)/5422656561931607936">
     <file name="FigureParameterAttribute_Editor.java">
-      <node id="5422656561931607936" at="11,79,12,90" concept="6" />
+      <node id="5422656561931607936" at="11,79,12,88" concept="6" />
       <node id="5422656561931607936" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="5422656561931607936" at="11,79,12,90" />
+      <scope id="5422656561931607936" at="11,79,12,88" />
       <scope id="5422656561931607936" at="11,0,14,0">
         <var name="editorContext" id="5422656561931607936" />
         <var name="node" id="5422656561931607936" />
       </scope>
       <unit id="5422656561931607936" at="10,0,15,0" name="jetbrains.mps.lang.editor.figures.editor.FigureParameterAttribute_Editor" />
     </file>
-    <file name="FigureParameterAttribute_EditorBuilder_a.java">
-      <node id="5422656561931607936" at="23,104,24,19" concept="11" />
+    <file name="FigureParameterAttribute_EditorBuilder.java">
+      <node id="5422656561931607936" at="23,102,24,19" concept="11" />
       <node id="5422656561931607936" at="24,19,25,18" concept="1" />
       <node id="5422656561931607936" at="30,26,31,18" concept="6" />
       <node id="5422656561931607936" at="34,39,35,32" concept="6" />
@@ -691,14 +691,14 @@
       <node id="5422656561931608167" at="59,93,60,22" concept="6" />
       <node id="5422656561931607936" at="20,0,22,0" concept="2" trace="myNode" />
       <node id="5422656561931607936" at="34,0,37,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="5422656561931607936" at="23,0,27,0" concept="0" trace="FigureParameterAttribute_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="5422656561931607936" at="23,0,27,0" concept="0" trace="FigureParameterAttribute_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="5422656561931607936" at="28,0,33,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="5422656561931608167" at="57,0,62,0" concept="4" trace="createAttributedNodeCell_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="5422656561931607936" at="38,0,47,0" concept="4" trace="createCollection_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="7319867929567527565" at="47,0,57,0" concept="4" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="5422656561931607936" at="30,26,31,18" />
       <scope id="5422656561931607936" at="34,39,35,32" />
-      <scope id="5422656561931607936" at="23,104,25,18" />
+      <scope id="5422656561931607936" at="23,102,25,18" />
       <scope id="5422656561931607936" at="34,0,37,0" />
       <scope id="5422656561931608167" at="57,51,60,22">
         <var name="editorCell" id="5422656561931608167" />
@@ -719,7 +719,7 @@
       </scope>
       <scope id="5422656561931607936" at="38,0,47,0" />
       <scope id="7319867929567527565" at="47,0,57,0" />
-      <unit id="5422656561931607936" at="19,0,63,0" name="jetbrains.mps.lang.editor.figures.editor.FigureParameterAttribute_EditorBuilder_a" />
+      <unit id="5422656561931607936" at="19,0,63,0" name="jetbrains.mps.lang.editor.figures.editor.FigureParameterAttribute_EditorBuilder" />
     </file>
   </root>
 </debug-info>

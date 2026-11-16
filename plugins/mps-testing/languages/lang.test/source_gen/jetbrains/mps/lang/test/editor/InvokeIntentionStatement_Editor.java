@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class InvokeIntentionStatement_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new InvokeIntentionStatement_EditorBuilder_a(editorContext, node).createCell();
+    return new InvokeIntentionStatement_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new InvokeIntentionStatement_InspectorBuilder_a(editorContext, node).createCell();
+    return new InvokeIntentionStatement_InspectorBuilder(editorContext, node).createCell();
   }
 }

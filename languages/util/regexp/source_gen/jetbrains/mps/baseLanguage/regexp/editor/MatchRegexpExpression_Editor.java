@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class MatchRegexpExpression_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new MatchRegexpExpression_EditorBuilder_a(editorContext, node).createCell();
+    return new MatchRegexpExpression_EditorBuilder(editorContext, node).createCell();
   }
 }

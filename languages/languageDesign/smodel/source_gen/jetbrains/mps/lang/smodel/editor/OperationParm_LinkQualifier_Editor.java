@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class OperationParm_LinkQualifier_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new OperationParm_LinkQualifier_EditorBuilder_a(editorContext, node).createCell();
+    return new OperationParm_LinkQualifier_EditorBuilder(editorContext, node).createCell();
   }
 }

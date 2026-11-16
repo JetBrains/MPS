@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ContinueExpression_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ContinueExpression_EditorBuilder_a(editorContext, node).createCell();
+    return new ContinueExpression_EditorBuilder(editorContext, node).createCell();
   }
 }

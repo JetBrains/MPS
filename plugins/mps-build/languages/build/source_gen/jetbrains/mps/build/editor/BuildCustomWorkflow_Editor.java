@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class BuildCustomWorkflow_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new BuildCustomWorkflow_EditorBuilder_a(editorContext, node).createCell();
+    return new BuildCustomWorkflow_EditorBuilder(editorContext, node).createCell();
   }
 }

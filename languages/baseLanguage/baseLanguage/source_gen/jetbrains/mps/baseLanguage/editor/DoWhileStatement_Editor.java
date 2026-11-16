@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class DoWhileStatement_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new DoWhileStatement_EditorBuilder_a(editorContext, node).createCell();
+    return new DoWhileStatement_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new DoWhileStatement_InspectorBuilder_a(editorContext, node).createCell();
+    return new DoWhileStatement_InspectorBuilder(editorContext, node).createCell();
   }
 }

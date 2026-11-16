@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class OrderReference_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new OrderReference_EditorBuilder_a(editorContext, node).createCell();
+    return new OrderReference_EditorBuilder(editorContext, node).createCell();
   }
 }

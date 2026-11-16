@@ -16,6 +16,6 @@ public class ModificationsEditor implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ModificationsEditor_ComponentBuilder_a(editorContext, node).createCell();
+    return new ModificationsEditor_ComponentBuilder(editorContext, node).createCell();
   }
 }

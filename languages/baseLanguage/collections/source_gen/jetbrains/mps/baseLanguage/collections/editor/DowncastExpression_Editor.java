@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class DowncastExpression_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new DowncastExpression_EditorBuilder_a(editorContext, node).createCell();
+    return new DowncastExpression_EditorBuilder(editorContext, node).createCell();
   }
 }

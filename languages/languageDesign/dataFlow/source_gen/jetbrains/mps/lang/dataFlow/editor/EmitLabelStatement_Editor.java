@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class EmitLabelStatement_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new EmitLabelStatement_EditorBuilder_a(editorContext, node).createCell();
+    return new EmitLabelStatement_EditorBuilder(editorContext, node).createCell();
   }
 }

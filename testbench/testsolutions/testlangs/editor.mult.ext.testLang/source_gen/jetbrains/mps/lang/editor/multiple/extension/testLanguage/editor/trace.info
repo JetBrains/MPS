@@ -19,11 +19,11 @@
     <file name="MultipleEditorsTestEditorComponentChild_compactRich.java">
       <node id="1217012833662768584" at="14,0,15,0" concept="2" trace="myContextHints" />
       <node id="1217012833662768584" at="16,47,17,26" concept="6" />
-      <node id="1217012833662768584" at="19,79,20,120" concept="6" />
+      <node id="1217012833662768584" at="19,79,20,118" concept="6" />
       <node id="1217012833662768584" at="19,0,22,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1217012833662768584" at="15,0,19,0" concept="4" trace="getContextHints#()Ljava/util/Collection;" />
       <scope id="1217012833662768584" at="16,47,17,26" />
-      <scope id="1217012833662768584" at="19,79,20,120" />
+      <scope id="1217012833662768584" at="19,79,20,118" />
       <scope id="1217012833662768584" at="19,0,22,0">
         <var name="editorContext" id="1217012833662768584" />
         <var name="node" id="1217012833662768584" />
@@ -31,8 +31,8 @@
       <scope id="1217012833662768584" at="15,0,19,0" />
       <unit id="1217012833662768584" at="13,0,23,0" name="jetbrains.mps.lang.editor.multiple.extension.testLanguage.editor.MultipleEditorsTestEditorComponentChild_compactRich" />
     </file>
-    <file name="MultipleEditorsTestEditorComponentChild_compactRich_ComponentBuilder_a.java">
-      <node id="1217012833662768584" at="34,134,35,19" concept="8" />
+    <file name="MultipleEditorsTestEditorComponentChild_compactRich_ComponentBuilder.java">
+      <node id="1217012833662768584" at="34,132,35,19" concept="8" />
       <node id="1217012833662768584" at="35,19,36,18" concept="1" />
       <node id="1217012833662768584" at="41,26,42,18" concept="6" />
       <node id="1217012833662768584" at="45,39,46,32" concept="6" />
@@ -83,7 +83,7 @@
       <node id="1217012833662768584" at="114,0,115,0" concept="7" trace="PropertyAttribute$Gb" />
       <node id="1217012833662768584" at="31,0,33,0" concept="2" trace="myNode" />
       <node id="1217012833662768584" at="45,0,48,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="1217012833662768584" at="34,0,38,0" concept="0" trace="MultipleEditorsTestEditorComponentChild_compactRich_ComponentBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1217012833662768584" at="34,0,38,0" concept="0" trace="MultipleEditorsTestEditorComponentChild_compactRich_ComponentBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1217012833662768584" at="39,0,44,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1217012833662768753" at="73,208,78,24" concept="3" />
       <node id="1217012833662768755" at="97,208,102,24" concept="3" />
@@ -96,7 +96,7 @@
       <scope id="1217012833662768584" at="45,39,46,32" />
       <scope id="1217012833662768753" at="79,15,80,40" />
       <scope id="1217012833662768755" at="103,15,104,40" />
-      <scope id="1217012833662768584" at="34,134,36,18" />
+      <scope id="1217012833662768584" at="34,132,36,18" />
       <scope id="1217012833662768753" at="74,74,76,145">
         <var name="manager" id="1217012833662768753" />
       </scope>
@@ -132,20 +132,20 @@
       <scope id="1217012833662768755" at="83,41,105,5" />
       <scope id="1217012833662768753" at="59,0,83,0" />
       <scope id="1217012833662768755" at="83,0,107,0" />
-      <unit id="1217012833662768584" at="113,0,116,0" name="jetbrains.mps.lang.editor.multiple.extension.testLanguage.editor.MultipleEditorsTestEditorComponentChild_compactRich_ComponentBuilder_a$CONCEPTS" />
-      <unit id="1217012833662768584" at="108,0,112,0" name="jetbrains.mps.lang.editor.multiple.extension.testLanguage.editor.MultipleEditorsTestEditorComponentChild_compactRich_ComponentBuilder_a$PROPS" />
-      <unit id="1217012833662768584" at="30,0,117,0" name="jetbrains.mps.lang.editor.multiple.extension.testLanguage.editor.MultipleEditorsTestEditorComponentChild_compactRich_ComponentBuilder_a" />
+      <unit id="1217012833662768584" at="113,0,116,0" name="jetbrains.mps.lang.editor.multiple.extension.testLanguage.editor.MultipleEditorsTestEditorComponentChild_compactRich_ComponentBuilder$CONCEPTS" />
+      <unit id="1217012833662768584" at="108,0,112,0" name="jetbrains.mps.lang.editor.multiple.extension.testLanguage.editor.MultipleEditorsTestEditorComponentChild_compactRich_ComponentBuilder$PROPS" />
+      <unit id="1217012833662768584" at="30,0,117,0" name="jetbrains.mps.lang.editor.multiple.extension.testLanguage.editor.MultipleEditorsTestEditorComponentChild_compactRich_ComponentBuilder" />
     </file>
   </root>
   <root nodeRef="r:a554b43d-e081-43aa-820b-45da05206260(jetbrains.mps.lang.editor.multiple.extension.testLanguage.editor)/6355695904178424145">
     <file name="MultipleEditorsTestMostSpecificChild_compact_rich_Editor.java">
       <node id="6355695904178424145" at="14,0,15,0" concept="2" trace="myContextHints" />
       <node id="6355695904178424145" at="17,47,18,26" concept="6" />
-      <node id="6355695904178424145" at="20,79,21,115" concept="6" />
+      <node id="6355695904178424145" at="20,79,21,113" concept="6" />
       <node id="6355695904178424145" at="20,0,23,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="6355695904178424145" at="15,0,20,0" concept="4" trace="getContextHints#()Ljava/util/Collection;" />
       <scope id="6355695904178424145" at="17,47,18,26" />
-      <scope id="6355695904178424145" at="20,79,21,115" />
+      <scope id="6355695904178424145" at="20,79,21,113" />
       <scope id="6355695904178424145" at="20,0,23,0">
         <var name="editorContext" id="6355695904178424145" />
         <var name="node" id="6355695904178424145" />
@@ -153,8 +153,8 @@
       <scope id="6355695904178424145" at="15,0,20,0" />
       <unit id="6355695904178424145" at="13,0,24,0" name="jetbrains.mps.lang.editor.multiple.extension.testLanguage.editor.MultipleEditorsTestMostSpecificChild_compact_rich_Editor" />
     </file>
-    <file name="MultipleEditorsTestMostSpecificChild_compact_rich_EditorBuilder_a.java">
-      <node id="6355695904178424145" at="34,129,35,19" concept="8" />
+    <file name="MultipleEditorsTestMostSpecificChild_compact_rich_EditorBuilder.java">
+      <node id="6355695904178424145" at="34,127,35,19" concept="8" />
       <node id="6355695904178424145" at="35,19,36,18" concept="1" />
       <node id="6355695904178424145" at="41,26,42,18" concept="6" />
       <node id="6355695904178424145" at="45,39,46,32" concept="6" />
@@ -207,7 +207,7 @@
       <node id="6355695904178424145" at="116,0,117,0" concept="7" trace="PropertyAttribute$Gb" />
       <node id="6355695904178424145" at="31,0,33,0" concept="2" trace="myNode" />
       <node id="6355695904178424145" at="45,0,48,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="6355695904178424145" at="34,0,38,0" concept="0" trace="MultipleEditorsTestMostSpecificChild_compact_rich_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="6355695904178424145" at="34,0,38,0" concept="0" trace="MultipleEditorsTestMostSpecificChild_compact_rich_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="6355695904178424145" at="39,0,44,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="8572332134194711084" at="75,208,80,24" concept="3" />
       <node id="8572332134194711091" at="99,208,104,24" concept="3" />
@@ -220,7 +220,7 @@
       <scope id="6355695904178424145" at="45,39,46,32" />
       <scope id="8572332134194711084" at="81,15,82,40" />
       <scope id="8572332134194711091" at="105,15,106,40" />
-      <scope id="6355695904178424145" at="34,129,36,18" />
+      <scope id="6355695904178424145" at="34,127,36,18" />
       <scope id="8572332134194711084" at="76,74,78,145">
         <var name="manager" id="8572332134194711084" />
       </scope>
@@ -256,9 +256,9 @@
       <scope id="8572332134194711091" at="85,41,107,5" />
       <scope id="8572332134194711084" at="61,0,85,0" />
       <scope id="8572332134194711091" at="85,0,109,0" />
-      <unit id="6355695904178424145" at="115,0,118,0" name="jetbrains.mps.lang.editor.multiple.extension.testLanguage.editor.MultipleEditorsTestMostSpecificChild_compact_rich_EditorBuilder_a$CONCEPTS" />
-      <unit id="6355695904178424145" at="110,0,114,0" name="jetbrains.mps.lang.editor.multiple.extension.testLanguage.editor.MultipleEditorsTestMostSpecificChild_compact_rich_EditorBuilder_a$PROPS" />
-      <unit id="6355695904178424145" at="30,0,119,0" name="jetbrains.mps.lang.editor.multiple.extension.testLanguage.editor.MultipleEditorsTestMostSpecificChild_compact_rich_EditorBuilder_a" />
+      <unit id="6355695904178424145" at="115,0,118,0" name="jetbrains.mps.lang.editor.multiple.extension.testLanguage.editor.MultipleEditorsTestMostSpecificChild_compact_rich_EditorBuilder$CONCEPTS" />
+      <unit id="6355695904178424145" at="110,0,114,0" name="jetbrains.mps.lang.editor.multiple.extension.testLanguage.editor.MultipleEditorsTestMostSpecificChild_compact_rich_EditorBuilder$PROPS" />
+      <unit id="6355695904178424145" at="30,0,119,0" name="jetbrains.mps.lang.editor.multiple.extension.testLanguage.editor.MultipleEditorsTestMostSpecificChild_compact_rich_EditorBuilder" />
     </file>
   </root>
 </debug-info>

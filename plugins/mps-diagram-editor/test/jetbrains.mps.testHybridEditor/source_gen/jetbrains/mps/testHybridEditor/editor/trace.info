@@ -31,12 +31,12 @@
   </root>
   <root nodeRef="r:814b5a42-e9ec-45d8-81f9-8c398455e907(jetbrains.mps.testHybridEditor.editor)/4394877045817292529">
     <file name="MetaBlock_Editor.java">
-      <node id="4394877045817292529" at="11,79,12,75" concept="6" />
-      <node id="4394877045817292529" at="14,82,15,78" concept="6" />
+      <node id="4394877045817292529" at="11,79,12,73" concept="6" />
+      <node id="4394877045817292529" at="14,82,15,76" concept="6" />
       <node id="4394877045817292529" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4394877045817292529" at="14,0,17,0" concept="4" trace="createInspectedCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4394877045817292529" at="11,79,12,75" />
-      <scope id="4394877045817292529" at="14,82,15,78" />
+      <scope id="4394877045817292529" at="11,79,12,73" />
+      <scope id="4394877045817292529" at="14,82,15,76" />
       <scope id="4394877045817292529" at="11,0,14,0">
         <var name="editorContext" id="4394877045817292529" />
         <var name="node" id="4394877045817292529" />
@@ -47,8 +47,8 @@
       </scope>
       <unit id="4394877045817292529" at="10,0,18,0" name="jetbrains.mps.testHybridEditor.editor.MetaBlock_Editor" />
     </file>
-    <file name="MetaBlock_EditorBuilder_a.java">
-      <node id="4394877045817292529" at="45,89,46,19" concept="8" />
+    <file name="MetaBlock_EditorBuilder.java">
+      <node id="4394877045817292529" at="45,87,46,19" concept="8" />
       <node id="4394877045817292529" at="46,19,47,18" concept="1" />
       <node id="4394877045817292529" at="52,26,53,18" concept="6" />
       <node id="4394877045817292529" at="56,39,57,32" concept="6" />
@@ -222,7 +222,7 @@
       <node id="4394877045817292529" at="269,0,272,0" concept="4" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="4394877045817292529" at="272,0,275,0" concept="4" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="4394877045817292529" at="316,96,319,9" concept="3" />
-      <node id="4394877045817292529" at="45,0,49,0" concept="0" trace="MetaBlock_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4394877045817292529" at="45,0,49,0" concept="0" trace="MetaBlock_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4394877045817292529" at="156,0,160,0" concept="0" trace="inMetaPortsListHandler_liyxwi_c3a#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="4394877045817292529" at="161,0,165,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="4394877045817292529" at="194,97,198,9" concept="3" />
@@ -278,7 +278,7 @@
       <scope id="4394877045817292529" at="272,48,273,34" />
       <scope id="4394877045817292529" at="290,17,291,42" />
       <scope id="4394877045817292529" at="317,34,318,91" />
-      <scope id="4394877045817292529" at="45,89,47,18" />
+      <scope id="4394877045817292529" at="45,87,47,18" />
       <scope id="4394877045817292685" at="90,74,92,145">
         <var name="manager" id="4394877045817292685" />
       </scope>
@@ -418,15 +418,15 @@
         <var name="elementNode" id="4394877045817292529" />
         <var name="isEmptyCell" id="4394877045817292529" />
       </scope>
-      <unit id="4394877045817292529" at="333,0,336,0" name="jetbrains.mps.testHybridEditor.editor.MetaBlock_EditorBuilder_a$PROPS" />
-      <unit id="4394877045817292529" at="337,0,341,0" name="jetbrains.mps.testHybridEditor.editor.MetaBlock_EditorBuilder_a$CONCEPTS" />
-      <unit id="4394877045817292529" at="342,0,346,0" name="jetbrains.mps.testHybridEditor.editor.MetaBlock_EditorBuilder_a$LINKS" />
-      <unit id="4394877045817292529" at="152,0,219,0" name="jetbrains.mps.testHybridEditor.editor.MetaBlock_EditorBuilder_a$inMetaPortsListHandler_liyxwi_c3a" />
-      <unit id="4394877045817292529" at="256,0,323,0" name="jetbrains.mps.testHybridEditor.editor.MetaBlock_EditorBuilder_a$outMetaPortsListHandler_liyxwi_g3a" />
-      <unit id="4394877045817292529" at="41,0,347,0" name="jetbrains.mps.testHybridEditor.editor.MetaBlock_EditorBuilder_a" />
+      <unit id="4394877045817292529" at="333,0,336,0" name="jetbrains.mps.testHybridEditor.editor.MetaBlock_EditorBuilder$PROPS" />
+      <unit id="4394877045817292529" at="337,0,341,0" name="jetbrains.mps.testHybridEditor.editor.MetaBlock_EditorBuilder$CONCEPTS" />
+      <unit id="4394877045817292529" at="342,0,346,0" name="jetbrains.mps.testHybridEditor.editor.MetaBlock_EditorBuilder$LINKS" />
+      <unit id="4394877045817292529" at="152,0,219,0" name="jetbrains.mps.testHybridEditor.editor.MetaBlock_EditorBuilder$inMetaPortsListHandler_liyxwi_c3a" />
+      <unit id="4394877045817292529" at="256,0,323,0" name="jetbrains.mps.testHybridEditor.editor.MetaBlock_EditorBuilder$outMetaPortsListHandler_liyxwi_g3a" />
+      <unit id="4394877045817292529" at="41,0,347,0" name="jetbrains.mps.testHybridEditor.editor.MetaBlock_EditorBuilder" />
     </file>
-    <file name="MetaBlock_InspectorBuilder_a.java">
-      <node id="4394877045817292529" at="32,92,33,19" concept="8" />
+    <file name="MetaBlock_InspectorBuilder.java">
+      <node id="4394877045817292529" at="32,90,33,19" concept="8" />
       <node id="4394877045817292529" at="33,19,34,18" concept="1" />
       <node id="4394877045817292529" at="39,26,40,18" concept="6" />
       <node id="4394877045817292529" at="43,39,44,32" concept="6" />
@@ -459,7 +459,7 @@
       <node id="4394877045817292529" at="89,0,90,0" concept="7" trace="PropertyAttribute$Gb" />
       <node id="4394877045817292529" at="29,0,31,0" concept="2" trace="myNode" />
       <node id="4394877045817292529" at="43,0,46,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="4394877045817292529" at="32,0,36,0" concept="0" trace="MetaBlock_InspectorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4394877045817292529" at="32,0,36,0" concept="0" trace="MetaBlock_InspectorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4394877045817292529" at="37,0,42,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="2336278055263065672" at="73,208,78,24" concept="3" />
       <node id="2336278055263059570" at="56,0,62,0" concept="4" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -469,7 +469,7 @@
       <scope id="4394877045817292529" at="39,26,40,18" />
       <scope id="4394877045817292529" at="43,39,44,32" />
       <scope id="2336278055263065672" at="79,15,80,40" />
-      <scope id="4394877045817292529" at="32,92,34,18" />
+      <scope id="4394877045817292529" at="32,90,34,18" />
       <scope id="2336278055263065672" at="74,74,76,145">
         <var name="manager" id="2336278055263065672" />
       </scope>
@@ -495,9 +495,9 @@
       </scope>
       <scope id="2336278055263065672" at="62,41,81,5" />
       <scope id="2336278055263065672" at="62,0,83,0" />
-      <unit id="4394877045817292529" at="84,0,87,0" name="jetbrains.mps.testHybridEditor.editor.MetaBlock_InspectorBuilder_a$PROPS" />
-      <unit id="4394877045817292529" at="88,0,91,0" name="jetbrains.mps.testHybridEditor.editor.MetaBlock_InspectorBuilder_a$CONCEPTS" />
-      <unit id="4394877045817292529" at="28,0,92,0" name="jetbrains.mps.testHybridEditor.editor.MetaBlock_InspectorBuilder_a" />
+      <unit id="4394877045817292529" at="84,0,87,0" name="jetbrains.mps.testHybridEditor.editor.MetaBlock_InspectorBuilder$PROPS" />
+      <unit id="4394877045817292529" at="88,0,91,0" name="jetbrains.mps.testHybridEditor.editor.MetaBlock_InspectorBuilder$CONCEPTS" />
+      <unit id="4394877045817292529" at="28,0,92,0" name="jetbrains.mps.testHybridEditor.editor.MetaBlock_InspectorBuilder" />
     </file>
   </root>
 </debug-info>

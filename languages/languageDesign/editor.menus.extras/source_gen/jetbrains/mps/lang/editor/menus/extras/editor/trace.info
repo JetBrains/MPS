@@ -18,17 +18,17 @@
   </root>
   <root nodeRef="r:f9027d3e-0a0c-40cc-8f3c-22568753f6bb(jetbrains.mps.lang.editor.menus.extras.editor)/2319156231054335476">
     <file name="TransformationMenuPart_PluginAction_Editor.java">
-      <node id="2319156231054335476" at="11,79,12,101" concept="6" />
+      <node id="2319156231054335476" at="11,79,12,99" concept="6" />
       <node id="2319156231054335476" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="2319156231054335476" at="11,79,12,101" />
+      <scope id="2319156231054335476" at="11,79,12,99" />
       <scope id="2319156231054335476" at="11,0,14,0">
         <var name="editorContext" id="2319156231054335476" />
         <var name="node" id="2319156231054335476" />
       </scope>
       <unit id="2319156231054335476" at="10,0,15,0" name="jetbrains.mps.lang.editor.menus.extras.editor.TransformationMenuPart_PluginAction_Editor" />
     </file>
-    <file name="TransformationMenuPart_PluginAction_EditorBuilder_a.java">
-      <node id="2319156231054335476" at="51,115,52,19" concept="9" />
+    <file name="TransformationMenuPart_PluginAction_EditorBuilder.java">
+      <node id="2319156231054335476" at="51,113,52,19" concept="9" />
       <node id="2319156231054335476" at="52,19,53,18" concept="1" />
       <node id="2319156231054335476" at="58,26,59,18" concept="6" />
       <node id="2319156231054335476" at="62,39,63,32" concept="6" />
@@ -142,7 +142,7 @@
       <node id="2319156231054335476" at="177,0,180,0" concept="4" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="2319156231054335476" at="180,0,183,0" concept="4" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="2319156231054335476" at="224,96,227,9" concept="3" />
-      <node id="2319156231054335476" at="51,0,55,0" concept="0" trace="TransformationMenuPart_PluginAction_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="2319156231054335476" at="51,0,55,0" concept="0" trace="TransformationMenuPart_PluginAction_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1077225164072301871" at="77,0,81,0" concept="4" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="2319156231054335476" at="95,0,99,5" concept="3" />
       <node id="2319156231054335476" at="168,0,172,0" concept="0" trace="featuresListHandler_uxi26n_c0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
@@ -182,7 +182,7 @@
       <scope id="2319156231054335476" at="180,48,181,47" />
       <scope id="2319156231054335476" at="198,17,199,42" />
       <scope id="2319156231054335476" at="225,34,226,91" />
-      <scope id="2319156231054335476" at="51,115,53,18" />
+      <scope id="2319156231054335476" at="51,113,53,18" />
       <scope id="1077225164072301871" at="77,42,79,22">
         <var name="editorCell" id="1077225164072301871" />
       </scope>
@@ -281,28 +281,28 @@
         <var name="referenceLink" id="2319156231054335476" />
       </scope>
       <scope id="2319156231054335476" at="81,0,109,0" />
-      <unit id="2319156231054335476" at="260,0,263,0" name="jetbrains.mps.lang.editor.menus.extras.editor.TransformationMenuPart_PluginAction_EditorBuilder_a$PROPS" />
-      <unit id="2319156231054335476" at="249,0,253,0" name="jetbrains.mps.lang.editor.menus.extras.editor.TransformationMenuPart_PluginAction_EditorBuilder_a$LINKS" />
-      <unit id="2319156231054335476" at="254,0,259,0" name="jetbrains.mps.lang.editor.menus.extras.editor.TransformationMenuPart_PluginAction_EditorBuilder_a$CONCEPTS" />
-      <unit id="2319156231054335476" at="83,42,91,5" name="jetbrains.mps.lang.editor.menus.extras.editor.TransformationMenuPart_PluginAction_EditorBuilder_a$1" />
-      <unit id="2319156231054335487" at="109,0,152,0" name="jetbrains.mps.lang.editor.menus.extras.editor.TransformationMenuPart_PluginAction_EditorBuilder_a$Inline_Builder0" />
-      <unit id="2319156231054335476" at="164,0,237,0" name="jetbrains.mps.lang.editor.menus.extras.editor.TransformationMenuPart_PluginAction_EditorBuilder_a$featuresListHandler_uxi26n_c0" />
-      <unit id="2319156231054335476" at="47,0,264,0" name="jetbrains.mps.lang.editor.menus.extras.editor.TransformationMenuPart_PluginAction_EditorBuilder_a" />
+      <unit id="2319156231054335476" at="260,0,263,0" name="jetbrains.mps.lang.editor.menus.extras.editor.TransformationMenuPart_PluginAction_EditorBuilder$PROPS" />
+      <unit id="2319156231054335476" at="249,0,253,0" name="jetbrains.mps.lang.editor.menus.extras.editor.TransformationMenuPart_PluginAction_EditorBuilder$LINKS" />
+      <unit id="2319156231054335476" at="254,0,259,0" name="jetbrains.mps.lang.editor.menus.extras.editor.TransformationMenuPart_PluginAction_EditorBuilder$CONCEPTS" />
+      <unit id="2319156231054335476" at="83,42,91,5" name="jetbrains.mps.lang.editor.menus.extras.editor.TransformationMenuPart_PluginAction_EditorBuilder$1" />
+      <unit id="2319156231054335487" at="109,0,152,0" name="jetbrains.mps.lang.editor.menus.extras.editor.TransformationMenuPart_PluginAction_EditorBuilder$Inline_Builder0" />
+      <unit id="2319156231054335476" at="164,0,237,0" name="jetbrains.mps.lang.editor.menus.extras.editor.TransformationMenuPart_PluginAction_EditorBuilder$featuresListHandler_uxi26n_c0" />
+      <unit id="2319156231054335476" at="47,0,264,0" name="jetbrains.mps.lang.editor.menus.extras.editor.TransformationMenuPart_PluginAction_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:f9027d3e-0a0c-40cc-8f3c-22568753f6bb(jetbrains.mps.lang.editor.menus.extras.editor)/2926686622729992812">
     <file name="TransformationMenuPart_Intention_Editor.java">
-      <node id="2926686622729992812" at="11,79,12,98" concept="6" />
+      <node id="2926686622729992812" at="11,79,12,96" concept="6" />
       <node id="2926686622729992812" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="2926686622729992812" at="11,79,12,98" />
+      <scope id="2926686622729992812" at="11,79,12,96" />
       <scope id="2926686622729992812" at="11,0,14,0">
         <var name="editorContext" id="2926686622729992812" />
         <var name="node" id="2926686622729992812" />
       </scope>
       <unit id="2926686622729992812" at="10,0,15,0" name="jetbrains.mps.lang.editor.menus.extras.editor.TransformationMenuPart_Intention_Editor" />
     </file>
-    <file name="TransformationMenuPart_Intention_EditorBuilder_a.java">
-      <node id="2926686622729992812" at="51,112,52,19" concept="9" />
+    <file name="TransformationMenuPart_Intention_EditorBuilder.java">
+      <node id="2926686622729992812" at="51,110,52,19" concept="9" />
       <node id="2926686622729992812" at="52,19,53,18" concept="1" />
       <node id="2926686622729992812" at="58,26,59,18" concept="6" />
       <node id="2926686622729992812" at="62,39,63,32" concept="6" />
@@ -416,7 +416,7 @@
       <node id="2926686622729992812" at="177,0,180,0" concept="4" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="2926686622729992812" at="180,0,183,0" concept="4" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="2926686622729992812" at="224,96,227,9" concept="3" />
-      <node id="2926686622729992812" at="51,0,55,0" concept="0" trace="TransformationMenuPart_Intention_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="2926686622729992812" at="51,0,55,0" concept="0" trace="TransformationMenuPart_Intention_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1077225164072301476" at="77,0,81,0" concept="4" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="2926686622729992812" at="95,0,99,5" concept="3" />
       <node id="2926686622729992812" at="168,0,172,0" concept="0" trace="featuresListHandler_yp01gy_c0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
@@ -456,7 +456,7 @@
       <scope id="2926686622729992812" at="180,48,181,47" />
       <scope id="2926686622729992812" at="198,17,199,42" />
       <scope id="2926686622729992812" at="225,34,226,91" />
-      <scope id="2926686622729992812" at="51,112,53,18" />
+      <scope id="2926686622729992812" at="51,110,53,18" />
       <scope id="1077225164072301476" at="77,42,79,22">
         <var name="editorCell" id="1077225164072301476" />
       </scope>
@@ -555,28 +555,28 @@
         <var name="referenceLink" id="2926686622729992812" />
       </scope>
       <scope id="2926686622729992812" at="81,0,109,0" />
-      <unit id="2926686622729992812" at="260,0,263,0" name="jetbrains.mps.lang.editor.menus.extras.editor.TransformationMenuPart_Intention_EditorBuilder_a$PROPS" />
-      <unit id="2926686622729992812" at="249,0,253,0" name="jetbrains.mps.lang.editor.menus.extras.editor.TransformationMenuPart_Intention_EditorBuilder_a$LINKS" />
-      <unit id="2926686622729992812" at="254,0,259,0" name="jetbrains.mps.lang.editor.menus.extras.editor.TransformationMenuPart_Intention_EditorBuilder_a$CONCEPTS" />
-      <unit id="2926686622729992812" at="83,42,91,5" name="jetbrains.mps.lang.editor.menus.extras.editor.TransformationMenuPart_Intention_EditorBuilder_a$1" />
-      <unit id="2926686622729992829" at="109,0,152,0" name="jetbrains.mps.lang.editor.menus.extras.editor.TransformationMenuPart_Intention_EditorBuilder_a$Inline_Builder0" />
-      <unit id="2926686622729992812" at="164,0,237,0" name="jetbrains.mps.lang.editor.menus.extras.editor.TransformationMenuPart_Intention_EditorBuilder_a$featuresListHandler_yp01gy_c0" />
-      <unit id="2926686622729992812" at="47,0,264,0" name="jetbrains.mps.lang.editor.menus.extras.editor.TransformationMenuPart_Intention_EditorBuilder_a" />
+      <unit id="2926686622729992812" at="260,0,263,0" name="jetbrains.mps.lang.editor.menus.extras.editor.TransformationMenuPart_Intention_EditorBuilder$PROPS" />
+      <unit id="2926686622729992812" at="249,0,253,0" name="jetbrains.mps.lang.editor.menus.extras.editor.TransformationMenuPart_Intention_EditorBuilder$LINKS" />
+      <unit id="2926686622729992812" at="254,0,259,0" name="jetbrains.mps.lang.editor.menus.extras.editor.TransformationMenuPart_Intention_EditorBuilder$CONCEPTS" />
+      <unit id="2926686622729992812" at="83,42,91,5" name="jetbrains.mps.lang.editor.menus.extras.editor.TransformationMenuPart_Intention_EditorBuilder$1" />
+      <unit id="2926686622729992829" at="109,0,152,0" name="jetbrains.mps.lang.editor.menus.extras.editor.TransformationMenuPart_Intention_EditorBuilder$Inline_Builder0" />
+      <unit id="2926686622729992812" at="164,0,237,0" name="jetbrains.mps.lang.editor.menus.extras.editor.TransformationMenuPart_Intention_EditorBuilder$featuresListHandler_yp01gy_c0" />
+      <unit id="2926686622729992812" at="47,0,264,0" name="jetbrains.mps.lang.editor.menus.extras.editor.TransformationMenuPart_Intention_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:f9027d3e-0a0c-40cc-8f3c-22568753f6bb(jetbrains.mps.lang.editor.menus.extras.editor)/4736696158595695493">
     <file name="TransformationMenuPart_Refactoring_Editor.java">
-      <node id="4736696158595695493" at="11,79,12,100" concept="6" />
+      <node id="4736696158595695493" at="11,79,12,98" concept="6" />
       <node id="4736696158595695493" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4736696158595695493" at="11,79,12,100" />
+      <scope id="4736696158595695493" at="11,79,12,98" />
       <scope id="4736696158595695493" at="11,0,14,0">
         <var name="editorContext" id="4736696158595695493" />
         <var name="node" id="4736696158595695493" />
       </scope>
       <unit id="4736696158595695493" at="10,0,15,0" name="jetbrains.mps.lang.editor.menus.extras.editor.TransformationMenuPart_Refactoring_Editor" />
     </file>
-    <file name="TransformationMenuPart_Refactoring_EditorBuilder_a.java">
-      <node id="4736696158595695493" at="51,114,52,19" concept="9" />
+    <file name="TransformationMenuPart_Refactoring_EditorBuilder.java">
+      <node id="4736696158595695493" at="51,112,52,19" concept="9" />
       <node id="4736696158595695493" at="52,19,53,18" concept="1" />
       <node id="4736696158595695493" at="58,26,59,18" concept="6" />
       <node id="4736696158595695493" at="62,39,63,32" concept="6" />
@@ -690,7 +690,7 @@
       <node id="4736696158595695493" at="177,0,180,0" concept="4" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="4736696158595695493" at="180,0,183,0" concept="4" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="4736696158595695493" at="224,96,227,9" concept="3" />
-      <node id="4736696158595695493" at="51,0,55,0" concept="0" trace="TransformationMenuPart_Refactoring_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4736696158595695493" at="51,0,55,0" concept="0" trace="TransformationMenuPart_Refactoring_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1077225164072301885" at="77,0,81,0" concept="4" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4736696158595695493" at="95,0,99,5" concept="3" />
       <node id="4736696158595695493" at="168,0,172,0" concept="0" trace="featuresListHandler_rkww6w_c0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
@@ -730,7 +730,7 @@
       <scope id="4736696158595695493" at="180,48,181,47" />
       <scope id="4736696158595695493" at="198,17,199,42" />
       <scope id="4736696158595695493" at="225,34,226,91" />
-      <scope id="4736696158595695493" at="51,114,53,18" />
+      <scope id="4736696158595695493" at="51,112,53,18" />
       <scope id="1077225164072301885" at="77,42,79,22">
         <var name="editorCell" id="1077225164072301885" />
       </scope>
@@ -829,13 +829,13 @@
         <var name="referenceLink" id="4736696158595695493" />
       </scope>
       <scope id="4736696158595695493" at="81,0,109,0" />
-      <unit id="4736696158595695493" at="260,0,263,0" name="jetbrains.mps.lang.editor.menus.extras.editor.TransformationMenuPart_Refactoring_EditorBuilder_a$PROPS" />
-      <unit id="4736696158595695493" at="249,0,253,0" name="jetbrains.mps.lang.editor.menus.extras.editor.TransformationMenuPart_Refactoring_EditorBuilder_a$LINKS" />
-      <unit id="4736696158595695493" at="254,0,259,0" name="jetbrains.mps.lang.editor.menus.extras.editor.TransformationMenuPart_Refactoring_EditorBuilder_a$CONCEPTS" />
-      <unit id="4736696158595695493" at="83,42,91,5" name="jetbrains.mps.lang.editor.menus.extras.editor.TransformationMenuPart_Refactoring_EditorBuilder_a$1" />
-      <unit id="4736696158595695498" at="109,0,152,0" name="jetbrains.mps.lang.editor.menus.extras.editor.TransformationMenuPart_Refactoring_EditorBuilder_a$Inline_Builder0" />
-      <unit id="4736696158595695493" at="164,0,237,0" name="jetbrains.mps.lang.editor.menus.extras.editor.TransformationMenuPart_Refactoring_EditorBuilder_a$featuresListHandler_rkww6w_c0" />
-      <unit id="4736696158595695493" at="47,0,264,0" name="jetbrains.mps.lang.editor.menus.extras.editor.TransformationMenuPart_Refactoring_EditorBuilder_a" />
+      <unit id="4736696158595695493" at="260,0,263,0" name="jetbrains.mps.lang.editor.menus.extras.editor.TransformationMenuPart_Refactoring_EditorBuilder$PROPS" />
+      <unit id="4736696158595695493" at="249,0,253,0" name="jetbrains.mps.lang.editor.menus.extras.editor.TransformationMenuPart_Refactoring_EditorBuilder$LINKS" />
+      <unit id="4736696158595695493" at="254,0,259,0" name="jetbrains.mps.lang.editor.menus.extras.editor.TransformationMenuPart_Refactoring_EditorBuilder$CONCEPTS" />
+      <unit id="4736696158595695493" at="83,42,91,5" name="jetbrains.mps.lang.editor.menus.extras.editor.TransformationMenuPart_Refactoring_EditorBuilder$1" />
+      <unit id="4736696158595695498" at="109,0,152,0" name="jetbrains.mps.lang.editor.menus.extras.editor.TransformationMenuPart_Refactoring_EditorBuilder$Inline_Builder0" />
+      <unit id="4736696158595695493" at="164,0,237,0" name="jetbrains.mps.lang.editor.menus.extras.editor.TransformationMenuPart_Refactoring_EditorBuilder$featuresListHandler_rkww6w_c0" />
+      <unit id="4736696158595695493" at="47,0,264,0" name="jetbrains.mps.lang.editor.menus.extras.editor.TransformationMenuPart_Refactoring_EditorBuilder" />
     </file>
   </root>
 </debug-info>

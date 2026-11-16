@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="-1dbg2bgl2oubmk8x59ce6p7s2tr50t3">
-  <files names="ActionMapImportTesterExtension_Editor.java:ActionMapImportTesterExtension_EditorBuilder_a.java:EditorAspectDescriptorImpl.java:MapExt.java" />
+  <files names="ActionMapImportTesterExtension_Editor.java:ActionMapImportTesterExtension_EditorBuilder.java:EditorAspectDescriptorImpl.java:MapExt.java" />
 </product>
 

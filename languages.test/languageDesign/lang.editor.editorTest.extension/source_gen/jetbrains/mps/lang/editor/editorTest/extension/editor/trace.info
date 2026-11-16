@@ -20,17 +20,17 @@
   </root>
   <root nodeRef="r:2c409c47-8bbf-4581-80a0-6efb7238889e(jetbrains.mps.lang.editor.editorTest.extension.editor)/4575047236827101341">
     <file name="ActionMapImportTesterExtension_Editor.java">
-      <node id="4575047236827101341" at="11,79,12,96" concept="6" />
+      <node id="4575047236827101341" at="11,79,12,94" concept="6" />
       <node id="4575047236827101341" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4575047236827101341" at="11,79,12,96" />
+      <scope id="4575047236827101341" at="11,79,12,94" />
       <scope id="4575047236827101341" at="11,0,14,0">
         <var name="editorContext" id="4575047236827101341" />
         <var name="node" id="4575047236827101341" />
       </scope>
       <unit id="4575047236827101341" at="10,0,15,0" name="jetbrains.mps.lang.editor.editorTest.extension.editor.ActionMapImportTesterExtension_Editor" />
     </file>
-    <file name="ActionMapImportTesterExtension_EditorBuilder_a.java">
-      <node id="4575047236827101341" at="36,110,37,19" concept="11" />
+    <file name="ActionMapImportTesterExtension_EditorBuilder.java">
+      <node id="4575047236827101341" at="36,108,37,19" concept="11" />
       <node id="4575047236827101341" at="37,19,38,18" concept="1" />
       <node id="4575047236827101341" at="43,26,44,18" concept="6" />
       <node id="4575047236827101341" at="47,39,48,32" concept="6" />
@@ -76,7 +76,7 @@
       <node id="4575047236827101341" at="110,0,111,0" concept="9" trace="PropertyAttribute$Gb" />
       <node id="4575047236827101341" at="33,0,35,0" concept="2" trace="myNode" />
       <node id="4575047236827101341" at="47,0,50,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="4575047236827101341" at="36,0,40,0" concept="0" trace="ActionMapImportTesterExtension_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4575047236827101341" at="36,0,40,0" concept="0" trace="ActionMapImportTesterExtension_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4575047236827101341" at="41,0,46,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="4575047236827101615" at="94,208,99,24" concept="3" />
       <node id="4575047236827101605" at="77,0,83,0" concept="4" trace="createConstant_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -88,7 +88,7 @@
       <scope id="4575047236827101341" at="43,26,44,18" />
       <scope id="4575047236827101341" at="47,39,48,32" />
       <scope id="4575047236827101615" at="100,15,101,40" />
-      <scope id="4575047236827101341" at="36,110,38,18" />
+      <scope id="4575047236827101341" at="36,108,38,18" />
       <scope id="4575047236827101615" at="95,74,97,145">
         <var name="manager" id="4575047236827101615" />
       </scope>
@@ -123,9 +123,9 @@
       </scope>
       <scope id="4575047236827101615" at="83,41,102,5" />
       <scope id="4575047236827101615" at="83,0,104,0" />
-      <unit id="4575047236827101341" at="105,0,108,0" name="jetbrains.mps.lang.editor.editorTest.extension.editor.ActionMapImportTesterExtension_EditorBuilder_a$PROPS" />
-      <unit id="4575047236827101341" at="109,0,112,0" name="jetbrains.mps.lang.editor.editorTest.extension.editor.ActionMapImportTesterExtension_EditorBuilder_a$CONCEPTS" />
-      <unit id="4575047236827101341" at="32,0,113,0" name="jetbrains.mps.lang.editor.editorTest.extension.editor.ActionMapImportTesterExtension_EditorBuilder_a" />
+      <unit id="4575047236827101341" at="105,0,108,0" name="jetbrains.mps.lang.editor.editorTest.extension.editor.ActionMapImportTesterExtension_EditorBuilder$PROPS" />
+      <unit id="4575047236827101341" at="109,0,112,0" name="jetbrains.mps.lang.editor.editorTest.extension.editor.ActionMapImportTesterExtension_EditorBuilder$CONCEPTS" />
+      <unit id="4575047236827101341" at="32,0,113,0" name="jetbrains.mps.lang.editor.editorTest.extension.editor.ActionMapImportTesterExtension_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:2c409c47-8bbf-4581-80a0-6efb7238889e(jetbrains.mps.lang.editor.editorTest.extension.editor)/4575047236827101453">

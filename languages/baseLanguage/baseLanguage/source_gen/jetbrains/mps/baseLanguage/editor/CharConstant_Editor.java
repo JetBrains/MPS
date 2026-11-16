@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class CharConstant_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new CharConstant_EditorBuilder_a(editorContext, node).createCell();
+    return new CharConstant_EditorBuilder(editorContext, node).createCell();
   }
 }

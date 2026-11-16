@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class IsStrongSubtypeExpression_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new IsStrongSubtypeExpression_EditorBuilder_a(editorContext, node).createCell();
+    return new IsStrongSubtypeExpression_EditorBuilder(editorContext, node).createCell();
   }
 }

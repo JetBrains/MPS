@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class SimpleMathBooleanConstant_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new SimpleMathBooleanConstant_EditorBuilder_a(editorContext, node).createCell();
+    return new SimpleMathBooleanConstant_EditorBuilder(editorContext, node).createCell();
   }
 }

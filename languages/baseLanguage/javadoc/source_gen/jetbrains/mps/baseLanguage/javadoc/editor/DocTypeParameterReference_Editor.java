@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class DocTypeParameterReference_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new DocTypeParameterReference_EditorBuilder_a(editorContext, node).createCell();
+    return new DocTypeParameterReference_EditorBuilder(editorContext, node).createCell();
   }
 }

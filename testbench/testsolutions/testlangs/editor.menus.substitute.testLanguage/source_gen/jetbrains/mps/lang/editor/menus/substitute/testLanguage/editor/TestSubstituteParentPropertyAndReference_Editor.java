@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class TestSubstituteParentPropertyAndReference_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new TestSubstituteParentPropertyAndReference_EditorBuilder_a(editorContext, node).createCell();
+    return new TestSubstituteParentPropertyAndReference_EditorBuilder(editorContext, node).createCell();
   }
 }

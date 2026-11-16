@@ -32,17 +32,17 @@
   </root>
   <root nodeRef="r:105afc13-e85d-4a9a-b408-b51c6dce8852(ref.editor)/7709929535540733623">
     <file name="OldComponentRef_Editor.java">
-      <node id="7709929535540733623" at="11,79,12,81" concept="6" />
+      <node id="7709929535540733623" at="11,79,12,79" concept="6" />
       <node id="7709929535540733623" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="7709929535540733623" at="11,79,12,81" />
+      <scope id="7709929535540733623" at="11,79,12,79" />
       <scope id="7709929535540733623" at="11,0,14,0">
         <var name="editorContext" id="7709929535540733623" />
         <var name="node" id="7709929535540733623" />
       </scope>
       <unit id="7709929535540733623" at="10,0,15,0" name="ref.editor.OldComponentRef_Editor" />
     </file>
-    <file name="OldComponentRef_EditorBuilder_a.java">
-      <node id="7709929535540733623" at="41,95,42,19" concept="9" />
+    <file name="OldComponentRef_EditorBuilder.java">
+      <node id="7709929535540733623" at="41,93,42,19" concept="9" />
       <node id="7709929535540733623" at="42,19,43,18" concept="1" />
       <node id="7709929535540733623" at="48,26,49,18" concept="6" />
       <node id="7709929535540733623" at="52,39,53,32" concept="6" />
@@ -107,7 +107,7 @@
       <node id="7709929535540733627" at="107,0,109,0" concept="2" trace="myNode" />
       <node id="7709929535540733623" at="52,0,55,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="7709929535540733627" at="117,0,120,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="7709929535540733623" at="41,0,45,0" concept="0" trace="OldComponentRef_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="7709929535540733623" at="41,0,45,0" concept="0" trace="OldComponentRef_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="7709929535540733623" at="92,0,96,5" concept="3" />
       <node id="7709929535540733623" at="46,0,51,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="7709929535540733623" at="99,205,104,22" concept="3" />
@@ -127,7 +127,7 @@
       <scope id="7709929535540733627" at="117,41,118,32" />
       <scope id="7709929535540733627" at="123,28,124,20" />
       <scope id="7709929535540733638" at="144,17,145,42" />
-      <scope id="7709929535540733623" at="41,95,43,18" />
+      <scope id="7709929535540733623" at="41,93,43,18" />
       <scope id="7709929535540733623" at="93,40,95,45" />
       <scope id="7709929535540733623" at="100,73,102,145">
         <var name="manager" id="7709929535540733623" />
@@ -185,27 +185,27 @@
         <var name="referenceLink" id="7709929535540733623" />
       </scope>
       <scope id="7709929535540733623" at="71,0,106,0" />
-      <unit id="7709929535540733623" at="150,0,153,0" name="ref.editor.OldComponentRef_EditorBuilder_a$LINKS" />
-      <unit id="7709929535540733623" at="159,0,162,0" name="ref.editor.OldComponentRef_EditorBuilder_a$PROPS" />
-      <unit id="7709929535540733623" at="154,0,158,0" name="ref.editor.OldComponentRef_EditorBuilder_a$CONCEPTS" />
-      <unit id="7709929535540733623" at="73,42,88,5" name="ref.editor.OldComponentRef_EditorBuilder_a$1" />
-      <unit id="7709929535540733627" at="106,0,149,0" name="ref.editor.OldComponentRef_EditorBuilder_a$Inline_Builder0" />
-      <unit id="7709929535540733623" at="37,0,163,0" name="ref.editor.OldComponentRef_EditorBuilder_a" />
+      <unit id="7709929535540733623" at="150,0,153,0" name="ref.editor.OldComponentRef_EditorBuilder$LINKS" />
+      <unit id="7709929535540733623" at="159,0,162,0" name="ref.editor.OldComponentRef_EditorBuilder$PROPS" />
+      <unit id="7709929535540733623" at="154,0,158,0" name="ref.editor.OldComponentRef_EditorBuilder$CONCEPTS" />
+      <unit id="7709929535540733623" at="73,42,88,5" name="ref.editor.OldComponentRef_EditorBuilder$1" />
+      <unit id="7709929535540733627" at="106,0,149,0" name="ref.editor.OldComponentRef_EditorBuilder$Inline_Builder0" />
+      <unit id="7709929535540733623" at="37,0,163,0" name="ref.editor.OldComponentRef_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:105afc13-e85d-4a9a-b408-b51c6dce8852(ref.editor)/7709929535540733689">
     <file name="NewComponentRef_Editor.java">
-      <node id="7709929535540733689" at="11,79,12,81" concept="6" />
+      <node id="7709929535540733689" at="11,79,12,79" concept="6" />
       <node id="7709929535540733689" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="7709929535540733689" at="11,79,12,81" />
+      <scope id="7709929535540733689" at="11,79,12,79" />
       <scope id="7709929535540733689" at="11,0,14,0">
         <var name="editorContext" id="7709929535540733689" />
         <var name="node" id="7709929535540733689" />
       </scope>
       <unit id="7709929535540733689" at="10,0,15,0" name="ref.editor.NewComponentRef_Editor" />
     </file>
-    <file name="NewComponentRef_EditorBuilder_a.java">
-      <node id="7709929535540733689" at="41,95,42,19" concept="9" />
+    <file name="NewComponentRef_EditorBuilder.java">
+      <node id="7709929535540733689" at="41,93,42,19" concept="9" />
       <node id="7709929535540733689" at="42,19,43,18" concept="1" />
       <node id="7709929535540733689" at="48,26,49,18" concept="6" />
       <node id="7709929535540733689" at="52,39,53,32" concept="6" />
@@ -270,7 +270,7 @@
       <node id="7709929535541053073" at="107,0,109,0" concept="2" trace="myNode" />
       <node id="7709929535540733689" at="52,0,55,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="7709929535541053073" at="117,0,120,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="7709929535540733689" at="41,0,45,0" concept="0" trace="NewComponentRef_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="7709929535540733689" at="41,0,45,0" concept="0" trace="NewComponentRef_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="7709929535540733689" at="92,0,96,5" concept="3" />
       <node id="7709929535540733689" at="46,0,51,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="7709929535540733689" at="99,205,104,22" concept="3" />
@@ -290,7 +290,7 @@
       <scope id="7709929535541053073" at="117,41,118,32" />
       <scope id="7709929535541053073" at="123,28,124,20" />
       <scope id="7709929535541053074" at="144,17,145,42" />
-      <scope id="7709929535540733689" at="41,95,43,18" />
+      <scope id="7709929535540733689" at="41,93,43,18" />
       <scope id="7709929535540733689" at="93,40,95,45" />
       <scope id="7709929535540733689" at="100,73,102,145">
         <var name="manager" id="7709929535540733689" />
@@ -348,12 +348,12 @@
         <var name="referenceLink" id="7709929535540733689" />
       </scope>
       <scope id="7709929535540733689" at="71,0,106,0" />
-      <unit id="7709929535540733689" at="150,0,153,0" name="ref.editor.NewComponentRef_EditorBuilder_a$LINKS" />
-      <unit id="7709929535540733689" at="159,0,162,0" name="ref.editor.NewComponentRef_EditorBuilder_a$PROPS" />
-      <unit id="7709929535540733689" at="154,0,158,0" name="ref.editor.NewComponentRef_EditorBuilder_a$CONCEPTS" />
-      <unit id="7709929535540733689" at="73,42,88,5" name="ref.editor.NewComponentRef_EditorBuilder_a$1" />
-      <unit id="7709929535541053073" at="106,0,149,0" name="ref.editor.NewComponentRef_EditorBuilder_a$Inline_Builder0" />
-      <unit id="7709929535540733689" at="37,0,163,0" name="ref.editor.NewComponentRef_EditorBuilder_a" />
+      <unit id="7709929535540733689" at="150,0,153,0" name="ref.editor.NewComponentRef_EditorBuilder$LINKS" />
+      <unit id="7709929535540733689" at="159,0,162,0" name="ref.editor.NewComponentRef_EditorBuilder$PROPS" />
+      <unit id="7709929535540733689" at="154,0,158,0" name="ref.editor.NewComponentRef_EditorBuilder$CONCEPTS" />
+      <unit id="7709929535540733689" at="73,42,88,5" name="ref.editor.NewComponentRef_EditorBuilder$1" />
+      <unit id="7709929535541053073" at="106,0,149,0" name="ref.editor.NewComponentRef_EditorBuilder$Inline_Builder0" />
+      <unit id="7709929535540733689" at="37,0,163,0" name="ref.editor.NewComponentRef_EditorBuilder" />
     </file>
   </root>
 </debug-info>

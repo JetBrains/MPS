@@ -17,17 +17,17 @@
   </root>
   <root nodeRef="r:ffb02e65-906c-4899-bf74-25c3831d917c(jetbrains.mps.build.tests.hl.editor)/4119417866632355936">
     <file name="Bundle_Editor.java">
-      <node id="4119417866632355936" at="11,79,12,72" concept="6" />
+      <node id="4119417866632355936" at="11,79,12,70" concept="6" />
       <node id="4119417866632355936" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4119417866632355936" at="11,79,12,72" />
+      <scope id="4119417866632355936" at="11,79,12,70" />
       <scope id="4119417866632355936" at="11,0,14,0">
         <var name="editorContext" id="4119417866632355936" />
         <var name="node" id="4119417866632355936" />
       </scope>
       <unit id="4119417866632355936" at="10,0,15,0" name="jetbrains.mps.build.tests.hl.editor.Bundle_Editor" />
     </file>
-    <file name="Bundle_EditorBuilder_a.java">
-      <node id="4119417866632355936" at="47,86,48,19" concept="8" />
+    <file name="Bundle_EditorBuilder.java">
+      <node id="4119417866632355936" at="47,84,48,19" concept="8" />
       <node id="4119417866632355936" at="48,19,49,18" concept="1" />
       <node id="4119417866632355936" at="54,26,55,18" concept="6" />
       <node id="4119417866632355936" at="58,39,59,32" concept="6" />
@@ -137,7 +137,7 @@
       <node id="4119417866632355936" at="176,0,179,0" concept="4" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="4119417866632355936" at="179,0,182,0" concept="4" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="4119417866632355936" at="223,96,226,9" concept="3" />
-      <node id="4119417866632355936" at="47,0,51,0" concept="0" trace="Bundle_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4119417866632355936" at="47,0,51,0" concept="0" trace="Bundle_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4119417866632355936" at="167,0,171,0" concept="0" trace="modulesListHandler_20hqsl_a3a#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="4119417866632355936" at="172,0,176,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="4119417866632355936" at="205,97,209,9" concept="3" />
@@ -175,7 +175,7 @@
       <scope id="4119417866632355936" at="179,48,180,40" />
       <scope id="4119417866632355936" at="197,17,198,42" />
       <scope id="4119417866632355936" at="224,34,225,91" />
-      <scope id="4119417866632355936" at="47,86,49,18" />
+      <scope id="4119417866632355936" at="47,84,49,18" />
       <scope id="4119417866632355972" at="101,74,103,145">
         <var name="manager" id="4119417866632355972" />
       </scope>
@@ -270,11 +270,11 @@
         <var name="elementNode" id="4119417866632355936" />
         <var name="isEmptyCell" id="4119417866632355936" />
       </scope>
-      <unit id="4119417866632355936" at="241,0,244,0" name="jetbrains.mps.build.tests.hl.editor.Bundle_EditorBuilder_a$LINKS" />
-      <unit id="4119417866632355936" at="231,0,235,0" name="jetbrains.mps.build.tests.hl.editor.Bundle_EditorBuilder_a$PROPS" />
-      <unit id="4119417866632355936" at="236,0,240,0" name="jetbrains.mps.build.tests.hl.editor.Bundle_EditorBuilder_a$CONCEPTS" />
-      <unit id="4119417866632355936" at="163,0,230,0" name="jetbrains.mps.build.tests.hl.editor.Bundle_EditorBuilder_a$modulesListHandler_20hqsl_a3a" />
-      <unit id="4119417866632355936" at="43,0,245,0" name="jetbrains.mps.build.tests.hl.editor.Bundle_EditorBuilder_a" />
+      <unit id="4119417866632355936" at="241,0,244,0" name="jetbrains.mps.build.tests.hl.editor.Bundle_EditorBuilder$LINKS" />
+      <unit id="4119417866632355936" at="231,0,235,0" name="jetbrains.mps.build.tests.hl.editor.Bundle_EditorBuilder$PROPS" />
+      <unit id="4119417866632355936" at="236,0,240,0" name="jetbrains.mps.build.tests.hl.editor.Bundle_EditorBuilder$CONCEPTS" />
+      <unit id="4119417866632355936" at="163,0,230,0" name="jetbrains.mps.build.tests.hl.editor.Bundle_EditorBuilder$modulesListHandler_20hqsl_a3a" />
+      <unit id="4119417866632355936" at="43,0,245,0" name="jetbrains.mps.build.tests.hl.editor.Bundle_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:ffb02e65-906c-4899-bf74-25c3831d917c(jetbrains.mps.build.tests.hl.editor)/729402675091596732">

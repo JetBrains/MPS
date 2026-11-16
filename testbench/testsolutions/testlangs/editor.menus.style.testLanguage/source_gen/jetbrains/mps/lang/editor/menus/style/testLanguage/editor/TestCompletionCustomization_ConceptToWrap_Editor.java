@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class TestCompletionCustomization_ConceptToWrap_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new TestCompletionCustomization_ConceptToWrap_EditorBuilder_a(editorContext, node).createCell();
+    return new TestCompletionCustomization_ConceptToWrap_EditorBuilder(editorContext, node).createCell();
   }
 }

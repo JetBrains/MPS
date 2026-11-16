@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class SeqRegexp_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new SeqRegexp_EditorBuilder_a(editorContext, node).createCell();
+    return new SeqRegexp_EditorBuilder(editorContext, node).createCell();
   }
 }

@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class CustomArgumentClause_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new CustomArgumentClause_EditorBuilder_a(editorContext, node).createCell();
+    return new CustomArgumentClause_EditorBuilder(editorContext, node).createCell();
   }
 }

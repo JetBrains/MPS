@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class OverloadedOpRulesContainer_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new OverloadedOpRulesContainer_EditorBuilder_a(editorContext, node).createCell();
+    return new OverloadedOpRulesContainer_EditorBuilder(editorContext, node).createCell();
   }
 }

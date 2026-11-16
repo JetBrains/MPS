@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class XmlNoSpaceValue_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new XmlNoSpaceValue_EditorBuilder_a(editorContext, node).createCell();
+    return new XmlNoSpaceValue_EditorBuilder(editorContext, node).createCell();
   }
 }

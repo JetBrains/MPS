@@ -16,6 +16,6 @@ public class ShortDescriptionEditorComponent implements ConceptEditorComponent {
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ShortDescriptionEditorComponent_ComponentBuilder_a(editorContext, node).createCell();
+    return new ShortDescriptionEditorComponent_ComponentBuilder(editorContext, node).createCell();
   }
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="4uzwy42wdkgevujt51zen3dw8cztso3">
-  <files names="DecisionTable_Editor.java:DecisionTable_EditorBuilder_a.java:EditorAspectDescriptorImpl.java" />
+  <files names="DecisionTable_Editor.java:DecisionTable_EditorBuilder.java:EditorAspectDescriptorImpl.java" />
 </product>
 

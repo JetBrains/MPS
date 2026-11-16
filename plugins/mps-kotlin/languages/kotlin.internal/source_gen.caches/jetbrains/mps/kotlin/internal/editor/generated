@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="-eczbaw09c1znephca1opupcd7e1pdfl">
-  <files names="EditorAspectDescriptorImpl.java:GenericLeftExpression_Editor.java:GenericLeftExpression_EditorBuilder_a.java:TextReference_Editor.java:TextReference_EditorBuilder_a.java:TextReference_InspectorBuilder_a.java" />
+  <files names="EditorAspectDescriptorImpl.java:GenericLeftExpression_Editor.java:GenericLeftExpression_EditorBuilder.java:TextReference_Editor.java:TextReference_EditorBuilder.java:TextReference_InspectorBuilder.java" />
 </product>
 

@@ -16,6 +16,6 @@ public class TransactionalProperty_EditorCellModel implements ConceptEditorCompo
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new TransactionalProperty_EditorCellModel_ComponentBuilder_a(editorContext, node).createCell();
+    return new TransactionalProperty_EditorCellModel_ComponentBuilder(editorContext, node).createCell();
   }
 }

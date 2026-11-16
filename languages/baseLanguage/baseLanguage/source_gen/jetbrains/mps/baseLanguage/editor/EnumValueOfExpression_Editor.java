@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class EnumValueOfExpression_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new EnumValueOfExpression_EditorBuilder_a(editorContext, node).createCell();
+    return new EnumValueOfExpression_EditorBuilder(editorContext, node).createCell();
   }
 }

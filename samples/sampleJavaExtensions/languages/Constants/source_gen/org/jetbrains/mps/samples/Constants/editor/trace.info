@@ -25,17 +25,17 @@
   </root>
   <root nodeRef="r:2bfc79e0-0d9b-47c9-b525-e58fbef017f6(org.jetbrains.mps.samples.Constants.editor)/1494751830318912540">
     <file name="Constant_Editor.java">
-      <node id="1494751830318912540" at="11,79,12,74" concept="6" />
+      <node id="1494751830318912540" at="11,79,12,72" concept="6" />
       <node id="1494751830318912540" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1494751830318912540" at="11,79,12,74" />
+      <scope id="1494751830318912540" at="11,79,12,72" />
       <scope id="1494751830318912540" at="11,0,14,0">
         <var name="editorContext" id="1494751830318912540" />
         <var name="node" id="1494751830318912540" />
       </scope>
       <unit id="1494751830318912540" at="10,0,15,0" name="org.jetbrains.mps.samples.Constants.editor.Constant_Editor" />
     </file>
-    <file name="Constant_EditorBuilder_a.java">
-      <node id="1494751830318912540" at="42,88,43,19" concept="9" />
+    <file name="Constant_EditorBuilder.java">
+      <node id="1494751830318912540" at="42,86,43,19" concept="9" />
       <node id="1494751830318912540" at="43,19,44,18" concept="1" />
       <node id="1494751830318912540" at="49,26,50,18" concept="6" />
       <node id="1494751830318912540" at="53,39,54,32" concept="6" />
@@ -102,7 +102,7 @@
       <node id="1494751830318912540" at="133,87,136,7" concept="3" />
       <node id="1494751830318912540" at="136,7,139,7" concept="3" />
       <node id="1494751830318912540" at="155,0,158,0" concept="4" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="1494751830318912540" at="42,0,46,0" concept="0" trace="Constant_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1494751830318912540" at="42,0,46,0" concept="0" trace="Constant_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1494751830318912540" at="104,0,108,0" concept="4" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1494751830318912540" at="112,0,116,0" concept="0" trace="initializerSingleRoleHandler_b5vi9g_d0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1494751830318912540" at="47,0,52,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -126,7 +126,7 @@
       <scope id="1494751830318912540" at="137,42,138,52" />
       <scope id="1494751830318912540" at="151,17,152,42" />
       <scope id="1494751830318912540" at="155,40,156,32" />
-      <scope id="1494751830318912540" at="42,88,44,18" />
+      <scope id="1494751830318912540" at="42,86,44,18" />
       <scope id="1494751830318912547" at="89,74,91,145">
         <var name="manager" id="1494751830318912547" />
       </scope>
@@ -185,26 +185,26 @@
       </scope>
       <scope id="1494751830318912547" at="74,41,96,5" />
       <scope id="1494751830318912547" at="74,0,98,0" />
-      <unit id="1494751830318912540" at="160,0,163,0" name="org.jetbrains.mps.samples.Constants.editor.Constant_EditorBuilder_a$PROPS" />
-      <unit id="1494751830318912540" at="164,0,167,0" name="org.jetbrains.mps.samples.Constants.editor.Constant_EditorBuilder_a$CONCEPTS" />
-      <unit id="1494751830318912540" at="168,0,171,0" name="org.jetbrains.mps.samples.Constants.editor.Constant_EditorBuilder_a$LINKS" />
-      <unit id="1494751830318912540" at="108,0,159,0" name="org.jetbrains.mps.samples.Constants.editor.Constant_EditorBuilder_a$initializerSingleRoleHandler_b5vi9g_d0" />
-      <unit id="1494751830318912540" at="38,0,172,0" name="org.jetbrains.mps.samples.Constants.editor.Constant_EditorBuilder_a" />
+      <unit id="1494751830318912540" at="160,0,163,0" name="org.jetbrains.mps.samples.Constants.editor.Constant_EditorBuilder$PROPS" />
+      <unit id="1494751830318912540" at="164,0,167,0" name="org.jetbrains.mps.samples.Constants.editor.Constant_EditorBuilder$CONCEPTS" />
+      <unit id="1494751830318912540" at="168,0,171,0" name="org.jetbrains.mps.samples.Constants.editor.Constant_EditorBuilder$LINKS" />
+      <unit id="1494751830318912540" at="108,0,159,0" name="org.jetbrains.mps.samples.Constants.editor.Constant_EditorBuilder$initializerSingleRoleHandler_b5vi9g_d0" />
+      <unit id="1494751830318912540" at="38,0,172,0" name="org.jetbrains.mps.samples.Constants.editor.Constant_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:2bfc79e0-0d9b-47c9-b525-e58fbef017f6(org.jetbrains.mps.samples.Constants.editor)/1494751830318912553">
     <file name="Constants_Editor.java">
-      <node id="1494751830318912553" at="11,79,12,75" concept="6" />
+      <node id="1494751830318912553" at="11,79,12,73" concept="6" />
       <node id="1494751830318912553" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1494751830318912553" at="11,79,12,75" />
+      <scope id="1494751830318912553" at="11,79,12,73" />
       <scope id="1494751830318912553" at="11,0,14,0">
         <var name="editorContext" id="1494751830318912553" />
         <var name="node" id="1494751830318912553" />
       </scope>
       <unit id="1494751830318912553" at="10,0,15,0" name="org.jetbrains.mps.samples.Constants.editor.Constants_Editor" />
     </file>
-    <file name="Constants_EditorBuilder_a.java">
-      <node id="1494751830318912553" at="46,89,47,19" concept="9" />
+    <file name="Constants_EditorBuilder.java">
+      <node id="1494751830318912553" at="46,87,47,19" concept="9" />
       <node id="1494751830318912553" at="47,19,48,18" concept="1" />
       <node id="1494751830318912553" at="53,26,54,18" concept="6" />
       <node id="1494751830318912553" at="57,39,58,32" concept="6" />
@@ -278,7 +278,7 @@
       <node id="1494751830318912553" at="123,0,126,0" concept="4" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="1494751830318912553" at="126,0,129,0" concept="4" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="1494751830318912553" at="170,96,173,9" concept="3" />
-      <node id="1494751830318912553" at="46,0,50,0" concept="0" trace="Constants_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1494751830318912553" at="46,0,50,0" concept="0" trace="Constants_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1494751830318912553" at="114,0,118,0" concept="0" trace="constantsListHandler_v2fri_c0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1494751830318912553" at="119,0,123,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1494751830318912553" at="152,97,156,9" concept="3" />
@@ -307,7 +307,7 @@
       <scope id="1494751830318912553" at="126,48,127,34" />
       <scope id="1494751830318912553" at="144,17,145,42" />
       <scope id="1494751830318912553" at="171,34,172,91" />
-      <scope id="1494751830318912553" at="46,89,48,18" />
+      <scope id="1494751830318912553" at="46,87,48,18" />
       <scope id="1494751830318912560" at="89,74,91,145">
         <var name="manager" id="1494751830318912560" />
       </scope>
@@ -371,26 +371,26 @@
         <var name="elementNode" id="1494751830318912553" />
         <var name="isEmptyCell" id="1494751830318912553" />
       </scope>
-      <unit id="1494751830318912553" at="178,0,181,0" name="org.jetbrains.mps.samples.Constants.editor.Constants_EditorBuilder_a$PROPS" />
-      <unit id="1494751830318912553" at="187,0,190,0" name="org.jetbrains.mps.samples.Constants.editor.Constants_EditorBuilder_a$LINKS" />
-      <unit id="1494751830318912553" at="182,0,186,0" name="org.jetbrains.mps.samples.Constants.editor.Constants_EditorBuilder_a$CONCEPTS" />
-      <unit id="1494751830318912553" at="110,0,177,0" name="org.jetbrains.mps.samples.Constants.editor.Constants_EditorBuilder_a$constantsListHandler_v2fri_c0" />
-      <unit id="1494751830318912553" at="42,0,191,0" name="org.jetbrains.mps.samples.Constants.editor.Constants_EditorBuilder_a" />
+      <unit id="1494751830318912553" at="178,0,181,0" name="org.jetbrains.mps.samples.Constants.editor.Constants_EditorBuilder$PROPS" />
+      <unit id="1494751830318912553" at="187,0,190,0" name="org.jetbrains.mps.samples.Constants.editor.Constants_EditorBuilder$LINKS" />
+      <unit id="1494751830318912553" at="182,0,186,0" name="org.jetbrains.mps.samples.Constants.editor.Constants_EditorBuilder$CONCEPTS" />
+      <unit id="1494751830318912553" at="110,0,177,0" name="org.jetbrains.mps.samples.Constants.editor.Constants_EditorBuilder$constantsListHandler_v2fri_c0" />
+      <unit id="1494751830318912553" at="42,0,191,0" name="org.jetbrains.mps.samples.Constants.editor.Constants_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:2bfc79e0-0d9b-47c9-b525-e58fbef017f6(org.jetbrains.mps.samples.Constants.editor)/3990190717072393831">
     <file name="ConstantReference_Editor.java">
-      <node id="3990190717072393831" at="11,79,12,83" concept="6" />
+      <node id="3990190717072393831" at="11,79,12,81" concept="6" />
       <node id="3990190717072393831" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="3990190717072393831" at="11,79,12,83" />
+      <scope id="3990190717072393831" at="11,79,12,81" />
       <scope id="3990190717072393831" at="11,0,14,0">
         <var name="editorContext" id="3990190717072393831" />
         <var name="node" id="3990190717072393831" />
       </scope>
       <unit id="3990190717072393831" at="10,0,15,0" name="org.jetbrains.mps.samples.Constants.editor.ConstantReference_Editor" />
     </file>
-    <file name="ConstantReference_EditorBuilder_a.java">
-      <node id="3990190717072393831" at="43,97,44,19" concept="9" />
+    <file name="ConstantReference_EditorBuilder.java">
+      <node id="3990190717072393831" at="43,95,44,19" concept="9" />
       <node id="3990190717072393831" at="44,19,45,18" concept="1" />
       <node id="3990190717072393831" at="50,26,51,18" concept="6" />
       <node id="3990190717072393831" at="54,39,55,32" concept="6" />
@@ -453,7 +453,7 @@
       <node id="3990190717072393834" at="102,0,104,0" concept="2" trace="myNode" />
       <node id="3990190717072393831" at="54,0,57,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="3990190717072393834" at="112,0,115,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="3990190717072393831" at="43,0,47,0" concept="0" trace="ConstantReference_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="3990190717072393831" at="43,0,47,0" concept="0" trace="ConstantReference_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="3990190717072393831" at="87,0,91,5" concept="3" />
       <node id="3990190717072393831" at="48,0,53,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="3990190717072393831" at="94,205,99,22" concept="3" />
@@ -472,7 +472,7 @@
       <scope id="3990190717072393834" at="112,41,113,32" />
       <scope id="3990190717072393834" at="118,28,119,20" />
       <scope id="3990190717072393836" at="142,17,143,42" />
-      <scope id="3990190717072393831" at="43,97,45,18" />
+      <scope id="3990190717072393831" at="43,95,45,18" />
       <scope id="3990190717072393831" at="88,40,90,47" />
       <scope id="3990190717072393831" at="95,73,97,145">
         <var name="manager" id="3990190717072393831" />
@@ -527,12 +527,12 @@
         <var name="referenceLink" id="3990190717072393831" />
       </scope>
       <scope id="3990190717072393831" at="66,0,101,0" />
-      <unit id="3990190717072393831" at="148,0,151,0" name="org.jetbrains.mps.samples.Constants.editor.ConstantReference_EditorBuilder_a$LINKS" />
-      <unit id="3990190717072393831" at="157,0,160,0" name="org.jetbrains.mps.samples.Constants.editor.ConstantReference_EditorBuilder_a$PROPS" />
-      <unit id="3990190717072393831" at="152,0,156,0" name="org.jetbrains.mps.samples.Constants.editor.ConstantReference_EditorBuilder_a$CONCEPTS" />
-      <unit id="3990190717072393831" at="68,42,83,5" name="org.jetbrains.mps.samples.Constants.editor.ConstantReference_EditorBuilder_a$1" />
-      <unit id="3990190717072393834" at="101,0,147,0" name="org.jetbrains.mps.samples.Constants.editor.ConstantReference_EditorBuilder_a$Inline_Builder0" />
-      <unit id="3990190717072393831" at="39,0,161,0" name="org.jetbrains.mps.samples.Constants.editor.ConstantReference_EditorBuilder_a" />
+      <unit id="3990190717072393831" at="148,0,151,0" name="org.jetbrains.mps.samples.Constants.editor.ConstantReference_EditorBuilder$LINKS" />
+      <unit id="3990190717072393831" at="157,0,160,0" name="org.jetbrains.mps.samples.Constants.editor.ConstantReference_EditorBuilder$PROPS" />
+      <unit id="3990190717072393831" at="152,0,156,0" name="org.jetbrains.mps.samples.Constants.editor.ConstantReference_EditorBuilder$CONCEPTS" />
+      <unit id="3990190717072393831" at="68,42,83,5" name="org.jetbrains.mps.samples.Constants.editor.ConstantReference_EditorBuilder$1" />
+      <unit id="3990190717072393834" at="101,0,147,0" name="org.jetbrains.mps.samples.Constants.editor.ConstantReference_EditorBuilder$Inline_Builder0" />
+      <unit id="3990190717072393831" at="39,0,161,0" name="org.jetbrains.mps.samples.Constants.editor.ConstantReference_EditorBuilder" />
     </file>
   </root>
 </debug-info>

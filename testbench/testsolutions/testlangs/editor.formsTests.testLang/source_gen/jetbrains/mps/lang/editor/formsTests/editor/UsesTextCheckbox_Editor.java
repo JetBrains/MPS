@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class UsesTextCheckbox_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new UsesTextCheckbox_EditorBuilder_a(editorContext, node).createCell();
+    return new UsesTextCheckbox_EditorBuilder(editorContext, node).createCell();
   }
 }

@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class GeneratorInternal_IWorkfowParticipants_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new GeneratorInternal_IWorkfowParticipants_EditorBuilder_a(editorContext, node).createCell();
+    return new GeneratorInternal_IWorkfowParticipants_EditorBuilder(editorContext, node).createCell();
   }
 }

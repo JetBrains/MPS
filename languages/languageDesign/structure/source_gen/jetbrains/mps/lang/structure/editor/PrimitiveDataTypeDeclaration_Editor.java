@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class PrimitiveDataTypeDeclaration_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new PrimitiveDataTypeDeclaration_EditorBuilder_a(editorContext, node).createCell();
+    return new PrimitiveDataTypeDeclaration_EditorBuilder(editorContext, node).createCell();
   }
 }

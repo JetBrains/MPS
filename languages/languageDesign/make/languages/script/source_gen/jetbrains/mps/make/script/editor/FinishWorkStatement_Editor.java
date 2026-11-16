@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class FinishWorkStatement_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new FinishWorkStatement_EditorBuilder_a(editorContext, node).createCell();
+    return new FinishWorkStatement_EditorBuilder(editorContext, node).createCell();
   }
 }

@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class XMLSAXLocatorExpression_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new XMLSAXLocatorExpression_EditorBuilder_a(editorContext, node).createCell();
+    return new XMLSAXLocatorExpression_EditorBuilder(editorContext, node).createCell();
   }
 }

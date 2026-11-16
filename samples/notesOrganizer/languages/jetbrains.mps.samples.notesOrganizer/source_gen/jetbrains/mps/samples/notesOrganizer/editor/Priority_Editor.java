@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class Priority_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new Priority_EditorBuilder_a(editorContext, node).createCell();
+    return new Priority_EditorBuilder(editorContext, node).createCell();
   }
 }

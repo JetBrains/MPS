@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class SubstituteTypeRule_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new SubstituteTypeRule_EditorBuilder_a(editorContext, node).createCell();
+    return new SubstituteTypeRule_EditorBuilder(editorContext, node).createCell();
   }
 }

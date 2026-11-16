@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ElsifClause_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ElsifClause_EditorBuilder_a(editorContext, node).createCell();
+    return new ElsifClause_EditorBuilder(editorContext, node).createCell();
   }
 }

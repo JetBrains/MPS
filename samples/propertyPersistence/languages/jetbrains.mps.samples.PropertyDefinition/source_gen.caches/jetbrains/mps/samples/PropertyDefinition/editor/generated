@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="3qzkfvfw76ev0v533rprcqjomn63ji1">
-  <files names="EditorAspectDescriptorImpl.java:PropertyCollection_Editor.java:PropertyCollection_EditorBuilder_a.java:Property_Editor.java:Property_EditorBuilder_a.java" />
+  <files names="EditorAspectDescriptorImpl.java:PropertyCollection_Editor.java:PropertyCollection_EditorBuilder.java:Property_Editor.java:Property_EditorBuilder.java" />
 </product>
 

@@ -9,9 +9,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ConceptFunction_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ConceptFunction_EditorBuilder_a(editorContext, node).createCell();
+    return new ConceptFunction_EditorBuilder(editorContext, node).createCell();
   }
   public EditorCell createInspectedCell(EditorContext editorContext, SNode node) {
-    return new ConceptFunction_InspectorBuilder_a(editorContext, node).createCell();
+    return new ConceptFunction_InspectorBuilder(editorContext, node).createCell();
   }
 }

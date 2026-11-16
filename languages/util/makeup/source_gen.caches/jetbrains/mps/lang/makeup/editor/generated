@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="5dqhvl1wt5mpnknac3mypvby1pcnto0">
-  <files names="CopyOutcome_Editor.java:CopyOutcome_EditorBuilder_a.java:EditorAspectDescriptorImpl.java" />
+  <files names="CopyOutcome_Editor.java:CopyOutcome_EditorBuilder.java:EditorAspectDescriptorImpl.java" />
 </product>
 

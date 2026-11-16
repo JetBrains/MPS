@@ -18,17 +18,17 @@
   </root>
   <root nodeRef="r:8cb98139-dde9-48c6-8624-a531b84be2cd(jetbrains.mps.lang.editor.table.editor)/2253133157536969611">
     <file name="CellModel_HierarchycalTable_Editor.java">
-      <node id="2253133157536969611" at="11,79,12,93" concept="6" />
+      <node id="2253133157536969611" at="11,79,12,91" concept="6" />
       <node id="2253133157536969611" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="2253133157536969611" at="11,79,12,93" />
+      <scope id="2253133157536969611" at="11,79,12,91" />
       <scope id="2253133157536969611" at="11,0,14,0">
         <var name="editorContext" id="2253133157536969611" />
         <var name="node" id="2253133157536969611" />
       </scope>
       <unit id="2253133157536969611" at="10,0,15,0" name="jetbrains.mps.lang.editor.table.editor.CellModel_HierarchycalTable_Editor" />
     </file>
-    <file name="CellModel_HierarchycalTable_EditorBuilder_a.java">
-      <node id="2253133157536969611" at="43,107,44,19" concept="9" />
+    <file name="CellModel_HierarchycalTable_EditorBuilder.java">
+      <node id="2253133157536969611" at="43,105,44,19" concept="9" />
       <node id="2253133157536969611" at="44,19,45,18" concept="1" />
       <node id="2253133157536969611" at="50,26,51,18" concept="6" />
       <node id="2253133157536969611" at="54,39,55,32" concept="6" />
@@ -262,7 +262,7 @@
       <node id="6216065619544954191" at="145,0,148,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="6216065619544954205" at="257,0,260,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="6216065619544954217" at="358,0,361,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="2253133157536969611" at="43,0,47,0" concept="0" trace="CellModel_HierarchycalTable_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="2253133157536969611" at="43,0,47,0" concept="0" trace="CellModel_HierarchycalTable_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="2253133157536969611" at="120,0,124,5" concept="3" />
       <node id="2253133157536969611" at="232,0,236,5" concept="3" />
       <node id="2253133157536969611" at="333,0,337,5" concept="3" />
@@ -318,7 +318,7 @@
       <scope id="6216065619544954217" at="358,41,359,32" />
       <scope id="6216065619544954217" at="364,28,365,20" />
       <scope id="6216065619544954218" at="385,17,386,42" />
-      <scope id="2253133157536969611" at="43,107,45,18" />
+      <scope id="2253133157536969611" at="43,105,45,18" />
       <scope id="2253133157536969611" at="121,40,123,63" />
       <scope id="2253133157536969611" at="128,73,130,145">
         <var name="manager" id="2253133157536969611" />
@@ -499,26 +499,26 @@
       <scope id="2253133157536969611" at="106,0,134,0" />
       <scope id="2253133157536969611" at="218,0,246,0" />
       <scope id="2253133157536969611" at="319,0,347,0" />
-      <unit id="2253133157536969611" at="411,0,414,0" name="jetbrains.mps.lang.editor.table.editor.CellModel_HierarchycalTable_EditorBuilder_a$PROPS" />
-      <unit id="2253133157536969611" at="406,0,410,0" name="jetbrains.mps.lang.editor.table.editor.CellModel_HierarchycalTable_EditorBuilder_a$CONCEPTS" />
-      <unit id="2253133157536969611" at="400,0,405,0" name="jetbrains.mps.lang.editor.table.editor.CellModel_HierarchycalTable_EditorBuilder_a$LINKS" />
-      <unit id="2253133157536969611" at="108,42,116,5" name="jetbrains.mps.lang.editor.table.editor.CellModel_HierarchycalTable_EditorBuilder_a$1" />
-      <unit id="2253133157536969611" at="220,42,228,5" name="jetbrains.mps.lang.editor.table.editor.CellModel_HierarchycalTable_EditorBuilder_a$2" />
-      <unit id="2253133157536969611" at="321,42,329,5" name="jetbrains.mps.lang.editor.table.editor.CellModel_HierarchycalTable_EditorBuilder_a$3" />
-      <unit id="6216065619544954191" at="134,0,177,0" name="jetbrains.mps.lang.editor.table.editor.CellModel_HierarchycalTable_EditorBuilder_a$Inline_Builder0" />
-      <unit id="6216065619544954205" at="246,0,289,0" name="jetbrains.mps.lang.editor.table.editor.CellModel_HierarchycalTable_EditorBuilder_a$Inline_Builder1" />
-      <unit id="6216065619544954217" at="347,0,390,0" name="jetbrains.mps.lang.editor.table.editor.CellModel_HierarchycalTable_EditorBuilder_a$Inline_Builder2" />
-      <unit id="2253133157536969611" at="39,0,415,0" name="jetbrains.mps.lang.editor.table.editor.CellModel_HierarchycalTable_EditorBuilder_a" />
+      <unit id="2253133157536969611" at="411,0,414,0" name="jetbrains.mps.lang.editor.table.editor.CellModel_HierarchycalTable_EditorBuilder$PROPS" />
+      <unit id="2253133157536969611" at="406,0,410,0" name="jetbrains.mps.lang.editor.table.editor.CellModel_HierarchycalTable_EditorBuilder$CONCEPTS" />
+      <unit id="2253133157536969611" at="400,0,405,0" name="jetbrains.mps.lang.editor.table.editor.CellModel_HierarchycalTable_EditorBuilder$LINKS" />
+      <unit id="2253133157536969611" at="108,42,116,5" name="jetbrains.mps.lang.editor.table.editor.CellModel_HierarchycalTable_EditorBuilder$1" />
+      <unit id="2253133157536969611" at="220,42,228,5" name="jetbrains.mps.lang.editor.table.editor.CellModel_HierarchycalTable_EditorBuilder$2" />
+      <unit id="2253133157536969611" at="321,42,329,5" name="jetbrains.mps.lang.editor.table.editor.CellModel_HierarchycalTable_EditorBuilder$3" />
+      <unit id="6216065619544954191" at="134,0,177,0" name="jetbrains.mps.lang.editor.table.editor.CellModel_HierarchycalTable_EditorBuilder$Inline_Builder0" />
+      <unit id="6216065619544954205" at="246,0,289,0" name="jetbrains.mps.lang.editor.table.editor.CellModel_HierarchycalTable_EditorBuilder$Inline_Builder1" />
+      <unit id="6216065619544954217" at="347,0,390,0" name="jetbrains.mps.lang.editor.table.editor.CellModel_HierarchycalTable_EditorBuilder$Inline_Builder2" />
+      <unit id="2253133157536969611" at="39,0,415,0" name="jetbrains.mps.lang.editor.table.editor.CellModel_HierarchycalTable_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:8cb98139-dde9-48c6-8624-a531b84be2cd(jetbrains.mps.lang.editor.table.editor)/4677325677876404631">
     <file name="CellModel_Table_Editor.java">
-      <node id="4677325677876404631" at="11,79,12,81" concept="6" />
-      <node id="4677325677876404631" at="14,82,15,84" concept="6" />
+      <node id="4677325677876404631" at="11,79,12,79" concept="6" />
+      <node id="4677325677876404631" at="14,82,15,82" concept="6" />
       <node id="4677325677876404631" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4677325677876404631" at="14,0,17,0" concept="4" trace="createInspectedCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4677325677876404631" at="11,79,12,81" />
-      <scope id="4677325677876404631" at="14,82,15,84" />
+      <scope id="4677325677876404631" at="11,79,12,79" />
+      <scope id="4677325677876404631" at="14,82,15,82" />
       <scope id="4677325677876404631" at="11,0,14,0">
         <var name="editorContext" id="4677325677876404631" />
         <var name="node" id="4677325677876404631" />
@@ -529,8 +529,8 @@
       </scope>
       <unit id="4677325677876404631" at="10,0,18,0" name="jetbrains.mps.lang.editor.table.editor.CellModel_Table_Editor" />
     </file>
-    <file name="CellModel_Table_EditorBuilder_a.java">
-      <node id="4677325677876404631" at="21,95,22,19" concept="9" />
+    <file name="CellModel_Table_EditorBuilder.java">
+      <node id="4677325677876404631" at="21,93,22,19" concept="9" />
       <node id="4677325677876404631" at="22,19,23,18" concept="1" />
       <node id="4677325677876404631" at="28,26,29,18" concept="6" />
       <node id="4677325677876404631" at="32,39,33,32" concept="6" />
@@ -549,13 +549,13 @@
       <node id="4677325677876404636" at="50,34,51,22" concept="6" />
       <node id="4677325677876404631" at="18,0,20,0" concept="2" trace="myNode" />
       <node id="4677325677876404631" at="32,0,35,0" concept="4" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="4677325677876404631" at="21,0,25,0" concept="0" trace="CellModel_Table_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4677325677876404631" at="21,0,25,0" concept="0" trace="CellModel_Table_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4677325677876404631" at="26,0,31,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="4677325677876404631" at="36,0,44,0" concept="4" trace="createCollection_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4677325677876404636" at="44,0,53,0" concept="4" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="4677325677876404631" at="28,26,29,18" />
       <scope id="4677325677876404631" at="32,39,33,32" />
-      <scope id="4677325677876404631" at="21,95,23,18" />
+      <scope id="4677325677876404631" at="21,93,23,18" />
       <scope id="4677325677876404631" at="32,0,35,0" />
       <scope id="4677325677876404631" at="21,0,25,0">
         <var name="context" id="4677325677876404631" />
@@ -571,10 +571,10 @@
       </scope>
       <scope id="4677325677876404631" at="36,0,44,0" />
       <scope id="4677325677876404636" at="44,0,53,0" />
-      <unit id="4677325677876404631" at="17,0,54,0" name="jetbrains.mps.lang.editor.table.editor.CellModel_Table_EditorBuilder_a" />
+      <unit id="4677325677876404631" at="17,0,54,0" name="jetbrains.mps.lang.editor.table.editor.CellModel_Table_EditorBuilder" />
     </file>
-    <file name="CellModel_Table_InspectorBuilder_a.java">
-      <node id="4677325677876404631" at="34,98,35,19" concept="9" />
+    <file name="CellModel_Table_InspectorBuilder.java">
+      <node id="4677325677876404631" at="34,96,35,19" concept="9" />
       <node id="4677325677876404631" at="35,19,36,18" concept="1" />
       <node id="4677325677876404631" at="41,26,42,18" concept="6" />
       <node id="4677325677876404631" at="45,39,46,32" concept="6" />
@@ -659,7 +659,7 @@
       <node id="4677325677876404631" at="145,87,148,7" concept="3" />
       <node id="4677325677876404631" at="148,7,151,7" concept="3" />
       <node id="4677325677876404631" at="167,0,170,0" concept="4" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="4677325677876404631" at="34,0,38,0" concept="0" trace="CellModel_Table_InspectorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4677325677876404631" at="34,0,38,0" concept="0" trace="CellModel_Table_InspectorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="3152052307426710942" at="63,0,67,0" concept="4" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4677325677876404631" at="116,0,120,0" concept="4" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4677325677876404631" at="124,0,128,0" concept="0" trace="tableModelSingleRoleHandler_83r2zf_b0d0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
@@ -682,7 +682,7 @@
       <scope id="4677325677876404631" at="149,42,150,51" />
       <scope id="4677325677876404631" at="163,17,164,42" />
       <scope id="4677325677876404631" at="167,40,168,31" />
-      <scope id="4677325677876404631" at="34,98,36,18" />
+      <scope id="4677325677876404631" at="34,96,36,18" />
       <scope id="3152052307426710942" at="63,42,65,22">
         <var name="editorCell" id="3152052307426710942" />
       </scope>
@@ -752,9 +752,9 @@
       </scope>
       <scope id="4677325677876404631" at="49,0,63,0" />
       <scope id="4677325677876404631" at="153,0,167,0" />
-      <unit id="4677325677876404631" at="172,0,175,0" name="jetbrains.mps.lang.editor.table.editor.CellModel_Table_InspectorBuilder_a$LINKS" />
-      <unit id="4677325677876404631" at="120,0,171,0" name="jetbrains.mps.lang.editor.table.editor.CellModel_Table_InspectorBuilder_a$tableModelSingleRoleHandler_83r2zf_b0d0" />
-      <unit id="4677325677876404631" at="30,0,176,0" name="jetbrains.mps.lang.editor.table.editor.CellModel_Table_InspectorBuilder_a" />
+      <unit id="4677325677876404631" at="172,0,175,0" name="jetbrains.mps.lang.editor.table.editor.CellModel_Table_InspectorBuilder$LINKS" />
+      <unit id="4677325677876404631" at="120,0,171,0" name="jetbrains.mps.lang.editor.table.editor.CellModel_Table_InspectorBuilder$tableModelSingleRoleHandler_83r2zf_b0d0" />
+      <unit id="4677325677876404631" at="30,0,176,0" name="jetbrains.mps.lang.editor.table.editor.CellModel_Table_InspectorBuilder" />
     </file>
   </root>
 </debug-info>

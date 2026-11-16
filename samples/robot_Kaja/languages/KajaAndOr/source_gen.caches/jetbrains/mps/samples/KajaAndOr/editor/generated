@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="eed2v0nqi9fstfm55nkbwy98znloarw">
-  <files names="AndOrTransforms_Contribution.java:AndOrTransforms_LogicalExpression_ext_2_Contribution.java:AndOrTransforms_Looking_Contribution.java:DeleteLogicalOperator.java:DeleteLogicalOperatorFromBehind.java:EditorAspectDescriptorImpl.java:LogicalOperator_Editor.java:LogicalOperator_EditorBuilder_a.java:LogicalOperator_SubstituteMenu.java" />
+  <files names="AndOrTransforms_Contribution.java:AndOrTransforms_LogicalExpression_ext_2_Contribution.java:AndOrTransforms_Looking_Contribution.java:DeleteLogicalOperator.java:DeleteLogicalOperatorFromBehind.java:EditorAspectDescriptorImpl.java:LogicalOperator_Editor.java:LogicalOperator_EditorBuilder.java:LogicalOperator_SubstituteMenu.java" />
 </product>
 

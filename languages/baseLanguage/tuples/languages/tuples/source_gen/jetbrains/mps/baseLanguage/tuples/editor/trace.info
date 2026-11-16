@@ -45,17 +45,17 @@
   </root>
   <root nodeRef="r:a841fea4-52c0-4064-96f2-7687a509aba5(jetbrains.mps.baseLanguage.tuples.editor)/1238852221639">
     <file name="IndexedTupleType_Editor.java">
-      <node id="1238852221639" at="11,79,12,82" concept="8" />
+      <node id="1238852221639" at="11,79,12,80" concept="8" />
       <node id="1238852221639" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1238852221639" at="11,79,12,82" />
+      <scope id="1238852221639" at="11,79,12,80" />
       <scope id="1238852221639" at="11,0,14,0">
         <var name="editorContext" id="1238852221639" />
         <var name="node" id="1238852221639" />
       </scope>
       <unit id="1238852221639" at="10,0,15,0" name="jetbrains.mps.baseLanguage.tuples.editor.IndexedTupleType_Editor" />
     </file>
-    <file name="IndexedTupleType_EditorBuilder_a.java">
-      <node id="1238852221639" at="43,96,44,19" concept="13" />
+    <file name="IndexedTupleType_EditorBuilder.java">
+      <node id="1238852221639" at="43,94,44,19" concept="13" />
       <node id="1238852221639" at="44,19,45,18" concept="2" />
       <node id="1238852221639" at="50,26,51,18" concept="8" />
       <node id="1238852221639" at="54,39,55,32" concept="8" />
@@ -141,7 +141,7 @@
       <node id="1238852221639" at="105,0,108,0" concept="6" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="1238852221639" at="108,0,111,0" concept="6" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="1262430001742033536" at="180,0,183,0" concept="6" trace="getText#()Ljava/lang/String;" />
-      <node id="1238852221639" at="43,0,47,0" concept="1" trace="IndexedTupleType_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1238852221639" at="43,0,47,0" concept="1" trace="IndexedTupleType_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1238852221639" at="96,0,100,0" concept="1" trace="componentTypeListHandler_kdtlb1_b0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1238852221639" at="101,0,105,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1238852221639" at="134,97,138,9" concept="5" />
@@ -173,7 +173,7 @@
       <scope id="1238852221639" at="108,48,109,30" />
       <scope id="1238852221639" at="126,17,127,42" />
       <scope id="1262430001742033539" at="180,31,181,162" />
-      <scope id="1238852221639" at="43,96,45,18" />
+      <scope id="1238852221639" at="43,94,45,18" />
       <scope id="1238852221639" at="96,87,98,25" />
       <scope id="1238852221639" at="135,122,137,146" />
       <scope id="1238852221639" at="141,34,143,142" />
@@ -246,27 +246,27 @@
         <var name="elementNode" id="1238852221639" />
         <var name="isEmptyCell" id="1238852221639" />
       </scope>
-      <unit id="1238852221639" at="196,0,199,0" name="jetbrains.mps.baseLanguage.tuples.editor.IndexedTupleType_EditorBuilder_a$LINKS" />
-      <unit id="1238852221639" at="200,0,203,0" name="jetbrains.mps.baseLanguage.tuples.editor.IndexedTupleType_EditorBuilder_a$CONCEPTS" />
-      <unit id="1262430001742033653" at="69,88,73,5" name="jetbrains.mps.baseLanguage.tuples.editor.IndexedTupleType_EditorBuilder_a$1" />
-      <unit id="1262430001742033536" at="179,88,183,5" name="jetbrains.mps.baseLanguage.tuples.editor.IndexedTupleType_EditorBuilder_a$2" />
-      <unit id="1238852221639" at="92,0,178,0" name="jetbrains.mps.baseLanguage.tuples.editor.IndexedTupleType_EditorBuilder_a$componentTypeListHandler_kdtlb1_b0" />
-      <unit id="1238852221639" at="39,0,204,0" name="jetbrains.mps.baseLanguage.tuples.editor.IndexedTupleType_EditorBuilder_a" />
+      <unit id="1238852221639" at="196,0,199,0" name="jetbrains.mps.baseLanguage.tuples.editor.IndexedTupleType_EditorBuilder$LINKS" />
+      <unit id="1238852221639" at="200,0,203,0" name="jetbrains.mps.baseLanguage.tuples.editor.IndexedTupleType_EditorBuilder$CONCEPTS" />
+      <unit id="1262430001742033653" at="69,88,73,5" name="jetbrains.mps.baseLanguage.tuples.editor.IndexedTupleType_EditorBuilder$1" />
+      <unit id="1262430001742033536" at="179,88,183,5" name="jetbrains.mps.baseLanguage.tuples.editor.IndexedTupleType_EditorBuilder$2" />
+      <unit id="1238852221639" at="92,0,178,0" name="jetbrains.mps.baseLanguage.tuples.editor.IndexedTupleType_EditorBuilder$componentTypeListHandler_kdtlb1_b0" />
+      <unit id="1238852221639" at="39,0,204,0" name="jetbrains.mps.baseLanguage.tuples.editor.IndexedTupleType_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:a841fea4-52c0-4064-96f2-7687a509aba5(jetbrains.mps.baseLanguage.tuples.editor)/1238853858232">
     <file name="IndexedTupleLiteral_Editor.java">
-      <node id="1238853858232" at="11,79,12,85" concept="8" />
+      <node id="1238853858232" at="11,79,12,83" concept="8" />
       <node id="1238853858232" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1238853858232" at="11,79,12,85" />
+      <scope id="1238853858232" at="11,79,12,83" />
       <scope id="1238853858232" at="11,0,14,0">
         <var name="editorContext" id="1238853858232" />
         <var name="node" id="1238853858232" />
       </scope>
       <unit id="1238853858232" at="10,0,15,0" name="jetbrains.mps.baseLanguage.tuples.editor.IndexedTupleLiteral_Editor" />
     </file>
-    <file name="IndexedTupleLiteral_EditorBuilder_a.java">
-      <node id="1238853858232" at="42,99,43,19" concept="13" />
+    <file name="IndexedTupleLiteral_EditorBuilder.java">
+      <node id="1238853858232" at="42,97,43,19" concept="13" />
       <node id="1238853858232" at="43,19,44,18" concept="2" />
       <node id="1238853858232" at="49,26,50,18" concept="8" />
       <node id="1238853858232" at="53,39,54,32" concept="8" />
@@ -350,7 +350,7 @@
       <node id="1238853858232" at="103,0,106,0" concept="6" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="1238853858232" at="106,0,109,0" concept="6" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="1262430001742033514" at="178,0,181,0" concept="6" trace="getText#()Ljava/lang/String;" />
-      <node id="1238853858232" at="42,0,46,0" concept="1" trace="IndexedTupleLiteral_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1238853858232" at="42,0,46,0" concept="1" trace="IndexedTupleLiteral_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1238853858232" at="94,0,98,0" concept="1" trace="componentListHandler_rvpzqy_b0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1238853858232" at="99,0,103,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1238853858232" at="132,97,136,9" concept="5" />
@@ -382,7 +382,7 @@
       <scope id="1238853858232" at="106,48,107,36" />
       <scope id="1238853858232" at="124,17,125,42" />
       <scope id="1262430001742033517" at="178,31,179,165" />
-      <scope id="1238853858232" at="42,99,44,18" />
+      <scope id="1238853858232" at="42,97,44,18" />
       <scope id="1238853858232" at="94,83,96,25" />
       <scope id="1238853858232" at="133,122,135,146" />
       <scope id="1238853858232" at="139,34,141,142" />
@@ -455,27 +455,27 @@
         <var name="elementNode" id="1238853858232" />
         <var name="isEmptyCell" id="1238853858232" />
       </scope>
-      <unit id="1238853858232" at="193,0,196,0" name="jetbrains.mps.baseLanguage.tuples.editor.IndexedTupleLiteral_EditorBuilder_a$LINKS" />
-      <unit id="1238853858232" at="197,0,200,0" name="jetbrains.mps.baseLanguage.tuples.editor.IndexedTupleLiteral_EditorBuilder_a$CONCEPTS" />
-      <unit id="1262430001742033525" at="68,88,72,5" name="jetbrains.mps.baseLanguage.tuples.editor.IndexedTupleLiteral_EditorBuilder_a$1" />
-      <unit id="1262430001742033514" at="177,88,181,5" name="jetbrains.mps.baseLanguage.tuples.editor.IndexedTupleLiteral_EditorBuilder_a$2" />
-      <unit id="1238853858232" at="90,0,176,0" name="jetbrains.mps.baseLanguage.tuples.editor.IndexedTupleLiteral_EditorBuilder_a$componentListHandler_rvpzqy_b0" />
-      <unit id="1238853858232" at="38,0,201,0" name="jetbrains.mps.baseLanguage.tuples.editor.IndexedTupleLiteral_EditorBuilder_a" />
+      <unit id="1238853858232" at="193,0,196,0" name="jetbrains.mps.baseLanguage.tuples.editor.IndexedTupleLiteral_EditorBuilder$LINKS" />
+      <unit id="1238853858232" at="197,0,200,0" name="jetbrains.mps.baseLanguage.tuples.editor.IndexedTupleLiteral_EditorBuilder$CONCEPTS" />
+      <unit id="1262430001742033525" at="68,88,72,5" name="jetbrains.mps.baseLanguage.tuples.editor.IndexedTupleLiteral_EditorBuilder$1" />
+      <unit id="1262430001742033514" at="177,88,181,5" name="jetbrains.mps.baseLanguage.tuples.editor.IndexedTupleLiteral_EditorBuilder$2" />
+      <unit id="1238853858232" at="90,0,176,0" name="jetbrains.mps.baseLanguage.tuples.editor.IndexedTupleLiteral_EditorBuilder$componentListHandler_rvpzqy_b0" />
+      <unit id="1238853858232" at="38,0,201,0" name="jetbrains.mps.baseLanguage.tuples.editor.IndexedTupleLiteral_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:a841fea4-52c0-4064-96f2-7687a509aba5(jetbrains.mps.baseLanguage.tuples.editor)/1238857796064">
     <file name="IndexedTupleMemberAccessExpression_Editor.java">
-      <node id="1238857796064" at="11,79,12,100" concept="8" />
+      <node id="1238857796064" at="11,79,12,98" concept="8" />
       <node id="1238857796064" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1238857796064" at="11,79,12,100" />
+      <scope id="1238857796064" at="11,79,12,98" />
       <scope id="1238857796064" at="11,0,14,0">
         <var name="editorContext" id="1238857796064" />
         <var name="node" id="1238857796064" />
       </scope>
       <unit id="1238857796064" at="10,0,15,0" name="jetbrains.mps.baseLanguage.tuples.editor.IndexedTupleMemberAccessExpression_Editor" />
     </file>
-    <file name="IndexedTupleMemberAccessExpression_EditorBuilder_a.java">
-      <node id="1238857796064" at="31,114,32,19" concept="13" />
+    <file name="IndexedTupleMemberAccessExpression_EditorBuilder.java">
+      <node id="1238857796064" at="31,112,32,19" concept="13" />
       <node id="1238857796064" at="32,19,33,18" concept="2" />
       <node id="1238857796064" at="38,26,39,18" concept="8" />
       <node id="1238857796064" at="42,39,43,32" concept="8" />
@@ -556,7 +556,7 @@
       <node id="1238857796064" at="150,87,153,7" concept="5" />
       <node id="1238857796064" at="153,7,156,7" concept="5" />
       <node id="1238857796064" at="172,0,175,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="1238857796064" at="31,0,35,0" concept="1" trace="IndexedTupleMemberAccessExpression_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1238857796064" at="31,0,35,0" concept="1" trace="IndexedTupleMemberAccessExpression_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1238857796064" at="57,0,61,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1238857796064" at="65,0,69,0" concept="1" trace="tupleSingleRoleHandler_pessfj_a0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1238857796064" at="121,0,125,0" concept="6" trace="createRefNode_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -587,7 +587,7 @@
       <scope id="1238857796064" at="154,42,155,46" />
       <scope id="1238857796064" at="168,17,169,42" />
       <scope id="1238857796064" at="172,40,173,26" />
-      <scope id="1238857796064" at="31,114,33,18" />
+      <scope id="1238857796064" at="31,112,33,18" />
       <scope id="1238857796064" at="57,40,59,33">
         <var name="provider" id="1238857796064" />
       </scope>
@@ -666,20 +666,20 @@
       <scope id="1238857796064" at="159,44,170,7" />
       <scope id="1238857796064" at="94,0,108,0" />
       <scope id="1238857796064" at="158,0,172,0" />
-      <unit id="1238857796064" at="186,0,190,0" name="jetbrains.mps.baseLanguage.tuples.editor.IndexedTupleMemberAccessExpression_EditorBuilder_a$LINKS" />
-      <unit id="1238857796064" at="61,0,112,0" name="jetbrains.mps.baseLanguage.tuples.editor.IndexedTupleMemberAccessExpression_EditorBuilder_a$tupleSingleRoleHandler_pessfj_a0" />
-      <unit id="1238857796064" at="125,0,176,0" name="jetbrains.mps.baseLanguage.tuples.editor.IndexedTupleMemberAccessExpression_EditorBuilder_a$indexSingleRoleHandler_pessfj_c0" />
-      <unit id="1238857796064" at="27,0,191,0" name="jetbrains.mps.baseLanguage.tuples.editor.IndexedTupleMemberAccessExpression_EditorBuilder_a" />
+      <unit id="1238857796064" at="186,0,190,0" name="jetbrains.mps.baseLanguage.tuples.editor.IndexedTupleMemberAccessExpression_EditorBuilder$LINKS" />
+      <unit id="1238857796064" at="61,0,112,0" name="jetbrains.mps.baseLanguage.tuples.editor.IndexedTupleMemberAccessExpression_EditorBuilder$tupleSingleRoleHandler_pessfj_a0" />
+      <unit id="1238857796064" at="125,0,176,0" name="jetbrains.mps.baseLanguage.tuples.editor.IndexedTupleMemberAccessExpression_EditorBuilder$indexSingleRoleHandler_pessfj_c0" />
+      <unit id="1238857796064" at="27,0,191,0" name="jetbrains.mps.baseLanguage.tuples.editor.IndexedTupleMemberAccessExpression_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:a841fea4-52c0-4064-96f2-7687a509aba5(jetbrains.mps.baseLanguage.tuples.editor)/1239377826323">
     <file name="NamedTupleDeclaration_Editor.java">
-      <node id="1239377826323" at="11,79,12,87" concept="8" />
-      <node id="1239377826323" at="14,82,15,90" concept="8" />
+      <node id="1239377826323" at="11,79,12,85" concept="8" />
+      <node id="1239377826323" at="14,82,15,88" concept="8" />
       <node id="1239377826323" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1239377826323" at="14,0,17,0" concept="6" trace="createInspectedCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1239377826323" at="11,79,12,87" />
-      <scope id="1239377826323" at="14,82,15,90" />
+      <scope id="1239377826323" at="11,79,12,85" />
+      <scope id="1239377826323" at="14,82,15,88" />
       <scope id="1239377826323" at="11,0,14,0">
         <var name="editorContext" id="1239377826323" />
         <var name="node" id="1239377826323" />
@@ -690,8 +690,8 @@
       </scope>
       <unit id="1239377826323" at="10,0,18,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleDeclaration_Editor" />
     </file>
-    <file name="NamedTupleDeclaration_EditorBuilder_a.java">
-      <node id="1239377826323" at="57,101,58,19" concept="13" />
+    <file name="NamedTupleDeclaration_EditorBuilder.java">
+      <node id="1239377826323" at="57,99,58,19" concept="13" />
       <node id="1239377826323" at="58,19,59,18" concept="2" />
       <node id="1239377826323" at="64,26,65,18" concept="8" />
       <node id="1239377826323" at="68,39,69,32" concept="8" />
@@ -1132,7 +1132,7 @@
       <node id="1239377826323" at="720,0,723,0" concept="6" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="1239377826323" at="723,0,726,0" concept="6" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="1239377826323" at="767,96,770,9" concept="5" />
-      <node id="1239377826323" at="57,0,61,0" concept="1" trace="NamedTupleDeclaration_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1239377826323" at="57,0,61,0" concept="1" trace="NamedTupleDeclaration_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8856861289653952666" at="98,0,102,0" concept="6" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1239459873182" at="102,0,106,0" concept="6" trace="createComponent_1#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1239377826323" at="182,0,186,0" concept="1" trace="typeVariableDeclarationListHandler_955wzk_b5a#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
@@ -1279,7 +1279,7 @@
       <scope id="1239377826323" at="723,48,724,51" />
       <scope id="1239377826323" at="741,17,742,42" />
       <scope id="1239377826323" at="768,34,769,91" />
-      <scope id="1239377826323" at="57,101,59,18" />
+      <scope id="1239377826323" at="57,99,59,18" />
       <scope id="8856861289653952666" at="98,42,100,22">
         <var name="editorCell" id="8856861289653952666" />
       </scope>
@@ -1646,19 +1646,19 @@
         <var name="elementNode" id="1239377826323" />
         <var name="isEmptyCell" id="1239377826323" />
       </scope>
-      <unit id="1239377826323" at="816,0,819,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleDeclaration_EditorBuilder_a$PROPS" />
-      <unit id="1239377826323" at="807,0,815,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleDeclaration_EditorBuilder_a$LINKS" />
-      <unit id="1239377826323" at="797,0,806,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleDeclaration_EditorBuilder_a$CONCEPTS" />
-      <unit id="1239377826323" at="298,0,349,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleDeclaration_EditorBuilder_a$extendedSingleRoleHandler_955wzk_b6a" />
-      <unit id="1239377826323" at="508,0,584,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleDeclaration_EditorBuilder_a$componentListHandler_955wzk_b8a" />
-      <unit id="1239377826323" at="598,0,674,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleDeclaration_EditorBuilder_a$tupleMethodListHandler_955wzk_c8a" />
-      <unit id="1239377826323" at="707,0,783,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleDeclaration_EditorBuilder_a$methodListHandler_955wzk_b3i0" />
-      <unit id="1239377826323" at="178,0,264,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleDeclaration_EditorBuilder_a$typeVariableDeclarationListHandler_955wzk_b5a" />
-      <unit id="1239377826323" at="375,0,464,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleDeclaration_EditorBuilder_a$implementsListHandler_955wzk_b7a" />
-      <unit id="1239377826323" at="53,0,820,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleDeclaration_EditorBuilder_a" />
+      <unit id="1239377826323" at="816,0,819,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleDeclaration_EditorBuilder$PROPS" />
+      <unit id="1239377826323" at="807,0,815,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleDeclaration_EditorBuilder$LINKS" />
+      <unit id="1239377826323" at="797,0,806,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleDeclaration_EditorBuilder$CONCEPTS" />
+      <unit id="1239377826323" at="298,0,349,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleDeclaration_EditorBuilder$extendedSingleRoleHandler_955wzk_b6a" />
+      <unit id="1239377826323" at="508,0,584,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleDeclaration_EditorBuilder$componentListHandler_955wzk_b8a" />
+      <unit id="1239377826323" at="598,0,674,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleDeclaration_EditorBuilder$tupleMethodListHandler_955wzk_c8a" />
+      <unit id="1239377826323" at="707,0,783,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleDeclaration_EditorBuilder$methodListHandler_955wzk_b3i0" />
+      <unit id="1239377826323" at="178,0,264,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleDeclaration_EditorBuilder$typeVariableDeclarationListHandler_955wzk_b5a" />
+      <unit id="1239377826323" at="375,0,464,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleDeclaration_EditorBuilder$implementsListHandler_955wzk_b7a" />
+      <unit id="1239377826323" at="53,0,820,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleDeclaration_EditorBuilder" />
     </file>
-    <file name="NamedTupleDeclaration_InspectorBuilder_a.java">
-      <node id="1239377826323" at="33,104,34,19" concept="13" />
+    <file name="NamedTupleDeclaration_InspectorBuilder.java">
+      <node id="1239377826323" at="33,102,34,19" concept="13" />
       <node id="1239377826323" at="34,19,35,18" concept="2" />
       <node id="1239377826323" at="40,26,41,18" concept="8" />
       <node id="1239377826323" at="44,39,45,32" concept="8" />
@@ -1722,7 +1722,7 @@
       <node id="1239377826323" at="93,0,96,0" concept="6" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="1239377826323" at="96,0,99,0" concept="6" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="1239377826323" at="140,96,143,9" concept="5" />
-      <node id="1239377826323" at="33,0,37,0" concept="1" trace="NamedTupleDeclaration_InspectorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1239377826323" at="33,0,37,0" concept="1" trace="NamedTupleDeclaration_InspectorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1239377826323" at="84,0,88,0" concept="1" trace="annotationListHandler_955wzk_b0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1239377826323" at="89,0,93,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1239377826323" at="122,97,126,9" concept="5" />
@@ -1748,7 +1748,7 @@
       <scope id="1239377826323" at="96,48,97,44" />
       <scope id="1239377826323" at="114,17,115,42" />
       <scope id="1239377826323" at="141,34,142,91" />
-      <scope id="1239377826323" at="33,104,35,18" />
+      <scope id="1239377826323" at="33,102,35,18" />
       <scope id="1239377826323" at="84,84,86,25" />
       <scope id="1239377826323" at="123,122,125,146" />
       <scope id="1239377826323" at="129,34,131,142" />
@@ -1807,25 +1807,25 @@
         <var name="elementNode" id="1239377826323" />
         <var name="isEmptyCell" id="1239377826323" />
       </scope>
-      <unit id="1239377826323" at="152,0,155,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleDeclaration_InspectorBuilder_a$LINKS" />
-      <unit id="1239377826323" at="156,0,159,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleDeclaration_InspectorBuilder_a$CONCEPTS" />
-      <unit id="1239377826323" at="80,0,147,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleDeclaration_InspectorBuilder_a$annotationListHandler_955wzk_b0" />
-      <unit id="1239377826323" at="29,0,160,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleDeclaration_InspectorBuilder_a" />
+      <unit id="1239377826323" at="152,0,155,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleDeclaration_InspectorBuilder$LINKS" />
+      <unit id="1239377826323" at="156,0,159,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleDeclaration_InspectorBuilder$CONCEPTS" />
+      <unit id="1239377826323" at="80,0,147,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleDeclaration_InspectorBuilder$annotationListHandler_955wzk_b0" />
+      <unit id="1239377826323" at="29,0,160,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleDeclaration_InspectorBuilder" />
     </file>
   </root>
   <root nodeRef="r:a841fea4-52c0-4064-96f2-7687a509aba5(jetbrains.mps.baseLanguage.tuples.editor)/1239463226387">
     <file name="NamedTupleComponentDeclaration_Editor.java">
-      <node id="1239463226387" at="11,79,12,96" concept="8" />
+      <node id="1239463226387" at="11,79,12,94" concept="8" />
       <node id="1239463226387" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1239463226387" at="11,79,12,96" />
+      <scope id="1239463226387" at="11,79,12,94" />
       <scope id="1239463226387" at="11,0,14,0">
         <var name="editorContext" id="1239463226387" />
         <var name="node" id="1239463226387" />
       </scope>
       <unit id="1239463226387" at="10,0,15,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleComponentDeclaration_Editor" />
     </file>
-    <file name="NamedTupleComponentDeclaration_EditorBuilder_a.java">
-      <node id="1239463226387" at="61,110,62,19" concept="13" />
+    <file name="NamedTupleComponentDeclaration_EditorBuilder.java">
+      <node id="1239463226387" at="61,108,62,19" concept="13" />
       <node id="1239463226387" at="62,19,63,18" concept="2" />
       <node id="1239463226387" at="68,26,69,18" concept="8" />
       <node id="1239463226387" at="72,39,73,32" concept="8" />
@@ -1919,7 +1919,7 @@
       <node id="1239463226387" at="139,7,142,7" concept="5" />
       <node id="1239463226387" at="158,0,161,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
       <node id="1239463555303" at="210,25,213,7" concept="5" />
-      <node id="1239463226387" at="61,0,65,0" concept="1" trace="NamedTupleComponentDeclaration_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1239463226387" at="61,0,65,0" concept="1" trace="NamedTupleComponentDeclaration_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8856861289654164814" at="93,0,97,0" concept="6" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1239463226387" at="107,0,111,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1239463226387" at="115,0,119,0" concept="1" trace="typeSingleRoleHandler_nmve34_c0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
@@ -1955,7 +1955,7 @@
       <scope id="1239463555283" at="204,29,205,89" />
       <scope id="1239463555294" at="206,14,207,64" />
       <scope id="1239463555304" at="211,73,212,103" />
-      <scope id="1239463226387" at="61,110,63,18" />
+      <scope id="1239463226387" at="61,108,63,18" />
       <scope id="8856861289654164814" at="93,42,95,22">
         <var name="editorCell" id="8856861289654164814" />
       </scope>
@@ -2040,23 +2040,23 @@
       </scope>
       <scope id="1239463226387" at="162,41,181,5" />
       <scope id="1239463226387" at="162,0,183,0" />
-      <unit id="1239463226387" at="232,0,235,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleComponentDeclaration_EditorBuilder_a$LINKS" />
-      <unit id="1239463226387" at="236,0,239,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleComponentDeclaration_EditorBuilder_a$CONCEPTS" />
-      <unit id="1239463226387" at="227,0,231,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleComponentDeclaration_EditorBuilder_a$PROPS" />
-      <unit id="1239463555269" at="189,38,196,9" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleComponentDeclaration_EditorBuilder_a$NamedTupleComponentDeclaration_name_postfixCellMenu_nmve34_a0d0$1" />
-      <unit id="1239463555269" at="183,0,217,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleComponentDeclaration_EditorBuilder_a$NamedTupleComponentDeclaration_name_postfixCellMenu_nmve34_a0d0" />
-      <unit id="1239463226387" at="111,0,162,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleComponentDeclaration_EditorBuilder_a$typeSingleRoleHandler_nmve34_c0" />
-      <unit id="1239463226387" at="57,0,240,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleComponentDeclaration_EditorBuilder_a" />
+      <unit id="1239463226387" at="232,0,235,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleComponentDeclaration_EditorBuilder$LINKS" />
+      <unit id="1239463226387" at="236,0,239,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleComponentDeclaration_EditorBuilder$CONCEPTS" />
+      <unit id="1239463226387" at="227,0,231,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleComponentDeclaration_EditorBuilder$PROPS" />
+      <unit id="1239463555269" at="189,38,196,9" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleComponentDeclaration_EditorBuilder$NamedTupleComponentDeclaration_name_postfixCellMenu_nmve34_a0d0$1" />
+      <unit id="1239463555269" at="183,0,217,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleComponentDeclaration_EditorBuilder$NamedTupleComponentDeclaration_name_postfixCellMenu_nmve34_a0d0" />
+      <unit id="1239463226387" at="111,0,162,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleComponentDeclaration_EditorBuilder$typeSingleRoleHandler_nmve34_c0" />
+      <unit id="1239463226387" at="57,0,240,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleComponentDeclaration_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:a841fea4-52c0-4064-96f2-7687a509aba5(jetbrains.mps.baseLanguage.tuples.editor)/1239546792005">
     <file name="NamedTupleType_Editor.java">
-      <node id="1239546792005" at="11,79,12,80" concept="8" />
-      <node id="1239546792005" at="14,82,15,83" concept="8" />
+      <node id="1239546792005" at="11,79,12,78" concept="8" />
+      <node id="1239546792005" at="14,82,15,81" concept="8" />
       <node id="1239546792005" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1239546792005" at="14,0,17,0" concept="6" trace="createInspectedCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1239546792005" at="11,79,12,80" />
-      <scope id="1239546792005" at="14,82,15,83" />
+      <scope id="1239546792005" at="11,79,12,78" />
+      <scope id="1239546792005" at="14,82,15,81" />
       <scope id="1239546792005" at="11,0,14,0">
         <var name="editorContext" id="1239546792005" />
         <var name="node" id="1239546792005" />
@@ -2067,8 +2067,8 @@
       </scope>
       <unit id="1239546792005" at="10,0,18,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleType_Editor" />
     </file>
-    <file name="NamedTupleType_EditorBuilder_a.java">
-      <node id="1239546792005" at="72,94,73,19" concept="13" />
+    <file name="NamedTupleType_EditorBuilder.java">
+      <node id="1239546792005" at="72,92,73,19" concept="13" />
       <node id="1239546792005" at="73,19,74,18" concept="2" />
       <node id="1239546792005" at="79,26,80,18" concept="8" />
       <node id="1239546792005" at="83,39,84,32" concept="8" />
@@ -2264,7 +2264,7 @@
       <node id="322547369016118909" at="260,0,263,0" concept="6" trace="getReplacementConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="1239546792005" at="311,0,314,0" concept="6" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="1239546792005" at="314,0,317,0" concept="6" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
-      <node id="1239546792005" at="72,0,76,0" concept="1" trace="NamedTupleType_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1239546792005" at="72,0,76,0" concept="1" trace="NamedTupleType_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1239546792005" at="160,0,164,5" concept="5" />
       <node id="1239550874594" at="199,26,203,11" concept="4" />
       <node id="322547369016118909" at="263,0,267,0" concept="6" trace="createEditorMenuDescriptor#(Ljetbrains/mps/nodeEditor/cellMenu/CellContext;Ljetbrains/mps/openapi/editor/EditorContext;)Ljetbrains/mps/openapi/editor/menus/EditorMenuDescriptor;" />
@@ -2327,7 +2327,7 @@
       <scope id="1239546792005" at="311,40,312,34" />
       <scope id="1239546792005" at="314,48,315,30" />
       <scope id="1239546792005" at="332,17,333,42" />
-      <scope id="1239546792005" at="72,94,74,18" />
+      <scope id="1239546792005" at="72,92,74,18" />
       <scope id="1239546792005" at="161,40,163,49" />
       <scope id="1239546792005" at="168,73,170,145">
         <var name="manager" id="1239546792005" />
@@ -2482,21 +2482,21 @@
         <var name="referenceLink" id="1239546792005" />
       </scope>
       <scope id="1239546792005" at="138,0,174,0" />
-      <unit id="1239546792005" at="403,0,406,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleType_EditorBuilder_a$PROPS" />
-      <unit id="1262430001742033289" at="124,88,128,5" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleType_EditorBuilder_a$1" />
-      <unit id="1262430001742033389" at="217,88,221,5" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleType_EditorBuilder_a$3" />
-      <unit id="1239546792005" at="243,88,247,5" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleType_EditorBuilder_a$4" />
-      <unit id="1239546792005" at="389,0,395,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleType_EditorBuilder_a$CONCEPTS" />
-      <unit id="1239546792005" at="396,0,402,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleType_EditorBuilder_a$LINKS" />
-      <unit id="1239550778846" at="196,90,206,7" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleType_EditorBuilder_a$Inline_Builder0$1" />
-      <unit id="322547369016118909" at="257,0,268,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleType_EditorBuilder_a$ReplaceWith_NamedTupleType_cellMenu_2ojjgh_a0a1a" />
-      <unit id="1239546792005" at="140,42,155,5" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleType_EditorBuilder_a$2" />
-      <unit id="1239549235574" at="174,0,216,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleType_EditorBuilder_a$Inline_Builder0" />
-      <unit id="1239546792005" at="298,0,378,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleType_EditorBuilder_a$parameterTypeListHandler_2ojjgh_b2a" />
-      <unit id="1239546792005" at="68,0,407,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleType_EditorBuilder_a" />
+      <unit id="1239546792005" at="403,0,406,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleType_EditorBuilder$PROPS" />
+      <unit id="1262430001742033289" at="124,88,128,5" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleType_EditorBuilder$1" />
+      <unit id="1262430001742033389" at="217,88,221,5" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleType_EditorBuilder$3" />
+      <unit id="1239546792005" at="243,88,247,5" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleType_EditorBuilder$4" />
+      <unit id="1239546792005" at="389,0,395,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleType_EditorBuilder$CONCEPTS" />
+      <unit id="1239546792005" at="396,0,402,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleType_EditorBuilder$LINKS" />
+      <unit id="1239550778846" at="196,90,206,7" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleType_EditorBuilder$Inline_Builder0$1" />
+      <unit id="322547369016118909" at="257,0,268,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleType_EditorBuilder$ReplaceWith_NamedTupleType_cellMenu_2ojjgh_a0a1a" />
+      <unit id="1239546792005" at="140,42,155,5" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleType_EditorBuilder$2" />
+      <unit id="1239549235574" at="174,0,216,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleType_EditorBuilder$Inline_Builder0" />
+      <unit id="1239546792005" at="298,0,378,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleType_EditorBuilder$parameterTypeListHandler_2ojjgh_b2a" />
+      <unit id="1239546792005" at="68,0,407,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleType_EditorBuilder" />
     </file>
-    <file name="NamedTupleType_InspectorBuilder_a.java">
-      <node id="1239546792005" at="54,97,55,19" concept="13" />
+    <file name="NamedTupleType_InspectorBuilder.java">
+      <node id="1239546792005" at="54,95,55,19" concept="13" />
       <node id="1239546792005" at="55,19,56,18" concept="2" />
       <node id="1239546792005" at="61,26,62,18" concept="8" />
       <node id="1239546792005" at="65,39,66,32" concept="8" />
@@ -2676,7 +2676,7 @@
       <node id="1239883957877" at="245,0,248,0" concept="6" trace="nodeCondition0#()Z" />
       <node id="2912004279740714497" at="316,0,319,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="2912004279740714694" at="328,0,331,0" concept="6" trace="getText#()Ljava/lang/String;" />
-      <node id="1239546792005" at="54,0,58,0" concept="1" trace="NamedTupleType_InspectorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1239546792005" at="54,0,58,0" concept="1" trace="NamedTupleType_InspectorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1239546792005" at="120,0,124,5" concept="5" />
       <node id="1239546792005" at="199,0,203,5" concept="5" />
       <node id="1239883957876" at="248,0,252,0" concept="6" trace="createComponent_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
@@ -2726,7 +2726,7 @@
       <scope id="2912004279740714497" at="316,41,317,45" />
       <scope id="2912004279740714497" at="322,28,323,20" />
       <scope id="2912004279740714697" at="328,33,329,503" />
-      <scope id="1239546792005" at="54,97,56,18" />
+      <scope id="1239546792005" at="54,95,56,18" />
       <scope id="1239546792005" at="121,40,123,49" />
       <scope id="1239546792005" at="128,73,130,145">
         <var name="manager" id="1239546792005" />
@@ -2879,32 +2879,32 @@
       <scope id="1239546792005" at="98,0,134,0" />
       <scope id="1239546792005" at="177,0,213,0" />
       <scope id="1239546792005" at="269,0,305,0" />
-      <unit id="2912004279740714694" at="327,90,331,7" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleType_InspectorBuilder_a$Inline_Builder2$1" />
-      <unit id="1239546792005" at="350,0,355,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleType_InspectorBuilder_a$CONCEPTS" />
-      <unit id="1239546792005" at="356,0,361,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleType_InspectorBuilder_a$PROPS" />
-      <unit id="1239546792005" at="342,0,349,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleType_InspectorBuilder_a$LINKS" />
-      <unit id="1239546792005" at="100,42,115,5" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleType_InspectorBuilder_a$1" />
-      <unit id="1239546792005" at="179,42,194,5" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleType_InspectorBuilder_a$2" />
-      <unit id="1239546792005" at="271,42,286,5" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleType_InspectorBuilder_a$3" />
-      <unit id="2912004279740714497" at="305,0,341,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleType_InspectorBuilder_a$Inline_Builder2" />
-      <unit id="1239883956209" at="213,0,253,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleType_InspectorBuilder_a$Inline_Builder1" />
-      <unit id="1239547301475" at="134,0,177,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleType_InspectorBuilder_a$Inline_Builder0" />
-      <unit id="1239546792005" at="50,0,362,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleType_InspectorBuilder_a" />
+      <unit id="2912004279740714694" at="327,90,331,7" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleType_InspectorBuilder$Inline_Builder2$1" />
+      <unit id="1239546792005" at="350,0,355,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleType_InspectorBuilder$CONCEPTS" />
+      <unit id="1239546792005" at="356,0,361,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleType_InspectorBuilder$PROPS" />
+      <unit id="1239546792005" at="342,0,349,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleType_InspectorBuilder$LINKS" />
+      <unit id="1239546792005" at="100,42,115,5" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleType_InspectorBuilder$1" />
+      <unit id="1239546792005" at="179,42,194,5" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleType_InspectorBuilder$2" />
+      <unit id="1239546792005" at="271,42,286,5" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleType_InspectorBuilder$3" />
+      <unit id="2912004279740714497" at="305,0,341,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleType_InspectorBuilder$Inline_Builder2" />
+      <unit id="1239883956209" at="213,0,253,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleType_InspectorBuilder$Inline_Builder1" />
+      <unit id="1239547301475" at="134,0,177,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleType_InspectorBuilder$Inline_Builder0" />
+      <unit id="1239546792005" at="50,0,362,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleType_InspectorBuilder" />
     </file>
   </root>
   <root nodeRef="r:a841fea4-52c0-4064-96f2-7687a509aba5(jetbrains.mps.baseLanguage.tuples.editor)/1239560853305">
     <file name="NamedTupleComponentReference_Editor.java">
-      <node id="1239560853305" at="11,79,12,94" concept="8" />
+      <node id="1239560853305" at="11,79,12,92" concept="8" />
       <node id="1239560853305" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1239560853305" at="11,79,12,94" />
+      <scope id="1239560853305" at="11,79,12,92" />
       <scope id="1239560853305" at="11,0,14,0">
         <var name="editorContext" id="1239560853305" />
         <var name="node" id="1239560853305" />
       </scope>
       <unit id="1239560853305" at="10,0,15,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleComponentReference_Editor" />
     </file>
-    <file name="NamedTupleComponentReference_EditorBuilder_a.java">
-      <node id="1239560853305" at="51,108,52,19" concept="13" />
+    <file name="NamedTupleComponentReference_EditorBuilder.java">
+      <node id="1239560853305" at="51,106,52,19" concept="13" />
       <node id="1239560853305" at="52,19,53,18" concept="2" />
       <node id="1239560853305" at="58,26,59,18" concept="8" />
       <node id="1239560853305" at="62,39,63,32" concept="8" />
@@ -2999,7 +2999,7 @@
       <node id="1239560853305" at="192,87,195,7" concept="5" />
       <node id="1239560853305" at="195,7,198,7" concept="5" />
       <node id="1239560853305" at="214,0,217,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="1239560853305" at="51,0,55,0" concept="1" trace="NamedTupleComponentReference_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1239560853305" at="51,0,55,0" concept="1" trace="NamedTupleComponentReference_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1239560853305" at="97,0,101,5" concept="5" />
       <node id="1239560853305" at="163,0,167,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1239560853305" at="171,0,175,0" concept="1" trace="valueSingleRoleHandler_61lahj_c0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
@@ -3031,7 +3031,7 @@
       <scope id="1239560853305" at="196,42,197,46" />
       <scope id="1239560853305" at="210,17,211,42" />
       <scope id="1239560853305" at="214,40,215,26" />
-      <scope id="1239560853305" at="51,108,53,18" />
+      <scope id="1239560853305" at="51,106,53,18" />
       <scope id="1239560853305" at="98,40,100,59" />
       <scope id="1239560853305" at="105,73,107,145">
         <var name="manager" id="1239560853305" />
@@ -3119,23 +3119,23 @@
         <var name="referenceLink" id="1239560853305" />
       </scope>
       <scope id="1239560853305" at="76,0,111,0" />
-      <unit id="1239560853305" at="229,0,232,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleComponentReference_EditorBuilder_a$PROPS" />
-      <unit id="1239560853305" at="219,0,223,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleComponentReference_EditorBuilder_a$LINKS" />
-      <unit id="1239560853305" at="224,0,228,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleComponentReference_EditorBuilder_a$CONCEPTS" />
-      <unit id="1239560853305" at="78,42,93,5" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleComponentReference_EditorBuilder_a$1" />
-      <unit id="1239560878451" at="111,0,157,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleComponentReference_EditorBuilder_a$Inline_Builder0" />
-      <unit id="1239560853305" at="167,0,218,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleComponentReference_EditorBuilder_a$valueSingleRoleHandler_61lahj_c0" />
-      <unit id="1239560853305" at="47,0,233,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleComponentReference_EditorBuilder_a" />
+      <unit id="1239560853305" at="229,0,232,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleComponentReference_EditorBuilder$PROPS" />
+      <unit id="1239560853305" at="219,0,223,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleComponentReference_EditorBuilder$LINKS" />
+      <unit id="1239560853305" at="224,0,228,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleComponentReference_EditorBuilder$CONCEPTS" />
+      <unit id="1239560853305" at="78,42,93,5" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleComponentReference_EditorBuilder$1" />
+      <unit id="1239560878451" at="111,0,157,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleComponentReference_EditorBuilder$Inline_Builder0" />
+      <unit id="1239560853305" at="167,0,218,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleComponentReference_EditorBuilder$valueSingleRoleHandler_61lahj_c0" />
+      <unit id="1239560853305" at="47,0,233,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleComponentReference_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:a841fea4-52c0-4064-96f2-7687a509aba5(jetbrains.mps.baseLanguage.tuples.editor)/1239560928631">
     <file name="NamedTupleLiteral_Editor.java">
-      <node id="1239560928631" at="11,79,12,83" concept="8" />
-      <node id="1239560928631" at="14,82,15,86" concept="8" />
+      <node id="1239560928631" at="11,79,12,81" concept="8" />
+      <node id="1239560928631" at="14,82,15,84" concept="8" />
       <node id="1239560928631" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1239560928631" at="14,0,17,0" concept="6" trace="createInspectedCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1239560928631" at="11,79,12,83" />
-      <scope id="1239560928631" at="14,82,15,86" />
+      <scope id="1239560928631" at="11,79,12,81" />
+      <scope id="1239560928631" at="14,82,15,84" />
       <scope id="1239560928631" at="11,0,14,0">
         <var name="editorContext" id="1239560928631" />
         <var name="node" id="1239560928631" />
@@ -3146,8 +3146,8 @@
       </scope>
       <unit id="1239560928631" at="10,0,18,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleLiteral_Editor" />
     </file>
-    <file name="NamedTupleLiteral_EditorBuilder_a.java">
-      <node id="1239560928631" at="41,97,42,19" concept="13" />
+    <file name="NamedTupleLiteral_EditorBuilder.java">
+      <node id="1239560928631" at="41,95,42,19" concept="13" />
       <node id="1239560928631" at="42,19,43,18" concept="2" />
       <node id="1239560928631" at="48,26,49,18" concept="8" />
       <node id="1239560928631" at="52,39,53,32" concept="8" />
@@ -3229,7 +3229,7 @@
       <node id="1239560928631" at="101,0,104,0" concept="6" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="1239560928631" at="104,0,107,0" concept="6" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="1262430001742033459" at="176,0,179,0" concept="6" trace="getText#()Ljava/lang/String;" />
-      <node id="1239560928631" at="41,0,45,0" concept="1" trace="NamedTupleLiteral_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1239560928631" at="41,0,45,0" concept="1" trace="NamedTupleLiteral_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1239560928631" at="92,0,96,0" concept="1" trace="componentRefListHandler_ulpguu_b0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="1239560928631" at="97,0,101,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1239560928631" at="130,97,134,9" concept="5" />
@@ -3261,7 +3261,7 @@
       <scope id="1239560928631" at="104,48,105,54" />
       <scope id="1239560928631" at="122,17,123,42" />
       <scope id="1262430001742033462" at="176,31,177,163" />
-      <scope id="1239560928631" at="41,97,43,18" />
+      <scope id="1239560928631" at="41,95,43,18" />
       <scope id="1239560928631" at="92,86,94,25" />
       <scope id="1239560928631" at="131,122,133,146" />
       <scope id="1239560928631" at="137,34,139,142" />
@@ -3334,15 +3334,15 @@
         <var name="elementNode" id="1239560928631" />
         <var name="isEmptyCell" id="1239560928631" />
       </scope>
-      <unit id="1239560928631" at="190,0,193,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleLiteral_EditorBuilder_a$LINKS" />
-      <unit id="1239560928631" at="194,0,197,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleLiteral_EditorBuilder_a$CONCEPTS" />
-      <unit id="1262430001742033279" at="67,88,71,5" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleLiteral_EditorBuilder_a$1" />
-      <unit id="1262430001742033459" at="175,88,179,5" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleLiteral_EditorBuilder_a$2" />
-      <unit id="1239560928631" at="88,0,174,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleLiteral_EditorBuilder_a$componentRefListHandler_ulpguu_b0" />
-      <unit id="1239560928631" at="37,0,198,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleLiteral_EditorBuilder_a" />
+      <unit id="1239560928631" at="190,0,193,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleLiteral_EditorBuilder$LINKS" />
+      <unit id="1239560928631" at="194,0,197,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleLiteral_EditorBuilder$CONCEPTS" />
+      <unit id="1262430001742033279" at="67,88,71,5" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleLiteral_EditorBuilder$1" />
+      <unit id="1262430001742033459" at="175,88,179,5" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleLiteral_EditorBuilder$2" />
+      <unit id="1239560928631" at="88,0,174,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleLiteral_EditorBuilder$componentRefListHandler_ulpguu_b0" />
+      <unit id="1239560928631" at="37,0,198,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleLiteral_EditorBuilder" />
     </file>
-    <file name="NamedTupleLiteral_InspectorBuilder_a.java">
-      <node id="1239560928631" at="52,100,53,19" concept="13" />
+    <file name="NamedTupleLiteral_InspectorBuilder.java">
+      <node id="1239560928631" at="52,98,53,19" concept="13" />
       <node id="1239560928631" at="53,19,54,18" concept="2" />
       <node id="1239560928631" at="59,26,60,18" concept="8" />
       <node id="1239560928631" at="63,39,64,32" concept="8" />
@@ -3505,7 +3505,7 @@
       <node id="1239567806107" at="277,0,280,0" concept="6" trace="getSLink#()Lorg/jetbrains/mps/openapi/language/SContainmentLink;" />
       <node id="1239567806107" at="280,0,283,0" concept="6" trace="getChildSConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="1239567806107" at="324,98,327,11" concept="5" />
-      <node id="1239560928631" at="52,0,56,0" concept="1" trace="NamedTupleLiteral_InspectorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1239560928631" at="52,0,56,0" concept="1" trace="NamedTupleLiteral_InspectorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1239560928631" at="116,0,120,5" concept="5" />
       <node id="1239560928631" at="210,0,214,5" concept="5" />
       <node id="1239567806107" at="268,0,272,0" concept="1" trace="componentListHandler_ulpguu_a0a1b0#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
@@ -3558,7 +3558,7 @@
       <scope id="1239567806107" at="280,50,281,58" />
       <scope id="1239567806107" at="298,19,299,44" />
       <scope id="1239567806107" at="325,36,326,93" />
-      <scope id="1239560928631" at="52,100,54,18" />
+      <scope id="1239560928631" at="52,98,54,18" />
       <scope id="1239560928631" at="117,40,119,55" />
       <scope id="1239560928631" at="124,73,126,145">
         <var name="manager" id="1239560928631" />
@@ -3706,30 +3706,30 @@
         <var name="style" id="1239560928631" />
       </scope>
       <scope id="1239560928631" at="189,0,227,0" />
-      <unit id="1239560928631" at="344,0,347,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleLiteral_InspectorBuilder_a$PROPS" />
-      <unit id="1239560928631" at="333,0,337,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleLiteral_InspectorBuilder_a$LINKS" />
-      <unit id="1239560928631" at="338,0,343,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleLiteral_InspectorBuilder_a$CONCEPTS" />
-      <unit id="1239560928631" at="97,42,112,5" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleLiteral_InspectorBuilder_a$1" />
-      <unit id="1239560928631" at="191,42,206,5" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleLiteral_InspectorBuilder_a$2" />
-      <unit id="1239567806100" at="130,0,173,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleLiteral_InspectorBuilder_a$Inline_Builder0" />
-      <unit id="1239567806107" at="264,0,331,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleLiteral_InspectorBuilder_a$Inline_Builder1$componentListHandler_ulpguu_a0a1b0" />
-      <unit id="1239567806107" at="227,0,332,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleLiteral_InspectorBuilder_a$Inline_Builder1" />
-      <unit id="1239560928631" at="48,0,348,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleLiteral_InspectorBuilder_a" />
+      <unit id="1239560928631" at="344,0,347,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleLiteral_InspectorBuilder$PROPS" />
+      <unit id="1239560928631" at="333,0,337,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleLiteral_InspectorBuilder$LINKS" />
+      <unit id="1239560928631" at="338,0,343,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleLiteral_InspectorBuilder$CONCEPTS" />
+      <unit id="1239560928631" at="97,42,112,5" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleLiteral_InspectorBuilder$1" />
+      <unit id="1239560928631" at="191,42,206,5" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleLiteral_InspectorBuilder$2" />
+      <unit id="1239567806100" at="130,0,173,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleLiteral_InspectorBuilder$Inline_Builder0" />
+      <unit id="1239567806107" at="264,0,331,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleLiteral_InspectorBuilder$Inline_Builder1$componentListHandler_ulpguu_a0a1b0" />
+      <unit id="1239567806107" at="227,0,332,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleLiteral_InspectorBuilder$Inline_Builder1" />
+      <unit id="1239560928631" at="48,0,348,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleLiteral_InspectorBuilder" />
     </file>
   </root>
   <root nodeRef="r:a841fea4-52c0-4064-96f2-7687a509aba5(jetbrains.mps.baseLanguage.tuples.editor)/1239576560558">
     <file name="NamedTupleComponentAccessOperation_Editor.java">
-      <node id="1239576560558" at="11,79,12,100" concept="8" />
+      <node id="1239576560558" at="11,79,12,98" concept="8" />
       <node id="1239576560558" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="1239576560558" at="11,79,12,100" />
+      <scope id="1239576560558" at="11,79,12,98" />
       <scope id="1239576560558" at="11,0,14,0">
         <var name="editorContext" id="1239576560558" />
         <var name="node" id="1239576560558" />
       </scope>
       <unit id="1239576560558" at="10,0,15,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleComponentAccessOperation_Editor" />
     </file>
-    <file name="NamedTupleComponentAccessOperation_EditorBuilder_a.java">
-      <node id="1239576560558" at="44,114,45,19" concept="13" />
+    <file name="NamedTupleComponentAccessOperation_EditorBuilder.java">
+      <node id="1239576560558" at="44,112,45,19" concept="13" />
       <node id="1239576560558" at="45,19,46,18" concept="2" />
       <node id="1239576560558" at="51,26,52,18" concept="8" />
       <node id="1239576560558" at="55,39,56,32" concept="8" />
@@ -3796,7 +3796,7 @@
       <node id="1239576646159" at="106,0,108,0" concept="3" trace="myNode" />
       <node id="1239576560558" at="55,0,58,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="1239576646159" at="116,0,119,0" concept="6" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="1239576560558" at="44,0,48,0" concept="1" trace="NamedTupleComponentAccessOperation_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="1239576560558" at="44,0,48,0" concept="1" trace="NamedTupleComponentAccessOperation_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="1239576560558" at="88,0,92,5" concept="5" />
       <node id="1239576560558" at="49,0,54,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="1239576560558" at="98,205,103,22" concept="5" />
@@ -3815,7 +3815,7 @@
       <scope id="1239576646159" at="116,41,117,32" />
       <scope id="1239576646159" at="122,28,123,20" />
       <scope id="1239576653632" at="147,17,148,42" />
-      <scope id="1239576560558" at="44,114,46,18" />
+      <scope id="1239576560558" at="44,112,46,18" />
       <scope id="1239576560558" at="89,40,91,48" />
       <scope id="1239576560558" at="99,73,101,145">
         <var name="manager" id="1239576560558" />
@@ -3871,12 +3871,12 @@
         <var name="style" id="1239576560558" />
       </scope>
       <scope id="1239576560558" at="67,0,105,0" />
-      <unit id="1239576560558" at="153,0,156,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleComponentAccessOperation_EditorBuilder_a$LINKS" />
-      <unit id="1239576560558" at="162,0,165,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleComponentAccessOperation_EditorBuilder_a$PROPS" />
-      <unit id="1239576560558" at="157,0,161,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleComponentAccessOperation_EditorBuilder_a$CONCEPTS" />
-      <unit id="1239576560558" at="69,42,84,5" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleComponentAccessOperation_EditorBuilder_a$1" />
-      <unit id="1239576646159" at="105,0,152,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleComponentAccessOperation_EditorBuilder_a$Inline_Builder0" />
-      <unit id="1239576560558" at="40,0,166,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleComponentAccessOperation_EditorBuilder_a" />
+      <unit id="1239576560558" at="153,0,156,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleComponentAccessOperation_EditorBuilder$LINKS" />
+      <unit id="1239576560558" at="162,0,165,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleComponentAccessOperation_EditorBuilder$PROPS" />
+      <unit id="1239576560558" at="157,0,161,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleComponentAccessOperation_EditorBuilder$CONCEPTS" />
+      <unit id="1239576560558" at="69,42,84,5" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleComponentAccessOperation_EditorBuilder$1" />
+      <unit id="1239576646159" at="105,0,152,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleComponentAccessOperation_EditorBuilder$Inline_Builder0" />
+      <unit id="1239576560558" at="40,0,166,0" name="jetbrains.mps.baseLanguage.tuples.editor.NamedTupleComponentAccessOperation_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:a841fea4-52c0-4064-96f2-7687a509aba5(jetbrains.mps.baseLanguage.tuples.editor)/1240400999425">
@@ -4685,17 +4685,17 @@
   </root>
   <root nodeRef="r:a841fea4-52c0-4064-96f2-7687a509aba5(jetbrains.mps.baseLanguage.tuples.editor)/4070820740695161961">
     <file name="LocalVariableDeclarationInTuple_Editor.java">
-      <node id="4070820740695161961" at="11,79,12,97" concept="8" />
+      <node id="4070820740695161961" at="11,79,12,95" concept="8" />
       <node id="4070820740695161961" at="11,0,14,0" concept="6" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4070820740695161961" at="11,79,12,97" />
+      <scope id="4070820740695161961" at="11,79,12,95" />
       <scope id="4070820740695161961" at="11,0,14,0">
         <var name="editorContext" id="4070820740695161961" />
         <var name="node" id="4070820740695161961" />
       </scope>
       <unit id="4070820740695161961" at="10,0,15,0" name="jetbrains.mps.baseLanguage.tuples.editor.LocalVariableDeclarationInTuple_Editor" />
     </file>
-    <file name="LocalVariableDeclarationInTuple_EditorBuilder_a.java">
-      <node id="4070820740695161961" at="29,111,30,19" concept="13" />
+    <file name="LocalVariableDeclarationInTuple_EditorBuilder.java">
+      <node id="4070820740695161961" at="29,109,30,19" concept="13" />
       <node id="4070820740695161961" at="30,19,31,18" concept="2" />
       <node id="4070820740695161961" at="36,26,37,18" concept="8" />
       <node id="4070820740695161961" at="40,39,41,32" concept="8" />
@@ -4736,7 +4736,7 @@
       <node id="4070820740695161961" at="84,87,87,7" concept="5" />
       <node id="4070820740695161961" at="87,7,90,7" concept="5" />
       <node id="4070820740695161961" at="106,0,109,0" concept="6" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="4070820740695161961" at="29,0,33,0" concept="1" trace="LocalVariableDeclarationInTuple_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4070820740695161961" at="29,0,33,0" concept="1" trace="LocalVariableDeclarationInTuple_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4070820740695161961" at="55,0,59,0" concept="6" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4070820740695161961" at="63,0,67,0" concept="1" trace="variableSingleRoleHandler_q1nwwe_a0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="4070820740695161961" at="34,0,39,0" concept="6" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -4753,7 +4753,7 @@
       <scope id="4070820740695161961" at="88,42,89,49" />
       <scope id="4070820740695161961" at="102,17,103,42" />
       <scope id="4070820740695161961" at="106,40,107,29" />
-      <scope id="4070820740695161961" at="29,111,31,18" />
+      <scope id="4070820740695161961" at="29,109,31,18" />
       <scope id="4070820740695161961" at="55,40,57,33">
         <var name="provider" id="4070820740695161961" />
       </scope>
@@ -4794,9 +4794,9 @@
       <scope id="4070820740695161961" at="44,0,55,0" />
       <scope id="4070820740695161961" at="93,44,104,7" />
       <scope id="4070820740695161961" at="92,0,106,0" />
-      <unit id="4070820740695161961" at="111,0,114,0" name="jetbrains.mps.baseLanguage.tuples.editor.LocalVariableDeclarationInTuple_EditorBuilder_a$LINKS" />
-      <unit id="4070820740695161961" at="59,0,110,0" name="jetbrains.mps.baseLanguage.tuples.editor.LocalVariableDeclarationInTuple_EditorBuilder_a$variableSingleRoleHandler_q1nwwe_a0" />
-      <unit id="4070820740695161961" at="25,0,115,0" name="jetbrains.mps.baseLanguage.tuples.editor.LocalVariableDeclarationInTuple_EditorBuilder_a" />
+      <unit id="4070820740695161961" at="111,0,114,0" name="jetbrains.mps.baseLanguage.tuples.editor.LocalVariableDeclarationInTuple_EditorBuilder$LINKS" />
+      <unit id="4070820740695161961" at="59,0,110,0" name="jetbrains.mps.baseLanguage.tuples.editor.LocalVariableDeclarationInTuple_EditorBuilder$variableSingleRoleHandler_q1nwwe_a0" />
+      <unit id="4070820740695161961" at="25,0,115,0" name="jetbrains.mps.baseLanguage.tuples.editor.LocalVariableDeclarationInTuple_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:a841fea4-52c0-4064-96f2-7687a509aba5(jetbrains.mps.baseLanguage.tuples.editor)/6106383936195047198">

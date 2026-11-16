@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class VCSHints_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new VCSHints_EditorBuilder_a(editorContext, node).createCell();
+    return new VCSHints_EditorBuilder(editorContext, node).createCell();
   }
 }

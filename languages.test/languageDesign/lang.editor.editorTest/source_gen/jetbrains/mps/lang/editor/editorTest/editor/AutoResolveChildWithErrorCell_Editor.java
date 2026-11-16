@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class AutoResolveChildWithErrorCell_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new AutoResolveChildWithErrorCell_EditorBuilder_a(editorContext, node).createCell();
+    return new AutoResolveChildWithErrorCell_EditorBuilder(editorContext, node).createCell();
   }
 }

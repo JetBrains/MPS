@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="1ivplam8p2eqxo8c1wvu7izfkux65ph">
-  <files names="DocumentationAnnotation_Editor.java:DocumentationAnnotation_EditorBuilder_a.java:DocumentedNodeAnnotation_DELETE.java:EditorAspectDescriptorImpl.java" />
+  <files names="DocumentationAnnotation_Editor.java:DocumentationAnnotation_EditorBuilder.java:DocumentedNodeAnnotation_DELETE.java:EditorAspectDescriptorImpl.java" />
 </product>
 

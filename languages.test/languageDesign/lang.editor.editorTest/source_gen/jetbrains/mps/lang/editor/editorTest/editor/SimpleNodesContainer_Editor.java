@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class SimpleNodesContainer_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new SimpleNodesContainer_EditorBuilder_a(editorContext, node).createCell();
+    return new SimpleNodesContainer_EditorBuilder(editorContext, node).createCell();
   }
 }

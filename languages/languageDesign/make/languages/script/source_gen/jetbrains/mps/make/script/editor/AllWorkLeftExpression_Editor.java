@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class AllWorkLeftExpression_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new AllWorkLeftExpression_EditorBuilder_a(editorContext, node).createCell();
+    return new AllWorkLeftExpression_EditorBuilder(editorContext, node).createCell();
   }
 }

@@ -16,6 +16,6 @@ public class DiagramElementCreationHandlers_EditoComponent implements ConceptEdi
     return Collections.emptyList();
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new DiagramElementCreationHandlers_EditoComponent_ComponentBuilder_a(editorContext, node).createCell();
+    return new DiagramElementCreationHandlers_EditoComponent_ComponentBuilder(editorContext, node).createCell();
   }
 }

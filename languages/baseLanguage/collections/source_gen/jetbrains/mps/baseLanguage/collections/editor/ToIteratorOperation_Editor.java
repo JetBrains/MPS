@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class ToIteratorOperation_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ToIteratorOperation_EditorBuilder_a(editorContext, node).createCell();
+    return new ToIteratorOperation_EditorBuilder(editorContext, node).createCell();
   }
 }

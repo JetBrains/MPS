@@ -20,17 +20,17 @@
   </root>
   <root nodeRef="r:cb69772c-6e46-4297-9ae5-fa1920399f88(jetbrains.mps.lang.core.doc.editor)/4293932951803504292">
     <file name="DocumentationAnnotation_Editor.java">
-      <node id="4293932951803504292" at="11,79,12,89" concept="6" />
+      <node id="4293932951803504292" at="11,79,12,87" concept="6" />
       <node id="4293932951803504292" at="11,0,14,0" concept="4" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="4293932951803504292" at="11,79,12,89" />
+      <scope id="4293932951803504292" at="11,79,12,87" />
       <scope id="4293932951803504292" at="11,0,14,0">
         <var name="editorContext" id="4293932951803504292" />
         <var name="node" id="4293932951803504292" />
       </scope>
       <unit id="4293932951803504292" at="10,0,15,0" name="jetbrains.mps.lang.core.doc.editor.DocumentationAnnotation_Editor" />
     </file>
-    <file name="DocumentationAnnotation_EditorBuilder_a.java">
-      <node id="4293932951803504292" at="31,103,32,19" concept="11" />
+    <file name="DocumentationAnnotation_EditorBuilder.java">
+      <node id="4293932951803504292" at="31,101,32,19" concept="11" />
       <node id="4293932951803504292" at="32,19,33,18" concept="1" />
       <node id="4293932951803504292" at="38,26,39,18" concept="6" />
       <node id="4293932951803504292" at="42,39,43,32" concept="6" />
@@ -77,7 +77,7 @@
       <node id="4293932951803504292" at="84,87,87,7" concept="3" />
       <node id="4293932951803504292" at="87,7,90,7" concept="3" />
       <node id="4293932951803504292" at="111,0,114,0" concept="4" trace="getNoTargetText#()Ljava/lang/String;" />
-      <node id="4293932951803504292" at="31,0,35,0" concept="0" trace="DocumentationAnnotation_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="4293932951803504292" at="31,0,35,0" concept="0" trace="DocumentationAnnotation_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="4293932951803504292" at="55,0,59,0" concept="4" trace="createRefNode_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <node id="4293932951803504292" at="63,0,67,0" concept="0" trace="textSingleRoleHandler_7wv24x_a0#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SContainmentLink;Ljetbrains/mps/openapi/editor/EditorContext;)V" />
       <node id="4293932951803504292" at="36,0,41,0" concept="4" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
@@ -95,7 +95,7 @@
       <scope id="4293932951803504292" at="88,42,89,45" />
       <scope id="4293932951803504292" at="107,17,108,42" />
       <scope id="4293932951803504292" at="111,40,112,25" />
-      <scope id="4293932951803504292" at="31,103,33,18" />
+      <scope id="4293932951803504292" at="31,101,33,18" />
       <scope id="4293932951803504292" at="55,40,57,33">
         <var name="provider" id="4293932951803504292" />
       </scope>
@@ -142,9 +142,9 @@
         <var name="isEmpty" id="4293932951803504292" />
       </scope>
       <scope id="4293932951803504292" at="97,0,111,0" />
-      <unit id="4293932951803504292" at="121,0,124,0" name="jetbrains.mps.lang.core.doc.editor.DocumentationAnnotation_EditorBuilder_a$LINKS" />
-      <unit id="4293932951803504292" at="59,0,115,0" name="jetbrains.mps.lang.core.doc.editor.DocumentationAnnotation_EditorBuilder_a$textSingleRoleHandler_7wv24x_a0" />
-      <unit id="4293932951803504292" at="27,0,125,0" name="jetbrains.mps.lang.core.doc.editor.DocumentationAnnotation_EditorBuilder_a" />
+      <unit id="4293932951803504292" at="121,0,124,0" name="jetbrains.mps.lang.core.doc.editor.DocumentationAnnotation_EditorBuilder$LINKS" />
+      <unit id="4293932951803504292" at="59,0,115,0" name="jetbrains.mps.lang.core.doc.editor.DocumentationAnnotation_EditorBuilder$textSingleRoleHandler_7wv24x_a0" />
+      <unit id="4293932951803504292" at="27,0,125,0" name="jetbrains.mps.lang.core.doc.editor.DocumentationAnnotation_EditorBuilder" />
     </file>
   </root>
   <root nodeRef="r:cb69772c-6e46-4297-9ae5-fa1920399f88(jetbrains.mps.lang.core.doc.editor)/6820988181001813198">

@@ -18,6 +18,6 @@ public class ElementRef_tooltipHint_mwjwii_a0_Editor extends DefaultNodeEditor {
     return myContextHints;
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new ElementRef_tooltipHint_mwjwii_a0_EditorBuilder_a(editorContext, node).createCell();
+    return new ElementRef_tooltipHint_mwjwii_a0_EditorBuilder(editorContext, node).createCell();
   }
 }

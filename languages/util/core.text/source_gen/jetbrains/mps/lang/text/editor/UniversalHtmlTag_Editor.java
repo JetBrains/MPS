@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class UniversalHtmlTag_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new UniversalHtmlTag_EditorBuilder_a(editorContext, node).createCell();
+    return new UniversalHtmlTag_EditorBuilder(editorContext, node).createCell();
   }
 }

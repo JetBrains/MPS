@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class TestCompletionCustomization_ParentTestContextMatcher_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new TestCompletionCustomization_ParentTestContextMatcher_EditorBuilder_a(editorContext, node).createCell();
+    return new TestCompletionCustomization_ParentTestContextMatcher_EditorBuilder(editorContext, node).createCell();
   }
 }

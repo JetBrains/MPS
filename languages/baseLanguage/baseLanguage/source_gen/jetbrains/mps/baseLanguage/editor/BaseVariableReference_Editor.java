@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class BaseVariableReference_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new BaseVariableReference_EditorBuilder_a(editorContext, node).createCell();
+    return new BaseVariableReference_EditorBuilder(editorContext, node).createCell();
   }
 }

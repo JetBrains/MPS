@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class TransformationLocation_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new TransformationLocation_EditorBuilder_a(editorContext, node).createCell();
+    return new TransformationLocation_EditorBuilder(editorContext, node).createCell();
   }
 }

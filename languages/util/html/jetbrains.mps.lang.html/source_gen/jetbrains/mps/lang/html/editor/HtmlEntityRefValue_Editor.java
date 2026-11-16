@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class HtmlEntityRefValue_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new HtmlEntityRefValue_EditorBuilder_a(editorContext, node).createCell();
+    return new HtmlEntityRefValue_EditorBuilder(editorContext, node).createCell();
   }
 }

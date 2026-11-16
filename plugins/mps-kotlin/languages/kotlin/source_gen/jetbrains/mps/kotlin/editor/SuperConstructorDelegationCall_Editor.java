@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class SuperConstructorDelegationCall_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new SuperConstructorDelegationCall_EditorBuilder_a(editorContext, node).createCell();
+    return new SuperConstructorDelegationCall_EditorBuilder(editorContext, node).createCell();
   }
 }

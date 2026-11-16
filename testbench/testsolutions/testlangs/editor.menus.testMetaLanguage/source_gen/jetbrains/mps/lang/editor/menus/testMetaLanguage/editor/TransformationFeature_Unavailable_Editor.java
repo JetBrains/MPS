@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class TransformationFeature_Unavailable_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new TransformationFeature_Unavailable_EditorBuilder_a(editorContext, node).createCell();
+    return new TransformationFeature_Unavailable_EditorBuilder(editorContext, node).createCell();
   }
 }

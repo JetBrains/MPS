@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class BuildMps_ModuleDependency_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new BuildMps_ModuleDependency_EditorBuilder_a(editorContext, node).createCell();
+    return new BuildMps_ModuleDependency_EditorBuilder(editorContext, node).createCell();
   }
 }

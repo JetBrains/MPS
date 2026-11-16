@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class StaticFieldDocReference_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new StaticFieldDocReference_EditorBuilder_a(editorContext, node).createCell();
+    return new StaticFieldDocReference_EditorBuilder(editorContext, node).createCell();
   }
 }

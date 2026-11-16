@@ -14,17 +14,17 @@
   </root>
   <root nodeRef="r:933d1e22-ea0a-4371-bd15-b8b35cbed7bd(jetbrains.mps.samples.customAspect.sampleLanguage.editor)/2897519568668509970">
     <file name="DocumentedConcept_Editor.java">
-      <node id="2897519568668509970" at="11,79,12,83" concept="5" />
+      <node id="2897519568668509970" at="11,79,12,81" concept="5" />
       <node id="2897519568668509970" at="11,0,14,0" concept="3" trace="createEditorCell#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <scope id="2897519568668509970" at="11,79,12,83" />
+      <scope id="2897519568668509970" at="11,79,12,81" />
       <scope id="2897519568668509970" at="11,0,14,0">
         <var name="editorContext" id="2897519568668509970" />
         <var name="node" id="2897519568668509970" />
       </scope>
       <unit id="2897519568668509970" at="10,0,15,0" name="jetbrains.mps.samples.customAspect.sampleLanguage.editor.DocumentedConcept_Editor" />
     </file>
-    <file name="DocumentedConcept_EditorBuilder_a.java">
-      <node id="2897519568668509970" at="16,97,17,19" concept="6" />
+    <file name="DocumentedConcept_EditorBuilder.java">
+      <node id="2897519568668509970" at="16,95,17,19" concept="6" />
       <node id="2897519568668509970" at="17,19,18,18" concept="1" />
       <node id="2897519568668509970" at="23,26,24,18" concept="5" />
       <node id="2897519568668509970" at="27,39,28,30" concept="5" />
@@ -36,12 +36,12 @@
       <node id="2897519568668509972" at="36,34,37,22" concept="5" />
       <node id="2897519568668509970" at="13,0,15,0" concept="2" trace="myNode" />
       <node id="2897519568668509970" at="27,0,30,0" concept="3" trace="createCell#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
-      <node id="2897519568668509970" at="16,0,20,0" concept="0" trace="DocumentedConcept_EditorBuilder_a#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="2897519568668509970" at="16,0,20,0" concept="0" trace="DocumentedConcept_EditorBuilder#(Ljetbrains/mps/openapi/editor/EditorContext;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="2897519568668509970" at="21,0,26,0" concept="3" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="2897519568668509972" at="31,0,39,0" concept="3" trace="createConstant_0#()Ljetbrains/mps/openapi/editor/cells/EditorCell;" />
       <scope id="2897519568668509970" at="23,26,24,18" />
       <scope id="2897519568668509970" at="27,39,28,30" />
-      <scope id="2897519568668509970" at="16,97,18,18" />
+      <scope id="2897519568668509970" at="16,95,18,18" />
       <scope id="2897519568668509970" at="27,0,30,0" />
       <scope id="2897519568668509970" at="16,0,20,0">
         <var name="context" id="2897519568668509970" />
@@ -52,7 +52,7 @@
         <var name="editorCell" id="2897519568668509972" />
       </scope>
       <scope id="2897519568668509972" at="31,0,39,0" />
-      <unit id="2897519568668509970" at="12,0,40,0" name="jetbrains.mps.samples.customAspect.sampleLanguage.editor.DocumentedConcept_EditorBuilder_a" />
+      <unit id="2897519568668509970" at="12,0,40,0" name="jetbrains.mps.samples.customAspect.sampleLanguage.editor.DocumentedConcept_EditorBuilder" />
     </file>
   </root>
 </debug-info>

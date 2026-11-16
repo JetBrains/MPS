@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class XmlAttribute_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new XmlAttribute_EditorBuilder_a(editorContext, node).createCell();
+    return new XmlAttribute_EditorBuilder(editorContext, node).createCell();
   }
 }

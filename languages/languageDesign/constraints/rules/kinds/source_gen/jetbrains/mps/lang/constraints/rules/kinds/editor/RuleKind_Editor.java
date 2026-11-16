@@ -9,6 +9,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 public class RuleKind_Editor extends DefaultNodeEditor {
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new RuleKind_EditorBuilder_a(editorContext, node).createCell();
+    return new RuleKind_EditorBuilder(editorContext, node).createCell();
   }
 }

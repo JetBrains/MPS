@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product version="3" modelHash="12gl2kfendk8gob2g6q0o7slx1l8sru">
-  <files names="CheckedDotExpression_Actions_DeleteOperation.java:CheckedDotExpression_Editor.java:CheckedDotExpression_EditorBuilder_a.java:CheckedDot_Actions_MakeUnchecked.java:EditorAspectDescriptorImpl.java:IOperation_CheckedDot_Contribution.java:checkedDotExpression_Contribution.java" />
+  <files names="CheckedDotExpression_Actions_DeleteOperation.java:CheckedDotExpression_Editor.java:CheckedDotExpression_EditorBuilder.java:CheckedDot_Actions_MakeUnchecked.java:EditorAspectDescriptorImpl.java:IOperation_CheckedDot_Contribution.java:checkedDotExpression_Contribution.java" />
 </product>
 
