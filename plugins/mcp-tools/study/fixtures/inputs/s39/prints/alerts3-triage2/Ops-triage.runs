@@ -1,0 +1,13 @@
+1: alert → #000080, bold, upright | book → #000080, bold, upright | Ops → default, plain, upright
+2: # → #808080, bold, upright | production → #808080, plain, italic | alerts → #808080, plain, italic
+3: channel → #000080, bold, upright | pager → default, plain, upright | -> → default, bold, upright | pager://ops → default, plain, upright
+4: channel → #000080, bold, upright | mail → default, plain, upright | -> → default, bold, upright | ops@example.com → default, plain, upright
+5: threshold → #000080, bold, upright | cpuLimit → default, plain, upright | = → default, bold, upright | 90 → default, plain, upright
+7: alert → #000080, bold, upright | HighCpu → default, plain, upright | [ → default, bold, upright | high → #b20000, bold, upright | ] → default, bold, upright
+8: when → #000080, bold, upright | cpu → default, plain, upright | over → #000080, bold, upright | 5 → default, plain, upright | min → #000080, bold, upright | > → default, bold, upright | cpuLimit → default, plain, upright, ref | (90) → default, plain, upright
+9: notify → #000080, bold, upright | pager → default, plain, upright, ref
+10: alert → #000080, bold, upright | LowDisk → default, plain, upright | [ → default, bold, upright | low → #7c007c, bold, upright | ] → default, bold, upright
+11: when → #000080, bold, upright | disk → default, plain, upright | < → default, bold, upright | 10 → default, plain, upright | and → default, bold, upright | not → #000080, bold, upright | ( → default, bold, upright | memory → default, plain, upright | > → default, bold, upright | cpuLimit → default, plain, upright, ref | (90) → default, plain, upright | + → default, bold, upright | 5 → default, plain, upright | ) → default, bold, upright
+12: notify → #000080, bold, upright | mail → default, plain, upright, ref | , → default, bold, upright | pager → default, plain, upright, ref
+13: muted → #808080, bold, upright | alert → #808080, bold, upright | Heartbeat → #808080, plain, upright | [low] → #808080, bold, upright
+14: when → #808080, bold, upright | uptime → #808080, plain, upright | < → #808080, bold, upright | 1 → #808080, plain, upright

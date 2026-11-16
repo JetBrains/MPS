@@ -12,6 +12,12 @@ import com.intellij.mcpserver.annotations.McpTool
 import jetbrains.mps.agents.mcp.tools.languages.StructureDeclarations
 import jetbrains.mps.agents.mcp.tools.logging.McpCallOutcomes
 import jetbrains.mps.editor.runtime.HeadlessEditorComponent
+import jetbrains.mps.nodeEditor.EditorCell_WithComponent
+import jetbrains.mps.nodeEditor.EditorComponent
+import jetbrains.mps.nodeEditor.cells.EditorCell_ContextAssistantComponent
+import jetbrains.mps.nodeEditor.cells.EditorCell_Label
+import jetbrains.mps.nodeEditor.hintsSettings.ConceptEditorHintSettingsComponent
+import jetbrains.mps.openapi.editor.cells.EditorCell
 import jetbrains.mps.errors.MessageStatus
 import jetbrains.mps.errors.item.ModelReportItem
 import jetbrains.mps.errors.item.NodeReportItem
@@ -28,17 +34,28 @@ import jetbrains.mps.project.validation.ValidationUtil
 import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory
 import org.jetbrains.mps.openapi.language.SAbstractConcept
 import org.jetbrains.mps.openapi.language.SContainmentLink
-import org.jetbrains.mps.openapi.language.SLanguage
 import org.jetbrains.mps.openapi.model.EditableSModel
 import org.jetbrains.mps.openapi.model.SModel
 import org.jetbrains.mps.openapi.model.SNode
 import org.jetbrains.mps.openapi.module.SModule
 import org.jetbrains.mps.openapi.module.SRepository
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
+import java.awt.image.BufferedImage
+import java.io.File
+import java.io.IOException
+import java.nio.file.Files
 import java.util.concurrent.TimeUnit
+import javax.imageio.ImageIO
 
 /** See [JetBrainsMPSNodeMcpToolset.moduleCheckBudgetMs]. */
 private const val MODULE_CHECK_BUDGET_MS: Long = 20_000
+
+// Diagram cells (matched by name: mcp-tools does not depend on the diagram runtime), and the preferred size in both
+// dimensions from which any other Swing cell counts as graphical rather than as a button or icon.
+private val GRAPHICAL_CELL_CLASSES = setOf("DiagramCell", "AbstractJetpadCell")
+private const val GRAPHICAL_CELL_MIN_SIZE = 64
+
+private val WHITESPACE = Regex("\\s+")
 
 // lang.core markers whose subtrees the typesystem checkers (TypeSystemUtil.shouldApplyTypeSystemRules) and
 // the constraints, reference-scope and target-concept checkers (AbstractNodeCheckerInEditor.SKIP_CONSTRAINTS_CONDITION)
@@ -265,8 +282,8 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
 
     @McpTool
     @McpDescription("""        
-        Structural node mutations and code generation: move a child within its role, move a node to a new parent or make it a root, create a deep copy of a node, make/rebuild models/modules/whole project, fix broken references. Parameters are a JSON object (real JSON or its string form). For MOVE_CHILD, supply `childNodeRef` (or `nodeReference`) for the child to move and `position`; `nodeReference` (the parent, when `childNodeRef` is also passed) and `childRole` are inferred from the child when omitted and validated when supplied; whatever was inferred is reported in `details` (`movedNode`, `parentReference`, `childRole`, `inferredParameters`), a lone `nodeReference` read as the child adds a `warnings` entry, and a lone `nodeReference` plus a `childRole` that the node's own concept also declares is rejected as ambiguous. For MOVE_NODE_TO_PARENT, supply a non-null `newParentRef` plus `role` to reparent; omit `newParentRef` and supply `modelReference` to intentionally promote the node to a root (its concept must be rootable; `role`/`position` are then ignored with a warning). Explicit `newParentRef:null`, and `newParentRef` together with `modelReference`, are rejected. Every MOVE_NODE_TO_PARENT check runs before the model changes: a new parent that is the node or its descendant, a concept the role does not accept, and a single-valued role that already holds another node are rejected (unlike update_node ADD CHILD, a move never replaces an occupant); an unknown `role` lists the roles that fit in `details.candidateRoles`. The response's `details` reports `movedNode`, `previousParentReference` (or `previousModelReference`), and `parentReference` plus `role`, or `modelReference`. A move to another model keeps the references within and out of the moved subtree resolvable (`data.fixReferences`), adding the model imports, module dependencies and used languages the subtree needs (languages added are listed in `details.addedUsedLanguages`), but does not update incoming references from elsewhere: a `warnings` entry says any such references stop resolving; use MPS's Move refactoring for a full move. For MOVE_CHILD and MOVE_NODE_TO_PARENT, `position` is 0-based and `-1` moves to the end; a `position` at or beyond the role's child count is clamped to the end (not rejected) and a negative value other than -1 is rejected — the response's `data.index` reports the moved (clamped) node's actual resulting index.
-         MAKE parameters: {"modules":[<moduleRef>,...]} | {"models":[<modelRef>,...]} | {"wholeProject":true}, plus optional "rebuild":bool and "saveTransientModels":bool; node references are not accepted — resolve the node's module or model first. `saveTransientModels` keeps (true) or drops (false) this make's transient models and generation trace, overriding the IDE setting for this make only (omitted = the IDE setting); keep them to read each step's output and trace nodes with `mps_mcp_generation`, which is cheap on a small sample model. Every make starts by discarding all earlier transient models except the shared `checkpoints` module: a make that ran reports `transientModels` {`saved`, `droppedPrevious` (earlier transient models existed and are now gone), `modules` [{`module`, `reference`, `models`}], `traceAvailableFor` (input models with a generation trace)}; "Nothing to make" reports no block. A successful make that built a language and reloaded its runtime adds `migrationsPending` (pending migrations of the project; apply them with `mps_mcp_run_migrations`). Returns `{"ok":true,"data":{...}}` on success or `{"ok":false,"error":"..."}` on failure. See `mps-node-editing` and `mps-mcp-workflow` skills.
+        Structural node mutations and code generation: move a child within its role, move a node to a new parent or make it a root, create a deep copy of a node, make/rebuild models/modules/whole project, fix broken references. Parameters are a JSON object (real JSON or its string form). For MOVE_CHILD, supply `childNodeRef` (or `nodeReference`) for the child to move and `position`; `nodeReference` (the parent, when `childNodeRef` is also passed) and `childRole` are inferred from the child when omitted and validated when supplied; whatever was inferred is reported in `details` (`movedNode`, `parentReference`, `childRole`, `inferredParameters`), a lone `nodeReference` read as the child adds a `warnings` entry, and a lone `nodeReference` plus a `childRole` that the node's own concept also declares is rejected as ambiguous. For MOVE_NODE_TO_PARENT, supply a non-null `newParentRef` plus `role` to reparent; omit `newParentRef` and supply `modelReference` to intentionally promote the node to a root (its concept must be rootable; `role`/`position` are then ignored with a warning). Explicit `newParentRef:null`, and `newParentRef` together with `modelReference`, are rejected. Every MOVE_NODE_TO_PARENT check runs before the model changes: a new parent that is the node or its descendant, a concept the role does not accept, and a single-valued role that already holds another node are rejected (unlike update_node ADD CHILD, a move never replaces an occupant; the rejection names it in `details.occupant` and gives the update_node SET CHILD call that deletes it in `details.recovery`, after which the same move succeeds; when the moved node lies inside the occupant, `details.movedNodeInsideOccupant` is true and there is no `details.recovery`, since deleting the occupant would delete the node); an unknown `role` lists the roles that fit in `details.candidateRoles`. The response's `details` reports `movedNode`, `previousParentReference` (or `previousModelReference`), and `parentReference` plus `role`, or `modelReference`. A move to another model keeps the references within and out of the moved subtree resolvable (`data.fixReferences`), adding the model imports, module dependencies and used languages the subtree needs (languages added are listed in `details.addedUsedLanguages`, and `details.addedUsedLanguageDetails` has one object per language: `qualifiedName`, `languageReference`, plus `containingProject` / `editableFromCurrentProject:false` when another open project owns it), but does not update incoming references from elsewhere: a `warnings` entry says any such references stop resolving; use MPS's Move refactoring for a full move. For MOVE_CHILD and MOVE_NODE_TO_PARENT, `position` is 0-based and `-1` moves to the end; a `position` at or beyond the role's child count is clamped to the end (not rejected) and a negative value other than -1 is rejected — the response's `data.index` reports the moved (clamped) node's actual resulting index.
+         MAKE parameters: {"modules":[<moduleRef>,...]} | {"models":[<modelRef>,...]} | {"wholeProject":true}, plus optional "rebuild":bool and "saveTransientModels":bool; node references are not accepted — resolve the node's module or model first. MAKE targets must belong to the project selected by projectPath, so a language of another open project is built with that project's `projectPath`. `saveTransientModels` keeps (true) or drops (false) this make's transient models and generation trace, overriding the IDE setting for this make only (omitted = the IDE setting); keep them to read each step's output and trace nodes with `mps_mcp_generation`, which is cheap on a small sample model. Every make starts by discarding all earlier transient models except the shared `checkpoints` module: a make that ran reports `transientModels` {`saved`, `droppedPrevious` (earlier transient models existed and are now gone), `modules` [{`module`, `reference`, `models`}], `traceAvailableFor` (input models with a generation trace)}; "Nothing to make" reports no block. A successful make that built a language and reloaded its runtime adds `migrationsPending` (pending migrations of the project; apply them with `mps_mcp_run_migrations`). Returns `{"ok":true,"data":{...}}` on success or `{"ok":false,"error":"..."}` on failure. See `mps-node-editing` and `mps-mcp-workflow` skills.
          For COPY_NODE, a root node is copied and added as a new root in the same model; a node inside a multi-child collection role (`[0..*]` or `[1..*]`) is copied and inserted as the next sibling; a node in a single-child role (`[0..1]` or `[1]`) returns an error because copying a singleton child makes no structural sense.
          Prefer COPY_NODE over hand-authoring a JSON blueprint when a new node should closely resemble one that already exists — it's fewer calls and guarantees a structurally valid clone; adjust the copy afterward with mps_mcp_update_node.
     """)
@@ -793,29 +810,257 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         }
     }
 
+    private enum class Projection(val label: String) { TEXT("text"), HTML("HTML"), IMAGE("an image") }
+
+    /** An image painted on the EDT, encoded and written to a file after the read action. */
+    private class PaintedImage(val image: BufferedImage, val details: Map<String, Any?>, val warnings: List<String>)
+
+    /** An HTML page and the painted editor it cuts images from, written to a temp directory after the read action. */
+    private class HtmlBundle(val html: String, val image: BufferedImage, val details: MutableMap<String, Any?>, val warnings: List<String>)
+
     suspend private fun showNodeAppearance(
         nodeReference: String,
-        asHtml: Boolean = false,
-        maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
+        projection: Projection,
+        maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES,
+        editorHints: List<String>? = null,
     ): String {
-        return withMpsProject("Getting MPS node ${if (asHtml) "HTML" else "text"} representation") { mpsProject ->
-            executeShortReadOnEdt(mpsProject) {
+        return withMpsProject("Getting MPS node ${projection.label} representation") { mpsProject ->
+            val result: Any = executeShortReadOnEdt(mpsProject) {
                 val repo = mpsProject.repository
                 val sNodeRef = resolveNodeReferencePreferringProject(mpsProject, nodeReference)
                 val node = sNodeRef?.resolve(repo)
                     ?: return@executeShortReadOnEdt unresolvedPrintNode(mpsProject, nodeReference, parsedAsNode = sNodeRef != null)
 
-                withHeadlessEditor(repo, node) { ctx ->
-                    val component = ctx.editorComponent as HeadlessEditorComponent
-                    val text = if (asHtml) {
-                        component.rootCell.renderHtml().htmlText
-                    } else {
-                        component.rootCell.renderText().getText()
+                val catalog = EditorHintCatalog.forNode(node, repo)
+                val warnings = mutableListOf<String>()
+                val hintsBlock = linkedMapOf<String, Any?>()
+                var compactHints = true
+                val applied = if (editorHints == null) {
+                    hintsBlock["source"] = "projectSettings"
+                    hintsBlock["applied"] = projectEditorHints(mpsProject)
+                    null
+                } else {
+                    resolveRequestedEditorHints(editorHints, catalog, repo, warnings).also {
+                        compactHints = warnings.isEmpty()
+                        hintsBlock["source"] = "request"
+                        hintsBlock["applied"] = it
                     }
-                    finalizeResult(JsonPrimitive(text).toString(), maxInlineBytes)
+                }
+                if (compactHints) {
+                    val (shown, hidden) = catalog.compactListing()
+                    hintsBlock["available"] = shown
+                    if (hidden > 0) hintsBlock["hiddenCount"] = hidden
+                } else {
+                    hintsBlock["available"] = catalog.fullListing()
+                }
+                if (catalog.unloadedLanguages.isNotEmpty()) hintsBlock["unloadedLanguages"] = catalog.unloadedLanguages
+
+                withHeadlessEditor(repo, node, applied?.toTypedArray()) { ctx ->
+                    val component = ctx.editorComponent as HeadlessEditorComponent
+                    val details = linkedMapOf<String, Any?>("editorHints" to hintsBlock)
+                    val omitted = if (projection == Projection.TEXT) NonTextCells.collect(component.rootCell) else emptyList()
+                    val shownAs = LinkedHashMap<EditorCell, String>()
+                    val text = try {
+                        when (projection) {
+                            Projection.HTML -> {
+                                // Paint first: painting moves some cells (a fraction bar takes its parent's width).
+                                val painted = EditorImageRenderer.paint(component, paintableComponentCells(component))
+                                val afterPaint = NonTextCells.collect(component.rootCell)
+                                val page = EditorHtmlRenderer.render(component.rootCell, node, afterPaint, component.background, component.foreground)
+                                details["image"] = painted.details
+                                reportNonTextCells(afterPaint, page.shownAs, details, warnings)
+                                if (page.missing.isNotEmpty()) {
+                                    val texts = page.missing.take(5).joinToString(", ") { (it as? EditorCell_Label)?.renderedText?.let { t -> "'$t'" } ?: it.javaClass.simpleName }
+                                    logger.warn("HTML page of $nodeReference misses ${page.missing.size} cell(s): $texts")
+                                    warnings += "${page.missing.size} cell(s) of the projection are missing from the page ($texts); " +
+                                        "read editor.png or PLAIN TEXT for them"
+                                }
+                                return@withHeadlessEditor HtmlBundle(page.html, painted.image, details, warnings + painted.warnings)
+                            }
+                            Projection.TEXT -> trimTrailingWhitespace(renderPlainText(component, omitted, shownAs, details, warnings))
+                            Projection.IMAGE -> {
+                                val painted = EditorImageRenderer.paint(component, paintableComponentCells(component))
+                                details["image"] = painted.details
+                                return@withHeadlessEditor PaintedImage(painted.image, details, warnings + painted.warnings)
+                            }
+                        }
+                    } catch (e: RuntimeException) {
+                        rethrowIfCancellation(e)
+                        logger.warn("Rendering ${projection.label} of $nodeReference failed", e)
+                        return@withHeadlessEditor errJson(
+                            "The editor of this node cannot be rendered as ${projection.label} ($e). " +
+                                "Retry with format ${if (projection == Projection.TEXT) "JSON" else "\"PLAIN TEXT\""}.",
+                            McpErrorCode.INTERNAL_ERROR,
+                        )
+                    }
+                    graphicalCellsWarning(component)?.let(warnings::add)
+                    reportNonTextCells(omitted, shownAs, details, warnings)
+                    finalizeResult(JsonPrimitive(text).toString(), maxInlineBytes, details, warnings)
                 }
             }
+            when (result) {
+                is PaintedImage -> writePngResult(result)
+                is HtmlBundle -> writeHtmlBundle(result)
+                else -> result as String
+            }
         }
+    }
+
+    /** `index.html` and `editor.png` in a fresh temp directory; `data` is the page's path. */
+    private fun writeHtmlBundle(bundle: HtmlBundle): String {
+        var dir: File? = null
+        return try {
+            dir = Files.createTempDirectory("mps-node-html-").toFile()
+            // Registered before the files: deleteOnExit runs in reverse order, so the files go first, then the directory.
+            dir.deleteOnExit()
+            val page = File(dir, EditorHtmlRenderer.PAGE).also { it.deleteOnExit() }
+            val image = File(dir, EditorHtmlRenderer.IMAGE).also { it.deleteOnExit() }
+            page.writeText(bundle.html, Charsets.UTF_8)
+            if (!ImageIO.write(bundle.image, "png", image)) throw IOException("no PNG writer")
+            val details = linkedMapOf<String, Any?>()
+            details["html"] = linkedMapOf(
+                "directory" to dir.absolutePath,
+                "files" to linkedMapOf(EditorHtmlRenderer.PAGE to page.length(), EditorHtmlRenderer.IMAGE to image.length()),
+            )
+            details.putAll(bundle.details)
+            okJson(JsonPrimitive(page.absolutePath), warnings = bundle.warnings, details = details)
+        } catch (e: IOException) {
+            logger.warn("Failed to save the HTML bundle to a temporary directory", e)
+            dir?.deleteRecursively()
+            errJson("Failed to save the HTML page to a temporary directory: ${e.message}")
+        }
+    }
+
+    private fun writePngResult(painted: PaintedImage): String {
+        return try {
+            val file = File.createTempFile("mps-node-", ".png")
+            file.deleteOnExit()
+            ImageIO.write(painted.image, "png", file)
+            okJson(JsonPrimitive(file.absolutePath), warnings = painted.warnings, details = painted.details)
+        } catch (e: IOException) {
+            logger.warn("Failed to save the node image to a temporary file", e)
+            errJson("Failed to save the image to a temporary file: ${e.message}")
+        }
+    }
+
+    /**
+     * `renderText()` of the root cell ([CellPlainText], which keeps the rows of a vertical block inside an indent
+     * line), unless the projection is two-dimensional (a table, a superscript layout, a cell without text): then the
+     * cell geometry is laid out as a character grid ([CellGridText]), which keeps the columns and rows `renderText()`
+     * collapses and draws brackets, rules and `⟦n⟧` placeholders. [shownAs] receives how each of the [omitted] cells
+     * appears in the grid. The caller trims trailing whitespace from the result.
+     */
+    private fun renderPlainText(
+        component: EditorComponent,
+        omitted: List<NonTextCells.Omitted>,
+        shownAs: MutableMap<EditorCell, String>,
+        details: MutableMap<String, Any?>,
+        warnings: MutableList<String>,
+    ): String {
+        val root = component.rootCell
+        val reason = CellGridText.gridReason(root, omitted) ?: return CellPlainText.render(root)
+        val grid = try {
+            CellGridText.render(root, omitted)
+        } catch (e: RuntimeException) {
+            rethrowIfCancellation(e)
+            logger.warn("Grid text rendering failed", e)
+            null
+        }
+        if (grid == null) {
+            warnings += "Because $reason, the text should be a character grid, but it could not be built; fell back to the plain " +
+                "text rendering, which may collapse table columns and stacked cells (use format IMAGE)"
+            return CellPlainText.render(root)
+        }
+        details["textRenderer"] = "grid"
+        shownAs += grid.shownAs
+        warnings += "Rendered as a character grid from the cell geometry because $reason" +
+            if (grid.brackets > 0) "; ⎡⎢⎣ ⎤⎥⎦ (⁅ ⁆ on one row) are brackets the editor draws around ${grid.brackets} box(es)" else ""
+        return grid.text
+    }
+
+    /**
+     * `details.omittedCells` and a warning for the cells the text or HTML leaves out because they have no textual form
+     * (a fraction bar, an image, a Swing component), so a reader does not take the text for the whole projection. The
+     * large graphical Swing cells [graphicalCellsWarning] already names are listed but not counted again in the warning.
+     */
+    private fun reportNonTextCells(
+        omitted: List<NonTextCells.Omitted>,
+        shownAs: Map<EditorCell, String>,
+        details: MutableMap<String, Any?>,
+        warnings: MutableList<String>,
+    ) {
+        if (omitted.isEmpty()) return
+        details["omittedCells"] = NonTextCells.details(omitted, shownAs)
+        val (shown, missing) = omitted.partition { it.cell in shownAs }
+        if (shown.isNotEmpty()) warnings += NonTextCells.shownWarning(shown, shownAs)
+        val unwarned = missing.filterNot { val cell = it.cell; cell is EditorCell_WithComponent && isGraphicalCell(cell) }
+        if (unwarned.isNotEmpty()) warnings += NonTextCells.warning(unwarned)
+    }
+
+    private fun paintableComponentCells(component: EditorComponent): List<EditorCell_WithComponent> =
+        component.cellTracker.componentCells.filter { it !is EditorCell_ContextAssistantComponent }
+
+    /** The hints the project-wide setting enables, which a headless editor applies when given none. */
+    private fun projectEditorHints(mpsProject: MPSProject): List<String> =
+        ConceptEditorHintSettingsComponent.getInstance(mpsProject.project)?.state?.enabledHints.orEmpty().sorted()
+
+    /**
+     * The FQ names of [values] (FQ names or short ids), looked up in [catalog] and, for a value it does not know, in every
+     * deployed language (with a warning). An unknown or ambiguous value fails the call with the node's catalog.
+     */
+    private fun resolveRequestedEditorHints(
+        values: List<String>,
+        catalog: EditorHintCatalog,
+        repo: SRepository,
+        warnings: MutableList<String>,
+    ): List<String> {
+        var global: EditorHintCatalog? = null
+        val resolved = linkedSetOf<String>()
+        val problems = mutableListOf<String>()
+        for (value in values.map { it.trim() }.filter { it.isNotEmpty() }) {
+            var match = catalog.find(value)
+            var outside = false
+            if (match is EditorHintCatalog.Match.Missing) {
+                val all = global ?: EditorHintCatalog.global(repo).also { global = it }
+                match = all.find(value)
+                outside = true
+            }
+            when (match) {
+                is EditorHintCatalog.Match.Found -> {
+                    resolved += match.entry.fqName
+                    if (outside) warnings += "Editor hint '${match.entry.fqName}' is declared by ${match.entry.language}, " +
+                        "which this node's model does not use; applied anyway"
+                }
+                is EditorHintCatalog.Match.Ambiguous ->
+                    problems += "'$value' is ambiguous (${match.candidates.joinToString(", ")}); pass the FQ name"
+                EditorHintCatalog.Match.Missing ->
+                    problems += "'$value' is not declared by any loaded language"
+            }
+        }
+        if (problems.isNotEmpty()) {
+            throw McpUserException(
+                McpErrorCode.INVALID_REQUEST,
+                "Unknown editorHints: ${problems.joinToString("; ")}. details.editorHints.available lists the hints of this node's model.",
+                mapOf("editorHints" to mapOf("available" to catalog.fullListing())),
+            )
+        }
+        return resolved.toList()
+    }
+
+    /**
+     * A warning naming the Swing or diagram cells of [component] that neither text nor HTML can show; the context-assistant
+     * cell and small widgets (buttons, icons) are not counted.
+     */
+    private fun graphicalCellsWarning(component: EditorComponent): String? {
+        val classes = paintableComponentCells(component).filter(::isGraphicalCell).map { it.javaClass.simpleName }
+        if (classes.isEmpty()) return null
+        return "${classes.size} graphical cell(s) (${classes.distinct().sorted().joinToString(", ")}) have no textual form; use format IMAGE"
+    }
+
+    private fun isGraphicalCell(cell: EditorCell_WithComponent): Boolean {
+        if (generateSequence<Class<*>>(cell.javaClass) { it.superclass }.any { it.simpleName in GRAPHICAL_CELL_CLASSES }) return true
+        val size = cell.component?.preferredSize ?: return false
+        return size.width >= GRAPHICAL_CELL_MIN_SIZE && size.height >= GRAPHICAL_CELL_MIN_SIZE
     }
 
     /**
@@ -1246,7 +1491,8 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
             return errJson(
                 "'$nodeReference' is a model ($name), not a node. " +
                     "mps_mcp_print_node requires a node reference (r:<uuid>(model)/<node-id>). " +
-                    "Retry with mps_mcp_get_project_structure, startingPoint set to '$modelRef', includeNodes=true. " +
+                    "Retry with mps_mcp_get_compact_project_structure, startingPoint set to '$modelRef' " +
+                    "(or mps_mcp_get_project_structure with includeNodes=true for JSON). " +
                     "mps_mcp_check_root_node_problems accepts this value in nodeReference as a model-scope check.",
                 McpErrorCode.INVALID_REQUEST,
             )
@@ -1328,19 +1574,27 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
     @McpTool
     @McpDescription(
         """
-        Prints the specified node as JSON. `data` is inline when the printout is <= `maxInlineBytes` (default 20000), otherwise a temp-file path. `deep=true` inlines all descendants; `deep=false` (default) lists direct children's refs only. The result (inline `data` or the saved envelope) is consumable by every node-mutation tool (`mps_mcp_update_node`, `mps_mcp_update_root_node_from_json`, etc.). See `mps-mcp-workflow/references/analysis-tools.md` for the output schema and `mps-node-editing/references/json-format.md` for the matching blueprint shape.
-        A stored property, child role or reference that the node's concept does not declare is printed with `declared:false`; a node whose concept is not loaded (its language is not loaded or no longer declares it) prints `conceptLoaded:false` with only such entries (types and docs only for features of loaded languages), and the envelope `warnings` say so — build the language or use `PLAIN TEXT`, never read that printout as an empty node.
-        `nodeReference` must be a node reference (`r:<uuid>(model)/<node-id>`). A model reference or qualified model name is rejected with INVALID_REQUEST that names the model and a retry line for `mps_mcp_get_project_structure` (`startingPoint`, `includeNodes=true`); `mps_mcp_check_root_node_problems` accepts those model forms in `nodeReference`.
+        Prints the specified node in one of five formats. Pick the format by task (see `mps-mcp-workflow/references/analysis-tools/print-node-agentic-view.md`):
+        `JSON` (default) is the node record that mutation tools consume: the result (inline `data` or the saved envelope) is accepted by every node-mutation tool (`mps_mcp_update_node`, `mps_mcp_update_root_node_from_json`, etc.); print it only for the subtree such a tool will take. `deep=true` inlines all descendants; `deep=false` (default) lists direct children's refs only. `data` is inline when the printout is <= `maxInlineBytes` (default 20000), otherwise a temp-file path. Schema: `mps-mcp-workflow/references/analysis-tools/print-node-output.md`; blueprint shape: `mps-node-editing/references/json-format.md`.
+        `AGENTIC VIEW` is for reading a node: structure, node ids, reference targets (name, model alias, id) and unset features, one line per node for the whole subtree. It is read-only text that no tool takes as input; `nodeDepth` bounds it, and above `maxInlineBytes` it is cut (level by level, as many nodes as fit) instead of written to a file, unless even the node alone does not fit (then `data` is the path of a raw `.txt` file); print a `(+N)` node by its reference `<model>/<id>` to continue. `codeAsText=true` prints each outermost BaseLanguage statement or expression as one line with its editor text, for roots that mix structure and code. For a whole model or module, use `mps_mcp_get_compact_project_structure`.
+        `PLAIN TEXT` is for reading code or a notation as the editor shows it: the editor-projected text, inline or as a temp-file path under the `maxInlineBytes` rule; a two-dimensional projection (table, fraction, matrix) is drawn as a character grid.
+        `HTML` is for an editor's text styles and for mapping text to nodes: it writes a standalone page `index.html` and the painted editor `editor.png` into a fresh temp directory and returns the page's path as `data` (`details.html` gives the directory and each file's size; `maxInlineBytes` does not apply): the projection's text in reading order, every node's part tagged with its node id, concept and role, tables, fractions and brackets as CSS boxes, cells without text as cut-outs of the image.
+        `IMAGE` is for diagrams, tables and other graphical cells: it paints the editor projection to a PNG temp file whose path is `data` (size in `details.image`), exactly as drawn.
+        `editorHints` selects an alternative projection (editor hints) for HTML, PLAIN TEXT and IMAGE; `details.editorHints` reports the hints applied and those `available` for the node's model.
+        A stored property, child role or reference that the node's concept does not declare is printed with `declared:false` (`!undeclared` in AGENTIC VIEW); a node whose concept is not loaded (its language is not loaded or no longer declares it) prints `conceptLoaded:false` with only such entries (types and docs only for features of loaded languages), and the envelope `warnings` say so — build the language or use `PLAIN TEXT`, never read that printout as an empty node.
+        `nodeReference` must be a node reference (`r:<uuid>(model)/<node-id>`). A model reference or qualified model name is rejected with INVALID_REQUEST that names the model and a retry line for `mps_mcp_get_compact_project_structure` (`startingPoint`; or `mps_mcp_get_project_structure` with `includeNodes=true` for JSON); `mps_mcp_check_root_node_problems` accepts those model forms in `nodeReference`.
         A node of a transient model a make kept (references from `mps_mcp_generation` TRANSIENT_MODELS, `i:` model ids) prints like any other; `mps_mcp_generation` TRACE tells which input node and rule produced it.
-        Alternatively, if HTML or PLAIN TEXT format is required, it returns the editor-projected representation of the specified node as a string, inline or as a temp-file path under the same `maxInlineBytes` rule.
         If the goal is to duplicate this node rather than merely inspect it, prefer `mps_mcp_alter_nodes` `COPY_NODE` over printing it deep and re-inserting the JSON — it's fewer calls and produces a structurally guaranteed-valid clone.
     """
     )
     suspend fun mps_mcp_print_node(
-        @McpDescription("Required. Persistent form of SNodeReference (r:<uuid>(model)/<node-id>). A model reference or qualified model name is rejected with a retry line pointing at mps_mcp_get_project_structure.") nodeReference: String = "",
-        @McpDescription("One of exactly three literals: JSON (default), HTML, PLAIN TEXT.") format: String = "JSON",
-        @McpDescription("Whether to perform a deep (true) or shallow (false) printout. Only relevant for JSON format. Defaults to false.") deep: Boolean = false,
-        @McpDescription("Inline the printout in `data` when it is at most this many characters; larger printouts are saved to a temp file whose path is returned instead (default 20000).") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
+        @McpDescription("Required. Persistent form of SNodeReference (r:<uuid>(model)/<node-id>). A model reference or qualified model name is rejected with a retry line pointing at mps_mcp_get_compact_project_structure.") nodeReference: String = "",
+        @McpDescription("One of exactly five literals: JSON (default), AGENTIC VIEW, PLAIN TEXT, HTML, IMAGE.") format: String = "JSON",
+        @McpDescription("JSON only: a deep (true) or shallow (false) printout. Defaults to false; AGENTIC VIEW always prints the whole subtree (bound it with nodeDepth).") deep: Boolean = false,
+        @McpDescription("Inline the printout in `data` when it is at most this many characters; larger printouts are saved to a temp file whose path is returned instead (default 20000). AGENTIC VIEW: the limit cuts the printout instead of writing a file, unless even the node alone does not fit.") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES,
+        @McpDescription("HTML, PLAIN TEXT and IMAGE only: an editor hint FQ name or short id, or a JSON array of them (a real array or the array written as a string). Omit to use the project's hint settings; [] for no hints.") editorHints: JsonOrText? = null,
+        @McpDescription("AGENTIC VIEW only: how many levels to print below the node: -1 (default) for the whole subtree, 0 for the node alone, n for n levels; a node with unprinted descendants ends in (+N).") nodeDepth: Int = -1,
+        @McpDescription("AGENTIC VIEW only: print each outermost statement or expression as its node line plus `= \"<editor text>\"`, its inner nodes counted in (+N) and its attributes still listed. Default false.") codeAsText: Boolean = false,
     ): String {
         rejectMissingParameters(
             "mps_mcp_print_node",
@@ -1348,15 +1602,25 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                 "nodeReference",
                 nodeReference,
                 "the node's persistent reference, `r:<uuid>(model)/<node-id>` (a model is not accepted here; " +
-                    "list a model's nodes with mps_mcp_get_project_structure instead)",
+                    "read a model with mps_mcp_get_compact_project_structure instead)",
             ),
         )?.let { return it }
         val normalizedFormat = format.uppercase().trim()
-        if (normalizedFormat == "HTML") return showNodeAppearance(nodeReference, asHtml = true, maxInlineBytes = maxInlineBytes)
-        if (normalizedFormat == "PLAIN TEXT") return showNodeAppearance(nodeReference, asHtml = false, maxInlineBytes = maxInlineBytes)
+        val hints = parseNullableStringOrJsonArray(editorHints)
+        val projection = when (normalizedFormat) {
+            "HTML" -> Projection.HTML
+            "PLAIN TEXT" -> Projection.TEXT
+            "IMAGE" -> Projection.IMAGE
+            else -> null
+        }
+        if (projection != null) return showNodeAppearance(nodeReference, projection, maxInlineBytes = maxInlineBytes, editorHints = hints)
+        if (normalizedFormat == "AGENTIC VIEW" || normalizedFormat == "AGENTIC_VIEW") {
+            return printAgenticView(nodeReference, nodeDepth, maxInlineBytes, editorHintsGiven = hints != null, codeAsText)
+        }
         if (normalizedFormat != "JSON") return McpCallOutcomes.record(
-            errJson("Invalid format '$format'. Allowed values: JSON, HTML, PLAIN TEXT", McpErrorCode.INVALID_REQUEST)
+            errJson("Invalid format '$format'. Allowed values: JSON, HTML, PLAIN TEXT, IMAGE, AGENTIC VIEW", McpErrorCode.INVALID_REQUEST)
         )
+        val hintsWarnings = if (hints == null) emptyList() else listOf("editorHints applies to the HTML, PLAIN TEXT and IMAGE formats only; ignored for JSON")
         return withMpsProject(if (deep) "Deep printing MPS node" else "Shallow printing MPS node") { mpsProject ->
             executeShortReadOnEdt(mpsProject) {
                 val repo = mpsProject.repository
@@ -1365,9 +1629,52 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                     ?: return@executeShortReadOnEdt unresolvedPrintNode(mpsProject, nodeReference, parsedAsNode = sNodeRef != null)
                 val unloadedConcepts = linkedSetOf<SAbstractConcept>()
                 val json = nodeHierarchyToJson(node, deep, mpsProject, unloadedConcepts = unloadedConcepts)
-                finalizeResult(json, maxInlineBytes, warnings = unloadedConceptsWarnings(unloadedConcepts))
+                finalizeResult(json, maxInlineBytes, warnings = hintsWarnings + unloadedConceptsWarnings(unloadedConcepts))
             }
         }
+    }
+
+    /** `format = AGENTIC VIEW`: [AgenticViewRenderer] under the JSON branch's resolution, cut to fit [maxInlineBytes]. */
+    private suspend fun printAgenticView(nodeReference: String, nodeDepth: Int, maxInlineBytes: Int, editorHintsGiven: Boolean, codeAsText: Boolean): String =
+        withMpsProject("Printing MPS node as AGENTIC VIEW") { mpsProject ->
+            executeShortReadOnEdt(mpsProject) {
+                val repo = mpsProject.repository
+                val sNodeRef = resolveNodeReferencePreferringProject(mpsProject, nodeReference)
+                val node = sNodeRef?.resolve(repo)
+                    ?: return@executeShortReadOnEdt unresolvedPrintNode(mpsProject, nodeReference, parsedAsNode = sNodeRef != null)
+                val warnings = mutableListOf<String>()
+                if (editorHintsGiven) warnings += "editorHints applies to the HTML, PLAIN TEXT and IMAGE formats only; ignored for AGENTIC VIEW"
+                val rendering = if (codeAsText) renderCodeAsText(mpsProject, node, nodeDepth, warnings) else agenticViewRenderer(mpsProject).render(node, nodeDepth)
+                agenticViewResult(
+                    rendering, maxInlineBytes, emptyMap(), warnings,
+                    floorExceeds = "The node alone exceeds", smaller = "print a child node for a smaller printout", codeAsText = codeAsText,
+                )
+            }
+        }
+
+    /**
+     * AGENTIC VIEW with `codeAsText`: the code texts come from one headless editor of [node] under the project's hint
+     * settings, each the rendered text of the code node's cell (also under a folded cell) with its whitespace collapsed;
+     * without an editor, or for code without a cell, the tree is printed and [warnings] say so.
+     */
+    private fun renderCodeAsText(mpsProject: MPSProject, node: SNode, nodeDepth: Int, warnings: MutableList<String>): AgenticViewRenderer.Rendering {
+        val renderer = agenticViewRenderer(mpsProject)
+        val rendering = try {
+            withHeadlessEditor(mpsProject.repository, node) { ctx ->
+                val component = ctx.editorComponent
+                renderer.render(node, nodeDepth) { code -> component.findNodeCell(code, true)?.let { WHITESPACE.replace(CellPlainText.render(it), " ").trim() } }
+            }
+        } catch (e: RuntimeException) {
+            rethrowIfCancellation(e)
+            logger.warn("codeAsText: editor failed for ${PersistenceFacade.getInstance().asString(node.reference)}", e)
+            warnings += "codeAsText: the editor of this node could not be built or rendered ($e), so all code is printed as node lines"
+            return agenticViewRenderer(mpsProject).render(node, nodeDepth)
+        }
+        if (renderer.textless > 0) {
+            warnings += "codeAsText: ${renderer.textless} statement(s) or expression(s) have no cell in this node's editor (code the " +
+                "inspector shows, or that the editor does not project), so they are printed as node lines"
+        }
+        return rendering
     }
 
     @McpTool
@@ -1395,7 +1702,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
 
         ADD × PROPERTY and ADD × REFERENCE are not valid combinations and return an error.
 
-        The child's concept must be assignable to the role's concept; model dependencies and used languages are updated automatically on child operations. For `childJson` larger than ~4 KB pass an absolute path to a file inside the system temp directory instead of an inline string. See `mps-node-editing` for blueprint format, file-path semantics, and staged-construction patterns. See `mps-mcp-workflow/references/reference-formats.md` for reference formats.
+        The child's concept must be assignable to the role's concept; model dependencies and used languages are updated automatically on child operations. A blueprint whose concept's language the target model does not yet import gets the import automatically; the response lists it in `details.addedUsedLanguages` / `details.addedUsedLanguageDetails` (also on a dry run, as would-be imports); undo with `mps_mcp_model_used_language` DELETE. A language owned by another open project is marked there, and importing it is allowed. For `childJson` larger than ~4 KB pass an absolute path to a file inside the system temp directory instead of an inline string. See `mps-node-editing` for blueprint format, file-path semantics, and staged-construction patterns. See `mps-mcp-workflow/references/reference-formats.md` for reference formats.
 
         On success returns `{"ok":true,"data":{...}}`. On failure returns `{"ok":false,"error":"..."}` with optional `code`, `details`, and `warnings` fields.
     """
@@ -1930,18 +2237,44 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                         singleRolePositionError(containmentLink.name, position)
                             ?.let { return@executeShortCommandOnEdt errJson(it, McpErrorCode.INVALID_REQUEST) }
                         // Unlike update_node ADD CHILD, which replaces the occupant of a single role, a move
-                        // never deletes a node the caller did not name.
+                        // never deletes a node the caller did not name. The rejection names the exact
+                        // deletion instead (study D142: the occupant is often a node-factory placeholder,
+                        // e.g. a fresh TemplateDeclaration's contentNode), so the caller needs no lookup.
                         val occupant = newParent.getChildren(containmentLink).firstOrNull()
                         if (occupant != null) {
                             if (occupant.reference == node.reference) {
                                 return@executeShortCommandOnEdt okJson(nodeInfoJsonObjectWithIndex(node, mpsProject), details = details)
                             }
+                            val occupantRef = facade.asString(occupant.reference)
+                            val occupied = "Role '${containmentLink.name}' of '$newParentRef' is single-valued " +
+                                "(${getCardinality(containmentLink)}) and already holds " +
+                                "'$occupantRef' (${occupant.concept.name}). MOVE_NODE_TO_PARENT does not replace it: "
+                            val occupantDetails = linkedMapOf<String, Any?>(
+                                "occupant" to linkedMapOf("reference" to occupantRef, "concept" to occupant.concept.name),
+                            )
+                            // The moved node inside the occupant (an unwrap): deleting the occupant would
+                            // delete the node too, so there is no one-call recovery to offer.
+                            if (isSameOrDescendantOf(node, occupant)) {
+                                return@executeShortCommandOnEdt errJson(
+                                    occupied + "the moved node lies inside that node, so deleting it would delete " +
+                                        "the moved node too. Move it out first, then delete the occupant " +
+                                        "and retry this move; or replace the occupant in one step with " +
+                                        "mps_mcp_update_node SET CHILD and a blueprint.",
+                                    McpErrorCode.INVALID_REQUEST,
+                                    details = occupantDetails + ("movedNodeInsideOccupant" to true),
+                                )
+                            }
                             return@executeShortCommandOnEdt errJson(
-                                "Role '${containmentLink.name}' of '$newParentRef' is single-valued " +
-                                    "(${getCardinality(containmentLink)}) and already holds " +
-                                    "'${facade.asString(occupant.reference)}'. MOVE_NODE_TO_PARENT does not replace it: " +
-                                    "move or delete that node first.",
-                                McpErrorCode.INVALID_REQUEST
+                                occupied + "move that node elsewhere, or delete it with mps_mcp_update_node " +
+                                    "operation=SET kind=CHILD childNodeRef='$occupantRef' (omit childJson), then " +
+                                    "retry this move unchanged (details.recovery).",
+                                McpErrorCode.INVALID_REQUEST,
+                                details = occupantDetails + ("recovery" to linkedMapOf(
+                                    "tool" to "mps_mcp_update_node",
+                                    "operation" to "SET",
+                                    "kind" to "CHILD",
+                                    "childNodeRef" to occupantRef,
+                                )),
                             )
                         }
                     }
@@ -1976,7 +2309,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                             incomingUsagesWarning(node).takeIf { crossModel },
                             warn,
                         ),
-                        details = details + addedUsedLanguagesDetail(addedLanguages),
+                        details = details + addedUsedLanguagesDetails(addedLanguages, mpsProject),
                     )
 
                 } else {
@@ -2031,7 +2364,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                             "movedNode" to facade.asString(node.reference),
                             previous,
                             "modelReference" to facade.asString(targetModel.reference),
-                        ) + addedUsedLanguagesDetail(addedLanguages),
+                        ) + addedUsedLanguagesDetails(addedLanguages, mpsProject),
                     )
                 }
             }
@@ -2054,9 +2387,6 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         )
     }
 
-    /** `addedUsedLanguages`, the qualified names of the languages a cross-model move imported, when there are any. */
-    private fun addedUsedLanguagesDetail(added: List<SLanguage>): Map<String, Any?> =
-        if (added.isEmpty()) emptyMap() else mapOf("addedUsedLanguages" to added.map { it.qualifiedName })
 
     /** A warning when the move emptied the mandatory single role [link] of [previousParent], or null. */
     private fun emptiedRequiredRoleWarning(previousParent: SNode?, link: SContainmentLink?): String? {
@@ -2084,3 +2414,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
 
 
 }
+
+/** No line ends with whitespace and the text ends with no blank line; blank lines inside stay. */
+internal fun trimTrailingWhitespace(text: String): String =
+    text.lines().joinToString("\n") { it.trimEnd() }.trimEnd('\n')

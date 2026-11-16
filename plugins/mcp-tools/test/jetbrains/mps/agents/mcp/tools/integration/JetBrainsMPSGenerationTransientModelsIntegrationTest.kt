@@ -144,6 +144,22 @@ class JetBrainsMPSGenerationTransientModelsIntegrationTest : McpIntegrationTestB
         val plainListing = runTool(projectTools) { it.mps_mcp_get_project_structure() }
         assertFalse("a project dump does not list transient modules", plainListing.contains(moduleRef))
 
+        val compactModel = JsonParser.parseString(
+            runTool(projectTools) { it.mps_mcp_get_compact_project_structure(startingPoint = modelRef, nodeDepth = 0, maxInlineBytes = 1_000_000) }
+        ).asJsonObject
+        assertTrue("compact project structure reads a transient model: $compactModel", compactModel.get("ok").asBoolean)
+        assertTrue(compactModel.get("data").asString.contains("m0=$modelRef"))
+        val compactModule = JsonParser.parseString(
+            runTool(projectTools) { it.mps_mcp_get_compact_project_structure(startingPoint = moduleRef, nodeDepth = 0, maxInlineBytes = 1_000_000) }
+        ).asJsonObject
+        assertTrue("compact project structure reads a transient module: $compactModule", compactModule.get("ok").asBoolean)
+        assertTrue(compactModule.get("data").asString.startsWith("# module "))
+        val compactNode = JsonParser.parseString(
+            runTool(projectTools) { it.mps_mcp_get_compact_project_structure(startingPoint = rootRef, nodeDepth = 0, maxInlineBytes = 1_000_000) }
+        ).asJsonObject
+        assertTrue("compact project structure reads a transient node: $compactNode", compactNode.get("ok").asBoolean)
+        assertTrue(compactNode.get("data").asString.contains("m0=$modelRef"))
+
         val printed = expectOk(runTool(JetBrainsMPSNodeMcpToolset()) { it.mps_mcp_print_node(rootRef) })
         assertEquals(rootRef, printed.get("reference").asString)
 

@@ -1493,13 +1493,18 @@ class JetBrainsMPSLanguageMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             "the project scope must contain a language the fixture module uses; got=${scoped.map { it.qualifiedName }}",
             scoped.any { it.qualifiedName == "jetbrains.mps.lang.structure" }
         )
-        // The project's own unbuilt languages are in scope too (their concepts come from the
-        // structure model, D112), so the registry plus the project's Language modules is the bound.
-        val ownLanguages = readOnRepo { myProject.projectModules.filterIsInstance<jetbrains.mps.smodel.Language>().map { MetaAdapterByDeclaration.getLanguage(it) }.toSet() }
+        // Unbuilt languages are in scope too (their concepts come from the structure model, D112),
+        // and the scope is cut from the global snapshot (D130), so the bound is the registry plus
+        // every Language module of the shared repository, not only the project's own.
+        val repositoryLanguages = readOnRepo { myProject.repository.modules.filterIsInstance<jetbrains.mps.smodel.Language>().map { MetaAdapterByDeclaration.getLanguage(it) }.toSet() }
         assertTrue(
-            "the project scope must be a subset of the registry plus the project's own languages; extra=${scoped.filter { it !in all && it !in ownLanguages }.map { l -> l.qualifiedName }}",
-            scoped.all { it in all || it in ownLanguages }
+            "the project scope must be a subset of the registry plus the repository's Language modules; extra=${scoped.filter { it !in all && it !in repositoryLanguages }.map { l -> l.qualifiedName }}",
+            scoped.all { it in all || it in repositoryLanguages }
         )
+        // The fixture language is never built, so it is in scope only through its module: the
+        // module half of the bound is exercised, not vacuous.
+        val fixtureLanguage = readOnRepo { MetaAdapterByDeclaration.getLanguage(language) }
+        assertTrue("the project's own unbuilt language must be in its scope", fixtureLanguage in scoped)
         assertTrue(
             "the project scope must be strictly smaller than the registry, otherwise it narrows nothing; " +
                     "scoped=${scoped.size} all=${all.size}",
@@ -1514,7 +1519,8 @@ class JetBrainsMPSLanguageMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         // nearly the whole registry here (recorded in study/docs-defects.md D38). What does hold
         // unconditionally is containment: the project scope is a subset of the full registry, so
         // a regression that widened the project scope past `all`, or narrowed `all`, fails here.
-        // The filter itself is pinned by the ProjectMembershipCache predicate tests.
+        // The scope itself (defined or used, origin tier <= 2) is pinned by the two-project tests
+        // in ProjectResolutionCrossProjectTest.
         // "ConceptDeclaration" deliberately, not a common word: both sides must stay under
         // MAX_STRICT_RESULTS or the comparison is between two differently ordered truncations
         // and says nothing about containment. A word like "Declaration" caps out on both sides

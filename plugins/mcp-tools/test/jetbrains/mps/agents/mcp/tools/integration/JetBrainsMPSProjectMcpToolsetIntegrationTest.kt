@@ -45,6 +45,7 @@ import java.util.logging.Level
  *  - `mps_mcp_get_project_structure` — listing project modules (default), descending into a
  *    model when `startingPoint` is set, the mutually-exclusive flag enforcement, and the
  *    NOT_FOUND envelope for an unknown starting point;
+ *  - `mps_mcp_get_compact_project_structure` — covered in [CompactProjectStructureIntegrationTest];
  *  - `mps_mcp_reload_all` — happy-path smoke test against the test project's
  *    `ClassLoaderManager`;
  *  - `mps_mcp_insert_console_command_from_json` — the pre-console input-validation guard

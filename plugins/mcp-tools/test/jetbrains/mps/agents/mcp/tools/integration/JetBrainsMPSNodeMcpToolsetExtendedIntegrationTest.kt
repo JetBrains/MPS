@@ -14,7 +14,9 @@ import jetbrains.mps.smodel.SModelInternal
 import jetbrains.mps.smodel.SModelStereotype
 import jetbrains.mps.smodel.SNodeUtil
 import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory
+import jetbrains.mps.smodel.adapter.structure.types.SConstrainedStringDatatypeAdapter
 import java.util.UUID
+import org.jetbrains.mps.openapi.language.SNamedElement
 import org.jetbrains.mps.openapi.model.SModel
 import org.jetbrains.mps.openapi.model.SNode
 import org.jetbrains.mps.openapi.module.SModule
@@ -1242,6 +1244,16 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
         val occupied = moveNodeToParent("""{"nodeReference":"${host.rightRef}","newParentRef":"${host.totalRef}","role":"initializer"}""")
         val occupiedError = expectErr(occupied)
         assertTrue(occupiedError, occupiedError.contains("single-valued (0..1) and already holds '${host.plusRef}'"))
+        // D142: `right` lies inside the occupant `plus`, so deleting the occupant would delete it too:
+        // the rejection names the occupant but offers no delete-then-retry recovery.
+        val occupiedDetails = JsonParser.parseString(occupied).asJsonObject.getAsJsonObject("details")
+        assertNotNull("expected details on the occupied-role rejection: $occupied", occupiedDetails)
+        val occupant = occupiedDetails.getAsJsonObject("occupant")
+        assertEquals(host.plusRef, occupant.get("reference").asString)
+        assertTrue(occupied, occupant.get("concept").asString.endsWith("PlusExpression"))
+        assertTrue(occupied, occupiedDetails.get("movedNodeInsideOccupant").asBoolean)
+        assertFalse("no recovery may delete the moved node: $occupied", occupiedDetails.has("recovery"))
+        assertTrue(occupiedError, occupiedError.contains("lies inside that node"))
 
         val badPosition = moveNodeToParent("""{"nodeReference":"${host.rightRef}","newParentRef":"${host.emptyRef}","role":"initializer","position":1}""")
         val badPositionError = expectErr(badPosition)
@@ -1260,6 +1272,44 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
         readOnRepo {
             assertEquals(host.emptyRef, PersistenceFacade.getInstance().asString(resolveNode(host.plusRef).parent!!.reference))
             assertTrue(resolveNode(host.totalRef).children.none { it.containmentLink?.name == "initializer" })
+        }
+    }
+
+    @Test
+    fun `alter_nodes MOVE_NODE_TO_PARENT occupied-role rejection carries a recovery that works as given`() {
+        // D142: follow details.recovery literally, then retry the identical move.
+        val host = createMoveHost()
+        val (totalTypeRef, emptyTypeRef) = readOnRepo {
+            val facade = PersistenceFacade.getInstance()
+            fun typeOf(ref: String) = facade.asString(resolveNode(ref).children.single { it.containmentLink?.name == "type" }.reference)
+            typeOf(host.totalRef) to typeOf(host.emptyRef)
+        }
+        val move = """{"nodeReference":"$totalTypeRef","newParentRef":"${host.emptyRef}","role":"type"}"""
+
+        val rejected = JsonParser.parseString(moveNodeToParent(move)).asJsonObject
+        assertFalse("expected error envelope: $rejected", rejected.get("ok").asBoolean)
+        val rejectedDetails = rejected.getAsJsonObject("details")
+        assertEquals(emptyTypeRef, rejectedDetails.getAsJsonObject("occupant").get("reference").asString)
+        assertFalse(rejected.toString(), rejectedDetails.has("movedNodeInsideOccupant"))
+        val recovery = rejectedDetails.getAsJsonObject("recovery")
+        assertEquals("mps_mcp_update_node", recovery.get("tool").asString)
+        assertEquals("SET", recovery.get("operation").asString)
+        assertEquals("CHILD", recovery.get("kind").asString)
+        assertEquals(emptyTypeRef, recovery.get("childNodeRef").asString)
+        assertTrue(rejected.toString(), rejected.get("error").asString.contains("childNodeRef='$emptyTypeRef'"))
+
+        val deleted = runTool(toolset) {
+            it.mps_mcp_update_node(
+                recovery.get("operation").asString, recovery.get("kind").asString,
+                childNodeRef = recovery.get("childNodeRef").asString,
+            )
+        }
+        assertTrue("expected the recovery deletion to succeed: $deleted", JsonParser.parseString(deleted).asJsonObject.get("ok").asBoolean)
+
+        expectOk(moveNodeToParent(move))
+        readOnRepo {
+            val emptyTypes = resolveNode(host.emptyRef).children.filter { it.containmentLink?.name == "type" }
+            assertEquals(listOf(totalTypeRef), emptyTypes.map { PersistenceFacade.getInstance().asString(it.reference) })
         }
     }
 
@@ -1960,6 +2010,29 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
                 property.get("type").asString.startsWith("enum:"),
             )
         }
+    }
+
+    @Test
+    fun `a constrained string datatype property prints its datatype name as type`() {
+        val ref = createConceptRoot("ConstrainedTypeProbe")
+        val constrained = readOnRepo {
+            resolveNode(ref).concept.properties
+                .filter { it.type is SConstrainedStringDatatypeAdapter }
+                .associate { it.name to (it.type as SNamedElement).name }
+        }
+        assertTrue("test precondition: ConceptDeclaration declares a constrained string property", constrained.isNotEmpty())
+        val printed = payloadObjectFromOkData(runTool(toolset) { it.mps_mcp_print_node(ref, deep = false) })
+        val types = printed.getAsJsonArray("properties").associate { entry ->
+            entry.asJsonObject.get("name").asString to entry.asJsonObject.get("type").asString
+        }
+        for ((name, type) in types) assertFalse("'$name' has an object-hash type: $type", type.contains("@"))
+        assertTrue(types.toString(), constrained.keys.any { it in types })
+        for ((name, datatype) in constrained) if (name in types) assertEquals(name, datatype, types[name])
+        val details = payloadArrayFromOkData(runTool(JetBrainsMPSLanguageMcpToolset()) {
+            it.mps_mcp_get_concept_details(conceptRefs = listOf("jetbrains.mps.lang.structure.structure.ConceptDeclaration"))
+        }).first().asJsonObject.getAsJsonArray("properties")
+            .associate { it.asJsonObject.get("name").asString to it.asJsonObject.get("type").asString }
+        for ((name, type) in types) if (name in details && !type.startsWith("enum:")) assertEquals(name, details[name], type)
     }
 
     @Test
@@ -2997,9 +3070,10 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
         assertEquals("INVALID_REQUEST", envelope.get("code").asString)
         val error = expectErr(response)
         assertTrue("must say it is a model: $error", error.contains("is a model"))
-        assertTrue("must name get_project_structure: $error", error.contains("mps_mcp_get_project_structure"))
+        assertTrue("must name get_compact_project_structure: $error", error.contains("mps_mcp_get_compact_project_structure"))
+        assertTrue("must name get_project_structure for JSON: $error", error.contains("mps_mcp_get_project_structure"))
         assertTrue("must name includeNodes: $error", error.contains("includeNodes"))
-        assertTrue("must offer a retry line: $error", error.contains("Retry with"))
+        assertTrue("must offer a retry line: $error", error.contains("Retry with mps_mcp_get_compact_project_structure"))
         assertTrue("must name startingPoint: $error", error.contains("startingPoint"))
     }
 
@@ -3010,7 +3084,8 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
         val error = expectErr(response)
         assertEquals("INVALID_REQUEST", JsonParser.parseString(response).asJsonObject.get("code").asString)
         assertTrue("must say it is a model: $error", error.contains("is a model"))
-        assertTrue("must name get_project_structure: $error", error.contains("mps_mcp_get_project_structure"))
+        assertTrue("must name get_compact_project_structure: $error", error.contains("mps_mcp_get_compact_project_structure"))
+        assertTrue("must name get_project_structure for JSON: $error", error.contains("mps_mcp_get_project_structure"))
     }
 
     // ── helpers ──────────────────────────────────────────────────────────────────────────

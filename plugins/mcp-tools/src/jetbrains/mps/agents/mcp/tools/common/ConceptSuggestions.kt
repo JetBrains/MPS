@@ -24,6 +24,11 @@ import java.util.PriorityQueue
  * must not resolve the declaration of every concept in the registry (study defect D116,
  * `docs/d116-concept-not-found-suggestions-plan.md`).
  *
+ * The candidate set is every language of the shared repository ([allLanguages]), whoever owns it:
+ * ownership is provenance, never a discovery filter (D130, `docs/d130-plan.md`). Within one match
+ * quality, a candidate's [Membership.originTier] ranks the current project's own languages first,
+ * then the ones it uses, then the rest; callers mark another open project's candidates as foreign.
+ *
  * One instance per tool call: [membership] memoizes ownership for the call's lock window only.
  */
 class ConceptSuggestions(
@@ -32,12 +37,16 @@ class ConceptSuggestions(
     private val docOf: (SNode?) -> String,
     private val deprecationOf: (SNode?) -> String,
 ) {
-    /** The ownership questions a scan asks; [AbstractOps.ProjectMembershipCache] answers them. */
+    /** The origin questions a scan asks; [AbstractOps.ProjectMembershipCache] answers them. */
     interface Membership {
         val currentProject: MPSProject?
-        fun isFromAnotherOpenProject(concept: SAbstractConcept, repository: SRepository): Boolean
-        fun isFromAnotherOpenProject(language: SLanguage, repository: SRepository): Boolean
-        fun isInCurrentProject(language: SLanguage, repository: SRepository): Boolean
+
+        /**
+         * [ORIGIN_DEFINED] when a module of [currentProject] defines [language], [ORIGIN_USED] when
+         * the project uses it (see [AbstractOps.ProjectMembershipCache]), [ORIGIN_OTHER] otherwise —
+         * including every language when there is no current project. Lower ranks first.
+         */
+        fun originTier(language: SLanguage): Int
     }
 
     enum class Mode {
@@ -57,29 +66,42 @@ class ConceptSuggestions(
 
     private val registry = LanguageRegistry.getInstance(repository)
 
-    /**
-     * Registered languages minus the ones owned by another open MPS project. The module
-     * repository is shared across open projects, so an unfiltered candidate list can answer a
-     * plain name with a same-named concept or language living in a sibling project — the caller
-     * cannot edit it and following the hint silently leaves its own project. Library and stub
-     * languages (owned by no open project) stay in the list.
-     */
-    fun languagesInProject(): List<SLanguage> {
+    private val snapshot: List<SLanguage> by lazy {
         val languages = LinkedHashSet<SLanguage>()
-        registry.allLanguages.filterTo(languages) { !membership.isFromAnotherOpenProject(it, repository) }
-        // The project's own unbuilt languages have no registry entry; their concepts come from declarations (D112).
-        membership.currentProject?.projectModules?.forEach { if (it is Language) languages.add(MetaAdapterByDeclaration.getLanguage(it)) }
-        return languages.toList()
+        languages.addAll(registry.allLanguages)
+        // Unbuilt languages have no registry entry; their concepts come from declarations (D112).
+        // SLanguage equality is by id, so a built language module is not listed twice.
+        for (module in repository.modules) {
+            if (module is Language) languages.add(MetaAdapterByDeclaration.getLanguage(module))
+        }
+        languages.toList()
     }
 
     /**
+     * Every language a free-form lookup may answer from: each `LanguageRegistry` language plus each
+     * `Language` module in the shared repository, built or not, deduplicated by language id. That
+     * covers libraries and every open project's modules — the set MPS's own language import dialog
+     * offers. Nothing is dropped because another open project owns it (D130); computed once per instance.
+     */
+    fun allLanguages(): List<SLanguage> = snapshot
+
+    /** [Membership.originTier] of [language]. */
+    fun originTier(language: SLanguage): Int = membership.originTier(language)
+
+    /** The `Language` module whose id is [lang]'s, wherever it is registered; null for a runtime-only language. */
+    fun languageModule(lang: SLanguage): Language? =
+        repository.getModule(ModuleId.regular(MetaIdHelper.getLanguage(lang).idValue)) as? Language
+
+    /**
      * The concepts a search sees for [lang], each with its declaration node: the built runtime's
-     * concepts plus, for a Language module in the repository, the structure-model declarations the
-     * runtime does not know yet — every concept when the language was never built (D112).
+     * concepts plus, for a Language module in the repository (any project's or a library's), the
+     * structure-model declarations the runtime does not know yet — every concept when the language
+     * was never built (D112). Resolving each runtime concept's `sourceNode` loads the structure
+     * model of a built language anyway, so reading its roots costs nothing extra.
      */
     fun conceptsWithDeclarations(lang: SLanguage): List<Pair<SAbstractConcept, SNode?>> {
         val runtime = registry.getLanguage(lang)
-        val module = projectLanguageModule(lang)
+        val module = languageModule(lang)
         if (runtime == null && module == null) return emptyList()
         val result = LinkedHashMap<SAbstractConcept, SNode?>()
         runtime?.concepts?.forEach { result[it] = it.sourceNode?.resolve(repository) }
@@ -109,46 +131,61 @@ class ConceptSuggestions(
      *    so concepts of other languages sharing the name do not hide a near miss in the named one.
      *    Only when nothing matched so far does the scan widen to every language — in [Mode.DETAILS]
      *    always, in [Mode.REJECTION] only for a ref that names no language.
+     *
+     * Local near miss: when the ref names no language and no hit of 1–2 comes from a language the
+     * current project defines or uses, the best subtoken match among those languages takes the same
+     * place as 3 — after the exact hits, or the last slot when they fill [limit]. Otherwise an exact
+     * hit from another project's language would hide the project's own near miss, which the wide
+     * scan used to find before such languages were candidates (D130). The extra scan reads names,
+     * aliases and short descriptions only ([Mode.REJECTION] matching), so it loads no structure model
+     * of a built language; only a never-built language's declarations are read, as in every scan.
      */
     fun suggest(ref: String, limit: Int, mode: Mode, accept: (SAbstractConcept) -> Boolean = { true }): List<SAbstractConcept> {
         val simpleName = ref.substringAfterLast('.').trim()
         if (simpleName.isEmpty() || limit <= 0) return emptyList()
         val impliedName = ref.substringBeforeLast('.', "").takeIf { it.endsWith(".structure") }?.removeSuffix(".structure")
-        val languages = languagesInProject()
-        val implied = impliedName?.let { name -> languages.firstOrNull { it.qualifiedName == name } }
-        val usable = { c: SAbstractConcept -> accept(c) && !membership.isFromAnotherOpenProject(c, repository) }
+        val languages = allLanguages()
+        // Same-named languages with different ids are independent; the project's own one is meant first.
+        val implied = impliedName?.let { name -> languages.filter { it.qualifiedName == name }.minByOrNull { originTier(it) } }
 
-        val exact = exactMatches(simpleName, languages, impliedName).filter(usable)
+        val exactHits = exactMatches(simpleName, languages, impliedName).filter { accept(it.first) }
+        val exact = exactHits.map { it.first }
         val exactSet = exact.toSet()
-        val scoped = implied?.let { tokenMatches(simpleName, listOf(it), mode, limit) { c -> c !in exactSet && usable(c) } }
+        val scoped = implied?.let { tokenMatches(simpleName, listOf(it), mode, limit) { c -> c !in exactSet && accept(c) } }
         val scopedStrict = scoped?.strict.orEmpty().asSequence()
 
         if (exact.isNotEmpty()) {
-            val tokens = scoped?.besideExact.orEmpty().take(limit)
+            val tokens = scoped?.besideExact.orEmpty().ifEmpty {
+                if (implied != null || exactHits.any { it.second <= ORIGIN_USED }) emptyList()
+                else localNearMiss(simpleName, languages, limit) { c -> c !in exactSet && accept(c) }
+            }.take(limit)
             return if (exact.size >= limit && tokens.isNotEmpty()) exact.take(limit - 1) + tokens.first()
             else exact.take(limit) + tokens.take(limit - exact.size.coerceAtMost(limit))
         }
         val scopedAll = (scopedStrict + scoped?.fallback.orEmpty().asSequence()).take(limit).toList()
         if (scopedAll.isNotEmpty()) return scopedAll
         if (mode == Mode.REJECTION && impliedName != null) return emptyList()
-        val wide = tokenMatches(simpleName, languages, mode, limit, usable)
+        val wide = tokenMatches(simpleName, languages, mode, limit, accept)
         return wide.strict.ifEmpty { wide.fallback }.take(limit)
     }
 
-    private fun projectLanguageModule(lang: SLanguage): Language? =
-        if (membership.isInCurrentProject(lang, repository)) repository.getModule(ModuleId.regular(MetaIdHelper.getLanguage(lang).idValue)) as? Language
-        else null
+    /** The best [Mode.REJECTION]-style subtoken match among the languages the project defines or uses, as a one-element list. */
+    private fun localNearMiss(simpleName: String, languages: List<SLanguage>, limit: Int, usable: (SAbstractConcept) -> Boolean): List<SAbstractConcept> {
+        val local = languages.filter { originTier(it) <= ORIGIN_USED }
+        if (local.isEmpty()) return emptyList()
+        return tokenMatches(simpleName, local, Mode.REJECTION, limit, usable).strict.take(1)
+    }
 
     /** A concept's name, alias and short description, from the runtime unless only the declaration knows the concept. */
     private class NamedConcept(val concept: SAbstractConcept, val name: String, val alias: String, val shortDescription: String)
 
     /**
      * [lang]'s concepts as [NamedConcept]s without resolving a runtime concept's declaration: the
-     * runtime answers name, alias and short description itself. The structure model is read only
-     * for a language of this project, for the concepts its runtime lacks, and for a built language
-     * only when the model is already loaded: a concept added since the build lives in a model
-     * someone edited, and in a checkout where every language is the project's own (MPS itself)
-     * loading them all would stall the command the rejection runs in.
+     * runtime answers name, alias and short description itself. The structure model of a language
+     * module is read for the concepts its runtime lacks, and for a built language only when the
+     * model is already loaded: a concept added since the build lives in a model someone edited, and
+     * with MPS itself open as a project loading every structure model would stall the command the
+     * rejection runs in.
      */
     private fun namedConcepts(lang: SLanguage): List<NamedConcept> {
         val result = LinkedHashMap<SAbstractConcept, NamedConcept>()
@@ -156,7 +193,7 @@ class ConceptSuggestions(
         runtime?.concepts?.forEach {
             result[it] = NamedConcept(it, it.name ?: "", it.conceptAlias ?: "", it.shortDescription ?: "")
         }
-        val structure = projectLanguageModule(lang)?.structureModelDescriptor?.takeIf { runtime == null || it.isLoaded }
+        val structure = languageModule(lang)?.structureModelDescriptor?.takeIf { runtime == null || it.isLoaded }
         structure?.rootNodes?.forEach { root ->
             val concept = StructureDeclarations.conceptOf(root) ?: return@forEach
             if (concept in result) return@forEach
@@ -170,9 +207,11 @@ class ConceptSuggestions(
         return result.values.toList()
     }
 
-    /** Tiers 1 and 2 of [suggest], ordered; see there. */
-    private fun exactMatches(simpleName: String, languages: List<SLanguage>, impliedName: String?): List<SAbstractConcept> {
-        class Hit(val concept: SAbstractConcept, val byAlias: Boolean, val caseExact: Boolean, val language: SLanguage)
+    /** Tiers 1 and 2 of [suggest], ordered; see there. Each concept comes with its language's [originTier]. */
+    private fun exactMatches(simpleName: String, languages: List<SLanguage>, impliedName: String?): List<Pair<SAbstractConcept, Int>> {
+        class Hit(val concept: SAbstractConcept, val byAlias: Boolean, val caseExact: Boolean, val language: SLanguage) {
+            val origin = originTier(language)
+        }
         val hits = ArrayList<Hit>()
         for (lang in languages) {
             for (named in namedConcepts(lang)) {
@@ -195,10 +234,10 @@ class ConceptSuggestions(
                 .thenBy { !it.caseExact }
                 .thenBy { it.language.qualifiedName != impliedName }
                 .thenByDescending { sharedSegments(it.language.qualifiedName.split('.'), impliedSegments) }
-                .thenBy { !membership.isInCurrentProject(it.language, repository) }
+                .thenBy { it.origin }
                 .thenBy { deprecated[it.concept] == true }
                 .thenBy { AbstractOps.structureQualifiedName(it.concept) }
-        ).map { it.concept }.distinct()
+        ).distinctBy { it.concept }.map { it.concept to it.origin }
     }
 
     private fun sharedSegments(a: List<String>, b: List<String>): Int {
@@ -244,16 +283,18 @@ class ConceptSuggestions(
     ): TokenMatches {
         val subtokens = subtokensOf(simpleName)
         if (subtokens.isEmpty()) return TokenMatches(emptyList(), emptyList(), emptyList())
-        val strict = ArrayList<Pair<SAbstractConcept, Int>>()
-        val nearMisses = ArrayList<Pair<SAbstractConcept, Int>>()
-        val rankedHeap = PriorityQueue<Pair<SAbstractConcept, Int>>(limit, compareBy { it.second })
+        val strict = ArrayList<Scored>()
+        val nearMisses = ArrayList<Scored>()
+        // Min-heap whose head is the worst of the kept candidates: lowest score, then latest origin tier.
+        val rankedHeap = PriorityQueue<Scored>(limit, compareBy<Scored> { it.score }.thenByDescending { it.origin })
         for (lang in languages) {
+            val origin = originTier(lang)
             if (mode == Mode.REJECTION) {
                 for (named in namedConcepts(lang)) {
                     val haystack = "${named.alias} ${named.shortDescription}"
                     val nameHits = subtokens.count { named.name.contains(it, ignoreCase = true) }
                     val allHit = subtokens.all { named.name.contains(it, ignoreCase = true) || haystack.contains(it, ignoreCase = true) }
-                    if ((allHit || isNameNearMiss(subtokens.size, nameHits)) && usable(named.concept)) strict.add(named.concept to nameHits)
+                    if ((allHit || isNameNearMiss(subtokens.size, nameHits)) && usable(named.concept)) strict.add(Scored(named.concept, nameHits, origin))
                 }
                 continue
             }
@@ -276,33 +317,39 @@ class ConceptSuggestions(
                     }
                 }
                 if (totalHits == subtokens.size) {
-                    strict.add(concept to nameHits)
+                    strict.add(Scored(concept, nameHits, origin))
                 } else if (isNameNearMiss(subtokens.size, nameHits)) {
-                    nearMisses.add(concept to nameHits)
+                    nearMisses.add(Scored(concept, nameHits, origin))
                 }
                 if (totalHits < subtokens.size && strict.isEmpty() && totalHits > 0) {
                     // Compound score: name hits dominate, doc/alias hits are a tiebreaker only.
                     // The 100-multiplier is a soft cap that the per-concept subtoken counts can't
                     // realistically saturate (search words rarely exceed ~10 subtokens), so
                     // (nameHits, extraHits) is effectively lexicographic.
-                    val score = nameHits * 100 + extraHits
+                    val candidate = Scored(concept, nameHits * 100 + extraHits, origin)
                     if (rankedHeap.size < limit) {
-                        rankedHeap.offer(concept to score)
-                    } else if (score > rankedHeap.peek().second) {
+                        rankedHeap.offer(candidate)
+                    } else if (rankedHeap.comparator().compare(candidate, rankedHeap.peek()) > 0) {
+                        // Strictly better than the worst kept: a higher score, or the same score from an earlier origin tier.
                         rankedHeap.poll()
-                        rankedHeap.offer(concept to score)
+                        rankedHeap.offer(candidate)
                     }
                 }
             }
         }
-        val order = compareByDescending<Pair<SAbstractConcept, Int>> { it.second }
-            .thenBy { Math.abs((it.first.name ?: "").length - simpleName.length) }
-            .thenBy { AbstractOps.structureQualifiedName(it.first) }
-        val ordered = strict.sortedWith(order).map { it.first }.distinct()
-        val besideExact = if (nearMisses.isEmpty()) ordered else (strict + nearMisses).sortedWith(order).map { it.first }.distinct()
+        val order = compareByDescending<Scored> { it.score }
+            .thenBy { Math.abs((it.concept.name ?: "").length - simpleName.length) }
+            .thenBy { it.origin }
+            .thenBy { AbstractOps.structureQualifiedName(it.concept) }
+        val ordered = strict.sortedWith(order).map { it.concept }.distinct()
+        val besideExact = if (nearMisses.isEmpty()) ordered else (strict + nearMisses).sortedWith(order).map { it.concept }.distinct()
         if (ordered.isNotEmpty()) return TokenMatches(ordered, emptyList(), besideExact)
-        return TokenMatches(emptyList(), rankedHeap.sortedByDescending { it.second }.map { it.first }, besideExact)
+        val fallback = rankedHeap.sortedWith(compareByDescending<Scored> { it.score }.thenBy { it.origin }).map { it.concept }
+        return TokenMatches(emptyList(), fallback, besideExact)
     }
+
+    /** A token-tier candidate: its [score] (name hits, or the compound fallback score) and its language's [origin] tier. */
+    private class Scored(val concept: SAbstractConcept, val score: Int, val origin: Int)
 
     /**
      * A name that has all but one of [subtokenCount] subtokens, three or more: one wrong word in a
@@ -320,6 +367,15 @@ class ConceptSuggestions(
             "[^A-Za-z0-9]+|(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])|(?<=[A-Za-z])(?=[0-9])|(?<=[0-9])(?=[A-Za-z])"
         )
         const val MIN_SUBTOKEN_LENGTH = 2
+
+        /** [Membership.originTier]: a language a module of the current project defines. */
+        const val ORIGIN_DEFINED = 1
+
+        /** [Membership.originTier]: a language the current project uses without defining it (a library's or another open project's). */
+        const val ORIGIN_USED = 2
+
+        /** [Membership.originTier]: every other language. */
+        const val ORIGIN_OTHER = 3
 
         // Single-character subtokens like "5" or "D" are substrings of almost any docstring and
         // would let unrelated concepts match — keep only subtokens of at least MIN_SUBTOKEN_LENGTH

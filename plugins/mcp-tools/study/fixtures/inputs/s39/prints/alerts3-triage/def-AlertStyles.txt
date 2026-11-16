@@ -1,0 +1,31 @@
+
+stylesheet AlertStyles {
+  style Keyword {
+    font-style : bold
+    text-foreground-color : light: dark blue     | dark: steel blue (#000080 / #3D6DAC)
+  }
+
+  style Level {
+    font-style : bold
+    text-foreground-color : light: dark magenta  | dark: magenta (#7D007D / #FF00FF)
+  }
+
+  style LevelHigh {
+    apply : Level
+    text-foreground-color : red (#FF0000)
+  }
+
+  style Dimmed dominates over Keyword {
+    text-foreground-color : gray (#808080)
+  }
+
+  style HighHeader {
+    background-color : light: pink          | dark: lampoon (#FFAFAF / #7D5656)
+  }
+
+  style Remark {
+    text-foreground-color : gray (#808080)
+    font-style : italic
+  }
+
+}

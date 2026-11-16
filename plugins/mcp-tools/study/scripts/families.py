@@ -46,8 +46,8 @@ Output (stdout, or --out FILE): a TSV with a header line, then `round` (the dire
   GN_drop                          mps_mcp_generation DROP_TRANSIENT_MODELS calls
   GN_trace_before_fix              TRACE calls that found a step, before the first accepted write
                                    to a `@generator` model (all of them without one)
-  GN_transient_reads               print_node / get_project_structure / query_nodes /
-                                   check_root_node_problems calls on a transient step model or node
+  GN_transient_reads               print_node / get_project_structure / get_compact_project_structure /
+                                   query_nodes / check_root_node_problems calls on a transient step model or node
   GN_template_prints               print_node calls on a node of a `@generator` model
   GN_template_prints_before_trace  of them, calls before the first TRACE that found a step (all of
                                    them without one)
@@ -149,8 +149,9 @@ Output (stdout, or --out FILE): a TSV with a header line, then `round` (the dire
   MG_sandbox_node_writes           accepted node writes (any GENERATOR_WRITES tool but a root insert) naming a
                                    node of a .sandbox model
   MG_find_instances                query_nodes FIND_INSTANCES calls
-  MG_mps_migration_dumps           node reads (print_node, get_project_structure, search_root_node_by_name,
-                                   query_nodes but FIND_INSTANCES) naming a jetbrains.mps.lang.migration* model
+  MG_mps_migration_dumps           node reads (print_node, get_project_structure, get_compact_project_structure,
+                                   search_root_node_by_name, query_nodes but FIND_INSTANCES) naming a
+                                   jetbrains.mps.lang.migration* model
   MG_publication_probe             before the first accepted structure write (alter_structure, or an intention or
                                    node write on a .structure model): mps_mcp / Grep / Glob / Bash calls naming
                                    BuildProject / BuildMps_Language (a plain project dump is orientation, not a probe)
@@ -177,9 +178,10 @@ module sweep (`details.truncated`, with or without perRoot rows), ok:false, unpa
 State: a container check sets the last verdict. A node check counts as C_root_after_clean_model
 after `clean` or `clean_unchecked` and as C_after_summary or C_after_node_sample after
 `problem_summary`; with autoApplyQuickFixes it counts the same way, then it resets the verdict, since
-it writes. Any other mps_mcp_* call except print_node,
-get_project_structure, query_nodes, list_open_projects, mps_mcp_generation and mps_mcp_query_dataflow resets it too. Batches: calls grouped by
-`message.id`, as in analyze_runs.py (A2); a call without an id is its own batch.
+it writes. Any other mps_mcp_* call except print_node, get_project_structure,
+get_compact_project_structure, query_nodes, list_open_projects, mps_mcp_generation and
+mps_mcp_query_dataflow resets it too. Batches: calls grouped by `message.id`, as in analyze_runs.py
+(A2); a call without an id is its own batch.
 
 T_rule_prints reads the concept from the print_node result: `data.concept` of an inline JSON
 printout. The server prints the short name (`SubtypingRule`); a qualified one
@@ -313,8 +315,8 @@ KEYS = ["tool_uses", "A_tempfile_env", "C_checks", "C_model_checks", "C_root_che
         "MG_console_runs", "MG_console_write_cmds", "MG_sandbox_node_writes", "MG_find_instances",
         "MG_mps_migration_dumps", "MG_publication_probe", "GT_red_runs_before_fix",
         "GT_runs_after_generator_write", "NP_node_ptr_writes", "NP_hand_pointer_writes"]
-READ_ONLY = ("mps_mcp_print_node", "mps_mcp_get_project_structure", "mps_mcp_query_nodes",
-             "mps_mcp_list_open_projects", "mps_mcp_generation", "mps_mcp_query_dataflow")
+READ_ONLY = ("mps_mcp_print_node", "mps_mcp_get_project_structure", "mps_mcp_get_compact_project_structure",
+             "mps_mcp_query_nodes", "mps_mcp_list_open_projects", "mps_mcp_generation", "mps_mcp_query_dataflow")
 CLEAN = "no problems found"
 CLEAN_UNCHECKED_PREFIX = "no problems found in checked nodes"
 CLEAN_VERDICTS = ("clean", "clean_unchecked")
@@ -339,8 +341,8 @@ TRANSIENT_REF = re.compile(r"(^|/)i:[0-9a-fA-F]+\([^()/]*@transient\d*/")
 # worker CLI runs `python3 -I -c` / `python3 -I -` on untrusted data (A16).
 ADHOC_PYTHON = re.compile(r"(?<![\w.-])python(?:3(?:\.\d+)?)?(?:\s+(?:-[bBdEhiIOPqRsSuvVx]+|-[WX]\s*\S+))*"
                           r"(?:\s+-[bBdEhiIOPqRsSuvVx]*c|\s+-(?=\s|$|[|;&)<])|\s*<<)")
-TRANSIENT_READS = ("mps_mcp_print_node", "mps_mcp_get_project_structure", "mps_mcp_query_nodes",
-                   "mps_mcp_check_root_node_problems")
+TRANSIENT_READS = ("mps_mcp_print_node", "mps_mcp_get_project_structure", "mps_mcp_get_compact_project_structure",
+                   "mps_mcp_query_nodes", "mps_mcp_check_root_node_problems")
 GENERATOR_WRITES = ("mps_mcp_insert_root_node_from_json", "mps_mcp_create_root_node", "mps_mcp_update_node",
                     "mps_mcp_update_root_node_from_json", "mps_mcp_parse_java_and_insert", "mps_mcp_apply_intention",
                     "mps_mcp_alter_nodes")
@@ -372,8 +374,8 @@ ATTACH_API = re.compile(r"DevkitDescriptor|setAssociatedPlan|associatedGenPlan|g
 DESCRIPTOR_FILE = re.compile(r"\.(?:devkit|msd)\b")
 GENPLAN_MODEL = re.compile(r"@genplan\b")
 PARAM_MODEL = re.compile(r"342b977c-a485-4fdb-b891-66244eff644a|generator\.extensions\.common")
-PARAM_MODEL_READS = ("mps_mcp_print_node", "mps_mcp_get_project_structure", "mps_mcp_query_nodes",
-                     "mps_mcp_search_root_node_by_name", "mps_mcp_check_root_node_problems")
+PARAM_MODEL_READS = ("mps_mcp_print_node", "mps_mcp_get_project_structure", "mps_mcp_get_compact_project_structure",
+                     "mps_mcp_query_nodes", "mps_mcp_search_root_node_by_name", "mps_mcp_check_root_node_problems")
 ROOT_INSERTS = ("mps_mcp_insert_root_node_from_json", "mps_mcp_create_root_node")
 MIGRATION_LANG = "90746344-04fd-4286-97d5-b46ae6a81709/"
 PURE_SCRIPT = re.compile(r"(?:^|\.)PureMigrationScript$|" + MIGRATION_LANG + r"7431903976166443707\b")
@@ -402,7 +404,8 @@ HAND_POINTER = re.compile(r"\bnew\s+(?:[\w.]+\.)?SNodePointer\s*\(|~SNodePointer
                           r"\bcreateNodeReference(?:\s*\(|%28)")
 VIRTUAL_PACKAGE = re.compile(r'\\?"virtualPackage\\?"')
 STRUCTURE_MODEL = re.compile(r"\.structure\)")
-MG_READS = ("mps_mcp_print_node", "mps_mcp_get_project_structure", "mps_mcp_search_root_node_by_name")
+MG_READS = ("mps_mcp_print_node", "mps_mcp_get_project_structure", "mps_mcp_get_compact_project_structure",
+            "mps_mcp_search_root_node_by_name")
 # scenario -> {(concept, role): (multiple, optional, isReference)} for the roles the fixture ships (FIXTURE.md pins)
 FIXTURE_ROLES = {
     "S25": {("Loan", "copies"): (True, True, False), ("Loan", "borrower"): (False, True, True),

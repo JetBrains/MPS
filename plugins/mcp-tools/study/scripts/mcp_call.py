@@ -28,6 +28,30 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from tools_inventory import McpClient, McpError, env_url  # noqa: E402
 
 
+def resolve_envelope(out: str) -> str:
+    """The envelope text `out` with a temp-file `data` path inlined: a JSON file is read and, when it
+    holds a complete envelope (defect D25), collapsed into this one; `_inlinedFrom` names the file.
+    Anything else (no envelope, no path, a non-JSON file such as a PLAIN TEXT `.txt`) is returned
+    unchanged."""
+    try:
+        env = json.loads(out)
+        data = env.get("data")
+        if isinstance(data, str) and os.path.exists(data):
+            with open(data) as fh:
+                loaded = json.load(fh)
+            # The temp file holds a COMPLETE envelope, not the bare payload, so splicing it in
+            # as `data` would produce data.data. Collapse the duplicate level.
+            if isinstance(loaded, dict) and set(loaded) <= {"ok", "data", "details", "warnings", "error"}:
+                env.update(loaded)
+            else:
+                env["data"] = loaded
+            env["_inlinedFrom"] = data
+            return json.dumps(env)
+    except (ValueError, AttributeError, OSError):
+        pass
+    return out
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("tool", help="tool name, e.g. mps_mcp_print_node")
@@ -60,22 +84,7 @@ def main(argv=None) -> int:
     texts = [c.get("text", "") for c in result.get("content", []) if c.get("type") == "text"]
     out = texts[0] if texts else json.dumps(result)
     if not a.raw:
-        try:
-            env = json.loads(out)
-            data = env.get("data")
-            if isinstance(data, str) and os.path.exists(data):
-                with open(data) as fh:
-                    loaded = json.load(fh)
-                # The temp file holds a COMPLETE envelope, not the bare payload, so splicing it in
-                # as `data` would produce data.data. Collapse the duplicate level.
-                if isinstance(loaded, dict) and set(loaded) <= {"ok", "data", "details", "warnings", "error"}:
-                    env.update(loaded)
-                else:
-                    env["data"] = loaded
-                env["_inlinedFrom"] = data
-                out = json.dumps(env)
-        except (ValueError, AttributeError):
-            pass
+        out = resolve_envelope(out)
     if a.max_chars and len(out) > a.max_chars:
         out = out[: a.max_chars] + f"\n...[truncated, {len(out)} chars total]"
     print(out)

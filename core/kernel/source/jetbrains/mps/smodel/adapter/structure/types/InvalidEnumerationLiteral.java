@@ -65,14 +65,16 @@ public class InvalidEnumerationLiteral implements SEnumerationLiteral {
 
   @Override
   public String getPresentation() {
-    SDataType rawMemberType = myOwner.getRawMemberType();
-    return StringUtil.emptyIfNull(rawMemberType.toString(myRawValue));
+    return StringUtil.emptyIfNull(getName());
   }
 
   @Nullable
   @Override
   public String getName() {
     SDataType rawMemberType = myOwner.getRawMemberType();
+    if (rawMemberType == null) {
+      return myRawValue == null ? null : myRawValue.toString();
+    }
     return rawMemberType.toString(myRawValue);
   }
 

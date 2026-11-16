@@ -21,6 +21,7 @@ import jetbrains.mps.smodel.SNodeUtil
 import jetbrains.mps.smodel.action.SNodeFactoryOperations
 import jetbrains.mps.smodel.constraints.ModelConstraints
 import kotlinx.coroutines.currentCoroutineContext
+import org.jetbrains.mps.openapi.language.SLanguage
 
 // MCP tool methods use snake_case names because they are part of the public MCP protocol
 // surface, and they are invoked via reflection by the MCP server framework, so static
@@ -57,7 +58,7 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
 
     @McpTool
     @McpDescription("""
-        Returns a node currently focused in the MPS UI as a node info envelope (see `mps-mcp-workflow/references/reference-formats.md`). `source` selects the editor: `editor` (default) returns the root node open in the active MPS file editor; `console` returns the current (unexecuted) command node in the MPS Console input editor (requires the Console plugin; errors if the input is empty); `inspector` returns the node currently being inspected in the Inspector tool window (errors if the Inspector is not open or has no node). Use this to anchor on the user's focus before editing. The returned `reference` can be passed to `mps_mcp_print_node` to obtain the node's JSON blueprint or its notational (PLAIN TEXT / HTML) printout — but a console command's reference is only valid until the next console interaction (execute / clear / history navigation), so print it promptly and do not cache it.
+        Returns a node currently focused in the MPS UI as a node info envelope (see `mps-mcp-workflow/references/reference-formats.md`). `source` selects the editor: `editor` (default) returns the root node open in the active MPS file editor; `console` returns the current (unexecuted) command node in the MPS Console input editor (requires the Console plugin; errors if the input is empty); `inspector` returns the node currently being inspected in the Inspector tool window (errors if the Inspector is not open or has no node). Use this to anchor on the user's focus before editing. The returned `reference` can be passed to `mps_mcp_print_node` to obtain its structure with node ids (AGENTIC VIEW), its JSON blueprint or its notational (PLAIN TEXT / HTML) printout — but a console command's reference is only valid until the next console interaction (execute / clear / history navigation), so print it promptly and do not cache it.
         For `source='editor'` and `source='inspector'` the envelope additionally carries the caret and selection state, always as skeleton objects so their emptiness is explicit. `selectedNodeReference` is the currently selected cell's node (present for an ordinary caret too, NOT only a whole-node selection); `bigCellSelected` (boolean) tells whether the current selection is a genuine whole-node ("big") cell. `caret` = the cursor's cell as a cell descriptor: `{present, cellId, cellType, nodeReference, nodeConcept, nodeName, nodeConceptQualifiedName, nodeConceptReference, contextualNodeReference, contextualNodeConcept, contextualNodeName, contextualNodeConceptQualifiedName, contextualNodeConceptReference, cellText, caretPosition, selectionStart, selectionEnd, isBig, editable, referenceCell, errorState, selectable, selected, feature, messages}` (empty strings / -1 / false / present=false when the cursor is outside any node or holds no cell). The `node*` fields describe the cell's semantic node (used for selection); the `contextualNode*` fields describe the node whose projection built the cell — they differ inside a reference cell, where the semantic node is the referencing node and the contextual node is the referenced target. `feature` = the concept feature the cell projects: `{kind (property|reference|child|""), name, declaredIn, declaredInQualifiedName, declaredInConceptReference, value, valueNodeReference, targetReference, targetConcept, targetConceptQualifiedName, targetConceptReference, navigational}` — for a property cell `value` is the property's display value (enums resolved to the literal name); for a reference role `value` is the target's presentation, `targetReference` its persistent reference (or the raw target reference when unresolved) and `targetConcept*` its concept; `valueNodeReference` is the node the value was read from (the contextual target inside a reference cell); `navigational=true` marks a reference the cell only navigates to but does NOT edit (e.g. a keyword like `this` — distinguished from a genuine reference cell, which has `referenceCell=true`). `selectable`/`selected` are the cell's interaction flags (whether it can be and currently is selected); `messages` is a compact array of the editor messages on the cell, each `{status (error|warning|info), message, priority}`, capped per cell and `[]` when none. `selection` = the selected region — `{present, kind (nodes|text|""), direction (LEFT|RIGHT|NONE|""), nodeCount, nodesReturned, nodesTruncated, nodes[{reference, concept, name}], cellCount, cellsReturned, cellsTruncated, cells[<cell descriptor>], text}` (present=true only for a genuine region: a character range inside one label cell, or one/more whole cells/nodes selected; otherwise empty with nodes=[]/cells=[]). `nodeCount`/`cellCount` are the true totals; the `nodes`/`cells` arrays are capped (default 20) with `nodesReturned`/`cellsReturned` the array sizes and `nodesTruncated`/`cellsTruncated` set when the arrays were capped.
     """)
     suspend fun mps_mcp_get_current_editor_root_node(
@@ -312,7 +313,7 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
 
     @McpTool
     @McpDescription("""
-        Bulk-creates one or more MPS root nodes from a JSON blueprint (a single object or a top-level array; arrays attach atomically — a failure inserts no roots at all. Node-factory side effects are the exception: a concept's factory runs while its node is being built, so anything it wrote to the model or module — a used language, a model import, a module dependency, a language-version bump — persists even when the batch then fails. Re-read that state rather than assuming a failed call changed nothing). Returns the new node's info envelope, or an array of envelopes when the input was an array (`responseDetail="full"`). From 10 roots up the response defaults to `responseDetail="summary"` — `{inserted:N, roots:[{name, reference, concept}], fixReferences:{fixed, repointed, stillBroken}}`, without the per-root `conceptDoc`/`conceptReference`/model/module fields — because the full form grew larger than the blueprint it answers; pass `responseDetail="full"` to force the envelopes, or `"summary"` to get the compact form for a smaller insert. Two blueprint values fail silently rather than erroring: a reference role given a `c:` concept ref (instead of an `r:` node ref or a plain name) yields an unresolved reference, and an encoded id inside a property value (e.g. a `PropertyMacro.propertyId`) is not validated — both surface only via `mps_mcp_check_root_node_problems`. See `mps-node-editing` SKILL (File-Path Semantics, `references/json-format.md`) and `mps-mcp-workflow/references/bulk-creation.md` for the array contract and large-input strategies.
+        Bulk-creates one or more MPS root nodes from a JSON blueprint (a single object or a top-level array; arrays attach atomically — a failure inserts no roots at all. Node-factory side effects are the exception: a concept's factory runs while its node is being built, so anything it wrote to the model or module — a used language, a model import, a module dependency, a language-version bump — persists even when the batch then fails. Re-read that state rather than assuming a failed call changed nothing). A blueprint whose concept's language the target model does not yet import gets the import automatically; the response lists it in `details.addedUsedLanguages` / `details.addedUsedLanguageDetails` (also on a dry run, as would-be imports); undo with `mps_mcp_model_used_language` DELETE. A language owned by another open project is marked there, and importing it is allowed. Returns the new node's info envelope, or an array of envelopes when the input was an array (`responseDetail="full"`). From 10 roots up the response defaults to `responseDetail="summary"` — `{inserted:N, roots:[{name, reference, concept}], fixReferences:{fixed, repointed, stillBroken}}`, without the per-root `conceptDoc`/`conceptReference`/model/module fields — because the full form grew larger than the blueprint it answers; pass `responseDetail="full"` to force the envelopes, or `"summary"` to get the compact form for a smaller insert. Two blueprint values fail silently rather than erroring: a reference role given a `c:` concept ref (instead of an `r:` node ref or a plain name) yields an unresolved reference, and an encoded id inside a property value (e.g. a `PropertyMacro.propertyId`) is not validated — both surface only via `mps_mcp_check_root_node_problems`. See `mps-node-editing` SKILL (File-Path Semantics, `references/json-format.md`) and `mps-mcp-workflow/references/bulk-creation.md` for the array contract and large-input strategies.
     """)
     suspend fun mps_mcp_insert_root_node_from_json(
         @McpDescription("Required. Target model: a persistent model reference (preferred), or the model's long/short name resolved in the project selected by projectPath.") modelReference: String = "",
@@ -368,13 +369,19 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
                         label = indexLabel
                     )) {
                         is RootableConceptResolution.Ok -> {} // validated
-                        is RootableConceptResolution.Err -> return@executeShortCommandOnEdt r.errJson
+                        is RootableConceptResolution.Err -> {
+                            gate.undoImports()
+                            return@executeShortCommandOnEdt r.errJson
+                        }
                     }
 
                     val newNode = try {
                         instantiateNode(jsonObject, model, dryRun, "$", batchWarnings, mpsProject, gate)
-                    } catch (e: Exception) {
-                        return@executeShortCommandOnEdt instantiationFailed("Failed to instantiate node$indexLabel from JSON", e, batchWarnings)
+                    } catch (t: Throwable) {
+                        // The earlier roots of the batch were never attached; their imports go too.
+                        gate.undoImports()
+                        if (t !is Exception) throw t
+                        return@executeShortCommandOnEdt instantiationFailed("Failed to instantiate node$indexLabel from JSON", t, batchWarnings)
                     }
                     preparedNodes.add(newNode)
                 }
@@ -401,11 +408,12 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
                     }
                 }
 
+                val importedLanguages = addedUsedLanguagesDetails(gate.addedLanguages, mpsProject)
                 if (dryRun) {
                     okJson(jsonObject {
                         addProperty("dryRun", true)
                         addProperty("message", "Dry run successful for root node insertion")
-                    }, warnings = withDryRunReferenceRule(batchWarnings))
+                    }, warnings = withDryRunReferenceRule(batchWarnings), details = importedLanguages)
                 } else {
                     saveModelAndModule(model)
                     when {
@@ -413,9 +421,9 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
                             addProperty("inserted", preparedNodes.size)
                             add("roots", JsonArray().apply { preparedNodes.forEach { add(createdNodeSummaryJsonObject(it)) } })
                             add("fixReferences", aggregateFixReferencesJsonObject(fixResults))
-                        }, warnings = batchWarnings)
-                        jsonObjects.size == 1 -> okJson(nodeInfos.first(), warnings = batchWarnings)
-                        else -> okJson(JsonArray().apply { nodeInfos.forEach { add(it) } }, warnings = batchWarnings)
+                        }, warnings = batchWarnings, details = importedLanguages)
+                        jsonObjects.size == 1 -> okJson(nodeInfos.first(), warnings = batchWarnings, details = importedLanguages)
+                        else -> okJson(JsonArray().apply { nodeInfos.forEach { add(it) } }, warnings = batchWarnings, details = importedLanguages)
                     }
                 }
             }
@@ -489,7 +497,7 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
 
     @McpTool
     @McpDescription("""
-        Updates or deletes an MPS root node from a JSON blueprint. The root node's persistent ID is preserved; its properties, references, and children are re-set to match the blueprint. The `name` property is included in the rewrite, so a different `name` in the blueprint renames the root (the ID is unchanged); omit `name` to keep the current one. This is a **full-root rewrite** — for partial updates prefer surgical tools if `mps_mcp_update_node`. See `mps-node-editing` SKILL (File-Path Semantics, `references/json-format.md`).
+        Updates or deletes an MPS root node from a JSON blueprint. The root node's persistent ID is preserved; its properties, references, and children are re-set to match the blueprint. The `name` property is included in the rewrite, so a different `name` in the blueprint renames the root (the ID is unchanged); omit `name` to keep the current one. This is a **full-root rewrite** — for partial updates prefer surgical tools if `mps_mcp_update_node`. A blueprint whose concept's language the target model does not yet import gets the import automatically; the response lists it in `details.addedUsedLanguages` / `details.addedUsedLanguageDetails` (also on a dry run, as would-be imports); undo with `mps_mcp_model_used_language` DELETE. A language owned by another open project is marked there, and importing it is allowed. See `mps-node-editing` SKILL (File-Path Semantics, `references/json-format.md`).
     """)
     suspend fun mps_mcp_update_root_node_from_json(
         @McpDescription("Required. Persistent form of SNodeReference") nodeReference: String = "",
@@ -551,17 +559,19 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
                 // Collected on both paths so a node-factory failure in a staged child is reported
                 // for a real update too, not only for a dry run.
                 val updateWarnings = mutableListOf<String>()
-                updateNodeFromBlueprint(node, jsonObject, dryRun, warnings = updateWarnings, mpsProject = mpsProject)
+                val updateAddedLanguages = LinkedHashSet<SLanguage>()
+                updateNodeFromBlueprint(node, jsonObject, dryRun, warnings = updateWarnings, mpsProject = mpsProject, addedLanguages = updateAddedLanguages)
+                val importedLanguages = addedUsedLanguagesDetails(updateAddedLanguages, mpsProject)
 
                 if (!dryRun) {
                     val fixResult = performFixReferences(mpsProject, node)
                     saveModelAndModule(model)
-                    okJson(withFixReferencesInfo(nodeInfoJsonObject(node, mpsProject), fixResult), warnings = updateWarnings)
+                    okJson(withFixReferencesInfo(nodeInfoJsonObject(node, mpsProject), fixResult), warnings = updateWarnings, details = importedLanguages)
                 } else {
                     okJson(jsonObject {
                         addProperty("dryRun", true)
                         addProperty("message", "Dry run successful for root node update")
-                    }, warnings = withDryRunReferenceRule(updateWarnings))
+                    }, warnings = withDryRunReferenceRule(updateWarnings), details = importedLanguages)
                 }
             }
         }

@@ -6,10 +6,32 @@
 | `PressKeyStatement` (`yd1bK`) | `press <chord>` | Simulate a key chord (Enter, Tab, Ctrl+Space, Alt+Enter…). Set `change` = `replace_all` on every `KeyMapKeystroke` (property next to `keycode`); left empty, the check reports "Empty enumeration property: 'change'" as an error |
 | `InvokeActionStatement` (`2HxZob`) with `MPSActionReference` (`1iFQzN`) | `invoke action -> <Name>` | Invoke an MPS action (`ActionDeclaration`) |
 | `InvokeActionStatement` with `BootstrapActionReference` | `invoke action by id: <actionId>` | Invoke an action by its id string, e.g. the platform's `$Undo` |
-| `InvokeIntentionStatement` (`1MFPAf`) | `invoke intention <IntentionName>` | Invoke a specific intention; may have a parameter |
+| `InvokeIntentionStatement` (`1MFPAf`) | `invoke intention <IntentionName>` | Invoke a specific intention on the node of the `before` caret (not the current selection); may have a parameter. It references the `IntentionDeclaration`, so for a test-first plan create the declaration with an empty `execute` first |
 | `ApplyQuickFix` (`1MTqDA`) | `invoke quick-fix [<id>]` | Apply a quick-fix (named or first applicable) |
 
 Also available, rarely needed: `InvokeSurroundWithIntentionStatement` (a surround-with intention), `SwitchToInspector` (later statements drive the inspector), `PressMouseStatement` / `DragMouseStatement` (mouse events at x, y). Concept refs are in `references/concept-identifiers.md`.
+
+**An intention on another node** (a second task, a sibling): moving the caret does not retarget `invoke intention`.
+Run it from a static helper in a class of the test model (parse it as a `CLASS` root, call it from `code` with
+`editor component` first), on the EDT in a command:
+
+```java
+public static void invokeOn(final jetbrains.mps.nodeEditor.EditorComponent ec, final SNode target, final String id) throws Exception {
+  SwingUtilities.invokeAndWait(() -> ec.getEditorContext().getRepository().getModelAccess().executeCommand(() -> {
+    IntentionsManager.QueryDescriptor query = new IntentionsManager.QueryDescriptor();
+    query.setCurrentNodeOnly(false);
+    for (Pair<IntentionExecutable, SNode> p : IntentionsManager.getInstance().getAvailableIntentions(query, target, ec.getEditorContext())) {
+      if (id.equals(p.o1.getDescriptor().getPersistentStateKey())) {
+        p.o1.execute(p.o2, ec.getEditorContext());
+      }
+    }
+  }));
+}
+```
+
+`id` is `<intentions model name>.<Name>_Intention`, the id `invoke intention` generates. Imports: `javax.swing.SwingUtilities`,
+`jetbrains.mps.intentions.IntentionsManager`, `jetbrains.mps.openapi.intentions.IntentionExecutable`, `jetbrains.mps.util.Pair`,
+`org.jetbrains.mps.openapi.model.SNode`. `p.o1.getDescription(p.o2, ec.getEditorContext())` gives the text the menu would show.
 
 ## Invoking actions: MPS actions and platform action ids
 

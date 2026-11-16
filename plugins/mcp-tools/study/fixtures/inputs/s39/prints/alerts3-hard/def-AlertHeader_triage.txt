@@ -1,0 +1,10 @@
+editor component AlertHeader_triage
+  overrides:
+    AlertHeader
+  applicable in context:
+    triage
+  applicable concept:
+    Alert
+
+  component cell layout:
+     [- ?^ muted alert { name } [ { severity } ] -]

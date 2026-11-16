@@ -24,6 +24,12 @@
 # lists `relatedProjects` — the `<project>-target` directory the worker creates — because the
 # analyser filters the server call log by project and would otherwise discard the whole run.
 #
+# Before launch (not for SMOKE) scripts/check_open_projects.py refuses the run, exit 3, while
+# another open project has modules (D130: it changes what search_concepts returns); the empty
+# harness project passes. ALLOW_SIBLING_PROJECTS=1 overrides it for a deliberate two-project run.
+# The meta records the other open projects as `otherOpenProjects` (null for SMOKE) and the
+# override as `allowSiblingProjects`.
+#
 # Before every run the LIVE bundled skill catalog and AGENTS.md/CLAUDE.md are installed into the
 # project through `mps_mcp_initialize_project_for_agents` (scripts/install_skills.py). Fixtures
 # deliberately ship without them, so a round can never measure a stale point-in-time catalog
@@ -184,6 +190,21 @@ print(d.get("url") or "-", d.get("source") or "unknown", "true" if d.get("confir
 fi
 export MPS_MCP_URL
 
+# D130: a second open project that has modules changes what search_concepts returns and marks MPS
+# results foreign (before 2026-11-16 it hid them), a setup a single-project user never sees. Pre-launch only (S10's worker swaps projects later), and
+# mandatory with SKIP_SKILL_INSTALL=1. The empty harness project passes. SMOKE is exempt, as from
+# the reuse check: it only lists the open projects. ALLOW_SIBLING_PROJECTS=1 lets a deliberate
+# two-project run through; the meta records it and the projects (`allowSiblingProjects`,
+# `otherOpenProjects`).
+ALLOW_SIBLING_PROJECTS=${ALLOW_SIBLING_PROJECTS:-0}
+OPEN_PROJECTS=null
+if [ "$SCENARIO" != SMOKE ]; then
+  OPEN_ARGS=(--project "$PROJECT" --url "$MPS_MCP_URL")
+  [ "$ALLOW_SIBLING_PROJECTS" = 1 ] && OPEN_ARGS+=(--allow)
+  OPEN_PROJECTS=$(python3 "$STUDY/scripts/check_open_projects.py" "${OPEN_ARGS[@]}") || {
+    echo "open-project check failed for $ID: $OPEN_PROJECTS" >&2; exit 3; }
+fi
+
 mkdir -p "$RUNS"
 
 if [ -n "$MCP_CONFIG" ]; then
@@ -242,14 +263,17 @@ START_OFF=$(stat -f %z "$CALLLOG" 2>/dev/null || stat -c %s "$CALLLOG")
 PROMPT_SHA=$(shasum -a 256 "$PROMPT" | cut -d' ' -f1)
 INVENTORY_SHA=$( [ -f "$RUNS/inventory.json" ] && shasum -a 256 "$RUNS/inventory.json" | cut -d' ' -f1 || echo null )
 
-python3 - "$RUNS/$ID.meta.json" <<PY
-import json,sys
+OPEN_PROJECTS_JSON="$OPEN_PROJECTS" python3 - "$RUNS/$ID.meta.json" <<PY
+import json,os,sys
+open_projects=json.loads(os.environ["OPEN_PROJECTS_JSON"])
 json.dump({"id":"$ID","scenario":"$SCENARIO","model":"$MODEL","modelSlug":"$MODEL_SLUG",
   "harness":"$HARNESS","effort":"$EFFORT" or None,"disallowedTools":"$DISALLOWED_TOOLS" or None,"run":$RUN,"project":"$PROJECT",
   "relatedProjects":[p for p in "$RELATED".split(":") if p],
   "promptSha256":"$PROMPT_SHA","inventorySha256":"$INVENTORY_SHA","skillsSha256":"$SKILLS_SHA","guidesSha256":"$GUIDES_SHA",
   "skillsInstalled":json.loads("$SKILLS_INSTALLED"),"maxTurns":$MAX_TURNS,
   "isolationLevel":"$ISOLATION","projectSynthesized":"$PROJECT_SYNTHESIZED"=="1",
+  "otherOpenProjects":open_projects["others"] if open_projects else None,
+  "allowSiblingProjects":"$ALLOW_SIBLING_PROJECTS"=="1",
   "mpsPid":int("$MPS_PID") if "$MPS_PID" else None,"mpsStartEpoch":int("$MPS_START") if "$MPS_START" else None,
   "mpsMcpUrl":"$MPS_MCP_URL","mpsMcpUrlSource":"$MPS_MCP_URL_SOURCE","mcpConfigSource":"$MCP_CONFIG_SOURCE","mcpConfigPath":"$MCP_CONFIG_PATH",
   "startTs":"$START_TS","callLogStartOffset":$START_OFF,"status":"running","pid":$$},

@@ -18,6 +18,7 @@ Other typical needs:
 - Navigate via smodel (`node.parent`, `node.ancestor<C>`).
 - Call behavior methods (`node.interpret()`, `node.render()`).
 - Open editors / dialogs via `editorContext.getOperationContext().getComponent(...)` or MPS API.
+- Change only how a node is shown in the open editor (a view toggle, a highlight; no model change): add or remove an explicit editor hint for the node through `editorContext.getEditorComponent().getUpdater()` — `references/editor-hints/switching.md` in the `mps-aspect-editor` skill root after loading that companion skill from the same origin.
 
 ## `SelectInEditorOperation` — JSON shape
 

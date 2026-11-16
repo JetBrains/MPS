@@ -1,5 +1,9 @@
 # S11 done criteria (observer, read-only, projectPath = run project dir)
 
+Status: 2026-11-14, after round 51: criterion 3's rule clause reworded to say the answer must credit the
+type to `typeof_SimpleMathAssignment` (S11-sonnet-1 named both rules but credited the declaration rule); it
+only clarifies, so no earlier PASS changes (lesson 45 re-read); earlier runs keep their verdicts.
+
 Fixture: `expressions.tar.gz` (`samples/expressions` with `classes_gen`, see `../../instructions/fixtures.md`).
 The worker must not change any model, so every answer below is fixed by the fixture. The answers
 were verified through MPS MCP against `samples/expressions` on 2026-10-07 (MPS 2026.1, build
@@ -40,9 +44,10 @@ Type concepts, all in `c:7e282943-fc6b-4900-ada5-34c0024cc4f4/…:jetbrains.mps.
    from below by `Int` (`typeof_SimpleMathVarDeclaration`); the later `E := D` adds
    `E :>=: typeof(D)` and `D` is `Float`, so the inequalities resolve to `E = Float`. `GET_TYPE` on `var E`
    answers `Float` directly (root scope since D100) but names no rule; the rule comes from `EXPLAIN_TYPE`,
-   whose `i = Float added` entry is credited to `typeof_SimpleMathAssignment`. Naming
-   `typeof_SimpleMathVarDeclaration` as well is fine; it must not be the only rule named. `Int`
-   (read off the initializer) fails.
+   whose `i = Float added` entry is credited to `typeof_SimpleMathAssignment`. The answer must credit
+   the type to `typeof_SimpleMathAssignment`. Mentioning `typeof_SimpleMathVarDeclaration` as well is
+   fine; an answer that credits `Float` to it (or to "the solver") and names the Assignment rule only in
+   passing fails. `Int` (read off the initializer) fails.
 4. **Q4 — no.** `Float` is not a subtype of `Int` (`IS_SUBTYPE {sub: Float, super: Int}` →
    `isSubtype: false`), so `Int anotherInt = 1.3 F` would be a type error. The answer must not cite
    a check of `TypeError` as evidence that it is well-typed: the declaration is commented out, so

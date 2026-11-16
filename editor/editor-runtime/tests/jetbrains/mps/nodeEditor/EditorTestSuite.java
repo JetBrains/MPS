@@ -20,6 +20,7 @@ import jetbrains.mps.lang.editor.menus.transformation.IncludeTransformationMenuT
 import jetbrains.mps.nodeEditor.assist.AncestorOrSmallCellContextAssistantFinderTest;
 import jetbrains.mps.nodeEditor.assist.CanExecuteFilterTest;
 import jetbrains.mps.nodeEditor.braces.BracesFinderTest;
+import jetbrains.mps.nodeEditor.cellLayout.CellLayoutDefaultHtmlTest;
 import jetbrains.mps.nodeEditor.cells.ComponentCellTest;
 import jetbrains.mps.nodeEditor.cells.ContainerTests;
 import jetbrains.mps.nodeEditor.cells.contextAssistant.ActionExecutionTest;
@@ -48,7 +49,8 @@ import org.junit.runners.Suite;
     EditorSettingsTest.class,
     GetContributionsInLanguagesTest.class,
     CellCompareTests.class,
-    CellTreeTraversalTest.class
+    CellTreeTraversalTest.class,
+    CellLayoutDefaultHtmlTest.class
 })
 public class EditorTestSuite {
 }

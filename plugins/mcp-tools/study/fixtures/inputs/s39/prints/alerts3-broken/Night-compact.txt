@@ -1,0 +1,12 @@
+alert book Night
+  # paging rules for the night shift
+  channel pager -> pager://night
+  channel mail -> night@example.com
+  channel chat -> chat://night
+  cpuLimit = 90
+  diskFloor = 10
+
+  alert HighCpu [high]
+  alert LowDisk [low]
+  muted alert Heartbeat [high]
+  muted alert Backlog [low]

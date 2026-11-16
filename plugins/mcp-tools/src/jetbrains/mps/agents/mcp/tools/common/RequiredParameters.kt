@@ -64,6 +64,9 @@ object RequiredParameterNearMisses {
         "usedLanguage" to listOf("language", "languageRef", "languageReference"),
         "mps_mcp_create_module.name" to listOf("moduleName", "moduleReference"),
         "mps_mcp_check_root_node_problems.nodeReference" to listOf("modelReference", "model", "moduleReference", "module", "nodeRef", "node"),
+        "mps_mcp_get_compact_project_structure.startingPoint" to listOf(
+            "modelReference", "model", "moduleReference", "module", "nodeReference", "reference",
+        ),
         // ADD CHILD's parent. Not 'target', which parse_java_and_insert uses for the node replaced.
         "mps_mcp_update_node.nodeReference" to listOf("parentRef", "nodeRef"),
     )

@@ -38,7 +38,7 @@ The MPS dataflow engine builds a control-flow graph from the emitted instruction
 3. Add a `BuilderBlock` child with a `body` (BL `StatementList`).
 4. Emit instructions: delegate to children with `EmitCodeForStatement`; model branches with `EmitIfJumpStatement` + `EmitLabelStatement`; record variable use with `EmitReadStatement` / `EmitWriteStatement`; mark exits with `EmitRetStatement`.
 5. For loops, use `BeforePosition`/`AfterPosition` to encode loop-back/exit edges; wrap potentially-unreachable instructions in `EmitMayBeUnreachable`.
-6. Rebuild the language (`mps_mcp_alter_nodes` `MAKE`), then validate a sample with `mps_mcp_check_root_node_problems` and look at the program the builders emit with `mps_mcp_query_dataflow` `PRINT_PROGRAM` (see Debugging a Builder). To pick a pattern, print a known-good baseLanguage builder via `mps_mcp_print_node` with `deep: true`.
+6. Rebuild the language (`mps_mcp_alter_nodes` `MAKE`), then validate a sample with `mps_mcp_check_root_node_problems` and look at the program the builders emit with `mps_mcp_query_dataflow` `PRINT_PROGRAM` (see Debugging a Builder). To pick a pattern, print a known-good baseLanguage builder via `mps_mcp_print_node` with `format: "AGENTIC VIEW"`.
 
 ## Debugging a Builder
 

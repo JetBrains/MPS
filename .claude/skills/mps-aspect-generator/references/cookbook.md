@@ -7,7 +7,7 @@ Read this when: applying a recognized recipe — parsing a Java template and att
 The bridge from a parsed Java skeleton to a working, property-substituting template. Use it whenever the generator targets BaseLanguage (Java) and you want specific literals — a class name, an integer, a string — driven by the source node instead of being hard-coded.
 
 1. **Parse the skeleton in.** `mps_mcp_parse_java_and_insert` (mode `root`) the Java source into the generator's `templates@generator` model. You now hold the template root, but nothing is parameterized yet.
-2. **Locate the literal sites.** Run `mps_mcp_query_nodes` `FIND_INSTANCES` with `conceptRef = IntegerConstant` / `StringLiteral` (etc.), `scope = roots`, `roots = [<template root>]`. No external tree-walker is needed. Add a `propertyFilter` such as `{"name": "value", "value": "<the literal>"}` to pinpoint a literal by its value directly — often avoiding the disambiguation pass below. Otherwise, when a query returns several hits, disambiguate with `mps_mcp_print_node` on the handful of candidates to pick the exact literal to parameterize.
+2. **Locate the literal sites.** Run `mps_mcp_query_nodes` `FIND_INSTANCES` with `conceptRef = IntegerConstant` / `StringLiteral` (etc.), `scope = roots`, `roots = [<template root>]`. No external tree-walker is needed. Add a `propertyFilter` such as `{"name": "value", "value": "<the literal>"}` to pinpoint a literal by its value directly — often avoiding the disambiguation pass below. Otherwise, when a query returns several hits, disambiguate with `mps_mcp_print_node` `format: "AGENTIC VIEW"` on the handful of candidates to pick the exact literal to parameterize.
 3. **Graft the macro.** Add a `PropertyMacro` as an `smodelAttribute` child of the target literal node (`mps_mcp_update_node`, `operation = ADD`, `kind = CHILD`, `childRole = "smodelAttribute"`). If the node already carries a macro, choose the child `position` deliberately — sibling macros chain in attribute-list order and that order is semantics. Set `propertyId` using the harvesting recipe in `references/macro-catalog.md` (PropertyMacro section); it is an encoded three-segment string, never a node reference.
 4. **Validate.** Run `mps_mcp_check_root_node_problems` on the template (it decodes `propertyId` and flags a malformed value), then do a dry generation / MAKE and diff `source_gen/` to confirm the literal is now driven by the source node.
 
@@ -41,7 +41,7 @@ If the bug is in `source_gen/`, the fix is almost always upstream — in the tem
 
 ## Seeing what a rule produced
 
-To see what your rules produced, or find the rule behind a node: MAKE a sandbox model with `saveTransientModels: true` → `mps_mcp_generation` `TRANSIENT_MODELS` → `mps_mcp_print_node` on the step model → `TRACE` `FORWARD` from an input node or `BACKWARD` from an output node → open the rule. The full recipe and the lifecycle rules of transient models are in `references/debugging-misgeneration.md`.
+To see what your rules produced, or find the rule behind a node: MAKE a sandbox model with `saveTransientModels: true` → `mps_mcp_generation` `TRANSIENT_MODELS` → `mps_mcp_print_node` (`format: "AGENTIC VIEW"` or `"PLAIN TEXT"`) on a step-model root → `TRACE` `FORWARD` from an input node or `BACKWARD` from an output node → open the rule. The full recipe and the lifecycle rules of transient models are in `references/debugging-misgeneration.md`.
 
 ## When a reduction loops
 

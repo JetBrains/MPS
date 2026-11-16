@@ -1,6 +1,6 @@
 # BaseLanguage Builder Reference
 
-Builders in `r:00000000-0000-4000-0000-011c895902c2(jetbrains.mps.baseLanguage.dataFlow)`. Use `mps_mcp_print_node` with `deep: true` on any of these nodeRefs to inspect the exact structure.
+Builders in `r:00000000-0000-4000-0000-011c895902c2(jetbrains.mps.baseLanguage.dataFlow)`. Use `mps_mcp_print_node` with `format: "AGENTIC VIEW"` on any of these nodeRefs to inspect the exact structure.
 
 | Builder | nodeReference (decimal) | What to learn |
 |---|---|---|

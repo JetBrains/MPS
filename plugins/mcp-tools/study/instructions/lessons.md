@@ -162,7 +162,9 @@
     have shadowed the catalog under measurement in all four cells. → `check_user_agents.py` now
     rejects `mps-*` folders in both skill catalogs too, read-only, with the same exit 3. Anything
     the procedure calls an assertion belongs in the guard the harness already runs; prose checks
-    are only reliable on the day someone remembers them.
+    are only reliable on the day someone remembers them. **Recurred 2026-11-15 (D130):** step 1's
+    "every other project must be closed" was prose only too; `run_worker.sh` now enforces it with
+    `check_open_projects.py`.
 33. **An instrumentation step must be executable from the state the round actually starts in.**
     Step 2 said "capture preserves the VM options of the live process, so a relaunch keeps the
     call-log option" — true, and useless when MPS is running *without* the option, which is the
@@ -323,3 +325,36 @@
     negative, an apply step, a check between two keys), the prompt's test list names it too, and the test count adds up.
     An evaluator's claim about MPS internals is a hypothesis: check it in the sources before it becomes doc text (one
     such claim, a bypassed menu on smart references, was wrong).
+
+## From round 50 (2026-11-14; S1–S4, sonnet medium, n=1)
+
+49. **`$RUNS` can be archived while MPS still runs with the call log on; the archive stays clean.**
+    `McpCallLogListener` opens the log by path on every call (`Files.write(…, CREATE, APPEND)`), and holds no file
+    handle. After the move, the next call creates a fresh `$RUNS/server-calllog.jsonl`, or fails while `$RUNS` is
+    missing (logged as a `WARN` in `idea.log` only for the first failure of the MPS process) and retries on every later
+    call. → At wrap-up with MPS still up, move `$RUNS`, recreate it empty, and expect the observer's closing calls in
+    the next round's log before its SMOKE offset. The run slices are offset-bounded, so those lines never reach a run.
+50. **When the server gains a read tool, update the evaluator's recipe too, or the evaluator pays per node.** In
+    round 50 the S3 evaluator followed `analysis.md`'s "a JSON print shows one level" and made 297 read calls to check
+    40 rows. The S4 evaluator read the whole model, reference targets included, with one
+    `get_compact_project_structure`. Worker skills were updated for AGENTIC VIEW; the evaluator's section was not
+    (A18). → After a surface change, re-read "Evaluating a run" against the new tools before the next round, and
+    count evaluator calls per run in `server-calllog.jsonl` (client `mps-study-tools-inventory`) as a harness cost.
+
+## From round 51 (2026-11-14; full matrix S1–S39b, opus and sonnet medium, n=1)
+
+51. **A pin of printed output is bound to the renderer and to the open-project set, not only to the MPS build.**
+    The S39 `roots.tsv` hashes were built on MPS 261.25134 and were stale on 261.25134 three days later, untouched
+    roots included (A20). Mostly this was because the pin session had the MPS source project open, so the JSON carried
+    `*ContainingProject` markers that the study MPS never prints. The rest came from a later `print_node` commit
+    (property types, the final newline). The evaluators fell back to prints plus the call log's write records, about
+    165 calls per evaluation and not the route the criteria name. → Hash a stored-content projection, not the printed
+    record. Keep rendered text only where the criterion is about text. Ship the hashing script with the pins and
+    record the plugin revision and open projects in the pin file. Gate the pins against a fresh fixture copy before
+    the round (runbook step 1a), never mid-round.
+52. **An evaluator's claim about the analysis tooling is a hypothesis too.** Five evaluators reported `families.py`
+    gaps; one held (A19), and even its stated cause was wrong. The others were a column defined as `Read` calls only,
+    observer-counted signals the coverage doc names as a follow-up, a count the evaluator had misread from the
+    transcript, and the evaluator's own timeout. → Before filing a tooling gap, read the column's docstring line,
+    then find the call it should have counted with `show_steps.py` at a full `--input-chars`; the default 400
+    cut off the triplet that renamed the S27 property (lesson 48's rule for MPS internals, applied to the harness).

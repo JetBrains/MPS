@@ -28,7 +28,7 @@ Workflow for inspecting an MPS language from a name (e.g. `jetbrains.mps.lang.co
     * **Structure**: properties, children, and references are detailed here.
 4. **Drill Down**:
     * **Declaration**: use the `sourceNode` reference with `mps_mcp_open_node` to open the definition.
-    * **Examples**: use `mps_mcp_query_nodes` with `FIND_INSTANCES` (`sampleOnly: true`) to get a sample node. Then use `mps_mcp_print_node` to see its canonical JSON structure for use as a template.
+    * **Examples**: use `mps_mcp_query_nodes` with `FIND_INSTANCES` (`sampleOnly: true`) to get a sample node. Then print it with `mps_mcp_print_node`: `format: "AGENTIC VIEW"` to see its shape, values and unset features, JSON (`deep=true`) for use as a template.
     * **Inheritance**: load the `mps-language-inheritance` skill for deeper hierarchy analysis.
 
 ## Inspecting Concept Aspects
@@ -54,7 +54,7 @@ Let the typesystem engine answer instead of reading rule roots: a node's type �
 
 ## Reference Index
 
-- Open `references/search-concepts.md` for the `mps_mcp_search_concepts` matching algorithm — haystack composition, subtoken splitting, fallback ranking, the three scopes (`modelReference` / `scope`) and the auto-widen, the `detail` projections, the 50-match cap, and the sub-2-char failure mode.
+- Open `references/search-concepts.md` for the `mps_mcp_search_concepts` matching algorithm — haystack composition, subtoken splitting, fallback ranking, the three scopes (`modelReference` / `scope`) and the auto-widen, origin-tier ranking, importing a marked language from another open project, the `detail` projections, the 50-match cap, and the sub-2-char failure mode.
 - Open `references/concept-details.md` for the `mps_mcp_get_concept_details` result schema and the unresolved-ref policy (all-failed vs partial-success envelopes and the suggestion heuristic).
 - Open `references/language-readiness.md` when a language has no built runtime or a concept was created after the last build: declaration-read records, their markers, `details.languageBuild`, and the `LANGUAGE_NOT_BUILT` refusal of the writers.
 

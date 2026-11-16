@@ -22,9 +22,9 @@ The envelope then carries a `warnings` entry and `details.languageBuild`:
 } }
 ```
 
-`recovery` is the exact call to make. A declaration-read record is correct for the structure as declared, but tools that need the runtime (the writers, `mps_mcp_query_types`) answer `LANGUAGE_NOT_BUILT` until the MAKE has run. `stale` appears in `details.languageBuild` only; the runtime record is returned as is. With several affected languages, `details.languageBuilds` lists them all.
+`recovery` is the exact call to make; for a language owned by another open project it names that project (`recovery.projectPath`), and the MAKE must run there. A declaration-read record is correct for the structure as declared, but tools that need the runtime (the writers, `mps_mcp_query_types`) answer `LANGUAGE_NOT_BUILT` until the MAKE has run. `stale` appears in `details.languageBuild` only; the runtime record is returned as is. With several affected languages, `details.languageBuilds` lists them all.
 
-`languageRefs` naming a project language returns the union of the runtime's concepts and the structure model's declarations, so concepts added since the last build appear, and a never-built language is answered from declarations instead of `NOT_FOUND`. `mps_mcp_search_concepts` takes the same union for project languages.
+`languageRefs` naming a language module (this project's, another open project's or a library's) returns the union of the runtime's concepts and the structure model's declarations, so concepts added since the last build appear, and a never-built language is answered from declarations instead of `NOT_FOUND`. `mps_mcp_search_concepts` takes the same union for every language module.
 
 
 ## Why the record is marked `descriptorStatus: "hollow"`

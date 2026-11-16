@@ -231,14 +231,14 @@ class JetBrainsMPSModelMcpToolset : AbstractNodeOps() {
     @McpTool
     @McpDescription(
         """
-        Adds or deletes a used language or devkit to an MPS model (`kind` = `"language"` or `"devkit"`). If the language being added is already provided by an imported DevKit, the call is a no-op and `providedByDevKit` reports the supplying DevKit. `modelReference: "console"` targets the MPS Console model, as in `mps_mcp_model_dependency`; deleting one of the console's built-in devkits (`jetbrains.mps.console.devkit` and the devkits extending it) is refused.
+        Adds or deletes a used language or devkit to an MPS model (`kind` = `"language"` or `"devkit"`). If the language being added is already provided by an imported DevKit, the call is a no-op and `providedByDevKit` reports the supplying DevKit. `modelReference: "console"` targets the MPS Console model, as in `mps_mcp_model_dependency`; deleting one of the console's built-in devkits (`jetbrains.mps.console.devkit` and the devkits extending it) is refused. Importing a language defined in another open project is allowed: pass the `languageReference` (`l:` form) of a `mps_mcp_search_concepts` `scope:"all"` hit.
         Supported operations: ADD or DELETE. 
     """
     )
     suspend fun mps_mcp_model_used_language(
         @McpDescription("Required. Target model: a persistent model reference (preferred), the model's long/short name resolved in the project selected by projectPath, or `\"console\"` for the MPS Console model (a project model named `console` then needs its persistent reference).")
         modelReference: String = "",
-        @McpDescription("Required. Language or devkit to add/remove. Accepts a persistent reference (`l:<uuid>:<qualifiedName>` for a language, `<uuid>(<name>)` for a devkit) or a plain qualified name. A plain name resolves against languages/devkits loaded in the project; a Language module that was created but never built is also resolved by name via the project repository. On ADD, a persistent language reference is accepted only when its uuid is a deployed language or a loaded Language module; an unresolved id is rejected with `Language not found` and nothing is stored. The stored name is the language's own qualified name, not the one written in the reference.")
+        @McpDescription("Required. Language or devkit to add/remove. Accepts a persistent reference (`l:<uuid>:<qualifiedName>` for a language, `<uuid>(<name>)` for a devkit) or a plain qualified name. A plain name resolves against languages/devkits loaded in the project; a Language module that was never built is also resolved by name, this project's first, then another open project's. Such a language can be imported; its concepts can be instantiated once it is built from its own project (that project's `projectPath`). On ADD, a persistent language reference is accepted only when its uuid is a deployed language or a loaded Language module; an unresolved id is rejected with `Language not found` and nothing is stored. The stored name is the language's own qualified name, not the one written in the reference.")
         usedLanguage: String = "",
         @McpDescription("Required. Kind: 'language' or 'devkit'")
         kind: String = "",
@@ -286,14 +286,9 @@ class JetBrainsMPSModelMcpToolset : AbstractNodeOps() {
         return when (kind) {
             "language" -> {
                 val lang = resolveLanguagePreferringProject(mpsProject, usedLanguage)
-                // A freshly-created Language module that has never been built has no
-                // LanguageRuntime, so it is absent from LanguageRegistry.allLanguages above.
-                // Fall back to resolving the Language *module* by name in the project
-                // repository and adapting it to an SLanguage via its module id (no runtime
-                // needed) — this lets an unbuilt language be imported by plain name.
-                // A rejected `l:` string also reaches this fallback; it matches no module and yields null.
-                ?: (resolveModule(mpsProject, usedLanguage, projectOnly = true) as? jetbrains.mps.smodel.Language)
-                    ?.let { jetbrains.mps.smodel.adapter.MetaAdapterByDeclaration.getLanguage(it) }
+                // A never-built Language module (this project's or another open project's) has no
+                // LanguageRuntime; resolveLanguagePreferringProject adapts the module by its id, so
+                // an unbuilt language can be imported by plain name. A rejected `l:` string yields null.
                 ?: return errJson("Language not found: $usedLanguage")
 
                 // k: when the language is already supplied by an imported DevKit, addLanguage

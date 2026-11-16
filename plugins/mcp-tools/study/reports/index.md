@@ -37,6 +37,9 @@ One hotspot file per written-up round. Gaps are named below; they are not implie
 | 45 | [`hotspot/round-45.md`](hotspot/round-45.md) |
 | 48 | [`hotspot/round-48.md`](hotspot/round-48.md) |
 | 49 | [`hotspot/round-49.md`](hotspot/round-49.md) |
+| 50 | [`hotspot/round-50.md`](hotspot/round-50.md) |
+| 51 | [`hotspot/round-51.md`](hotspot/round-51.md) |
+| 52 | [`hotspot/round-52.md`](hotspot/round-52.md) |
 
 No committed hotspot file for rounds: 7, 27, 28, 29, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 46, 47.
 
@@ -63,4 +66,5 @@ Other reports:
 - [`observations.md`](observations.md) — running notebook, not a round file
 - [`assessments/dataflow-exposure.md`](assessments/dataflow-exposure.md)
 - [`assessments/editor-dynamics.md`](assessments/editor-dynamics.md) — editor-dynamics probe E1–E4, skill correction, S30–S35 origin, opus and sonnet rehearsal, test-first rule (2026-11-01)
+- [`assessments/editor-hints.md`](assessments/editor-hints.md) — editor-hints probe H1–H3, the new hints references, S38a/S38b origin, walks and opus rehearsal (2026-11-09)
 - [`audits/2026-10-23-consistency.md`](audits/2026-10-23-consistency.md)
