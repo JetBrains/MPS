@@ -22,9 +22,9 @@ Task: a small DSL for survey forms, editors that behave like a text editor, and 
            - all
 
    Tags are separated by `, `; the intro is edited in the Inspector only; the count after a
-   section title is computed and not editable; a question's keyword is the concept's alias, and
-   keyword, text, `?` and the `*` marker are written once and shared by the three question
-   editors; `*` shows only when the question is required; keywords are bold dark blue and `*` is
+   section title is computed and not editable; a question's keyword is the concept's alias,
+   shown with the lang.core alias component, and keyword, text, `?` and the `*` marker are
+   written once and shared by the three question editors; `*` shows only when the question is required; keywords are bold dark blue and `*` is
    red, both from one style sheet; options go one per line, indented; `-> skip to <question>`
    shows the target's text and appears only when a target is set; a section with no questions
    shows the hint `<add a question>` in place of the list, and the hint vanishes as soon as the

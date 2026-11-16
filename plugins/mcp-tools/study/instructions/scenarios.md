@@ -537,7 +537,7 @@ recipes are in `../fixtures/inputs/s31`, `s32`, `s34`, `s35/FIXTURE.md` (pins: t
 GP rows of the matrix are undocumented in the catalog today: document them before freezing, or they score doc
 gaps. Sizes (opus min, E1 = 21) and the drop order are per cell below.
 
-**S30 — greenfield survey DSL.** Fixture: `empty-project` (synthesized). Forces static editors (shared
+**S30 — greenfield survey DSL.** Fixture: `empty-project` (synthesized). Prompt re-baselined 2026-11-16 (step 2 names the lang.core alias component; `promptSha256` `9042cf9de1d8…`). Forces static editors (shared
 component with the alias cell, style sheet, show-if, `separatorText`, `nullText` placeholder, read-only
 accessor, inspector, smart reference), a default substitute menu with an Action, a default transformation menu
 with Super reached from a keyword cell carrying a `transformationMenu`, `NodeFactory` with `sampleNode` and
