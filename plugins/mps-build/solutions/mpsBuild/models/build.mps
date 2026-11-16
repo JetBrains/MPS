@@ -2492,7 +2492,11 @@
     <node concept="2kB4xC" id="3AMbuf1N5Oy" role="1l3spd">
       <property role="TrG5h" value="version.bugfixNr" />
       <node concept="aVJcg" id="3AMbuf1N6Pd" role="aVJcv">
-        <node concept="NbPM2" id="3AMbuf1N6Pc" role="aVJcq" />
+        <node concept="NbPM2" id="3AMbuf1N6Pc" role="aVJcq">
+          <node concept="3Mxwew" id="5cau$4DaxOv" role="3MwsjC">
+            <property role="3MwjfP" value=".1" />
+          </node>
+        </node>
       </node>
     </node>
     <node concept="2kB4xC" id="3AMbuf1a7On" role="1l3spd">
