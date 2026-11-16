@@ -1,8 +1,10 @@
 # D130 — sibling-project filter hides languages from `search_concepts`: plan
 
-Status 2026-11-16: **P1 (harness) committed** (`957d03b01a58`). **P2 (server) implemented and
-reviewed**, suite green (1565/1565); its live check and first-call measurement wait for the P3 build.
-P3's Kotlin descriptions landed with P2; the skill docs are P3. The former P3 (provenance) is folded into P2: alone it
+Status 2026-11-16: **P1 (harness) committed** (`957d03b01a58`). **P2 (server) committed**
+(`a2b722a040ca`; suite 1570/1570; P3's Kotlin descriptions landed with it). **P3 (skill docs) and the
+records** committed after review; live check done (first calls after a restart: `get_concept_details`
+miss 0.36 s, `scope:"all"` 0.29 s — no UI freeze, the search stays on `executeShortReadOnEdt`).
+Open: the first real study round (P1 item) and the YouTrack decision. The former P3 (provenance) is folded into P2: alone it
 had no observable effect, because the current filter admits no foreign candidate to mark. Tick a box
 when the item is done *and* verified as stated.
 
@@ -269,7 +271,7 @@ returns an unmarked foreign result.
       D112 behavior, extended from A to all). Built languages' structure models are loaded by the
       `sourceNode` resolution anyway (Evidence), so an asymmetric guard would buy nothing. Keep the
       loaded-only guard in `namedConcepts` (REJECTION mode) unchanged.
-- [ ] First-call cost: measure the first `scope:all` search and the first `get_concept_details` miss
+- [x] First-call cost: measure the first `scope:all` search and the first `get_concept_details` miss
       after a restart with the MPS checkout open (both in `executeShortReadOnEdt`). If either freezes
       the UI noticeably, move the search to `executeBackgroundRead`; record the numbers in the D130 row.
 - [x] Implement the ordering contract (three origin tiers inside the comparators and caps, see
@@ -379,7 +381,7 @@ goes away and later tests in the shared JVM do not see marked `baseLanguage`-fam
       be running machine-wide.
 - [x] Full `McpToolsIntegrationTestSuite` once at the end; re-run a single non-reproducing failure
       before blaming the diff.
-- [ ] **One** live check, after restarting MPS on the new build (`mps_control.sh`, never kill) with
+- [x] **One** live check, after restarting MPS on the new build (`mps_control.sh`, never kill) with
       `myMPS-fix` and one small study project open: from the study project,
       `search_concepts ["GeneratorTest","NodesTestCase"] scope:all` returns hits marked
       `containingProject`; a search for a project-only `jetbrains.mps.samples.*` concept also returns
@@ -450,39 +452,39 @@ surface, in the same words.
 
 ### Skills (blueprints; re-propagate each changed folder)
 
-- [ ] MUST `SK/mps-mcp-workflow/references/mcp-tools-index.md:58` ("Name suggestions for an unresolved
+- [x] MUST `SK/mps-mcp-workflow/references/mcp-tools-index.md:58` ("Name suggestions for an unresolved
       ref never point into another open project" — the D4 half (a) text) and `:59` (`search_concepts`
       "searches the whole registry") — rewrite both within the 6 B cap (see above).
-- [ ] MUST `SK/mps-language-analysis/references/search-concepts.md`: `:59-60` scope table ("minus
+- [x] MUST `SK/mps-language-analysis/references/search-concepts.md`: `:59-60` scope table ("minus
       those owned by another open MPS project"); `:64` auto-widen ("retried over the whole
       registry"); `:45-46` result-cap text ("registry iteration order" — now origin tier, then
       qualified name, before the cap); `:87-100` schema note that the markers now also appear on
       `scope:"all"`/widened hits and on suggestions.
-- [ ] MUST `SK/mps-language-analysis/references/concept-details.md:57` ("Candidates owned by another
+- [x] MUST `SK/mps-language-analysis/references/concept-details.md:57` ("Candidates owned by another
       open MPS project are never suggested") → may be suggested, marked, ranked after an equally good
       local candidate, and an exact foreign hit never crowds out the project's best near miss; `:54` ("runs project-wide") → runs over every language in the repository.
-- [ ] MUST `SK/mps-mcp-workflow/SKILL.md:51` (multi-project rules): soften "read targets may come from
+- [x] MUST `SK/mps-mcp-workflow/SKILL.md:51` (multi-project rules): soften "read targets may come from
       another open project when explicitly named or imported" — discovery now also returns them,
       marked; add the "marker ≠ do not use" sentence.
-- [ ] MUST `SK/mps-mcp-workflow/references/finding-things.md:13` (default scope and widening) and
+- [x] MUST `SK/mps-mcp-workflow/references/finding-things.md:13` (default scope and widening) and
       `:19-20` (foreign bullet): marker is provenance, not a filter or a ban; with the MPS checkout
       open even `baseLanguage` hits are marked; plain names also resolve never-built languages of
       other open projects.
-- [ ] SHOULD adoption flow (find with `scope:"all"` → `get_concept_details` → `model_used_language`
+- [x] SHOULD adoption flow (find with `scope:"all"` → `get_concept_details` → `model_used_language`
       ADD with the `l:` ref → build from the owner project if unbuilt, `LANGUAGE_NOT_BUILT` until
       then → now in project scope) as a short section in `search-concepts.md`, with one-line pointers
       from `SK/mps-aspect-accessories/references/model-level-imports.md` and `finding-things.md`;
       `SK/mps-language-analysis/SKILL.md:57` pointer mentions origin ranking and importing a marked
       language.
-- [ ] SHOULD `SK/mps-aspect-accessories/references/model-level-imports.md:30` and
+- [x] SHOULD `SK/mps-aspect-accessories/references/model-level-imports.md:30` and
       `SK/mps-aspect-accessories/SKILL.md:23` (automatic imports): the response now lists them in
       `addedUsedLanguages` / `addedUsedLanguageDetails`, foreign ones marked; undo with
       `model_used_language` DELETE. `SK/mps-node-editing/SKILL.md:42` (MOVE paragraph) and its insert
       guidance: same two fields.
-- [ ] SHOULD `SK/mps-language-analysis/references/language-readiness.md` (`details.languageBuild`) and
+- [x] SHOULD `SK/mps-language-analysis/references/language-readiness.md` (`details.languageBuild`) and
       `SK/mps-mcp-workflow/references/reference-formats/response-envelope.md:22-40`
       (`LANGUAGE_NOT_BUILT`): a foreign language's recovery names the owning project; MAKE it there.
-- [ ] Optional one-liners: `SK/mps-language-inheritance/SKILL.md:48` (base language in another open
+- [x] Optional one-liners: `SK/mps-language-inheritance/SKILL.md:48` (base language in another open
       project via `scope:"all"`), `SK/mps-language-modularity/SKILL.md` (cross-project language
       dependency: find, import/extend explicitly, read-only), `SK/mps-dsl-memory/SKILL.md:22` (record a
       language used from another open project; marker is not a blocker),
@@ -497,24 +499,24 @@ surface, in the same words.
 - No change: `templates/AGENTS_template.md` (project resolution only, no discovery text);
   `CLAUDE.md`, `AGENTS.md` (`:45` Project Resolution) and `.agents/*.md`; `test_scenarios/**`
   (the only `search_concepts` step, `06_structure_and_concepts.md:326-338`, uses `modelReference`).
-- [ ] Optional: `test_scenarios/COVERAGE_MATRIX.md:48` lists only `searchTexts`, `modelReference` for
-      `search_concepts`; add `scope` and `detail`.
+- Dropped: `test_scenarios/COVERAGE_MATRIX.md:48` lists only `searchTexts`, `modelReference` for
+  `search_concepts`; adding `scope` and `detail` would overclaim, since step 06.14 uses neither.
 
 ### Gates for P3
 
-- [ ] Whole-project `build_project`; `SkillCatalogReplicationTest`, `SkillReferenceLayoutTest`,
+- [x] Whole-project `build_project`; `SkillCatalogReplicationTest`, `SkillReferenceLayoutTest`,
       `validate_skill_catalog.py`; diff the installed catalog against the blueprints.
-- [ ] Re-propagate each changed skill folder over `.claude/skills` and `.agents/skills`.
-- [ ] Grep the blueprints and `KT` once more for "never suggested", "never point into another",
+- [x] Re-propagate each changed skill folder over `.claude/skills` and `.agents/skills`.
+- [x] Grep the blueprints and `KT` once more for "never suggested", "never point into another",
       "whole registry", "whole language registry", "minus those owned" — no hits expected.
 
 ## Records (with P2/P3)
 
-- [ ] D130 row in `defects.md`: rewrite the **S** remedy text (it still proposes "not foreign when an
+- [x] D130 row in `defects.md`: rewrite the **S** remedy text (it still proposes "not foreign when an
       SLibrary also owns it or the project uses it" plus a dropped-count warning; both are superseded
       by this design), then → fixed with the live measurement; move it to `defects-archive.md` after
       one clean round.
-- [ ] D4 row in `defects-archive.md`: add a dated note that half (a) ("a miss yields no suggestion
+- [x] D4 row in `defects-archive.md`: add a dated note that half (a) ("a miss yields no suggestion
       from B") is replaced by "marked and ranked after equally good A candidates" (D130), naming the
       replaced tests (the row names both predicate tests). Archive rows are history: append, do not
       rewrite.

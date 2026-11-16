@@ -34,7 +34,7 @@ ConceptEditorDeclaration #3308300503039647687 IfStatement_Editor* virtualPackage
 
 Header lines start with `#`:
 
-- `m0` is the model of the printed node. Other models that references point into get aliases `mN`. `!foreign` after a model means it belongs to another open project.
+- `m0` is the model of the printed node. Other models that references point into get aliases `mN`. `!foreign` after a model means it belongs to another open project (provenance, not a ban).
 - `# concepts` lists every concept of the printout under its language. The qualified name is `<language>.structure.<Concept>`. Two concepts with the same short name are printed as `<language>.<Name>` in the tree and in `# deprecated`.
 - `# deprecated` names, per concept, the deprecated features. They are printed in the tree only when set; an unset boolean one reads `false`.
 - `# cut: P of T nodes printed (the whole printout is X chars); …` appears when the printout was cut (see below).
