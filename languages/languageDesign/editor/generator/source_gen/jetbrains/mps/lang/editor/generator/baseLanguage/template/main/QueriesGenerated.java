@@ -1076,7 +1076,7 @@ public class QueriesGenerated extends QueryProviderBase {
     return (String) StyleKey__BehaviorDescriptor.getClassFQName_id3w77Jl_kKlh.invoke(_context.getNode());
   }
   public static Object propertyMacro_GetValue_155_0(final PropertyMacroContext _context) {
-    return _context.createUniqueName(((String) _context.getVariable("name")), null);
+    return _context.createIndexedName(((String) _context.getVariable("name")), null, true);
   }
   public static Object propertyMacro_GetValue_161_0(final PropertyMacroContext _context) {
     return SPropertyOperations.getString(SLinkOperations.getTarget(_context.getNode(), LINKS.conceptDeclaration$h3E), PROPS.name$MnvL);
