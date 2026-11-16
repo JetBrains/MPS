@@ -176,8 +176,8 @@ first run (the directive's "show its roots as PLAIN TEXT"); whether the worker r
 (wrong); whether the report names the choices
 the description left open (difficulty of the test recipes, `isStatic` / modifiers); whether the
 worker made `<S>` and read the Java before the test (orientation) or only after the fix; a
-`search_concepts` → `[]` → module-dump fallback on the way to `GeneratorTest` (D130, expected only in
-a run whose meta has `allowSiblingProjects: true`).
+`search_concepts` → `[]` → module-dump fallback on the way to `GeneratorTest` (D130, fixed
+2026-11-16: now a regression to file, whatever the meta's `allowSiblingProjects`).
 
 ## Process signals (`families.py` row; reported separately from the pass)
 

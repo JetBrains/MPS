@@ -127,8 +127,8 @@ after an insert with an unresolved name, how the worker found out (`fixReference
 check, the doc); whether it read the stored servings and minutes before asserting them or took 2 and
 13 from the prompt; whether it probed the rename or Find Usages itself; whether it proved the test
 non-vacuous (e.g. a red run on a wrong expected value; neither the prompt nor the criteria ask for
-it); a `search_concepts` → `[]` fallback on the way to `NodePointerExpression` (D130, expected only
-in a run whose meta has `allowSiblingProjects: true`); which skill files it read (`D_skill_reads`
+it); a `search_concepts` → `[]` fallback on the way to `NodePointerExpression` (D130, fixed
+2026-11-16: now a regression to file, whatever the meta's `allowSiblingProjects`); which skill files it read (`D_skill_reads`
 and `D_skill_bash_fetch`, which misses a relative path read after a `cd` into the catalog, as in
 `S37-sonnet-1`: check the transcript), in particular
 how it reached `link-and-concept-literals.md`: through `mps-model-manipulation` (its Critical

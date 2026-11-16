@@ -208,8 +208,10 @@ must be explicit or reported — never a silent side effect of following a sugge
       `myMPS-fix`, 702 modules).
 - [x] D130 row, runbook, lesson 32, `scenarios.md`, S18/S19/S36/S37 `done_criteria.md` updated.
 - [x] User review, then commit (format per `.agents/git.md`; `mcp-tools - study: …`).
-- [ ] First real round after the commit: confirm `otherOpenProjects` appears in a cell's meta
-      (no dedicated run; read it off the next round).
+- [x] First real round after the commit: confirm `otherOpenProjects` appears in a cell's meta
+      (no dedicated run; read it off the next round). Round 52 (2026-11-16): all four cells carry
+      `otherOpenProjects: []` and `allowSiblingProjects: false`; the off-metrics S18-opus-2 carries
+      `[{myMPS-fix, 702, modules}]` and `true`; SMOKE metas carry `null` as specified.
 
 ## P2 — provenance markers, narrow project scope, global all scope (server)
 

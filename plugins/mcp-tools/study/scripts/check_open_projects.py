@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Refuse a run while another MPS project with modules is open beside the run project.
 
-Why this exists (study defect D130): `mps_mcp_search_concepts` and the "did you mean" suggestions
-drop every language owned by another open project. With the MPS source checkout open beside a run
-project, that is every MPS language, and the worker measures a search that a user never sees. The
+Why this exists (study defect D130): with another project open, `mps_mcp_search_concepts` and the
+"did you mean" suggestions answer from that project's languages too, marked foreign — with the MPS
+source checkout open, every MPS language (until 2026-11-16 they were dropped instead). Either way
+the worker measures a search that a single-project user never sees. The
 runbook has required closing every other project since round 8, but only in prose, and a preflight
 assertion with no script does not hold (lesson 32).
 
@@ -134,8 +135,8 @@ def failure_message(result: dict) -> str:
         if o["verdict"] in OFFENDING:
             what = f"{o['modules']} modules" if o["modules"] is not None else "no readable .mps/modules.xml"
             lines.append(f"  {o['path']} ({what})")
-    return ("another MPS project with modules is open beside the run project (D130: its languages "
-            "disappear from search_concepts):\n" + "\n".join(lines) +
+    return ("another MPS project with modules is open beside the run project (D130: it changes what "
+            "search_concepts returns):\n" + "\n".join(lines) +
             "\nClose it with mps_mcp_close_project (force=false) and announce the path, or set "
             "ALLOW_SIBLING_PROJECTS=1 for a deliberate two-project run.")
 

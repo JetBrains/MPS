@@ -36,8 +36,10 @@ experiments `proj/genplan-new1`, `proj/genplan-new2`; the first ran on a catalog
 still carried this cell's names, see lesson 19 below).
 
 D130: with another project that has modules open (the MPS source project in the 2026-10-29
-baseline and rehearsal), `search_concepts` finds no plan-language concept. `run_worker.sh` refuses
-such a launch since 2026-11-15; a run with `allowSiblingProjects: true` in its meta still has it.
+baseline and rehearsal), `search_concepts` found no plan-language concept. Fixed 2026-11-16
+(verified in round 52). `run_worker.sh` still refuses such a launch since 2026-11-15; a run with
+`allowSiblingProjects: true` sees foreign markers (`containingProject`, `addedUsedLanguageDetails`),
+and a `search_concepts` → `[]` for an MPS language is a regression to file.
 
 ## Observer walk (2026-10-29, `proj/genplan-walk`, `proj/genplan-new1`, `proj/genplan-new2`)
 

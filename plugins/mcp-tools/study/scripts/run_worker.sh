@@ -25,7 +25,7 @@
 # analyser filters the server call log by project and would otherwise discard the whole run.
 #
 # Before launch (not for SMOKE) scripts/check_open_projects.py refuses the run, exit 3, while
-# another open project has modules (D130: its languages vanish from search_concepts); the empty
+# another open project has modules (D130: it changes what search_concepts returns); the empty
 # harness project passes. ALLOW_SIBLING_PROJECTS=1 overrides it for a deliberate two-project run.
 # The meta records the other open projects as `otherOpenProjects` (null for SMOKE) and the
 # override as `allowSiblingProjects`.
@@ -190,8 +190,8 @@ print(d.get("url") or "-", d.get("source") or "unknown", "true" if d.get("confir
 fi
 export MPS_MCP_URL
 
-# D130: a second open project that has modules hides its languages from search_concepts, so the
-# run would measure a search no user sees. Pre-launch only (S10's worker swaps projects later), and
+# D130: a second open project that has modules changes what search_concepts returns and marks MPS
+# results foreign (before 2026-11-16 it hid them), a setup a single-project user never sees. Pre-launch only (S10's worker swaps projects later), and
 # mandatory with SKIP_SKILL_INSTALL=1. The empty harness project passes. SMOKE is exempt, as from
 # the reuse check: it only lists the open projects. ALLOW_SIBLING_PROJECTS=1 lets a deliberate
 # two-project run through; the meta records it and the projects (`allowSiblingProjects`,

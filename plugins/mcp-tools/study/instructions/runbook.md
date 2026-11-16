@@ -60,7 +60,8 @@ RUNS=$HOME/MPSProjects/mcp-study/runs
      checkout, the common case when MPS was started from the IDEA run configuration. Disjoint
      module names are not enough: with `confirmOpenNewProject2 = -1` (the default) the second open
      raises the modal New Window / This Window prompt and blocks the round (lesson 30), and a
-     second project that has modules hides its languages from `search_concepts` (D130). Announce
+     second project that has modules changes what `search_concepts` returns and marks results
+     foreign, which a user's single-project setup does not show (D130, fixed 2026-11-16). Announce
      the path you close; it is an observer action, not one to ask for. `run_worker.sh` now enforces
      the rule before every launch except SMOKE (`check_open_projects.py`, exit 3 naming the open
      project; the empty harness project passes); `ALLOW_SIBLING_PROJECTS=1` overrides it for a
