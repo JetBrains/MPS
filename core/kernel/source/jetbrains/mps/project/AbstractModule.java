@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2025 JetBrains s.r.o.
+ * Copyright 2003-2026 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -122,34 +122,14 @@ public abstract class AbstractModule extends SModuleBase implements EditableSMod
   private final IFile myDescriptorFile;
   private PathSpec myOutputRoot;
 
-  @NotNull
-  private final FileSystem myFileSystem;
   private SModuleReference myModuleReference;
   private final Set<ModelRoot> mySModelRoots = new LinkedHashSet<>();
   private final Set<SModuleFacet> myFacets = new LinkedHashSet<>();
 
   private boolean myChanged = false;
 
-  private static jetbrains.mps.vfs.FileSystem getFSSingleton() {
-    return jetbrains.mps.vfs.FileSystem.getInstance();
-  }
-
   protected AbstractModule(@Nullable IFile descriptorFile) {
     myDescriptorFile = descriptorFile;
-    if (descriptorFile != null) {
-      myFileSystem = descriptorFile.getFileSystem();
-    } else {
-      myFileSystem = getFSSingleton();
-    }
-  }
-
-  /**
-   * @deprecated there's no guarantee {@code AbstractModule} is based on a file
-   */
-  @Deprecated(forRemoval = true, since = "2025.1")
-  public FileSystem getFileSystem() {
-    // 2 uses in MPS-extension, 1 in mbeddr
-    return myFileSystem;
   }
 
   @NotNull
@@ -452,9 +432,13 @@ public abstract class AbstractModule extends SModuleBase implements EditableSMod
 
   private void updateModuleDescriptorValues() {
     ModuleDescriptor descriptor = getModuleDescriptor();
-    if (descriptor != null && descriptor.getOutputRoot() != null) {
+    // FileSystem, not IFileSystem as it fails now for modules read from a jar
+    // and trying to reconstruct outputRoot (which is outside the jar).
+    // XXX proper fix is to avoid using output root for deployed modules at all.
+    final FileSystem fs = myDescriptorFile == null ? null : myDescriptorFile.getFileSystem();
+    if (descriptor != null && descriptor.getOutputRoot() != null && fs != null) {
       myOutputRoot = new PathSpec(descriptor.getOutputRoot());
-      final Function<String, IFile> path2file = s -> myFileSystem.getFile(MacrosFactory.forModule((SModule) this).expandPath(s));
+      final Function<String, IFile> path2file = s -> fs.getFile(MacrosFactory.forModule(this).expandPath(s));
       myOutputRoot.resolve(path2file);
     } else {
       myOutputRoot = null;

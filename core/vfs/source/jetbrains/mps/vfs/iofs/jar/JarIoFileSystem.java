@@ -46,7 +46,7 @@ public final class JarIoFileSystem implements IFileSystem {
   public IFile getFile(@NotNull String path) {
     new PathFormatChecker(path).absolute().noDots().osIndependentPath();
     int index = path.indexOf(JAR_SEPARATOR);
-    assert index > 0;
+    assert index > 0 : path;
     String jarPath = path.substring(0, index);
     String entryPath = path.substring(index + 1);
 
