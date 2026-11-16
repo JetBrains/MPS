@@ -41,7 +41,7 @@ To add your group (or actions wrapped inside a group) under an existing MPS/IDEA
 
 One group can have multiple modifications — it will plug itself into several target groups simultaneously.
 
-Group definitions in other modules can declare `GroupAnchor`s your modification can target. Inspect the target group first (e.g. `mps_mcp_print_node` on its node ref) to discover valid anchor names.
+Group definitions in other modules can declare `GroupAnchor`s your modification can target. Inspect the target group first (e.g. `mps_mcp_print_node` `format: "AGENTIC VIEW"` on its node ref) to discover valid anchor names.
 
 ## JSON Blueprint (Popup that Contributes into Existing Groups and Declares Its Own Anchor)
 

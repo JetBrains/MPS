@@ -21,7 +21,7 @@ Use this workflow when authoring non-trivial BaseLanguage code via JSON blueprin
     * Create placeholder roots via `mps_mcp_create_root_node`.
     * Insert a skeleton (signatures, fields, empty bodies) using `mps_mcp_update_root_node_from_json`.
 4. **Harvest References**:
-    * **Own members**: use `mps_mcp_print_node` on the skeleton to get persistent refs for constructors and methods.
+    * **Own members**: use `mps_mcp_print_node` (`format: "AGENTIC VIEW"`) on the skeleton to get persistent refs for constructors and methods.
     * **External members**: derive refs from the class ref using URL-encoded signatures (`references/stub-references.md`).
     * **Inherited methods**: use the declaring class ref for `baseMethodDeclaration`.
     * **Ambiguity**: use `GET_ASSIGNABLE_REFERENCES` (mode: `completion`) for overloaded/inherited members if name auto-resolution fails.
@@ -41,7 +41,7 @@ Use this workflow when authoring non-trivial BaseLanguage code via JSON blueprin
 * Use fully qualified concept names in JSON.
 * Keep helper JSON-generation scripts outside the model.
 * If only one subtree changes, prefer `mps_mcp_update_node` over a full root rewrite to reduce reference churn.
-* Harvest refs from live AST with `mps_mcp_print_node` for own-class members; do not assume constructor or method identities are stable across rewrites.
+* Harvest refs from live AST with `mps_mcp_print_node` `format: "AGENTIC VIEW"` for own-class members; do not assume constructor or method identities are stable across rewrites.
 * For library stubs, derive persistent refs from the class ref using the URL-encoded signature formula; do not print stubs to harvest refs that can be computed.
 
 ## Checklist

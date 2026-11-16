@@ -45,4 +45,4 @@ Use as `target` in `SNodeType.concept`, `RefConcept_Reference.conceptDeclaration
 | `StatementList` | find via `mps_mcp_search_concepts "StatementList"` |
 
 > For any concept not listed above: use `mps_mcp_search_concepts` to find its declaration,
-> then `mps_mcp_print_node` (shallow) on the result to get the persistent node ref.
+> then `mps_mcp_print_node` (`format: "AGENTIC VIEW"`, `nodeDepth: 0`) on the result to get the persistent node ref.

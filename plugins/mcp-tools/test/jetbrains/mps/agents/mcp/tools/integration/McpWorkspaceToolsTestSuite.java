@@ -30,6 +30,7 @@ import org.junit.runners.Suite;
     WriteToolCrossProjectTest.class,
     ProjectResolutionCrossProjectTest.class,
     JetBrainsMPSProjectMcpToolsetIntegrationTest.class,
+    CompactProjectStructureIntegrationTest.class,
     JetBrainsMPSConsoleMcpToolsetIntegrationTest.class,
     JetBrainsMPSRunConfigurationMcpToolsetIntegrationTest.class,
 })

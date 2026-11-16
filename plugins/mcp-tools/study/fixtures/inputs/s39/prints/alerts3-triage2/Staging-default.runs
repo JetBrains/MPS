@@ -1,0 +1,3 @@
+1: alert → #000080, bold, upright | book → #000080, bold, upright | Staging → default, plain, upright
+2: channel → #000080, bold, upright | chat → default, plain, upright | -> → default, bold, upright | chat://staging → default, plain, upright
+3: cpuLimit → default, plain, upright | = → default, bold, upright | 95 → default, plain, upright

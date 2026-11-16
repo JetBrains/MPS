@@ -96,7 +96,8 @@ class JetBrainsMPSGenerationMcpToolset : AbstractOps() {
         PLAN's `transientStereotypePrefix`, and for a branch's input copy (its lowest minor) the FORK's
         `branchInputStereotypePrefix`; `branch` is 0 on the main branch, so a fork branch's models, which reuse later
         main-branch prefixes, are told apart by reference and branch, never by name. Read a listed
-        model with mps_mcp_print_node, mps_mcp_query_nodes or mps_mcp_get_project_structure (startingPoint = its reference);
+        model with mps_mcp_get_compact_project_structure (startingPoint = its reference), one of its nodes with
+        mps_mcp_print_node, query it with mps_mcp_query_nodes, or dump JSON with mps_mcp_get_project_structure;
         write tools refuse it (NOT_EDITABLE). The next make, from any tool or the user, discards them all.
         DROP_TRANSIENT_MODELS {includeCheckpoints (default true)} → frees the transient models, as the IDE's "Remove Transient
         Models" does: {droppedModules, droppedModels, includeCheckpoints, droppedCheckpointModels}; the checkpoints module is

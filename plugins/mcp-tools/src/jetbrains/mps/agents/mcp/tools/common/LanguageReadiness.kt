@@ -1,7 +1,9 @@
 package jetbrains.mps.agents.mcp.tools.common
 
 import jetbrains.mps.agents.mcp.tools.common.AbstractOps.McpLanguageNotBuiltException
+import com.intellij.openapi.project.ProjectManager
 import jetbrains.mps.generator.ModelGenerationStatusManager
+import jetbrains.mps.ide.project.ProjectHelper
 import jetbrains.mps.project.MPSProject
 import jetbrains.mps.project.ModuleId
 import jetbrains.mps.smodel.Language
@@ -11,6 +13,8 @@ import org.jetbrains.mps.openapi.language.SAbstractConcept
 import org.jetbrains.mps.openapi.model.SModel
 import org.jetbrains.mps.openapi.model.SNode
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
+import java.nio.file.InvalidPathException
+import java.nio.file.Paths
 
 /**
  * Whether a concept's language runtime can be trusted for it. An id-based concept adapter never
@@ -25,22 +29,27 @@ sealed class ConceptReadiness {
     /** Neither a runtime descriptor nor a structure-model declaration: an invented reference, not a build state. */
     object Undeclared : ConceptReadiness()
 
-    /** The runtime cannot serve this concept; [module] is the project language to rebuild when it is in the repository. */
-    sealed class NotBuilt(val languageName: String, val module: Language?) : ConceptReadiness() {
+    /**
+     * The runtime cannot serve this concept; [module] is the language module to rebuild when it is in
+     * the repository. [buildProjectPath] is the base directory of the other open project that owns
+     * [module], null when the selected project owns it or no open project does: MAKE targets must
+     * belong to the selected project, so a foreign language is built with that `projectPath` (D130).
+     */
+    sealed class NotBuilt(val languageName: String, val module: Language?, val buildProjectPath: String?) : ConceptReadiness() {
         abstract val status: String
 
         /** `LanguageRegistry` has no runtime for the language: never made, or its `classes_gen` is gone. */
-        class NoRuntime(languageName: String, module: Language?) : NotBuilt(languageName, module) {
+        class NoRuntime(languageName: String, module: Language?, buildProjectPath: String? = null) : NotBuilt(languageName, module, buildProjectPath) {
             override val status = "no_runtime"
         }
 
         /** The runtime is loaded but does not know this concept id: the concept was created after the last build. */
-        class ConceptNotInRuntime(languageName: String, module: Language?) : NotBuilt(languageName, module) {
+        class ConceptNotInRuntime(languageName: String, module: Language?, buildProjectPath: String? = null) : NotBuilt(languageName, module, buildProjectPath) {
             override val status = "concept_not_in_runtime"
         }
 
         /** A descriptor exists, but the structure model was edited since it was generated. */
-        class Stale(languageName: String, module: Language?, val structureModel: SModel) : NotBuilt(languageName, module) {
+        class Stale(languageName: String, module: Language?, val structureModel: SModel, buildProjectPath: String? = null) : NotBuilt(languageName, module, buildProjectPath) {
             override val status = "stale"
         }
     }
@@ -72,14 +81,39 @@ object LanguageReadiness {
         val languageName = module?.moduleName ?: concept.language.qualifiedName
         val runtimeLanguage = declaringModule?.let { jetbrains.mps.smodel.adapter.MetaAdapterByDeclaration.getLanguage(it) } ?: concept.language
         if (LanguageRegistry.getInstance(repository).getLanguage(runtimeLanguage) == null) {
-            return ConceptReadiness.NotBuilt.NoRuntime(languageName, module)
+            return ConceptReadiness.NotBuilt.NoRuntime(languageName, module, foreignBuildProjectPath(module, project))
         }
-        if (!concept.isValid) return ConceptReadiness.NotBuilt.ConceptNotInRuntime(languageName, module)
+        if (!concept.isValid) return ConceptReadiness.NotBuilt.ConceptNotInRuntime(languageName, module, foreignBuildProjectPath(module, project))
         if (!checkStale) return ConceptReadiness.Ready
         val structureModel = (declaration ?: concept.sourceNode?.resolve(repository))?.model ?: return ConceptReadiness.Ready
         val statusManager = project.getComponent(ModelGenerationStatusManager::class.java) ?: return ConceptReadiness.Ready
-        return if (statusManager.generationRequired(structureModel)) ConceptReadiness.NotBuilt.Stale(languageName, module, structureModel)
-        else ConceptReadiness.Ready
+        return if (statusManager.generationRequired(structureModel)) {
+            ConceptReadiness.NotBuilt.Stale(languageName, module, structureModel, foreignBuildProjectPath(module, project))
+        } else ConceptReadiness.Ready
+    }
+
+    /**
+     * The normalized base directory of the open project other than [project] that owns [module], or
+     * null when [project] owns it, no open project does (a library), or [module] is null. Only asked
+     * for a language that is not built, so the scan over the open projects' module lists is rare.
+     */
+    fun foreignBuildProjectPath(module: Language?, project: MPSProject): String? {
+        if (module == null) return null
+        val ref = module.moduleReference
+        if (project.projectModules.any { it.moduleReference == ref }) return null
+        val owner = ProjectManager.getInstance().openProjects
+            .asSequence()
+            .mapNotNull { ProjectHelper.fromIdeaProject(it) }
+            .filter { it !== project }
+            .sortedBy { it.project.basePath ?: "" }
+            .firstOrNull { other -> other.projectModules.any { it.moduleReference == ref } }
+            ?: return null
+        val base = owner.project.basePath ?: return null
+        return try {
+            Paths.get(base).toAbsolutePath().normalize().toString()
+        } catch (e: InvalidPathException) {
+            null
+        }
     }
 
     /** Classifies a language module as a whole: [ConceptReadiness.NotBuilt.NoRuntime], [ConceptReadiness.NotBuilt.Stale] or [ConceptReadiness.Ready]. */
@@ -87,26 +121,32 @@ object LanguageReadiness {
         val repository = project.repository
         val language = jetbrains.mps.smodel.adapter.MetaAdapterByDeclaration.getLanguage(module)
         if (LanguageRegistry.getInstance(repository).getLanguage(language) == null) {
-            return ConceptReadiness.NotBuilt.NoRuntime(module.moduleName ?: language.qualifiedName, module)
+            return ConceptReadiness.NotBuilt.NoRuntime(module.moduleName ?: language.qualifiedName, module, foreignBuildProjectPath(module, project))
         }
         val structureModel = module.structureModelDescriptor ?: return ConceptReadiness.Ready
         val statusManager = project.getComponent(ModelGenerationStatusManager::class.java) ?: return ConceptReadiness.Ready
-        return if (statusManager.generationRequired(structureModel)) ConceptReadiness.NotBuilt.Stale(module.moduleName ?: language.qualifiedName, module, structureModel)
-        else ConceptReadiness.Ready
+        return if (statusManager.generationRequired(structureModel)) {
+            ConceptReadiness.NotBuilt.Stale(module.moduleName ?: language.qualifiedName, module, structureModel, foreignBuildProjectPath(module, project))
+        } else ConceptReadiness.Ready
     }
 
-    /** The `languageBuild` block every surface emits (`details.languageBuild`). */
+    /**
+     * The `languageBuild` block every surface emits (`details.languageBuild`). For a language of
+     * another open project, `recovery.projectPath` names the project the MAKE must run in.
+     */
     fun languageBuildDetails(notBuilt: ConceptReadiness.NotBuilt): Map<String, Any?> {
         val moduleRef = notBuilt.module?.let { PersistenceFacade.getInstance().asString(it.moduleReference) }
+        val recovery = linkedMapOf<String, Any?>(
+            "tool" to "mps_mcp_alter_nodes",
+            "operation" to "MAKE",
+        )
+        notBuilt.buildProjectPath?.let { recovery["projectPath"] = it }
+        recovery["parameters"] = linkedMapOf("modules" to listOf(moduleRef ?: notBuilt.languageName), "rebuild" to true)
         return linkedMapOf(
             "language" to notBuilt.languageName,
             "module" to moduleRef,
             "status" to notBuilt.status,
-            "recovery" to linkedMapOf(
-                "tool" to "mps_mcp_alter_nodes",
-                "operation" to "MAKE",
-                "parameters" to linkedMapOf("modules" to listOf(moduleRef ?: notBuilt.languageName), "rebuild" to true),
-            ),
+            "recovery" to recovery,
             "note" to MAKE_CHANGES_NO_MODEL_NOTE,
         )
     }
@@ -121,7 +161,10 @@ object LanguageReadiness {
     /** The recovery sentence every surface uses. */
     fun recoverySentence(notBuilt: ConceptReadiness.NotBuilt): String {
         val target = notBuilt.module?.let { PersistenceFacade.getInstance().asString(it.moduleReference) } ?: notBuilt.languageName
-        return "Run mps_mcp_alter_nodes MAKE with modules:[\"$target\"] and rebuild:true, then retry. $MAKE_CHANGES_NO_MODEL_NOTE"
+        val foreign = notBuilt.buildProjectPath
+            ?.let { "The language belongs to another open project and MAKE builds only the selected project's modules, so pass projectPath:\"$it\". " }
+            ?: ""
+        return "Run mps_mcp_alter_nodes MAKE with modules:[\"$target\"] and rebuild:true, then retry. $foreign$MAKE_CHANGES_NO_MODEL_NOTE"
     }
 
     /** The marker fields a concept record carries when it is served while [notBuilt]. */

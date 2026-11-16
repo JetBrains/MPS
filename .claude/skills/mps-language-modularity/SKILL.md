@@ -70,6 +70,8 @@ Wiring the dependencies any strategy needs (used/extended languages, runtime sol
 - `references/design-principles.md` — cross-cutting lessons (reuse-designed-in, behavior contracts, specific references, model-to-model assimilation, MPS-"extends" trap) and the **annotations** escape hatch.
 - `references/validation.md` — the per-kind test checklist.
 
+Cross-project language dependency: find it with `search_concepts` `scope:"all"`, import or extend it explicitly; it stays read-only here.
+
 ## Related skills
 
 - `mps-language-aspects-overview` — authoring order and which aspect to edit once a strategy is chosen.

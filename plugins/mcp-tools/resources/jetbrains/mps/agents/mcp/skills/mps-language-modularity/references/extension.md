@@ -49,7 +49,7 @@ operation MulExpression   operands: <MoneyType>,<int|float>  -> <MoneyType>
 
 1. **Accessories** — add the host language (BaseLanguage, your core, a reusable expression language) as a dependency.
 2. **Structure** — new concepts as subtypes of existing base concepts; that one choice gives validity in existing positions.
-3. **Editor** — assign unique aliases where possible.
+3. **Editor** — assign unique aliases where possible. A different look for the host's own concepts is a set of hinted editors (and hinted component overrides) in the extension, never a default editor; users see its hint only in models that use the extension. → `references/editor-hints.md` in the `mps-aspect-editor` skill root after loading that companion skill from the same origin.
 4. **Typesystem** — type the new concept *and* extend existing operators via overloaded operation containers before duplicating syntax.
 5. **Constraints** — ban illegal placements narrowly.
 6. **Generator** — assimilate via reduction + weaving; reserve placeholders for future post-processing.

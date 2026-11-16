@@ -1,0 +1,19 @@
+1: alert → #000080, bold, upright | book → #000080, bold, upright | Night → default, plain, upright
+2: # → #808080, bold, upright | paging → #808080, plain, italic | rules → #808080, plain, italic | for → #808080, plain, italic | the → #808080, plain, italic | night → #808080, plain, italic | shift → #808080, plain, italic
+3: channel → #000080, bold, upright | pager → default, plain, upright | -> → default, bold, upright | pager://night → default, plain, upright
+4: channel → #000080, bold, upright | mail → default, plain, upright | -> → default, bold, upright | night@example.com → default, plain, upright
+5: channel → #000080, bold, upright | chat → default, plain, upright | -> → default, bold, upright | chat://night → default, plain, upright
+6: threshold → #000080, bold, upright | cpuLimit → default, plain, upright | = → default, bold, upright | 90 → default, plain, upright
+7: threshold → #000080, bold, upright | diskFloor → default, plain, upright | = → default, bold, upright | 10 → default, plain, upright
+9: alert → #000080, bold, upright | HighCpu → default, plain, upright | [ → default, bold, upright | high → #ff00ff, bold, upright | ] → default, bold, upright
+10: when → #000080, bold, upright | cpu → default, plain, upright | over → #000080, bold, upright | 5 → default, plain, upright | min → #000080, bold, upright | > → default, bold, upright | cpuLimit → default, plain, upright, ref
+11: notify → #000080, bold, upright | pager → default, plain, upright, ref | , → default, bold, upright | mail → default, plain, upright, ref
+12: alert → #000080, bold, upright | LowDisk → default, plain, upright | [ → default, bold, upright | low → #ff00ff, bold, upright | ] → default, bold, upright
+13: when → #000080, bold, upright | disk → default, plain, upright | > → default, bold, upright | diskFloor → default, plain, upright, ref | and → default, bold, upright | not → #000080, bold, upright | ( → default, bold, upright | memory → default, plain, upright | > → default, bold, upright | cpuLimit → default, plain, upright, ref | + → default, bold, upright | 5 → default, plain, upright | ) → default, bold, upright
+14: notify → #000080, bold, upright | mail → default, plain, upright, ref
+15: muted → #000080, bold, upright | alert → #000080, bold, upright | Heartbeat → #808080, plain, upright | [high] → #808080, bold, upright
+16: when → #000080, bold, upright | uptime → #808080, plain, upright | > → #808080, bold, upright | 1 → #808080, plain, upright
+17: notify → #000080, bold, upright | << → #808080, bold, upright | ... → #808080, bold, upright | >> → #808080, bold, upright
+18: muted → #000080, bold, upright | alert → #000080, bold, upright | Backlog → #808080, plain, upright | [low] → #808080, bold, upright
+19: when → #000080, bold, upright | queue → #808080, plain, upright | over → #000080, bold, upright | 10 → #808080, plain, upright | min → #000080, bold, upright | > → #808080, bold, upright | 100 → #808080, plain, upright
+20: notify → #000080, bold, upright | chat → #808080, plain, upright, ref | , → #808080, bold, upright | mail → #808080, plain, upright, ref | , → #808080, bold, upright | pager → #808080, plain, upright, ref

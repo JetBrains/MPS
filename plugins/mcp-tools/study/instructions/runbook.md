@@ -11,6 +11,10 @@ RUNS=$HOME/MPSProjects/mcp-study/runs
 
 `$RUNS/inventory.json` is load-bearing: `run_worker.sh` records its sha in every run's meta. Scratch projects are `$HOME/MPSProjects/mcp-study/workspace/<scratch>`, one at a time, where `<scratch>` is the run id plus a UTC stamp (`S3-sonnet-1-20261030T1733`): a new path every time, because the IDE's file cache is keyed by path and can show a previous scratch's models at a reused one (`run_worker.sh` refuses a path an earlier run used). Current tarballs are `$HOME/MPSProjects/mcp-study/fixtures/`. An empty project is synthesized by `new_study_project.py`, never unpacked.
 
+## Observer subagents
+
+`study-scenario-evaluator` (one run: step 6, card step 5) and `study-run-evaluator` (wrap-up: steps 7–8 and the file side of step 11) are project-scope Claude Code agents in the observer's checkout, `<checkout>/.claude/agents/study-*.md`. They are untracked (`.git/info/exclude`), so another worktree may not have them. They are available only when the observer's Agent tool lists them as agent types. A file on disk that the listing does not show does not count: a session started in another checkout or a Junie observer cannot use them. Prefer them when listed. Otherwise brief a generic Opus subagent from this runbook and [`analysis.md`](analysis.md), as before. Either way, give it the run id or round, scenario, project path, `RUNS` and `STUDY`, plus the cell's special step (the S8 pass, or "the S10 snapshot is already in `<id>.eval.md`"). The agents point at these two files instead of restating them, and when they disagree these files win. The observer keeps the rest: it writes `taskPass` / `taskEvidence` / `observerNote` into the meta from the reply, performs every project swap, MAKE and MPS start/stop, and resumes the S8 evaluator with SendMessage. Never put them in `~/.claude/agents`. There, `check_user_agents.py` rejects them (an `mps_mcp` body), and every worker would see them listed, which tells it it is being measured (lesson 26). No worker prompt, scenario or fixture names them.
+
 ## Procedure (tick as you go; details in the references)
 
 1. **Preflight** — MPS running with the MCP server enabled. The port belongs to the IDE selector
@@ -55,8 +59,13 @@ RUNS=$HOME/MPSProjects/mcp-study/runs
      synthesis fails. **Every other project must be closed first** — including the developer's own
      checkout, the common case when MPS was started from the IDEA run configuration. Disjoint
      module names are not enough: with `confirmOpenNewProject2 = -1` (the default) the second open
-     raises the modal New Window / This Window prompt and blocks the round (lesson 30). Announce
-     the path you close; it is an observer action, not one to ask for.
+     raises the modal New Window / This Window prompt and blocks the round (lesson 30), and a
+     second project that has modules changes what `search_concepts` returns and marks results
+     foreign, which a user's single-project setup does not show (D130, fixed 2026-11-16). Announce
+     the path you close; it is an observer action, not one to ask for. `run_worker.sh` now enforces
+     the rule before every launch except SMOKE (`check_open_projects.py`, exit 3 naming the open
+     project; the empty harness project passes); `ALLOW_SIBLING_PROJECTS=1` overrides it for a
+     deliberate two-project experiment and is recorded in the meta.
    - Is the call log on? Ask the process, not the log:
    `ps -ww -p $(pgrep -f '[j]etbrains\.mps\.Launcher') -o args= | tr ' ' '\n' | grep calllog`
    must print the option, and the file must grow after a tool call. If it is off and gate question
@@ -75,6 +84,33 @@ RUNS=$HOME/MPSProjects/mcp-study/runs
    The guard never modifies anything: move an offending user skill out of the skills directory
    for the round and restore it at wrap-up. Built-in `Explore` and `Task`
    agents are outside this pin and remain enabled.
+
+   **1a. S39 pin gate** (only when S39a or S39b is in the round; A20). Run this before step 2. Step 2's
+   shutdown → start then gives the first cell a fresh process.
+   1. With MPS running, run `mps_control.sh capture` once, then `mps_control.sh calllog` with no argument. The capture
+      is needed because `shutdown` refuses without one. Clearing the call-log option keeps the gate's prints out of
+      the round's `server-calllog.jsonl`; step 2 captures and sets it again.
+   2. For each of `alerts3` and then `alerts3-hard`, in one Bash call (the chain stops at the first failure,
+      including a sha mismatch):
+      ```
+      C=<copy>; T=$HOME/MPSProjects/mcp-study/fixtures/$C.tar.gz; D=$HOME/MPSProjects/mcp-study/workspace/gate-$C-$(date +%Y%m%dT%H%M)
+      W=$(grep "^| \`$C\` |" $STUDY/fixtures/pins.md | awk -F'`' '{print $4}')
+      echo "$W  $T" | shasum -a 256 -c - && mkdir -p $D && tar -xzf $T -C $D &&
+      $STUDY/scripts/mps_control.sh shutdown && $STUDY/scripts/mps_control.sh start $D/$C && $STUDY/scripts/mps_control.sh wait &&
+      export MPS_MCP_URL=$($STUDY/scripts/mps_control.sh url) &&
+      python3 $STUDY/scripts/mcp_call.py mps_mcp_alter_nodes "{\"projectPath\":\"$D/$C\",\"operation\":\"MAKE\",\"parameters\":{\"modules\":[\"mcp.study.alerts\",\"mcp.study.alerts.sandbox\",\"mcp.study.alerts.tests\"]}}" --max-chars 300 &&
+      python3 $STUDY/fixtures/inputs/s39/roots.py check --project $D/$C $STUDY/fixtures/inputs/s39/prints/$C/roots.tsv
+      ```
+      The restart before each copy keeps the two apart: they share module ids.
+
+   Exit 0 from `roots.py` means the pins hold. Exit 2 means the check did not run; fix it and repeat. Exit 1 on an
+   unchanged fixture means renderer or environment drift:
+   - hold the S39 cells;
+   - re-pin with `roots.py pin` by the same procedure, and record the reason in `FIXTURE.md` ("roots.tsv pins");
+   - leave the re-pinned files uncommitted until the user says go;
+   - the cells may run on them, and the round report says so.
+
+   About 1 minute per fixture. The `gate-*` copies are scratch; delete them at wrap-up.
 2. **Instrument** — the plugin logs one JSON line per dispatched call when MPS runs with
    `-Dmps.mcp.calllog=<file>` (`McpCallLogListener`, off by default). Turn it on without a human and
    without touching a tracked file: `mps_control.sh capture` **while MPS is still alive**, then
@@ -139,7 +175,7 @@ RUNS=$HOME/MPSProjects/mcp-study/runs
    via CLI (`mps-project-management`) → confirm with `list_open_projects` → launch
    detached (`run_worker.sh` first rejects MPS-related user agents, then installs the live skills;
    either guard failure aborts with exit 3) →
-   poll the PID in bounded loops → evaluate with an Opus subagent using the `done_criteria.md`
+   poll the PID in bounded loops → evaluate with `study-scenario-evaluator` when listed, else an Opus subagent ("Observer subagents"), using the `done_criteria.md`
    and the "Evaluating a run" section of [`analysis.md`](analysis.md)
    (read-only `mps_mcp_*`, always with `projectPath`) → set `taskPass` (true/false) and
    `taskEvidence` (the `<id>.eval.md` name) in `<id>.meta.json`, plus `observerNote` when the
@@ -151,12 +187,12 @@ RUNS=$HOME/MPSProjects/mcp-study/runs
    level and that every meta's
    `skillsSha256` and `guidesSha256` are each the same value before comparing runs; a differing one
    means the catalog or the installed `AGENTS.md` / `CLAUDE.md` moved mid-round. Open/close details: the harness section of this runbook.
-7. **Analyse** — `python3 $STUDY/scripts/analyze_runs.py $RUNS [--out DIR]` (default `$RUNS/analysis`)
+7. **Analyse** — once every non-SMOKE run has a verdict and no worker runs, hand steps 7–8 and the file side of step 11 to `study-run-evaluator` when listed ("Observer subagents"). Otherwise do them yourself: `python3 $STUDY/scripts/analyze_runs.py $RUNS [--out DIR]` (default `$RUNS/analysis`)
    → `metrics.csv`, `tools.json`, `chains.json`, `errors.json`, `hotspots.md`; `pass` is filled from
    each run's meta after evaluation. Then
    `python3 $STUDY/scripts/families.py <baseline runs> <previous round> $RUNS > $RUNS/analysis/families.tsv`
    (per-run family counters, [`analysis.md`](analysis.md)). Filter chains containing `mps_mcp`, group into families, have an
-   Opus reviewer inspect 3 instances per family with `study/scripts/show_steps.py` and assign
+   Opus reviewer (`study-run-evaluator` does this itself) inspect 3 instances per family with `study/scripts/show_steps.py` and assign
    determinism {1.0, 0.5, 0}. Rank by avoidable turns (fixed context ≈ 150 K cache-read tokens per
    turn dominates) as well as by the study formula.
 8. **Classify** each hotspot D → S → P-off → P-on → T (first fit). Write the round file under `reports/hotspot/` (see [`../reports/index.md`](../reports/index.md)):
@@ -172,7 +208,7 @@ RUNS=$HOME/MPSProjects/mcp-study/runs
     SMOKE), then the same runs against the treated tools; success = ≥ 30 % fewer tool calls and
     ≥ 25 % fewer context tokens on treated scenarios, no drop in pass rate; delete remedies that do
     not pay.
-11. **Wrap up** — fold conclusions into the study doc; revert the VM option; leave the current tarballs in `~/MPSProjects/mcp-study/fixtures/` (archive a round under `archive/` rather than deleting those tarballs)
+11. **Wrap up** — with `study-run-evaluator`, the report, defects, lessons, index, the `$RUNS` move and the scratch moves are its job. The hand-off list in its reply is the rest of this step, and that rest stays yours: everything that touches MPS, `~/.claude*` or user skills. Without it, do all of the following yourself. Fold conclusions into the study doc; revert the VM option; leave the current tarballs in `~/MPSProjects/mcp-study/fixtures/` (archive a round under `archive/` rather than deleting those tarballs)
     (keep the SMOKE scenario — step 4 needs it); once the report is written, move `$RUNS` to
     `~/MPSProjects/mcp-study/archive/runs/<round>/` so the next round starts empty; announce and close any remaining scratch with
     `mps_mcp_close_project`, **closing the last one with `shutdownWithLastProject=true`** if MPS
@@ -262,6 +298,8 @@ Run them once at preflight: a harness bug is cheaper to find there than in a rou
 Env: `RUNS` (default `~/MPSProjects/mcp-study/runs`), `CALLLOG` (default `$RUNS/server-calllog.jsonl`),
 `MAX_TURNS` (400, Claude only), `STUDY` (auto), `SKIP_SKILL_INSTALL` (0),
 `ALLOW_REUSED_PROJECT` (0 — set 1 only to rerun deliberately on a path an earlier run used),
+`ALLOW_SIBLING_PROJECTS` (0 — set 1 only for a deliberate run with another project that has modules
+open beside the run project; see below),
 `ARCHIVE_RUNS` (`$(dirname $RUNS)/archive/runs`, searched by the reuse check), `ISOLATION` (`per-round`),
 `PROJECT_SYNTHESIZED` (0 — set 1 when the project came from `new_study_project.py`),
 `EFFORT` (unset — the gate-2a level for this model, passed as `--effort`; Claude accepts
@@ -307,7 +345,12 @@ guard also runs with `SKIP_SKILL_INSTALL=1`, before any run side
 effect. Missing/empty catalogs, unrelated definitions and unrelated skills pass. Built-in
 `Explore`/`Task` are outside this pin. Do not pass `--skill-default-locations=false` until a Junie SMOKE proves project
 `.agents/skills` still load without it; user-skill isolation for the first Junie matrix is the
-preflight `~/.junie/skills` check. The meta gains
+preflight `~/.junie/skills` check. After the MCP URL is resolved and before any run file is
+written, `check_open_projects.py` (not for SMOKE, also with `SKIP_SKILL_INSTALL=1`) makes one
+`list_open_projects` call and counts the `<modulePath>` entries in each other open project's
+`.mps/modules.xml`. It exits 3, naming the project, when one has modules or no readable descriptor
+(D130); close that project with `mps_mcp_close_project`. The meta gains `otherOpenProjects`
+(`[{path, modules, verdict}]`, null for SMOKE) and `allowSiblingProjects`. The meta also gains
 `skillsSha256` (catalog fingerprint), `guidesSha256` (fingerprint of the installed `AGENTS.md` +
 `CLAUDE.md`, `absent` when either is missing) and `skillsInstalled`, plus the MPS process under measurement
 (`mpsPid`, `mpsStartTs`), `isolationLevel`, `projectSynthesized`, `relatedProjects`, and the MCP
@@ -622,7 +665,7 @@ Non-`mps-*` skills are never touched.
 
 ## mcp_call.py `<tool> '<json-args>' [--url URL] [--raw] [--max-chars N]`
 One MPS MCP tool call from the shell. The observing/evaluating session is normally NOT connected to
-the server (only the workers are, via `--mcp-config`), so this is how the observer and the Opus
+the server (only the workers are, via `--mcp-config`), so this is how the observer and its
 evaluators reach MPS. It does not detect the URL: `--url`, else `MPS_MCP_URL`, else the 64343
 constant with a stderr line — prefix a direct call with `MPS_MCP_URL=$(mps_control.sh url)` on a
 selector that uses another port. If this session already has `mps_mcp_*` tools, call them directly instead.
@@ -710,9 +753,9 @@ line; it does not detect the port itself.
    confirm `skillsSha256` and `guidesSha256` match the round's other runs, and `mpsPid` too — a differing pid means
    MPS was restarted mid-round and the runs are not directly comparable. 4. For S10 only: record
    the left-behind `list_open_projects` state **the moment the worker exits** (a Welcome-screen
-   rejection counts), then open `<proj>-target` for the checks. 5. Evaluate via an Opus subagent
+   rejection counts), then open `<proj>-target` for the checks. 5. Evaluate via `study-scenario-evaluator` if listed, else an Opus subagent
    (read-only — `dryRun: true` calls included —, `projectPath` on every call, temp-file `data` is a
-   path to read; brief it with the "Evaluating a run" section of [`analysis.md`](analysis.md)). **S8 is evaluated
+   path to read; brief a generic one with the "Evaluating a run" section of [`analysis.md`](analysis.md); `study-scenario-evaluator` reads it itself). **S8 is evaluated
    in two passes** (its criterion 3 dry-runs blueprints, which the hollow fixture language rejects;
    A8): the evaluator checks criteria 1, 2 and 4 and returns; the observer runs
    `mcp_call.py mps_mcp_alter_nodes '{"projectPath":"<proj>","operation":"MAKE","parameters":{"modules":["com.example.statechart"],"rebuild":true}}'`
@@ -721,6 +764,6 @@ line; it does not detect the port itself.
    confirms `get_concept_details` no longer says `descriptorStatus: hollow`; still hollow →
    criterion 3 not evaluable, not a FAIL. If the runtime cannot resume a finished subagent,
    relaunch the evaluator with its first-pass report in the prompt.
-6. `meta.taskPass/taskEvidence`; save the report as `<id>.eval.md`. 7. Tell the user the path, then
+6. Set `meta.taskPass/taskEvidence` (and `observerNote`) yourself from the evaluator's reply. The report is `<id>.eval.md`: `study-scenario-evaluator` writes it there, and you save a generic evaluator's report there. 7. Tell the user the path, then
    close with `mps_mcp_close_project` (`force=false`; `MODAL_BLOCKED` → user dismisses the dialog);
    for S10 close and delete `<proj>-target` as well.

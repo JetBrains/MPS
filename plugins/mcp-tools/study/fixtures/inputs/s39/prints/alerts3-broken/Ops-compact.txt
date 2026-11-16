@@ -1,0 +1,9 @@
+alert book Ops
+  # production alerts
+  channel pager -> pager://ops
+  channel mail -> ops@example.com
+  cpuLimit = 90
+
+  alert HighCpu [high]
+  alert LowDisk [low]
+  muted alert Heartbeat [low]

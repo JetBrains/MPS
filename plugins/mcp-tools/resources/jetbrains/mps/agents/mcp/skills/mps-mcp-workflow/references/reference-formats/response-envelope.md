@@ -36,7 +36,7 @@ Every MPS MCP tool returns a JSON envelope at the top level:
 }
 ```
 
-`status` is `no_runtime` (the language has no built runtime), `concept_not_in_runtime` (the concept was created after the last build) or `stale`. `stale` answers a feature that **is** declared in the structure model but missing from the built runtime, such as a property added to a built concept; the response then says so instead of "Unknown property". A feature declared nowhere keeps the "Unknown property" / "Child role not found" rejection. `recovery` is the exact call to make; `mps_mcp_get_concept_details` returns the same block as `details.languageBuild`, with a `warnings` entry, on records it read from the concept declarations.
+`status` is `no_runtime` (the language has no built runtime), `concept_not_in_runtime` (the concept was created after the last build) or `stale`. `stale` answers a feature that **is** declared in the structure model but missing from the built runtime, such as a property added to a built concept; the response then says so instead of "Unknown property". A feature declared nowhere keeps the "Unknown property" / "Child role not found" rejection. `recovery` is the exact call to make (for a language owned by another open project it carries that project's `projectPath`: MAKE it there); `mps_mcp_get_concept_details` returns the same block as `details.languageBuild`, with a `warnings` entry, on records it read from the concept declarations.
 
 **Dry-run response** specifically:
 

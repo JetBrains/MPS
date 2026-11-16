@@ -39,7 +39,7 @@ Pick the right authoring tool before you start:
 1. **Scope**: call `mps_mcp_get_current_editor_root_node` to know where you are inserting (method body, field initializer, root, …).
 2. **Resolve dependencies**: confirm the containing model imports the right languages (`jetbrains.mps.baseLanguage` plus any extensions). Models for referenced nodes must also be imported.
 3. **Skeleton first**: for any non-trivial root, insert a placeholder skeleton (`mps_mcp_create_root_node` + `mps_mcp_update_root_node_from_json` or the parser) before filling member bodies.
-4. **Harvest references**: for own members, run `mps_mcp_print_node` on the skeleton to read persistent refs of constructors, methods, and fields. For JDK / library stubs, derive refs from the class ref using the URL-encoded signature formula (see references).
+4. **Harvest references**: for own members, run `mps_mcp_print_node` (`format: "AGENTIC VIEW"`) on the skeleton to read persistent refs of constructors, methods, and fields. For JDK / library stubs, derive refs from the class ref using the URL-encoded signature formula (see references).
 5. **Apply bodies**: edit one subtree at a time with `mps_mcp_update_node`, or bulk-rewrite via `mps_mcp_update_root_node_from_json`.
 6. **Auto-resolution**: for unambiguous local refs (a parameter, a local variable, a unique method name), pass the plain name as `target` — MPS resolves it after insertion. For overloaded or stub members, use a persistent ref.
 7. **Validate in three gates**:

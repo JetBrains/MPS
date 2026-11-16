@@ -39,6 +39,7 @@ Read this together with `AGENTS.md` whenever the task involves MPS artifacts or 
 - **Never simulate the typesystem.** To decide whether a type fits, what a slot requires, what an operator returns, or why a node has a type, call `mps_mcp_query_types` (`IS_SUBTYPE`, `SUPERTYPES`, `COMMON_SUPERTYPE`, `COERCE`, `OPERATION_TYPE`, `EXPLAIN_TYPE`) or `mps_mcp_query_nodes` (`GET_TYPE`, `GET_EXPECTED_TYPE`). Print a `SubtypingRule` / `InferenceRule` root only to change it, or to pick the sibling you `COPY_NODE` — not to predict what the engine will answer: even while authoring, ask the engine for the rest, including what your change does to operators and joins (`OPERATION_TYPE`, `COMMON_SUPERTYPE`). If an engine answer surprises you (`null`, `false`), ask `EXPLAIN_TYPE`; do not open the rule. See `references/analysis-tools/type-queries.md` for the operation table and caveats.
 - **Never simulate the dataflow engine.** To see the program a dataflow builder emits, which builder emitted an instruction, why a node is unreachable, which writes reach a read or which reads a write feeds, call `mps_mcp_query_dataflow` (`PRINT_PROGRAM`, `REACHING_WRITES`, `REACHING_READS`); do not print builder roots to predict the program, and do not hand-write a console probe of `jetbrains.mps.lang.dataFlow`. See `references/analysis-tools/dataflow-queries.md`.
 - **Check the IDE log when the envelope and the effect disagree.** When a tool reports success but the effect is missing, or a skill says an error "surfaces only in `idea.log`", call `mps_mcp_read_ide_log` with `sinceMinutes` covering the call window and `minLevel="WARN"` (no path needed, works for standalone MPS); `references/ide-log.md` has the recipe and the fallback for older servers.
+- **Read nodes as `AGENTIC VIEW`.** Structure, ids, references → `mps_mcp_print_node` `format: "AGENTIC VIEW"`; code → `PLAIN TEXT`; a blueprint → JSON `deep=true` of the subtree you change; script input → JSON; looks → `HTML`/`IMAGE`; a whole model or module → `mps_mcp_get_compact_project_structure`; counts over a model → `mps_mcp_get_project_structure` JSON + `scripts/mps_dump.py`. See `references/analysis-tools/print-node-agentic-view.md`.
 - **Validate frequently.** A successful insertion (`"ok": true`) does not mean the AST is semantically valid — always follow with `mps_mcp_check_root_node_problems`. Read `warnings` and `details.uncheckedSubtrees`, not just the `data` verdict: commented-out code and other `IDontApplyTypesystemRules` / `ISkipConstraintsChecking` subtrees are not checked, so a clean verdict over them proves nothing — ask `IS_SUBTYPE`. A problem may carry `rules: [{rule, ruleReference, statement}]`: `rules[0].rule` names the reporting rule — cite it instead of guessing; print `ruleReference` only to change that rule.
 
 > **Tool name note**: MPS MCP tools are named with a `mps_mcp_` prefix (e.g. `mps_mcp_query_nodes`, `mps_mcp_alter_nodes`, `mps_mcp_get_concept_details`). Your MCP client wraps these with a server-specific prefix (e.g. `mcp__mps-mcp-server__<env>___`), which varies by environment. Match tools by the stable `mps_mcp_*` suffix.
@@ -47,7 +48,7 @@ Read this together with `AGENTS.md` whenever the task involves MPS artifacts or 
 
 > **Which project the tools act on (subdirectory & multi-project checkouts).** The `mps_mcp_*` tools operate on the MPS project currently open in the running MPS instance. That project often lives in a **subdirectory** of your repository (e.g. `<repo>/tools/BigProject`, as in mbeddr or MPS-extensions), and one checkout may even hold **several** MPS projects. Supply that project's `mpsProjectBaseDirectory` — the folder MPS actually opened, i.e. a path *at or inside* it, **not** the repository root — as `projectPath` on every call, per the Critical Directive above. The first-call CWD probe in that directive still applies when the path is unknown, even if CWD is the repository root. This is the opposite of `mps_mcp_initialize_project_for_agents`, whose `targetDirectory` is the *repository / workspace root* (where `.agents/`, `.claude/`, `AGENTS.md`, and `CLAUDE.md` belong), which may be an *ancestor* of the MPS project directory.
 >
-> **Multi-project repository rules.** All open MPS projects share the same module repository. Write targets — models, modules, root nodes, and nodes being mutated — must belong to the project selected by `projectPath`; tools refuse writes to another open project's elements. Read/reference/dependency targets may come from another open MPS project when they are explicitly named or imported: model/module dependencies, model used languages/devkits, node concepts, and reference targets can point across projects, and the foreign elements are treated like read-only library/stub elements. Returned JSON for an element from another open project includes `containingProject: { name, mpsProjectBaseDirectory }` and `editableFromCurrentProject: false`; nested references use prefixes such as `conceptContainingProject`, `targetContainingProject`, or `typeContainingProject`. These markers appear *only* for elements owned by another open project — their absence does not imply an element is editable (a read-only library/stub in the current project carries `readOnly: true` but no `containingProject`), so decide editability from `readOnly` together with these markers.
+> **Multi-project repository rules.** All open MPS projects share the same module repository. Write targets — models, modules, root nodes, and nodes being mutated — must belong to the project selected by `projectPath`; tools refuse writes to another open project's elements. Read/reference/dependency targets — model/module dependencies, model used languages/devkits, node concepts, reference targets — may come from another open MPS project when explicitly named or imported, and are treated like read-only library/stub elements; discovery (`mps_mcp_search_concepts`, name suggestions) also returns such languages and concepts, marked. Returned JSON for an element from another open project includes `containingProject: { name, mpsProjectBaseDirectory }` and `editableFromCurrentProject: false`; nested references use prefixes such as `conceptContainingProject`, `targetContainingProject`, or `typeContainingProject`. These markers appear *only* for elements owned by another open project — their absence does not imply an element is editable (a read-only library/stub in the current project carries `readOnly: true` but no `containingProject`), so decide editability from `readOnly` together with these markers. A marker means "defined in another open project, read-only here", **not** "do not use": importing and instantiating that language is allowed.
 >
 > **When in doubt, ask which project.** When several MPS projects are open under one repository / VCS root, the `mps_mcp_*` tools accept *any* valid project path and act relative to that project. Same-name resolution prefers the selected project's own elements before falling back to the shared repository, but an explicit reference may still resolve to another open project. If the intended project is not obvious from the user's request or the current editor focus (`mps_mcp_get_current_editor_root_node`), do **not** guess — show the `mps_mcp_list_open_projects` entries and ask the user which project the query or change should run against.
 
@@ -123,9 +124,9 @@ Open `references/node-editing-rules.md` for the full rulebook on adding/updating
 
 Open `references/reference-formats.md` for the reference-format protocol: node refs (`r:`/`i:`), concept refs (`c:`), the critical "never use a concept ref where a node ref is expected" rule, and how to pass a list to a top-level parameter (a real JSON array and the array written as a string are equivalent).
 
-Open `references/bulk-creation.md` for bulk inserts: roots from a table (CSV or JSON rows) through `mps-node-editing`'s `scripts/table_to_bulk_insert.py`, name-based references inside one batch, and the print-shallow-then-add-children staged construction workflow used when subtrees exceed the JSON size limit.
+Open `references/bulk-creation.md` for bulk inserts: roots from a table (CSV or JSON rows) through `mps-node-editing`'s `scripts/table_to_bulk_insert.py`, name-based references inside one batch, and the print-then-add-children staged construction workflow used when subtrees exceed the JSON size limit.
 
-Open `references/analysis-tools.md` for the inventory of analysis operations: `mps_mcp_query_types`, `mps_mcp_query_nodes` `GET_TYPE` / `GET_EXPECTED_TYPE`, `mps_mcp_query_dataflow`, `mps_mcp_print_node`, and `mps_mcp_check_root_node_problems` with its `rules`, `uncheckedSubtrees`, `quickFixes` / `autoApplyQuickFixes`, plus `mps_mcp_list_node_intentions` / `mps_mcp_apply_intention` and `mps_mcp_alter_nodes FIX_REFERENCES`.
+Open `references/analysis-tools.md` for the inventory of analysis operations: `mps_mcp_query_types`, `mps_mcp_query_nodes` `GET_TYPE` / `GET_EXPECTED_TYPE`, `mps_mcp_query_dataflow`, `mps_mcp_print_node`, `mps_mcp_get_compact_project_structure`, and `mps_mcp_check_root_node_problems` with its `rules`, `uncheckedSubtrees`, `quickFixes` / `autoApplyQuickFixes`, plus `mps_mcp_list_node_intentions` / `mps_mcp_apply_intention` and `mps_mcp_alter_nodes FIX_REFERENCES`.
 
 Open `references/editor-workflow.md` for the MPS Concept Editor workflow (scaffold → componentize → refine → validate) and the editor procedural guidelines.
 
@@ -143,15 +144,19 @@ Open `references/mcp-tools-index.md` for the complete inventory of MPS MCP tools
 
 ## Scripts
 
-`scripts/mps_dump.py` — projects an MPS MCP result file (`mps_mcp_get_project_structure`,
-`mps_mcp_print_node`, `mps_mcp_get_concept_details`) down to the lines you need, instead of
-reading the whole 10–40 KB file: `roots`, `models`, `node`, `tree`, `shape`, `count`. It is also the library the
-other skills' scripts import (`load`, `roots`, `props`, `refs`, `children`, `find`, `shape`);
-`props` marks enum properties that sit at their enumeration's default value (the printer flags
-them with `isDefault`; an older dump that omits them is filled from the concept details'
-`enumerationDefault`). Lower `maxInlineBytes` only to get a file for this script: for any other
-result a smaller value moves the answer into a file you must then read, so keep the default and
-narrow the call (`references/analysis-tools/overview.md`).
+`scripts/mps_dump.py` — projects an MPS MCP **JSON** result file (`mps_mcp_get_project_structure`,
+`mps_mcp_print_node` `JSON`, `mps_mcp_get_concept_details`) down to the lines you need, instead of
+reading the whole 10–40 KB file: `roots`, `models`, `node`, `tree`, `shape`, `count`. To simply
+read a model or module (or list its roots), call `mps_mcp_get_compact_project_structure` (`nodeDepth: 0`
+for roots, `nodeDepth: n` for depth-bounded trees), and for one node call `mps_mcp_print_node`
+`format: "AGENTIC VIEW"` — neither writes a JSON dump or needs this script; reach for `mps_dump.py`
+when you need `models`, `count`, `shape`, `--concept` filtering, or Python library helpers (`load`,
+`roots`, `props`, `refs`, `children`, `find`, `shape`, imported by other skills' scripts such as
+`table_to_bulk_insert.py --verify`). `props` marks enum properties that sit at their enumeration's
+default value (the printer flags them with `isDefault`; an older dump that omits them is filled
+from the concept details' `enumerationDefault`). Lower `maxInlineBytes` only to get a JSON file for
+this script: for any other result a smaller value moves the answer into a file you must then read,
+so keep the default and narrow the call (`references/analysis-tools/overview.md`).
 
 ```
 python3 scripts/mps_dump.py roots /var/folders/.../mps-node-123.json --concept Course
@@ -160,6 +165,9 @@ python3 scripts/mps_dump.py node /var/folders/.../mps-node-123.json "Score Readi
 python3 scripts/mps_dump.py models /var/folders/.../mps-node-789.json   # modules, models, root counts
 python3 scripts/mps_dump.py tree /var/folders/.../mps-node-321.json --depth 3   # indented subtree
 ```
+
+`tree` marks a property at its default (`isDefault`) with a trailing `*` and a reference target in another
+model than its node with `@<model name>`.
 
 `roots`, `count`, `node` and `tree` need a dump made with `includeRootNodes` (or `includeNodes`,
 or a `print_node` result); on a structure-only dump they exit 3 and name `models`. For
@@ -174,8 +182,9 @@ depends on. Bundled dumps to try it on, and to read when you need a shape remind
 always written to a file under the system temp directory and named in that summary.
 
 No `python3` (typically Windows): ask the server for the reduction instead —
-`mps_mcp_get_project_structure` with `nodeDetail: "names"` returns exactly the `name` /
-`concept` / `reference` of each root, small enough to read inline with no file at all. An enum
+`mps_mcp_get_compact_project_structure` (`nodeDepth: 0` for root lines, `nodeDepth: n` for trees) reads a
+model or module inline as text, and `mps_mcp_get_project_structure` with `nodeDetail: "names"` returns
+the `name` / `concept` / `reference` of each root as inline JSON with no file at all. An enum
 property holding its enumeration's default is printed with that literal and `"isDefault": true`
 (`mps_mcp_get_concept_details` names it in `enumerationDefault`); in a dump taken before that,
 the property is absent or printed as `""` — either way it is the default, not missing data.

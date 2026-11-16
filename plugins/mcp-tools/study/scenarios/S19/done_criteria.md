@@ -35,8 +35,11 @@ catalog the same worker type needed 39–41 MCP calls, no errors and no workarou
 experiments `proj/genplan-new1`, `proj/genplan-new2`; the first ran on a catalog whose blueprints
 still carried this cell's names, see lesson 19 below).
 
-Known confound (D130): with the MPS source project open, `search_concepts` finds no plan-language
-concept; workers reach them through the skill.
+D130: with another project that has modules open (the MPS source project in the 2026-10-29
+baseline and rehearsal), `search_concepts` found no plan-language concept. Fixed 2026-11-16
+(verified in round 52). `run_worker.sh` still refuses such a launch since 2026-11-15; a run with
+`allowSiblingProjects: true` sees foreign markers (`containingProject`, `addedUsedLanguageDetails`),
+and a `search_concepts` → `[]` for an MPS language is a regression to file.
 
 ## Observer walk (2026-10-29, `proj/genplan-walk`, `proj/genplan-new1`, `proj/genplan-new2`)
 
@@ -153,8 +156,8 @@ reads the id from `get_project_structure`.)
 ## Rehearsal (done 2026-10-29)
 
 `run_worker.sh` per model after an `mps_control.sh restart` each, the MPS source project open beside
-the run project as in S18 (D130). Both passed on the intended path: three `@genplan` models, the DevKit
-exporting `jetbrains.mps.baseLanguage` as well (the DevKit warning asks for it; accepted), the fork
+the run project as in S18 (D130; neither worker called `search_concepts`). Both passed on the
+intended path: three `@genplan` models, the DevKit exporting `jetbrains.mps.baseLanguage` as well (the DevKit warning asks for it; accepted), the fork
 written with `ParameterEquals` on `module-facet`, the BaseLanguage step replaced in place by an
 `IncludePlan` (`SET CHILD`), one `rebuild` MAKE of both modules. Both also added a module dependency
 `mcp.study.pantry` → `mcp.study.plans` after the attach warning, and the fork condition's `r:` reference

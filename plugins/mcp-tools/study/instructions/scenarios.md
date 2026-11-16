@@ -14,13 +14,19 @@ rehearsed in rounds 46–47 and are frozen since 2026-10-30. S25–S29 (language
 reviewed, built and rehearsed on 2026-10-31 and are frozen since then. S30–S35 (editor authoring and
 editing) were written and reviewed on 2026-11-01 and rehearsed with opus the same day: S31, S34 and S35 passed on the
 first run; S30 and S32 passed on rev 4 after one revision; S33 failed only on a criterion's letter and passed on
-rev 5. The sonnet rehearsal the same evening passed S33 and S35 on the first run and S30, S32, S34 (run 2) and
+rev 5 (its prompt's test list was revised on 2026-11-14 after round 51, lesson 48, and needs a sonnet + opus
+rehearsal before its results are compared with earlier rounds). The sonnet rehearsal the same evening passed S33 and S35 on the first run and S30, S32, S34 (run 2) and
 S31 (run 4, rev 8) after prompt and criteria revisions (results in
 [`../reports/assessments/editor-dynamics.md`](../reports/assessments/editor-dynamics.md)); they are frozen since then.
 S36 (a generator test from an informal description) was written, built and reviewed on 2026-11-02 and is frozen since
 then: opus passed; sonnet missed the test-first order until the `mps-aspect-generator` directive was reworded
 (`ad638540c771`), then passed. S37 (a node known at design time, MPS-40408) was written, walked and rehearsed on 2026-11-02: opus and
-sonnet both passed on the intended route on the first run; frozen since then.
+sonnet both passed on the intended route on the first run; frozen since then. S38a/S38b (editor hints) were written, reviewed
+and walked on 2026-11-09 from the ad-hoc exercises H1–H3 and rehearsed once each with opus the same day and with sonnet `medium` (both PASS on criteria rev 5; [`../reports/assessments/editor-hints.md`](../reports/assessments/editor-hints.md)); frozen since 2026-11-09.
+S39a/S39b (checking editor definitions by rendering: build a Triage view / audit one with planted defects) were written,
+reviewed, built and rehearsed twice on 2026-11-11 — a hardening between the rehearsals did not change the outcome (4/4 PASS
+each time, opus `high` and sonnet `medium`; [`../reports/assessments/editor-checking.md`](../reports/assessments/editor-checking.md)); frozen since 2026-11-11 as
+regression and cost cells, not as model discriminators.
 
 A pass means the worker met `done_criteria.md`. It is evidence about the skills that cell
 **forces**. It is weak evidence about skills it only happens to read.
@@ -48,7 +54,7 @@ A pass means the worker met `done_criteria.md`. It is evidence about the skills 
 | S17 | Add six editor tests for the Recipe editor that must not pass vacuously and must run headless (typing with the caret checked, undo, redo, copy and paste, a deletion that ignores the two-step-deletion setting, an action's applicability), create a run configuration, and run them. |
 | S18 | Add three generator tests for the recipes generator (the exact output, the output in any root order, the output of an explicit plan that runs only that generator), keep the test data out of make, create a run configuration, and run them. |
 | S19 | Give the recipes models explicit generation plans: two plans with a checkpoint, a generator-module step and a conditional fork, one shipped through a DevKit and one attached to a solution; then rename the checkpoint, extract a shared plan both include, and make both modules. |
-| S20 | Greenfield tariff DSL whose generator emits an interface with one implementation class per plan: conditional and unconditional no-input roots read by label, `$COPY_SRC(L)$`, in-line templates with and without context, a pattern rule with a property variable, a labelled `$LOOP$` read by `$REF$`, `$MAP_SRC$` (null source; mapper + post-mapper), `$INSERT$`, a post-processing script. Frozen after rounds 46–47 (round 47: opus and sonnet PASS). |
+| S20 | Greenfield tariff DSL whose generator emits an interface with one implementation class per plan: conditional and unconditional no-input roots read by label, `$COPY_SRC(L)$`, in-line templates (with context forced; without recorded), a pattern rule with a property variable, a labelled `$LOOP$` read by `$REF$`, `$MAP_SRC$` (null source; mapper + post-mapper), `$INSERT$`, a post-processing script. Frozen after rounds 46–47 (round 47: opus and sonnet PASS). |
 | S21 | Greenfield shell DSL whose generator emits fluent-API classes: weaving with a stable anchor found through a shared fragment label (`get output list`), a weave template that loops and calls with unique names, `$CALL$` with arguments, `pick output`, `$VAR$`, an in-line switch, a generator warning. Frozen after rounds 46–47 (round 47: opus and sonnet PASS). |
 | S22 | Edit the recipes generator: a template switch with a parameter, an error default and a null-input message; a case for a sub-concept added by an extending language's switch (one plan step); `keepSourceRoot`; a generator-only language; a two-key label; a pre-processing script that modifies the model; a three-step plan. Frozen after rounds 46–47 (round 47: opus and sonnet PASS). |
 | S23 | Edit an observer-built flows generator (`flows-gen`): fix a wrong rule order from its symptom, add an in-line switch case, rename a label with every use, extract an in-line template into a template declaration. Frozen after round 46 (opus and sonnet PASS). |
@@ -61,11 +67,15 @@ A pass means the worker met `done_criteria.md`. It is evidence about the skills 
 | S30 | Greenfield survey DSL: static editors (shared component, alias cell, style sheet, show-if, separator, placeholder, read-only count, inspector), a substitute action, a keyword menu with Super, node factories, a wrap transform after `?`, a paste wrapper, seven editor tests. Frozen 2026-11-01. |
 | S31 | Edit the alerts editors you did not write: a model-access window cell, matching parentheses, a shared name component, a query style, a Ctrl+Alt+Shift+K keymap, a "new channel" reference action, postfix hints, select-all, a paste post-processor; six shipped tests kept. Frozen 2026-11-01. |
 | S32 | Recipes: difficulty to the Inspector, `then` typed after a step's `)` and offered in Ctrl+Space with the step's own items, a parameterized `scale` menu over one factor list on the name, a `+`/`-` keymap on minutes; four shipped tests kept. Frozen 2026-11-01. |
-| S33 | An on-call language extending alerts: a substitute-menu contribution, a transformation-menu contribution with a cross-concept factory and Undo, an editor-component override, an everyModel Ctrl+Alt+Shift+G keymap; the base untouched. Frozen 2026-11-01. |
+| S33 | An on-call language extending alerts: a substitute-menu contribution, a transformation-menu contribution with a cross-concept factory and Undo, an editor-component override, an everyModel Ctrl+Alt+Shift+G keymap; the base untouched. Frozen 2026-11-01; prompt item 5 revised 2026-11-14 (lesson 48), rehearsal pending. |
 | S34 | Write editor tests for eight specified alerts behaviours, run them red against six planted editor defects, then fix the language, not the tests. Frozen 2026-11-01. |
 | S35 | Kaja sample: a movement menu on `step`/`turnLeft`, a LEFT `comment` transform on `trace` also in Ctrl+Space, a `Trace` context-assistant item, a red count; corpus menus kept. Frozen 2026-11-01. |
 | S36 | Correct an almost-right recipes generator from an informal description of the wanted Java and capture the description as a generator test: on the intended path the test is written first, fails naming a leaked literal and a dropped step, the template is fixed, the test goes green and the samples' Java is right. |
 | S37 | Test the stored `Pancakes` sample (servings 2, `totalMinutes()` 13) from a new test solution so that the test survives a rename of the recipe and shows in Find Usages: the `node-ptr/Pancakes/` literal resolved through the project's repository, after importing the samples model; no lookup by name, no hand-built `SNodePointer`. Frozen 2026-11-02 (opus and sonnet PASS). |
+| S38a | Alerts: a "Compact" view — a hint container (one hint offered in the IDE, one not), a one-line hinted alert editor with its Inspector, a fixed Inspector hint showing `cpuLimit (= 90)` on nested references, a book flag driving computed hints, the per-editor push in tests, an intention toggling explicit node hints without clearing others; six shipped tests kept. Drafted 2026-11-09, walked 2026-11-09 (`walk-2.md` in the ad-hoc notes); rehearsed with opus and sonnet 2026-11-09, frozen (`../reports/assessments/editor-hints.md`). |
+| S38b | A review language extending alerts on `alerts2-compact`: a `>>` decorator on the members' super-concept through a next-editor cell, a hinted header override, nested parentheses by cell-tree inheritance, thresholds opted out with `removeHints` (landing rule), two-hint editors (AND, the cross- and same-concept ties, a base hint through a model import), the Inspector under both views, the sandbox using the extension; ten shipped tests kept. Drafted 2026-11-09, walked 2026-11-09 (`walk-2.md` in the ad-hoc notes); rehearsed with opus and sonnet 2026-11-09, frozen (`../reports/assessments/editor-hints.md`). |
+| S39a | Alerts on `alerts3`: a "Triage" view — nested block layout, severity classes (darkMagenta / red), a muted class that `dominates over` the keyword class into the condition's editors, a conditional pink header (picture-only check), a hinted header override, a threshold's value shown after its reference with plain constants, a note style, an Inspector; normal and Compact views unchanged. Frozen 2026-11-11 (`../reports/assessments/editor-checking.md`). |
+| S39b | Audit the Triage view on `alerts3-hard` against its specification: seven deviations from eight planted causes (a dominance priority tie, a same-named class of a second style sheet, a hinted editor of an abstract superconcept, one deviation with three causes, a rendering condition wrong for one data combination, a shared-component leak into two views, a picture-only background), Q1/Q2 on which definition draws a part and why a style value wins, a Defects report. Frozen 2026-11-11 (`../reports/assessments/editor-checking.md`). |
 | SMOKE | Not an eval. Lists open projects and stops. Readiness check after every MPS start. |
 
 ## Directory
@@ -402,8 +412,8 @@ Read the process signals with `GT_generator_test_writes` (≥ 3), `GT_nodes_test
 `ET_run_configs` (1); `M_makes_save_transient` / `GN_transient_*` show the golden-master route.
 Baseline (evidence, not a cell): an opus Agent-tool worker with the old catalog passed the task by
 dumping every language module to find `GeneratorTest` and by reflective console Java for the flag.
-D130 (the source project's languages are "foreign" to `search_concepts`) confounds concept search
-in this cell.
+That baseline ran with the MPS source project open, so its `search_concepts` returned `[]` (D130);
+`run_worker.sh` refuses such a second project since 2026-11-15, so a cell does not inherit it.
 Hypotheses: H1, H2, H7.
 Isolation: the `mcp.study.recipes` module ids of S3–S7, S9, S15, S17 and S19, so restart MPS before S18
 when one of those ran in the process. Generation loads the language's generator, so a later recipes
@@ -441,7 +451,8 @@ Read the process signals with the `GP_*` columns (`GP_set_plan_calls` and `GP_de
 Baseline (evidence, not a cell): an opus Agent-tool worker with the old catalog and plugin finished
 the task in 96 tool uses through console Java for the DevKit, five guessed facet keys and a dump of
 the plan-parameter model; with the new plugin and catalog the same kind of worker needed 39–41 MCP
-calls and no workaround. D130 confounds concept search here as in S18.
+calls and no workaround. Those baselines had the MPS source project open (D130), which a cell no
+longer can, as in S18.
 Every round: the lesson-19 grep in `done_criteria.md` (the catalog must not name this cell's plans).
 Hypotheses: H1, H2, H7.
 Isolation: the `mcp.study.recipes` module ids of S3–S7, S9, S15, S17 and S18, so restart MPS before
@@ -526,7 +537,7 @@ recipes are in `../fixtures/inputs/s31`, `s32`, `s34`, `s35/FIXTURE.md` (pins: t
 GP rows of the matrix are undocumented in the catalog today: document them before freezing, or they score doc
 gaps. Sizes (opus min, E1 = 21) and the drop order are per cell below.
 
-**S30 — greenfield survey DSL.** Fixture: `empty-project` (synthesized). Forces static editors (shared
+**S30 — greenfield survey DSL.** Fixture: `empty-project` (synthesized). Prompt re-baselined 2026-11-16 (step 2 names the lang.core alias component; `promptSha256` `9042cf9de1d8…`). Forces static editors (shared
 component with the alias cell, style sheet, show-if, `separatorText`, `nullText` placeholder, read-only
 accessor, inspector, smart reference), a default substitute menu with an Action, a default transformation menu
 with Super reached from a keyword cell carrying a `transformationMenu`, `NodeFactory` with `sampleNode` and
@@ -566,6 +577,9 @@ used-language rule GP, `everyModel`, exact `modifiers`, leaf-cell rule), `mps-as
 `editor-components.md` (override GP), `mps-aspect-actions` (cross-concept `sampleNode`),
 `mps-aspect-accessories`, `mps-language-inheritance`, `mps-tests` (`$Undo`). Re-exposes E1#1/#8, E2#1, M5.
 Size 35–45. Isolation: `alerts2` ids; restart before and after, never next to another `alerts2*` copy.
+Prompt item 5 revised 2026-11-14 after round 51 (lesson 48): the test list now names `paged` offered and the undo
+test's check of the paged alert before its one Undo, which criterion 5 gates; `promptSha256` changes, so the next run
+is a rehearsal (sonnet + opus) before comparison with rounds ≤ 51.
 
 **S34 — editor tests that find planted defects.** Fixture: `alerts2-broken`
 ([`../fixtures/inputs/s34/FIXTURE.md`](../fixtures/inputs/s34/FIXTURE.md)): a missing `AddConcept`, a missing
@@ -626,6 +640,42 @@ Size 15–35. Hypotheses: H1, H7. Isolation: joins the `recipes*` set (S3–S7, 
 before it when an earlier cell in the process rebuilt the recipes language (D80); it does not rebuild the language
 itself.
 
+**S38a/S38b — editor hints and alternative editors.** Written 2026-11-09 from the ad-hoc exercises H1–H3
+(`~/MPSProjects/mcp-study/adhoc-hints/notes/plan.md`, run analyses) after two proposal reviews; the observer decided the split
+(one cell would be 220–320 calls), dropped the project-wide-setting test (an IDE project service whose leak reddens shipped
+tests; knowledge only) and took the H1-opus-2 project as S38b's base. Walked 2026-11-09 (`walk-2.md` in the ad-hoc notes); rehearsed with opus and sonnet 2026-11-09, frozen ([`../reports/assessments/editor-hints.md`](../reports/assessments/editor-hints.md)). The hints sub-matrix is in
+[`../scenarios/coverage/editor.md`](../scenarios/coverage/editor.md).
+
+**S38a — the Compact view: hints in the base language.** Fixture: `alerts2` ([`../fixtures/inputs/s31/FIXTURE.md`](../fixtures/inputs/s31/FIXTURE.md)).
+Forces `ConceptEditorContextHints` with `showInUI` true and false, a hinted `ConceptEditorDeclaration` with an inspected
+layout, a fixed `ExplicitHintsSpecification` on an inspected cell reaching a nested `ThresholdRef`, a `QueryHintsSpecification`
+driven by a book flag, `setInitialEditorHints` in tests (never the dialog), an intention toggling explicit node hints through the
+`Updater` without `clearExplicitHints` (a survival test), test-first. Knowledge only: the project-wide Settings page (a leaked
+hint reddens the shipped T2/T5). Run to verify: `mps-aspect-editor` `editor-hints.md` and `editor-hints/{declaring,choosing,
+switching}.md` (container, hinted editor, fixed and computed `addHints`, explicit hints); `mps-tests`
+`editor-test-case/hinted-editors.md` (recipe 2, asserting the rendering editor, the Inspector), `root-and-caret.md`
+(`isInInspector`); `mps-aspect-intentions` `execute-idioms.md`; `mps-run-configurations`. Re-exposes H1 gaps 1–4 and H3 gap 1.
+Read `ET_test_runs` (≥ 2, red first), `M_makes` ≥ 2, `X_outside_project` 0 (deny the MPS checkout to workers). Size 140–180;
+drop item 5, then item 3. Isolation: `alerts2` ids (restart before and after; never next to another `alerts2*` copy or the
+H1-opus-2 scratch).
+
+**S38b — the Review view from an extending language.** Fixture: `alerts2-compact`
+([`../fixtures/inputs/s38b/FIXTURE.md`](../fixtures/inputs/s38b/FIXTURE.md): `alerts2` plus the compact view of the H1-opus-2 run,
+audited and pinned). Forces an extending language's hinted editors for base concepts (the default-editor rule as a guard), the IDE
+offer rule (the sandbox must use the extension), a hinted editor on the abstract `Member` beating every member's default editor,
+`CellModel_NextEditor` decoration with the landing rule and `removeHints` on a `Threshold` opt-out, a hinted
+`EditorComponentDeclaration` override with `conceptDeclaration`, nested parentheses by cell-tree inheritance, two-hint editors
+(AND, most hints wins, the cross-concept tie that lets the compact editor beat the `Member` decorator and the same-concept tie
+with `Threshold_compact_Editor`), a base hint referenced through the imported base editor model, a next editor in an inspected
+layout, pushed hints in tests; the base read-only. Run to verify: `mps-aspect-editor` `editor-hints/choosing.md` (the rule,
+inheritance, Inspector, decorating), `declaring.md` (override with `conceptDeclaration`, checker rules, across languages),
+`switching.md` (`removeHints`), `editor-components.md`; `mps-language-modularity` `extension.md` (hinted editors, never a
+default); `mps-language-inheritance`; `mps-aspect-accessories` (a used language on the sandbox model); `mps-tests`
+`hinted-editors.md`. Re-exposes H2 gaps 2–4, H3 gap 4 and plan facts A4, A5, A8. Read `ET_test_runs` (≥ 2, red first),
+`M_makes` ≥ 2, `X_outside_project` 0, base-model writes 0 except the sandbox's used languages. Size 115–160; drop the
+Compact-alone assertion, then item 4's Inspector sentence; never items 2–3. Isolation: `alerts2` ids (restart before and after;
+never next to another `alerts2*` copy, nor to the live H1-opus-2 scratch the fixture was taken from).
+
 **SMOKE — not a scenario.** No `done_criteria.md`, no evaluation, `pass` stays empty. One
 `mps_mcp_list_open_projects` against the harness project. Use it only as the readiness gate
 after a start or restart.
@@ -643,16 +693,16 @@ skill whose **Run** column is not S1 or S3.
 |---|---|---|---|
 | `mps-language-aspects-overview` | S1 | | |
 | `mps-aspect-structure-concepts` | S1 (create concepts, enums, children, refs), S2 (add a child to an existing concept), S4 (rename, cardinality, new concept), S25 and S29 (the published directive: never tighten or delete in place), S28 (local: tighten in place, delete once empty) | | S3 only consumes the language |
-| `mps-aspect-editor` | S1 (an editor per concept, not a scaffold), S2 (change an existing cell model); frozen 2026-11-01: S30 (components, style sheet, show-if, separator, placeholder, accessor, inspector), S31 (model access, punctuation, matching label, query style), S32 (inspector), S33 (component override), S35 (query style on a corpus editor) | S25–S28 (editor switched to the replacement) | menus, keymaps, action maps: see the next row |
+| `mps-aspect-editor` | S1 (an editor per concept, not a scaffold), S2 (change an existing cell model); frozen 2026-11-01: S30 (components, style sheet, show-if, separator, placeholder, accessor, inspector), S31 (model access, punctuation, matching label, query style), S32 (inspector), S33 (component override), S35 (query style on a corpus editor); S38a (hint container, hinted editor + inspected layout, fixed and computed `addHints`), S38b (super-concept hinted editor, next-editor decorator and landing rule, `removeHints`, hinted override, two-hint editors, cross-language hint) | S25–S28 (editor switched to the replacement) | menus, keymaps, action maps: see the next row |
 | `mps-aspect-editor-menus-and-keymaps` | frozen 2026-11-01: S30 (substitute Action, keyword menu with Super, RIGHT wrap, paste), S31 (keymap, ReferenceScope + pattern Action, postfix hints, select-all), S32 (side transform, include + `location`, Parameterized on a property cell, keymap), S33 (contributions, `everyModel` keymap), S34 (diagnosing six planted traps), S35 (named substitute menu via an alias cell, LEFT transform, context assistant) | S26 (hiding with an empty default `SubstituteMenu`) | `CompletionStyling`, menu adapters, `CellActionMapImport` (see `../scenarios/coverage/editor.md`) |
 | `mps-aspect-actions` | frozen 2026-11-01: S30 (`NodeFactory` with `sampleNode` and `index`, `PasteWrapper`), S31 (`PastePostProcessor`), S33 records a cross-concept `NodeFactory` (a hand copy also passes) | | `CopyPreProcessor` (recorded only) |
 | `mps-aspect-constraints` | S1 (property validator + a scope that excludes the referrer), S2 (non-blank property rule) | | S5 repairs instances; it does not author a rule |
 | `mps-aspect-typesystem` | S1 (warning on a property value; non-typesystem checking), S11 (querying the compiled typesystem, its Common-Path step 0), S12 (authoring a subtyping rule and checking it on a scratch sandbox, steps 4 and 9) | | no cell authors inference or replacement rules; S12 authors one subtyping rule |
 | `mps-aspect-dataflow` | S13 (fixing two builders: a label position and a guard), S16 (the same with a position bug that reads as correct) | | no cell authors a builder for a new concept, a custom analyzer, or a builder mode |
 | `mps-aspect-behavior` | S1 (one method), S6 (parser body and JSON AST of the same method) | | |
-| `mps-aspect-intentions` | S2 | | |
+| `mps-aspect-intentions` | S2, S38a (explicit editor hints from `execute`, a description that reads editor state) | | |
 | `mps-aspect-migrations` | S4 (a required child filled by a migration), S25–S29 (`language-evolution.md`: classification, published vs local, deprecation, declarative moves, conversion with `check()`, Console route, unknown status) | | apply half needs the D48 `MigrationTrigger` change; see S4 above |
-| `mps-aspect-accessories` | S19 (DevKit exports and the DevKit's plan through `module-level-deps.md`; a used devkit on a model) | | accessory models, runtime solutions, extended languages — no cell |
+| `mps-aspect-accessories` | S19 (DevKit exports and the DevKit's plan through `module-level-deps.md`; a used devkit on a model), S38b (a used language added to the sandbox model) | | accessory models, runtime solutions, extended languages — no cell |
 | `mps-aspect-generator` | S6 (authoring a root mapping rule and macros), S15 (debugging a misgeneration, `references/debugging-misgeneration.md`), S20–S24 (rules of every kind, switches incl. override, labels in every form, weaving, scripts, `$MAP_SRC$`/`$VAR$`/`$INSERT$`/`$CALL$`, editing and maintenance; frozen after rounds 46–47; S23/S24 run on `flows-gen`), S36 (Critical Directive 1: a `GeneratorTest` from an informal description, red before the fix) | S18 (the *Testing a generator* pointer; routing only) | compiled-generator tracing (integration test only); `MapSrcListMacro`, `$WEAVE$`, `$TRACE$` |
 | `mps-aspect-generation-plan` | S19 (author, attach through a DevKit and a Solution, verify, maintain), S18 (a one-step plan for a generator test), S22 draft (two generators in one `Transform` step, a generator-only language) | S15 (reads a DEFAULT plan's steps and prefixes; no plan authoring) | cross-model checkpoints with label lookups, `PlanContribution`, `InitModelAttributes` — no cell |
 | `mps-node-editing` | S1 and S6 (hand-written blueprints), S3 (bulk + aggregate root), S5 (surgical repair, identity-preserving moves), S2 and S4 and S7 (writes) | S18 (the `GeneratorTest` blueprint) | S8 and S9 must not write |
@@ -662,9 +712,11 @@ skill whose **Run** column is not S1 or S3.
 | `mps-baselanguage` | S6 (parser vs JSON AST), S1 and S2 (function bodies in behavior / constraints) | S7, S17 (test bodies), S18 (expected classes through the parser) | S10's one empty class is not a signal |
 | `mps-model-manipulation` | S1 (checking rule, behavior, constraint code), S6 (behavior bodies; a whole method is one deep print), S37 (a node known at design time: `node-ptr/…/`, `references/link-and-concept-literals.md`) | | |
 | `mps-language-analysis` | S2 (find the concept to extend), S8 (explore a project you have not seen), S5 (find every problem), S11 (type questions via `mps_mcp_query_types`) | S1, S6, S7, S17 (`get_concept_details` / `shape`) | |
+| `mps-language-modularity` | S38b (`references/extension.md`: a different look for host concepts is hinted editors only) | | |
+| `mps-language-inheritance` | | S38b (sub-concepts of `Member`, the abstract `BinaryExpr`) | |
 | `mps-dsl-memory` | S8 | | |
-| `mps-tests` | S7 (NodesTestCase, one typing editor test), S17 (editor tests: MPS actions and platform action ids, undo and clipboard, `is action applicable`, two-step deletion, non-vacuity), S18 (`GeneratorTest`: arguments, match options, an explicit plan, "Do not generate", the skipped trap), S36 (the fail-first rule for generator tests: a red mismatch before the fix, not `null vs <root>`), S37 (a test of a stored node through `node-ptr/…/`); frozen 2026-11-01: S30–S35 (completion items before typing, prefix via `Complete`, keystrokes, inspector, two-step both ways, Undo, context assistant, red run first in S34) | | intentions (no cell) |
-| `mps-run-configurations` | S7, S17, S18, S36; drafts S30, S35 | S37 | |
+| `mps-tests` | S7 (NodesTestCase, one typing editor test), S17 (editor tests: MPS actions and platform action ids, undo and clipboard, `is action applicable`, two-step deletion, non-vacuity), S18 (`GeneratorTest`: arguments, match options, an explicit plan, "Do not generate", the skipped trap), S36 (the fail-first rule for generator tests: a red mismatch before the fix, not `null vs <root>`), S37 (a test of a stored node through `node-ptr/…/`); frozen 2026-11-01: S30–S35 (completion items before typing, prefix via `Complete`, keystrokes, inspector, two-step both ways, Undo, context assistant, red run first in S34); S38a/S38b (`editor-test-case/hinted-editors.md`: pushed hints without a dialog, asserting the rendering editor, the Inspector under hints; `invoke intention` in S38a) | | — |
+| `mps-run-configurations` | S7, S17, S18, S36, S38a, S38b; drafts S30, S35 | S37 | |
 | `mps-console` | S9 (read-only), S28 (writing commands that migrate values) | | evaluate before close |
 | `mps-project-management` | S10 | | observer opens for S1–S9 and S11–S24 do not measure this skill |
 | `mps-mcp-workflow` (the skill as a whole) | pick the row below; do not run all of them | | |
@@ -692,7 +744,6 @@ an eval ([`runbook.md`](runbook.md), "Adding a scenario").
 
 - `mps-aspect-actions` and `mps-aspect-editor-menus-and-keymaps` have only S30–S35 (frozen 2026-11-01; **By skill**) and S26 (hiding a concept with an empty default `SubstituteMenu`)
 - `mps-aspect-textgen`
-- `mps-language-modularity`
 - `mps-language-inheritance` (S6 and S7 sometimes walk superconcepts because `shape` omits them; that is not a cell for this skill)
 - `mps-quotations`
 - `mps-build-language`

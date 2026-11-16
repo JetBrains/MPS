@@ -47,9 +47,11 @@ a "Do not generate" model, so the flag is cleared for one make:
 3. `mps_mcp_generation TRANSIENT_MODELS {model: <input model ref>}` lists the step models
    (`…input@0`, `@2_0`, …, `@6_7` in the recipes example); the last one on `branch` 0 is the compared
    output.
-4. `mps_mcp_print_node(nodeReference=<transient root>, deep=true)` per root, then
+4. `mps_mcp_get_compact_project_structure(startingPoint=<step model ref>, nodeDepth=0)` to list the
+   `<transient root>` references in model order (`TRANSIENT_MODELS` reports only the `roots` count),
+   then `mps_mcp_print_node(nodeReference=<transient root>, deep=true)` per root and
    `mps_mcp_insert_root_node_from_json(modelReference=<expected model>, json=<the printed file>)`,
-   in the order the step model lists the roots.
+   in that order.
 5. `SET_DO_NOT_GENERATE` again (default `true`), then MAKE the test Solution with `rebuild: true`:
    step 2 wrote the input's Java into the test Solution's `source_gen` and `classes_gen`, and only a
    rebuild removes it.
@@ -65,8 +67,9 @@ on the expected model, and repoint such references at the expected model's own n
 
 By default, roots are paired by position: the first output root with the first expected root. The
 output's order is the order the generator created them (for a root mapping rule, the input roots'
-order). The Project view sorts roots by name, so it does not show this order; `mps_mcp_get_project_structure`
-with `includeRootNodes` lists the model's real order. Either insert the expected roots in that order,
+order). The Project view sorts roots by name, so it does not show this order; `mps_mcp_get_compact_project_structure`
+with `nodeDepth: 0` reads the model's real order inline (or `mps_mcp_get_project_structure` with
+`includeRootNodes: true`, `nodeDetail: "names"` for JSON). Either insert the expected roots in that order,
 or let the assertion ignore order (`aggregateIgnoreOrder`, `references/generator-test/matching-and-plans.md`),
 which pairs roots — and children — by concept and presentation (the name, for a named node) instead.
 

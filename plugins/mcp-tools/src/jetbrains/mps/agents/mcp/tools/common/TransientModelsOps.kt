@@ -49,8 +49,9 @@ internal object TransientModelsOps {
             "later main-branch steps, so tell its models apart by reference and branch (0 = main branch), never by name. A branch's " +
             "lowest-minor model is its input copy, named with the fork's branchInputStereotypePrefix.",
         "The checkpoints module is shared by every open project, so checkpoints lists checkpoint models of any project.",
-        "Transient models are read-only: read them with mps_mcp_print_node, mps_mcp_query_nodes or mps_mcp_get_project_structure " +
-            "(startingPoint = a reference listed here); write tools refuse them with NOT_EDITABLE.",
+        "Transient models are read-only: read a model with mps_mcp_get_compact_project_structure (startingPoint = a reference listed here), " +
+            "one of its nodes with mps_mcp_print_node, query with mps_mcp_query_nodes, or dump JSON with mps_mcp_get_project_structure; " +
+            "write tools refuse them with NOT_EDITABLE.",
     )
 
     internal const val CHECKPOINTS_SHARED_WARNING =

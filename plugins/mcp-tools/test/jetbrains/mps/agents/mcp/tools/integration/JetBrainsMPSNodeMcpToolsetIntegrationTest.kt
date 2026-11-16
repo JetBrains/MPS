@@ -2219,7 +2219,7 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
         assertEquals("INVALID_REQUEST", obj.get("code").asString)
         assertEquals(
-            "Invalid format 'structural'. Allowed values: JSON, HTML, PLAIN TEXT",
+            "Invalid format 'structural'. Allowed values: JSON, HTML, PLAIN TEXT, IMAGE, AGENTIC VIEW",
             obj.get("error").asString,
         )
     }

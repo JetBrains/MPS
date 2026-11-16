@@ -46,8 +46,8 @@ This catches typos symmetrically across all search strings — the tool never si
 
 - **Strict matches** (all query words matched) are capped at **50** (`MAX_STRICT_RESULTS`). When more matched, the envelope carries `details.totalStrictMatches` (the real total), `details.truncated: true`, and a warning naming the two ways to narrow: more query words, or `modelReference`. `data` stays a plain array either way.
 - **Fallback ranking**: if no concept strictly matches all words of any search string, the tool ranks concepts by the number of matching words and returns up to `MAX_FALLBACK_RESULTS` (currently 20) best candidates instead of an empty result.
-- Within the fallback, equal-score candidates are admitted in registry iteration order while the heap fills. That makes the tie-break **deterministic for a given MPS session and language load order**, but **not stable across sessions**. Treat the fallback result as a candidate set rather than a ranked list.
-- Concepts whose **name is exactly one of your query words** are returned first and are never the ones the cap drops, so searching for a name always finds it. Beyond that tier the order is registry iteration order, not relevance: a truncated result is a signal to narrow the query, not a top-50 ranking.
+- **Ordering.** Match quality first, then origin tier (defined by this project, used by it, everything else), then qualified name. Strict results are sorted that way **before** the 50 cap, so the cap drops the far tier and the order is stable across sessions. Concepts whose **name is exactly one of your query words** come first and are never dropped by the cap. A truncated result is still a signal to narrow the query, not a relevance ranking.
+- Within the fallback, equal-score candidates follow the same origin tier, then qualified name. Treat the fallback result as a candidate set rather than a ranked list.
 
 ## Scoping
 
@@ -56,12 +56,12 @@ Three scopes, narrowest first. **Pick the narrowest one you can** — every wide
 | | what it searches | when |
 |---|---|---|
 | `modelReference` | the languages used by that one model | you already know which model the node will live in — the recommended first attempt |
-| `scope: "project"` (**default**) | the languages this project's modules **define**, plus the ones they **use** (including everything their used devkits export) | ordinary discovery |
-| `scope: "all"` | every language in the registry, minus those owned by another open MPS project | the concept is genuinely outside what this project touches |
+| `scope: "project"` (**default**) | the languages this project's modules **define**, plus the ones they **use** (including everything their used devkits export); a used language owned by another open project is included, marked | ordinary discovery |
+| `scope: "all"` | every registered language plus every Language module in the repository, other open projects' and never-built ones included (foreign hits are marked) | the concept is genuinely outside what this project touches |
 
-`scope: "project"` is "owned **or** used" on purpose. Scoping to owned-only would drop `jetbrains.mps.baseLanguage` in any project that merely uses it, which would make `ClassConcept` unfindable; scoping to the whole registry is what made a four-term query return 183 KB dominated by languages the project never touches.
+`scope: "project"` is "owned **or** used" on purpose. Scoping to owned-only would drop `jetbrains.mps.baseLanguage` in any project that merely uses it, which would make `ClassConcept` unfindable; scoping to every registered language is what made a four-term query return 183 KB dominated by languages the project never touches.
 
-**Auto-widening.** A `scope: "project"` search with **no strict match** is retried over the whole registry automatically, and the envelope carries a warning saying so. You never have to retry a project-scoped miss by hand. The widened answer is kept only when it is better — a strict hit, or anything at all where the narrow pass found nothing; registry-wide *fallback* candidates never displace the project's own, which are more likely to be what you want. `scope: "all"` never widens; it is already the widest.
+**Auto-widening.** A `scope: "project"` search with **no strict match** is retried over every language in the repository (other open projects' included, marked) automatically, and the envelope carries a warning saying so. You never have to retry a project-scoped miss by hand. The widened answer is kept only when it is better — a strict hit, or anything at all where the narrow pass found nothing; repository-wide *fallback* candidates never displace the project's own, which are more likely to be what you want. `scope: "all"` never widens; it is already the widest.
 
 `scope` and `modelReference` **cannot be combined** — *any* explicit `scope`, including `"project"`. `modelReference` is already the narrowest scope, and honouring one key while silently dropping the other is the failure the rejection exists to prevent, so the call is refused with `INVALID_REQUEST` naming both. Omitting `scope` entirely alongside `modelReference` is the normal case and is fine.
 
@@ -103,3 +103,9 @@ containingProject?, editableFromCurrentProject?, present:true
 Escalate to `"full"` only when you need the documentation or the super-concept chain for the hits themselves. To learn a concept's *shape* (properties, references, children), call `mps_mcp_get_concept_details` with `detail: "shape"` on the one name you picked — that is cheaper than `"full"` here and answers a different question.
 
 Use the `qualifiedName` field (e.g. `"jetbrains.mps.baseLanguage.structure.ClassConcept"`) as the `concept` field in JSON node blueprints — it is unambiguous and does not require a `conceptReference`.
+
+## Foreign results
+
+`containingProject` + `editableFromCurrentProject: false` mark every hit and name suggestion from another open project, in any scope. The marker means "defined in another open project, read-only here", **not** "do not use": importing and instantiating the language is allowed. With the MPS checkout open, even `baseLanguage` hits are marked.
+
+Adoption flow: find with `scope: "all"` -> `mps_mcp_get_concept_details` -> `mps_mcp_model_used_language` ADD with the hit's `languageReference` (`l:…`) -> if unbuilt, MAKE it from the **owning** project (`details.languageBuild.recovery.projectPath`; writers answer `LANGUAGE_NOT_BUILT` until then) -> it is now in `scope: "project"`.

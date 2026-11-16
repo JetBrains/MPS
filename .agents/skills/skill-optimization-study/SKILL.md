@@ -34,7 +34,9 @@ including that workspace contract, is `$STUDY/README.md`.
 ## Roles
 
 - **Observer** (this session, Opus-class): orchestrates, never performs the MPS task, never tells
-  workers they are measured, evaluates results read-only, writes the report. Owns the whole
+  workers they are measured, evaluates results read-only, writes the report. It does both through the project-scope
+  `study-scenario-evaluator` / `study-run-evaluator` subagents when its Agent tool lists them, else
+  through a generic Opus subagent (runbook "Observer subagents"); either way, the meta fields stay its own. Owns the whole
   lifecycle: **synthesizes** empty projects (`scripts/new_study_project.py`), **opens** them via CLI
   (`mps-project-management`), **closes** them with `mps_mcp_close_project`, and **starts, restarts
   and shuts MPS down** with `scripts/mps_control.sh`. Before each swap, tell the user the absolute
@@ -42,6 +44,8 @@ including that workspace contract, is `$STUDY/README.md`.
   swap and do not wait for approval.
 - **Workers**: headless CLI processes (`claude -p` or `junie --task`), one per (scenario, model, run),
   launched by `study/scripts/run_worker.sh`. Evidence = their transcript + the server call log.
+  Workers never see the observer subagents. Keep those in the checkout's `.claude/agents/`, never in
+  `~/.claude/agents` (`check_user_agents.py`, lesson 26).
 - **Human**: answers the gate questions, approves pushes, and dismisses MPS dialogs when a call
   returns `MODAL_BLOCKED` or a close/exit hangs on a confirmation. Does **not** open, close or
   create projects and does **not** restart MPS — those are observer actions now.

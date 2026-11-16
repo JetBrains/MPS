@@ -1,0 +1,13 @@
+alert book Ops
+  # production alerts
+  channel pager -> pager://ops
+  channel mail -> ops@example.com
+  threshold cpuLimit = 90
+
+  alert HighCpu [high]
+    when cpu over 5 min > cpuLimit
+  alert LowDisk [low]
+    notify mail, pager
+    when disk < 10 and not ( memory > cpuLimit + 5 )
+  muted alert Heartbeat [low]
+    when uptime < 1

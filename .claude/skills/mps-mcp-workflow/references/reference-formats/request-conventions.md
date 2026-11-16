@@ -18,7 +18,8 @@ A model reference is **not** interchangeable with a node reference; each tool ta
 | Tool | node/root reference | model reference |
 |---|---|---|
 | `mps_mcp_check_root_node_problems` | yes | **yes** — also a qualified model name; pass it in `nodeReference` (there is no `modelReference` parameter). Checks every root of the model in one exhaustive call (`autoApplyQuickFixes` is ignored in this mode). Also a module reference or name: every model of the module, a language's generators included |
-| `mps_mcp_print_node` | yes | **no** — rejected with INVALID_REQUEST naming the model and a retry line for `mps_mcp_get_project_structure` (`startingPoint`, `includeNodes=true`) |
+| `mps_mcp_print_node` | yes | **no** — rejected with INVALID_REQUEST naming the model and a retry line for `mps_mcp_get_compact_project_structure` (`startingPoint`) |
+| `mps_mcp_get_compact_project_structure`, `mps_mcp_get_project_structure` | yes (`startingPoint`) | **yes** — also a qualified model name or module reference/name, in `startingPoint` |
 | `mps_mcp_update_node`, `mps_mcp_open_node`, `mps_mcp_list_node_intentions`, `mps_mcp_apply_intention` | yes | no — their node parameters take a node reference only |
 | `mps_mcp_insert_root_node_from_json`, `mps_mcp_create_root_node` | — | yes, as the *target model* parameter |
 | `mps_mcp_query_nodes` (`models` scope), `mps_mcp_alter_nodes` (`MAKE` `{"models": […]}`), `mps_mcp_model_dependency`, `mps_mcp_model_used_language`, `mps_mcp_update_model` | — | yes, in the documented model/`models` parameter |

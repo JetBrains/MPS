@@ -75,7 +75,7 @@ Node blueprints for common MPS types (use in `mps_mcp_update_node`):
 
 The `target` of the `concept` reference must be the persistent node ref of the concept declaration
 (obtainable via `mps_mcp_search_concepts` or from the type of an existing `sequence<node<X>>`
-variable — print it with `mps_mcp_print_node` to get the exact ref).
+variable — print it with `mps_mcp_print_node` `format: "AGENTIC VIEW"` to get the exact ref).
 
 ### Static methods of Java interfaces
 
@@ -124,7 +124,7 @@ Instead it uses `LINKS.xxx` static inner-class constants.
    ```
    Then reference `LINKS.throwable$kKKg` in the method body.
 
-> The `LINKS` inner class node ref is found by printing the parent class (shallow depth)
+> The `LINKS` inner class node ref is found by printing the parent class (`format: "AGENTIC VIEW"`, `nodeDepth: 1`)
 > and reading the node ref of the nested class child.
 
 ### `collectUncaughtThrowables` and other behavior method invocations

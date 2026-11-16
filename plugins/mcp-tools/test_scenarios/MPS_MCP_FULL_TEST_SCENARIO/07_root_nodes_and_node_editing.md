@@ -3,7 +3,7 @@
 > **Captured-value contract** — _Inputs:_ `{{SERVER_PREFIX}}`, `{{PROJECT_DIR}}`. _Produces (cross-part):_ `{{GEARBOX_REF}}`, `{{GBX_PARKED_REF}}`, `{{GBX_DRIVING_REF}}`, `{{GBX_TRANS_REF}}`. _(Also creates many intra-part refs — `{{OTHER_ROOT_REF}}`, `{{GBX_GO_REF}}`, etc. — used only inside this part.)_
 
 Tools: `mps_mcp_create_root_node`, `mps_mcp_insert_root_node_from_json` (single + array +
-`dryRun`), `mps_mcp_print_node` (formats `JSON`/`HTML`/`PLAIN TEXT`, `deep` true/false),
+`dryRun`), `mps_mcp_print_node` (formats `JSON`/`AGENTIC VIEW`/`HTML`/`PLAIN TEXT`/`IMAGE`, `editorHints`, `deep` true/false, `nodeDepth`),
 `mps_mcp_update_node` (ops×kinds: ADD/CHILD, SET/CHILD, SET/PROPERTY, SET/REFERENCE, plus
 deletes via `null`, plus invalid combos), `mps_mcp_check_root_node_problems`
 (`onlyNodesWithProblems` true/false; clean + problem), `mps_mcp_update_root_node_from_json`
@@ -188,9 +188,42 @@ Send the array (as a string) as `json`, same other args as 07.03.
   "arguments": { "projectPath": "{{PROJECT_DIR}}", "nodeReference": "{{OTHER_ROOT_REF}}", "format": "HTML" }
 }
 ```
-- Validation: `ok==true`; `data` is an HTML rendering as a string, or a temp-file path whose
-  envelope's `data` holds it. Exercises `format:"HTML"`. (`format:"JSON"` was exercised in
-  07.06/07.07.)
+- Validation: `ok==true`; `data` is the path of `index.html`, a standalone page (`<!DOCTYPE html>`,
+  `<meta name="mps-node">` naming `{{OTHER_ROOT_REF}}`) in a fresh temp directory that also holds
+  `editor.png`; `details.html` gives `directory` and `files` (name to size), `details.image` the image size.
+  Exercises `format:"HTML"`. (`format:"JSON"` was exercised in 07.06/07.07.) The envelope carries
+  `details.editorHints` (`source`, `applied`, compact `available`).
+
+---
+
+### Step 07.09a — `print_node` `format:"IMAGE"` and `editorHints` `[READ-FILE]`
+
+```json
+{
+  "tool": "mps_mcp_print_node",
+  "arguments": { "projectPath": "{{PROJECT_DIR}}", "nodeReference": "{{OTHER_ROOT_REF}}", "format": "IMAGE", "editorHints": [] }
+}
+```
+- Validation: `ok==true`; `data` is the path of a `.png` file that exists; `details.image` has
+  `width`, `height`, `mediaType:"image/png"`; `details.editorHints.source=="request"` with
+  `applied==[]`, compact `available` (FQ-name strings) and `hiddenCount`. Repeat with `format:"PLAIN TEXT"` and
+  `editorHints:["noSuchHint"]` → `ok==false`, `code==INVALID_REQUEST` whose `details.editorHints.available` holds the full-form objects; with `format:"JSON"` and
+  `editorHints:[]` → `ok==true` plus a warning that `editorHints` is ignored.
+
+---
+
+### Step 07.09b — `print_node` `format:"AGENTIC VIEW"` and `nodeDepth`
+
+```json
+{
+  "tool": "mps_mcp_print_node",
+  "arguments": { "projectPath": "{{PROJECT_DIR}}", "nodeReference": "{{OTHER_ROOT_REF}}", "format": "AGENTIC VIEW" }
+}
+```
+- Validation: `ok==true`; `data` is inline text whose first line starts with `# AGENTIC VIEW 1 | model m0=`, then the other
+  header lines, then one line per node of `OtherStateChart` (plus `empty:` lines) with `#<id>` (the root line carries `{{OTHER_ROOT_REF}}`'s node id);
+  `details.agenticView` has `nodes` and `printedNodes`, equal. Repeat with `nodeDepth:0` → one node line ending in
+  `(+N)` and `printedNodes==1`. Exercises `format:"AGENTIC VIEW"` and `nodeDepth`.
 
 ---
 
@@ -682,5 +715,23 @@ Exercises `includeNodes` with a `startingPoint` (one model).
 ```
 - Validation: `ok==true`; read the file if `data` is a path. The payload contains the full node trees of the roots
   (states, transitions, events inlined). Exercises `includeNodes`.
+
+---
+
+### Step 07.41 — Compact project structure: the model as AGENTIC VIEW text
+
+```json
+{
+  "tool": "mps_mcp_get_compact_project_structure",
+  "arguments": { "projectPath": "{{PROJECT_DIR}}", "startingPoint": "mcp.test.sandbox.model" }
+}
+```
+- Validation: `ok==true`; `data` is inline text whose first line starts with `# AGENTIC VIEW 1 | model m0=` and names
+  `mcp.test.sandbox.model`; the depth-0 lines (no leading spaces, not starting with `#`) are the model's roots in model order,
+  `GearboxStateChart` and `OtherStateChart` among them, each with `#<id>`; `details.agenticView` has `models==1`, `roots`
+  equal to the number of root lines, and `nodes==printedNodes`. Repeat with `nodeDepth:0` → only root lines; a root with
+  descendants ends in `(+N)`, and `printedNodes==roots`. Repeat with `startingPoint:"mcp.test.sandbox"` (the module) → the first
+  line is `# module mcp.test.sandbox | <N> models`, followed by one `# AGENTIC VIEW 1` section per model.
+  Exercises `startingPoint` (model, module) and `nodeDepth`.
 
 Proceed to `08_queries_and_navigation.md`.

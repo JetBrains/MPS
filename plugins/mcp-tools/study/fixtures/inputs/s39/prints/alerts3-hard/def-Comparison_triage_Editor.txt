@@ -1,0 +1,6 @@
+triage editor for concept Comparison
+  node cell layout:
+     [- % left % > % right % -]
+
+  inspected cell layout:
+    <choose cell model>

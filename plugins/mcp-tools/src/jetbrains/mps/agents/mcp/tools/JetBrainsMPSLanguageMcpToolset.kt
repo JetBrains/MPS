@@ -9,8 +9,6 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.intellij.mcpserver.annotations.McpDescription
 import com.intellij.mcpserver.annotations.McpTool
-import jetbrains.mps.project.AbstractModule
-import jetbrains.mps.project.DevKit
 import jetbrains.mps.project.MPSProject
 import jetbrains.mps.smodel.language.LanguageRegistry
 import jetbrains.mps.smodel.adapter.MetaAdapterByDeclaration
@@ -92,12 +90,12 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
     @McpTool
     @McpDescription(
         """
-        Returns detailed info for the listed concepts and/or for every concept of the listed languages. `data` is inline when the serialized result is <= `maxInlineBytes` (default 20000), otherwise a temp-file path. `detail = "shape"` returns only the structural projection of each concept (`qualifiedName`, `conceptReference`, `sourceNode`, `isAbstract`, `isRootable`, plus `properties`/`references`/`children` with type, enum literals, target concept, cardinality, `featureId` and `sourceNode`) — no docs, no `sampleNode`, no aspect details; `detail = "full"` (default) returns everything described below. `cardinality` is identical at both levels — never escalate to `"full"` for it; a `references` entry always reads `0..1` or `1` (MPS references are single-valued). To learn the shapes of the concepts a concept's child/reference roles target, pass `languageRefs`: one call returns every concept of the language, which is cheaper than a refinement call per target. Each entry in `properties`, `references`, and `children` carries `featureId` (the encoded `<langUUID>/<conceptId>/<featureId>` triple a `PROPERTY`/`REF` macro stores as `propertyId`/`linkId`; not a node ref, so never a blueprint reference `target`) and `sourceNode` (the feature declaration's persistent ref, e.g. `r:...(...structure)/<id>` — the `target` of smodel `SPropertyAccess.property` / `SLinkAccess.link` / `SLinkListAccess.link`; an inherited feature's ref is in the declaring concept's model; `applicableConcept` takes the concept's own `sourceNode`, not a feature's) — so the ids no longer need harvesting via deep `print_node` calls. Unresolved refs are surfaced in `warnings` (partial success) or in an error envelope with `details.unresolved` suggestions (everything failed); use `mps_mcp_search_concepts` for free-form lookup of unknown names. `languageRefs` on a project language returns the union of its built runtime's concepts and its structure model's concept declarations, so concepts added since the last build are included and a language that was never built is answered from its declarations. The `qualifiedName` field is the unambiguous form to use as `concept` in JSON blueprints. A concept whose language has no built runtime, or that was created after the last build, is read from its structure-model declaration: the record is correct and marked `source: "declaration"`, `descriptorStatus: "hollow"`, `runtimeStatus` and `descriptorRecoveryAction`, and the envelope carries a warning plus `details.languageBuild` with the exact `mps_mcp_alter_nodes` MAKE call (`rebuild = true` on the language module; `mps_mcp_reload_all` alone is not sufficient). See `mps-language-analysis/references/concept-details.md` for the result schema and the unresolved-ref policy. For details on the canonical structure-to-aspect editing and compilation prerequisite chain, see the Critical Directives in the `mps-mcp-workflow` skill.
+        Returns detailed info for the listed concepts and/or for every concept of the listed languages. `data` is inline when the serialized result is <= `maxInlineBytes` (default 20000), otherwise a temp-file path. `detail = "shape"` returns only the structural projection of each concept (`qualifiedName`, `conceptReference`, `sourceNode`, `isAbstract`, `isRootable`, plus `properties`/`references`/`children` with type, enum literals, target concept, cardinality, `featureId` and `sourceNode`) — no docs, no `sampleNode`, no aspect details; `detail = "full"` (default) returns everything described below. `cardinality` is identical at both levels — never escalate to `"full"` for it; a `references` entry always reads `0..1` or `1` (MPS references are single-valued). To learn the shapes of the concepts a concept's child/reference roles target, pass `languageRefs`: one call returns every concept of the language, which is cheaper than a refinement call per target. Each entry in `properties`, `references`, and `children` carries `featureId` (the encoded `<langUUID>/<conceptId>/<featureId>` triple a `PROPERTY`/`REF` macro stores as `propertyId`/`linkId`; not a node ref, so never a blueprint reference `target`) and `sourceNode` (the feature declaration's persistent ref, e.g. `r:...(...structure)/<id>` — the `target` of smodel `SPropertyAccess.property` / `SLinkAccess.link` / `SLinkListAccess.link`; an inherited feature's ref is in the declaring concept's model; `applicableConcept` takes the concept's own `sourceNode`, not a feature's) — so the ids no longer need harvesting via deep `print_node` calls. Unresolved refs are surfaced in `warnings` (partial success) or in an error envelope with `details.unresolved` suggestions (everything failed); a suggestion may name another open project's concept or language, marked with `containingProject` / `editableFromCurrentProject:false` and ranked after equally good ones from this project; use `mps_mcp_search_concepts` for free-form lookup of unknown names. `languageRefs` on a language module (this project's, another open project's or a library's) returns the union of its built runtime's concepts and its structure model's concept declarations, so concepts added since the last build are included and a language that was never built is answered from its declarations. The `qualifiedName` field is the unambiguous form to use as `concept` in JSON blueprints. A concept whose language has no built runtime, or that was created after the last build, is read from its structure-model declaration: the record is correct and marked `source: "declaration"`, `descriptorStatus: "hollow"`, `runtimeStatus` and `descriptorRecoveryAction`, and the envelope carries a warning plus `details.languageBuild` with the exact `mps_mcp_alter_nodes` MAKE call (`rebuild = true` on the language module; `mps_mcp_reload_all` alone is not sufficient; for a language of another open project, `recovery.projectPath` names the project to build it from). See `mps-language-analysis/references/concept-details.md` for the result schema and the unresolved-ref policy. For details on the canonical structure-to-aspect editing and compilation prerequisite chain, see the Critical Directives in the `mps-mcp-workflow` skill.
     """
     )
     suspend fun mps_mcp_get_concept_details(
         @McpDescription("A persistent reference (SAbstractConcept) or fully qualified name of a concept/interface concept, or a JSON array of them (a real array or the array written as a string).") conceptRefs: JsonOrText = JsonOrText.EMPTY,
-        @McpDescription("A persistent reference (SLanguage) or qualified language name, or a JSON array of them (a real array or the array written as a string). All concepts and interface concepts of these languages will be returned.") languageRefs: JsonOrText = JsonOrText.EMPTY,
+        @McpDescription("A persistent reference (SLanguage) or qualified language name, or a JSON array of them (a real array or the array written as a string). All concepts and interface concepts of these languages will be returned. A plain name also resolves another open project's language, built or not; this project's language is preferred when names collide.") languageRefs: JsonOrText = JsonOrText.EMPTY,
         @McpDescription("Detail level: \"full\" (default) for the complete records, or \"shape\" for the structural projection only (no docs, no sampleNode).") detail: String = "full",
         @McpDescription("Inline the result in `data` when it is at most this many characters; larger results are saved to a temp file whose path is returned instead (default 20000).") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
     ): String = mps_mcp_get_concept_details(
@@ -187,7 +185,7 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
                 for (languageRef in languageRefs) {
                     val lang = resolveLanguagePreferringProject(mpsProject, languageRef)
                     val runtime = lang?.let { registry.getLanguage(it) }
-                    val module = findProjectLanguageModule(mpsProject, languageRef, lang)
+                    val module = lang?.let { languageModuleOf(repo, it) }
                     if (runtime == null && module == null) {
                         unresolvedLanguageRefs.add(languageRef)
                         continue
@@ -205,7 +203,7 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
                     }
                     if (runtime == null) {
                         val name = module!!.moduleName ?: languageRef
-                        notBuilt.putIfAbsent(name, ConceptReadiness.NotBuilt.NoRuntime(name, module))
+                        notBuilt.putIfAbsent(name, ConceptReadiness.NotBuilt.NoRuntime(name, module, LanguageReadiness.foreignBuildProjectPath(module, mpsProject)))
                     }
                 }
 
@@ -285,14 +283,14 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
     @McpTool
     @McpDescription(
         """
-        Searches for concepts and interface concepts by free-form text. Multi-word search strings are AND-combined; multiple search strings are OR-combined. Each word is split on camelCase / underscore / digit boundaries; subtokens shorter than 2 characters are rejected with an explicit error naming the offending words. By default the search covers the languages this project owns plus the ones its modules use (`scope="project"`); pass `scope="all"` for the whole language registry. A project-scoped search with no strict match is retried over the whole registry automatically and says so in `warnings`. Pass `modelReference` to restrict further to the languages used by one model — it is the narrowest scope and cannot be combined with any explicit `scope`. Records are the compact projection by default (`detail="summary"`: no `doc`, no `sourceNode`, no super-concept details); pass `detail="full"` for the same records `mps_mcp_get_concept_details` returns. At most 50 strictly matching concepts come back; when more matched, `details.totalStrictMatches` and a warning say so. `data` is inline when the serialized result is <= `maxInlineBytes` (default 20000), otherwise a temp-file path. The `qualifiedName` field is the unambiguous form to use as `concept` in JSON blueprints. See `mps-language-analysis/references/search-concepts.md` for the matching algorithm, scoping, fallback ranking, result schema, and `modelReference` error strings.
+        Searches for concepts and interface concepts by free-form text. Multi-word search strings are AND-combined; multiple search strings are OR-combined. Each word is split on camelCase / underscore / digit boundaries; subtokens shorter than 2 characters are rejected with an explicit error naming the offending words. By default the search covers the languages this project defines or uses (`scope="project"`; a used language owned by another open project is included, marked); pass `scope="all"` for every registered language plus every language module in the repository, other open projects' and never-built ones included. A project-scoped search with no strict match is retried over that whole set automatically and says so in `warnings`. A hit owned by another open project carries `containingProject` and `editableFromCurrentProject:false`: its definition is read-only here, but importing its language and instantiating its concepts is allowed; it ranks after equally good hits from this project (defined, then used, then everything else). Pass `modelReference` to restrict further to the languages used by one model — it is the narrowest scope and cannot be combined with any explicit `scope`. Records are the compact projection by default (`detail="summary"`: no `doc`, no `sourceNode`, no super-concept details); pass `detail="full"` for the same records `mps_mcp_get_concept_details` returns. At most 50 strictly matching concepts come back (exact-name matches first, then by origin and qualified name); when more matched, `details.totalStrictMatches` and a warning say so. `data` is inline when the serialized result is <= `maxInlineBytes` (default 20000), otherwise a temp-file path. The `qualifiedName` field is the unambiguous form to use as `concept` in JSON blueprints. See `mps-language-analysis/references/search-concepts.md` for the matching algorithm, scoping, fallback ranking, result schema, and `modelReference` error strings.
     """
     )
     suspend fun mps_mcp_search_concepts(
         @McpDescription("The text(s) to search for. Either a single search string or a JSON array: [\"Term1\", \"Term2\"] (a real array or the array written as a string). Multiple words within a string are AND-combined (all required); multiple strings are OR-combined.") searchTexts: JsonOrText = JsonOrText.EMPTY,
         @McpDescription("Optional model reference (preferred) or model name to limit search to languages used by this model") modelReference: String? = null,
         @McpDescription("Per-record projection: \"summary\" (default) for the compact record, or \"full\" for the same record mps_mcp_get_concept_details returns (adds doc, sourceNode, virtualFolder, superConcept and superInterfaces).") detail: String = SEARCH_DETAIL_SUMMARY,
-        @McpDescription("Language scope, defaulting to \"project\": the languages this project owns plus the ones its modules use. \"all\" searches the whole language registry. Cannot be combined with modelReference, which is narrower still.") scope: String? = null,
+        @McpDescription("Language scope, defaulting to \"project\": the languages this project defines or uses (another open project's used language included, marked). \"all\" searches every registered language and every language module in the repository, including other open projects'. Cannot be combined with modelReference, which is narrower still.") scope: String? = null,
         @McpDescription("Inline the result in `data` when it is at most this many characters; larger results are saved to a temp file whose path is returned instead (default 20000).") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
     ): String {
         val terms = parseStringOrJsonArray(searchTexts)
@@ -352,7 +350,7 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
                     "Parameters 'scope' and 'modelReference' cannot be used together: modelReference " +
                             "is already the narrowest scope (the languages used by that one model). Retry " +
                             "with modelReference alone for the model's languages, or with scope='$requestedScope' " +
-                            "alone to search the project's languages or the whole registry.",
+                            "alone to search the project's languages or every language in the repository.",
                     McpErrorCode.INVALID_REQUEST,
                 )
             )
@@ -382,17 +380,18 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
             val catalog = conceptSuggestions(repo, cache)
             // An explicit `modelReference` is the narrowest scope and is honoured as given; the
             // two `scope` values differ only in how much of the shared repository they admit.
-            // Both drop languages owned by another open project, so a free-form query cannot
-            // answer with a same-named concept from a sibling project (study defect D4).
+            // Neither drops a language because another open project owns it: ownership is
+            // provenance, carried by the foreign-project markers on each record, and ranks a
+            // result after equally good ones from this project (D130, which replaces D4's filter).
             val languages: Iterable<SLanguage> = if (modelReference != null) {
                 val model = resolveModelPreferringProject(mpsProject, modelReference)
                     ?: return@executeShortReadOnEdt errJson("Model not found: $modelReference")
                 val mdr = ModelDependencyResolver(registry, repo)
                 mdr.usedLanguages(model)
             } else if (requestedScope == SEARCH_SCOPE_PROJECT) {
-                languagesInProjectScope(mpsProject, registry, repo, cache)
+                languagesInProjectScope(catalog)
             } else {
-                catalog.languagesInProject()
+                catalog.allLanguages()
             }
 
             val termGroups: List<List<String>> = searchTexts
@@ -441,7 +440,7 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
                 // very nearly the whole registry, and rescanning it would double the cost of
                 // every miss. matchConcepts resolves and reads the doc of every concept it sees,
                 // so the set comparison is free next to the scan it avoids.
-                val allLanguages = catalog.languagesInProject()
+                val allLanguages = catalog.allLanguages()
                 val widened = if (allLanguages.toSet() == languages.toSet()) matches
                 else matchConcepts(allLanguages, catalog, groupSubtokens, queryWords)
                 // Keep the widened answer only when it is actually better: a strict hit, or
@@ -451,8 +450,10 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
                     matches = widened
                     warnings.add(
                         "No concept matched inside this project's languages; the search was widened to " +
-                                "the whole language registry. The matches below may belong to languages this " +
-                                "project does not use. Pass scope='$SEARCH_SCOPE_ALL' to skip the narrow pass."
+                                "every language in the repository, including other open projects'. The matches below " +
+                                "may belong to languages this project does not use; entries with containingProject " +
+                                "are read-only definitions of another open project and can still be imported. " +
+                                "Pass scope='$SEARCH_SCOPE_ALL' to skip the narrow pass."
                     )
                 }
             }
@@ -479,7 +480,7 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
     }
 
     /**
-     * Concepts matching one parsed query, in the order the registry was scanned.
+     * Concepts matching one parsed query, best first (see [matchConcepts]).
      *
      * [strictTotal] counts every strict match, including the ones past [MAX_STRICT_RESULTS] that
      * [concepts] does not carry, so the caller can say how much it is not showing. Fallback
@@ -500,6 +501,10 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
      * Scans [languages] for concepts matching [groupSubtokens] (OR over groups, AND within a
      * group). Extracted from the tool body so the project-scoped pass and the widened pass run
      * exactly the same matcher.
+     *
+     * Order: strict matches whose name equals a query word first, then the other strict matches,
+     * each by (origin tier, qualified name), cut to [MAX_STRICT_RESULTS]; without a strict match,
+     * the fallback by (score descending, origin tier, qualified name).
      */
     private fun matchConcepts(
         languages: Iterable<SLanguage>,
@@ -511,14 +516,18 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
         // arbitrary relative to relevance, so a plain "first 50" could answer a query for
         // `Statement` with fifty unrelated `*Statement*` concepts and not `Statement` itself —
         // and the "narrow the query" advice is useless when the name already is the query.
-        val exactNameMatches = mutableListOf<SAbstractConcept>()
-        val otherMatches = mutableListOf<SAbstractConcept>()
+        // Within each tier the origin decides (this project's languages, then the ones it uses,
+        // then the rest), then the qualified name — before the cap, so another project's matches
+        // scanned first cannot crowd out this project's (D130).
+        val exactNameMatches = mutableListOf<Ranked>()
+        val otherMatches = mutableListOf<Ranked>()
         var strictTotal = 0
-        // Bounded top-K min-heap on (concept, score): the heap head is always the lowest
-        // score among the K best so far. We replace the head whenever a strictly larger
-        // score arrives, so the heap never grows beyond MAX_FALLBACK_RESULTS even if the
+        // Bounded top-K min-heap whose head is the worst of the K best so far: lowest score, then
+        // latest origin tier, then last qualified name. A candidate replaces the head only when it
+        // is strictly better, so the heap never grows beyond MAX_FALLBACK_RESULTS even if the
         // query scores most of the registry (e.g. a single common subtoken like "type").
-        val rankedHeap = PriorityQueue<Pair<SAbstractConcept, Int>>(MAX_FALLBACK_RESULTS, compareBy { it.second })
+        val worstFirst = compareBy<Ranked> { it.score }.thenByDescending { it.origin }.thenByDescending { it.qualifiedName }
+        val rankedHeap = PriorityQueue<Ranked>(MAX_FALLBACK_RESULTS, worstFirst)
         // Tracked once instead of repeatedly probing strictMatches.size(): once any concept
         // matches strictly, the fallback path is irrelevant for the rest of the scan.
         var strictFound = false
@@ -526,6 +535,7 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
         for (lang in languages) {
             val entries = catalog.conceptsWithDeclarations(lang)
             if (entries.isEmpty()) continue
+            val origin = catalog.originTier(lang)
             // Use only the trailing segment of the qualified name so that natural queries
             // like "<concept> <language fragment>" work (e.g. "collections", "smodel") without
             // letting common prefixes ("jetbrains", "mps", "lang", "baseLanguage") act as
@@ -571,32 +581,37 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
                         }
                     }
                     strictTotal++
-                    // Keep counting past the cap: the count is what the truncation warning
-                    // reports, and dropping the concept here is what keeps the payload bounded.
+                    // Every strict match is kept until the tiers are ordered; the cap applies after.
                     val tier = if (queryWords.any { it.equals(concept.name, ignoreCase = true) }) exactNameMatches
                     else otherMatches
-                    if (tier.size < MAX_STRICT_RESULTS) tier.add(concept)
+                    tier.add(Ranked(concept, 0, origin, structureQualifiedName(concept)))
                 } else if (!strictFound && bestGroupScore > 0) {
-                    // Maintain the heap as a running top-K by score. While under capacity,
-                    // accept every positive-score candidate; once full, only candidates with
-                    // a strictly higher score than the current worst displace the head.
+                    // Maintain the heap as a running top-K. While under capacity, accept every
+                    // positive-score candidate; once full, only a candidate strictly better than
+                    // the current worst displaces the head.
+                    val candidate = Ranked(concept, bestGroupScore, origin, structureQualifiedName(concept))
                     if (rankedHeap.size < MAX_FALLBACK_RESULTS) {
-                        rankedHeap.offer(concept to bestGroupScore)
-                    } else if (bestGroupScore > rankedHeap.peek().second) {
+                        rankedHeap.offer(candidate)
+                    } else if (worstFirst.compare(candidate, rankedHeap.peek()) > 0) {
                         rankedHeap.poll()
-                        rankedHeap.offer(concept to bestGroupScore)
+                        rankedHeap.offer(candidate)
                     }
                 }
             }
         }
 
         if (strictFound) {
-            val kept = (exactNameMatches + otherMatches).take(MAX_STRICT_RESULTS)
+            val byOrigin = compareBy<Ranked> { it.origin }.thenBy { it.qualifiedName }
+            val kept = (exactNameMatches.sortedWith(byOrigin) + otherMatches.sortedWith(byOrigin))
+                .take(MAX_STRICT_RESULTS).map { it.concept }
             return ConceptMatches(kept, strictTotal, strictFound = true)
         }
-        val fallback = rankedHeap.sortedByDescending { it.second }.map { it.first }
+        val fallback = rankedHeap.sortedWith(worstFirst.reversed()).map { it.concept }
         return ConceptMatches(fallback, fallback.size, strictFound = false)
     }
+
+    /** A [matchConcepts] candidate with its sort keys: fallback [score] (0 for a strict match), language [origin] tier, [qualifiedName]. */
+    private class Ranked(val concept: SAbstractConcept, val score: Int, val origin: Int, val qualifiedName: String)
 
     /**
      * Adds the `sourceNode` persistent ref to [obj] (when [nodeRef] is resolvable) AND returns the
@@ -1109,8 +1124,8 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
 
     /**
      * The languages a query issued against this project can plausibly mean: the ones the
-     * project's own modules define, plus the ones those modules use (including everything their
-     * used devkits export).
+     * project's own modules define, plus the ones it uses — whoever owns them, a library or
+     * another open project (a used foreign language is in scope and its records stay marked).
      *
      * The shared module repository registers every deployed language, bundled ones included, so
      * an unscoped free-form query answers out of languages the project never touches — one
@@ -1120,43 +1135,15 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
      * `jetbrains.mps.baseLanguage` is a library module, and dropping it would make `ClassConcept`
      * unfindable. "Owned or used" is the set that keeps recall and drops the noise.
      *
-     * Module descriptors are the cheap source for "used": `languageVersions` is the record
-     * `ModuleDependencyVersions` already maintains per module — and it is the *extended-language
-     * closure* of what the module uses, so recall is better than `ModelDependencyResolver`, which
-     * deliberately excludes extended languages. The trade-off is staleness: a language imported
-     * into a model this session but not yet written through to the descriptor is missing here.
-     * The auto-widen covers that case, which is a second reason to trigger it on "no strict
+     * "Used" is [ProjectMembershipCache]'s used set: module descriptors (`languageVersions`, the
+     * extended-language closure, and used devkits) plus the imports of the project's models that
+     * are already loaded, so a language imported this session is in scope before any save. A
+     * language imported only into a model that is not loaded and not yet stamped in a descriptor is
+     * missing; the auto-widen covers that case, which is a second reason to trigger it on "no strict
      * match" rather than on "no results at all".
-     *
      */
-    private fun languagesInProjectScope(
-        project: MPSProject,
-        registry: LanguageRegistry,
-        repository: SRepository,
-        cache: ProjectMembershipCache
-    ): List<SLanguage> {
-        val scoped = LinkedHashSet<SLanguage>()
-        for (module in project.projectModulesWithGenerators) {
-            val descriptor = (module as? AbstractModule)?.moduleDescriptor ?: continue
-            scoped.addAll(descriptor.languageVersions.keys)
-            for (devkitRef in descriptor.usedDevkits) {
-                val devkit = devkitRef.resolve(repository) as? DevKit ?: continue
-                scoped.addAll(devkit.allExportedLanguageIds)
-            }
-        }
-        // A language module the project owns is in scope even when nothing uses it yet — that is
-        // the language the caller is most likely working on right now — and even when it has no
-        // built runtime (its concepts are then read from the structure model, D112).
-        for (language in registry.allLanguages) {
-            if (cache.isInCurrentProject(language, repository)) scoped.add(language)
-        }
-        for (module in project.projectModules) {
-            if (module is Language) scoped.add(MetaAdapterByDeclaration.getLanguage(module))
-        }
-        // Same sibling-project filter the widened scope applies: a used language could itself be
-        // owned by another open project, and the caller cannot edit that one either.
-        return scoped.filter { !cache.isFromAnotherOpenProject(it, repository) }
-    }
+    private fun languagesInProjectScope(catalog: ConceptSuggestions): List<SLanguage> =
+        catalog.allLanguages().filter { catalog.originTier(it) <= ConceptSuggestions.ORIGIN_USED }
 
     /**
      * [languagesInProjectScope] with its own membership cache, for callers outside the search
@@ -1165,30 +1152,29 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
      * full-registry answer.
      */
     internal fun projectSearchScope(project: MPSProject, repository: SRepository): List<SLanguage> =
-        languagesInProjectScope(
-            project, LanguageRegistry.getInstance(repository), repository, ProjectMembershipCache(project)
-        )
+        languagesInProjectScope(conceptSuggestions(repository, ProjectMembershipCache(project)))
 
     /**
      * Computes "did you mean" candidates for an unresolved languageRef by subtoken-matching the
-     * trailing segment of every registered language's qualified name. Cheaper than the concept
-     * ranker (only the language list, not its concepts), and the namespace tail (e.g.
-     * `smodel`, `collections`) is the discriminating part of a real qualified name.
+     * trailing segment of every language in the repository ([ConceptSuggestions.allLanguages]).
+     * Cheaper than the concept ranker (only the language list, not its concepts), and the namespace
+     * tail (e.g. `smodel`, `collections`) is the discriminating part of a real qualified name.
+     * Ordered by score, then origin tier (this project's, then used, then the rest), then name.
      */
-    private fun suggestForUnresolvedLanguageRef(
-        ref: String,
-        repository: SRepository,
-        cache: ProjectMembershipCache
-    ): List<SLanguage> {
+    private fun suggestForUnresolvedLanguageRef(ref: String, catalog: ConceptSuggestions): List<SLanguage> {
         val subtokens = ConceptSuggestions.subtokensOf(ref.substringAfterLast('.'))
         if (subtokens.isEmpty()) return emptyList()
-        return conceptSuggestions(repository, cache).languagesInProject()
+        return catalog.allLanguages()
             .mapNotNull { lang ->
                 val tail = lang.qualifiedName.substringAfterLast('.')
                 val score = subtokens.count { tail.contains(it, ignoreCase = true) }
                 if (score > 0) lang to score else null
             }
-            .sortedByDescending { it.second }
+            .sortedWith(
+                compareByDescending<Pair<SLanguage, Int>> { it.second }
+                    .thenBy { catalog.originTier(it.first) }
+                    .thenBy { it.first.qualifiedName }
+            )
             .take(MAX_SUGGESTIONS_PER_UNRESOLVED)
             .map { it.first }
     }
@@ -1244,8 +1230,9 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
      * (possibly empty) suggestion list so the agent can paste a canonical `qualifiedName` or
      * `conceptReference`/`languageReference` straight into a retry. A ref that names a
      * non-concept declaration carries `declaredAs` and `route` instead of suggestions — see
-     * [NonConceptDeclaration]. A project language without a built runtime is not unresolved: it is
-     * answered from its structure model (D35, D112).
+     * [NonConceptDeclaration]. A language module without a built runtime is not unresolved: it is
+     * answered from its structure model (D35, D112). A suggestion owned by another open project
+     * carries the foreign-project markers (D130).
      */
     private fun buildUnresolvedDetailsJson(
         unresolvedConceptRefs: Collection<String>,
@@ -1274,6 +1261,7 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
                 val s = JsonObject()
                 s.addProperty("qualifiedName", structureQualifiedName(c))
                 s.addProperty("conceptReference", facade.asString(c))
+                addContainingProjectIfForeign(s, cache.currentProject, c, repository, cache = cache)
                 suggestions.add(s)
             }
             entry.add("suggestions", suggestions)
@@ -1284,10 +1272,11 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
             entry.addProperty("ref", ref)
             entry.addProperty("kind", "language")
             val suggestions = JsonArray()
-            for (lang in suggestForUnresolvedLanguageRef(ref, repository, cache)) {
+            for (lang in suggestForUnresolvedLanguageRef(ref, catalog)) {
                 val s = JsonObject()
                 s.addProperty("qualifiedName", lang.qualifiedName)
                 s.addProperty("languageReference", facade.asString(lang))
+                addContainingProjectIfForeign(s, cache.currentProject, lang, repository, cache = cache)
                 suggestions.add(s)
             }
             entry.add("suggestions", suggestions)
@@ -1328,31 +1317,6 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
             details = extraDetails + mapOf("unresolved" to unresolvedDetails),
             warnings = warnings,
         )
-    }
-
-    /**
-     * A language module that is in the selected project, whether or not its runtime is built: the
-     * source of the structure-model half of a `languageRefs` answer (D35, D112).
-     */
-    private fun findProjectLanguageModule(
-        mpsProject: MPSProject,
-        languageRef: String,
-        lang: SLanguage?,
-    ): Language? {
-        val candidates = LinkedHashSet<String>()
-        candidates.add(languageRef)
-        lang?.qualifiedName?.let { candidates.add(it) }
-        if (languageRef.startsWith("l:")) {
-            val lastColon = languageRef.lastIndexOf(':')
-            if (lastColon in 2 until languageRef.lastIndex) {
-                candidates.add(languageRef.substring(lastColon + 1))
-            }
-        }
-        for (candidate in candidates) {
-            val module = resolveModule(mpsProject, candidate, projectOnly = true)
-            if (module is Language) return module
-        }
-        return null
     }
 
 }

@@ -5,6 +5,10 @@
 `limits()` insertion, braces and parentheses; prompt and criteria revised), `S20-sonnet-1` PASS on
 the revision (116 calls, 8 min). Round 47 (stable catalog `a7ee526d`, medium effort): `S20-opus-1` PASS (101 calls, 8 min), `S20-sonnet-1` PASS (132, 10); criteria wording fixed after the evaluators' notes. Prompt frozen 2026-10-30.**
 
+Status 2026-11-14, after round 51: the `base()` Fee sub-item of criterion 6 also accepts an in-line template
+with context (the prompt does not forbid one; S20-sonnet-1), so the no-context in-line template is recorded, not
+forced; it only loosens, so no earlier PASS changes (lesson 45 re-read); earlier runs keep their verdicts.
+
 ## Fixture
 
 `empty-project` (synthesized). Greenfield: language `mcp.study.tariff` (with generator), solution
@@ -17,7 +21,7 @@ no lambdas, no checked exceptions, no streams.
 Root mapping rule with `conditionFunction` + `labelDeclaration` · `CreateRootRule` **with**
 condition whose output is read by label alone (`get output <label>`, no input) · `CreateRootRule`
 without condition · `$COPY_SRCL$` (tiers → statements) · `$COPY_SRC$` on a single child (fee →
-expression) · reduction with in-line template (no context) and in-line template **with context**
+expression) · reduction with in-line template (no context: recorded, not forced, since 2026-11-14) and in-line template **with context**
 · pattern reduction rule with a **property pattern variable used in the consequence** · `$LOOP$`
 with the loop index **and** node-macro `mappingLabel` on the loop, read by `$REF$`
 elsewhere · `$PROPERTY$` typed (int, string) · `$MAP_SRC$` with a **null source** · `$MAP_SRC$`
@@ -73,7 +77,8 @@ member order matters where listed. `print_node` PLAIN TEXT for structure, JSON f
      `TemplateArgumentPropertyPatternRefExpression` in a query has no TextGen and fails the make); a second conditional reduction rule instead
      fails this item;
    - `base()`: `CopySrcNodeMacro` on the return expression with `node.base`; a `Fee` reduction
-     with `InlineTemplate_RuleConsequence` (an `IntegerConstant` + `$PROPERTY$`); a `$PROPERTY$`
+     with `InlineTemplate_RuleConsequence` or `InlineTemplateWithContext_RuleConsequence` (an `IntegerConstant` +
+     `$PROPERTY$`; record which); a `$PROPERTY$`
      straight on an integer literal fails this item;
    - `currency()`: `MapSrcNodeMacro` on the string literal with **both** `mapperFunction` (builds
      the literal from `node.currency`) and `postMapperFunction` (upper-cases the output node's
