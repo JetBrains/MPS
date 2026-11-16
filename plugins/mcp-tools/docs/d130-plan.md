@@ -1,7 +1,8 @@
 # D130 — sibling-project filter hides languages from `search_concepts`: plan
 
-Status 2026-11-16: **P1 (harness) committed** (`957d03b01a58`). P2 (server: provenance + scopes) and
-P3 (descriptions, guides, skills) not started. The former P3 (provenance) is folded into P2: alone it
+Status 2026-11-16: **P1 (harness) committed** (`957d03b01a58`). **P2 (server) implemented and
+reviewed**, suite green (1565/1565); its live check and first-call measurement wait for the P3 build.
+P3's Kotlin descriptions landed with P2; the skill docs are P3. The former P3 (provenance) is folded into P2: alone it
 had no observable effect, because the current filter admits no foreign candidate to mark. Tick a box
 when the item is done *and* verified as stated.
 
@@ -215,63 +216,63 @@ returns an unmarked foreign result.
 
 ### Provenance
 
-- [ ] Add one shared helper that marks a language or concept as foreign with `containingProject` and
+- [x] Add one shared helper that marks a language or concept as foreign with `containingProject` and
       `editableFromCurrentProject:false`, built on `ownerOfConcept`/`ownerOfLanguage` (real module
       ownership); origin ranking must not replace ownership metadata.
-- [ ] Apply it to concept suggestions and language suggestions in `buildUnresolvedDetailsJson`, and
+- [x] Apply it to concept suggestions and language suggestions in `buildUnresolvedDetailsJson`, and
       to `conceptHint` (`AbstractOps.kt:1037-1068`; callers `AbstractOps:1279`,
       `AbstractNodeOps:426`, `:1005`, `JetBrainsMPSTypesMcpToolset:409`, `:623`).
-- [ ] Verify (do not rebuild) the markers already emitted on search hits (`:917`, `:1080`, `:1106`)
+- [x] Verify (do not rebuild) the markers already emitted on search hits (`:917`, `:1080`, `:1106`)
       for summary and full records, runtime-backed and declaration-backed, and on superconcept /
       superinterface / target-concept metadata (`:761`, `:898`, `:906`, `:952`;
       `AbstractOps.kt:3995-4013`).
-- [ ] Foreign unbuilt-language recovery: `recordMarkers` / `languageBuildDetails`
+- [x] Foreign unbuilt-language recovery: `recordMarkers` / `languageBuildDetails`
       (`LanguageReadiness.kt:99-134`) tell the caller to MAKE the language's module, which fails from
       A (MAKE targets are project-only). For a foreign language the advice names B's
       `mpsProjectBaseDirectory` as the `projectPath` to build from.
-- [ ] Optional, cheap: make `ownerOf(module)` stable when two or more other open projects own one
+- [x] Optional, cheap: make `ownerOf(module)` stable when two or more other open projects own one
       module (today `firstOrNull` over `openProjects`, stable within a session): sort by base path.
-- [ ] No `details.skippedForeignLanguages` / `skippedForeignMatches`: all scope drops nothing, and
+- [x] No `details.skippedForeignLanguages` / `skippedForeignMatches`: all scope drops nothing, and
       the project-scope auto-widen warning already explains when the global set was consulted.
 
 ### Candidate sets
 
-- [ ] Build one per-call language snapshot, reused by all scope, project scope, auto-widen, concept
+- [x] Build one per-call language snapshot, reused by all scope, project scope, auto-widen, concept
       suggestions and language suggestions: every `Language` module in the repository plus
       `LanguageRegistry.allLanguages`, deduplicated by `SLanguage` id. Per entry record the
       language module (if any), whether A defines it, and whether A uses it. Owner lookup is only
       for markers and runs lazily, under the existing read action.
-- [ ] Used set: descriptor `languageVersions` and used devkits' exported languages of every module of
+- [x] Used set: descriptor `languageVersions` and used devkits' exported languages of every module of
       A (as today), plus `importedLanguageIds()` and the exported languages of `importedDevkits()` of
       A's models **that are already fully loaded** (`SModelBase` FULLY_LOADED, `SModelBase.java:328-329`).
       An import added this session lives in a loaded model, so it moves L into project scope
       immediately; unloaded models are never loaded for this. Document that stale
       descriptor stamps can over-approximate the used set (a language removed from every model but
       still stamped) and that this is harmless (tier 2 instead of 3).
-- [ ] `languagesInProjectScope`: select A-defined or A-used entries from the snapshot. Remove the
+- [x] `languagesInProjectScope`: select A-defined or A-used entries from the snapshot. Remove the
       final sibling-project filter (`JetBrainsMPSLanguageMcpToolset.kt:1158`). A used B language is
       visible and stays marked.
-- [ ] Replace `ConceptSuggestions.languagesInProject()` with the global snapshot for all scope,
+- [x] Replace `ConceptSuggestions.languagesInProject()` with the global snapshot for all scope,
       auto-widen and both suggestion kinds, and rename it (it is no longer "in project").
-- [ ] Remove the per-concept foreign filter from `ConceptSuggestions.suggest` (`usable`,
+- [x] Remove the per-concept foreign filter from `ConceptSuggestions.suggest` (`usable`,
       `ConceptSuggestions.kt:119`); `accept` alone decides acceptability.
-- [ ] Remove `isFromAnotherOpenProject` from `ConceptSuggestions.Membership` and every discovery
+- [x] Remove `isFromAnotherOpenProject` from `ConceptSuggestions.Membership` and every discovery
       path. Rename only the `Membership` methods (the replacement answers origin tier, e.g.
       `originTier(language)`); `ProjectMembershipCache.ownerOf*` keeps its name — it feeds about ten
       marker sites, including the AGENTIC VIEW `!foreign` flag (`AbstractOps.kt:1403-1405`).
-- [ ] Generalize `ConceptSuggestions.projectLanguageModule` and `findProjectLanguageModule` into a
+- [x] Generalize `ConceptSuggestions.projectLanguageModule` and `findProjectLanguageModule` into a
       read-only language-module lookup over the repository. Prefer A's module when duplicate names
       exist; otherwise select by exact language id. Use the same lookup in
       `resolveLanguagePreferringProject` so a plain-name `languageRef` / `usedLanguage` resolves a
       never-built B language, marked. Keep mutation helpers project-only.
-- [ ] Declarations: read structure declarations for every Language module in the snapshot (today's
+- [x] Declarations: read structure declarations for every Language module in the snapshot (today's
       D112 behavior, extended from A to all). Built languages' structure models are loaded by the
       `sourceNode` resolution anyway (Evidence), so an asymmetric guard would buy nothing. Keep the
       loaded-only guard in `namedConcepts` (REJECTION mode) unchanged.
 - [ ] First-call cost: measure the first `scope:all` search and the first `get_concept_details` miss
       after a restart with the MPS checkout open (both in `executeShortReadOnEdt`). If either freezes
       the UI noticeably, move the search to `executeBackgroundRead`; record the numbers in the D130 row.
-- [ ] Implement the ordering contract (three origin tiers inside the comparators and caps, see
+- [x] Implement the ordering contract (three origin tiers inside the comparators and caps, see
       "Result and suggestion ordering") in both `matchConcepts` and `ConceptSuggestions`. Strict
       results move from scan order to (origin tier, qualified name) even with one project open;
       update existing search tests that assert result order, and say so in the commit message.
@@ -280,9 +281,9 @@ returns an unmarked foreign result.
 
 ### Write safety
 
-- [ ] Audit write-target enforcement for every `conceptHint` caller and the adoption-flow tools: a
+- [x] Audit write-target enforcement for every `conceptHint` caller and the adoption-flow tools: a
       suggestion never makes a B node/model/module the mutation target.
-- [ ] Blueprint inserts (`AbstractNodeOps.kt:437-448`) report the languages they import. The import
+- [x] Blueprint inserts (`AbstractNodeOps.kt:437-448`) report the languages they import. The import
       itself stays (human analogy: paste raises the Add-required-imports dialog, so the import is
       visible, not silent). Shape: keep `addedUsedLanguages` as today's list of qualified-name strings
       (`JetBrainsMPSNodeMcpToolset.kt:2391`, MOVE) so existing consumers and tests are unaffected, and
@@ -296,11 +297,11 @@ returns an unmarked foreign result.
 
 ### Contract text in code
 
-- [ ] Correct the tool and `scope` `@McpDescription`: project = languages A defines or uses; all =
+- [x] Correct the tool and `scope` `@McpDescription`: project = languages A defines or uses; all =
       every registered language and every language module in the repository, including other open
       projects. All-scope results may be foreign, carry the markers, are read-only definitions that
       can still be imported, and rank after equally relevant A results.
-- [ ] Rewrite the KDoc that states the old contract (or remove it with the method):
+- [x] Rewrite the KDoc that states the old contract (or remove it with the method):
       `ConceptSuggestions.languagesInProject` (renamed), `ProjectMembershipCache.isFromAnotherOpenProject`
       (removed) and `isInCurrentProject` (replaced by `originTier`; keep it only if a non-discovery
       caller remains, e.g. A-first module lookup), the comment at
@@ -315,40 +316,40 @@ language registered as a module of project B (e.g. a bundled language's module a
 fixture). State the fixture in each test. Teardown closes B (in `finally`), so the extra owner link
 goes away and later tests in the shared JVM do not see marked `baseLanguage`-family hits.
 
-- [ ] Scope split: unused B is absent from the project first pass and present in all; after A imports
+- [x] Scope split: unused B is absent from the project first pass and present in all; after A imports
       B's exact language id into a loaded model, it is present in project scope with no save. A
       same-named different-id language does not become used accidentally.
-- [ ] Auto-widen: a project miss finds B in the global pass, carries the widening warning, and marks
+- [x] Auto-widen: a project miss finds B in the global pass, carries the widening warning, and marks
       every B result. A project strict hit prevents widening.
-- [ ] Search ordering: within exact-name matches A precedes used, which precedes other; the same
+- [x] Search ordering: within exact-name matches A precedes used, which precedes other; the same
       holds within other strict matches; fallback score stays primary, origin and qualified name
       break ties.
-- [ ] Caps: with more than `MAX_STRICT_RESULTS` strict B matches scanned before A's, A's strict match
+- [x] Caps: with more than `MAX_STRICT_RESULTS` strict B matches scanned before A's, A's strict match
       is still returned (origin applied before truncation); same for the fallback heaps.
-- [ ] Suggestion ordering: exact/alias/token tiers stay primary; equal-quality A precedes B; the
+- [x] Suggestion ordering: exact/alias/token tiers stay primary; equal-quality A precedes B; the
       implied-language and deprecated keys still apply. Language suggestions sort by token score,
       origin tier, qualified name.
-- [ ] Local near-miss slot: A defines `FooBar`, B defines `Foo`; an unqualified miss `foo` (case-only
+- [x] Local near-miss slot: A defines `FooBar`, B defines `Foo`; an unqualified miss `foo` (case-only
       match) suggests B's `Foo` first, marked, then A's `FooBar`; with exact B hits filling the
       limit, `FooBar` takes the last slot. Negative cases: an exact hit from A's languages suppresses
       the extra scan; a `<langA>.structure.` ref is served by the scoped rule, not by this one (no
       duplicate candidate).
-- [ ] Marker coverage: foreign runtime search hit, declaration-backed search hit, concept suggestion,
+- [x] Marker coverage: foreign runtime search hit, declaration-backed search hit, concept suggestion,
       language suggestion, rejection `conceptHint`; no marker on A-owned or library-only records.
       Pin the shared helper directly as well.
-- [ ] Declarations: `scope:"all"` finds a concept in a never-built B language; explicit `languageRefs`
+- [x] Declarations: `scope:"all"` finds a concept in a never-built B language; explicit `languageRefs`
       lists it, by `l:` reference and by plain name; after A imports the language (by plain name via
       `mps_mcp_model_used_language`), project scope finds it. For A, a concept added since the last
       build is included alongside runtime concepts (existing D112 behavior). No B variant: it would
       need editing a bundled language's structure model in the shared test JVM; the code path is the
       same one A's case covers.
-- [ ] Used-set cost: a project-scope search does not load an unloaded solution model of A. Fixture:
+- [x] Used-set cost: a project-scope search does not load an unloaded solution model of A. Fixture:
       a model of A that was saved and then `unload()`ed; assert `isLoaded` is false before the call
       (so the test cannot pass vacuously) and still false after.
-- [ ] Used set via devkit: importing a devkit that exports B's language into a loaded A model puts
+- [x] Used set via devkit: importing a devkit that exports B's language into a loaded A model puts
       the language in project scope without a save.
-- [ ] Foreign unbuilt recovery: the build advice for an unbuilt B language names B's project path.
-- [ ] D4 replacement: a miss may suggest B, but the suggestion is marked; an equally good A
+- [x] Foreign unbuilt recovery: the build advice for an unbuilt B language names B's project path.
+- [x] D4 replacement: a miss may suggest B, but the suggestion is marked; an equally good A
       candidate ranks first; a plain name existing only in B still resolves marked; a shared name
       still resolves A first. Replace in `ProjectResolutionCrossProjectTest`: "get concept details
       suggestions never name a concept from a sibling project", the predicate tests "name-suggestion
@@ -357,21 +358,26 @@ goes away and later tests in the shared JVM do not see marked `baseLanguage`-fam
       "marks a sibling-project concept reached by plain name". In
       `JetBrainsMPSLanguageMcpToolsetIntegrationTest` `:1479-1505`, the "registry plus own languages"
       bound becomes "registry plus repository Language modules"; fix the comment at `:1517`.
-- [ ] Write safety: a suggested B concept cannot make a B node/model/module a mutation target; adding
+- [x] Write safety: a suggested B concept cannot make a B node/model/module a mutation target; adding
       B's language to an A model and then creating a B-language node in A is accepted; a blueprint
       insert that imports a language lists it in `addedUsedLanguages` and in
       `addedUsedLanguageDetails` (foreign-marked for B), also on a dry run; MOVE's string list is
       unchanged.
+- [x] Added in review: a failed blueprint write undoes the language imports it made
+      (`ConceptGate.undoImports`), so a refused batch leaves the model's used languages unchanged.
+- Not covered: the deprecated suggestion key (no deprecated fixture; the key did not move) and "a
+  concept added since the last build of a *built* A language" (needs a built fixture language; the
+  D112 tests cover it).
 
 ### Validation gates (in this order; see `.agents/quality-gates.md`)
 
-- [ ] `get_file_problems` on each changed Kotlin file; `build_project` (whole project if skill
+- [x] `get_file_problems` on each changed Kotlin file; `build_project` (whole project if skill
       docs changed — per-file builds leave plugin resources stale).
-- [ ] Focused run: `execute_run_configuration("McpToolsIntegrationTestSuite",
+- [x] Focused run: `execute_run_configuration("McpToolsIntegrationTestSuite",
       envs={"MCP_TESTS": "ProjectResolutionCrossProjectTest,JetBrainsMPSLanguageMcpToolsetIntegrationTest"})`;
       check the new test names appear in the result (stale-bytecode trap). No other JUnit JVM may
       be running machine-wide.
-- [ ] Full `McpToolsIntegrationTestSuite` once at the end; re-run a single non-reproducing failure
+- [x] Full `McpToolsIntegrationTestSuite` once at the end; re-run a single non-reproducing failure
       before blaming the diff.
 - [ ] **One** live check, after restarting MPS on the new build (`mps_control.sh`, never kill) with
       `myMPS-fix` and one small study project open: from the study project,
@@ -382,7 +388,7 @@ goes away and later tests in the shared JVM do not see marked `baseLanguage`-fam
       language into the study model and verify it then appears in the project first pass. Time the
       first `scope:all` call after the restart (see "First-call cost"). Check that `idea.log` has no
       SEVERE in the window. Use direct MCP calls, not `run_worker.sh`.
-- [ ] No scenario re-run is needed: guarded cells never have a sibling project, so P2 cannot change
+- [x] No scenario re-run is needed: guarded cells never have a sibling project, so P2 cannot change
       their measurements. Note this in the round report instead of re-measuring.
 
 ## P3 — descriptions, guides and skills
@@ -409,36 +415,35 @@ surface, in the same words.
 
 ### Tool descriptions and user-visible strings (Kotlin)
 
-- [ ] MUST `KT/JetBrainsMPSLanguageMcpToolset.kt:288` (`search_concepts` description) and `:295`
+- [x] MUST `KT/JetBrainsMPSLanguageMcpToolset.kt:288` (`search_concepts` description) and `:295`
       (`scope`): project = languages this project defines or uses (a used language owned by another
       open project included, marked); all = every registered language plus every language module in
       the repository, other open projects' and never-built ones included; foreign hits carry
       `containingProject` + `editableFromCurrentProject:false` and rank after equally good hits from
       this project (defined, used, everything else). Same item as P2 "Contract text in code".
-- [ ] MUST `KT/JetBrainsMPSLanguageMcpToolset.kt:453-455` (auto-widen warning): "widened to every
+- [x] MUST `KT/JetBrainsMPSLanguageMcpToolset.kt:453-455` (auto-widen warning): "widened to every
       language in the repository, including other open projects'"; entries with `containingProject`
       are read-only there and still importable.
-- [ ] MUST `KT/JetBrainsMPSModelMcpToolset.kt:239` (`usedLanguage` of `mps_mcp_model_used_language`):
+- [x] MUST `KT/JetBrainsMPSModelMcpToolset.kt:239` (`usedLanguage` of `mps_mcp_model_used_language`):
       plain-name resolution of a never-built language looks in this project first, then other open
       projects; such a language can be imported, its concepts instantiated once it is built from its
       own project. SHOULD `:230` (tool description): importing another open project's language is
       allowed; pass the `l:` reference from a `search_concepts scope:"all"` hit.
-- [ ] SHOULD `KT/JetBrainsMPSLanguageMcpToolset.kt:95` (`get_concept_details`): `details.unresolved`
+- [x] SHOULD `KT/JetBrainsMPSLanguageMcpToolset.kt:95` (`get_concept_details`): `details.unresolved`
       suggestions may name other open projects' concepts/languages, marked and ranked after equally
       good local ones; `:100` (`languageRefs`): a plain name also resolves another open project's
       language, this project preferred; the `details.languageBuild` sentence: for a foreign unbuilt
       language the recovery names the owning project's path.
-- [ ] SHOULD `KT/JetBrainsMPSNodeMcpToolset.kt:288` (`alter_nodes`): name `addedUsedLanguageDetails`
+- [x] SHOULD `KT/JetBrainsMPSNodeMcpToolset.kt:288` (`alter_nodes`): name `addedUsedLanguageDetails`
       next to `addedUsedLanguages`; in the MAKE paragraph, targets must belong to the selected
       project, so a foreign language is built with its own `projectPath`. `:1704` (`update_node`)
       and `KT/JetBrainsMPSRootNodeMcpToolset.kt:313`, `:494`/`:510` (insert/update root): the
       automatic language import and its report (also on a dry run). Cover every tool whose response
       goes through the new sink (P2 write safety).
-- [ ] SHOULD `KT/common/AbstractOps.kt:1037-1068` (`conceptHint` message suffix
+- [x] SHOULD `KT/common/AbstractOps.kt:1037-1068` (`conceptHint` message suffix
       ". Closest concepts: A, B"): append " (project X)" to a foreign candidate's name, so the
       human-readable message carries the provenance the structured `details.suggestions[*]` marker
-      already has. Decide in P2; if skipped, say in the descriptions that markers live in
-      `details.suggestions`.
+      already has. Decided in P2: done.
 - No change: `search_root_node_by_name` scope, `query_nodes`, project-structure tools,
   `parse_java_and_insert` (BaseLanguage-family imports only), `scope` error text (`:340`, value set
   unchanged), the AGENTIC VIEW `!foreign` flag, existing marker sites.

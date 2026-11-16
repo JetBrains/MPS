@@ -39,6 +39,7 @@ import jetbrains.mps.errors.item.RuleIdFlavouredItem
 import jetbrains.mps.errors.messageTargets.PropertyMessageTarget
 import jetbrains.mps.errors.messageTargets.ReferenceMessageTarget
 import jetbrains.mps.extapi.model.GeneratableSModel
+import jetbrains.mps.extapi.model.SModelBase
 import jetbrains.mps.extapi.module.TransientSModule
 import jetbrains.mps.generator.GenerationSettingsProvider
 import jetbrains.mps.generator.TransientModelsProvider
@@ -68,6 +69,7 @@ import jetbrains.mps.smodel.Language
 import jetbrains.mps.smodel.SNodeUtil
 import jetbrains.mps.smodel.adapter.MetaAdapterByDeclaration
 import jetbrains.mps.smodel.adapter.ids.MetaIdByDeclaration
+import jetbrains.mps.smodel.adapter.ids.MetaIdHelper
 import jetbrains.mps.smodel.adapter.ids.SConceptId
 import jetbrains.mps.smodel.adapter.ids.SLanguageId
 import jetbrains.mps.smodel.adapter.ids.SPropertyId
@@ -918,7 +920,8 @@ abstract class AbstractOps : McpToolset {
 
     /**
      * Per-call cache of "which open MPS project owns this element", used to add the foreign-project
-     * markers (`containingProject` / `editableFromCurrentProject`) to returned JSON. Resolving
+     * markers (`containingProject` / `editableFromCurrentProject`) to returned JSON, and of each
+     * language's [originTier] for ranking free-form lookups. Resolving
      * ownership rebuilds [MPSProject.getProjectModulesWithGenerators] (a read action that allocates a
      * fresh list and expands language-owned generators), so resolving it per node/concept/reference
      * would be O(elements x project-modules). This cache resolves the current project's module set
@@ -951,9 +954,12 @@ abstract class AbstractOps : McpToolset {
             val ref = module.moduleReference
             if (currentModuleRefs != null && ref in currentModuleRefs) return currentProject
             if (moduleOwner.containsKey(ref)) return moduleOwner[ref]
+            // Sorted by base directory so a module two other open projects both register names the
+            // same one on every call, not whichever project the IDE happens to list first.
             val owner = ProjectManager.getInstance().openProjects
                 .asSequence()
                 .mapNotNull { ProjectHelper.fromIdeaProject(it) }
+                .sortedBy { it.project.basePath ?: "" }
                 .firstOrNull { openProject -> openProject.projectModulesWithGenerators.any { it.moduleReference == ref } }
             moduleOwner[ref] = owner
             return owner
@@ -974,33 +980,59 @@ abstract class AbstractOps : McpToolset {
             return owner
         }
 
-        /**
-         * True when the element is owned by an open MPS project *other* than [currentProject].
-         * Read-only lookups that offer name-based candidates (e.g. "did you mean" suggestions)
-         * use this to drop candidates the caller cannot act on: the module repository is shared
-         * across open projects, so a plain name can otherwise surface a same-named concept or
-         * language belonging to a sibling project. Elements owned by no open project (read-only
-         * libraries and stubs) are NOT foreign — they are legitimately visible everywhere.
-         */
-        override fun isFromAnotherOpenProject(concept: SAbstractConcept, repository: SRepository): Boolean =
-            isForeign(ownerOfConcept(repository, concept))
-
-        override fun isFromAnotherOpenProject(language: SLanguage, repository: SRepository): Boolean =
-            isForeign(ownerOfLanguage(repository, language))
+        private val originTiers = HashMap<SLanguage, Int>()
 
         /**
-         * True when [language] is defined by a module of [currentProject]. The complement of
-         * [isFromAnotherOpenProject] only for elements some open project owns: a library or stub
-         * language is neither foreign nor in the current project, so a scope that wants "what
-         * this project defines" must ask this rather than negate the foreignness test.
+         * The languages [currentProject] uses: for every module of the project, the descriptor's
+         * `languageVersions` (the extended-language closure of what the module uses, maintained by
+         * `ModuleDependencyVersions`) and the languages its used devkits export; plus, for each of
+         * its models that is already fully loaded, the languages and devkit-exported languages it
+         * imports. The models make an import added this session count at once, before any save
+         * writes it through to the descriptor; an unloaded model is never loaded for this, since
+         * reading a model's imports goes through its full data. Descriptor stamps can over-approximate
+         * — a language removed from every model but still stamped stays "used" — which only ranks it
+         * one origin tier earlier.
          */
-        override fun isInCurrentProject(language: SLanguage, repository: SRepository): Boolean {
-            val current = currentProject ?: return false
-            val owner = ownerOfLanguage(repository, language) ?: return false
-            return sameOpenProject(owner, current)
+        private val usedLanguages: Set<SLanguage> by lazy {
+            val project = currentProject ?: return@lazy emptySet()
+            val repository = project.repository
+            val used = HashSet<SLanguage>()
+            val addDevkit = { ref: SModuleReference -> (ref.resolve(repository) as? DevKit)?.let { used.addAll(it.allExportedLanguageIds) } }
+            for (module in project.projectModulesWithGenerators) {
+                val descriptor = (module as? AbstractModule)?.moduleDescriptor
+                if (descriptor != null) {
+                    used.addAll(descriptor.languageVersions.keys)
+                    descriptor.usedDevkits.forEach { addDevkit(it) }
+                }
+                for (model in module.models) {
+                    if (model !is SModelBase || !model.isLoaded) continue
+                    used.addAll(model.importedLanguageIds())
+                    model.importedDevkits().forEach { addDevkit(it) }
+                }
+            }
+            used
         }
 
-        private fun isForeign(owner: MPSProject?): Boolean {
+        /**
+         * [ConceptSuggestions.Membership.originTier]: defined when the `Language` module with
+         * [language]'s id is one of [currentProject]'s own modules (a module registered by two
+         * projects is the current one's), used when [usedLanguages] holds it. Owner lookup over
+         * other open projects is not needed for the tier, so it stays lazy, for the markers only.
+         */
+        override fun originTier(language: SLanguage): Int {
+            val project = currentProject ?: return ConceptSuggestions.ORIGIN_OTHER
+            return originTiers.getOrPut(language) {
+                val module = project.repository.getModule(ModuleId.regular(MetaIdHelper.getLanguage(language).idValue))
+                when {
+                    module != null && currentModuleRefs?.contains(module.moduleReference) == true -> ConceptSuggestions.ORIGIN_DEFINED
+                    language in usedLanguages -> ConceptSuggestions.ORIGIN_USED
+                    else -> ConceptSuggestions.ORIGIN_OTHER
+                }
+            }
+        }
+
+        /** True when [owner] is an open project other than [currentProject]: the element gets the foreign-project markers. */
+        fun isForeign(owner: MPSProject?): Boolean {
             val current = currentProject ?: return false
             return owner != null && !sameOpenProject(owner, current)
         }
@@ -1013,8 +1045,9 @@ abstract class AbstractOps : McpToolset {
     /**
      * The part of a "concept not found" rejection that names the concepts the caller probably meant:
      * [messageSuffix] (`. Closest concepts: A, B, C`) to append to the site's own message, and
-     * [details] (`suggestions`, one `{qualifiedName, conceptReference, alias?, isAbstract?}` each).
-     * Both are empty when nothing is close (study defect D116).
+     * [details] (`suggestions`, one `{qualifiedName, conceptReference, alias?, isAbstract?,
+     * containingProject?, editableFromCurrentProject?}` each; the last two mark another open
+     * project's concept, D130). Both are empty when nothing is close (study defect D116).
      */
     protected class ConceptHint(val messageSuffix: String, val details: Map<String, Any?>) {
         companion object {
@@ -1024,7 +1057,9 @@ abstract class AbstractOps : McpToolset {
 
     /**
      * [ConceptHint] for a `concept` / `conceptReference` pair that resolved to no concept a node can
-     * have. Interface concepts are never offered, since no rejecting site accepts one, nor are the
+     * have. A candidate owned by another open project carries the foreign-project markers in
+     * `details.suggestions` and ` (project <name>)` in the message; it is only a name to retry with,
+     * never a write target (the writer still resolves the target model in the selected project). Interface concepts are never offered, since no rejecting site accepts one, nor are the
      * concepts [accept] refuses (a root needs a rootable one). When [concreteRequired], an abstract
      * candidate is kept but marked, so `Type` tells the caller to name a concrete subconcept rather
      * than vanishing from the list.
@@ -1043,8 +1078,9 @@ abstract class AbstractOps : McpToolset {
         accept: (SAbstractConcept) -> Boolean = { true }
     ): ConceptHint {
         val name = concept?.takeIf { it.isNotBlank() } ?: conceptReference?.let { nameInConceptReference(it) } ?: return ConceptHint.NONE
+        val cache = ProjectMembershipCache(currentProject)
         val candidates = try {
-            conceptSuggestions(repository, ProjectMembershipCache(currentProject))
+            conceptSuggestions(repository, cache)
                 .suggest(name, MAX_REJECTION_SUGGESTIONS, ConceptSuggestions.Mode.REJECTION) { it !is SInterfaceConcept && accept(it) }
         } catch (e: Exception) {
             rethrowIfCancellation(e)
@@ -1055,15 +1091,22 @@ abstract class AbstractOps : McpToolset {
         val facade = PersistenceFacade.getInstance()
         val markedAbstract = { c: SAbstractConcept -> concreteRequired && c is SConcept && c.isAbstract }
         val suggestions = JsonArray()
+        val foreignOwner = { c: SAbstractConcept -> cache.ownerOfConcept(repository, c)?.takeIf { cache.isForeign(it) } }
         for (c in candidates) {
             suggestions.add(JsonObject().apply {
                 addProperty("qualifiedName", structureQualifiedName(c))
                 addProperty("conceptReference", facade.asString(c))
                 c.conceptAlias?.takeIf { it.isNotEmpty() }?.let { addProperty("alias", it) }
                 if (markedAbstract(c)) addProperty("isAbstract", true)
+                addContainingProjectIfForeign(this, currentProject, c, repository, cache = cache)
             })
         }
-        val names = candidates.joinToString(", ") { structureQualifiedName(it) + if (markedAbstract(it)) " (abstract)" else "" }
+        // The message carries the provenance too: a reader of the text alone must not take another
+        // open project's concept for one of its own (D130).
+        val names = candidates.joinToString(", ") { c ->
+            structureQualifiedName(c) + (if (markedAbstract(c)) " (abstract)" else "") +
+                (foreignOwner(c)?.let { " (project ${it.name})" } ?: "")
+        }
         return ConceptHint(". Closest concepts: $names", mapOf("suggestions" to suggestions))
     }
 
@@ -1183,6 +1226,29 @@ abstract class AbstractOps : McpToolset {
         if (currentProject == null || concept == null) return
         val c = cache ?: ProjectMembershipCache(currentProject)
         addContainingProjectIfForeign(obj, c.currentProject, c.ownerOfConcept(repository, concept), prefix)
+    }
+
+    /**
+     * The response details naming the languages a write imported into a model ([added], in import
+     * order): `addedUsedLanguages`, their qualified names (the shape MOVE_NODE_TO_PARENT has always
+     * reported), and `addedUsedLanguageDetails`, one `{qualifiedName, languageReference}` object per
+     * language with the foreign-project markers when another open project owns it. Importing and
+     * instantiating such a language is allowed; the marker only says its definition is read-only
+     * here. Empty when nothing was imported, so the keys are absent rather than empty.
+     */
+    protected fun addedUsedLanguagesDetails(added: Collection<SLanguage>, mpsProject: MPSProject?): Map<String, Any?> {
+        if (added.isEmpty()) return emptyMap()
+        val facade = PersistenceFacade.getInstance()
+        val cache = ProjectMembershipCache(mpsProject)
+        val details = JsonArray()
+        for (language in added) {
+            details.add(JsonObject().apply {
+                addProperty("qualifiedName", language.qualifiedName)
+                addProperty("languageReference", facade.asString(language))
+                if (mpsProject != null) addContainingProjectIfForeign(this, mpsProject, language, mpsProject.repository, cache = cache)
+            })
+        }
+        return linkedMapOf("addedUsedLanguages" to added.map { it.qualifiedName }, "addedUsedLanguageDetails" to details)
     }
 
     /**
@@ -3839,6 +3905,13 @@ abstract class AbstractOps : McpToolset {
         }
     }
 
+    /**
+     * [languageRef] as a language: an `l:` reference by its id ([resolveLanguage]); a plain name
+     * first as a `Language` module of the selected project, then as a registered language, then as
+     * any `Language` module in the repository — so another open project's language resolves even
+     * when it was never built (D130), the selected project's preferred when names collide. Read-only:
+     * callers that mutate a module resolve it with the project-only module helpers.
+     */
     protected fun resolveLanguagePreferringProject(mpsProject: MPSProject, languageRef: String): SLanguage? {
         if (languageRef.startsWith("l:")) {
             return resolveLanguage(mpsProject.repository, languageRef)
@@ -3846,8 +3919,20 @@ abstract class AbstractOps : McpToolset {
         (resolveModule(mpsProject, languageRef, projectOnly = true) as? Language)?.let {
             return MetaAdapterByDeclaration.getLanguage(it)
         }
-        return resolveLanguage(mpsProject.repository, languageRef)
+        resolveLanguage(mpsProject.repository, languageRef)?.let { return it }
+        return nameLookupModules(mpsProject.repository)
+            .filterIsInstance<Language>()
+            .filter { it.moduleName == languageRef }
+            .minByOrNull { it.moduleReference.moduleId.toString() }
+            ?.let { MetaAdapterByDeclaration.getLanguage(it) }
     }
+
+    /**
+     * The `Language` module that defines [language], wherever it is registered (the selected
+     * project, another open project or a library); null for a runtime-only language. Read-only.
+     */
+    protected fun languageModuleOf(repository: SRepository, language: SLanguage): Language? =
+        repository.getModule(ModuleId.regular(MetaIdHelper.getLanguage(language).idValue)) as? Language
 
     protected fun resolveNodeReference(repository: SRepository, nodeRefStr: String): SNodeReference? {
         if (nodeRefStr.startsWith("c:")) {

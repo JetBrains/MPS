@@ -60,6 +60,7 @@ import org.jetbrains.mps.openapi.language.SConceptFeature
 import org.jetbrains.mps.openapi.language.SContainmentLink
 import org.jetbrains.mps.openapi.language.SEnumeration
 import org.jetbrains.mps.openapi.language.SInterfaceConcept
+import org.jetbrains.mps.openapi.language.SLanguage
 import org.jetbrains.mps.openapi.language.SProperty
 import org.jetbrains.mps.openapi.language.SReferenceLink
 import org.jetbrains.mps.openapi.model.EditableSModel
@@ -145,9 +146,39 @@ abstract class AbstractNodeOps : AbstractOps() {
      * The writer gate of one tool call (D112): classifies each concept once, refuses one its runtime
      * cannot serve, and tells a stale runtime from an authoring error when a feature lookup misses.
      */
-    protected inner class ConceptGate(private val mpsProject: MPSProject) {
+    protected inner class ConceptGate(
+        private val mpsProject: MPSProject,
+        /**
+         * The languages the call's blueprints imported into their target model (on a dry run: would
+         * have imported), in first-import order. The import is the editor's paste-with-required-imports,
+         * made visible: the response lists it ([addedUsedLanguagesDetails]) rather than doing it silently.
+         * A caller that creates the gate inside a helper passes its own set to read it afterwards.
+         */
+        val addedLanguages: MutableSet<SLanguage> = LinkedHashSet()
+    ) {
         private val declarations = HashMap<SAbstractConcept, SNode?>()
         private val verdicts = HashMap<SAbstractConcept, ConceptReadiness>()
+        private val madeImports = ArrayList<Pair<SModelInternal, SLanguage>>()
+
+        /** Records that a blueprint needs [language] in [model]; [made] when the import really happened (not a dry run). */
+        fun recordImport(model: SModelInternal, language: SLanguage, made: Boolean) {
+            addedLanguages.add(language)
+            if (made) madeImports.add(model to language)
+        }
+
+        /**
+         * Removes the imports this call made, for a write that failed: a command does not roll back,
+         * and a refused or failed blueprint must leave the model's used languages as they were —
+         * otherwise the import would be a silent side effect no response reports (D130).
+         */
+        fun undoImports() {
+            for ((model, language) in madeImports.asReversed()) {
+                runCatching { if (model.importedLanguageIds().contains(language)) model.deleteLanguageId(language) }
+                    .onFailure { logger.warn("Could not undo the import of '${language.qualifiedName}' into ${(model as? SModel)?.name ?: model}", it) }
+            }
+            madeImports.clear()
+            addedLanguages.clear()
+        }
 
         private fun declarationOf(concept: SAbstractConcept): SNode? {
             if (concept in declarations) return declarations[concept]
@@ -179,7 +210,10 @@ abstract class AbstractNodeOps : AbstractOps() {
             val structureModel = declaration.model ?: return null
             val stale = LanguageReadiness.of(concept, declaration, mpsProject) as? ConceptReadiness.NotBuilt.Stale
                 ?: (structureModel.module as? Language).let { module ->
-                    ConceptReadiness.NotBuilt.Stale(module?.moduleName ?: concept.language.qualifiedName, module, structureModel)
+                    ConceptReadiness.NotBuilt.Stale(
+                        module?.moduleName ?: concept.language.qualifiedName, module, structureModel,
+                        LanguageReadiness.foreignBuildProjectPath(module, mpsProject),
+                    )
                 }
             val what = when (kind) {
                 StructureDeclarations.FeatureKind.PROPERTY -> "Property"
@@ -441,10 +475,9 @@ abstract class AbstractNodeOps : AbstractOps() {
             ?: throw McpNotFoundException("Language of concept '${sConcept.name}' at $jsonPath is not a loaded language: ${sConcept.language}")
         // Before the import, so a refused write leaves the model untouched; a dry run refuses alike.
         gate?.require(sConcept, "Concept '${structureQualifiedName(sConcept)}' at $jsonPath")
-        if (!dryRun && model is SModelInternal) {
-            if (!model.importedLanguageIds().contains(language)) {
-                model.addLanguage(language)
-            }
+        if (model is SModelInternal && !model.importedLanguageIds().contains(language)) {
+            gate?.recordImport(model, language, made = !dryRun)
+            if (!dryRun) model.addLanguage(language)
         }
 
         // Node factories (the language's "actions" aspect) must see the target model and the enclosing
@@ -632,6 +665,16 @@ abstract class AbstractNodeOps : AbstractOps() {
         }
     }
 
+    /** Runs [block]; when it throws, [gate]'s imports are undone before the throwable propagates. */
+    private inline fun undoImportsOnFailure(gate: ConceptGate, block: () -> Unit) {
+        try {
+            block()
+        } catch (t: Throwable) {
+            gate.undoImports()
+            throw t
+        }
+    }
+
     /**
      * [fillChildren] for the blueprint's top node [newNode], which the caller has attached unless this is
      * a dry run. A failure deletes [newNode] again, because a command does not roll back, and returns the
@@ -652,6 +695,7 @@ abstract class AbstractNodeOps : AbstractOps() {
             return null
         } catch (t: Throwable) {
             if (!dryRun) runCatching { newNode.delete() }.exceptionOrNull()?.let(t::addSuppressed)
+            gate.undoImports()
             if (t !is Exception) throw t
             return instantiationFailed(errorPrefix, t, warnings)
         }
@@ -1130,12 +1174,13 @@ abstract class AbstractNodeOps : AbstractOps() {
         dryRun: Boolean = false,
         jsonPath: String = "$",
         warnings: MutableList<String>? = null,
-        mpsProject: MPSProject? = null
+        mpsProject: MPSProject? = null,
+        addedLanguages: MutableSet<SLanguage>? = null
     ) {
         val model = node.model ?: throw IllegalArgumentException("Node must be in a model")
         val sConcept = node.concept
         rejectUnloadedConceptRecord(jsonObject, jsonPath, sConcept.name, rewritesRoot = true)
-        val gate = mpsProject?.let { ConceptGate(it) }
+        val gate = mpsProject?.let { ConceptGate(it, addedLanguages ?: LinkedHashSet()) }
         gate?.require(sConcept, "Concept '${structureQualifiedName(sConcept)}' of the root being rewritten")
 
         // Stage-then-apply: validate everything (instantiate new children, resolve references)
@@ -1282,6 +1327,7 @@ abstract class AbstractNodeOps : AbstractOps() {
             stagedProperties.forEach { (property, value) -> setProperty(node, property, value) }
         } catch (t: Throwable) {
             if (!dryRun) rollBackStagedChildren(node, originalChildren, t)
+            gate?.undoImports()
             throw t
         }
 
@@ -1373,22 +1419,24 @@ abstract class AbstractNodeOps : AbstractOps() {
                 enclosingNode = parent, link = role, index = parent.getChildren(role).indexOf(childNode)
             )
         } catch (e: Exception) {
+            gate.undoImports()
             return instantiationFailed(errorPrefix, e, nodeWarnings)
         }
 
         if (!newChild.concept.isSubConceptOf(role.targetConcept)) {
+            gate.undoImports()
             throw childAssignabilityFailure("$", newChild.concept, role, parent.concept, model)
         }
 
         // Attach, fill, and only then delete the replaced child, as in addNodeChild.
-        if (!dryRun) parent.insertChildBefore(role, newChild, childNode)
+        if (!dryRun) undoImportsOnFailure(gate) { parent.insertChildBefore(role, newChild, childNode) }
         fillChildrenOrDelete(newChild, jsonObject, model, dryRun, nodeWarnings, mpsProject, gate, errorPrefix)?.let { return it }
 
         if (dryRun) {
             return okJson(jsonObject {
                 addProperty("dryRun", true)
                 addProperty("message", "Dry run successful for node replacement")
-            }, warnings = withDryRunReferenceRule(nodeWarnings))
+            }, warnings = withDryRunReferenceRule(nodeWarnings), details = addedUsedLanguagesDetails(gate.addedLanguages, mpsProject))
         }
 
         childNode.delete()
@@ -1396,7 +1444,8 @@ abstract class AbstractNodeOps : AbstractOps() {
         val warn = persistOrRefreshConsole(model, console)
         return okJson(
             withFixReferencesInfo(nodeInfoJsonObject(parent, mpsProject), fixResult),
-            warnings = nodeWarnings + listOfNotNull(warn)
+            warnings = nodeWarnings + listOfNotNull(warn),
+            details = addedUsedLanguagesDetails(gate.addedLanguages, mpsProject)
         )
     }
 
@@ -1511,11 +1560,13 @@ abstract class AbstractNodeOps : AbstractOps() {
         val newChild = try {
             createNode(jsonObject, model, dryRun, "$", nodeWarnings, mpsProject, gate, enclosingNode = parent, link = role, index = index)
         } catch (e: Exception) {
+            gate.undoImports()
             return instantiationFailed(errorPrefix, e, nodeWarnings)
         }
 
         // Check before attaching: MPS commands do not roll back.
         if (!newChild.concept.isSubConceptOf(role.targetConcept)) {
+            gate.undoImports()
             throw childAssignabilityFailure("$", newChild.concept, role, parent.concept, model)
         }
 
@@ -1530,7 +1581,7 @@ abstract class AbstractNodeOps : AbstractOps() {
         // occupant still attached, and a nested factory reading the role sees two children; both are
         // harmless.
         val replacedOccupants = if (role.isMultiple || dryRun) emptyList() else parent.getChildren(role).toList()
-        if (!dryRun) {
+        if (!dryRun) undoImportsOnFailure(gate) {
             when (insertIndex) {
                 is InsertIndex.At -> {
                     // index is in [0, existingChildrenInRole.size); the snapshot was taken before any mutation.
@@ -1547,7 +1598,7 @@ abstract class AbstractNodeOps : AbstractOps() {
             return okJson(jsonObject {
                 addProperty("dryRun", true)
                 addProperty("message", "Dry run successful for node addition")
-            }, warnings = withDryRunReferenceRule(nodeWarnings))
+            }, warnings = withDryRunReferenceRule(nodeWarnings), details = addedUsedLanguagesDetails(gate.addedLanguages, mpsProject))
         }
 
         replacedOccupants.forEach { it.delete() }
@@ -1558,13 +1609,14 @@ abstract class AbstractNodeOps : AbstractOps() {
                 addProperty("added", 1)
                 add("nodes", JsonArray().apply { add(createdNodeSummaryJsonObject(newChild)) })
                 add("fixReferences", aggregateFixReferencesJsonObject(listOf(fixResult)))
-            }, warnings = nodeWarnings + listOfNotNull(warn))
+            }, warnings = nodeWarnings + listOfNotNull(warn), details = addedUsedLanguagesDetails(gate.addedLanguages, mpsProject))
         }
         // Report the new child's actual index so a caller that overshot `position` (now clamped
         // to an append) can see where it landed.
         return okJson(
             withFixReferencesInfo(nodeInfoJsonObjectWithIndex(newChild, mpsProject), fixResult),
-            warnings = nodeWarnings + listOfNotNull(warn)
+            warnings = nodeWarnings + listOfNotNull(warn),
+            details = addedUsedLanguagesDetails(gate.addedLanguages, mpsProject)
         )
     }
 
