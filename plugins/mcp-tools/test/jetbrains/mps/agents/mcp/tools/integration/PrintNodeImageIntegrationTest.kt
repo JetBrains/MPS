@@ -17,7 +17,7 @@ import javax.imageio.ImageIO
 /** `mps_mcp_print_node` with `format=IMAGE`: a PNG temp file in `data`, its size in `details.image`. */
 class PrintNodeImageIntegrationTest : McpIntegrationTestBase() {
 
-    private val toolset = JetBrainsMPSNodeMcpToolset()
+    private val toolset = MPSNodeMcpToolset()
 
     private fun printImage(ref: String, editorHints: String? = null): JsonObject {
         val envelope = JsonParser.parseString(runTool(toolset) {

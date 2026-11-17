@@ -134,8 +134,8 @@ abstract class McpIntegrationTestBase : ModuleInProjectTest() {
     }
 
     /** Convenience overload preserving the original concept-test call shape. */
-    protected fun <R> runTool(block: suspend (JetBrainsMPSLanguageStructureMcpToolset) -> R): R =
-        runTool(JetBrainsMPSLanguageStructureMcpToolset(), block)
+    protected fun <R> runTool(block: suspend (MPSLanguageStructureMcpToolset) -> R): R =
+        runTool(MPSLanguageStructureMcpToolset(), block)
 
     /**
      * Invokes the *registered* `@McpTool` overload named [toolName] through the platform's
@@ -446,7 +446,7 @@ abstract class McpIntegrationTestBase : ModuleInProjectTest() {
         val behaviorModel = readOnRepo { language.models.single { it.name.longName.endsWith(".behavior") } }
         val behaviorModelRef = modelRefOf(behaviorModel)
 
-        val modelToolset = JetBrainsMPSModelMcpToolset()
+        val modelToolset = MPSModelMcpToolset()
         for (usedLanguage in listOf("jetbrains.mps.lang.behavior", "jetbrains.mps.baseLanguage")) {
             expectOk(runTool(modelToolset) {
                 it.mps_mcp_model_used_language(behaviorModelRef, usedLanguage, "language", DependencyOperation.ADD)
@@ -473,7 +473,7 @@ abstract class McpIntegrationTestBase : ModuleInProjectTest() {
             }
         """.trimIndent()
 
-        val resp = runTool(JetBrainsMPSRootNodeMcpToolset()) {
+        val resp = runTool(MPSRootNodeMcpToolset()) {
             it.mps_mcp_insert_root_node_from_json(behaviorModelRef, JsonOrText(json), dryRun = false, responseDetail = "summary")
         }
         val payload = expectOk(resp)

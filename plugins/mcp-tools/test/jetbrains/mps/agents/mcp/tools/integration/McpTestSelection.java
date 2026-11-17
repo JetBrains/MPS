@@ -26,7 +26,7 @@ import java.util.Set;
 /**
  * The {@code MCP_TESTS} selector of {@link McpToolsIntegrationTestSuite}: a comma-separated list of
  * simple names, each a sub-suite ({@code McpNodeToolsTestSuite}), a test class
- * ({@code JetBrainsMPSTypesMcpToolsetIntegrationTest}) or a method ({@code ClassSimpleName#methodName}, compared
+ * ({@code MPSTypesMcpToolsetIntegrationTest}) or a method ({@code ClassSimpleName#methodName}, compared
  * verbatim with {@link Description#getMethodName()}, so Kotlin backtick names with spaces work).
  * <p>
  * Names resolve against the {@code @Suite.SuiteClasses} tree below the root suite; an unknown name is an

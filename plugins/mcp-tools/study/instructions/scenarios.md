@@ -320,7 +320,7 @@ Read the process signals in `done_criteria.md` together with the `families.py` c
 `M_makes_save_transient` (≥ 1), `GN_trace_before_fix` (≥ 1), `GN_template_prints_before_trace`
 (≤ 1), `GN_plan`, `GN_transient_models`, `GN_transient_reads`, `GN_drop`, and `M_makes` (3 expected).
 The generator is interpreted on purpose; compiled-generator tracing (coarser, no `LOOP`/`TEMPLATE`
-roles) stays with `JetBrainsMPSGenerationTraceIntegrationTest`. The plan read is a DEFAULT plan;
+roles) stays with `MPSGenerationTraceIntegrationTest`. The plan read is a DEFAULT plan;
 explicit plans, checkpoints and forks are not authored or read here.
 Rehearsed 2026-10-23 (`runs-s15`, effort `medium`, one MPS restart per run): `S15-opus-1` (31 tool
 calls, 2 min 18 s) and `S15-sonnet-1` (27 calls, 1 min 51 s) both passed criteria 1–5 on the intended

@@ -26,7 +26,7 @@ import org.junit.Test
  */
 class SearchRootNodeCrossProjectTest : McpIntegrationTestBase() {
 
-    private val searchToolset = JetBrainsMPSRootNodeMcpToolset()
+    private val searchToolset = MPSRootNodeMcpToolset()
 
     private var projectB: MPSProject? = null
 
@@ -83,7 +83,7 @@ class SearchRootNodeCrossProjectTest : McpIntegrationTestBase() {
               "conceptsJson": [ { "name": "$name" } ]
             }
         """.trimIndent()
-        val resp = runToolForProject(project, JetBrainsMPSLanguageStructureMcpToolset()) {
+        val resp = runToolForProject(project, MPSLanguageStructureMcpToolset()) {
             it.mps_mcp_alter_structure(MPSStructureAlterOperation.CREATE_CONCEPTS, params)
         }
         assertTrue(

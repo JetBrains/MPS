@@ -385,7 +385,7 @@ class SkillScriptsDriftTest : McpIntegrationTestBase() {
 
         val solution = createSolution()
         val model = createModel(solution, "${solution.moduleName}.code")
-        val response = runTool(JetBrainsMPSRootNodeMcpToolset()) {
+        val response = runTool(MPSRootNodeMcpToolset()) {
             it.mps_mcp_insert_root_node_from_json(modelRefOf(model), JsonOrText(file.toString()), dryRun = true)
         }
         expectOk(response)
@@ -586,7 +586,7 @@ class SkillScriptsDriftTest : McpIntegrationTestBase() {
     private fun installSkills(): Path {
         val root = Files.createTempDirectory("mps-skill-scripts")
         installRoot = root
-        val response = runTool(JetBrainsMPSInitMcpToolset()) { it.mps_mcp_initialize_project_for_agents(root.toString()) }
+        val response = runTool(MPSInitMcpToolset()) { it.mps_mcp_initialize_project_for_agents(root.toString()) }
         assertTrue(
             "installing the skill catalog must succeed: $response",
             JsonParser.parseString(response).asJsonObject.get("ok").asBoolean
@@ -700,23 +700,23 @@ class SkillScriptsDriftTest : McpIntegrationTestBase() {
         // Every toolset registered in META-INF/plugin.xml. Listed explicitly so that renaming a
         // toolset class breaks compilation here rather than silently shrinking the registry.
         private val TOOLSETS: List<KClass<out AbstractOps>> = listOf(
-            JetBrainsMPSProjectMcpToolset::class,
-            JetBrainsMPSConsoleMcpToolset::class,
-            JetBrainsMPSLanguageMcpToolset::class,
-            JetBrainsMPSModuleMcpToolset::class,
-            JetBrainsMPSModelMcpToolset::class,
-            JetBrainsMPSRootNodeMcpToolset::class,
-            JetBrainsMPSNodeMcpToolset::class,
-            JetBrainsMPSTypesMcpToolset::class,
-            JetBrainsMPSDataflowMcpToolset::class,
-            JetBrainsMPSIntentionsMcpToolset::class,
-            JetBrainsMPSEditorMcpToolset::class,
-            JetBrainsMPSLanguageStructureMcpToolset::class,
-            JetBrainsMPSJavaMcpToolset::class,
-            JetBrainsMPSRunConfigurationMcpToolset::class,
-            JetBrainsMPSMigrationMcpToolset::class,
-            JetBrainsMPSGenerationMcpToolset::class,
-            JetBrainsMPSInitMcpToolset::class,
+            MPSProjectMcpToolset::class,
+            MPSConsoleMcpToolset::class,
+            MPSLanguageMcpToolset::class,
+            MPSModuleMcpToolset::class,
+            MPSModelMcpToolset::class,
+            MPSRootNodeMcpToolset::class,
+            MPSNodeMcpToolset::class,
+            MPSTypesMcpToolset::class,
+            MPSDataflowMcpToolset::class,
+            MPSIntentionsMcpToolset::class,
+            MPSEditorMcpToolset::class,
+            MPSLanguageStructureMcpToolset::class,
+            MPSJavaMcpToolset::class,
+            MPSRunConfigurationMcpToolset::class,
+            MPSMigrationMcpToolset::class,
+            MPSGenerationMcpToolset::class,
+            MPSInitMcpToolset::class,
         )
     }
 }

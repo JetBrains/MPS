@@ -2080,7 +2080,7 @@ abstract class AbstractNodeOps : AbstractOps() {
 
     /**
      * Validates an explicit search-scope selector without throwing from the surrounding read action.
-     * A single bare string remains supported for compatibility with [JetBrainsMPSRootNodeMcpToolset];
+     * A single bare string remains supported for compatibility with [MPSRootNodeMcpToolset];
      * arrays must be nonempty and every element must be a nonblank JSON string.
      */
     private fun scopeRefStrings(params: JsonObject, name: String): RefStrings {
@@ -2585,7 +2585,7 @@ abstract class AbstractNodeOps : AbstractOps() {
     /**
      * Locates the MPS Console tool's current editable tab via reflection, so this plugin does not
      * carry a compile-time dependency on the optional `jetbrains.mps.console` plugin (mirrors the
-     * reflective access in [JetBrainsMPSRunConfigurationMcpToolset]). The console classes are loaded
+     * reflective access in [MPSRunConfigurationMcpToolset]). The console classes are loaded
      * through the console plugin's own classloader; that classloader also sees `ProjectPluginManager`
      * (core MPS), so it is used for both lookups, keeping the `getTool(Class)` identity check valid.
      *

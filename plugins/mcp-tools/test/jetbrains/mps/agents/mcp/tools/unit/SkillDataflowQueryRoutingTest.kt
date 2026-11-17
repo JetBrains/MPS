@@ -2,7 +2,7 @@ package jetbrains.mps.agents.mcp.tools.unit
 
 import jetbrains.mps.agents.mcp.tools.DEFAULT_MAX_INSTRUCTIONS
 import jetbrains.mps.agents.mcp.tools.DataflowQueryOperation
-import jetbrains.mps.agents.mcp.tools.JetBrainsMPSDataflowMcpToolset
+import jetbrains.mps.agents.mcp.tools.MPSDataflowMcpToolset
 import jetbrains.mps.agents.mcp.tools.unit.SkillRoutingDocs.assertNamesAll
 import jetbrains.mps.agents.mcp.tools.unit.SkillRoutingDocs.criticalDirectives
 import jetbrains.mps.agents.mcp.tools.unit.SkillRoutingDocs.read
@@ -53,7 +53,7 @@ class SkillDataflowQueryRoutingTest {
     fun `documented maxInstructions default matches the code`() {
         val sources = listOf(
             DATAFLOW_QUERIES to read(DATAFLOW_QUERIES),
-            "@McpDescription of mps_mcp_query_dataflow" to toolDescription(JetBrainsMPSDataflowMcpToolset::class, QUERY_DATAFLOW_TOOL),
+            "@McpDescription of mps_mcp_query_dataflow" to toolDescription(MPSDataflowMcpToolset::class, QUERY_DATAFLOW_TOOL),
         )
         for ((source, text) in sources) {
             val documented = MAX_INSTRUCTIONS_DEFAULT.findAll(text).map { it.groupValues[1] }.toList()

@@ -67,7 +67,7 @@ Line numbers are those of the working tree at the time of writing.
 
 ## Stop 4 — the read tools (review)
 
-`.../JetBrainsMPSLanguageMcpToolset.kt`
+`.../MPSLanguageMcpToolset.kt`
 
 - `mps_mcp_get_concept_details` body (:170–300): the `conceptRefs` loop records each concept's declaration;
   the `languageRefs` loop builds the **union** of `runtime.concepts` and the structure model's concept roots
@@ -104,21 +104,21 @@ Line numbers are those of the working tree at the time of writing.
   `INVALID_REQUEST`. `createNode` still skips a `name` silently for a concept without one (a per-node warning
   flooded `print_node` round-trips); `create_root_node` warns.
 
-Other toolsets are call-site threading of the same gate: `JetBrainsMPSRootNodeMcpToolset.kt` (:361 batch
+Other toolsets are call-site threading of the same gate: `MPSRootNodeMcpToolset.kt` (:361 batch
 insert shares one gate; :455 `create_root_node`; the root-name search matches an unloaded root by its
-stored name), `JetBrainsMPSNodeMcpToolset.kt` (:1614 SET PROPERTY, :1704 MOVE_CHILD, :1878
-MOVE_NODE_TO_PARENT), `JetBrainsMPSJavaMcpToolset.kt` (:499 parent role), `JetBrainsMPSTypesMcpToolset.kt`
-(:409 COERCE, :596 node operand, :621 concept operand), `JetBrainsMPSConsoleMcpToolset.kt` (passes the
+stored name), `MPSNodeMcpToolset.kt` (:1614 SET PROPERTY, :1704 MOVE_CHILD, :1878
+MOVE_NODE_TO_PARENT), `MPSJavaMcpToolset.kt` (:499 parent role), `MPSTypesMcpToolset.kt`
+(:409 COERCE, :596 node operand, :621 concept operand), `MPSConsoleMcpToolset.kt` (passes the
 project so console blueprints are gated), `references/AssignableReferenceService.kt` (:58, with a
 `declarationOf` lambda supplied by the structure toolset at :322 because the service cannot reach the
 resolver itself).
 
 ## Stop 6 — the tools that build
 
-`.../JetBrainsMPSLanguageStructureMcpToolset.kt` (:774–815): `CREATE_CONCEPTS make:true` classifies the
+`.../MPSLanguageStructureMcpToolset.kt` (:774–815): `CREATE_CONCEPTS make:true` classifies the
 module (`ofLanguage`) and calls `ensureLanguageRuntime` with the created concepts as the verification;
 `makeStatus`, `recoveryStage`, `hollowConcepts` keep their names.
-`.../JetBrainsMPSEditorMcpToolset.kt` (:184–220): `scaffold_editor`'s pre-make plan is the classifier; the
+`.../MPSEditorMcpToolset.kt` (:184–220): `scaffold_editor`'s pre-make plan is the classifier; the
 self-heal was model-scoped only and now uses the staged helper (a never-built language needed the module
 rebuild).
 
@@ -127,16 +127,16 @@ rebuild).
 - `LanguageReadinessTest` (new, registered in `McpLanguageToolsTestSuite`): classifier states on the
   never-built fixture language, `Ready`/`Undeclared` on bundled concepts, the parity test, the `query_types`
   refusal, and SET PROPERTY refusal + `conceptLoaded:false` for a node created through the SNode API.
-- `JetBrainsMPSLanguageMcpToolsetIntegrationTest`: the D20 test now asserts declared *content* and markers
+- `MPSLanguageMcpToolsetIntegrationTest`: the D20 test now asserts declared *content* and markers
   for `full` and `shape`; the two D35 `languageRefs` tests now expect declaration records instead of
   `NOT_FOUND`; a new search-union test; the project-scope subset test admits the project's own languages.
-- Writers: `JetBrainsMPSRootNodeMcpToolsetIntegrationTest` (:713, :730, :748, :788),
-  `JetBrainsMPSNodeMcpToolsetIntegrationTest` (:44), `ProjectResolutionCrossProjectTest` (two tests now
+- Writers: `MPSRootNodeMcpToolsetIntegrationTest` (:713, :730, :748, :788),
+  `MPSNodeMcpToolsetIntegrationTest` (:44), `ProjectResolutionCrossProjectTest` (two tests now
   expect the refusal naming the intended project's language, which still pins the resolution they test),
-  `McpIntegrationTestBase.expectLanguageNotBuilt` (:309). `JetBrainsMPSLanguageStructureMcpToolsetIntegrationTest`'s
+  `McpIntegrationTestBase.expectLanguageNotBuilt` (:309). `MPSLanguageStructureMcpToolsetIntegrationTest`'s
   `AspectFixture` adds its quoted node through the SNode API, because a blueprint of an unbuilt concept is
   now refused — a behaviour change worth knowing when authoring typesystem rules of a fresh language.
-- `ScaffoldEditorStalenessTest` and `JetBrainsMPSEditorMcpToolsetIntegrationTest`: wording updates.
+- `ScaffoldEditorStalenessTest` and `MPSEditorMcpToolsetIntegrationTest`: wording updates.
 
 Gate results on 2026-10-27: the final full `McpToolsIntegrationTestSuite` run on the finished tree is
 1374 started / 1374 finished / 0 failed (earlier rounds: 1371 with 5 failures, 1374 with 3, then the

@@ -94,7 +94,7 @@ class LanguageReadinessTest : McpIntegrationTestBase() {
         val name = "TypesProbe${System.nanoTime()}"
         createConceptRoot(name)
         val fqn = readOnRepo { structureModel.name.longName + "." + name }
-        val response = runTool(jetbrains.mps.agents.mcp.tools.JetBrainsMPSTypesMcpToolset()) {
+        val response = runTool(jetbrains.mps.agents.mcp.tools.MPSTypesMcpToolset()) {
             it.mps_mcp_query_types(
                 "IS_SUBTYPE",
                 jetbrains.mps.agents.mcp.tools.common.JsonOrText("""{"sub":{"typeConceptRef":"$fqn"},"super":{"typeConceptRef":"jetbrains.mps.lang.core.structure.BaseConcept"}}"""),
@@ -120,7 +120,7 @@ class LanguageReadinessTest : McpIntegrationTestBase() {
             ref
         }
         try {
-            val found = runTool(jetbrains.mps.agents.mcp.tools.JetBrainsMPSRootNodeMcpToolset()) {
+            val found = runTool(jetbrains.mps.agents.mcp.tools.MPSRootNodeMcpToolset()) {
                 it.mps_mcp_search_root_node_by_name(
                     names = jetbrains.mps.agents.mcp.tools.common.JsonOrText(rootName),
                     scope = "models",
@@ -132,7 +132,7 @@ class LanguageReadinessTest : McpIntegrationTestBase() {
             assertFalse(record.get("name").asString.contains("concept is not found"))
             assertFalse("conceptLoaded must be false: $record", record.get("conceptLoaded").asBoolean)
 
-            val set = runTool(jetbrains.mps.agents.mcp.tools.JetBrainsMPSNodeMcpToolset()) {
+            val set = runTool(jetbrains.mps.agents.mcp.tools.MPSNodeMcpToolset()) {
                 it.mps_mcp_update_node(operation = "SET", kind = "PROPERTY", properties = listOf(listOf(rootRef, "name", "Renamed")))
             }
             // SET PROPERTY answers a batch: one envelope per triplet.

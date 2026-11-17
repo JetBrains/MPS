@@ -37,7 +37,7 @@ See "Gate" at the end for the full-suite result.
 ### 1.1. [Medium] `TRANSIENT_MODELS` filtered by a checkpoint model reference returns empty `originals`
 - **Where:** `plugins/mcp-tools/src/jetbrains/mps/agents/mcp/tools/common/TransientModelsOps.kt:125-146`
 - **What happens:**
-  `JetBrainsMPSGenerationMcpToolset.kt:82` documents `TRANSIENT_MODELS {model? (an original model by reference or name, or a transient model by reference; omitted = all)}`, and `TransientModelsOps.isTransient` (`TransientModelsOps.kt:77`) classifies checkpoint models as transient.
+  `MPSGenerationMcpToolset.kt:82` documents `TRANSIENT_MODELS {model? (an original model by reference or name, or a transient model by reference; omitted = all)}`, and `TransientModelsOps.isTransient` (`TransientModelsOps.kt:77`) classifies checkpoint models as transient.
   However, in `TransientModelsOps.transientModelsJson`:
   ```kotlin
   val checkpointsModule = provider.checkpointsModule
@@ -99,19 +99,19 @@ See "Gate" at the end for the full-suite result.
 ## 2. Consistency Findings
 
 ### 2.1. [Low] `mps_mcp_scaffold_editor` drops `transientModels.droppedPrevious` when its pre-make succeeds but scaffolding later fails
-- **Where:** `plugins/mcp-tools/src/jetbrains/mps/agents/mcp/tools/JetBrainsMPSEditorMcpToolset.kt:224-237, 905-912`
+- **Where:** `plugins/mcp-tools/src/jetbrains/mps/agents/mcp/tools/MPSEditorMcpToolset.kt:224-237, 905-912`
 - **What happens:**
   When `structureModelForMake != null`, `scaffold_editor` runs `performMake` before entering `executeShortCommandOnEdt`.
-  - If `performMake` itself fails (`JetBrainsMPSEditorMcpToolset.kt:227-232`), `errJson` includes `details = dropped?.let { mapOf("transientModels" to mapOf("droppedPrevious" to it)) }.orEmpty()`.
-  - If scaffolding succeeds (`JetBrainsMPSEditorMcpToolset.kt:404, 841, 855`), `addTransientModelsDropped()` attaches `transientModels`.
+  - If `performMake` itself fails (`MPSEditorMcpToolset.kt:227-232`), `errJson` includes `details = dropped?.let { mapOf("transientModels" to mapOf("droppedPrevious" to it)) }.orEmpty()`.
+  - If scaffolding succeeds (`MPSEditorMcpToolset.kt:404, 841, 855`), `addTransientModelsDropped()` attaches `transientModels`.
   - However, if `performMake` **succeeds** (so previous transient models *were* dropped) and scaffolding subsequently fails inside `executeShortCommandOnEdt` (e.g., target editor model not found/not editable at line 310, smart-reference + `includeComponents` conflict at line 380, or empty cells), lines 905-912 return the error without `droppedPreviousTransients`, leaving the caller unaware that its earlier transient models were discarded by the pre-make.
 
   **Verdict: confirmed.** **Fixed:** every error after the pre-make now carries `details.transientModels.droppedPrevious`. A plain message goes through `errJson(..., details)`. A pre-built envelope such as `EditableModelResolution.Err` is merged by the new `AbstractOps.withDetails`, the `details` counterpart of `withWarnings`. Covered by `scaffold_editor reports the transient models its make dropped when scaffolding fails after it`. In that test the failure after the make is the staleness gate's "has no loaded runtime" error for the fresh language, a plain-message error; the code path is the same.
 
 ### 2.2. [Nit] Asymmetric `ModelGenerationStatusManager` call sites after removing reflection
-- **Where:** `plugins/mcp-tools/src/jetbrains/mps/agents/mcp/tools/JetBrainsMPSEditorMcpToolset.kt:201-215` vs. `plugins/mcp-tools/src/jetbrains/mps/agents/mcp/tools/common/AbstractOps.kt:3684-3685`
+- **Where:** `plugins/mcp-tools/src/jetbrains/mps/agents/mcp/tools/MPSEditorMcpToolset.kt:201-215` vs. `plugins/mcp-tools/src/jetbrains/mps/agents/mcp/tools/common/AbstractOps.kt:3684-3685`
 - **What happens:**
-  Commit `649dfaada05a` replaced reflective `ModelGenerationStatusManager.generationRequired` calls in both files. `AbstractOps.checkScaffoldingStaleness` (`AbstractOps.kt:3684-3685`) calls `mgsm.generationRequired(structureModel)` directly, whereas `JetBrainsMPSEditorMcpToolset.kt:203-214` kept the surrounding `try / catch (e: Exception)` and fallback from the former reflection block.
+  Commit `649dfaada05a` replaced reflective `ModelGenerationStatusManager.generationRequired` calls in both files. `AbstractOps.checkScaffoldingStaleness` (`AbstractOps.kt:3684-3685`) calls `mgsm.generationRequired(structureModel)` directly, whereas `MPSEditorMcpToolset.kt:203-214` kept the surrounding `try / catch (e: Exception)` and fallback from the former reflection block.
 
   **Verdict: valid.** The catch existed for reflective lookup failures, which a direct call cannot have. The reflective version in `AbstractOps` had deliberately rethrown a `RuntimeException` from inside `generationRequired` rather than mask it. **Fixed:** the pre-make check is now a direct call, like `checkScaffoldingStaleness`, and the unused `EditableSModel` import is gone.
 
@@ -121,23 +121,23 @@ See "Gate" at the end for the full-suite result.
 
 ### 3.1. [Low] ~50 lines of `@genplan` AST builder helpers and `MetaAdapterFactory` constants duplicated across two test classes
 - **Where:**
-  - `plugins/mcp-tools/test/jetbrains/mps/agents/mcp/tools/integration/JetBrainsMPSGenerationMcpToolsetIntegrationTest.kt:35-40, 226-264`
-  - `plugins/mcp-tools/test/jetbrains/mps/agents/mcp/tools/integration/JetBrainsMPSGenerationTransientModelsIntegrationTest.kt:371-420`
+  - `plugins/mcp-tools/test/jetbrains/mps/agents/mcp/tools/integration/MPSGenerationMcpToolsetIntegrationTest.kt:35-40, 226-264`
+  - `plugins/mcp-tools/test/jetbrains/mps/agents/mcp/tools/integration/MPSGenerationTransientModelsIntegrationTest.kt:371-420`
 - **What happens:**
-  `JetBrainsMPSGenerationTransientModelsIntegrationTest` copies `PLAN_LANG_HI`, `PLAN_LANG_LO`, `PLAN`, `FORK`, `PLAN_STEPS`, `TRANSFORM`, `TRANSFORM_LANGUAGES`, `CHECKPOINT`, `IN_PLACE_CHECKPOINT_SPEC`, `CHECKPOINT_SPEC`, `FORK_PLAN`, `SMODEL_LANG_HI`, `SMODEL_LANG_LO`, `LANGUAGE_ID`, `LANGUAGE_ID_ID`, `LANGUAGE_ID_NAMESPACE`, and the helper methods `languageRuntime`, `concept`, `planNode`, `transformNode`, and `checkpointNode` from `JetBrainsMPSGenerationMcpToolsetIntegrationTest` (even noting `// jetbrains.mps.lang.generator.plan and smodel's LanguageId, as in JetBrainsMPSGenerationMcpToolsetIntegrationTest` at line 402).
+  `MPSGenerationTransientModelsIntegrationTest` copies `PLAN_LANG_HI`, `PLAN_LANG_LO`, `PLAN`, `FORK`, `PLAN_STEPS`, `TRANSFORM`, `TRANSFORM_LANGUAGES`, `CHECKPOINT`, `IN_PLACE_CHECKPOINT_SPEC`, `CHECKPOINT_SPEC`, `FORK_PLAN`, `SMODEL_LANG_HI`, `SMODEL_LANG_LO`, `LANGUAGE_ID`, `LANGUAGE_ID_ID`, `LANGUAGE_ID_NAMESPACE`, and the helper methods `languageRuntime`, `concept`, `planNode`, `transformNode`, and `checkpointNode` from `MPSGenerationMcpToolsetIntegrationTest` (even noting `// jetbrains.mps.lang.generator.plan and smodel's LanguageId, as in MPSGenerationMcpToolsetIntegrationTest` at line 402).
 - **Suggested fix:**
   Extract a small `internal object GenPlanTestNodes` (or shared helpers in the integration test package) so both integration tests share a single definition.
 
   **Verdict: valid.** **Refactored:** `integration/GenPlanTestNodes.kt` holds the metamodel handles and `planNode`, `transformNode` (now `vararg`, covering both copies' signatures), `checkpointNode` and a new `forkNode`. Only `PLAN_STEPS` is public. `languageRuntime` and `concept` moved to `McpIntegrationTestBase`, because they need the test project. In the transient-models test, the checkpoint-plan setup is now one helper, `modelWithCheckpointPlan`, shared by the old `droppedPrevious` test and the two new checkpoint tests.
 
-### 3.2. [Low] `resolveDataType` in `JetBrainsMPSLanguageStructureMcpToolset` duplicates `AbstractOps.resolveStructureDeclarationPreferringProject`
+### 3.2. [Low] `resolveDataType` in `MPSLanguageStructureMcpToolset` duplicates `AbstractOps.resolveStructureDeclarationPreferringProject`
 - **Where:**
-  - `plugins/mcp-tools/src/jetbrains/mps/agents/mcp/tools/JetBrainsMPSLanguageStructureMcpToolset.kt:944-970`
+  - `plugins/mcp-tools/src/jetbrains/mps/agents/mcp/tools/MPSLanguageStructureMcpToolset.kt:944-970`
   - `plugins/mcp-tools/src/jetbrains/mps/agents/mcp/tools/common/AbstractOps.kt:3108-3145`
 - **What happens:**
   Commit `6c05766e5679` updated the two `nameLookupModules(mpsProject.repository)` loops in `resolveDataType` (`ModelName.DataTypeName` and bare `DataTypeName` in `.structure` models). Those 27 lines duplicate `AbstractOps.findStructureDeclarationInModules`, except `resolveDataType` is not project-first (`generation-debugging-plan.md:66`).
 - **Suggested fix:**
-  Replace lines 944-970 of `JetBrainsMPSLanguageStructureMcpToolset.kt` with a call to `resolveStructureDeclarationPreferringProject(mpsProject, type) { it.concept.isSubConceptOf(CONCEPT_DataTypeDeclaration) }`, which both removes the duplicate scan and makes `resolveDataType` project-first.
+  Replace lines 944-970 of `MPSLanguageStructureMcpToolset.kt` with a call to `resolveStructureDeclarationPreferringProject(mpsProject, type) { it.concept.isSubConceptOf(CONCEPT_DataTypeDeclaration) }`, which both removes the duplicate scan and makes `resolveDataType` project-first.
 
   **Verdict: confirmed.** **Refactored** as suggested. Two small differences, both improvements:
   - The shared lookup applies the data-type filter while it searches, so a same-named non-data-type root no longer hides a data type later in the model.
@@ -172,6 +172,6 @@ A second reviewer was given the diff, not these verdicts. It found no blocking b
 ## Gate
 
 - Before the second round, `McpToolsIntegrationTestSuite` (full umbrella, no `MCP_TESTS`): 1314 tests, 0 failed, 0 ignored.
-- After the second round, these targeted classes pass, 52 tests in all: `JetBrainsMPSGenerationTransientModelsIntegrationTest`, `JetBrainsMPSGenerationTraceIntegrationTest`, `JetBrainsMPSEditorMcpToolsetIntegrationTest` and `alter_nodes MAKE saveTransientModels keeps the transient models for this make only`.
+- After the second round, these targeted classes pass, 52 tests in all: `MPSGenerationTransientModelsIntegrationTest`, `MPSGenerationTraceIntegrationTest`, `MPSEditorMcpToolsetIntegrationTest` and `alter_nodes MAKE saveTransientModels keeps the transient models for this make only`.
 - Full umbrella after the second round: 1314 tests, 0 failed, 0 ignored.
 

@@ -2,7 +2,6 @@ package jetbrains.mps.agents.mcp.tools.integration
 
 import jetbrains.mps.agents.mcp.tools.*
 import jetbrains.mps.agents.mcp.tools.common.*
-import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
@@ -76,7 +75,7 @@ class PrintNodeHtmlIntegrationTest : McpIntegrationTestBase() {
     @Test
     fun `HTML is a standalone page next to the painted editor, tagged with the nodes it projects`() {
         val ref = createConceptRoot("HtmlPage")
-        val envelope = JsonParser.parseString(runTool(JetBrainsMPSNodeMcpToolset()) {
+        val envelope = JsonParser.parseString(runTool(MPSNodeMcpToolset()) {
             it.mps_mcp_print_node(ref, format = "HTML", maxInlineBytes = 10)
         }).asJsonObject
         assertTrue(envelope.toString(), envelope.get("ok").asBoolean)

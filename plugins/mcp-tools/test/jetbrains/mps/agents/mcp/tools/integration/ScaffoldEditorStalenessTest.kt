@@ -23,7 +23,7 @@ import org.junit.Test
 
 /**
  * Integration + helper-level coverage for the model-level staleness gate in
- * [JetBrainsMPSEditorMcpToolset.mps_mcp_scaffold_editor] (see
+ * [MPSEditorMcpToolset.mps_mcp_scaffold_editor] (see
  * [AbstractOps.checkScaffoldingStaleness]).
  *
  * The gate has three Stale branches plus a Fresh outcome:
@@ -44,7 +44,7 @@ import org.junit.Test
  */
 class ScaffoldEditorStalenessTest : McpIntegrationTestBase() {
 
-    private val toolset = JetBrainsMPSEditorMcpToolset()
+    private val toolset = MPSEditorMcpToolset()
 
     /** A compiled, alias-bearing concept that has scaffoldable content (properties/refs/children). */
     private val compiledConceptFqn = "jetbrains.mps.lang.structure.structure.ConceptDeclaration"
@@ -85,7 +85,7 @@ class ScaffoldEditorStalenessTest : McpIntegrationTestBase() {
         // properties/links when the id is unknown to the language — exactly the shape
         // `isHollowDescriptor` catches. The ref must use `SConceptAdapterById`'s canonical
         // serialize format (`c:<langUUID>/<conceptIdValue>:<qualifiedName>`) because we call
-        // `createConcept` directly here — unlike `JetBrainsMPSEditorMcpToolsetIntegrationTest.
+        // `createConcept` directly here — unlike `MPSEditorMcpToolsetIntegrationTest.
         // `hollow runtime descriptor surfaces ...``, which routes through `AbstractOps.resolveConcept`
         // and survives the more permissive `(langName)`-style node-ref format because that path
         // swallows the FormatException and falls back to node-reference resolution.

@@ -164,6 +164,6 @@ model, so no separate `model_used_language` step is needed.
 - Several test roots, several models, or a mix: `data.runType=="NODE"`, `data.live==false`. Pass `configurationName`. Repeat the call to refresh a snapshot.
 - A model reference passed as `nodeReference` is `INVALID_REQUEST` and names `modelReference`.
 
-The fixture for these cases, including a model with no tests, `compileInMPS=false`, and a cross-project model, is `JetBrainsMPSRunConfigurationMcpToolsetIntegrationTest`. Do not execute the created JUnit configurations here.
+The fixture for these cases, including a model with no tests, `compileInMPS=false`, and a cross-project model, is `MPSRunConfigurationMcpToolsetIntegrationTest`. Do not execute the created JUnit configurations here.
 
 Proceed to `12_console.md`.

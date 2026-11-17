@@ -43,12 +43,12 @@ cheap, but no turn saving is expected.
 
 | D56 says | Finding |
 |---|---|
-| `concept` / `conceptName` are outside the near-miss vocabulary | **True** for this tool. The message at `JetBrainsMPSLanguageMcpToolset.kt:149` and `RETRY_WITH_CONCEPT_REFS` (`:83`) are hand-written and list only `conceptRef`/`conceptReference`/`languageRef`/`languageReference`. The shared vocabulary already treats both as near-misses of `conceptRef` (`RequiredParameters.kt:37`), so this tool is out of line with it. |
+| `concept` / `conceptName` are outside the near-miss vocabulary | **True** for this tool. The message at `MPSLanguageMcpToolset.kt:149` and `RETRY_WITH_CONCEPT_REFS` (`:83`) are hand-written and list only `conceptRef`/`conceptReference`/`languageRef`/`languageReference`. The shared vocabulary already treats both as near-misses of `conceptRef` (`RequiredParameters.kt:37`), so this tool is out of line with it. |
 | "the generic 'no concepts nor languages provided' message fires" | **Partly.** The same message fires, but it is not generic. It names `'conceptRefs'` twice and ends with a retry line. The genuinely generic message (`"No concepts nor languages have been provided"`, nothing else) existed only at baseline, and that is the only case that cost 2 turns (`runs/S1-sonnet-1:95`→ToolSearch `:96`→`:97`). |
 | "the worker repeats the same wrong key on a second concept before switching to `conceptRefs`" | **False.** `S2-sonnet-1:118,:119` (round 10) and `S6-sonnet-1:10,:11` (round 11) are each one assistant message. The next message fixed all of them at once: `:120` and `:14` merge both concepts into one `conceptRefs` array. |
 | "a third confirmed instance (round 8 S2, round 10 S1/S2, round 11 S6)" | **Miscounted.** Round 8 S2 is `conceptNames` (plural, one call, one turn: `runs-r8/S2-sonnet-1:68`→`:69`). Round 10 S1 is `conceptRef`, which D56 itself calls covered. That leaves two `concept`/`conceptName` instances (r10 S2, r11 S6) plus one `conceptNames` (r8 S2). |
 | `print_node` `node` "two-in-a-row miss on two different node references" | **One batch** (`S6-sonnet-1:12,:13` share a message with `:10,:11`), one recovery turn (`:15`, `:16`). |
-| "Confirm whether `print_node`'s rejection of `node` already names `nodeReference`" | **It does**, verbatim: *"nodeReference is required. Retry with nodeReference set to … This tool spells it 'nodeReference'; a value sent as 'nodeRef'/'node'/'reference' never reaches it."* (`JetBrainsMPSNodeMcpToolset.kt:966`, via `RequiredParameters.kt:51`). |
+| "Confirm whether `print_node`'s rejection of `node` already names `nodeReference`" | **It does**, verbatim: *"nodeReference is required. Retry with nodeReference set to … This tool spells it 'nodeReference'; a value sent as 'nodeRef'/'node'/'reference' never reaches it."* (`MPSNodeMcpToolset.kt:966`, via `RequiredParameters.kt:51`). |
 | "Not the same as `apply_intention` `targetNode`, where the D43 message worked in one retry" | **The distinction does not hold.** D56's cases also took one retry. The only difference is batch width, 1 call against 2. |
 | Round-12 addition: "singular `conceptRef` ×3 in one parallel batch" | Correctly described, and it is the covered key. It had the same shape and cost (3 calls, 1 turn) as the uncovered cases. That is evidence **against** the remedy, not for it. |
 
@@ -147,7 +147,7 @@ retry_rate)`), so parallel-batching sonnet runs are over-weighted [I].
    retry sentence key-agnostic ("…set to the value you sent under another key"). The latter
    covers spellings nobody has predicted, which a list cannot. `conceptNames` already escaped it
    once. Either edit changes the exact-string assertion in
-   `JetBrainsMPSLanguageMcpToolsetIntegrationTest.kt:463` (D27's test). The tool description
+   `MPSLanguageMcpToolsetIntegrationTest.kt:463` (D27's test). The tool description
    does not change, so `inventorySha256` stays the same.
 3. **Fix the analyzer (recommended, separate from D56):** in the retry loop, skip candidates with
    the same `msg` as the error. Take the first same-tool call from a *later* message, without

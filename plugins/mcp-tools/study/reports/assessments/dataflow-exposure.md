@@ -4,7 +4,7 @@ Status: assessment, 2026-10-08; code pointers re-checked and the implementation 
 2026-10-22; steps 1 and 2 implemented and step 3 run (round 41) 2026-10-23 (see Recommendation). Investigates whether dataflow graphs,
 "value to here" / "value from here" inspections, or other dataflow-derived information would
 help agents editing DSL code if exposed as MCP tools, and how much each candidate would cost.
-The implemented `mps_mcp_query_types` (`src/jetbrains/mps/agents/mcp/tools/JetBrainsMPSTypesMcpToolset.kt`,
+The implemented `mps_mcp_query_types` (`src/jetbrains/mps/agents/mcp/tools/MPSTypesMcpToolset.kt`,
 documented in skill `mps-mcp-workflow/references/analysis-tools/type-queries.md`) is the template
 any dataflow tool would follow. Its plan, `docs/query-types-plan.md`, was removed as implemented in
 `8cf5c45bc359`; read it with `git show 8cf5c45bc359^:plugins/mcp-tools/docs/query-types-plan.md`.
@@ -158,13 +158,13 @@ it: only the catch-all `tools/gensources/gensources.iml` lists its `source_gen`,
 from `languages/runtimes/jetbrains.mps.dataFlow.runtime.jar` (`build/mpsCore.xml`). `mcp-tools.iml`
 does not depend on it, and no hand-written IDEA module imports `jetbrains.mps.lang.dataFlow.*`.
 A toolset that writes `program.analyze(ReachingDefinitionsAnalyzer())` in Kotlin, as
-`JetBrainsMPSTypesMcpToolset` calls `TypecheckingFacade` (which lives in the `typechecking` IDEA
+`MPSTypesMcpToolset` calls `TypecheckingFacade` (which lives in the `typechecking` IDEA
 module), does not compile today.
 
 There are three ways around it:
 
 - **A. Reflection through the module class loader.** mcp-tools already does this for
-  MPS-compiled code. `JetBrainsMPSRunConfigurationMcpToolset.loadBaseLanguageClass` resolves
+  MPS-compiled code. `MPSRunConfigurationMcpToolset.loadBaseLanguageClass` resolves
   `jetbrains.mps.baseLanguage` classes through `ClassLoaderManager.getClassLoader(module)`. That
   helper is private and hard-codes the module name, so it would have to be generalised.
   `JavaParseResolver.kt` also loads a module class by name. The console helpers in
@@ -187,7 +187,7 @@ There are three ways around it:
 - **C. A compile-time dependency from `mcp-tools.iml` on the runtime's classes.** It would
   compile, but it does not work at runtime. The mcp-tools plugin class loader does not see
   module jars under `languages/runtimes` (see the comment in
-  `JetBrainsMPSRunConfigurationMcpToolset.kt` above `loadBaseLanguageClass`), so the likely
+  `MPSRunConfigurationMcpToolset.kt` above `loadBaseLanguageClass`), so the likely
   result is a `NoClassDefFoundError`. Bundling a private copy fails too, and silently:
   `ModuleRuntime.extensionsFor` and `LanguageRuntime.getAspect` match classes by identity. So
   `withAvailableExtensions(MPSProgramFactory.class)` with the copy's class finds nothing, and
@@ -329,7 +329,7 @@ Low value.
    - Neither worker misread its prompt; both prompts are frozen.
 1. Settle the compile boundary (see "The compile boundary"). A, a reflective façade, is the
    default. Then add `mps_mcp_query_dataflow` with operations `PRINT_PROGRAM`, `REACHING_WRITES`
-   and `REACHING_READS`, following `JetBrainsMPSTypesMcpToolset.kt`: an operation enum,
+   and `REACHING_READS`, following `MPSTypesMcpToolset.kt`: an operation enum,
    `ParameterKeys` per operation, `withMpsProject`, and a Gson result through `finalizeResult`.
    Use a plain model read, not the EDT read: `query_types` needs the EDT only for
    `TypecheckingFacade`. Build programs through
@@ -376,7 +376,7 @@ Low value.
    copy each changed skill folder to `.agents/skills/` and `.claude/skills/`, which
    `SkillCatalogReplicationTest` enforces.
    Status 2026-10-23: steps 1 and 2 are done. `mps_mcp_query_dataflow`
-   (`src/.../JetBrainsMPSDataflowMcpToolset.kt`, façade `common/DataflowRuntime.kt`) has
+   (`src/.../MPSDataflowMcpToolset.kt`, façade `common/DataflowRuntime.kt`) has
    `PRINT_PROGRAM`, `REACHING_WRITES` and `REACHING_READS`, with every wiring item above, and the
    skill page `mps-mcp-workflow/references/analysis-tools/dataflow-queries.md`. `families.py`
    counts `DF_queries`, `DF_program_prints` and `DF_reaching_queries`. Facts settled while

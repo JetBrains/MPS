@@ -12,7 +12,7 @@ that `show_steps.py` prints.
 ## 0. Harness state
 
 - **Measured surface**: HEAD `8b8b13900d3c` plus the **uncommitted working-tree changes** in
-  `AbstractOps.kt`, `AbstractNodeOps.kt` and `JetBrainsMPSModelMcpToolset.kt` (work in progress that rejects
+  `AbstractOps.kt`, `AbstractNodeOps.kt` and `MPSModelMcpToolset.kt` (work in progress that rejects
   invented language UUIDs, see `docs/reject-invented-language-uuids.md`).
   - The plugin classes were compiled at 16:04, after every source edit, so the relaunched MPS served them.
   - Since round 18, the committed changes are MPS-40208 (a `mps-mcp-workflow/SKILL.md` hint to load a tool's

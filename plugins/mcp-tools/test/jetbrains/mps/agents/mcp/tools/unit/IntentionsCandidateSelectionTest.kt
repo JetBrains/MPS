@@ -2,14 +2,14 @@ package jetbrains.mps.agents.mcp.tools.unit
 
 import jetbrains.mps.agents.mcp.tools.*
 
-import jetbrains.mps.agents.mcp.tools.JetBrainsMPSIntentionsMcpToolset.CandidateChoice
+import jetbrains.mps.agents.mcp.tools.MPSIntentionsMcpToolset.CandidateChoice
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
- * Unit tests for [JetBrainsMPSIntentionsMcpToolset.selectCandidate] — the disambiguation step of
+ * Unit tests for [MPSIntentionsMcpToolset.selectCandidate] — the disambiguation step of
  * `mps_mcp_apply_intention`. The plan's contract: several *identical* candidates (same key) →
  * apply the first with a warning; several *differing* candidates → an Ambiguous error listing
  * them. A deterministic bundled fixture with differing same-id candidates on one node does not
@@ -17,7 +17,7 @@ import org.junit.Test
  */
 class IntentionsCandidateSelectionTest {
 
-    private val toolset = JetBrainsMPSIntentionsMcpToolset()
+    private val toolset = MPSIntentionsMcpToolset()
 
     private fun choose(candidates: List<String>): CandidateChoice<String> =
         toolset.selectCandidate(candidates) { it }

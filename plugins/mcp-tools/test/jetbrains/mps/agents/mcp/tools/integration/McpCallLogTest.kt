@@ -1,9 +1,9 @@
 package jetbrains.mps.agents.mcp.tools.integration
 
-import jetbrains.mps.agents.mcp.tools.JetBrainsMPSLanguageMcpToolset
-import jetbrains.mps.agents.mcp.tools.JetBrainsMPSLanguageStructureMcpToolset
-import jetbrains.mps.agents.mcp.tools.JetBrainsMPSModelMcpToolset
-import jetbrains.mps.agents.mcp.tools.JetBrainsMPSNodeMcpToolset
+import jetbrains.mps.agents.mcp.tools.MPSLanguageMcpToolset
+import jetbrains.mps.agents.mcp.tools.MPSLanguageStructureMcpToolset
+import jetbrains.mps.agents.mcp.tools.MPSModelMcpToolset
+import jetbrains.mps.agents.mcp.tools.MPSNodeMcpToolset
 import jetbrains.mps.agents.mcp.tools.logging.*
 
 import com.google.gson.JsonParser
@@ -198,7 +198,7 @@ class McpCallLogTest : McpIntegrationTestBase() {
             val tool: String,
             val args: Map<String, McpJsonElement>,
             val expectedCode: String,
-            val toolset: com.intellij.mcpserver.McpToolset = JetBrainsMPSNodeMcpToolset(),
+            val toolset: com.intellij.mcpserver.McpToolset = MPSNodeMcpToolset(),
         )
 
         val cases = listOf(
@@ -225,19 +225,19 @@ class McpCallLogTest : McpIntegrationTestBase() {
             // D43: a missing required parameter, answered by rejectMissingParameters.
             Case("mps_mcp_query_nodes", emptyMap(), "INVALID_REQUEST"),
             Case("mps_mcp_check_root_node_problems", emptyMap(), "INVALID_REQUEST"),
-            Case("mps_mcp_create_model", emptyMap(), "INVALID_REQUEST", JetBrainsMPSModelMcpToolset()),
+            Case("mps_mcp_create_model", emptyMap(), "INVALID_REQUEST", MPSModelMcpToolset()),
             Case(
                 "mps_mcp_query_structure",
                 mapOf("operation" to McpJsonPrimitive("IS_SMART_REFERENCE")),
                 "INVALID_REQUEST",
-                JetBrainsMPSLanguageStructureMcpToolset(),
+                MPSLanguageStructureMcpToolset(),
             ),
             // D43 review: alter_structure's unknown-operation return was unrecorded before.
             Case(
                 "mps_mcp_alter_structure",
                 mapOf("operation" to McpJsonPrimitive("DELETE_CONCEPT")),
                 "INVALID_REQUEST",
-                JetBrainsMPSLanguageStructureMcpToolset(),
+                MPSLanguageStructureMcpToolset(),
             ),
         )
 
@@ -278,7 +278,7 @@ class McpCallLogTest : McpIntegrationTestBase() {
             val info = stubMcpCallInfo(myProject)
             listener.beforeMcpToolCall(info.mcpToolDescriptor, info)
             val result = runBlocking(McpCallAdditionalDataElement(stubMcpCallInfo(myProject))) {
-                JetBrainsMPSNodeMcpToolset().mps_mcp_update_node(
+                MPSNodeMcpToolset().mps_mcp_update_node(
                     operation = "SET",
                     kind = "PROPERTY",
                     properties = listOf(
@@ -315,7 +315,7 @@ class McpCallLogTest : McpIntegrationTestBase() {
             val info = stubMcpCallInfo(myProject)
             listener.beforeMcpToolCall(info.mcpToolDescriptor, info)
             val result = callThroughBridge(
-                JetBrainsMPSLanguageMcpToolset(),
+                MPSLanguageMcpToolset(),
                 "mps_mcp_get_concept_details",
                 mapOf("conceptRef" to McpJsonPrimitive("jetbrains.mps.lang.core.structure.BaseConcept")),
             )

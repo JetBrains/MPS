@@ -65,7 +65,7 @@ class PrintNodeGridTextIntegrationTest : McpIntegrationTestBase() {
     fun `a ConceptDeclaration editor has no table and keeps the plain text renderer`() {
         val ref = createConceptRoot("GridNone")
         assertNull(inEditor(ref) { CellGridText.gridReason(it, NonTextCells.collect(it)) })
-        val envelope = JsonParser.parseString(runTool(JetBrainsMPSNodeMcpToolset()) {
+        val envelope = JsonParser.parseString(runTool(MPSNodeMcpToolset()) {
             it.mps_mcp_print_node(ref, format = "PLAIN TEXT")
         }).asJsonObject
         assertTrue(envelope.toString(), envelope.get("ok").asBoolean)
@@ -104,7 +104,7 @@ class PrintNodeGridTextIntegrationTest : McpIntegrationTestBase() {
             assertNull(CellGridText.gridReason(root, NonTextCells.collect(root)))
             labelTexts(root)
         }
-        val envelope = JsonParser.parseString(runTool(JetBrainsMPSNodeMcpToolset()) {
+        val envelope = JsonParser.parseString(runTool(MPSNodeMcpToolset()) {
             it.mps_mcp_print_node(ref, format = "PLAIN TEXT")
         }).asJsonObject
         assertTrue(envelope.toString(), envelope.get("ok").asBoolean)
@@ -165,7 +165,7 @@ class PrintNodeGridTextIntegrationTest : McpIntegrationTestBase() {
         val ref = createConceptRoot("NonTextNone")
         assertEquals(0, inEditor(ref) { NonTextCells.collect(it).size })
         for (format in listOf("PLAIN TEXT", "HTML")) {
-            val envelope = JsonParser.parseString(runTool(JetBrainsMPSNodeMcpToolset()) {
+            val envelope = JsonParser.parseString(runTool(MPSNodeMcpToolset()) {
                 it.mps_mcp_print_node(ref, format = format)
             }).asJsonObject
             assertTrue(envelope.toString(), envelope.get("ok").asBoolean)

@@ -8,7 +8,7 @@ When you call `mps_mcp_create_model(moduleName, modelName)` the `modelName` argu
 
 - **A plain model** typically used in solutions or as utility mmodels in generators and languages.
 - **Language-aspect ID** (no `@`): the model becomes the named aspect of a language module. Detected by qualified name `<langModule>.<aspectId>` where `<aspectId>` is **case-sensitive** and must match a registered `LanguageAspectDescriptor` (`core/kernel/source/jetbrains/mps/smodel/language/LanguageAspectDescriptorBase.java:54-67`). Aspect models carry **no stereotype** — adding `@aspectId` actively prevents recognition (see the comment at line 61: *"be specific we care about complete model name, don't want to get into the one with a stereotype"*).
-- **Model stereotype** (`name@stereotype`): the model becomes a stereotyped non-aspect model (generator template, generation plan, tests, descriptor). Parsed by `validateModelName` (`plugins/mcp-tools/src/jetbrains/mps/agents/mcp/tools/JetBrainsMPSModelMcpToolset.kt:442-471`).
+- **Model stereotype** (`name@stereotype`): the model becomes a stereotyped non-aspect model (generator template, generation plan, tests, descriptor). Parsed by `validateModelName` (`plugins/mcp-tools/src/jetbrains/mps/agents/mcp/tools/MPSModelMcpToolset.kt:626-659`).
 
 The two mechanisms are orthogonal: aspect models never have a stereotype, stereotyped models are never aspect models.
 

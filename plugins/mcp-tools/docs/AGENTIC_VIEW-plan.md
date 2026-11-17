@@ -167,7 +167,7 @@ Files, all under `plugins/mcp-tools/src/jetbrains/mps/agents/mcp/tools/`:
 | File | Change |
 |---|---|
 | `common/AgenticViewRenderer.kt` (new) | `render(node, repository, currentProject): Rendering`. One model walk under a read action produces a list of lines, each with its depth and descendant count, plus the legends and `unloadedConcepts`. `Rendering.text(maxDepth)` assembles a printout. Quoting, id escaping and line assembly are separate functions that need no `SNode`. |
-| `JetBrainsMPSNodeMcpToolset.kt` | `print_node`: literal dispatch (D1), `nodeDepth` parameter (D3), new branch, error text "Allowed values: JSON, HTML, PLAIN TEXT, IMAGE, AGENTIC VIEW". The full `@McpDescription` rewrite is in P5. |
+| `MPSNodeMcpToolset.kt` | `print_node`: literal dispatch (D1), `nodeDepth` parameter (D3), new branch, error text "Allowed values: JSON, HTML, PLAIN TEXT, IMAGE, AGENTIC VIEW". The full `@McpDescription` rewrite is in P5. |
 | `common/AbstractOps.kt` | A text variant of `finalizeResult` that writes a raw `.txt` temp file with `deleteOnExit`. Do **not** add it to `createdTempJsonFiles`: that list is for files mutation tools consume and delete. |
 
 ### P1.1 Traversal
@@ -216,7 +216,7 @@ only after a cut. Warnings: unloaded concepts, ignored `editorHints`, and the cu
 |---|---|---|---|
 | `AgenticViewLinesTest` (new, `test/…/unit/`) | unit | `McpNodeToolsTestSuite` (next to `CellGridTextRendererTest`) | Quoting; id escaping (a foreign id with a space, `(`, `/`); line assembly; duplicate-name suffix; the `<language>.<Name>` rule for two concepts with one short name; `empty:` groups; depth selection from per-depth sizes |
 | `PrintNodeAgenticViewIntegrationTest` (new, `test/…/integration/`) | integration | `McpNodeToolsTestSuite` | The cases below |
-| `JetBrainsMPSNodeMcpToolsetIntegrationTest` | existing | — | The "Allowed values" assertion |
+| `MPSNodeMcpToolsetIntegrationTest` | existing | — | The "Allowed values" assertion |
 
 Integration cases, each on an existing fixture of the mcp-tools tests where one exists:
 
@@ -387,8 +387,8 @@ when the edit takes a blueprint.
 
 | File | Change |
 |---|---|
-| `JetBrainsMPSNodeMcpToolset.kt`, `print_node` | `@McpDescription`: one sentence per variant with its use, AGENTIC VIEW first after JSON; `format`: "five literals"; `nodeDepth`; `deep`: "JSON only"; `maxInlineBytes`: for AGENTIC VIEW the limit cuts the depth instead of writing a file. Keep the length close to today's. |
-| Other tool descriptions that send readers to `print_node (deep=true)`: `JetBrainsMPSProjectMcpToolset.kt` (around line 266), the root-node toolset (around line 60), `JetBrainsMPSConsoleMcpToolset.kt` (around line 186); list the rest with `grep -n print_node src/…/tools/*.kt` | Where the purpose is reading, name AGENTIC VIEW; where the JSON is consumed, leave it |
+| `MPSNodeMcpToolset.kt`, `print_node` | `@McpDescription`: one sentence per variant with its use, AGENTIC VIEW first after JSON; `format`: "five literals"; `nodeDepth`; `deep`: "JSON only"; `maxInlineBytes`: for AGENTIC VIEW the limit cuts the depth instead of writing a file. Keep the length close to today's. |
+| Other tool descriptions that send readers to `print_node (deep=true)`: `MPSProjectMcpToolset.kt` (around line 266), the root-node toolset (around line 60), `MPSConsoleMcpToolset.kt` (around line 186); list the rest with `grep -n print_node src/…/tools/*.kt` | Where the purpose is reading, name AGENTIC VIEW; where the JSON is consumed, leave it |
 | `mps-mcp-workflow/SKILL.md`, `## Critical Directives` | A new directive with the routing rule in two lines and the pointer to the new reference |
 | `mps-mcp-workflow/references/analysis-tools/print-node-agentic-view.md` (new) | The grammar of §2 with one worked example, the flags, the cut and how to continue (`nodeDepth`, print a `(+N)` node), what the format does not carry (cardinality, docs), read-only (D10), and the routing table of P5.1. Under 12288 bytes. |
 | `…/analysis-tools/print-node-output.md` (12174 of 12288 bytes) | "five literals" and the new error text; replace the "Which one" paragraph by a pointer to the routing table; shorten the `reflective` bullet. Net size must not grow. |
