@@ -9,6 +9,7 @@ import com.google.gson.JsonParser
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.impl.LaterInvocator
+import com.intellij.openapi.project.DumbService
 import jetbrains.mps.make.MakeServiceComponent
 import jetbrains.mps.make.MakeSession
 import jetbrains.mps.messages.IMessageHandler
@@ -158,9 +159,22 @@ class MPSMigrationMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         val baseLanguage = checkNotNull(LanguageRegistry.getInstance(myProject.repository).getLanguage("jetbrains.mps.baseLanguage")).identity
         val (solution, _) = solutionUsing(baseLanguage, importVersion = null, recorded = null)
 
+        // openNewSession waits for smart mode without a timeout, and the platform leaves dumb mode
+        // through a NON_MODAL EDT event that cannot run while this test holds the modal: entering
+        // the modal while dumb deadlocks the test. Wait for the rescan solutionUsing started, then
+        // enter the modal in the same EDT event that confirms the project is smart. Dumb mode
+        // cannot start under the modal either, since entering it also needs a NON_MODAL EDT event.
+        waitForSmartMode()
+        val dumbService = DumbService.getInstance(myProject.project)
         val modal = Any()
-        var modalEntered = true
-        ApplicationManager.getApplication().invokeAndWait({ LaterInvocator.enterModal(modal) }, ModalityState.nonModal())
+        var modalEntered = false
+        ApplicationManager.getApplication().invokeAndWait({
+            if (!dumbService.isDumb) {
+                LaterInvocator.enterModal(modal)
+                modalEntered = true
+            }
+        }, ModalityState.nonModal())
+        assumeTrue("the project re-entered dumb mode before the modal could be entered", modalEntered)
         val session = MakeSession(myProject, IMessageHandler.NULL_HANDLER, false)
         var sessionOpened = false
         try {
@@ -175,6 +189,8 @@ class MPSMigrationMcpToolsetIntegrationTest : McpIntegrationTestBase() {
                             delay(5)
                         }
                     }
+                    // Fail fast instead of hanging the build until its execution timeout.
+                    if (dumbService.isDumb) fail("the project went dumb under the modal; openNewSession would never return")
                     sessionOpened = makeService!!.openNewSession(session)
                     assumeTrue("the test environment could not open a make session", sessionOpened)
                     ApplicationManager.getApplication().invokeAndWait({ LaterInvocator.leaveModal(modal) }, ModalityState.any())
