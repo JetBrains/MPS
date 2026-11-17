@@ -13,6 +13,8 @@ import jetbrains.mps.openapi.editor.descriptor.EditorAspectDescriptor;
 import jetbrains.mps.samples.StateChart.editor.EditorAspectDescriptorImpl;
 import jetbrains.mps.openapi.intentions.IntentionAspectDescriptor;
 import jetbrains.mps.samples.StateChart.intentions.IntentionsDescriptor;
+import jetbrains.mps.lang.typesystem.runtime.IHelginsDescriptor;
+import jetbrains.mps.samples.StateChart.typesystem.TypesystemDescriptor;
 import jetbrains.mps.smodel.runtime.StructureAspectDescriptor;
 import jetbrains.mps.smodel.runtime.ConceptPresentationAspect;
 import jetbrains.mps.samples.StateChart.structure.ConceptPresentationAspectImpl;
@@ -57,6 +59,9 @@ public class Language extends LanguageRuntime {
     }
     if (aspectClass == IntentionAspectDescriptor.class) {
       return aspectClass.cast(new IntentionsDescriptor());
+    }
+    if (aspectClass == IHelginsDescriptor.class) {
+      return aspectClass.cast(new TypesystemDescriptor());
     }
     if (aspectClass == StructureAspectDescriptor.class) {
       return aspectClass.cast(new jetbrains.mps.samples.StateChart.structure.StructureAspectDescriptor());
