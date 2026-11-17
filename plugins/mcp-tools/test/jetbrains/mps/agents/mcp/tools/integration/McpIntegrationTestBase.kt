@@ -20,6 +20,7 @@ import com.intellij.mcpserver.impl.util.CallableBridge
 import com.intellij.mcpserver.impl.util.asTools
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.diagnostic.awaitLogQueueProcessed
 import com.intellij.openapi.project.DumbService
 import com.intellij.testFramework.IndexingTestUtil
 import jetbrains.mps.ide.ModuleInProjectTest
@@ -232,7 +233,13 @@ abstract class McpIntegrationTestBase : ModuleInProjectTest() {
         return result to records.map { it.message }
     }
 
-    /** Like [captureLogMessages], but keeps each record's level. */
+    /**
+     * Like [captureLogMessages], but keeps each record's level.
+     *
+     * Platform [com.intellij.openapi.diagnostic.Logger] calls reach JUL through an asynchronous queue
+     * (`asyncLog.kt`), so a message logged at the end of [block] may not have reached the handler yet when
+     * [block] returns. The queue is drained before the snapshot is taken.
+     */
     protected fun <T> captureLogRecords(block: () -> T): Pair<T, List<LogRecord>> {
         val records = Collections.synchronizedList(mutableListOf<LogRecord>())
         val handler = object : Handler() {
@@ -247,6 +254,7 @@ abstract class McpIntegrationTestBase : ModuleInProjectTest() {
         rootLogger.addHandler(handler)
         return try {
             val result = block()
+            awaitLogQueueProcessed()
             val snapshot = synchronized(records) { records.toList() }
             result to snapshot
         }
