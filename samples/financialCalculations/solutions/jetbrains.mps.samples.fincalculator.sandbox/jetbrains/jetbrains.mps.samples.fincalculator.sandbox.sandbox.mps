@@ -4,6 +4,7 @@
   <languages>
     <use id="26b3d6d5-b99a-4ed6-83be-d2ea6f3627c2" name="jetbrains.mps.samples.fincalculator" version="0" />
     <use id="f3061a53-9226-4cc5-a443-f952ceaf5816" name="jetbrains.mps.baseLanguage" version="12" />
+    <use id="c7fb639f-be78-4307-89b0-b5959c3fa8c8" name="jetbrains.mps.lang.text" version="0" />
   </languages>
   <imports>
     <import index="npo5" ref="r:346759f7-f6a3-4d42-a3a1-c8d7b36649d7(jetbrains.mps.samples.fincalculator.support.runtime)" />
@@ -105,9 +106,21 @@
         <property id="1169194664001" name="name" index="TrG5h" />
       </concept>
     </language>
+    <language id="c7fb639f-be78-4307-89b0-b5959c3fa8c8" name="jetbrains.mps.lang.text">
+      <concept id="155656958578482948" name="jetbrains.mps.lang.text.structure.Word" flags="nn" index="3oM_SD">
+        <property id="155656958578482949" name="value" index="3oM_SC" />
+      </concept>
+      <concept id="2535923850359206929" name="jetbrains.mps.lang.text.structure.Text" flags="nn" index="1Pa9Pv">
+        <child id="2535923850359210936" name="lines" index="1PaQFQ" />
+      </concept>
+      <concept id="2535923850359271782" name="jetbrains.mps.lang.text.structure.Line" flags="nn" index="1PaTwC">
+        <child id="2535923850359271783" name="elements" index="1PaTwD" />
+      </concept>
+    </language>
     <language id="26b3d6d5-b99a-4ed6-83be-d2ea6f3627c2" name="jetbrains.mps.samples.fincalculator">
       <concept id="1241362555920" name="jetbrains.mps.samples.fincalculator.structure.Calculator" flags="ng" index="6YmkL">
         <child id="2094486643673280176" name="commands" index="13SN8L" />
+        <child id="3521948432316187749" name="description" index="1p$NOl" />
       </concept>
       <concept id="1241362608529" name="jetbrains.mps.samples.fincalculator.structure.InputField" flags="ng" index="6Yz2K" />
       <concept id="1241362815640" name="jetbrains.mps.samples.fincalculator.structure.OutputField" flags="ng" index="6ZlIT">
@@ -249,19 +262,84 @@
     <node concept="13S77e" id="1Oh785v2nYQ" role="13SN8L" />
     <node concept="13S77e" id="49kBZ1LuGPS" role="13SN8L" />
     <node concept="13S77e" id="1Oh785v07nm" role="13SN8L" />
+    <node concept="1Pa9Pv" id="33wun1Dvjxk" role="1p$NOl">
+      <node concept="1PaTwC" id="33wun1Dvjxl" role="1PaQFQ">
+        <node concept="3oM_SD" id="33wun1Dvjxn" role="1PaTwD">
+          <property role="3oM_SC" value="Calculates" />
+        </node>
+        <node concept="3oM_SD" id="33wun1Dvjxo" role="1PaTwD">
+          <property role="3oM_SC" value="gross" />
+        </node>
+        <node concept="3oM_SD" id="33wun1Dvjxp" role="1PaTwD">
+          <property role="3oM_SC" value="and" />
+        </node>
+        <node concept="3oM_SD" id="33wun1Dvjxq" role="1PaTwD">
+          <property role="3oM_SC" value="net" />
+        </node>
+        <node concept="3oM_SD" id="33wun1Dvjxr" role="1PaTwD">
+          <property role="3oM_SC" value="salary" />
+        </node>
+        <node concept="3oM_SD" id="33wun1Dvjxs" role="1PaTwD">
+          <property role="3oM_SC" value="from" />
+        </node>
+        <node concept="3oM_SD" id="33wun1Dvjxt" role="1PaTwD">
+          <property role="3oM_SC" value="design" />
+        </node>
+        <node concept="3oM_SD" id="33wun1Dvjxu" role="1PaTwD">
+          <property role="3oM_SC" value="and" />
+        </node>
+        <node concept="3oM_SD" id="33wun1Dvjxv" role="1PaTwD">
+          <property role="3oM_SC" value="implementation" />
+        </node>
+        <node concept="3oM_SD" id="33wun1Dvjxw" role="1PaTwD">
+          <property role="3oM_SC" value="hours" />
+        </node>
+        <node concept="3oM_SD" id="33wun1Dvjxx" role="1PaTwD">
+          <property role="3oM_SC" value="and" />
+        </node>
+        <node concept="3oM_SD" id="33wun1Dvjxy" role="1PaTwD">
+          <property role="3oM_SC" value="hourly" />
+        </node>
+        <node concept="3oM_SD" id="33wun1Dvjxz" role="1PaTwD">
+          <property role="3oM_SC" value="rates," />
+        </node>
+        <node concept="3oM_SD" id="33wun1Dvjx$" role="1PaTwD">
+          <property role="3oM_SC" value="applying" />
+        </node>
+        <node concept="3oM_SD" id="33wun1Dvjx_" role="1PaTwD">
+          <property role="3oM_SC" value="the" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvjxA" role="1PaTwD">
+          <property role="3oM_SC" value="income" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvjxB" role="1PaTwD">
+          <property role="3oM_SC" value="tax" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvjxC" role="1PaTwD">
+          <property role="3oM_SC" value="rate" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvjxD" role="1PaTwD">
+          <property role="3oM_SC" value="with" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvjxE" role="1PaTwD">
+          <property role="3oM_SC" value="a" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvjxF" role="1PaTwD">
+          <property role="3oM_SC" value="student" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvjxG" role="1PaTwD">
+          <property role="3oM_SC" value="tax" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvjxH" role="1PaTwD">
+          <property role="3oM_SC" value="discount." />
+        </node>
+      </node>
+    </node>
   </node>
   <node concept="6YmkL" id="4qqfUlqtbKd">
     <property role="TrG5h" value="Mortgage Evaluation" />
-    <node concept="6Yz2K" id="4qqfUlqtfC3" role="13SN8L">
-      <property role="TrG5h" value="age" />
-      <property role="13YcsM" value="1Oh785uVB3d/numeric" />
-    </node>
     <node concept="6Yz2K" id="4qqfUlqtfOt" role="13SN8L">
       <property role="TrG5h" value="total monthly income" />
-      <property role="13YcsM" value="1Oh785uUtIQ/amount" />
-    </node>
-    <node concept="6Yz2K" id="4qqfUlqtgZ4" role="13SN8L">
-      <property role="TrG5h" value="total debt" />
       <property role="13YcsM" value="1Oh785uUtIQ/amount" />
     </node>
     <node concept="6Yz2K" id="4qqfUlqtfS9" role="13SN8L">
@@ -271,46 +349,6 @@
     <node concept="6Yz2K" id="4qqfUlqth3F" role="13SN8L">
       <property role="TrG5h" value="monthly payments towards other loans" />
       <property role="13YcsM" value="1Oh785uUtIQ/amount" />
-    </node>
-    <node concept="NfP_W" id="49kBZ1Lraqf" role="13SN8L">
-      <property role="TrG5h" value="marital status" />
-      <property role="sZ4Cd" value="1Oh785uVB3d/numeric" />
-      <node concept="NfP_Z" id="49kBZ1LraqH" role="NfP$X">
-        <property role="TrG5h" value="single" />
-        <property role="NfP_y" value="1" />
-      </node>
-      <node concept="NfP_Z" id="49kBZ1LraqJ" role="NfP$X">
-        <property role="TrG5h" value="married" />
-        <property role="NfP_y" value="3" />
-      </node>
-      <node concept="NfP_Z" id="49kBZ1LraqM" role="NfP$X">
-        <property role="TrG5h" value="divorced" />
-        <property role="NfP_y" value="1" />
-      </node>
-      <node concept="NfP_Z" id="49kBZ1Lx2FG" role="NfP$X">
-        <property role="TrG5h" value="widowed" />
-        <property role="NfP_y" value="1" />
-      </node>
-    </node>
-    <node concept="NfP_W" id="4qqfUlqtfVR" role="13SN8L">
-      <property role="TrG5h" value="kids" />
-      <property role="sZ4Cd" value="1Oh785uVB3d/other" />
-      <node concept="NfP_Z" id="4qqfUlqtfYa" role="NfP$X">
-        <property role="TrG5h" value="None" />
-        <property role="NfP_y" value="0" />
-      </node>
-      <node concept="NfP_Z" id="4qqfUlqtfZS" role="NfP$X">
-        <property role="TrG5h" value="1" />
-        <property role="NfP_y" value="1" />
-      </node>
-      <node concept="NfP_Z" id="4qqfUlqtg1c" role="NfP$X">
-        <property role="TrG5h" value="2" />
-        <property role="NfP_y" value="2" />
-      </node>
-      <node concept="NfP_Z" id="4qqfUlqtgB3" role="NfP$X">
-        <property role="TrG5h" value="3 or more" />
-        <property role="NfP_y" value="3" />
-      </node>
     </node>
     <node concept="NfP_W" id="4qqfUlqtglD" role="13SN8L">
       <property role="TrG5h" value="education" />
@@ -334,24 +372,12 @@
     <node concept="Nfvq4" id="4qqfUlqtgFx" role="13SN8L">
       <property role="TrG5h" value="retired" />
     </node>
-    <node concept="Nfvq4" id="4qqfUlqtgIo" role="13SN8L">
-      <property role="TrG5h" value="disabled" />
-    </node>
     <node concept="Nfvq4" id="4qqfUlqtgKr" role="13SN8L">
       <property role="TrG5h" value="known history of paying back a mortgage" />
     </node>
     <node concept="6Yz2K" id="4qqfUlqtg5H" role="13SN8L">
       <property role="TrG5h" value="load amount" />
       <property role="13YcsM" value="1Oh785uUtIQ/amount" />
-    </node>
-    <node concept="6Yz2K" id="4qqfUlqtg7T" role="13SN8L">
-      <property role="TrG5h" value="downpayment" />
-      <property role="13YcsM" value="1Oh785uUtIQ/amount" />
-    </node>
-    <node concept="13ZTlJ" id="4qqfUlqtha2" role="13SN8L">
-      <property role="TrG5h" value="interest rate" />
-      <property role="13YcsM" value="1Oh785uUtIR/percent" />
-      <property role="13ZTlI" value="5" />
     </node>
     <node concept="13S77e" id="23xMseUu1j4" role="13SN8L" />
     <node concept="2q_vqQ" id="23xMseUtJwq" role="13SN8L">
@@ -528,6 +554,76 @@
       </node>
     </node>
     <node concept="13S77e" id="4qqfUlqtfDn" role="13SN8L" />
+    <node concept="1Pa9Pv" id="33wun1DvkpY" role="1p$NOl">
+      <node concept="1PaTwC" id="33wun1DvkpZ" role="1PaQFQ">
+        <node concept="3oM_SD" id="33wun1Dvkq1" role="1PaTwD">
+          <property role="3oM_SC" value="Evaluates" />
+        </node>
+        <node concept="3oM_SD" id="33wun1Dvkq2" role="1PaTwD">
+          <property role="3oM_SC" value="whether" />
+        </node>
+        <node concept="3oM_SD" id="33wun1Dvkq3" role="1PaTwD">
+          <property role="3oM_SC" value="a" />
+        </node>
+        <node concept="3oM_SD" id="33wun1Dvkq4" role="1PaTwD">
+          <property role="3oM_SC" value="mortgage" />
+        </node>
+        <node concept="3oM_SD" id="33wun1Dvkq5" role="1PaTwD">
+          <property role="3oM_SC" value="application" />
+        </node>
+        <node concept="3oM_SD" id="33wun1Dvkq6" role="1PaTwD">
+          <property role="3oM_SC" value="is" />
+        </node>
+        <node concept="3oM_SD" id="33wun1Dvkq7" role="1PaTwD">
+          <property role="3oM_SC" value="accepted" />
+        </node>
+        <node concept="3oM_SD" id="33wun1Dvkq8" role="1PaTwD">
+          <property role="3oM_SC" value="based" />
+        </node>
+        <node concept="3oM_SD" id="33wun1Dvkq9" role="1PaTwD">
+          <property role="3oM_SC" value="on" />
+        </node>
+        <node concept="3oM_SD" id="33wun1Dvkqa" role="1PaTwD">
+          <property role="3oM_SC" value="monthly" />
+        </node>
+        <node concept="3oM_SD" id="33wun1Dvkqb" role="1PaTwD">
+          <property role="3oM_SC" value="income," />
+        </node>
+        <node concept="3oM_SD" id="33wun1Dvkqc" role="1PaTwD">
+          <property role="3oM_SC" value="spending," />
+        </node>
+        <node concept="3oM_SD" id="33wun1Dvkqd" role="1PaTwD">
+          <property role="3oM_SC" value="existing" />
+        </node>
+        <node concept="3oM_SD" id="33wun1Dvkqe" role="1PaTwD">
+          <property role="3oM_SC" value="loan" />
+        </node>
+        <node concept="3oM_SD" id="33wun1Dvkqf" role="1PaTwD">
+          <property role="3oM_SC" value="payments," />
+        </node>
+        <node concept="3oM_SD" id="33wun1Dvkqg" role="1PaTwD">
+          <property role="3oM_SC" value="requested" />
+        </node>
+        <node concept="3oM_SD" id="33wun1Dvkqh" role="1PaTwD">
+          <property role="3oM_SC" value="loan" />
+        </node>
+        <node concept="3oM_SD" id="33wun1Dvkqi" role="1PaTwD">
+          <property role="3oM_SC" value="amount," />
+        </node>
+        <node concept="3oM_SD" id="33wun1Dvkqj" role="1PaTwD">
+          <property role="3oM_SC" value="and" />
+        </node>
+        <node concept="3oM_SD" id="33wun1Dvkqk" role="1PaTwD">
+          <property role="3oM_SC" value="applicant" />
+        </node>
+        <node concept="3oM_SD" id="33wun1Dvkql" role="1PaTwD">
+          <property role="3oM_SC" value="risk" />
+        </node>
+        <node concept="3oM_SD" id="33wun1Dvkqm" role="1PaTwD">
+          <property role="3oM_SC" value="profile." />
+        </node>
+      </node>
+    </node>
   </node>
   <node concept="6YmkL" id="4qqfUlqtbL4">
     <property role="TrG5h" value="Mortgage Simulation" />
@@ -656,13 +752,82 @@
         </node>
       </node>
     </node>
+    <node concept="1Pa9Pv" id="33wun1DvliB" role="1p$NOl">
+      <node concept="1PaTwC" id="33wun1DvliC" role="1PaQFQ">
+        <node concept="3oM_SD" id="33wun1DvliE" role="1PaTwD">
+          <property role="3oM_SC" value="Simulates" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvliF" role="1PaTwD">
+          <property role="3oM_SC" value="mortgage" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvliG" role="1PaTwD">
+          <property role="3oM_SC" value="repayment" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvliH" role="1PaTwD">
+          <property role="3oM_SC" value="over" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvliI" role="1PaTwD">
+          <property role="3oM_SC" value="time" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvliJ" role="1PaTwD">
+          <property role="3oM_SC" value="from" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvliK" role="1PaTwD">
+          <property role="3oM_SC" value="loan" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvliL" role="1PaTwD">
+          <property role="3oM_SC" value="amount," />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvliM" role="1PaTwD">
+          <property role="3oM_SC" value="interest" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvliN" role="1PaTwD">
+          <property role="3oM_SC" value="rate," />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvliO" role="1PaTwD">
+          <property role="3oM_SC" value="and" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvliP" role="1PaTwD">
+          <property role="3oM_SC" value="monthly" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvliQ" role="1PaTwD">
+          <property role="3oM_SC" value="payment," />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvliR" role="1PaTwD">
+          <property role="3oM_SC" value="reporting" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvliS" role="1PaTwD">
+          <property role="3oM_SC" value="repayment" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvliT" role="1PaTwD">
+          <property role="3oM_SC" value="duration," />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvliU" role="1PaTwD">
+          <property role="3oM_SC" value="accumulated" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvliV" role="1PaTwD">
+          <property role="3oM_SC" value="interest," />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvliW" role="1PaTwD">
+          <property role="3oM_SC" value="and" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvliX" role="1PaTwD">
+          <property role="3oM_SC" value="a" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvliY" role="1PaTwD">
+          <property role="3oM_SC" value="monthly" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvliZ" role="1PaTwD">
+          <property role="3oM_SC" value="overview" />
+        </node>
+        <node concept="3oM_SD" id="33wun1Dvlj0" role="1PaTwD">
+          <property role="3oM_SC" value="table." />
+        </node>
+      </node>
+    </node>
   </node>
   <node concept="6YmkL" id="4qqfUlqtfyV">
     <property role="TrG5h" value="Tax Form" />
-    <node concept="6Yz2K" id="23xMseUOoCR" role="13SN8L">
-      <property role="TrG5h" value="Name" />
-      <property role="13YcsM" value="23xMseUC67c/textual" />
-    </node>
     <node concept="6Yz2K" id="23xMseUOoCX" role="13SN8L">
       <property role="TrG5h" value="Gross income from employment" />
       <property role="13YcsM" value="1Oh785uUtIQ/amount" />
@@ -894,6 +1059,88 @@
         </node>
       </node>
     </node>
+    <node concept="1Pa9Pv" id="33wun1Dvmc$" role="1p$NOl">
+      <node concept="1PaTwC" id="33wun1Dvmc_" role="1PaQFQ">
+        <node concept="3oM_SD" id="33wun1DvmcB" role="1PaTwD">
+          <property role="3oM_SC" value="Computes" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvmcC" role="1PaTwD">
+          <property role="3oM_SC" value="taxable" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvmcD" role="1PaTwD">
+          <property role="3oM_SC" value="employment" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvmcE" role="1PaTwD">
+          <property role="3oM_SC" value="and" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvmcF" role="1PaTwD">
+          <property role="3oM_SC" value="capital" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvmcG" role="1PaTwD">
+          <property role="3oM_SC" value="income," />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvmcH" role="1PaTwD">
+          <property role="3oM_SC" value="applies" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvmcI" role="1PaTwD">
+          <property role="3oM_SC" value="deductions" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvmcJ" role="1PaTwD">
+          <property role="3oM_SC" value="for" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvmcK" role="1PaTwD">
+          <property role="3oM_SC" value="disability" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvmcL" role="1PaTwD">
+          <property role="3oM_SC" value="and" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvmcM" role="1PaTwD">
+          <property role="3oM_SC" value="children" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvmcN" role="1PaTwD">
+          <property role="3oM_SC" value="along" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvmcO" role="1PaTwD">
+          <property role="3oM_SC" value="with" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvmcP" role="1PaTwD">
+          <property role="3oM_SC" value="location" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvmcQ" role="1PaTwD">
+          <property role="3oM_SC" value="and" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvmcR" role="1PaTwD">
+          <property role="3oM_SC" value="church" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvmcS" role="1PaTwD">
+          <property role="3oM_SC" value="tax" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvmcT" role="1PaTwD">
+          <property role="3oM_SC" value="rates," />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvmcU" role="1PaTwD">
+          <property role="3oM_SC" value="and" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvmcV" role="1PaTwD">
+          <property role="3oM_SC" value="determines" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvmcW" role="1PaTwD">
+          <property role="3oM_SC" value="the" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvmcX" role="1PaTwD">
+          <property role="3oM_SC" value="final" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvmcY" role="1PaTwD">
+          <property role="3oM_SC" value="tax" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvmcZ" role="1PaTwD">
+          <property role="3oM_SC" value="balance" />
+        </node>
+        <node concept="3oM_SD" id="33wun1Dvmd0" role="1PaTwD">
+          <property role="3oM_SC" value="due." />
+        </node>
+      </node>
+    </node>
   </node>
   <node concept="6YmkL" id="4qqfUlqtf$d">
     <property role="TrG5h" value="Simple Investment" />
@@ -1036,6 +1283,73 @@
               <ref role="70ssT" node="4qqfUlqth$c" resolve="Inflation" />
             </node>
           </node>
+        </node>
+      </node>
+    </node>
+    <node concept="1Pa9Pv" id="33wun1Dvneo" role="1p$NOl">
+      <node concept="1PaTwC" id="33wun1Dvnep" role="1PaQFQ">
+        <node concept="3oM_SD" id="33wun1Dvner" role="1PaTwD">
+          <property role="3oM_SC" value="Estimates" />
+        </node>
+        <node concept="3oM_SD" id="33wun1Dvnes" role="1PaTwD">
+          <property role="3oM_SC" value="nominal" />
+        </node>
+        <node concept="3oM_SD" id="33wun1Dvnet" role="1PaTwD">
+          <property role="3oM_SC" value="and" />
+        </node>
+        <node concept="3oM_SD" id="33wun1Dvneu" role="1PaTwD">
+          <property role="3oM_SC" value="inflation-adjusted" />
+        </node>
+        <node concept="3oM_SD" id="33wun1Dvnev" role="1PaTwD">
+          <property role="3oM_SC" value="investment" />
+        </node>
+        <node concept="3oM_SD" id="33wun1Dvnew" role="1PaTwD">
+          <property role="3oM_SC" value="profit" />
+        </node>
+        <node concept="3oM_SD" id="33wun1Dvnex" role="1PaTwD">
+          <property role="3oM_SC" value="and" />
+        </node>
+        <node concept="3oM_SD" id="33wun1Dvney" role="1PaTwD">
+          <property role="3oM_SC" value="total" />
+        </node>
+        <node concept="3oM_SD" id="33wun1Dvnez" role="1PaTwD">
+          <property role="3oM_SC" value="amount" />
+        </node>
+        <node concept="3oM_SD" id="33wun1Dvne$" role="1PaTwD">
+          <property role="3oM_SC" value="from" />
+        </node>
+        <node concept="3oM_SD" id="33wun1Dvne_" role="1PaTwD">
+          <property role="3oM_SC" value="initial" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvneA" role="1PaTwD">
+          <property role="3oM_SC" value="downpayment," />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvneB" role="1PaTwD">
+          <property role="3oM_SC" value="monthly" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvneC" role="1PaTwD">
+          <property role="3oM_SC" value="contributions," />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvneD" role="1PaTwD">
+          <property role="3oM_SC" value="fees," />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvneE" role="1PaTwD">
+          <property role="3oM_SC" value="interest" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvneF" role="1PaTwD">
+          <property role="3oM_SC" value="rate," />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvneG" role="1PaTwD">
+          <property role="3oM_SC" value="inflation," />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvneH" role="1PaTwD">
+          <property role="3oM_SC" value="and" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvneI" role="1PaTwD">
+          <property role="3oM_SC" value="investment" />
+        </node>
+        <node concept="3oM_SD" id="33wun1DvneJ" role="1PaTwD">
+          <property role="3oM_SC" value="duration." />
         </node>
       </node>
     </node>
