@@ -26,4 +26,8 @@ public class PostMergeSortingScenarioTest implements EnvironmentAware {
     List<String> problems = SortingScenarios.runAll(new SortingScenarioRunner(myEnv.getPlatform()), false);
     Assert.assertTrue(String.join("\n", problems), problems.isEmpty());
   }
+  @Test(timeout = 60000)
+  public void childCollectionRolesAndIndices() {
+    new SortingScenarioRunner(myEnv.getPlatform()).checkChildCollectionRolesAndIndices();
+  }
 }

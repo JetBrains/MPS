@@ -13287,15 +13287,11 @@
       <property role="2aFKle" value="false" />
       <node concept="3clFbS" id="63cAeS_sgEe" role="3clF47">
         <node concept="3clFbJ" id="63cAeS_rjGE" role="3cqZAp">
-          <node concept="2OqwBi" id="63cAeS_rk0a" role="3clFbw">
-            <node concept="37vLTw" id="63cAeS_rjSo" role="2Oq$k0">
+          <node concept="2YIFZM" id="3fx$VD9a93I" role="3clFbw">
+            <ref role="1Pybhc" node="5zEkxuKh8vS" resolve="AttributeOperations" />
+            <ref role="37wK5l" node="2orW$Z0h$rE" resolve="isChildAttribute" />
+            <node concept="37vLTw" id="3fx$VD9a93J" role="37wK5m">
               <ref role="3cqZAo" node="63cAeS_skpo" resolve="childNode" />
-            </node>
-            <node concept="liA8E" id="1CQDqZTHDWn" role="2OqNvi">
-              <ref role="37wK5l" to="mhbf:~SNode.isInstanceOfConcept(org.jetbrains.mps.openapi.language.SAbstractConcept)" resolve="isInstanceOfConcept" />
-              <node concept="35c_gC" id="1CQDqZTHE3q" role="37wK5m">
-                <ref role="35c_gD" to="tpck:BpxLfMhSxq" resolve="ChildAttribute" />
-              </node>
             </node>
           </node>
           <node concept="3clFbS" id="63cAeS_rjGG" role="3clFbx">

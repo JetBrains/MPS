@@ -650,7 +650,7 @@ public class SNodeOperations {
     return MetaAdapterByDeclaration.asInstanceConcept(concept);
   }
   public static SContainmentLink getContainingLinkInChildrenAndChildAttributesCollection(SNode childNode) {
-    if (childNode.isInstanceOfConcept(CONCEPTS.ChildAttribute$m8)) {
+    if (AttributeOperations.isChildAttribute(childNode)) {
       return ((SContainmentLink) BHReflection.invoke0(SNodeOperations.cast(childNode, CONCEPTS.ChildAttribute$m8), CONCEPTS.ChildAttribute$m8, SMethodIdV2.create("getLink", 709746936026609871L, 0x553941aeb020c32eL)));
     } else {
       return getContainingLink(childNode);

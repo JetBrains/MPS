@@ -17,6 +17,7 @@ import jetbrains.mps.vcs.mergehints.runtime.VCSAspectUtil;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SNodeOperations;
 import jetbrains.mps.internal.collections.runtime.ListSequence;
 import jetbrains.mps.internal.collections.runtime.Sequence;
+import java.util.ArrayList;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SModelOperations;
 import jetbrains.mps.util.NameUtil;
 import jetbrains.mps.baseLanguage.tuples.runtime.Tuples;
@@ -26,12 +27,9 @@ import jetbrains.mps.baseLanguage.tuples.runtime.MultiTuple;
 import jetbrains.mps.errors.messageTargets.DeletedNodeMessageTarget;
 import jetbrains.mps.util.IterableUtil;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.AttributeOperations;
-import java.util.ArrayList;
 import jetbrains.mps.errors.messageTargets.NodeMessageTarget;
 import java.util.Objects;
 import jetbrains.mps.vcs.diff.DiffUtil;
-import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
-import org.jetbrains.mps.openapi.language.SConcept;
 
 @GeneratedClass(nodeId = "4972886494893223485", model = "r:9b4a89e1-ec38-42c4-b1bd-96ab47ffcb3f(jetbrains.mps.vcs.diff.changes)")
 public class NodeGroupChange extends StructureChange {
@@ -179,20 +177,22 @@ public class NodeGroupChange extends StructureChange {
     myPreparedIdsToDelete = null;
   }
 
-  private Iterable<SNode> copyNodesToInsert(@NotNull final NodeCopier nodeCopier) {
-    return ListSequence.fromList(getChangedCollection(true)).page(myResultBegin, myResultEnd).select((child) -> nodeCopier.copyNode(child));
+  private Iterable<SNode> getNodesToInsert() {
+    return ListSequence.fromList(getChangedCollection(true)).page(myResultBegin, myResultEnd);
   }
 
   private void insertNewNodes(@NotNull SModel model, NodeCopier nodeCopier) {
-    List<SNode> nodesToAdd = Sequence.fromIterable(copyNodesToInsert(nodeCopier)).toList();
-    if (ListSequence.fromList(nodesToAdd).isEmpty()) {
+    List<SNode> nodesToInsert = Sequence.fromIterable(getNodesToInsert()).toList();
+    if (ListSequence.fromList(nodesToInsert).isEmpty()) {
       return;
     }
     SNode parent = nodeCopier.getNode(model, getParentNodeId(false));
     SNode beforAnchor = nodeCopier.getNode(model, myBeforeAnchorId);
-    for (SNode newNode : ListSequence.fromList(nodesToAdd)) {
-      SContainmentLink link = (myRespectCommentedOutNodes && SNodeOperations.isInstanceOf(newNode, CONCEPTS.ChildAttribute$m8) ? LINKS.smodelAttribute$KJ43 : myRole);
-      parent.insertChildBefore(link, newNode, beforAnchor);
+    List<SNode> nodesToAdd = ListSequence.fromList(new ArrayList<SNode>());
+    for (SNode sourceNode : ListSequence.fromList(nodesToInsert)) {
+      SNode newNode = nodeCopier.copyNode(sourceNode);
+      parent.insertChildBefore(SNodeOperations.getContainingLink(sourceNode), newNode, beforAnchor);
+      ListSequence.fromList(nodesToAdd).addElement(newNode);
     }
     StructureChange.fixInnerModelReferences(nodesToAdd, SModelOperations.getPointer(getChangeSet().getNewModel()), model);
   }
@@ -448,13 +448,5 @@ public class NodeGroupChange extends StructureChange {
   }
   private static <T> T as_yjf6x2_a0a0a0ld(Object o, Class<T> type) {
     return (type.isInstance(o) ? (T) o : null);
-  }
-
-  private static final class LINKS {
-    /*package*/ static final SContainmentLink smodelAttribute$KJ43 = MetaAdapterFactory.getContainmentLink(0xceab519525ea4f22L, 0x9b92103b95ca8c0cL, 0x10802efe25aL, 0x47bf8397520e5942L, "smodelAttribute");
-  }
-
-  private static final class CONCEPTS {
-    /*package*/ static final SConcept ChildAttribute$m8 = MetaAdapterFactory.getConcept(0xceab519525ea4f22L, 0x9b92103b95ca8c0cL, 0x9d98713f247885aL, "jetbrains.mps.lang.core.structure.ChildAttribute");
   }
 }

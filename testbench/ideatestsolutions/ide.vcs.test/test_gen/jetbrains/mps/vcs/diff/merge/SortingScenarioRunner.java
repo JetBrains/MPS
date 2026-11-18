@@ -32,6 +32,8 @@ import org.jetbrains.mps.openapi.model.SModelName;
 import jetbrains.mps.smodel.adapter.ids.MetaIdHelper;
 import java.util.Objects;
 import java.util.Collections;
+import org.junit.Assert;
+import jetbrains.mps.lang.smodel.generator.smodelAdapter.SNodeOperations;
 
 /**
  * 
@@ -391,6 +393,29 @@ import java.util.Collections;
       result.add(item);
     }
     return Collections.unmodifiableList(result);
+  }
+  /*package*/ void checkChildCollectionRolesAndIndices() {
+    SNode parent = new jetbrains.mps.smodel.SNode(CLASS);
+    SNode first = new jetbrains.mps.smodel.SNode(FIELD);
+    SNode attribute = new jetbrains.mps.smodel.SNode(GENERIC_COMMENT);
+    SNode ordinary = new jetbrains.mps.smodel.SNode(GENERIC_COMMENT);
+    SNode last = new jetbrains.mps.smodel.SNode(FIELD);
+    attribute.setProperty(LINK_ID, MetaIdHelper.getAggregation(MEMBER).serialize());
+    ordinary.setProperty(LINK_ID, MetaIdHelper.getAggregation(ANNOTATIONS).serialize());
+    parent.addChild(MEMBER, first);
+    parent.addChild(MetaAdapterFactory.getContainmentLink(-3554657779850784990L, -7236703803128771572L, 1133920641626L, 5169995583184591170L, "smodelAttribute"), attribute);
+    parent.addChild(MEMBER, ordinary);
+    parent.addChild(MEMBER, last);
+    Assert.assertEquals(MEMBER, SNodeOperations.getContainingLinkInChildrenAndChildAttributesCollection(first));
+    Assert.assertEquals(0, SNodeOperations.getIndexInChildrenAndChildAttributesCollection(first));
+    Assert.assertEquals(MEMBER, SNodeOperations.getContainingLinkInChildrenAndChildAttributesCollection(attribute));
+    Assert.assertEquals(1, SNodeOperations.getIndexInChildrenAndChildAttributesCollection(attribute));
+    Assert.assertEquals(MEMBER, SNodeOperations.getContainingLinkInChildrenAndChildAttributesCollection(ordinary));
+    Assert.assertEquals(2, SNodeOperations.getIndexInChildrenAndChildAttributesCollection(ordinary));
+    Assert.assertEquals(3, SNodeOperations.getIndexInChildrenAndChildAttributesCollection(last));
+    ordinary.setProperty(LINK_ID, MetaIdHelper.getAggregation(MEMBER).serialize());
+    Assert.assertEquals(MEMBER, SNodeOperations.getContainingLinkInChildrenAndChildAttributesCollection(ordinary));
+    Assert.assertEquals(2, SNodeOperations.getIndexInChildrenAndChildAttributesCollection(ordinary));
   }
 
   private static final class LINKS {
