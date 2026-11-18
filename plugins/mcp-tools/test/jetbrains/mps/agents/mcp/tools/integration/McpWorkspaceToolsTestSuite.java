@@ -22,17 +22,17 @@ import org.junit.runners.Suite;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    JetBrainsMPSModelMcpToolsetIntegrationTest.class,
-    JetBrainsMPSModuleMcpToolsetIntegrationTest.class,
-    JetBrainsMPSMigrationMcpToolsetIntegrationTest.class,
+    MPSModelMcpToolsetIntegrationTest.class,
+    MPSModuleMcpToolsetIntegrationTest.class,
+    MPSMigrationMcpToolsetIntegrationTest.class,
     MigrationAssistantGuardTest.class,
     SearchRootNodeCrossProjectTest.class,
     WriteToolCrossProjectTest.class,
     ProjectResolutionCrossProjectTest.class,
-    JetBrainsMPSProjectMcpToolsetIntegrationTest.class,
+    MPSProjectMcpToolsetIntegrationTest.class,
     CompactProjectStructureIntegrationTest.class,
-    JetBrainsMPSConsoleMcpToolsetIntegrationTest.class,
-    JetBrainsMPSRunConfigurationMcpToolsetIntegrationTest.class,
+    MPSConsoleMcpToolsetIntegrationTest.class,
+    MPSRunConfigurationMcpToolsetIntegrationTest.class,
 })
 public class McpWorkspaceToolsTestSuite {
 }

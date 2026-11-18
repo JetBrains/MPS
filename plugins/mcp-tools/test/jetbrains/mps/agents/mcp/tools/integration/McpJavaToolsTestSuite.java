@@ -21,7 +21,7 @@ import org.junit.runners.Suite;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    JetBrainsMPSJavaMcpToolsetIntegrationTest.class,
+    MPSJavaMcpToolsetIntegrationTest.class,
     ConceptFunctionParameterBindingIntegrationTest.class,
 })
 public class McpJavaToolsTestSuite {

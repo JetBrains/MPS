@@ -5,6 +5,7 @@ Read this first when an error message looks weird or you're about to write your 
 ## Golden rules
 
 - **Node Equality**: When comparing nodes for equality, ALWAYS use the `:eq:` and `:ne:` operators (`NPEEqualsExpression` / `NPENotEqualsExpression`). Never use `==` or `equals()`, as they can cause `NullPointerException`s or compare incorrectly in MPS.
+- **A design-time identity is an smodel literal**: a model, module, node, concept, link or language that exists when you write the code is `model-ptr/…/`, `module-reference/…/`, `node-ptr/…/`, `concept/C/`, `link/C : role/` or `language/…/`, never a `PersistenceFacade` / `SNodePointer` / `MetaAdapterFactory` call or a UUID string — also when the Java parser produced it. See `references/design-time-identities.md`.
 - **Closure parameter needs a `type` child** (`UndefinedType`): the rule and its error cascade are in `references/golden-rules-and-pitfalls.md` in the `mps-collections-and-closures` skill root after loading that companion skill from the same origin.
 
 ## Background: two worlds in one model
@@ -34,8 +35,8 @@ against a matching functional-type target; a mismatch is reported in the insert 
 
 | Symptom | Cause | Fix |
 |---|---|---|
-| `UnknownDotCall` for `SLinkOperations.getTarget` | Inline `MetaAdapterFactory.getContainmentLink` argument could not be resolved | Use `LINKS.xxx` constant instead of inline MetaAdapterFactory call |
-| `UnknownDotCall` for `MetaAdapterFactory.getContainmentLink` | Java parser can't match the `(long,long,long,long,String)` overload in this context | Never call getContainmentLink in method bodies; always use LINKS/CONCEPTS constants |
+| `UnknownDotCall` for `SLinkOperations.getTarget` | Inline `MetaAdapterFactory.getContainmentLink` argument could not be resolved | In a class that already has `LINKS` constants, use one; anywhere else write `link/C : role/` (`references/design-time-identities.md`) |
+| `UnknownDotCall` for `MetaAdapterFactory.getContainmentLink` | Java parser can't match the `(long,long,long,long,String)` overload in this context | Never call getContainmentLink in method bodies: use the class's `LINKS`/`CONCEPTS` constants if it has them, otherwise `link/C : role/` / `concept/C/` |
 | `type undefined is not a subtype of SNode` (cascade) | A preceding unresolved call returned `undefined` type | Fix the first `UnknownDotCall` and the cascade disappears |
 | `type List<SNode> is not a subtype of sequence<node<Type>>` | Method return type was parsed as Java `List<SNode>` instead of MPS `SequenceType` | Replace the `returnType` child after parsing using `mps_mcp_update_node` |
 | `StaticMethodCall` inserts as root node (not into tree) | `parse_java_and_insert` with `mode: "replace"` silently failed to find the target | Verify the target node ref is correct and still in the tree; check that the parent still exists |
@@ -45,4 +46,5 @@ against a matching functional-type target; a mismatch is reported in the insert 
 | `Unresolved reference: <Name>` on a `NamedNodeReference` inside `node-ptr/…/` | The target's model is not imported, so the name is out of scope | `mps_mcp_model_dependency` `ADD` of the target's model, then `mps_mcp_alter_nodes` `FIX_REFERENCES` or re-set the `target` — see `references/link-and-concept-literals.md` |
 | `node-ptr<C> is not a strong subtype of …SNodeReference` | A Java method (`getNodeId()`, `getModelReference()`) called on a `node-ptr` value directly | Downcast first: `node-ptr/X//.getNodeId()` (`SemanticDowncastExpression`) |
 | A lookup of a known node by name (`roots(C).findFirst(… name …)`) returns `null` after a rename | The name is a string, invisible to rename and Find Usages | Replace it with `node-ptr/<name>/.resolve(repo)` — see `references/link-and-concept-literals.md` |
+| No error, yet a model or module is named by a `PersistenceFacade…create{Model,Module}Reference("…")` string (often parsed Java) | The string is untyped and opaque: no stale-name report, not findable as a literal | Replace the whole call with `model-ptr/…/` / `module-reference/…/` and pass it without `.resolve` — see `references/design-time-identities.md` |
 | `"different parameter numbers"` on a `ClosureLiteral`, or any other collections / closures error | A collections or closures rule, not an smodel one | Open `references/golden-rules-and-pitfalls.md` in the `mps-collections-and-closures` skill root after loading that companion skill from the same origin |

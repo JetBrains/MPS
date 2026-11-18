@@ -134,7 +134,7 @@ WARN - jetbrains.mps.agents.mcp.tools.AbstractOps - Unexpected failure in MCP to
 jetbrains.mps.lang.smodel...NodeCastException: Can't cast node: …, concept: jetbrains.mps.lang.behavior.structure.ConceptBehavior
   to concept: jetbrains.mps.baseLanguage.structure.Classifier
   at …JavaParser.parse(JavaParser.java:118)
-  at …JetBrainsMPSJavaMcpToolset.prepareJavaParseResult$lambda$0(JetBrainsMPSJavaMcpToolset.kt:100)
+  at …MPSJavaMcpToolset.prepareJavaParseResult$lambda$0(MPSJavaMcpToolset.kt:100)
 ```
 
 Reproduced deterministically twice after the round (see §4, D26). Omitting `contextNodeRef`
@@ -347,7 +347,7 @@ already document that limit.
 
 `AbstractOps.kt` already treats EOF / unterminated input as brace imbalance and appends a
 temp-file hint; `update_node` uses that helper. The insert/update-root paths in
-`JetBrainsMPSRootNodeMcpToolset.kt` instead call `JsonParser.parseString` and return bare
+`MPSRootNodeMcpToolset.kt` instead call `JsonParser.parseString` and return bare
 `Failed to parse JSON: ${e.message}`, so this worker never saw the hint.
 
 Route `insert_root_node_from_json` and `update_root_node_from_json` parse failures through the

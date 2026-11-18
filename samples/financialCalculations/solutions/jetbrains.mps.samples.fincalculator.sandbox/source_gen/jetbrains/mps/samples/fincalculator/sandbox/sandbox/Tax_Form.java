@@ -46,19 +46,17 @@ public class Tax_Form extends CalculationFrame {
   private JTextField inputField_x9krak_c = new JTextField();
   private JTextField inputField_x9krak_d = new JTextField();
   private JTextField inputField_x9krak_e = new JTextField();
-  private JTextField inputField_x9krak_f = new JTextField();
+  private JTextField outputField_x9krak_k = new JTextField();
   private JTextField outputField_x9krak_l = new JTextField();
-  private JTextField outputField_x9krak_m = new JTextField();
-  private JTextField outputField_x9krak_q = new JTextField();
-  private JTextField inputField_x9krak_r = new JTextField();
-  private JTextField outputField_x9krak_s = new JTextField();
+  private JTextField outputField_x9krak_p = new JTextField();
+  private JTextField inputField_x9krak_q = new JTextField();
+  private JTextField outputField_x9krak_r = new JTextField();
+  private JTextField outputField_x9krak_v = new JTextField();
   private JTextField outputField_x9krak_w = new JTextField();
-  private JTextField outputField_x9krak_x = new JTextField();
-  private JComboBox selector_x9krak_h = new JComboBox();
-  private JComboBox selector_x9krak_j = new JComboBox();
-  private ButtonGroup group_x9krak_o = new ButtonGroup();
+  private JComboBox selector_x9krak_g = new JComboBox();
+  private JComboBox selector_x9krak_i = new JComboBox();
+  private ButtonGroup group_x9krak_n = new ButtonGroup();
 
-  private String Name = "";
   private double Gross_income_from_employment = 0;
   private double Gross_income_from_renting_out = 0;
   private double Capital_gains = 0;
@@ -85,22 +83,20 @@ public class Tax_Form extends CalculationFrame {
 
   public Tax_Form() {
     setTitle("Tax Form");
-    addToSmallPanel("Name", inputField_x9krak_a, "");
+    addToSmallPanel("Gross income from employment", inputField_x9krak_a, "$");
     inputField_x9krak_a.getDocument().addDocumentListener(this.listener);
-    addToSmallPanel("Gross income from employment", inputField_x9krak_b, "$");
+    addToSmallPanel("Gross income from renting out", inputField_x9krak_b, "$");
     inputField_x9krak_b.getDocument().addDocumentListener(this.listener);
-    addToSmallPanel("Gross income from renting out", inputField_x9krak_c, "$");
+    addToSmallPanel("Capital gains", inputField_x9krak_c, "$");
     inputField_x9krak_c.getDocument().addDocumentListener(this.listener);
-    addToSmallPanel("Capital gains", inputField_x9krak_d, "$");
+    addToSmallPanel("Capital loss in previous year", inputField_x9krak_d, "$");
     inputField_x9krak_d.getDocument().addDocumentListener(this.listener);
-    addToSmallPanel("Capital loss in previous year", inputField_x9krak_e, "$");
-    inputField_x9krak_e.getDocument().addDocumentListener(this.listener);
-    addToSmallPanel("Paid towards taxes", inputField_x9krak_f, "$");
+    addToSmallPanel("Paid towards taxes", inputField_x9krak_e, "$");
     addToSmallPanel("", new JLabel(""), "");
-    inputField_x9krak_f.getDocument().addDocumentListener(this.listener);
+    inputField_x9krak_e.getDocument().addDocumentListener(this.listener);
 
     {
-      JComboBox localbox = selector_x9krak_h;
+      JComboBox localbox = selector_x9krak_g;
       localbox.addItem(new SelectorItem<Double>("None", Double.parseDouble("20")));
       localbox.addItem(new SelectorItem<Double>("Light", Double.parseDouble("50")));
       localbox.addItem(new SelectorItem<Double>("Modest", Double.parseDouble("70")));
@@ -114,7 +110,7 @@ public class Tax_Form extends CalculationFrame {
     }
 
     {
-      JComboBox localbox = selector_x9krak_j;
+      JComboBox localbox = selector_x9krak_i;
       localbox.addItem(new SelectorItem<Double>("0", Double.parseDouble("0")));
       localbox.addItem(new SelectorItem<Double>("1", Double.parseDouble("15")));
       localbox.addItem(new SelectorItem<Double>("2", Double.parseDouble("30")));
@@ -127,10 +123,10 @@ public class Tax_Form extends CalculationFrame {
       addToSmallPanel("", new JLabel(""), "");
     }
 
-    addToSmallPanel("Taxable income", this.outputField_x9krak_l, "$");
+    addToSmallPanel("Taxable income", this.outputField_x9krak_k, "$");
+    this.outputField_x9krak_k.setEnabled(false);
+    addToSmallPanel("Taxable capital income", this.outputField_x9krak_l, "$");
     this.outputField_x9krak_l.setEnabled(false);
-    addToSmallPanel("Taxable capital income", this.outputField_x9krak_m, "$");
-    this.outputField_x9krak_m.setEnabled(false);
     addToSmallPanel("", new JLabel(""), "");
 
     {
@@ -140,7 +136,7 @@ public class Tax_Form extends CalculationFrame {
         JRadioButton button = null;
         button = new JRadioButtonWithItem<Double>("City", new SelectorItem<Double>("City", Double.parseDouble("3")));
 
-        group_x9krak_o.add(button);
+        group_x9krak_n.add(button);
         panel.add(button);
         button.addActionListener(actionListener);
       }
@@ -148,7 +144,7 @@ public class Tax_Form extends CalculationFrame {
         JRadioButton button = null;
         button = new JRadioButtonWithItem<Double>("Town", new SelectorItem<Double>("Town", Double.parseDouble("2")));
 
-        group_x9krak_o.add(button);
+        group_x9krak_n.add(button);
         panel.add(button);
         button.addActionListener(actionListener);
       }
@@ -156,26 +152,26 @@ public class Tax_Form extends CalculationFrame {
         JRadioButton button = null;
         button = new JRadioButtonWithItem<Double>("Rural", new SelectorItem<Double>("Rural", Double.parseDouble("1")));
 
-        group_x9krak_o.add(button);
+        group_x9krak_n.add(button);
         panel.add(button);
         button.addActionListener(actionListener);
       }
       addToSmallPanel("Living area", panel, "");
     }
-    addToSmallPanel("Base tax", this.outputField_x9krak_q, "%");
-    this.outputField_x9krak_q.setEnabled(false);
-    inputField_x9krak_r.setText("0");
-    addToSmallPanel("Church tax rate increment", inputField_x9krak_r, "%");
-    inputField_x9krak_r.getDocument().addDocumentListener(this.listener);
-    addToSmallPanel("Applied tax rate", this.outputField_x9krak_s, "%");
-    this.outputField_x9krak_s.setEnabled(false);
+    addToSmallPanel("Base tax", this.outputField_x9krak_p, "%");
+    this.outputField_x9krak_p.setEnabled(false);
+    inputField_x9krak_q.setText("0");
+    addToSmallPanel("Church tax rate increment", inputField_x9krak_q, "%");
+    inputField_x9krak_q.getDocument().addDocumentListener(this.listener);
+    addToSmallPanel("Applied tax rate", this.outputField_x9krak_r, "%");
+    this.outputField_x9krak_r.setEnabled(false);
     addToSmallPanel("", new JLabel(""), "");
 
 
-    addToSmallPanel("Income tax", this.outputField_x9krak_w, "$");
+    addToSmallPanel("Income tax", this.outputField_x9krak_v, "$");
+    this.outputField_x9krak_v.setEnabled(false);
+    addToSmallPanel("Tax balance to pay", this.outputField_x9krak_w, "$");
     this.outputField_x9krak_w.setEnabled(false);
-    addToSmallPanel("Tax balance to pay", this.outputField_x9krak_x, "$");
-    this.outputField_x9krak_x.setEnabled(false);
     update();
     setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     pack();
@@ -183,31 +179,30 @@ public class Tax_Form extends CalculationFrame {
   }
 
   public void update() {
-    Name = inputField_x9krak_a.getText();
     try {
-      Gross_income_from_employment = Double.parseDouble(inputField_x9krak_b.getText());
+      Gross_income_from_employment = Double.parseDouble(inputField_x9krak_a.getText());
     } catch (NumberFormatException e) {
     }
     try {
-      Gross_income_from_renting_out = Double.parseDouble(inputField_x9krak_c.getText());
+      Gross_income_from_renting_out = Double.parseDouble(inputField_x9krak_b.getText());
     } catch (NumberFormatException e) {
     }
     try {
-      Capital_gains = Double.parseDouble(inputField_x9krak_d.getText());
+      Capital_gains = Double.parseDouble(inputField_x9krak_c.getText());
     } catch (NumberFormatException e) {
     }
     try {
-      Capital_loss_in_previous_year = Double.parseDouble(inputField_x9krak_e.getText());
+      Capital_loss_in_previous_year = Double.parseDouble(inputField_x9krak_d.getText());
     } catch (NumberFormatException e) {
     }
     try {
-      Paid_towards_taxes = Double.parseDouble(inputField_x9krak_f.getText());
+      Paid_towards_taxes = Double.parseDouble(inputField_x9krak_e.getText());
     } catch (NumberFormatException e) {
     }
-    Level_of_disability = ((SelectorItem<Double>) ((JComboBox) selector_x9krak_h).getSelectedItem()).getValue();
-    Number_of_children = ((SelectorItem<Double>) ((JComboBox) selector_x9krak_j).getSelectedItem()).getValue();
+    Level_of_disability = ((SelectorItem<Double>) ((JComboBox) selector_x9krak_g).getSelectedItem()).getValue();
+    Number_of_children = ((SelectorItem<Double>) ((JComboBox) selector_x9krak_i).getSelectedItem()).getValue();
     {
-      Enumeration<AbstractButton> elements = ((ButtonGroup) group_x9krak_o).getElements();
+      Enumeration<AbstractButton> elements = ((ButtonGroup) group_x9krak_n).getElements();
       Iterator<AbstractButton> iterator = elements.asIterator();
       JRadioButtonWithItem<Double> selectedButton = null;
       while (iterator.hasNext()) {
@@ -220,21 +215,21 @@ public class Tax_Form extends CalculationFrame {
     }
     base_tax_rate = 15;
     try {
-      Church_tax_rate_increment = Double.parseDouble(inputField_x9krak_r.getText());
+      Church_tax_rate_increment = Double.parseDouble(inputField_x9krak_q.getText());
     } catch (NumberFormatException e) {
     }
     Taxable_income = calculateNonNegativeIncome();
-    outputField_x9krak_l.setText("" + (Taxable_income));
+    outputField_x9krak_k.setText("" + (Taxable_income));
     Taxable_capital_income = Math.max(Capital_gains - Capital_loss_in_previous_year, 0);
-    outputField_x9krak_m.setText("" + (Taxable_capital_income));
+    outputField_x9krak_l.setText("" + (Taxable_capital_income));
     Base_tax = base_tax_rate;
-    outputField_x9krak_q.setText("" + (Base_tax));
+    outputField_x9krak_p.setText("" + (Base_tax));
     Applied_tax_rate = base_tax_rate + Living_area + Church_tax_rate_increment;
-    outputField_x9krak_s.setText("" + (Applied_tax_rate));
+    outputField_x9krak_r.setText("" + (Applied_tax_rate));
     Income_tax = (Taxable_income + Taxable_capital_income + Gross_income_from_renting_out) * Applied_tax_rate / 100;
-    outputField_x9krak_w.setText("" + (Income_tax));
+    outputField_x9krak_v.setText("" + (Income_tax));
     Tax_balance_to_pay = Income_tax - Paid_towards_taxes;
-    outputField_x9krak_x.setText("" + (Tax_balance_to_pay));
+    outputField_x9krak_w.setText("" + (Tax_balance_to_pay));
   }
 
   public static void main(String[] args) {

@@ -13,7 +13,7 @@ when the item is done *and* verified as stated.
 `mps_mcp_search_concepts` (both scopes, and the project scope's auto-widen) and the "did you mean"
 suggestions consider only languages for which `ProjectMembershipCache.isFromAnotherOpenProject` is
 false (`common/ConceptSuggestions.kt:67-73` language list, `:119` per-concept `usable` filter;
-`common/AbstractOps.kt:985-1003`; `JetBrainsMPSLanguageMcpToolset.kt:393-395`, `:444`, `:1158`,
+`common/AbstractOps.kt:985-1003`; `MPSLanguageMcpToolset.kt:393-395`, `:444`, `:1158`,
 `:1185`). With a second project open that owns the languages — the MPS checkout beside a sandbox, or
 a language project beside its consumer — every such language vanishes: `[]`, no warning.
 `modelReference`-scoped search and explicit refs are not filtered.
@@ -98,7 +98,7 @@ Entry-point rules:
 
 Concept discovery follows the selected language scope; there is no inheritance-based exception.
 Superconcept, superinterface and feature target-concept metadata may point into B and are already
-foreign-marked (declaration path `JetBrainsMPSLanguageMcpToolset.kt:761`, `:898`, `:906`, `:952`;
+foreign-marked (declaration path `MPSLanguageMcpToolset.kt:761`, `:898`, `:906`, `:952`;
 runtime path `AbstractOps.kt:3995-4013`) — verify, do not rebuild.
 
 ### Result and suggestion ordering
@@ -112,7 +112,7 @@ Origin priority (three tiers):
 Library vs B is not an ordering criterion — the human import dialog does not distinguish them either.
 Match quality remains primary so a relevant B result is not buried behind unrelated A results.
 Origin tier is a key **inside** the existing comparators and caps, never a post-sort: today the
-strict tiers keep the first 50 in scan order (`JetBrainsMPSLanguageMcpToolset.kt:576-578`) and both
+strict tiers keep the first 50 in scan order (`MPSLanguageMcpToolset.kt:576-578`) and both
 fallback heaps replace only on a strictly higher score (`:585`; `ConceptSuggestions.kt:289-293`), so
 a later sort could not recover A results the cap already dropped.
 
@@ -158,10 +158,10 @@ Planned flow (the human flow: find it, then import it explicitly):
 2. Inspect the chosen concept or enumerate B's language with `mps_mcp_get_concept_details`.
 3. Import that exact language, or a devkit exporting it, into the intended A model with
    `mps_mcp_model_used_language` ADD, passing the `l:` language reference from the hit (plain names
-   work once P2 generalizes name resolution; today a plain name fails, `JetBrainsMPSModelMcpToolset.kt:282-291`).
+   work once P2 generalizes name resolution; today a plain name fails, `MPSModelMcpToolset.kt:282-291`).
    If B's language is not built, instantiating its concepts in A is refused (`ConceptGate`) until it
    is built; the build runs from B (`projectPath` = B), since MAKE targets are project-only
-   (`JetBrainsMPSNodeMcpToolset.kt:746-747`).
+   (`MPSNodeMcpToolset.kt:746-747`).
 4. The language is now in A's project scope and moves from origin tier 3 to tier 2.
 
 Foreign means the definition cannot be mutated from A. It does not prohibit A from importing or
@@ -185,13 +185,13 @@ must be explicit or reported — never a silent side effect of following a sugge
   `sourceNode` for every runtime concept (`:85`; `SNodePointer.resolve` → `SModelBase.getNode` →
   `getModelData()`), so a search already loads the structure model of every built language it
   scans — today for library languages too. The cost is paid once per session (models stay loaded),
-  inside `executeShortReadOnEdt` (`JetBrainsMPSLanguageMcpToolset.kt:378`, `:158`): a UI-freeze
+  inside `executeShortReadOnEdt` (`MPSLanguageMcpToolset.kt:378`, `:158`): a UI-freeze
   risk on the first `scope:all` call, not a per-call cost. `namedConcepts` (`:150-170`, REJECTION
   mode) reads structure for a built language only when it is already loaded.
 - Auto-import sites (2026-11-16 review): blueprint inserts import the concept's language silently
   (`AbstractNodeOps.kt:437-448`: `languageForId` then `model.addLanguage`, no response detail;
   `ConceptGate.require` at `:443` still refuses unbuilt concepts). `MOVE_NODE_TO_PARENT`
-  (`UsedLanguages.addMissingFor`, `JetBrainsMPSNodeMcpToolset.kt:2292`, `:2342`) moves between
+  (`UsedLanguages.addMissingFor`, `MPSNodeMcpToolset.kt:2292`, `:2342`) moves between
   models of one project, so it re-imports languages A already used, and already reports them
   (`:2390`). `JavaParseResolver.kt:313`, `:354` import only BaseLanguage-family languages.
 
@@ -225,7 +225,7 @@ returns an unmarked foreign result.
       ownership); origin ranking must not replace ownership metadata.
 - [x] Apply it to concept suggestions and language suggestions in `buildUnresolvedDetailsJson`, and
       to `conceptHint` (`AbstractOps.kt:1037-1068`; callers `AbstractOps:1279`,
-      `AbstractNodeOps:426`, `:1005`, `JetBrainsMPSTypesMcpToolset:409`, `:623`).
+      `AbstractNodeOps:426`, `:1005`, `MPSTypesMcpToolset:409`, `:623`).
 - [x] Verify (do not rebuild) the markers already emitted on search hits (`:917`, `:1080`, `:1106`)
       for summary and full records, runtime-backed and declaration-backed, and on superconcept /
       superinterface / target-concept metadata (`:761`, `:898`, `:906`, `:952`;
@@ -254,7 +254,7 @@ returns an unmarked foreign result.
       descriptor stamps can over-approximate the used set (a language removed from every model but
       still stamped) and that this is harmless (tier 2 instead of 3).
 - [x] `languagesInProjectScope`: select A-defined or A-used entries from the snapshot. Remove the
-      final sibling-project filter (`JetBrainsMPSLanguageMcpToolset.kt:1158`). A used B language is
+      final sibling-project filter (`MPSLanguageMcpToolset.kt:1158`). A used B language is
       visible and stays marked.
 - [x] Replace `ConceptSuggestions.languagesInProject()` with the global snapshot for all scope,
       auto-widen and both suggestion kinds, and rename it (it is no longer "in project").
@@ -290,7 +290,7 @@ returns an unmarked foreign result.
 - [x] Blueprint inserts (`AbstractNodeOps.kt:437-448`) report the languages they import. The import
       itself stays (human analogy: paste raises the Add-required-imports dialog, so the import is
       visible, not silent). Shape: keep `addedUsedLanguages` as today's list of qualified-name strings
-      (`JetBrainsMPSNodeMcpToolset.kt:2391`, MOVE) so existing consumers and tests are unaffected, and
+      (`MPSNodeMcpToolset.kt:2391`, MOVE) so existing consumers and tests are unaffected, and
       add a sibling `addedUsedLanguageDetails`: one object per language with `qualifiedName`,
       `languageReference`, and the foreign marker when another open project owns it. The import
       happens deep in node creation (`:444-447`), so thread a collecting sink through to the
@@ -309,7 +309,7 @@ returns an unmarked foreign result.
       `ConceptSuggestions.languagesInProject` (renamed), `ProjectMembershipCache.isFromAnotherOpenProject`
       (removed) and `isInCurrentProject` (replaced by `originTier`; keep it only if a non-discovery
       caller remains, e.g. A-first module lookup), the comment at
-      `JetBrainsMPSLanguageMcpToolset.kt:383-386`, and `languagesInProjectScope`'s staleness note
+      `MPSLanguageMcpToolset.kt:383-386`, and `languagesInProjectScope`'s staleness note
       (`:1123-1129`) now that loaded models are consulted.
 
 ### Tests (suite two-project harness; no live MPS)
@@ -360,7 +360,7 @@ goes away and later tests in the shared JVM do not see marked `baseLanguage`-fam
       candidates exclude concepts owned by a sibling project" and "search scope predicate separates
       own languages from library and sibling ones" (`:547`, calls `isFromAnotherOpenProject`); keep
       "marks a sibling-project concept reached by plain name". In
-      `JetBrainsMPSLanguageMcpToolsetIntegrationTest` `:1479-1505`, the "registry plus own languages"
+      `MPSLanguageMcpToolsetIntegrationTest` `:1479-1505`, the "registry plus own languages"
       bound becomes "registry plus repository Language modules"; fix the comment at `:1517`.
 - [x] Write safety: a suggested B concept cannot make a B node/model/module a mutation target; adding
       B's language to an A model and then creating a B-language node in A is accepted; a blueprint
@@ -378,7 +378,7 @@ goes away and later tests in the shared JVM do not see marked `baseLanguage`-fam
 - [x] `get_file_problems` on each changed Kotlin file; `build_project` (whole project if skill
       docs changed — per-file builds leave plugin resources stale).
 - [x] Focused run: `execute_run_configuration("McpToolsIntegrationTestSuite",
-      envs={"MCP_TESTS": "ProjectResolutionCrossProjectTest,JetBrainsMPSLanguageMcpToolsetIntegrationTest"})`;
+      envs={"MCP_TESTS": "ProjectResolutionCrossProjectTest,MPSLanguageMcpToolsetIntegrationTest"})`;
       check the new test names appear in the result (stale-bytecode trap). No other JUnit JVM may
       be running machine-wide.
 - [x] Full `McpToolsIntegrationTestSuite` once at the end; re-run a single non-reproducing failure
@@ -419,29 +419,29 @@ surface, in the same words.
 
 ### Tool descriptions and user-visible strings (Kotlin)
 
-- [x] MUST `KT/JetBrainsMPSLanguageMcpToolset.kt:288` (`search_concepts` description) and `:295`
+- [x] MUST `KT/MPSLanguageMcpToolset.kt:288` (`search_concepts` description) and `:295`
       (`scope`): project = languages this project defines or uses (a used language owned by another
       open project included, marked); all = every registered language plus every language module in
       the repository, other open projects' and never-built ones included; foreign hits carry
       `containingProject` + `editableFromCurrentProject:false` and rank after equally good hits from
       this project (defined, used, everything else). Same item as P2 "Contract text in code".
-- [x] MUST `KT/JetBrainsMPSLanguageMcpToolset.kt:453-455` (auto-widen warning): "widened to every
+- [x] MUST `KT/MPSLanguageMcpToolset.kt:453-455` (auto-widen warning): "widened to every
       language in the repository, including other open projects'"; entries with `containingProject`
       are read-only there and still importable.
-- [x] MUST `KT/JetBrainsMPSModelMcpToolset.kt:239` (`usedLanguage` of `mps_mcp_model_used_language`):
+- [x] MUST `KT/MPSModelMcpToolset.kt:239` (`usedLanguage` of `mps_mcp_model_used_language`):
       plain-name resolution of a never-built language looks in this project first, then other open
       projects; such a language can be imported, its concepts instantiated once it is built from its
       own project. SHOULD `:230` (tool description): importing another open project's language is
       allowed; pass the `l:` reference from a `search_concepts scope:"all"` hit.
-- [x] SHOULD `KT/JetBrainsMPSLanguageMcpToolset.kt:95` (`get_concept_details`): `details.unresolved`
+- [x] SHOULD `KT/MPSLanguageMcpToolset.kt:95` (`get_concept_details`): `details.unresolved`
       suggestions may name other open projects' concepts/languages, marked and ranked after equally
       good local ones; `:100` (`languageRefs`): a plain name also resolves another open project's
       language, this project preferred; the `details.languageBuild` sentence: for a foreign unbuilt
       language the recovery names the owning project's path.
-- [x] SHOULD `KT/JetBrainsMPSNodeMcpToolset.kt:288` (`alter_nodes`): name `addedUsedLanguageDetails`
+- [x] SHOULD `KT/MPSNodeMcpToolset.kt:288` (`alter_nodes`): name `addedUsedLanguageDetails`
       next to `addedUsedLanguages`; in the MAKE paragraph, targets must belong to the selected
       project, so a foreign language is built with its own `projectPath`. `:1704` (`update_node`)
-      and `KT/JetBrainsMPSRootNodeMcpToolset.kt:313`, `:494`/`:510` (insert/update root): the
+      and `KT/MPSRootNodeMcpToolset.kt:313`, `:494`/`:510` (insert/update root): the
       automatic language import and its report (also on a dry run). Cover every tool whose response
       goes through the new sink (P2 write safety).
 - [x] SHOULD `KT/common/AbstractOps.kt:1037-1068` (`conceptHint` message suffix

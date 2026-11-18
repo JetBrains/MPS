@@ -21,7 +21,7 @@ because Gate 1 stopped that matrix at S1 + S3. This round therefore compares in 
 
 - **MPS**: 2026.1 EAP, build 261.25134, from this checkout (HEAD `27fe9b9f7f0a`).
 - **Plugin freshness**: the MPS running at round start (pid 2785, started 11:22) predated the
-  uncommitted `JetBrainsMPSConsoleMcpToolset.kt` edit (12:36, the D54 response `preview`).
+  uncommitted `MPSConsoleMcpToolset.kt` edit (12:36, the D54 response `preview`).
   - `build_project` was green with 0 problems.
   - The compiled class carries the new description text; this was checked in the class file.
   - Then `capture` → `calllog runs-r15/server-calllog.jsonl` → `shutdown` (closed the dev
@@ -189,7 +189,7 @@ Unmeasured; nothing is filed.
 
 | id | remedy | tier | owner files | saving (S9) | evidence |
 |---|---|---|---|---|---|
-| R-a | Say when a response `preview` is the full text; optionally add `previewComplete` | D (+ optional S) | `mps-console/SKILL.md:46` (three trees), `get_console_history` description in `JetBrainsMPSConsoleMcpToolset.kt` | 2 calls/run | §4.1 |
+| R-a | Say when a response `preview` is the full text; optionally add `previewComplete` | D (+ optional S) | `mps-console/SKILL.md:46` (three trees), `get_console_history` description in `MPSConsoleMcpToolset.kt` | 2 calls/run | §4.1 |
 | R-b | Complete query-with-closure blueprint template in `mcp-insertion.md` (D61) | T via D | `mps-console/references/mcp-insertion.md` (three trees) | 6–14 calls + 1 retry/run | §4.2 |
 | — | D50 directory index | D | already open | would also cover part of R-b's navigation | §3 row 3 |
 

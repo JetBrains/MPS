@@ -2,7 +2,7 @@
 <debug-info version="2">
   <root>
     <file name="Language.java">
-      <unit at="25,0,82,0" name="jetbrains.mps.samples.fincalculator.Language" />
+      <unit at="27,0,87,0" name="jetbrains.mps.samples.fincalculator.Language" />
     </file>
   </root>
 </debug-info>

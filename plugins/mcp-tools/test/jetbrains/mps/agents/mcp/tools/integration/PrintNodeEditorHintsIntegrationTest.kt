@@ -22,7 +22,7 @@ import org.junit.Test
 /** `mps_mcp_print_node` HTML / PLAIN TEXT with `editorHints`, and the `details.editorHints` block. */
 class PrintNodeEditorHintsIntegrationTest : McpIntegrationTestBase() {
 
-    private val toolset = JetBrainsMPSNodeMcpToolset()
+    private val toolset = MPSNodeMcpToolset()
 
     private val commentHint = "jetbrains.mps.lang.core.editor.BaseEditorContextHints.comment"
 

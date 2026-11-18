@@ -29,7 +29,7 @@ Citations use `run:step`: the 1-based `tool_use` ordinal, as in `show_steps.py`.
   - Content: HEAD `80b2681a649c` (D49 all-at-once missing-parameter disclosure, D51/D52 creator
     wrapping and feature-reference docs, D57, ADD CHILD occupant fix), **plus two uncommitted peer
     edits** that were in the tree at build time:
-    - a one-line `expected` text in `JetBrainsMPSNodeMcpToolset.kt` (MOVE_NODE_TO_PARENT);
+    - a one-line `expected` text in `MPSNodeMcpToolset.kt` (MOVE_NODE_TO_PARENT);
     - `mps-mcp-workflow/references/reference-formats/request-conventions.md` (+9/−5 lines).
     - Later peer edits (`AbstractOps.kt`, `McpToolInputSchemas.kt`, `tool-conventions.md`, …)
       appeared after the build and are **not** measured.

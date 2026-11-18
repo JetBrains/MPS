@@ -45,19 +45,19 @@ import java.nio.file.Paths
  */
 class ProjectResolutionCrossProjectTest : McpIntegrationTestBase() {
 
-    private val moduleToolset = JetBrainsMPSModuleMcpToolset()
-    private val modelToolset = JetBrainsMPSModelMcpToolset()
-    private val languageToolset = JetBrainsMPSLanguageMcpToolset()
-    private val nodeToolset = JetBrainsMPSNodeMcpToolset()
-    private val projectToolset = JetBrainsMPSProjectMcpToolset()
-    private val rootNodeToolset = JetBrainsMPSRootNodeMcpToolset()
+    private val moduleToolset = MPSModuleMcpToolset()
+    private val modelToolset = MPSModelMcpToolset()
+    private val languageToolset = MPSLanguageMcpToolset()
+    private val nodeToolset = MPSNodeMcpToolset()
+    private val projectToolset = MPSProjectMcpToolset()
+    private val rootNodeToolset = MPSRootNodeMcpToolset()
 
     private val conceptDeclarationFqn = "jetbrains.mps.lang.structure.structure.ConceptDeclaration"
 
     private var projectB: MPSProject? = null
 
     private companion object {
-        const val MAX_SUGGESTIONS = JetBrainsMPSLanguageMcpToolset.MAX_SUGGESTIONS_PER_UNRESOLVED
+        const val MAX_SUGGESTIONS = MPSLanguageMcpToolset.MAX_SUGGESTIONS_PER_UNRESOLVED
         const val CLASS_CONCEPT = "jetbrains.mps.baseLanguage.structure.ClassConcept"
         const val BASE_LANGUAGE = "jetbrains.mps.baseLanguage"
     }
@@ -645,20 +645,20 @@ class ProjectResolutionCrossProjectTest : McpIntegrationTestBase() {
         createConceptRootIn(myProject, structureModelOf(myProject, own), "${t}Own")
         val ownQn = qn(own, "${t}Own")
         assertTrue("precondition: the own concept sorts last by name", bNames.all { qn(other, it) < ownQn })
-        assertTrue("precondition: B alone exceeds the strict cap", bNames.size > JetBrainsMPSLanguageMcpToolset.MAX_STRICT_RESULTS)
+        assertTrue("precondition: B alone exceeds the strict cap", bNames.size > MPSLanguageMcpToolset.MAX_STRICT_RESULTS)
 
         val strict = search(listOf(t), scope = "all")
-        assertEquals(JetBrainsMPSLanguageMcpToolset.MAX_STRICT_RESULTS, strict.hits.size)
+        assertEquals(MPSLanguageMcpToolset.MAX_STRICT_RESULTS, strict.hits.size)
         assertEquals(bNames.size + 1, strict.details?.get("totalStrictMatches")?.asInt)
         assertEquals("the own strict match must survive the cap, first", ownQn, strict.qualifiedNames().first())
 
         val fallback = search(listOf("$t $u"), scope = "all")
-        assertEquals(JetBrainsMPSLanguageMcpToolset.MAX_FALLBACK_RESULTS, fallback.hits.size)
+        assertEquals(MPSLanguageMcpToolset.MAX_FALLBACK_RESULTS, fallback.hits.size)
         assertEquals("the own equal-score candidate must survive the fallback heap, first", ownQn, fallback.qualifiedNames().first())
 
         // The suggestion ranker's fallback heap: two subtokens, every candidate hits one.
         val suggestions = conceptSuggestionsFor("$t$u")
-        assertEquals(JetBrainsMPSLanguageMcpToolset.MAX_SUGGESTIONS_PER_UNRESOLVED, suggestions.size)
+        assertEquals(MPSLanguageMcpToolset.MAX_SUGGESTIONS_PER_UNRESOLVED, suggestions.size)
         assertEquals("the own candidate must survive the suggestion heap, first", ownQn, suggestions.first().get("qualifiedName").asString)
         suggestions.drop(1).forEach { assertForeignProjectMarker(it, projectB) }
     }
@@ -1243,7 +1243,7 @@ class ProjectResolutionCrossProjectTest : McpIntegrationTestBase() {
             val alias = aliases[name]?.let { """, "conceptAlias": "$it"""" } ?: ""
             """{ "name": "$name", "rootable": false$alias }"""
         }
-        val response = runToolForProject(project, JetBrainsMPSLanguageStructureMcpToolset()) {
+        val response = runToolForProject(project, MPSLanguageStructureMcpToolset()) {
             it.mps_mcp_alter_structure(MPSStructureAlterOperation.CREATE_CONCEPTS,
                 """{ "structureModelRef": "$structureModelRef", "conceptsJson": [ $concepts ] }""")
         }
@@ -1388,7 +1388,7 @@ class ProjectResolutionCrossProjectTest : McpIntegrationTestBase() {
               "conceptsJson": [ { "name": "$name", "rootable": $rootable } ]
             }
         """.trimIndent()
-        val response = runToolForProject(project, JetBrainsMPSLanguageStructureMcpToolset()) {
+        val response = runToolForProject(project, MPSLanguageStructureMcpToolset()) {
             it.mps_mcp_alter_structure(MPSStructureAlterOperation.CREATE_CONCEPTS, params)
         }
         assertTrue(

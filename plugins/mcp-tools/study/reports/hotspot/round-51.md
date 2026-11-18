@@ -333,7 +333,7 @@ batch re-reads 17–241 K of context here. Three instances per family were inspe
     (d) reading the hints of an editor in a test. Contract: no `X_outside_project` read in S31, S33, S35, S38a.
     Saving ≈ 30 batches per full round, mostly opus. Risk: each paragraph must be checked against the sources
     first (lesson 48).
-  - **D141, tier S**, owner `JetBrainsMPSJavaMcpToolset.kt`: infer `contextNodeRef` from `insert.parentRef` and say so
+  - **D141, tier S**, owner `MPSJavaMcpToolset.kt`: infer `contextNodeRef` from `insert.parentRef` and say so
     in `details`. Saving 1 batch per instance. Risk: none when the inference is limited to a Classifier or
     `ConceptBehavior` parent.
   - **D139, tier S** (as filed in round 50) plus a ranking fix: a candidate whose name is the query minus one leading

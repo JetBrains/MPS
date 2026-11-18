@@ -1,8 +1,8 @@
 package jetbrains.mps.agents.mcp.tools.unit
 
 import jetbrains.mps.agents.mcp.tools.DEFAULT_MAX_ROOT_NODES
-import jetbrains.mps.agents.mcp.tools.JetBrainsMPSNodeMcpToolset
-import jetbrains.mps.agents.mcp.tools.JetBrainsMPSTypesMcpToolset
+import jetbrains.mps.agents.mcp.tools.MPSNodeMcpToolset
+import jetbrains.mps.agents.mcp.tools.MPSTypesMcpToolset
 import jetbrains.mps.agents.mcp.tools.TypesQueryOperation
 import jetbrains.mps.agents.mcp.tools.unit.SkillRoutingDocs.assertNamesAll
 import jetbrains.mps.agents.mcp.tools.unit.SkillRoutingDocs.criticalDirectives
@@ -73,8 +73,8 @@ class SkillTypeQueryRoutingTest {
     fun `documented maxRootNodes default matches the code`() {
         val sources = listOf(
             TYPE_QUERIES to read(TYPE_QUERIES),
-            "@McpDescription of mps_mcp_query_types" to toolDescription(JetBrainsMPSTypesMcpToolset::class, "mps_mcp_query_types"),
-            "@McpDescription of mps_mcp_query_nodes" to toolDescription(JetBrainsMPSNodeMcpToolset::class, "mps_mcp_query_nodes"),
+            "@McpDescription of mps_mcp_query_types" to toolDescription(MPSTypesMcpToolset::class, "mps_mcp_query_types"),
+            "@McpDescription of mps_mcp_query_nodes" to toolDescription(MPSNodeMcpToolset::class, "mps_mcp_query_nodes"),
         )
         for ((source, text) in sources) {
             val documented = MAX_ROOT_NODES_DEFAULT.findAll(text).map { it.groupValues[1] }.toList()

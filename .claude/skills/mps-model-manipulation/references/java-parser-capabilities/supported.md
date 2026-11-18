@@ -15,9 +15,16 @@ Things that resolve correctly:
   and references to the rule's applicable node (e.g. `throwStatement`) resolve to their
   MPS model equivalents
 - `LINKS.xxx` and `CONCEPTS.xxx` field references (inner-class constants) resolve fine
-  as long as they already exist on the target class
+  as long as they already exist on the target class. Use them only in a class that already keeps
+  such constants (e.g. `RulesFunctions_BaseLanguage`); elsewhere write `link/C : role/` / `concept/C/`
 - `MetaAdapterFactory.getConcept(...)`, `MetaAdapterFactory.getReferenceLink(...)` resolve,
-  but see the note on `getContainmentLink` in `references/java-parser-capabilities/unsupported-and-workarounds.md`
+  but only belong in such a constants class; see the note on `getContainmentLink` in `references/java-parser-capabilities/unsupported-and-workarounds.md`
+
+Resolving is not the same as finished. `PersistenceFacade.getInstance().createModelReference("…")`,
+`createModuleReference("…")`, `new SNodePointer("…", "…")` and inline `MetaAdapterFactory` ids also parse
+and resolve, but in model code each one is a **placeholder** for an smodel literal (`model-ptr/`,
+`module-reference/`, `node-ptr/`, `concept/`, `link/`). Replace it before validating, as
+`references/design-time-identities.md` describes; no check flags a missed one.
 
 ## Java 8 lambdas → closures
 

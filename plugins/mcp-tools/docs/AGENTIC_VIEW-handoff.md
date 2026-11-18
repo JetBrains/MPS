@@ -60,7 +60,7 @@ the next edit.
     `ReadOnlyDefaultEditor` when the concept is not loaded or the "reflective editor read-only" setting is on. The
     study saw only `DefaultEditor`; everything below describes that one.
 - `print_node` then renders the editor cells to text through `showNodeAppearance` → `renderPlainText` in
-  `plugins/mcp-tools/src/jetbrains/mps/agents/mcp/tools/JetBrainsMPSNodeMcpToolset.kt`, around lines 820 and 949.
+  `plugins/mcp-tools/src/jetbrains/mps/agents/mcp/tools/MPSNodeMcpToolset.kt`, around lines 820 and 949.
   This requires building an editor component.
 - Envelope: `{ok, data: "<text>", details: {editorHints: {source, applied, available[...]}}}`. Because the request
   passes `editorHints`, `available` comes back in the full form (`catalog.fullListing()`): 1.3–1.5 KB on every call.
@@ -298,7 +298,7 @@ Points to decide while implementing:
 - **Measure tokens, not only chars.** A 19-digit node id is token-dense, like a UUID. §7 is in chars.
 - **Format literal.** Existing literals use a space (`PLAIN TEXT`). Accept `AGENTIC VIEW` and `AGENTIC_VIEW`
   (`format.uppercase()` is already applied in `print_node`), and update the error text "Allowed values: …" and the
-  tool description (`JetBrainsMPSNodeMcpToolset.kt` around lines 1571–1607).
+  tool description (`MPSNodeMcpToolset.kt` around lines 1571–1607).
 
 ---
 
@@ -334,7 +334,7 @@ the behavior) and to **0.65–0.7×** for the small ones (Maze, dectab, the conc
 
 ## 8. Implementation pointers
 
-- **Entry point.** `JetBrainsMPSNodeMcpToolset.print_node`, around lines 1583–1620: format dispatch, `editorHints`
+- **Entry point.** `MPSNodeMcpToolset.print_node`, around lines 1583–1620: format dispatch, `editorHints`
   warning for JSON, `withMpsProject` + `executeShortReadOnEdt` + `resolveNodeReferencePreferringProject`.
   - Add a branch for the new literal.
   - Reuse the JSON path's resolution, `unresolvedPrintNode` errors, and `unloadedConceptsWarnings`.
@@ -368,7 +368,7 @@ the behavior) and to **0.65–0.7×** for the small ones (Maze, dectab, the conc
   - Unit-level grammar tests can use the study fixtures: the Kaja sample, `reduce_IfStatement`, and the
     `ConceptEditorDeclaration` concept (references in `plan.md`, in the study directory).
 - **Docs.**
-  - Tool description in `JetBrainsMPSNodeMcpToolset.kt`.
+  - Tool description in `MPSNodeMcpToolset.kt`.
   - Skill blueprints under `plugins/mcp-tools/resources/jetbrains/mps/agents/mcp/skills/`, in
     `mps-mcp-workflow/references/analysis-tools/`. `print-node-output.md` is at 12174 of its **12288-byte cap**
     (`SkillReferenceLayoutTest`), so put the new format into its own reference file.

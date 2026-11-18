@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<debug-info version="2">
+  <concept fqn="c:f3061a53-9226-4cc5-a443-f952ceaf5816/1068580123155:jetbrains.mps.baseLanguage.structure.ExpressionStatement" />
+  <concept fqn="c:f3061a53-9226-4cc5-a443-f952ceaf5816/1144226303539:jetbrains.mps.baseLanguage.structure.ForeachStatement" />
+  <concept fqn="c:f3061a53-9226-4cc5-a443-f952ceaf5816/1068580123165:jetbrains.mps.baseLanguage.structure.InstanceMethodDeclaration" />
+  <concept fqn="c:f3061a53-9226-4cc5-a443-f952ceaf5816/1070462154015:jetbrains.mps.baseLanguage.structure.StaticFieldDeclaration" />
+  <root>
+    <file name="DataFlowAspectDescriptorImpl.java">
+      <unit at="15,0,54,0" name="jetbrains.mps.samples.fincalculator.dataFlow.DataFlowAspectDescriptorImpl" />
+    </file>
+  </root>
+  <root nodeRef="r:f1d5624f-f676-4083-91fe-3cc6ee2ead36(jetbrains.mps.samples.fincalculator.dataFlow)/3521948432330800551">
+    <file name="Calculator_DataFlow.java">
+      <node id="3521948432330800560" at="15,119,16,51" concept="0" />
+      <node id="3521948432330800562" at="17,5,18,195" concept="0" />
+      <node id="3521948432330800551" at="22,0,23,0" concept="3" trace="commands$LtFR" />
+      <node id="3521948432330800554" at="14,60,17,5" concept="1" />
+      <node id="3521948432330800551" at="14,0,20,0" concept="2" trace="build#(Ljetbrains/mps/lang/dataFlow/DataFlowBuilderContext;)V" />
+      <scope id="3521948432330800559" at="15,119,16,51" />
+      <scope id="3521948432330800554" at="14,60,17,5">
+        <var name="command" id="3521948432330800555" />
+      </scope>
+      <scope id="3521948432330800553" at="14,60,18,195" />
+      <scope id="3521948432330800551" at="14,0,20,0">
+        <var name="_context" id="3521948432330800551" />
+      </scope>
+      <unit id="3521948432330800551" at="21,0,24,0" name="jetbrains.mps.samples.fincalculator.dataFlow.Calculator_DataFlow$LINKS" />
+      <unit id="3521948432330800551" at="13,0,25,0" name="jetbrains.mps.samples.fincalculator.dataFlow.Calculator_DataFlow" />
+    </file>
+  </root>
+  <root nodeRef="r:f1d5624f-f676-4083-91fe-3cc6ee2ead36(jetbrains.mps.samples.fincalculator.dataFlow)/3521948432330800565">
+    <file name="InputField_DataFlow.java">
+      <node id="3521948432330800568" at="9,60,10,164" concept="0" />
+      <node id="3521948432330800565" at="9,0,12,0" concept="2" trace="build#(Ljetbrains/mps/lang/dataFlow/DataFlowBuilderContext;)V" />
+      <scope id="3521948432330800567" at="9,60,10,164" />
+      <scope id="3521948432330800565" at="9,0,12,0">
+        <var name="_context" id="3521948432330800565" />
+      </scope>
+      <unit id="3521948432330800565" at="8,0,13,0" name="jetbrains.mps.samples.fincalculator.dataFlow.InputField_DataFlow" />
+    </file>
+  </root>
+  <root nodeRef="r:f1d5624f-f676-4083-91fe-3cc6ee2ead36(jetbrains.mps.samples.fincalculator.dataFlow)/3521948432330800570">
+    <file name="Selector_DataFlow.java">
+      <node id="3521948432330800573" at="9,60,10,164" concept="0" />
+      <node id="3521948432330800570" at="9,0,12,0" concept="2" trace="build#(Ljetbrains/mps/lang/dataFlow/DataFlowBuilderContext;)V" />
+      <scope id="3521948432330800572" at="9,60,10,164" />
+      <scope id="3521948432330800570" at="9,0,12,0">
+        <var name="_context" id="3521948432330800570" />
+      </scope>
+      <unit id="3521948432330800570" at="8,0,13,0" name="jetbrains.mps.samples.fincalculator.dataFlow.Selector_DataFlow" />
+    </file>
+  </root>
+  <root nodeRef="r:f1d5624f-f676-4083-91fe-3cc6ee2ead36(jetbrains.mps.samples.fincalculator.dataFlow)/3521948432330800575">
+    <file name="Logical_DataFlow.java">
+      <node id="3521948432330800578" at="9,60,10,164" concept="0" />
+      <node id="3521948432330800575" at="9,0,12,0" concept="2" trace="build#(Ljetbrains/mps/lang/dataFlow/DataFlowBuilderContext;)V" />
+      <scope id="3521948432330800577" at="9,60,10,164" />
+      <scope id="3521948432330800575" at="9,0,12,0">
+        <var name="_context" id="3521948432330800575" />
+      </scope>
+      <unit id="3521948432330800575" at="8,0,13,0" name="jetbrains.mps.samples.fincalculator.dataFlow.Logical_DataFlow" />
+    </file>
+  </root>
+  <root nodeRef="r:f1d5624f-f676-4083-91fe-3cc6ee2ead36(jetbrains.mps.samples.fincalculator.dataFlow)/3521948432330800580">
+    <file name="CalculationValue_DataFlow.java">
+      <node id="3521948432330800583" at="13,60,14,111" concept="0" />
+      <node id="3521948432330800587" at="14,111,15,164" concept="0" />
+      <node id="3521948432330800580" at="19,0,20,0" concept="3" trace="initializer$EDCJ" />
+      <node id="3521948432330800580" at="13,0,17,0" concept="2" trace="build#(Ljetbrains/mps/lang/dataFlow/DataFlowBuilderContext;)V" />
+      <scope id="3521948432330800582" at="13,60,15,164" />
+      <scope id="3521948432330800580" at="13,0,17,0">
+        <var name="_context" id="3521948432330800580" />
+      </scope>
+      <unit id="3521948432330800580" at="18,0,21,0" name="jetbrains.mps.samples.fincalculator.dataFlow.CalculationValue_DataFlow$LINKS" />
+      <unit id="3521948432330800580" at="12,0,22,0" name="jetbrains.mps.samples.fincalculator.dataFlow.CalculationValue_DataFlow" />
+    </file>
+  </root>
+  <root nodeRef="r:f1d5624f-f676-4083-91fe-3cc6ee2ead36(jetbrains.mps.samples.fincalculator.dataFlow)/3521948432330800589">
+    <file name="OutputField_DataFlow.java">
+      <node id="3521948432330800592" at="13,60,14,110" concept="0" />
+      <node id="3521948432330800596" at="14,110,15,164" concept="0" />
+      <node id="3521948432330800589" at="19,0,20,0" concept="3" trace="expression$ddms" />
+      <node id="3521948432330800589" at="13,0,17,0" concept="2" trace="build#(Ljetbrains/mps/lang/dataFlow/DataFlowBuilderContext;)V" />
+      <scope id="3521948432330800591" at="13,60,15,164" />
+      <scope id="3521948432330800589" at="13,0,17,0">
+        <var name="_context" id="3521948432330800589" />
+      </scope>
+      <unit id="3521948432330800589" at="18,0,21,0" name="jetbrains.mps.samples.fincalculator.dataFlow.OutputField_DataFlow$LINKS" />
+      <unit id="3521948432330800589" at="12,0,22,0" name="jetbrains.mps.samples.fincalculator.dataFlow.OutputField_DataFlow" />
+    </file>
+  </root>
+  <root nodeRef="r:f1d5624f-f676-4083-91fe-3cc6ee2ead36(jetbrains.mps.samples.fincalculator.dataFlow)/3521948432330800598">
+    <file name="OutputTable_DataFlow.java">
+      <node id="3521948432330800601" at="13,60,14,110" concept="0" />
+      <node id="3521948432330800598" at="18,0,19,0" concept="3" trace="dataSource$1D5f" />
+      <node id="3521948432330800598" at="13,0,16,0" concept="2" trace="build#(Ljetbrains/mps/lang/dataFlow/DataFlowBuilderContext;)V" />
+      <scope id="3521948432330800600" at="13,60,14,110" />
+      <scope id="3521948432330800598" at="13,0,16,0">
+        <var name="_context" id="3521948432330800598" />
+      </scope>
+      <unit id="3521948432330800598" at="17,0,20,0" name="jetbrains.mps.samples.fincalculator.dataFlow.OutputTable_DataFlow$LINKS" />
+      <unit id="3521948432330800598" at="12,0,21,0" name="jetbrains.mps.samples.fincalculator.dataFlow.OutputTable_DataFlow" />
+    </file>
+  </root>
+  <root nodeRef="r:f1d5624f-f676-4083-91fe-3cc6ee2ead36(jetbrains.mps.samples.fincalculator.dataFlow)/3521948432330800605">
+    <file name="Calculation_DataFlow.java">
+      <node id="3521948432330800620" at="18,388,19,53" concept="0" />
+      <node id="3521948432330800678" at="20,5,21,164" concept="0" />
+      <node id="3521948432330800605" at="25,0,26,0" concept="3" trace="body$xrvH" />
+      <node id="3521948432330800605" at="29,0,30,0" concept="3" trace="FieldReference$gP" />
+      <node id="3521948432330800605" at="30,0,31,0" concept="3" trace="LogicalReference$$S" />
+      <node id="3521948432330800605" at="31,0,32,0" concept="3" trace="SelectorReference$6m" />
+      <node id="3521948432330800605" at="32,0,33,0" concept="3" trace="CalculationReference$OC" />
+      <node id="3521948432330800605" at="33,0,34,0" concept="3" trace="CalculationValueReference$nS" />
+      <node id="3521948432330800608" at="17,60,20,5" concept="1" />
+      <node id="3521948432330800605" at="17,0,23,0" concept="2" trace="build#(Ljetbrains/mps/lang/dataFlow/DataFlowBuilderContext;)V" />
+      <scope id="3521948432330800619" at="18,388,19,53" />
+      <scope id="3521948432330800608" at="17,60,20,5">
+        <var name="reference" id="3521948432330800609" />
+      </scope>
+      <scope id="3521948432330800607" at="17,60,21,164" />
+      <scope id="3521948432330800605" at="17,0,23,0">
+        <var name="_context" id="3521948432330800605" />
+      </scope>
+      <unit id="3521948432330800605" at="24,0,27,0" name="jetbrains.mps.samples.fincalculator.dataFlow.Calculation_DataFlow$LINKS" />
+      <unit id="3521948432330800605" at="28,0,35,0" name="jetbrains.mps.samples.fincalculator.dataFlow.Calculation_DataFlow$CONCEPTS" />
+      <unit id="3521948432330800605" at="16,0,36,0" name="jetbrains.mps.samples.fincalculator.dataFlow.Calculation_DataFlow" />
+    </file>
+  </root>
+  <root nodeRef="r:f1d5624f-f676-4083-91fe-3cc6ee2ead36(jetbrains.mps.samples.fincalculator.dataFlow)/3521948432330800680">
+    <file name="FieldReference_DataFlow.java">
+      <node id="3521948432330800683" at="12,60,13,208" concept="0" />
+      <node id="3521948432330800680" at="17,0,18,0" concept="3" trace="field$pMHA" />
+      <node id="3521948432330800680" at="12,0,15,0" concept="2" trace="build#(Ljetbrains/mps/lang/dataFlow/DataFlowBuilderContext;)V" />
+      <scope id="3521948432330800682" at="12,60,13,208" />
+      <scope id="3521948432330800680" at="12,0,15,0">
+        <var name="_context" id="3521948432330800680" />
+      </scope>
+      <unit id="3521948432330800680" at="16,0,19,0" name="jetbrains.mps.samples.fincalculator.dataFlow.FieldReference_DataFlow$LINKS" />
+      <unit id="3521948432330800680" at="11,0,20,0" name="jetbrains.mps.samples.fincalculator.dataFlow.FieldReference_DataFlow" />
+    </file>
+  </root>
+  <root nodeRef="r:f1d5624f-f676-4083-91fe-3cc6ee2ead36(jetbrains.mps.samples.fincalculator.dataFlow)/3521948432330800687">
+    <file name="LogicalReference_DataFlow.java">
+      <node id="3521948432330800690" at="12,60,13,209" concept="0" />
+      <node id="3521948432330800687" at="17,0,18,0" concept="3" trace="target$22yf" />
+      <node id="3521948432330800687" at="12,0,15,0" concept="2" trace="build#(Ljetbrains/mps/lang/dataFlow/DataFlowBuilderContext;)V" />
+      <scope id="3521948432330800689" at="12,60,13,209" />
+      <scope id="3521948432330800687" at="12,0,15,0">
+        <var name="_context" id="3521948432330800687" />
+      </scope>
+      <unit id="3521948432330800687" at="16,0,19,0" name="jetbrains.mps.samples.fincalculator.dataFlow.LogicalReference_DataFlow$LINKS" />
+      <unit id="3521948432330800687" at="11,0,20,0" name="jetbrains.mps.samples.fincalculator.dataFlow.LogicalReference_DataFlow" />
+    </file>
+  </root>
+  <root nodeRef="r:f1d5624f-f676-4083-91fe-3cc6ee2ead36(jetbrains.mps.samples.fincalculator.dataFlow)/3521948432330800694">
+    <file name="SelectorReference_DataFlow.java">
+      <node id="3521948432330800697" at="12,60,13,209" concept="0" />
+      <node id="3521948432330800694" at="17,0,18,0" concept="3" trace="target$Djhf" />
+      <node id="3521948432330800694" at="12,0,15,0" concept="2" trace="build#(Ljetbrains/mps/lang/dataFlow/DataFlowBuilderContext;)V" />
+      <scope id="3521948432330800696" at="12,60,13,209" />
+      <scope id="3521948432330800694" at="12,0,15,0">
+        <var name="_context" id="3521948432330800694" />
+      </scope>
+      <unit id="3521948432330800694" at="16,0,19,0" name="jetbrains.mps.samples.fincalculator.dataFlow.SelectorReference_DataFlow$LINKS" />
+      <unit id="3521948432330800694" at="11,0,20,0" name="jetbrains.mps.samples.fincalculator.dataFlow.SelectorReference_DataFlow" />
+    </file>
+  </root>
+  <root nodeRef="r:f1d5624f-f676-4083-91fe-3cc6ee2ead36(jetbrains.mps.samples.fincalculator.dataFlow)/3521948432330800701">
+    <file name="CalculationReference_DataFlow.java">
+      <node id="3521948432330800704" at="12,60,13,209" concept="0" />
+      <node id="3521948432330800701" at="17,0,18,0" concept="3" trace="target$WJl$" />
+      <node id="3521948432330800701" at="12,0,15,0" concept="2" trace="build#(Ljetbrains/mps/lang/dataFlow/DataFlowBuilderContext;)V" />
+      <scope id="3521948432330800703" at="12,60,13,209" />
+      <scope id="3521948432330800701" at="12,0,15,0">
+        <var name="_context" id="3521948432330800701" />
+      </scope>
+      <unit id="3521948432330800701" at="16,0,19,0" name="jetbrains.mps.samples.fincalculator.dataFlow.CalculationReference_DataFlow$LINKS" />
+      <unit id="3521948432330800701" at="11,0,20,0" name="jetbrains.mps.samples.fincalculator.dataFlow.CalculationReference_DataFlow" />
+    </file>
+  </root>
+  <root nodeRef="r:f1d5624f-f676-4083-91fe-3cc6ee2ead36(jetbrains.mps.samples.fincalculator.dataFlow)/3521948432330800708">
+    <file name="CalculationValueReference_DataFlow.java">
+      <node id="3521948432330800711" at="12,60,13,209" concept="0" />
+      <node id="3521948432330800708" at="17,0,18,0" concept="3" trace="target$fs2f" />
+      <node id="3521948432330800708" at="12,0,15,0" concept="2" trace="build#(Ljetbrains/mps/lang/dataFlow/DataFlowBuilderContext;)V" />
+      <scope id="3521948432330800710" at="12,60,13,209" />
+      <scope id="3521948432330800708" at="12,0,15,0">
+        <var name="_context" id="3521948432330800708" />
+      </scope>
+      <unit id="3521948432330800708" at="16,0,19,0" name="jetbrains.mps.samples.fincalculator.dataFlow.CalculationValueReference_DataFlow$LINKS" />
+      <unit id="3521948432330800708" at="11,0,20,0" name="jetbrains.mps.samples.fincalculator.dataFlow.CalculationValueReference_DataFlow" />
+    </file>
+  </root>
+</debug-info>
+

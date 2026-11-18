@@ -5,7 +5,7 @@ Origin: `~/MPSProjects/mcp-study/guide-slim/handoff-edt-grazie-check-root-node-p
 
 ## Diagnosis (summary)
 
-- Report-only `mps_mcp_check_root_node_problems` (`JetBrainsMPSNodeMcpToolset.kt:861-865`) runs
+- Report-only `mps_mcp_check_root_node_problems` (`MPSNodeMcpToolset.kt:861-865`) runs
   `runRootCheckers` on the EDT via `executeShortReadOnEdt`.
 - `NonTypesystemChecker` runs `check_NamingPolicy_NonTypesystemRule`; for title-case policies it calls
   `NativeLanguageAnalyzer.isActionDescProperlyCapitalized` -> `LangDetector.getLang` -> `LangTool.getTool`

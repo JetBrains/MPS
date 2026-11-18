@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<product version="3" modelHash="-5zp692jp9i7j3lrw49izt2u2gm2tbsw">
-  <files names="ConceptCasts_Test.java:SConceptHierarchy_Test.java" />
+<product version="3" modelHash="-9eoh3iijveo3r8v80hkfrdvvb0g1laz">
+  <files names="ConceptCasts_Test.java:ConceptIsExactlyInterface_Test.java:SConceptHierarchy_Test.java" />
 </product>
 

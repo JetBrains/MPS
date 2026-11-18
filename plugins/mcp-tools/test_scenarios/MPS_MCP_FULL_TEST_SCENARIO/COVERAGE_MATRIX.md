@@ -73,9 +73,9 @@ negative cases), not by this scenario. Record them as "not covered here — see 
 smoke test" in the run report.
 
 (○) Not exercised by this scenario; covered elsewhere. `generation` (`PLAN`, `TRANSIENT_MODELS`,
-`TRACE`, `DROP_TRANSIENT_MODELS`): `JetBrainsMPSGeneration*IntegrationTest` and study cell S15.
-`run_migrations`: `JetBrainsMPSMigrationMcpToolsetIntegrationTest` and study cell S4.
-`read_ide_log`: `JetBrainsMPSProjectMcpToolsetIntegrationTest` and step V10 of
+`TRACE`, `DROP_TRANSIENT_MODELS`): `MPSGenerationMcpToolsetIntegrationTest`, `MPSGenerationTraceIntegrationTest`, `MPSGenerationTransientModelsIntegrationTest`, and study cell S15.
+`run_migrations`: `MPSMigrationMcpToolsetIntegrationTest` and study cell S4.
+`read_ide_log`: `MPSProjectMcpToolsetIntegrationTest` and step V10 of
 `test_scenarios/mcp-verification-scenario-console-imports.md`. Record them as "not covered here" in
 the run report.
 
@@ -117,7 +117,7 @@ the scenario, and part 14 must still snapshot the project. Opening and closing p
 - **`GET_ASSIGNABLE_REFERENCES.kindFilter`**: instanceMethods ✔(10.12.s3a), staticMethods ✔(10.12.s3b), constructors ✔(10.12.s3c), classes ✔(10.12.s3d). Exercised against the BaseLanguage call/type roles seeded in `McpRunnable` (`baseMethodDeclaration` on an `IMethodCall`; `classifier` on a `ClassifierType`); each call asserts a non-empty candidate set whose every `kind` equals the requested value.
 - **`query_nodes.operation`**: FIND_INSTANCES ✔(08.01), FIND_USAGES ✔(08.08), GET_PARENT ✔(08.09), GET_ROOT ✔(08.10), GET_MODEL_FOR_NODE ✔(08.11), NODE_INDEX ✔(08.12), SIBLINGS ✔(08.13), GET_CHILD_ROLE ✔(08.14), GET_TYPE ✔(10.15a/b; `null` 10.15c; `maxRootNodes` / `details.scope:"node"` 10.15d), GET_EXPECTED_TYPE ✔(10.16a–c; `null` 10.16d; `maxRootNodes` / `details.scope:"node"` 10.16)
 - **`query_types.operation`**: IS_SUBTYPE ✔(10.17a–c), SUPERTYPES ✔(10.18), COMMON_SUPERTYPE ✔(10.19a), COERCE ✔(10.20a–b), OPERATION_TYPE ✔(10.21), EXPLAIN_TYPE ✔(10.22a–b, 10.24.s3); unknown op ✔(10.23)
-- **`query_types` operand forms**: `typeConceptRef` ✔(10.17a), `typeNodeReference` ✔(10.17c), `nodeReference` ✔(10.20a; rejected on a type node 10.17e). *Not exercised:* `blueprint` / a printed type object passed back — it means embedding a whole printed type in the escaped `parameters` string; covered by `JetBrainsMPSTypesMcpToolsetIntegrationTest`.
+- **`query_types` operand forms**: `typeConceptRef` ✔(10.17a), `typeNodeReference` ✔(10.17c), `nodeReference` ✔(10.20a; rejected on a type node 10.17e). *Not exercised:* `blueprint` / a printed type object passed back — it means embedding a whole printed type in the escaped `parameters` string; covered by `MPSTypesMcpToolsetIntegrationTest`.
 - **`query_types` options**: `SUPERTYPES.depth` default ✔(10.18a) / 1 + `details.truncated` ✔(10.18b), `SUPERTYPES.weak`=false ✔(10.18c), `COERCE.strong`=true ✔(10.20b), `OPERATION_TYPE` `operatorNode` ✔(10.21a) / `operatorConceptRef` + `detached instance` warning ✔(10.21b), `EXPLAIN_TYPE.includeApplyRule`=true ✔(10.22b), `EXPLAIN_TYPE.maxRootNodes` too small ✔(10.22c); `parameters` as a real JSON object + lower-case operation ✔(10.17d)
 - **`query_dataflow.operation`**: PRINT_PROGRAM ✔(10.26a–c), REACHING_WRITES ✔(10.27a, 10.27c), REACHING_READS ✔(10.27b); unknown op ✔(10.27e). *Not exercised:* a builder failure (`builderFailure`) — it needs a language whose builder throws; the frame lookup is covered by `DataflowBuilderFrameTest`.
 - **`query_nodes.scope` (FIND_INSTANCES)**: editable ✔(08.01), all ✔(08.02), models ✔(08.03), modules ✔(08.04), roots ✔(08.05)
@@ -135,7 +135,7 @@ the scenario, and part 14 must still snapshot the project. Opening and closing p
 - **`get_concept_details`**: conceptRefs ✔(06.05), languageRefs ✔(06.15)
 - **`parse_java_and_insert.featureKind`**: CLASS ✔(10.01), METHOD ✔(10.02), FIELD ✔(10.03), NESTED_CLASS ✔(10.04), CLASS_CONTENT ✔(10.05), STATEMENTS ✔(10.06), EXPRESSION ✔(10.07)
 - **`parse_java_and_insert.insert.mode`**: root ✔(10.01), child ✔(10.02–10.05), console ✔(10.06–10.07), replace ✔(10.08)
-- **`create_run_configuration` dispatch**: ClassConcept-with-`main`→Java Application ✔(11.01; this is the "Java class with a `public static void main` run via a run configuration" case, executed in optional 11.05); `ITestCase`→JUnit Tests ✔(11.06–11.07, via the stock `jetbrains.mps.lang.test.structure.NodesTestCase`); one model, several roots, and a mix ✔(11.08, and `JetBrainsMPSRunConfigurationMcpToolsetIntegrationTest`). *Not exercised:* `IMainClass`→Java Application — `IMainClass` (`jetbrains.mps.execution.util`) has no stock BaseLanguage implementer, so reaching it needs a DSL/demo concept (`jetbrains.mps.execution.demo`) a generic MPS project may not have loaded; this branch is covered by the toolset's unit tests instead.
+- **`create_run_configuration` dispatch**: ClassConcept-with-`main`→Java Application ✔(11.01; this is the "Java class with a `public static void main` run via a run configuration" case, executed in optional 11.05); `ITestCase`→JUnit Tests ✔(11.06–11.07, via the stock `jetbrains.mps.lang.test.structure.NodesTestCase`); one model, several roots, and a mix ✔(11.08, and `MPSRunConfigurationMcpToolsetIntegrationTest`). *Not exercised:* `IMainClass`→Java Application — `IMainClass` (`jetbrains.mps.execution.util`) has no stock BaseLanguage implementer, so reaching it needs a DSL/demo concept (`jetbrains.mps.execution.demo`) a generic MPS project may not have loaded; this branch is covered by the toolset's unit tests instead.
 
 ## D. Tools intentionally NOT covered (out of scope)
 

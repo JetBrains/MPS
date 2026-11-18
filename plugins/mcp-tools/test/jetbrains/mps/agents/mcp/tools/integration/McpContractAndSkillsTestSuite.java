@@ -12,7 +12,7 @@ package jetbrains.mps.agents.mcp.tools.integration;
 import jetbrains.mps.agents.mcp.tools.unit.GenerationOpsStepsTest;
 import jetbrains.mps.agents.mcp.tools.unit.GenerationTraceRoleTest;
 import jetbrains.mps.agents.mcp.tools.unit.IdeLogReaderTest;
-import jetbrains.mps.agents.mcp.tools.unit.JetBrainsMPSInitMcpToolsetTest;
+import jetbrains.mps.agents.mcp.tools.unit.MPSInitMcpToolsetTest;
 import jetbrains.mps.agents.mcp.tools.unit.McpTestSelectionTest;
 import jetbrains.mps.agents.mcp.tools.unit.McpToolInputSchemasTest;
 import jetbrains.mps.agents.mcp.tools.unit.McpToolParameterOptionalityTest;
@@ -43,8 +43,8 @@ import org.junit.runners.Suite;
     McpJsonOrTextWireShapeTest.class,
     AbstractOpsMakeTest.class,
     AbstractOpsModalTimeoutTest.class,
-    JetBrainsMPSInitMcpToolsetTest.class,
-    JetBrainsMPSInitMcpToolsetIntegrationTest.class,
+    MPSInitMcpToolsetTest.class,
+    MPSInitMcpToolsetIntegrationTest.class,
     McpToolInputSchemasTest.class,
     McpToolParameterOptionalityTest.class,
     McpCallLogTest.class,

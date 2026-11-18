@@ -1,0 +1,2020 @@
+package jetbrains.mps.agents.mcp.tools
+
+import jetbrains.mps.agents.mcp.tools.common.*
+
+// MPS APIs used for CRUD
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
+import com.google.gson.JsonParseException
+import com.google.gson.JsonParser
+import com.google.gson.JsonPrimitive
+import com.intellij.mcpserver.annotations.McpDescription
+import com.intellij.mcpserver.annotations.McpTool
+import com.intellij.openapi.application.WriteAction
+import jetbrains.mps.generator.CustomGenerationModuleFacet
+import jetbrains.mps.persistence.MementoImpl
+import jetbrains.mps.module.ModuleDeleteHelper
+import jetbrains.mps.module.PersistenceContextImpl
+import jetbrains.mps.project.AbstractModule
+import jetbrains.mps.project.DevKit
+import jetbrains.mps.project.MPSProject
+import jetbrains.mps.project.Solution
+import jetbrains.mps.project.modules.DevkitProducer
+import jetbrains.mps.project.modules.LanguageAndSolutionsProducer
+import jetbrains.mps.project.modules.LanguageProducer
+import jetbrains.mps.project.modules.SolutionProducer
+import jetbrains.mps.project.structure.modules.Dependency
+import jetbrains.mps.project.structure.modules.DevkitDescriptor
+import jetbrains.mps.project.structure.modules.GeneratorDescriptor
+import jetbrains.mps.project.structure.modules.LanguageDescriptor
+import jetbrains.mps.project.structure.modules.ModuleDescriptor
+import jetbrains.mps.project.structure.modules.ModuleFacetDescriptor
+import jetbrains.mps.refactoring.Renamer
+import jetbrains.mps.smodel.Generator
+import jetbrains.mps.smodel.Language
+import jetbrains.mps.smodel.ModuleDependencyVersions
+import jetbrains.mps.smodel.adapter.MetaAdapterByDeclaration
+import jetbrains.mps.smodel.language.LanguageRegistry
+import jetbrains.mps.vfs.IFile
+import org.jetbrains.annotations.Nullable
+import org.jetbrains.mps.openapi.model.SModelReference
+import org.jetbrains.mps.openapi.module.FacetsFacade
+import org.jetbrains.mps.openapi.module.SDependencyScope
+import org.jetbrains.mps.openapi.module.SModule
+import org.jetbrains.mps.openapi.module.SModuleReference
+import org.jetbrains.mps.openapi.persistence.Memento
+import org.jetbrains.mps.openapi.persistence.PersistenceFacade
+import java.nio.file.Files
+import java.nio.file.InvalidPathException
+import java.nio.file.Paths
+import java.util.function.Consumer
+import javax.lang.model.SourceVersion
+
+// MCP tool methods use snake_case names because they are part of the public MCP protocol
+// surface, and they are invoked via reflection by the MCP server framework, so static
+// analysis flags them as "never used".
+@Suppress("FunctionName", "unused")
+class MPSModuleMcpToolset : AbstractOps() {
+    @McpTool
+    @McpDescription("""
+        Adds or deletes a dependency of an MPS module based on the operation parameter. Supported operations: ADD or DELETE. 
+        For ADD: Supported scopes: Default, Design, Compile, Runtime, Provided, Generation Target, Extends. `Extends` is routed per source kind (Language→extendedLanguages, Generator→depGenerators; Solution and cross-kind combinations are rejected). A **DevKit** source has no dependencies of its own: the target's kind decides where it goes (Language→exportedLanguages, Solution→exportedSolutions, DevKit→extendedDevkits, Generator rejected), only scope Default/Extends and no reexport are accepted, and the answer is `{added, devkitCollection, alreadyPresent?}` (`added:false, alreadyPresent:true` when the DevKit already lists the target); a DevKit that ships a generation plan exports the plan's solution and languages this way. Returns `{ "added":true }` on change, or `{ "added":false, "reason":"providedByDevKit" }` when the dependency is already supplied by a used DevKit. ADD is an upsert on a single edge: a module holds at most one dependency per source→target pair, so re-adding an existing edge updates its `scope`/`reexport` in place (no duplicate is created) — `added:true` is returned for both a fresh insert and an in-place update. See `mps-aspect-accessories/references/module-level-deps.md` for the scope-dispatch table and the "Extends typically needs a Default companion" note.
+        For DELETE: Both the regular `<dependencies>` list and the per-kind `Extends` collection (for a DevKit also its exports) are probed; any removal counts as success. A DevKit answers `{removed:true, devkitCollections:[...]}` and warns when the removal leaves its generation plan without an export it needs; other modules answer `true`. See `mps-aspect-accessories/references/module-level-deps.md` for the dispatch details.
+    """)
+    suspend fun mps_mcp_module_dependency(
+        @McpDescription("Required. Source module name or reference")
+        moduleName: String = "",
+        @McpDescription("Required. Target module name or reference")
+        targetModule: String = "",
+        @McpDescription("Required. Operation to perform: ADD or DELETE")
+        operation: String = "",
+        @McpDescription("Dependency scope (Default by default)")
+        @Nullable scope: String? = null,
+        @McpDescription("Whether to reexport the dependency (false by default)")
+        reexport: Boolean = false
+    ): String {
+        rejectMissingParameters(
+            "mps_mcp_module_dependency",
+            RequiredParameter("moduleName", moduleName, "the source module's name or reference"),
+            RequiredParameter("targetModule", targetModule, "the target module's name or reference"),
+            RequiredParameter("operation", operation, "ADD or DELETE"),
+        )?.let { return it }
+        val op = resolveOperationOrNull<DependencyOperation>(operation)
+            ?: return unknownOperation<DependencyOperation>(operation)
+        return mps_mcp_module_dependency(moduleName, targetModule, op, scope, reexport)
+    }
+
+    /** Internal enum-typed entry point for [mps_mcp_module_dependency]; see [resolveOperationOrNull]. */
+    suspend fun mps_mcp_module_dependency(
+        moduleName: String,
+        targetModule: String,
+        operation: DependencyOperation,
+        scope: String? = null,
+        reexport: Boolean = false,
+    ): String = withMpsProject("Adding MPS module dependency") { mpsProject ->
+        if (operation == DependencyOperation.DELETE) {
+            return@withMpsProject removeModuleDependency(moduleName, targetModule)
+        }
+        executeShortCommandOnEdt(mpsProject) {
+            val resolved = resolveAbstractModuleWithDescriptor(mpsProject, moduleName, requireWritable = true)
+            if (resolved is AbstractModuleResolution.Err) {
+                return@executeShortCommandOnEdt errJson(resolved.message, resolved.code, resolved.details)
+            }
+            val (abstractModule, descriptor) = (resolved as AbstractModuleResolution.Ok)
+
+            val target = resolveModulePreferringProject(mpsProject, targetModule)
+                ?: return@executeShortCommandOnEdt errJson("Target module $targetModule not found", McpErrorCode.NOT_FOUND)
+
+            val targetRef = target.moduleReference
+            if (abstractModule.moduleReference == targetRef) {
+                return@executeShortCommandOnEdt errJson("Cannot add dependency to itself", McpErrorCode.INVALID_REQUEST)
+            }
+
+            // SDependencyScope.toString() returns the presentation ("Default"), and .name
+            // returns the JVM enum constant ("DEFAULT"); both spellings are commonly seen
+            // in user input, so accept either.
+            val depScope = scope?.let { s ->
+                SDependencyScope.entries.find { it.toString().equals(s, ignoreCase = true) || it.name.equals(s, ignoreCase = true) }
+            } ?: SDependencyScope.DEFAULT
+
+            if (descriptor is DevkitDescriptor) {
+                return@executeShortCommandOnEdt addDevkitContent(abstractModule, descriptor, target, scope, reexport)
+            }
+
+            if (depScope == SDependencyScope.EXTENDS) {
+                // EXTENDS is NOT persisted as a `<dependency scope="extend">` entry. MPS keeps the extension
+                // target in a separate descriptor field per module kind, and the regular `<dependencies>`
+                // list is only used for non-EXTENDS scopes (see ModuleDependTableModel.getDependencies()
+                // / .apply() in workbench/mps-ui). Dispatch accordingly; reject combinations that have no
+                // meaning (Solution source, or source/target kind mismatch).
+                when {
+                    descriptor is LanguageDescriptor && target is Language ->
+                        descriptor.extendedLanguages.add(targetRef)
+                    descriptor is GeneratorDescriptor && target is Generator ->
+                        descriptor.depGenerators.add(targetRef)
+                    descriptor is DevkitDescriptor && targetIsDevkit(target) ->
+                        descriptor.extendedDevkits.add(targetRef)
+                    else -> return@executeShortCommandOnEdt errJson(
+                        extendsRejectMessage(descriptor, target),
+                        McpErrorCode.INVALID_REQUEST,
+                    )
+                }
+                // Set.add returns false when the entry was already present — the call is still
+                // idempotently successful for the caller, so we report added=true either way
+                // (matches the behavior of the non-EXTENDS branch when scope/reexport are unchanged).
+                abstractModule.setChanged()
+                abstractModule.save()
+                return@executeShortCommandOnEdt okJson(jsonObject { addProperty("added", true) })
+            }
+
+            val existing = descriptor.dependencies.find { it.moduleRef == targetRef }
+            if (existing != null) {
+                existing.scope = depScope
+                existing.isReexport = reexport
+            } else {
+                val targetLang = if (target is Language) MetaAdapterByDeclaration.getLanguage(target) else null
+                val providedByDevkit = isProvidedByUsedDevkit(descriptor.usedDevkits, mpsProject.repository) { dk ->
+                    dk.allExportedSolutions.any { it.moduleReference == targetRef } ||
+                            (targetLang != null && dk.allExportedLanguageIds.any { it == targetLang })
+                }
+                if (providedByDevkit) {
+                    return@executeShortCommandOnEdt okJson(jsonObject {
+                        addProperty("added", false)
+                        addProperty("reason", "providedByDevKit")
+                    })
+                }
+                descriptor.dependencies.add(Dependency(targetRef, depScope, reexport))
+            }
+            abstractModule.setChanged()
+            abstractModule.save()
+            okJson(jsonObject { addProperty("added", true) })
+        }
+    }
+
+    private fun targetIsDevkit(target: SModule): Boolean =
+        target is jetbrains.mps.project.DevKit
+
+    /**
+     * ADD for a DevKit source. A DevKit has no `<dependencies>`: its descriptor persists only exported languages,
+     * exported solutions and extended devkits (`DevkitDescriptorPersistence`), so a regular dependency added to it
+     * would live in memory until the next reload and never be written. The IDE's DevKit properties dialog files
+     * every listed module into one of those three sets by kind (`ModulePropertiesConfigurable`); so does this.
+     */
+    private fun addDevkitContent(
+        devkit: AbstractModule,
+        descriptor: DevkitDescriptor,
+        target: SModule,
+        scope: String?,
+        reexport: Boolean,
+    ): String {
+        if (reexport) {
+            return errJson(
+                "A DevKit has no re-exported dependencies: every language and solution it lists is exported to the models " +
+                    "that use it. Omit reexport.",
+                McpErrorCode.INVALID_REQUEST,
+            )
+        }
+        // An unrecognized scope string falls back to DEFAULT for the other module kinds; here it is named instead.
+        val scopeAccepted = scope == null || listOf(SDependencyScope.DEFAULT, SDependencyScope.EXTENDS).any {
+            scope.equals(it.toString(), ignoreCase = true) || scope.equals(it.name, ignoreCase = true)
+        }
+        if (!scopeAccepted) {
+            return errJson(
+                "Scope '$scope' does not apply to a DevKit source: a DevKit exports languages and solutions and extends " +
+                    "devkits. Use scope Default (or Extends); the target's kind decides which list it joins.",
+                McpErrorCode.INVALID_REQUEST,
+            )
+        }
+        val (collection, collectionName) = when {
+            target is Language -> descriptor.exportedLanguages to DEVKIT_EXPORTED_LANGUAGES
+            target is Generator -> return errJson(
+                "A DevKit cannot export a generator module (${target.moduleName}); export its language " +
+                    "${target.sourceLanguage().qualifiedName} instead, whose generators come with it.",
+                McpErrorCode.INVALID_REQUEST,
+            )
+            targetIsDevkit(target) -> descriptor.extendedDevkits to DEVKIT_EXTENDED_DEVKITS
+            else -> descriptor.exportedSolutions to DEVKIT_EXPORTED_SOLUTIONS
+        }
+        val targetRef = target.moduleReference
+        val added = collection.add(targetRef)
+        // Earlier server versions answered such a request with an in-memory `dependencies` entry; drop that ghost.
+        val ghostRemoved = descriptor.dependencies.removeIf { it.moduleRef == targetRef }
+        if (added || ghostRemoved) {
+            devkit.setModuleDescriptor(descriptor)
+            devkit.save()
+        }
+        return okJson(jsonObject {
+            addProperty("added", added)
+            addProperty("devkitCollection", collectionName)
+            if (!added) addProperty("alreadyPresent", true)
+        })
+    }
+
+    /** The DevKit descriptor sets [targetRef] is listed in, by the names [addDevkitContent] reports. */
+    private fun devkitCollectionsHolding(descriptor: DevkitDescriptor, targetRef: SModuleReference): List<String> = listOfNotNull(
+        DEVKIT_EXPORTED_LANGUAGES.takeIf { targetRef in descriptor.exportedLanguages },
+        DEVKIT_EXPORTED_SOLUTIONS.takeIf { targetRef in descriptor.exportedSolutions },
+        DEVKIT_EXTENDED_DEVKITS.takeIf { targetRef in descriptor.extendedDevkits },
+    )
+
+    private fun extendsRejectMessage(
+        descriptor: jetbrains.mps.project.structure.modules.ModuleDescriptor,
+        target: SModule,
+    ): String {
+        val srcKind = when (descriptor) {
+            is LanguageDescriptor -> "Language"
+            is GeneratorDescriptor -> "Generator"
+            is DevkitDescriptor -> "DevKit"
+            else -> "Solution"
+        }
+        val tgtKind = when {
+            target is Language -> "Language"
+            target is Generator -> "Generator"
+            targetIsDevkit(target) -> "DevKit"
+            else -> "Solution"
+        }
+        return when (srcKind) {
+            "Solution" ->
+                "Scope 'Extends' is not applicable to Solution modules (Solutions do not extend other modules)"
+            else ->
+                "Scope 'Extends' for a $srcKind source requires a $srcKind target, got $tgtKind"
+        }
+    }
+
+    private suspend fun removeModuleDependency(moduleName: String, targetModule: String
+    ): String = withMpsProject("Removing MPS module dependency") { mpsProject ->
+        executeShortCommandOnEdt(mpsProject) {
+            val resolved = resolveAbstractModuleWithDescriptor(mpsProject, moduleName, requireWritable = true)
+            if (resolved is AbstractModuleResolution.Err) {
+                return@executeShortCommandOnEdt errJson(resolved.message, resolved.code, resolved.details)
+            }
+            val (abstractModule, descriptor) = (resolved as AbstractModuleResolution.Ok)
+
+            // Resolve target first for consistency with mps_mcp_module_dependency. Fall back to
+            // a name/serialized-reference match against any of the descriptor's reference collections
+            // (regular deps, extendedLanguages, depGenerators, extendedDevkits) so the user can still
+            // remove an entry whose target module is no longer in the project.
+            val persistence = PersistenceFacade.getInstance()
+            val resolvedTargetRef = resolveModulePreferringProject(mpsProject, targetModule)?.moduleReference
+            val targetRef = resolvedTargetRef
+                ?: descriptor.dependencies.find {
+                    it.moduleRef.moduleName == targetModule ||
+                            persistence.asString(it.moduleRef) == targetModule
+                }?.moduleRef
+                ?: extendsCollections(descriptor)
+                    .flatMap { it.asSequence() }
+                    .firstOrNull {
+                        it.moduleName == targetModule || persistence.asString(it) == targetModule
+                    }
+                ?: return@executeShortCommandOnEdt errJson(
+                    "Dependency to $targetModule not found in $moduleName",
+                    McpErrorCode.NOT_FOUND,
+                )
+
+            val removedFromDevkit = (descriptor as? DevkitDescriptor)?.let { devkitCollectionsHolding(it, targetRef) }.orEmpty()
+            val removedFromDeps = descriptor.dependencies.removeIf { it.moduleRef == targetRef }
+            val removedFromExtends = extendsCollections(descriptor)
+                .map { it.remove(targetRef) }
+                .fold(false) { acc, r -> acc || r }
+            if (!removedFromDeps && !removedFromExtends) {
+                return@executeShortCommandOnEdt errJson(
+                    "Dependency to $targetModule not found in $moduleName",
+                    McpErrorCode.NOT_FOUND,
+                )
+            }
+            if (descriptor is DevkitDescriptor) {
+                // A DevKit is only re-read from its live descriptor; setModuleDescriptor fires the module change as the IDE dialog does.
+                abstractModule.setModuleDescriptor(descriptor)
+                abstractModule.save()
+                val warnings = (abstractModule as? DevKit)?.let { GenerationPlanAttachment.devkitWarnings(it, mpsProject.repository) }.orEmpty()
+                return@executeShortCommandOnEdt okJson(jsonObject {
+                    addProperty("removed", true)
+                    add("devkitCollections", JsonArray().apply { removedFromDevkit.forEach(::add) })
+                }, warnings)
+            }
+            abstractModule.setChanged()
+            abstractModule.save()
+            okJson("true")
+        }
+    }
+
+    /**
+     * Returns the Extends-side reference collections that the given descriptor exposes
+     * (empty list for descriptors that have none, e.g. SolutionDescriptor). The returned
+     * collections are live and mutable.
+     */
+    private fun extendsCollections(
+        descriptor: jetbrains.mps.project.structure.modules.ModuleDescriptor
+    ): List<MutableSet<org.jetbrains.mps.openapi.module.SModuleReference>> = when (descriptor) {
+        is LanguageDescriptor -> listOf(descriptor.extendedLanguages)
+        is GeneratorDescriptor -> listOf(descriptor.depGenerators)
+        // A DevKit's exports are the other sets a DevKit "dependency" can live in (see addDevkitContent).
+        is DevkitDescriptor -> listOf(descriptor.extendedDevkits, descriptor.exportedLanguages, descriptor.exportedSolutions)
+        else -> emptyList()
+    }
+
+    @McpTool
+    @McpDescription("""
+        Creates a new, empty MPS module of the given type at the specified directory (created if missing). Types: `solution` | `language` | `devkit` | `generator`. `directory` is required for `solution`/`language`/`devkit`. `type=generator` requires `parentLanguage`; its `directory` is optional and defaults to `<parent-language-dir>/generator` when omitted or blank — a pre-existing *empty* directory at the target is reused (only a non-empty directory or a non-directory file is rejected). Creating a generator also scaffolds its `templates@generator` model with a `main` `MappingConfiguration`, so the module is immediately ready for mapping/reduction rules. `type=language` accepts the `withGenerator`/`withSandbox`/`withRuntime` companion flags. The optional `facets` value (one type or a JSON array) is allowed only for `solution`/`language` (rejected upfront for `devkit`/`generator`); unknown facet types fail before the module is produced. An explicit `directory` must be absolute and not a file; on Unix-like systems a solution or language folder must also sit at least three levels below `/` (e.g. `/tmp/x` is rejected, `/tmp/work/x` is fine — an MPS core limitation, MPS-40228). When the producer or the facet attachment after it fails (e.g. a language `withGenerator` whose folder already holds `generator/`), the call un-registers every module it registered and removes the files and folders it created; when that rollback is incomplete, the error names what is left over. Returns the new module's info envelope (same shape as `mps_mcp_get_project_structure(startingPoint=<module>)`) plus `data.models` — `[{name, reference, aspect}]` for every model the module already owns. A new Language comes with its aspect models (`structure`, ...) and a new Generator with its `templates@generator` model, so use those references instead of calling `mps_mcp_create_model` for them again. A Language also gets `data.generators` — `[{name, reference, models}]` for the generator `withGenerator` created (empty without it). See `mps-aspect-accessories/references/module-creation.md` for the facets policy and `module-info-fields.md` for the return-envelope fields.
+    """
+    )
+    suspend fun mps_mcp_create_module(
+        @McpDescription("Required. Module type: solution|language|devkit|generator") type: String = "",
+        @McpDescription("Required. Module name or namespace. Ignored for type='generator' — the generator's name is derived as '<parentLanguage>.generator'.") name: String = "",
+        @McpDescription("Absolute directory for the module; created by the tool if missing. Must not be a file; a solution/language folder must be at least three levels below '/' (MPS-40228). Required for solution/language/devkit. Optional for 'generator': omit or leave blank to default to '<parent-language-dir>/generator'; an existing empty directory at the target is reused.") @Nullable directory: String? = null,
+        @McpDescription("Optional Project View virtual folder") @Nullable virtualFolder: String? = null,
+        @McpDescription("Required only when type='generator'; ignored otherwise") @Nullable parentLanguage: String? = null,
+        @McpDescription("For language: also create a generator") withGenerator: Boolean = false,
+        @McpDescription("For language: also create a sandbox solution") withSandbox: Boolean = false,
+        @McpDescription("For language: also create a runtime solution") withRuntime: Boolean = false,
+        @McpDescription("Optional additional facet type or JSON array of facet types (e.g. `tests` or [\"tests\"] for a test-container Solution; a real array or the array written as a string). Omit or pass [] for no additional facets. See the tool description for dedup, unknown-type, and module-type-restriction rules.") @Nullable facets: JsonOrText? = null
+    ): String = rejectMissingParameters(
+        "mps_mcp_create_module",
+        *listOfNotNull(
+            RequiredParameter("type", type, "solution, language, devkit, or generator"),
+            // A generator's name is derived from its parent language, so a blank one is meaningful.
+            RequiredParameter("name", name, "the new module's name or namespace")
+                .takeUnless { type.lowercase() == "generator" },
+        ).toTypedArray(),
+    ) ?: mps_mcp_create_module(
+        type,
+        name,
+        directory,
+        virtualFolder,
+        parentLanguage,
+        withGenerator,
+        withSandbox,
+        withRuntime,
+        parseNullableStringOrJsonArray(facets),
+    )
+
+    /**
+     * Internal list-typed entry point for [mps_mcp_create_module]. Deliberately *not* annotated
+     * with `@McpTool`: the String-typed overload above accepts either a single facet type or a
+     * JSON array without requiring the MCP bridge to decode a scalar as a list. Retained as a
+     * direct entry point for in-process callers and tests.
+     */
+    suspend fun mps_mcp_create_module(
+        type: String,
+        name: String,
+        @Nullable directory: String? = null,
+        @Nullable virtualFolder: String? = null,
+        @Nullable parentLanguage: String? = null,
+        withGenerator: Boolean = false,
+        withSandbox: Boolean = false,
+        withRuntime: Boolean = false,
+        @Nullable facets: List<String>?
+    ): String = withMpsProject("Create MPS module") { mpsProject ->
+        // Holds either the created module or an error string. The block sets exactly one.
+        var created: SModule? = null
+        var error: String? = null
+
+        val normalizedType = type.lowercase()
+        // Pre-validate `facets` BEFORE entering the write command: an unknown facet type
+        // discovered mid-command would otherwise leave a partially-created module on disk
+        // and registered with the project — easier on the caller to refuse upfront.
+        val requestedFacets: List<String> = facets
+            ?.map { it.trim() }
+            ?.filter { it.isNotEmpty() }
+            ?: emptyList()
+        if (requestedFacets.isNotEmpty()) {
+            // Reject facets paired with module kinds that have no use for them. DevKits
+            // carry no JavaModuleFacet by default and have no test/runtime semantics;
+            // Generators inherit their facet shape from the parent Language and the tool
+            // surface offers no canonical use case for layering extra facets on top.
+            // Failing upfront beats producing a module with a meaningless facet attached.
+            if (normalizedType == "devkit" || normalizedType == "generator") {
+                return@withMpsProject errJson(
+                    "Parameter 'facets' is not supported for module type '$type'; only 'solution' and 'language' accept additional facets",
+                    McpErrorCode.INVALID_REQUEST,
+                )
+            }
+            // `FacetsFacade` is a static registry and lookups are not documented to require
+            // model access, but neighboring toolset code (e.g. mps_mcp_list_facet_types)
+            // already wraps facet-registry reads in a read action — do the same here to
+            // stay safe if a future MPS revision starts checking for one.
+            val unknown = executeShortReadOnEdt(mpsProject) {
+                @Suppress("DEPRECATION")
+                val ff = FacetsFacade.getInstance()
+                requestedFacets.filter { ff.getFacetFactory(it) == null }
+            }
+            if (unknown.isNotEmpty()) {
+                return@withMpsProject errJson(
+                    "Unknown facet type(s): ${unknown.joinToString(", ")}",
+                    McpErrorCode.INVALID_REQUEST,
+                )
+            }
+        }
+
+        // Validate the type and the directory BEFORE the write command, which creates the directory
+        // before any producer runs: a rejection found inside it would leave that directory behind.
+        if (normalizedType !in setOf("solution", "language", "devkit", "generator")) {
+            return@withMpsProject errJson("Unsupported module type '$type'", McpErrorCode.INVALID_REQUEST)
+        }
+        // `directory` is optional at the protocol level (nullable, no default). Normalize a
+        // missing/blank value to the empty string so the per-kind logic below has a single
+        // shape: empty means "use the kind's default location" (only 'generator' has one),
+        // non-empty means "use exactly this path".
+        val dir = directory?.trim().orEmpty()
+        // m: only 'generator' may default directory from its parent language; for
+        // every other module kind an empty directory is a programming error that
+        // used to surface as `fs.getFile("").mkdirs()` producing a non-recoverable
+        // file system state. Reject it early with a structured error.
+        if (normalizedType != "generator" && dir.isEmpty()) {
+            return@withMpsProject errJson(
+                "Parameter 'directory' must be non-empty for module type '$type'",
+                McpErrorCode.INVALID_REQUEST,
+            )
+        }
+        if (dir.isNotEmpty()) {
+            rejectUnusableModuleDirectory(normalizedType, dir, name)?.let { return@withMpsProject it }
+        }
+
+        // Set together with `error` by the producer failure path below; null keeps errJson's default.
+        var errorCode: McpErrorCode? = null
+        // Set when a rollback un-registered modules, so the project is saved after the command: saving
+        // inside it runs a modal progress under the write lock, which the platform reports as an error.
+        var rolledBack = false
+
+        withModalTimeoutOnEdt {
+            mpsProject.repository.modelAccess.executeCommand {
+                val fs: jetbrains.mps.vfs.openapi.FileSystem = mpsProject.fileSystem
+                // Snapshot what exists before `mkdirs()` below and before the producer runs, so a
+                // failed call can take back exactly what it registered and created (MPS-40228).
+                // The producers register a module before they save it, so a throw from them, or
+                // from the facet attachment after them, would otherwise leave modules registered
+                // and folders on disk. The generator branch has its own rollback and uses neither.
+                val modulesBefore = mpsProject.projectModulesWithGenerators.map { it.moduleReference }.toSet()
+                var createdPaths: CreatedPaths? = null
+                when (normalizedType) {
+                    "generator" -> {
+                        val parentLangName = parentLanguage
+                        if (parentLangName.isNullOrBlank()) {
+                            error = "Generator creation requires 'parentLanguage'"
+                            return@executeCommand
+                        }
+                        // Look up the Language *module* (not the runtime SLanguage). resolveLanguage
+                        // returns SLanguage which cannot be cast to jetbrains.mps.smodel.Language —
+                        // they are unrelated types — so route the lookup through the module resolver
+                        // and reject anything that isn't an actual Language module.
+                        val parentLang = resolveModule(mpsProject, parentLangName, projectOnly = true) as? Language
+                        if (parentLang == null) {
+                            error = "Parent language not found or is not a Language module: $parentLangName"
+                            return@executeCommand
+                        }
+                        val parentDescriptorFile = parentLang.descriptorFile
+                        if (parentDescriptorFile == null) {
+                            error = "Parent language '$parentLangName' has no descriptor file on disk"
+                            return@executeCommand
+                        }
+
+                        val generatorLocation = if (dir.isEmpty()) {
+                            parentDescriptorFile.parent?.findChild("generator")
+                        } else {
+                            fs.getFile(dir)
+                        }
+                        if (generatorLocation == null) {
+                            error = "Could not determine generator location (directory='$dir')"
+                            return@executeCommand
+                        }
+                        // Tolerate a pre-existing EMPTY directory at the target location: the
+                        // conventional '<lang>/generator' folder is often laid out as empty
+                        // scaffolding before any generator exists, and a language-owned generator
+                        // has no separate descriptor file to collide with (it lives in the parent
+                        // '.mpl'). Approximate NewModuleCheck.checkHome: reject only a non-directory
+                        // file or a directory that already holds "real" content. We deviate from
+                        // checkHome's VFileProperty.HIDDEN test and instead skip dotfiles and
+                        // FS-ignored entries (e.g. '.DS_Store', VCS metadata) so an otherwise-empty
+                        // scaffold dir is reused; an empty (or all-skipped) directory falls through
+                        // to the mkdirs() below, which is then a no-op.
+                        if (generatorLocation.exists()) {
+                            if (!generatorLocation.isDirectory) {
+                                error = "The generator location $generatorLocation already exists and is not a directory"
+                                return@executeCommand
+                            }
+                            val nonHiddenChildren = generatorLocation.children
+                                ?.filter { !it.name.startsWith(".") && !it.isIgnored }
+                                ?: emptyList()
+                            if (nonHiddenChildren.isNotEmpty()) {
+                                error = "The generator location $generatorLocation already exists and is not empty; " +
+                                        "pass a different 'directory' or remove its contents"
+                                return@executeCommand
+                            }
+                        }
+                        // Track whether THIS call created the directory (vs. reused a pre-existing
+                        // empty one) so rollback only deletes a folder we own.
+                        val createdGeneratorDir = !generatorLocation.exists()
+                        generatorLocation.mkdirs()
+
+                        val languageDescriptor = parentLang.moduleDescriptor
+                        val generatorDescriptor = LanguageProducer.createGeneratorDescriptor(parentLang.moduleName + ".generator", generatorLocation, null)
+                        generatorDescriptor.sourceLanguage = languageDescriptor.moduleReference
+
+                        // Undo a partially-created generator if any step below fails. Unlike the
+                        // facet path (which has its own rollback), the generator path mutates the
+                        // parent language's descriptor, may register a generator module, and may
+                        // lay down a templates model — a throw or the "not registered" guard would
+                        // otherwise strand the parent '.mpl' half-mutated plus an empty generator
+                        // dir on disk. Best-effort: the primary error is what the caller needs.
+                        fun rollbackGeneratorCreation() {
+                            runCatching {
+                                if (languageDescriptor.generators.removeIf { it.moduleReference == generatorDescriptor.moduleReference }) {
+                                    // Re-apply the cleaned descriptor so revalidateGenerators
+                                    // unregisters any generator the failed attempt instantiated.
+                                    parentLang.setModuleDescriptor(languageDescriptor)
+                                }
+                                // Safety belt: drop a generator that is somehow still registered.
+                                val stray = parentLang.generators
+                                    .firstOrNull { it.moduleReference == generatorDescriptor.moduleReference }
+                                if (stray != null && mpsProject.repository.getModule(stray.moduleReference.moduleId) != null) {
+                                    runCatching { mpsProject.removeModule(stray) }
+                                }
+                                parentLang.save()
+                            }
+                            // Only remove a directory we created — never a reused pre-existing one.
+                            if (createdGeneratorDir) {
+                                runCatching { if (generatorLocation.exists()) generatorLocation.delete() }
+                            }
+                        }
+
+                        try {
+                            languageDescriptor.generators.add(generatorDescriptor)
+                            // setModuleDescriptor → Language.revalidateGenerators already instantiates
+                            // the new Generator with its model roots and registers it with the
+                            // project's repository. Calling ModuleRepositoryFacade.instantiate(...) and
+                            // addModule afterwards used to produce a duplicate, half-built Generator
+                            // with empty model roots, which then crashed
+                            // LanguageProducer.createTemplateModelIfNoneYet. Look up the registered
+                            // generator instead.
+                            parentLang.setModuleDescriptor(languageDescriptor)
+
+                            val generator = parentLang.generators
+                                .singleOrNull { it.moduleReference == generatorDescriptor.moduleReference }
+                                ?: run {
+                                    rollbackGeneratorCreation()
+                                    error = "Generator was not registered with parent language after descriptor update: ${generatorDescriptor.moduleReference}"
+                                    return@executeCommand
+                                }
+
+                            LanguageProducer.createTemplateModelIfNoneYet(mpsProject, generator)
+
+                            val mv = ModuleDependencyVersions(mpsProject.getComponent(LanguageRegistry::class.java), mpsProject.repository)
+                            mv.update(parentLang)
+                            parentLang.save()
+                            mv.update(generator)
+                            generator.save()
+
+                            applyVirtualFolder(mpsProject, generator, virtualFolder)
+                            created = generator
+                        } catch (t: Throwable) {
+                            rethrowIfCancellation(t)
+                            if (t is Error) throw t
+                            rollbackGeneratorCreation()
+                            created = null
+                            error = "Failed to create generator for language '$parentLangName': ${t.message ?: t.toString()}"
+                            return@executeCommand
+                        }
+                    }
+                    else -> {
+                        try {
+                            val moduleDir = Paths.get(fs.getFile(dir).path)
+                            createdPaths = CreatedPaths.snapshot(buildList {
+                                add(moduleDir)
+                                // LanguageAndSolutionsProducer puts the runtime/sandbox solutions next to
+                                // the language, in '<parent>/<name>.runtime' and '<parent>/<name>.sandbox'.
+                                val parent = moduleDir.parent
+                                if (normalizedType == "language" && parent != null) {
+                                    if (withRuntime) add(parent.resolve("$name.runtime"))
+                                    if (withSandbox) add(parent.resolve("$name.sandbox"))
+                                }
+                            })
+                            // The generator branch above resolves AND creates its own location. It must
+                            // NOT be pre-created: for a non-empty `dir` that used to make the generator
+                            // branch's own existence check fire on the directory this code had just
+                            // created, aborting every non-empty-directory generator creation. The other
+                            // kinds reuse an existing directory or create it here.
+                            val dirFile = fs.findExistingFile(dir) ?: fs.getFile(dir).also {
+                                if (!it.mkdirs()) throw McpInvalidRequestException("Could not create the directory '$dir'")
+                            }
+                            created = produceModule(
+                                mpsProject, normalizedType, name, dirFile, virtualFolder,
+                                withGenerator, withSandbox, withRuntime,
+                            )
+                        } catch (t: Throwable) {
+                            // Take back what the producer registered and created before reporting, so a
+                            // failed call leaves neither a registered module nor folders behind, and the
+                            // exception doesn't escape the command (MPS-40228).
+                            val leftovers = rollbackFailedCreation(mpsProject, modulesBefore, createdPaths)
+                            rolledBack = true
+                            rethrowIfCancellation(t)
+                            if (t is Error) throw t
+                            created = null
+                            val cause = when (t) {
+                                is McpUserException -> {
+                                    errorCode = t.errorCode
+                                    t.message
+                                }
+                                // The producers signal an occupied location with these.
+                                is IllegalStateException, is IllegalArgumentException -> {
+                                    errorCode = McpErrorCode.INVALID_REQUEST
+                                    t.message ?: "Collision detected during module creation"
+                                }
+                                else -> {
+                                    logger.warn("Failed to create $normalizedType '$name'", t)
+                                    errorCode = McpErrorCode.INTERNAL_ERROR
+                                    "Failed to create $normalizedType '$name': ${t.javaClass.simpleName}: ${t.message}"
+                                }
+                            }
+                            error = "${(cause ?: t.javaClass.simpleName).trimEnd('.')}. $leftovers"
+                            return@executeCommand
+                        }
+                    }
+                }
+
+                // Attach any extra facets requested by the caller AFTER the producer ran:
+                // producers install the default `java` facet themselves, but anything
+                // language-specific (e.g. `tests` for `@tests` model containers) is the
+                // caller's responsibility. Facet types were pre-validated above.
+                //
+                // If this fails after the producer has already registered the module, the same
+                // rollback as for a failed producer takes back every module and folder the call
+                // added — otherwise the caller sees a failure envelope while a partial module
+                // lingers in the project, and a retry trips over its leftover folders.
+                val createdModule = created
+                if (createdModule != null && requestedFacets.isNotEmpty()) {
+                    val abstractModule = createdModule as? AbstractModule
+                    val descriptor = abstractModule?.moduleDescriptor
+                    if (abstractModule == null || descriptor == null) {
+                        // Roll back the producer's registration: the user asked for a module
+                        // with these facets and is going to see an error, so leaving the
+                        // half-built module behind would be worse than the failure itself.
+                        val leftovers = rollbackFailedCreation(mpsProject, modulesBefore, createdPaths)
+                        rolledBack = true
+                        created = null
+                        errorCode = McpErrorCode.INTERNAL_ERROR
+                        error = if (abstractModule == null) {
+                            "Cannot attach facets to module '${createdModule.moduleName}': not an AbstractModule. $leftovers"
+                        } else {
+                            "Cannot attach facets to module '${createdModule.moduleName}': descriptor is null. $leftovers"
+                        }
+                        return@executeCommand
+                    }
+                    // Mutate `descriptor.moduleFacetDescriptors` in-place, then call
+                    // `setModuleDescriptor(descriptor)`. This is the canonical pattern
+                    // MPS itself uses for facet installation — see how `JavaModuleFacetImpl`
+                    // and `TestsFacetImpl` install themselves via `moduleFacetDescriptors`
+                    // + `setModuleDescriptor` — and matches what `mps_mcp_update_module_facet`
+                    // does in this same file. There is no public `addFacet(type)` API on
+                    // `AbstractModule`; the descriptor route is the supported way to attach
+                    // a facet by type identifier.
+                    //
+                    // Wrap the loop + setModuleDescriptor + save in try/catch: pre-validation
+                    // already filtered unknown facet types, but a future MPS revision could
+                    // validate the descriptor more strictly, a facet factory could surface
+                    // an unexpected side-effect, or `save()` could fail with an IO error.
+                    // Any such throwable here would otherwise escape `executeCommand` with
+                    // the producer-registered module still in the project — exactly the
+                    // half-built state the rollback machinery exists to prevent.
+                    try {
+                        var added = false
+                        for (facetType in requestedFacets) {
+                            // Skip if an equivalent facet is already attached by the producer (e.g. `java`)
+                            // or by a previous iteration of this loop. Overwriting would wipe any
+                            // default settings the producer configured (e.g. JavaModuleFacet's
+                            // `LoadExtensions`/source-root layout). Callers who need non-default
+                            // settings should follow up with `mps_mcp_update_module_facet`.
+                            if (descriptor.moduleFacetDescriptors.any { it.type == facetType }) {
+                                continue
+                            }
+                            descriptor.moduleFacetDescriptors.add(ModuleFacetDescriptor(facetType, MementoImpl()))
+                            added = true
+                        }
+                        // Skip `setModuleDescriptor`/`save` when every requested facet was
+                        // already attached. Otherwise we'd force a descriptor reload and an
+                        // on-disk write for a module that didn't logically change — wasteful
+                        // and a small risk surface if a future `setModuleDescriptor` change
+                        // introduces a side-effect on transient module state.
+                        if (added) {
+                            abstractModule.setModuleDescriptor(descriptor)
+                            abstractModule.save()
+                        }
+                    } catch (t: Throwable) {
+                        // Roll back before any rethrow, as the producer catch does, so an Error
+                        // (e.g. an AssertionError under -ea) doesn't leak state either.
+                        val leftovers = rollbackFailedCreation(mpsProject, modulesBefore, createdPaths)
+                        rolledBack = true
+                        rethrowIfCancellation(t)
+                        if (t is Error) throw t
+                        created = null
+                        // Not a collision: facet factories, the descriptor reload and save() fail
+                        // only unexpectedly, so anything but an McpUserException is internal.
+                        errorCode = (t as? McpUserException)?.errorCode ?: McpErrorCode.INTERNAL_ERROR
+                        if (t !is McpUserException) {
+                            logger.warn("Failed to attach facets to module '${createdModule.moduleName}'", t)
+                        }
+                        val cause = (t.message ?: t.toString()).trimEnd('.')
+                        error = "Failed to attach facets to module '${createdModule.moduleName}': $cause. $leftovers"
+                        return@executeCommand
+                    }
+                }
+            }
+            if ((created != null && error == null) || rolledBack) {
+                // Producers register solution/devkit/language with the project themselves; the
+                // generator branch already calls addModule() inside the executeCommand block.
+                // Just persist project state here, after a rollback too.
+                mpsProject.save()
+            }
+        }
+        val finalError = error
+        val finalCreated = created
+        when {
+            finalError != null -> errJson(finalError, errorCode)
+            finalCreated != null -> okJson(executeShortReadOnEdt(mpsProject) {
+                moduleInfoJsonObject(mpsProject, finalCreated).apply {
+                    add("models", createdModelsJsonArray(finalCreated))
+                    // `withGenerator` (or `withSandbox`/`withRuntime`) adds more modules; name the generator
+                    // and its template model here so a caller need not look them up before adding rules.
+                    if (finalCreated is Language) {
+                        add("generators", JsonArray().apply {
+                            for (gen in finalCreated.ownedGenerators) add(jsonObject {
+                                addProperty("name", gen.moduleName ?: "")
+                                addProperty("reference", PersistenceFacade.getInstance().asString(gen.moduleReference))
+                                add("models", createdModelsJsonArray(gen))
+                            })
+                        })
+                    }
+                }
+            })
+            else -> errJson("Module creation failed for unknown reason")
+        }
+    }
+
+    /**
+     * The models the new module already owns, `[{name, reference, aspect}]`. A Language is born with
+     * its aspect models and a Generator with its `templates@generator` model, and agents that could
+     * not see them from the create result tried to create them again, which fails with "No suitable
+     * model root found ... to create model" (study defect D6).
+     *
+     * `aspect` is the model's stereotype when it has one (`generator`, `tests`, ...), otherwise the
+     * part of the name following the module name (`structure`, `editor`, ...), and empty for a model
+     * whose name does not extend the module's.
+     */
+    private fun createdModelsJsonArray(module: SModule): JsonArray {
+        val result = JsonArray()
+        val moduleName = module.moduleName ?: ""
+        for (model in module.models) {
+            val stereotype = model.name.stereotype
+            val longName = model.name.longName
+            val aspect = when {
+                stereotype.isNotEmpty() -> stereotype
+                moduleName.isNotEmpty() && longName.startsWith("$moduleName.") -> longName.substring(moduleName.length + 1)
+                else -> ""
+            }
+            result.add(jsonObject {
+                addProperty("name", model.name.value)
+                addProperty("reference", PersistenceFacade.getInstance().asString(model.reference))
+                addProperty("aspect", aspect)
+            })
+        }
+        return result
+    }
+
+    @McpTool
+    @McpDescription("""
+        Updates or deletes an MPS module based on the `operation` parameter:
+        - RENAME (default): renames the module (Solution / Language / DevKit). `newName` must be a valid Java-package qualified name. Generator modules cannot be renamed through this tool; rename the parent Language instead (the rename cascades into owned generators). Returns the module info envelope plus optional `renameWarnings` / `renameCriticalProblems` arrays. See `mps-aspect-accessories/references/module-rename.md` for the cascade behavior, in-project-only reference rewrites, and the warnings semantics.
+        - CHANGE_VIRTUAL_FOLDER: changes the Project View virtual folder of the module. `newName` is the new folder path (e.g. "Group/Subgroup").
+        - SYNC_VERSION: derives the **language module's own** version from its migration scripts and writes it — the headless equivalent of MPS's "Correct Language Version" action (Language modules only; every other module kind is rejected). Whenever a versioned script exists, the version becomes `max(fromVersion) + 1` over the `migration` aspect's scripts (`MigrationScript` / `PureMigrationScript` roots that have a `fromVersion`), which is the only value the migration checker and generator accept; it is never set directly, so `newName` must be omitted. Idempotent: repeating it is a no-op (`changed:false`). Both `MigrationScript` and `PureMigrationScript` created through a factory-running MCP write tool already bump the version themselves via their node factory; use this operation after editing, deleting, or copying a script (a copy duplicates its source's `fromVersion`), and whenever the checker or the generator reports a language-version mismatch — that mismatch's "Set correct language version" quick fix (`FixLanguageVersion`) is an explicit, non-auto-applicable alternative via `mps_mcp_apply_intention`. Without a `migration` aspect or without versioned scripts nothing is derived and the version is left alone (`note` says why). Lowering happens when a trailing script was deleted and is reported in `warnings`, naming any module whose recorded used-language version is now ahead of the language. Consumer-side `usedLanguages[].version` stamps are never touched (refreshing them would mark pending migrations as already applied). Returns the module info envelope plus `languageVersion`, `previousLanguageVersion`, `changed`, `maxFromVersion` (absent when no script has a version), `migrationUnitCount`, `migrationProblems` (`[{unit, reference, concept, problem}]` — scripts without a version, several scripts for one version, a missing version in the sequence; SYNC_VERSION does not fix these: correct the script's `fromVersion`, then sync again), and — when the compiled language runtime disagrees with the descriptor — `runtimeLanguageVersion`, `runtimeStale:true` and `runtimeRecoveryAction`: the migration executor reads the version off the *generated* `LanguageRuntime`, so a new version only takes effect for migrations after the language module is rebuilt (`mps_mcp_alter_nodes` MAKE with `rebuild=true`). No make is performed here. See `mps-aspect-migrations/references/form-selection.md`.
+        - DELETE: removes the module from the project. Set `deleteFiles=true` to also remove module files from disk. Only modules of the selected project are accepted; anything else is NOT_FOUND. A generator declared in its language's `.mpl` (every generator that is not a standalone module) is also removed from that language's descriptor, which rewrites the `.mpl` even without `deleteFiles`. Without `deleteFiles` its folder stays on disk, no longer declared. With `deleteFiles` only its models, its generated files and its folders once they are empty are removed, never the language's folder or anything it shares with the language; what stays is listed in `fileDeletionWarning`. The response adds `parentLanguage`.
+        - SET_GENERATION_PLAN: attaches the generation plan model `planModel` (a `@genplan` model's reference or name) the way MPS stores it. A **DevKit** gets it as its associated plan, so every model that uses the DevKit is generated with it (export the plan's solution and the languages it names from the DevKit with `mps_mcp_module_dependency` ADD: make finds the plan without them, but DevKit validation, the IDE and build scripts need them); a **Solution** gets it through its Custom Generation module facet (type `generator`, key `planModel`), so every model of the solution is generated with it, ahead of any DevKit plan. Languages and generators take no plan. A plan is a model, not a node: MPS uses the model's first `Plan` root (root order) and its first `PlanContribution`; other `Plan` roots there serve only as Fork / IncludePlan targets. Refused before anything changes: a model that does not resolve, has neither root, has a PlanContribution pointing at no plan, pairs a Plan with a PlanContribution of another plan, uses a ConceptListSelector, or forks into or includes itself (building such a plan throws). Returns the module info envelope plus `generationPlan` `{model, reference, plan, contributed, attachedVia: DEVKIT|FACET, previousModel?, changed}` and advisory `warnings` (unexported plan solution or languages, a facet plan shadowing DevKit plans, a plan model governed by its own plan, several Plan roots, a contributed plan whose main branch is empty). Verify on a governed model with `mps_mcp_generation` PLAN; a plan change does not mark models dirty, so re-make with `rebuild=true`. See `mps-aspect-generation-plan/references/attaching-plans.md`.
+        - CLEAR_GENERATION_PLAN: removes a DevKit's associated plan or a Solution's Custom Generation facet; `generationPlan.changed:false` when there was none.
+    """
+    )
+    suspend fun mps_mcp_update_module(
+        @McpDescription("Required. Existing module name or reference") moduleName: String = "",
+        @McpDescription("New name or value for the operation: new qualified name for RENAME, new folder path for CHANGE_VIRTUAL_FOLDER, or ignored for DELETE. Must be omitted for SYNC_VERSION, which derives the version from the migration scripts.") @Nullable newName: String? = null,
+        @McpDescription("Operation to perform: RENAME, CHANGE_VIRTUAL_FOLDER, SYNC_VERSION, DELETE, SET_GENERATION_PLAN or CLEAR_GENERATION_PLAN. Default is RENAME.") operation: String = "RENAME",
+        @McpDescription("For DELETE only: whether to also delete module files from disk.") deleteFiles: Boolean = false,
+        @McpDescription("For SET_GENERATION_PLAN only: the generation plan model to attach, as a model reference or name (e.g. `my.plans@genplan`).") @Nullable planModel: String? = null,
+    ): String {
+        rejectMissingParameters(
+            "mps_mcp_update_module",
+            RequiredParameter("moduleName", moduleName, "the existing module's name or reference"),
+        )?.let { return it }
+        val op = resolveOperationOrNull<ModuleOperation>(operation)
+            ?: return unknownOperation<ModuleOperation>(operation)
+        val givenPlanModel = planModel?.trim()?.takeIf { it.isNotEmpty() }
+        if (givenPlanModel != null && op != ModuleOperation.SET_GENERATION_PLAN) {
+            return errJson(
+                "planModel applies to operation SET_GENERATION_PLAN only (got operation $op); pass operation=SET_GENERATION_PLAN to " +
+                    "attach '$givenPlanModel'.",
+                McpErrorCode.INVALID_REQUEST,
+            )
+        }
+        return mps_mcp_update_module(moduleName, newName, op, deleteFiles, givenPlanModel)
+    }
+
+    /** Internal enum-typed entry point for [mps_mcp_update_module]; see [resolveOperationOrNull]. */
+    suspend fun mps_mcp_update_module(
+        moduleName: String,
+        newName: String? = null,
+        operation: ModuleOperation,
+        deleteFiles: Boolean = false,
+        planModel: String? = null,
+    ): String = when (operation) {
+        ModuleOperation.RENAME -> withMpsProject("Update MPS module") { mpsProject ->
+            val trimmedNewName = newName?.trim()?.takeIf { it.isNotEmpty() }
+                ?: return@withMpsProject errJson("Nothing to rename: provide newName", McpErrorCode.INVALID_REQUEST)
+            validateModuleName(trimmedNewName)?.let {
+                return@withMpsProject errJson(it, McpErrorCode.INVALID_REQUEST)
+            }
+            // The Renamer follows the same 3-phase shape the IDE dialog uses:
+            //   1. collectRenames()   — requires a read action
+            //   2. prepareRename()    — no model access needed
+            //   3. runRenameCommand() — opens its own write command internally
+            // The phases share state on the Renamer instance and must run in order on the
+            // same instance, so we cannot fold them into a single executeCommand block.
+            val renameProblems = mutableListOf<Renamer.RenameProblem>()
+            val (r, oldId) = executeShortReadOnEdt(mpsProject) {
+                val m = resolveModule(mpsProject, moduleName)
+                    ?: throw McpNotFoundException("Module '$moduleName' not found")
+                if (m !is AbstractModule) {
+                    throw McpInvalidRequestException("Module '$moduleName' is not renameable (not an AbstractModule)")
+                }
+                if (m.isReadOnly) {
+                    throw McpNotEditableException("Module '$moduleName' is read-only")
+                }
+                if (m is Generator) {
+                    throw McpInvalidRequestException(
+                        "Generator modules cannot be renamed through this tool — rename the parent Language instead, which cascade-renames its owned generators."
+                    )
+                }
+                if (m.descriptorFile == null) {
+                    throw McpInvalidRequestException("Module '$moduleName' has no descriptor file and cannot be renamed")
+                }
+                if (trimmedNewName != m.moduleName) {
+                    val clash = mpsProject.repository.modules.firstOrNull {
+                        it != m && trimmedNewName == it.moduleName
+                    }
+                    if (clash != null) {
+                        throw McpInvalidRequestException("Module name '$trimmedNewName' is already in use in the repository")
+                    }
+                }
+                val renamer = Renamer(mpsProject, m, Consumer { renameProblems.add(it) }).also { it.collectRenames() }
+                renamer to m.moduleReference.moduleId
+            }
+            withModalTimeoutOnEdt {
+                r.prepareRename(trimmedNewName)
+                if (r.hasPrimaryRename() || r.hasDependantRenames()) {
+                    r.runRenameCommand()
+                }
+            }
+            val updated = executeShortCommandOnEdt(mpsProject) {
+                mpsProject.repository.getModule(oldId)
+                    ?: throw McpUserException(
+                        McpErrorCode.INTERNAL_ERROR,
+                        "Rename completed but the renamed module could not be located by id $oldId",
+                    )
+            }
+            val info = moduleInfoJsonObject(mpsProject, updated)
+            val warnings = JsonArray()
+            val critical = JsonArray()
+            for (p in renameProblems) {
+                when (p.severity) {
+                    Renamer.RenameProblem.Severity.CRITICAL -> critical.add(JsonPrimitive(p.presentation))
+                    Renamer.RenameProblem.Severity.NON_CRITICAL -> warnings.add(JsonPrimitive(p.presentation))
+                    Renamer.RenameProblem.Severity.NO_PROBLEM -> {}
+                }
+            }
+            if (warnings.size() > 0) info.add("renameWarnings", warnings)
+            if (critical.size() > 0) info.add("renameCriticalProblems", critical)
+            okJson(info)
+        }
+
+        ModuleOperation.CHANGE_VIRTUAL_FOLDER -> withMpsProject("Update MPS module") { mpsProject ->
+            val folder = newName?.trim()?.takeIf { it.isNotEmpty() }
+                ?: return@withMpsProject errJson("Nothing to update: provide newName (virtual folder path)", McpErrorCode.INVALID_REQUEST)
+            val (updated, folderFailure) = executeShortCommandOnEdt(mpsProject) {
+                val m = resolveModule(mpsProject, moduleName)
+                    ?: throw McpNotFoundException("Module '$moduleName' not found")
+                // n1: surface virtual folder failures as warnings rather than errors so the
+                // module info is still returned along with the failure detail.
+                val failure = warningMessageOrRethrow {
+                    mpsProject.setVirtualFolder(m, folder)
+                    (m as? AbstractModule)?.setChanged()
+                }
+                m to failure
+            }
+            if (folderFailure == null) {
+                withModalTimeoutOnEdt {
+                    mpsProject.save()
+                }
+            }
+            val info = moduleInfoJsonObject(mpsProject, updated)
+            folderFailure?.let {
+                val warnings = JsonArray()
+                warnings.add(JsonPrimitive("Failed to set virtual folder: $it"))
+                info.add("warnings", warnings)
+            }
+            okJson(info)
+        }
+
+        ModuleOperation.SYNC_VERSION -> withMpsProject("Update MPS module") { mpsProject ->
+            newName?.trim()?.takeIf { it.isNotEmpty() }?.let { given ->
+                return@withMpsProject errJson(
+                    "SYNC_VERSION takes no value (got newName='$given'): a language's version is derived " +
+                        "from its migration scripts — max(fromVersion) + 1 — and is never set directly. " +
+                        "To fix a wrong version, correct the offending script's `fromVersion` (or delete " +
+                        "the script) and call SYNC_VERSION again without `newName`.",
+                    McpErrorCode.INVALID_REQUEST,
+                )
+            }
+
+            executeShortCommandOnEdt(mpsProject) {
+                val resolved = resolveAbstractModuleWithDescriptor(mpsProject, moduleName, requireWritable = true)
+                if (resolved is AbstractModuleResolution.Err) {
+                    return@executeShortCommandOnEdt errJson(resolved.message, resolved.code, resolved.details)
+                }
+                val (abstractModule, descriptor) = (resolved as AbstractModuleResolution.Ok)
+
+                // The version integer lives on LanguageDescriptor only; Solutions, Generators and
+                // DevKits have no such field. Name the actual kind so the caller can correct the
+                // target instead of guessing why the operation was refused.
+                if (abstractModule !is Language || descriptor !is LanguageDescriptor) {
+                    return@executeShortCommandOnEdt errJson(
+                        "SYNC_VERSION applies only to Language modules — '$moduleName' is a " +
+                            "${moduleKindLabel(abstractModule, descriptor)}. The version integer a " +
+                            "migration script's `fromVersion` gates on exists only on a Language.",
+                        McpErrorCode.INVALID_REQUEST,
+                    )
+                }
+
+                val previous = abstractModule.languageVersion
+                val analysis = MigrationUnitVersions.analyze(abstractModule)
+                val target = analysis.maxFromVersion?.let { it + 1 } ?: previous
+                val changed = target != previous
+                if (changed) {
+                    // setLanguageVersion() itself calls fireChanged()/setChanged(); save() flushes
+                    // the descriptor to the .mpl on disk (setChanged alone only marks it dirty).
+                    abstractModule.setLanguageVersion(target)
+                    abstractModule.save()
+                }
+
+                val warnings = mutableListOf<String>()
+                if (changed && target < previous) {
+                    // Not an error: MPS's own CorrectLanguageVersion action lowers the version when a
+                    // trailing migration script was deleted.
+                    val language = MetaAdapterByDeclaration.getLanguage(abstractModule)
+                    val consumersAhead = mpsProject.repository.modules
+                        .mapNotNull { m ->
+                            val stamp = (m as? AbstractModule)?.moduleDescriptor?.languageVersions?.get(language)
+                            if (stamp != null && stamp > target) "${m.moduleName ?: m.moduleReference} (records $stamp)" else null
+                        }
+                        .sorted()
+                    warnings.add(buildString {
+                        append("Language version lowered from $previous to $target because the highest migration ")
+                        append("script now migrates from ${target - 1}. Only expected after a trailing migration ")
+                        append("script was deleted.")
+                        if (consumersAhead.isNotEmpty()) {
+                            append(" These modules record a used-language version above $target and are now ")
+                            append("ahead of their language: ${consumersAhead.joinToString(", ")}.")
+                        }
+                    })
+                }
+                if (analysis.problems.isNotEmpty()) {
+                    warnings.add(
+                        "The migration scripts have ${analysis.problems.size} ordering problem(s) listed in " +
+                            "`migrationProblems`. SYNC_VERSION does not fix them: correct each script's " +
+                            "`fromVersion` (or delete a duplicate), then call SYNC_VERSION again."
+                    )
+                }
+
+                val info = moduleInfoJsonObject(mpsProject, abstractModule)
+                info.addProperty("languageVersion", target)
+                info.addProperty("previousLanguageVersion", previous)
+                info.addProperty("changed", changed)
+                analysis.maxFromVersion?.let { info.addProperty("maxFromVersion", it) }
+                info.addProperty("migrationUnitCount", analysis.unitCount)
+                info.add("migrationProblems", JsonArray().apply {
+                    for (p in analysis.problems) {
+                        add(jsonObject {
+                            addProperty("unit", p.unit)
+                            addProperty("reference", p.reference)
+                            addProperty("concept", p.concept)
+                            addProperty("problem", p.problem)
+                        })
+                    }
+                })
+                analysis.noOpReason?.let { info.addProperty("note", it) }
+
+                // The migration executor (MigrationScriptCollector) reads the version off the
+                // *generated* LanguageRuntime, not off the descriptor we just wrote, so a change only
+                // becomes effective for migrations after the language module is rebuilt. Surface the
+                // disagreement instead of hiding it; deliberately do not make here (expensive, and the
+                // caller usually has further edits to build in the same pass).
+                val runtime = LanguageRegistry.getInstance(mpsProject.repository).getLanguage(abstractModule)
+                val runtimeVersion = runtime?.version
+                if (runtimeVersion != null) {
+                    info.addProperty("runtimeLanguageVersion", runtimeVersion)
+                }
+                val runtimeStale = runtimeVersion == null || runtimeVersion != target
+                info.addProperty("runtimeStale", runtimeStale)
+                if (runtimeStale) {
+                    info.addProperty(
+                        "runtimeRecoveryAction",
+                        "The compiled language runtime still reports " +
+                            (runtimeVersion?.toString() ?: "no deployed version") +
+                            ", so migrations are still gated on that value. Rebuild the language module " +
+                            "(mps_mcp_alter_nodes MAKE with rebuild=true, targeting the language module) " +
+                            "to make version $target effective for migration execution."
+                    )
+                }
+                okJson(info, warnings)
+            }
+        }
+
+        ModuleOperation.DELETE -> deleteModule(moduleName, deleteFiles)
+        ModuleOperation.SET_GENERATION_PLAN, ModuleOperation.CLEAR_GENERATION_PLAN ->
+            updateGenerationPlan(moduleName, newName, operation, planModel)
+    }
+
+    /**
+     * Mirrors [jetbrains.mps.ide.refactoring.RenameModuleDialog.checkValue]: the new module
+     * name must be a valid Java-package-style qualified name. Returns a user-facing error
+     * message when invalid, or null when the name passes validation.
+     */
+    private fun validateModuleName(name: String): String? {
+        if (name.isEmpty()) {
+            return "Module name must not be empty"
+        }
+        if (!Character.isJavaIdentifierStart(name[0])) {
+            return "Module name can't start with '${name[0]}'"
+        }
+        if (!Character.isJavaIdentifierPart(name[name.length - 1])) {
+            return "Module name can't end with '${name[name.length - 1]}'"
+        }
+        if (!SourceVersion.isName(name)) {
+            return "Module name should be a valid Java package qualified name"
+        }
+        return null
+    }
+
+    /**
+     * SET_GENERATION_PLAN / CLEAR_GENERATION_PLAN. MPS keeps a plan in one of two places, both a model reference: a
+     * DevKit's associated plan, or a Solution's Custom Generation facet (`FacetsRegistry` makes that facet applicable to
+     * Solutions only). The plan model is checked before anything changes, so a refused call leaves the module as it was.
+     */
+    private suspend fun updateGenerationPlan(
+        moduleName: String,
+        newName: String?,
+        operation: ModuleOperation,
+        planModel: String?,
+    ): String = withMpsProject("Update MPS module generation plan") { mpsProject ->
+        newName?.trim()?.takeIf { it.isNotEmpty() }?.let { given ->
+            return@withMpsProject errJson(
+                "$operation takes no newName (got '$given'); pass the plan model as planModel.",
+                McpErrorCode.INVALID_REQUEST,
+            )
+        }
+        val set = operation == ModuleOperation.SET_GENERATION_PLAN
+        if (set && planModel == null) {
+            return@withMpsProject errJson(
+                "SET_GENERATION_PLAN needs planModel: the reference or name of the @genplan model to attach. To detach, use " +
+                    "CLEAR_GENERATION_PLAN.",
+                McpErrorCode.INVALID_REQUEST,
+            )
+        }
+        executeShortCommandOnEdt(mpsProject) {
+            val resolved = resolveAbstractModuleWithDescriptor(mpsProject, moduleName, requireWritable = true)
+            if (resolved is AbstractModuleResolution.Err) {
+                return@executeShortCommandOnEdt errJson(resolved.message, resolved.code, resolved.details)
+            }
+            val (module, descriptor) = (resolved as AbstractModuleResolution.Ok)
+            if (module !is DevKit && module !is Solution) {
+                return@executeShortCommandOnEdt errJson(
+                    "Module '${module.moduleName}' is a ${moduleKindLabel(module, descriptor)}; MPS attaches generation plans to DevKits (for every " +
+                        "model that uses the DevKit) and to Solutions (for every model of the solution, through the Custom Generation " +
+                        "facet) only.",
+                    McpErrorCode.INVALID_REQUEST,
+                )
+            }
+
+            val plan = if (set) {
+                resolveModelPreferringProject(mpsProject, planModel!!)
+                    ?: return@executeShortCommandOnEdt errJson("Plan model '$planModel' not found", McpErrorCode.NOT_FOUND)
+            } else null
+            val info = plan?.let { GenerationPlanAttachment.inspect(it) }
+            info?.rejection?.let { return@executeShortCommandOnEdt errJson(it, McpErrorCode.INVALID_REQUEST) }
+            val planRef = plan?.reference
+
+            val previous = if (descriptor is DevkitDescriptor) descriptor.associatedGenPlan else GenerationPlanAttachment.facetPlanOf(module)
+            val hasFacetDescriptor = descriptor.moduleFacetDescriptors.any { it.type == GenerationPlanAttachment.FACET_TYPE }
+            val changed = previous != planRef || (module is Solution && !set && hasFacetDescriptor)
+            if (changed) {
+                if (descriptor is DevkitDescriptor) {
+                    descriptor.setAssociatedPlan(planRef)
+                    module.setModuleDescriptor(descriptor)
+                } else {
+                    updatePlanFacet(module as Solution, descriptor, planRef)
+                }
+                module.save()
+            }
+
+            val warnings = mutableListOf<String>()
+            if (plan != null) {
+                warnings.addAll(info!!.notes)
+                if (module is DevKit) {
+                    warnings.addAll(GenerationPlanAttachment.devkitWarnings(module, mpsProject.repository))
+                    GenerationPlanAttachment.modelsShadowingDevkit(module, mpsProject.projectModules).takeIf { it.isNotEmpty() }?.let {
+                        warnings.add(
+                            "These models use the DevKit but their solution's Custom Generation facet plan takes precedence: " +
+                                it.joinToString(", ") + "."
+                        )
+                    }
+                } else {
+                    warnings.addAll(GenerationPlanAttachment.solutionWarnings(module as Solution, plan, mpsProject.repository))
+                }
+            }
+            val result = moduleInfoJsonObject(mpsProject, module)
+            result.add("generationPlan", jsonObject {
+                if (plan != null) {
+                    addProperty("model", plan.name.value)
+                    addProperty("reference", PersistenceFacade.getInstance().asString(plan.reference))
+                    info!!.planName?.let { addProperty("plan", it) }
+                    addProperty("contributed", info.contributed)
+                }
+                addProperty("attachedVia", if (module is DevKit) "DEVKIT" else "FACET")
+                previous?.takeIf { it != planRef }?.let { addProperty("previousModel", PersistenceFacade.getInstance().asString(it)) }
+                addProperty("changed", changed)
+            })
+            okJson(result, warnings)
+        }
+    }
+
+    /**
+     * Points [solution]'s Custom Generation facet at [planRef], or removes the facet when it is null. An existing facet is
+     * updated in place. Adding or removing one goes through `setModuleDescriptor`, which recreates every facet from the
+     * descriptor, so the live facets are written back into it first — the order `ModulePropertiesConfigurable.save` uses.
+     */
+    private fun updatePlanFacet(solution: Solution, descriptor: ModuleDescriptor, planRef: SModelReference?) {
+        val context = PersistenceContextImpl.forModule(solution)
+        val facet = solution.getFacetOfType(GenerationPlanAttachment.FACET_TYPE) as? CustomGenerationModuleFacet
+        val hasDescriptor = descriptor.moduleFacetDescriptors.any { it.type == GenerationPlanAttachment.FACET_TYPE }
+        if (planRef != null && facet != null && hasDescriptor) {
+            facet.setPlanModelReference(planRef)
+            descriptor.updateFacetDescriptor(facet, context)
+            solution.setChanged()
+            return
+        }
+        for (live in solution.facets) {
+            descriptor.updateFacetDescriptor(live, context)
+        }
+        descriptor.moduleFacetDescriptors.removeIf { it.type == GenerationPlanAttachment.FACET_TYPE }
+        if (planRef != null) {
+            val memento = MementoImpl()
+            memento.put("planModel", PersistenceFacade.getInstance().asString(planRef))
+            descriptor.moduleFacetDescriptors.add(ModuleFacetDescriptor(GenerationPlanAttachment.FACET_TYPE, memento))
+        }
+        solution.setModuleDescriptor(descriptor)
+    }
+
+    private suspend fun deleteModule(
+        moduleName: String,
+        deleteFiles: Boolean
+    ): String = withMpsProject("Delete MPS module") { mpsProject ->
+        var removed: SModule? = null
+        var removedName: String? = null
+        // Capture the descriptor file's parent BEFORE removing the module: after
+        // removeModule() the descriptor wiring may be torn down.
+        var moduleDir: IFile? = null
+        var ownedGenerator: OwnedGeneratorDelete? = null
+        withModalTimeoutOnEdt {
+            try {
+                mpsProject.repository.modelAccess.executeCommand {
+                    val m = resolveModule(mpsProject, moduleName) ?: return@executeCommand
+                    // Record the target up front; the rest of the block is the actual removal
+                    // sequence and shouldn't be interrupted by bookkeeping assignments.
+                    removed = m
+                    // Read the resolved module name under the model lock; after removeModule()
+                    // the SModule may be detached and reading state is not guaranteed safe.
+                    removedName = m.moduleName
+                    if (m is Generator && !m.moduleDescriptor.isStandaloneModule) {
+                        ownedGenerator = deleteOwnedGenerator(mpsProject, m, deleteFiles)
+                        return@executeCommand
+                    }
+                    if (deleteFiles) {
+                        moduleDir = (m as? AbstractModule)?.descriptorFile?.parent
+                    }
+                    // Mark the module as changed BEFORE removing it from the project so any
+                    // pending in-memory state is persisted by the subsequent project save.
+                    (m as? AbstractModule)?.setChanged()
+                    // Same order as rollbackModulesRegisteredSince and ModuleDeleteHelper. removeModule(language)
+                    // would detach the owned generators itself; removing them first just avoids depending on that.
+                    if (m is Language) {
+                        for (generator in m.ownedGenerators) {
+                            if (mpsProject.repository.getModule(generator.moduleReference.moduleId) != null) {
+                                mpsProject.removeModule(generator)
+                            }
+                        }
+                    }
+                    mpsProject.removeModule(m)
+                }
+            } finally {
+                // o1: save outside the executeCommand block. Project save performs
+                // descriptor file I/O which doesn't need the model-access write lock,
+                // and holding the lock across that I/O would block concurrent model
+                // operations. The in-memory removal inside the command is the part
+                // that must be atomic; the subsequent persistence does not. Matches
+                // the post-rename save pattern in mps_mcp_update_module above.
+                // The save runs whether or not the command completed or the post-condition below holds,
+                // as a failure may come after the module was removed.
+                if (removed != null) {
+                    mpsProject.save()
+                }
+            }
+        }
+        if (removed == null) {
+            return@withMpsProject errJson("Module '$moduleName' not found", McpErrorCode.NOT_FOUND)
+        }
+        ownedGenerator?.let { return@withMpsProject ownedGeneratorDeleteResult(mpsProject, removedName ?: moduleName, it) }
+        var fsWarning: String? = null
+        val dir = moduleDir
+        if (deleteFiles && dir != null) {
+            // IFile.delete() routes to VirtualFile.delete(), which asserts an active write
+            // action. The executeCommand block above (which would have satisfied that, just
+            // like the rollback path's in-command descriptorFile.delete()) has already closed,
+            // so the on-disk removal must re-enter a write action on the EDT. Running it bare
+            // here — as before — only threw the write-access assertion into fsWarning and left
+            // the directory on disk. We keep the I/O out of the model-access command (the o1
+            // note's intent) by re-entering only a write action, not the model command; the
+            // save() above already flushed descriptor I/O so the VFS view is current.
+            var deleted = false
+            fsWarning = warningMessageOrRethrow {
+                withModalTimeoutOnEdt {
+                    WriteAction.runAndWait<Throwable> { deleted = dir.delete() }
+                }
+            }
+            // delete() reports an unthrown failure (missing VFS entry / IOException it swallowed
+            // internally) as a false return; surface it so the response doesn't claim a clean
+            // removal while files remain.
+            if (fsWarning == null && !deleted) {
+                fsWarning = "Could not delete module directory: ${dir.path}"
+            }
+        }
+        val payload = jsonObject {
+            addProperty("name", removedName ?: moduleName)
+            addProperty("deleted", true)
+            if (fsWarning != null) {
+                addProperty("fileDeletionWarning", fsWarning)
+            }
+        }
+        okJson(payload)
+    }
+
+    /**
+     * What [deleteModule] reports after [deleteOwnedGenerator]: [language] is the generator's language (null if it
+     * doesn't resolve; then only the repository half of the post-condition applies), [foldersToPrune] and [keptTargets]
+     * are the folders ModuleDeleteHelper prunes once empty and the generated-artifact locations it keeps as they belong
+     * to the language, both captured before the delete.
+     */
+    private class OwnedGeneratorDelete(
+        val generator: SModuleReference,
+        val languageName: String,
+        val language: Language?,
+        val deleteFiles: Boolean,
+        val foldersToPrune: List<IFile>,
+        val keptTargets: List<IFile>,
+    )
+
+    /**
+     * A generator that is not a standalone module has no descriptor file of its own: its `descriptorFile` is its
+     * language's `.mpl`, so the generic path of [deleteModule], which deletes `descriptorFile.parent`, would delete the
+     * language folder. Delete it the way the IDE's Delete Generator does: ModuleDeleteHelper removes it from the
+     * project, unregisters it from its language's descriptor and saves the language and, with [deleteFiles], deletes
+     * its models and generated artifacts and prunes its folders once they are empty, never touching a location of the
+     * language.
+     *
+     * ModuleDeleteHelper does file I/O inside the command (module saves, data-source deletes), just like the IDE;
+     * a deliberate exception to the o1 note in [deleteModule]. All IFile deletes stay inside the command's write action.
+     * Needs the command's write access.
+     */
+    private fun deleteOwnedGenerator(mpsProject: MPSProject, generator: Generator, deleteFiles: Boolean): OwnedGeneratorDelete {
+        val languageRef = generator.moduleDescriptor.sourceLanguage
+        val result = OwnedGeneratorDelete(
+            generator.moduleReference,
+            languageRef.moduleName ?: languageRef.toString(),
+            languageRef.resolve(mpsProject.repository) as? Language,
+            deleteFiles,
+            // models share output roots, and source roots their parent folders
+            if (deleteFiles) ModuleDeleteHelper.generatorFoldersToPrune(generator).distinctBy { it.path } else emptyList(),
+            if (deleteFiles) ModuleDeleteHelper.protectedForceDeleteTargets(generator).distinctBy { it.path } else emptyList(),
+        )
+        ModuleDeleteHelper(mpsProject).deleteModules(listOf(generator), false, deleteFiles)
+        return result
+    }
+
+    /**
+     * Checks that the generator is gone from the repository and from its language's descriptor; ModuleDeleteHelper
+     * skips the descriptor edit for a read-only language. Reports the folders and generated-artifact locations
+     * that stayed on disk.
+     */
+    private fun ownedGeneratorDeleteResult(mpsProject: MPSProject, name: String, delete: OwnedGeneratorDelete): String {
+        val (leftovers, keptFiles) = mpsProject.modelAccess.computeReadAction {
+            val leftovers = listOfNotNull(
+                "still registered".takeIf { mpsProject.repository.getModule(delete.generator.moduleId) != null },
+                "unregistered but still declared in the descriptor of language '${delete.languageName}', so it returns when the language reloads"
+                    .takeIf { delete.language?.moduleDescriptor?.generators?.any { it.moduleReference == delete.generator } == true },
+            )
+            val keptFiles = delete.foldersToPrune.filter { it.exists() }.map { "kept ${it.path}: not empty" } +
+                delete.keptTargets.filter { it.exists() }.map { "kept ${it.path}: shared with the language" }
+            leftovers to keptFiles
+        }
+        if (leftovers.isNotEmpty()) {
+            val filesNote = if (delete.deleteFiles) "; its models and generated files were already deleted" else ""
+            return errJson("Generator '$name' was not fully deleted: ${leftovers.joinToString("; ")}$filesNote", McpErrorCode.INTERNAL_ERROR)
+        }
+        val payload = jsonObject {
+            addProperty("name", name)
+            addProperty("deleted", true)
+            addProperty("parentLanguage", delete.languageName)
+            if (keptFiles.isNotEmpty()) {
+                addProperty("fileDeletionWarning", keptFiles.joinToString("; "))
+            }
+        }
+        return okJson(payload)
+    }
+
+    @McpTool
+    @McpDescription("""
+        Lists all available module facet types and their applicability to a specific module (if provided).
+
+        Returns a JSON object with 'ok':true and 'data':{ "module": {...}, "facetTypes": [{type, presentation, applicableToModule, recommendedForModule}, ...] } on success, or 'ok':false and 'error':"..." on failure. The `module` context is present when `moduleName` is supplied.
+    """)
+    // FacetsFacade.getInstance() is deprecated in favour of obtaining the registry via the
+    // owning ComponentPlugin (e.g. MPSCore), which requires plumbing a ComponentPlugin handle
+    // into the MCP toolsets. Tracked under phase 6 as a deferred architectural change.
+    @Suppress("DEPRECATION")
+    suspend fun mps_mcp_list_facet_types(
+        @McpDescription("Optional module name or reference to check applicability") @Nullable moduleName: String? = null
+    ): String = withMpsProject("Listing module facet types") { mpsProject ->
+        executeShortReadOnEdt(mpsProject) {
+            val ff = FacetsFacade.getInstance()
+                ?: throw McpUserException(McpErrorCode.INTERNAL_ERROR, "FacetsFacade service is not available")
+            val module = moduleName?.let { resolveModulePreferringProject(mpsProject, it) }
+            val recommendedTypes = module?.let { ff.getApplicableFacetTypes(it.usedLanguages) } ?: emptySet()
+
+            val jsonArray = JsonArray()
+            for (type in ff.facetTypes.sorted()) {
+                val factory = ff.getFacetFactory(type)
+                val obj = JsonObject()
+                obj.addProperty("type", type)
+                obj.addProperty("presentation", factory?.presentation ?: "")
+                if (module != null) {
+                    obj.addProperty("applicableToModule", factory?.isApplicable(module) ?: true)
+                    obj.addProperty("recommendedForModule", recommendedTypes.contains(type))
+                }
+                jsonArray.add(obj)
+            }
+            val resObj = JsonObject()
+            module?.let {
+                resObj.add("module", moduleFacetContextJsonObject(it, mpsProject))
+            }
+            resObj.add("facetTypes", jsonArray)
+            okJson(resObj)
+        }
+    }
+
+    @McpTool
+    @McpDescription("""
+        Gets information about active and persisted facets of a module.
+
+        Returns a JSON object with 'ok':true and 'data':{ "module": {...}, "activeFacets": [...], "persistedFacets": [...], "discrepancies": [...] } on success, or 'ok':false and 'error':"..." on failure.
+    """)
+    // See note above mps_mcp_list_facet_types regarding deprecated FacetsFacade.getInstance().
+    @Suppress("DEPRECATION")
+    suspend fun mps_mcp_get_module_facets(
+        @McpDescription("Required. Module name or reference") moduleName: String = ""
+    ): String = rejectMissingParameters(
+        "mps_mcp_get_module_facets",
+        RequiredParameter("moduleName", moduleName, "the module's name or reference"),
+    ) ?: withMpsProject("Getting module facets") { mpsProject ->
+        executeShortReadOnEdt(mpsProject) {
+            val module = resolveModulePreferringProject(mpsProject, moduleName)
+            if (module == null) {
+                errJson("Module $moduleName not found", McpErrorCode.NOT_FOUND)
+            } else {
+                val ff = FacetsFacade.getInstance()
+                    ?: throw McpUserException(McpErrorCode.INTERNAL_ERROR, "FacetsFacade service is not available")
+                val abstractModule = module as? AbstractModule
+                val persistenceContext = if (abstractModule != null) PersistenceContextImpl.forModule(abstractModule) else PersistenceContextImpl.empty()
+
+                val activeFacets = JsonArray()
+                for (facet in module.facets) {
+                    val obj = JsonObject()
+                    obj.addProperty("type", facet.facetType)
+                    obj.addProperty("attached", facet.isAttached)
+                    obj.addProperty("presentation", ff.getFacetFactory(facet.facetType)?.presentation ?: "")
+                    val memento = MementoImpl()
+                    facet.save(memento, persistenceContext)
+                    obj.add("stateMemento", mementoToJson(memento, facet.facetType))
+                    activeFacets.add(obj)
+                }
+
+                val persistedFacets = JsonArray()
+                val discrepancies = JsonArray()
+                abstractModule?.moduleDescriptor?.moduleFacetDescriptors?.forEach { fd ->
+                    val obj = JsonObject()
+                    obj.addProperty("type", fd.type)
+                    obj.add("memento", mementoToJson(fd.memento, fd.type))
+                    persistedFacets.add(obj)
+
+                    val facet = module.getFacetOfType(fd.type)
+                    if (facet != null) {
+                        val currentMemento = MementoImpl()
+                        facet.save(currentMemento, persistenceContext)
+                        if (!mementosEqual(currentMemento, fd.memento, fd.type)) {
+                            discrepancies.add(fd.type)
+                        }
+                    }
+                }
+
+                val resObj = JsonObject()
+                resObj.add("module", moduleFacetContextJsonObject(module, mpsProject))
+                resObj.add("activeFacets", activeFacets)
+                resObj.add("persistedFacets", persistedFacets)
+                resObj.add("discrepancies", discrepancies)
+                okJson(resObj)
+            }
+        }
+    }
+
+    private fun moduleFacetContextJsonObject(module: SModule, mpsProject: MPSProject): JsonObject {
+        val obj = JsonObject()
+        obj.addProperty("name", module.moduleName ?: "")
+        obj.addProperty("reference", PersistenceFacade.getInstance().asString(module.moduleReference))
+        addContainingProjectIfForeign(obj, mpsProject, module)
+        return obj
+    }
+
+    @McpTool
+    @McpDescription("""
+        Updates module facets (enable/disable/configure).
+
+        `settingsJson` accepts a flat object of primitive properties, or a structured memento object with optional `properties`, primitive `text`, and `children`. Structured `properties` must be an object; `children` must be an array of objects whose primitive `type` is present. Invalid settings return INVALID_REQUEST without changing the existing facet configuration. When `enabled=false`, settings are ignored and the facet is disabled.
+
+        Before anything changes, the settings are loaded into a scratch instance of the facet and saved back: settings the facet cannot load are refused (INVALID_REQUEST), and supplied keys or child types it does not keep are named in `warnings` (with the ones it keeps). A facet not applicable to the module kind is kept with a warning. DevKits are refused: a DevKit saves no facets (use `mps_mcp_update_module` SET_GENERATION_PLAN to give its models a plan). For the `generator` (Custom Generation) facet, prefer `mps_mcp_update_module` SET_GENERATION_PLAN, which validates the plan.
+
+        Returns a JSON object with 'ok':true and 'data':{"updated":true, "facetType":"..."} (plus `warnings`) on success, or 'ok':false and 'error':"..." on failure.
+    """)
+    // See note above mps_mcp_list_facet_types regarding deprecated FacetsFacade.getInstance().
+    @Suppress("DEPRECATION")
+    suspend fun mps_mcp_update_module_facet(
+        @McpDescription("Required. Module name or reference") moduleName: String = "",
+        @McpDescription("Required. Facet type to update") facetType: String = "",
+        @McpDescription("Whether to enable or disable the facet") @Nullable enabled: Boolean? = null,
+        @McpDescription("Facet settings as a flat JSON object of primitive values, or structured JSON with optional 'properties' object, primitive 'text', and 'children' array; sent as real JSON or as its string form. Each child requires a primitive 'type'. Invalid settings leave the existing facet unchanged; ignored when enabled=false.") @Nullable settingsJson: JsonOrText? = null
+    ): String = rejectMissingParameters(
+        "mps_mcp_update_module_facet",
+        RequiredParameter("moduleName", moduleName, "the module's name or reference"),
+        RequiredParameter("facetType", facetType, "the facet type to update"),
+    ) ?: withMpsProject("Updating module facet") { mpsProject ->
+        val settings = settingsJson?.text
+        val warnings = mutableListOf<String>()
+        val validationError = withModalTimeoutOnEdt {
+            var commandError: String? = null
+            mpsProject.repository.modelAccess.executeCommand {
+                val resolved = resolveAbstractModuleWithDescriptor(mpsProject, moduleName, requireWritable = true)
+                when (resolved) {
+                    is AbstractModuleResolution.Err -> throw McpUserException(resolved.code, resolved.message, resolved.details)
+                    is AbstractModuleResolution.Ok -> {
+                        val (abstractModule, descriptor) = resolved
+                        if (abstractModule is DevKit) {
+                            // DevkitDescriptorPersistence writes no facets, so the change would be lost on the next reload.
+                            commandError = errJson(
+                                "A DevKit has no module facets that MPS saves. To give the models that use a DevKit a generation plan, " +
+                                    "use mps_mcp_update_module operation=SET_GENERATION_PLAN on the DevKit.",
+                                McpErrorCode.INVALID_REQUEST,
+                            )
+                            return@executeCommand
+                        }
+
+                        if (enabled == false) {
+                            descriptor.moduleFacetDescriptors.removeIf { it.type == facetType }
+                        } else if (enabled == true || settings != null) {
+                            if (FacetsFacade.getInstance().getFacetFactory(facetType) == null) {
+                                throw McpInvalidRequestException("Unknown facet type: $facetType. No factory registered.")
+                            }
+
+                            val memento = MementoImpl()
+                            if (settings != null) {
+                                when (val parsed = jsonToMemento(settings, memento)) {
+                                    MementoParsingResult.Ok -> Unit
+                                    is MementoParsingResult.Err -> {
+                                        commandError = parsed.errJson
+                                        return@executeCommand
+                                    }
+                                }
+                                // Rehearse the settings on a scratch facet before the descriptor changes: setModuleDescriptor
+                                // recreates every facet from the descriptor, and a facet whose load throws there takes the
+                                // module's other facets down with it.
+                                when (val rehearsal = rehearseFacetSettings(abstractModule, facetType, memento)) {
+                                    is FacetRehearsal.Refused -> {
+                                        commandError = errJson(rehearsal.message, McpErrorCode.INVALID_REQUEST)
+                                        return@executeCommand
+                                    }
+                                    is FacetRehearsal.Loaded -> warnings.addAll(rehearsal.warnings)
+                                }
+                            } else if (descriptor.moduleFacetDescriptors.any { it.type == facetType }) {
+                                return@executeCommand
+                            }
+                            if (facetType == GenerationPlanAttachment.FACET_TYPE && warnings.none { it.contains("SET_GENERATION_PLAN") }) {
+                                warnings.add(
+                                    "The Custom Generation facet keeps only `planModel` and checks nothing; mps_mcp_update_module " +
+                                        "operation=SET_GENERATION_PLAN attaches a plan model with validation."
+                                )
+                            }
+                            if (FacetsFacade.getInstance().getFacetFactory(facetType)?.isApplicable(abstractModule) == false) {
+                                warnings.add(
+                                    "Facet '$facetType' is not applicable to module '${abstractModule.moduleName}' " +
+                                        "(${moduleKindLabel(abstractModule, descriptor)}); MPS keeps it but may ignore it."
+                                )
+                            }
+
+                            descriptor.moduleFacetDescriptors.removeIf { it.type == facetType }
+                            descriptor.moduleFacetDescriptors.add(ModuleFacetDescriptor(facetType, memento))
+                        }
+
+                        abstractModule.setModuleDescriptor(descriptor)
+                        abstractModule.save()
+                    }
+                }
+            }
+            if (commandError == null) {
+                mpsProject.save()
+            }
+            commandError
+        }
+        if (validationError != null) return@withMpsProject validationError
+
+        okJson(jsonObject {
+            addProperty("updated", true)
+            addProperty("facetType", facetType)
+        }, warnings)
+    }
+
+    private sealed class FacetRehearsal {
+        class Refused(val message: String) : FacetRehearsal()
+        class Loaded(val warnings: List<String>) : FacetRehearsal()
+    }
+
+    /**
+     * Loads [settings] into a scratch instance of the [facetType] facet and saves it back. A load that throws refuses the
+     * settings; a supplied property key or child type the facet does not save back is one it ignores. Only those are
+     * compared: a facet may add defaults or normalize values (the Java facet rewrites paths), which is not a loss.
+     */
+    @Suppress("DEPRECATION")
+    private fun rehearseFacetSettings(module: AbstractModule, facetType: String, settings: Memento): FacetRehearsal {
+        val factory = FacetsFacade.getInstance().getFacetFactory(facetType) ?: return FacetRehearsal.Loaded(emptyList())
+        val context = PersistenceContextImpl.forModule(module)
+        val saved = MementoImpl()
+        try {
+            val scratch = factory.create(module) ?: return FacetRehearsal.Loaded(emptyList())
+            scratch.load(settings, context)
+            scratch.save(saved, context)
+        } catch (e: Exception) {
+            return FacetRehearsal.Refused(
+                "Facet '$facetType' cannot load these settings (${e.javaClass.simpleName}: ${e.message}); the module was not changed."
+            )
+        }
+        val ignoredKeys = getEffectiveKeys(settings, facetType).filter { saved.get(it) == null }.sorted()
+        val savedChildTypes = saved.children.map { it.type }.toSet()
+        val ignoredChildren = settings.children.map { it.type }.filter { it !in savedChildTypes }.distinct().sorted()
+        if (ignoredKeys.isEmpty() && ignoredChildren.isEmpty()) return FacetRehearsal.Loaded(emptyList())
+        val kept = getEffectiveKeys(saved, facetType).sorted()
+        val hint = if (facetType == GenerationPlanAttachment.FACET_TYPE) {
+            " The Custom Generation facet keeps only `planModel` (a generation plan model reference); " +
+                "mps_mcp_update_module operation=SET_GENERATION_PLAN attaches a plan with validation."
+        } else ""
+        return FacetRehearsal.Loaded(listOf(
+            "Facet '$facetType' ignores " +
+                listOfNotNull(
+                    ignoredKeys.takeIf { it.isNotEmpty() }?.let { "the settings ${it.joinToString(", ")}" },
+                    ignoredChildren.takeIf { it.isNotEmpty() }?.let { "the child types ${it.joinToString(", ")}" },
+                ).joinToString(" and ") +
+                "; it keeps ${if (kept.isEmpty()) "no settings" else kept.joinToString(", ")}.$hint"
+        ))
+    }
+
+    /**
+     * Runs the producer for a `solution`, `devkit` or `language` and returns the new module. The
+     * producers register a module (and a Language's generator/runtime/sandbox companions) before
+     * saving it, so a throw from here can leave modules registered; the caller rolls those back.
+     */
+    private fun produceModule(
+        mpsProject: MPSProject,
+        normalizedType: String,
+        name: String,
+        dirFile: IFile,
+        virtualFolder: String?,
+        withGenerator: Boolean,
+        withSandbox: Boolean,
+        withRuntime: Boolean,
+    ): SModule = when (normalizedType) {
+        "solution" -> {
+            val sol = SolutionProducer(mpsProject).create(name, dirFile)
+            applyVirtualFolder(mpsProject, sol, virtualFolder)
+            sol
+        }
+        "devkit" -> {
+            val dk = DevkitProducer(mpsProject).create(name, dirFile)
+            applyVirtualFolder(mpsProject, dk, virtualFolder)
+            dk
+        }
+        "language" -> {
+            val lp = LanguageAndSolutionsProducer(mpsProject)
+                .withGenerator(withGenerator)
+                .withRuntimeSolution(withRuntime)
+                .withSandboxSolution(withSandbox)
+            val lang = lp.create(name, dirFile)
+            if (virtualFolder != null) {
+                applyVirtualFolder(mpsProject, lang, virtualFolder)
+                lp.runtimeSolution.ifPresent { applyVirtualFolder(mpsProject, it, virtualFolder) }
+                lp.sandboxSolution.ifPresent { applyVirtualFolder(mpsProject, it, virtualFolder) }
+                lang.generators.forEach { applyVirtualFolder(mpsProject, it, virtualFolder) }
+            }
+            lang.save()
+            // Persist all sub-modules the producer created. Without this, an opted-in
+            // runtime/sandbox solution or generator would stay dirty in memory until a
+            // later, unrelated save flushed them — which is fragile and order-dependent.
+            lp.runtimeSolution.ifPresent { it.save() }
+            lp.sandboxSolution.ifPresent { it.save() }
+            lang.generators.forEach { it.save() }
+            lang
+        }
+        else -> throw IllegalStateException("Unexpected module type '$normalizedType'")
+    }
+
+    /**
+     * Undoes a failed solution/devkit/language creation, whether the producer or the facet
+     * attachment after it failed: un-registers every module registered since [modulesBefore] and
+     * removes what [createdPaths] recorded as new; the caller saves the project after the command, so
+     * `.mps/modules.xml` no longer lists them. Returns the sentence that ends the error message, which
+     * states what is left over when the best-effort rollback did not get everything.
+     */
+    private fun rollbackFailedCreation(
+        mpsProject: MPSProject,
+        modulesBefore: Set<SModuleReference>,
+        createdPaths: CreatedPaths?,
+    ): String {
+        val stillRegistered = runCatching { rollbackModulesRegisteredSince(mpsProject, modulesBefore) }
+            .getOrElse { listOf("(could not list the project's modules: ${it.message})") }
+        val leftovers = createdPaths?.rollback(mpsProject.fileSystem)
+        val notRemoved = leftovers?.notRemoved.orEmpty()
+        val notFullyChecked = leftovers?.notFullyChecked.orEmpty()
+        val partialCheck = notFullyChecked.takeIf { it.isNotEmpty() }?.let {
+            "in ${it.joinToString(", ")} only the first level was checked, so files the call added inside its " +
+                "existing subfolders may remain"
+        }
+        if (stillRegistered.isEmpty() && notRemoved.isEmpty()) {
+            if (partialCheck == null) return "No module or file was left behind."
+            return "No module was left registered; $partialCheck."
+        }
+        val parts = listOfNotNull(
+            stillRegistered.takeIf { it.isNotEmpty() }?.let { "still in the project: ${it.joinToString(", ")}" },
+            notRemoved.takeIf { it.isNotEmpty() }?.let { "not removed: ${it.joinToString(", ")}" },
+            partialCheck,
+        )
+        return "Rollback was incomplete (${parts.joinToString("; ")}); remove what is left with " +
+            "mps_mcp_update_module DELETE deleteFiles=true, or delete the files by hand."
+    }
+
+    /**
+     * Un-registers every project module that is not in [before], without deleting files: file removal
+     * is [CreatedPaths]' job, which knows whether a file predates the call. Returns the names of the
+     * modules the project still tracks afterwards, marking those that only its module list still holds.
+     * Needs the command's write access.
+     *
+     * The order follows how the project tracks a Language's generator. LanguageProducer adds the
+     * generator with `ProjectBase.addModule`, so it has its own module-loader entry and file-listener
+     * registration, both keyed to the language's `.mpl`. Unregistering it through the language
+     * descriptor, as for a generator of a surviving language, leaves both behind: MPS then logs
+     * "is not found in the project repository" on every project-module listing, and the `.mpl`
+     * listener is never released (MPS-40228 live review). So each rolled-back language goes first,
+     * right after the generators it owns, each through `removeModule`. Only generators of a surviving
+     * language take the descriptor path.
+     */
+    internal fun rollbackModulesRegisteredSince(mpsProject: MPSProject, before: Set<SModuleReference>): List<String> {
+        val added = mpsProject.projectModulesWithGenerators.filter { it.moduleReference !in before }
+        fun registered(module: SModule) = mpsProject.repository.getModule(module.moduleReference.moduleId) != null
+        // One failing module must not stop the others; the check below reports it.
+        val languages = added.filterIsInstance<Language>()
+        for (language in languages) {
+            // Each generator goes right before its language, like ModuleDeleteHelper does. removeModule(language)
+            // would detach them itself; removing them first just avoids depending on that.
+            for (generator in language.ownedGenerators) {
+                if (registered(generator)) runCatching { mpsProject.removeModule(generator) }
+            }
+            if (registered(language)) runCatching { rollbackSingleModule(mpsProject, language) }
+        }
+        for (module in added) {
+            if (module !is Language && module !is Generator && registered(module)) {
+                runCatching { rollbackSingleModule(mpsProject, module) }
+            }
+        }
+        for (generator in added.filterIsInstance<Generator>()) {
+            if (registered(generator)) runCatching { rollbackSingleModule(mpsProject, generator) }
+        }
+        // A module can be gone from the repository and still be tracked by the project's module
+        // loader, which getProjectModules() silently skips; isProjectModule() sees that entry. It is
+        // true by design for a generator of a language the project keeps, so ask it only for a
+        // generator whose language was rolled back too.
+        val rolledBackLanguages = languages.map { it.moduleReference }.toSet()
+        return added.mapNotNull { module ->
+            val moduleName = module.moduleName ?: module.moduleReference.toString()
+            when {
+                registered(module) -> moduleName
+                runCatching {
+                    val languageRolledBack = module !is Generator ||
+                        module.sourceLanguage()?.sourceModuleReference in rolledBackLanguages
+                    languageRolledBack && mpsProject.isProjectModule(module)
+                }.getOrDefault(false) -> "$moduleName (only in the project's module list, which a restart of MPS clears)"
+                else -> null
+            }
+        }
+    }
+
+    /**
+     * Upfront checks of an explicit `directory`, run before anything is created. Returns an error
+     * envelope, or null when the directory is usable.
+     */
+    private fun rejectUnusableModuleDirectory(
+        normalizedType: String,
+        dir: String,
+        name: String,
+    ): String? {
+        val path = try {
+            Paths.get(dir)
+        } catch (e: InvalidPathException) {
+            return errJson("Parameter 'directory' is not a valid path: '$dir' (${e.reason})", McpErrorCode.INVALID_REQUEST)
+        }
+        if (!path.isAbsolute) {
+            return errJson("Parameter 'directory' must be an absolute path: '$dir'", McpErrorCode.INVALID_REQUEST)
+        }
+        if (Files.isRegularFile(path)) {
+            return errJson(
+                "Parameter 'directory' points to an existing file, not a directory: '$dir'",
+                McpErrorCode.INVALID_REQUEST,
+            )
+        }
+        // MPS-40228: saving a module whose folder is fewer than three levels below '/' fails in
+        // MacrosFactory.ModuleMacros.shrink: its '${module}/..' or '${module}/../..' alternative is then
+        // relative to '/', which FileUtil.getRelativePath cannot handle, and by then the producer has
+        // registered the module. Solutions and languages have paths to shrink (output root, model
+        // roots); a devkit has none, and a generator's anchor is its parent's .mpl. A Windows drive
+        // root is unaffected ("C:/" splits into a non-empty element). The rule is spelled out rather
+        // than probed through MacrosFactory, because the probe cannot judge a folder whose ancestors
+        // do not exist yet. Drop this check once ModuleMacros.shrink skips a root prefix.
+        if (normalizedType != "solution" && normalizedType != "language") return null
+        val normalized = path.normalize()
+        if (normalized.root?.toString() != "/" || normalized.nameCount >= 3) return null
+        var example = normalized.resolve(name.ifBlank { "module" })
+        while (example.nameCount < 3) example = example.resolve(name.ifBlank { "module" })
+        return errJson(
+            "Module directory '$normalized' is too close to the filesystem root: MPS cannot record module " +
+                "paths for a module folder fewer than three levels below '/' (MPS-40228). Use a directory at " +
+                "least three levels deep, e.g. '$example'.",
+            McpErrorCode.INVALID_REQUEST,
+        )
+    }
+
+    private fun applyVirtualFolder(mpsProject: MPSProject, module: SModule, virtualFolder: String?) {
+        if (virtualFolder != null) {
+            mpsProject.setVirtualFolder(module, virtualFolder)
+        }
+    }
+
+    /**
+     * Best-effort un-registration of one module in a rollback. Any throwable except an [Error] is
+     * swallowed: the primary error has already been recorded and is more useful to the caller than
+     * a cleanup failure. Descriptor and other files are left alone; [CreatedPaths] removes them.
+     *
+     * - Generator: reached only for a generator whose language survives the rollback (see
+     *   [rollbackModulesRegisteredSince]). The generator branch registers it through
+     *   `parentLang.setModuleDescriptor(...)` → `Language.revalidateGenerators`, so the symmetric
+     *   rollback is to drop the entry from the parent's `generators` and re-set the descriptor,
+     *   which makes `revalidateGenerators` unregister it. As a safety belt `removeModule` follows
+     *   if the generator is somehow still attached. Its descriptor file is the parent's `.mpl`, so
+     *   nothing may ever delete it on the generator's behalf.
+     * - Everything else: the producer registered the module with the project, so `removeModule` is
+     *   the matching reversal.
+     *
+     * Must run inside `modelAccess.executeCommand { ... }`: `removeModule`, `setModuleDescriptor`
+     * and `save()` all need write access.
+     */
+    private fun rollbackSingleModule(mpsProject: MPSProject, module: SModule) {
+        try {
+            if (module is Generator) {
+                // `Generator.sourceLanguage()` reads `mySourceLanguage0` directly and can
+                // return null for a partially constructed generator (e.g. a Language whose
+                // `revalidateGenerators` failed mid-flight). NPE-ing here would abort the
+                // rollback walk and strand the remaining modules —
+                // exactly the partial state this helper exists to prevent. Fall through to
+                // the `removeModule` safety belt below when the parent link is missing.
+                val parentRef = runCatching { module.sourceLanguage()?.sourceModuleReference }.getOrNull()
+                val parent = parentRef?.let { mpsProject.repository.getModule(it.moduleId) as? Language }
+                val parentDescriptor = parent?.moduleDescriptor
+                if (parent != null && parentDescriptor != null) {
+                    parentDescriptor.generators.removeIf { it.moduleReference == module.moduleReference }
+                    parent.setModuleDescriptor(parentDescriptor)
+                    // The parent's own save may be exactly what failed (MPS-40228); a throw here
+                    // must not skip the `removeModule` safety belt below.
+                    runCatching { parent.save() }
+                }
+                // Safety belt: if revalidateGenerators didn't fully detach the generator
+                // from the project repository, drop it explicitly. Idempotent on a
+                // module that is no longer registered.
+                if (mpsProject.repository.getModule(module.moduleReference.moduleId) != null) {
+                    runCatching { mpsProject.removeModule(module) }
+                }
+            } else {
+                // Idempotent: removing a module not in the repo throws in some MPS revisions,
+                // so check first.
+                if (mpsProject.repository.getModule(module.moduleReference.moduleId) != null) {
+                    mpsProject.removeModule(module)
+                }
+            }
+        } catch (e: Throwable) {
+            rethrowIfCancellation(e)
+            if (e is Error) throw e
+            // Swallow: the original failure is what the caller needs to see.
+        }
+    }
+
+    private fun getEffectiveKeys(m: Memento, rootType: String? = null): Set<String> {
+        return m.keys.filter { key ->
+            !(key == "type" && (m.get(key) == m.type || (m.type == null && m.get(key) == rootType)))
+        }.toSet()
+    }
+
+    private fun mementoToJson(m: Memento, rootType: String? = null): JsonObject {
+        val obj = JsonObject()
+        val props = JsonObject()
+        for (key in getEffectiveKeys(m, rootType)) {
+            props.addProperty(key, m.get(key))
+        }
+        if (props.size() > 0) {
+            obj.add("properties", props)
+        }
+        val text = m.text
+        if (text != null) {
+            obj.addProperty("text", text)
+        }
+        val children = JsonArray()
+        for (child in m.children) {
+            val childObj = mementoToJson(child, null)
+            childObj.addProperty("type", child.type)
+            children.add(childObj)
+        }
+        if (children.size() > 0) {
+            obj.add("children", children)
+        }
+        return obj
+    }
+
+    private sealed interface MementoParsingResult {
+        object Ok : MementoParsingResult
+        data class Err(val errJson: String) : MementoParsingResult
+    }
+
+    private fun jsonToMemento(settingsJson: String, memento: Memento): MementoParsingResult {
+        val element = try {
+            JsonParser.parseString(settingsJson)
+        }
+        catch (e: JsonParseException) {
+            return mementoError("settingsJson is not valid JSON: ${JsonSyntaxErrors.describe(settingsJson, e.message ?: e.toString(), JsonInputGuidance.INLINE)}")
+        }
+        if (!element.isJsonObject) {
+            return mementoError("settingsJson must be a JSON object")
+        }
+        return jsonToMemento(element.asJsonObject, memento, "settingsJson")
+    }
+
+    private fun jsonToMemento(obj: JsonObject, memento: Memento, path: String): MementoParsingResult {
+        val text = obj.get("text")
+        if (text != null && !text.isJsonPrimitive) {
+            return mementoError("$path.text must be a JSON primitive")
+        }
+        val properties = obj.get("properties")
+        val children = obj.get("children")
+        val structured = properties?.isJsonObject == true || children?.isJsonArray == true || text != null
+
+        if (structured) {
+            if (properties != null && !properties.isJsonObject) {
+                return mementoError("$path.properties must be a JSON object")
+            }
+            if (children != null && !children.isJsonArray) {
+                return mementoError("$path.children must be a JSON array")
+            }
+            properties?.asJsonObject?.let { values ->
+                for (entry in values.entrySet()) {
+                    if (entry.value.isJsonPrimitive) {
+                        memento.put(entry.key, entry.value.asString)
+                    }
+                }
+            }
+            text?.let { memento.text = it.asString }
+            children?.asJsonArray?.let { values ->
+                for ((index, childElement) in values.withIndex()) {
+                    val childPath = "$path.children[$index]"
+                    if (!childElement.isJsonObject) {
+                        return mementoError("$childPath must be a JSON object")
+                    }
+                    val child = childElement.asJsonObject
+                    val type = child.get("type")
+                    if (type == null) {
+                        return mementoError("$childPath.type is missing")
+                    }
+                    if (!type.isJsonPrimitive) {
+                        return mementoError("$childPath.type must be a JSON primitive")
+                    }
+                    val childMemento = memento.createChild(type.asString)
+                    when (val nested = jsonToMemento(child, childMemento, childPath)) {
+                        MementoParsingResult.Ok -> Unit
+                        is MementoParsingResult.Err -> return nested
+                    }
+                }
+            }
+        }
+        else {
+            for (entry in obj.entrySet()) {
+                if (entry.value.isJsonPrimitive) {
+                    val key = entry.key
+                    val value = entry.value.asString
+                    if (key == "type" && value == memento.type) continue
+                    memento.put(key, value)
+                }
+            }
+        }
+        return MementoParsingResult.Ok
+    }
+
+    private fun mementoError(message: String): MementoParsingResult.Err =
+        MementoParsingResult.Err(errJson(message, McpErrorCode.INVALID_REQUEST))
+
+    private fun mementosEqual(m1: Memento, m2: Memento, rootType: String? = null): Boolean {
+        if (m1.type != m2.type) return false
+        if (m1.text != m2.text) return false
+
+        val keys1 = getEffectiveKeys(m1, rootType)
+        val keys2 = getEffectiveKeys(m2, rootType)
+        if (keys1 != keys2) return false
+        for (key in keys1) {
+            if (m1.get(key) != m2.get(key)) return false
+        }
+
+        val children1 = m1.children.toList()
+        val children2 = m2.children.toList()
+        if (children1.size != children2.size) return false
+
+        for (i in children1.indices) {
+            if (!mementosEqual(children1[i], children2[i], null)) return false
+        }
+        return true
+    }
+
+
+}
+
+enum class ModuleOperation {
+    RENAME,
+    CHANGE_VIRTUAL_FOLDER,
+    SYNC_VERSION,
+    DELETE,
+    SET_GENERATION_PLAN,
+    CLEAR_GENERATION_PLAN,
+}
+
+private const val DEVKIT_EXPORTED_LANGUAGES = "exportedLanguages"
+private const val DEVKIT_EXPORTED_SOLUTIONS = "exportedSolutions"
+private const val DEVKIT_EXTENDED_DEVKITS = "extendedDevkits"
+

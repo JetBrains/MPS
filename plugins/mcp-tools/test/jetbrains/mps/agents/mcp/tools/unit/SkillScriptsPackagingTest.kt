@@ -23,7 +23,7 @@ import kotlin.io.path.name
  * first half; [SkillScriptsDriftTest] runs the installed copies.
  *
  * The skills catalog is a classpath resource, so no MPS project is needed and the heavyweight
- * [McpIntegrationTestBase] setup is skipped — same reasoning as [JetBrainsMPSInitMcpToolsetTest],
+ * [McpIntegrationTestBase] setup is skipped — same reasoning as [MPSInitMcpToolsetTest],
  * whose reflective access to the production resource resolution is reused here.
  */
 class SkillScriptsPackagingTest {
@@ -112,19 +112,19 @@ class SkillScriptsPackagingTest {
      * Runs [block] on the bundled skills root, resolved through the production
      * `withSkillsResourceFs` so a directory classpath entry and a packaged JAR behave the
      * same. Reached by reflection because the method is private — the same pattern
-     * [JetBrainsMPSInitMcpToolsetTest] uses.
+     * [MPSInitMcpToolsetTest] uses.
      */
     @Suppress("UNCHECKED_CAST")
     private fun <T> withSkillsRoot(block: (Path) -> T): T {
         val resourceUrl: URL = checkNotNull(javaClass.classLoader.getResource(SKILLS_RESOURCE_PATH)) {
             "bundled skills catalog is missing from the classpath at '$SKILLS_RESOURCE_PATH'"
         }
-        val method = JetBrainsMPSInitMcpToolset::class.java.getDeclaredMethod(
+        val method = MPSInitMcpToolset::class.java.getDeclaredMethod(
             "withSkillsResourceFs",
             URL::class.java,
             Function1::class.java,
         )
         method.isAccessible = true
-        return method.invoke(JetBrainsMPSInitMcpToolset(), resourceUrl, block as Function1<Path, T>) as T
+        return method.invoke(MPSInitMcpToolset(), resourceUrl, block as Function1<Path, T>) as T
     }
 }

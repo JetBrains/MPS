@@ -158,7 +158,7 @@ says otherwise.
 
 - **The original report's problem 5 was wrong.** `mps_mcp_create_enum`,
   `mps_mcp_rename_concept_link` and the other six "missing tools" are `private suspend fun` in
-  `../src/jetbrains/mps/agents/mcp/tools/JetBrainsMPSLanguageStructureMcpToolset.kt`
+  `../src/jetbrains/mps/agents/mcp/tools/MPSLanguageStructureMcpToolset.kt`
   (`:1076`, `:1367`, …), reached through `mps_mcp_alter_structure`. They are not MCP tools, are
   absent from from-sources inventories (`~/MPSProjects/mcp-study/archive/runs/r49/inventory.json`,
   54 tools), and no catalog names them.
@@ -176,7 +176,7 @@ says otherwise.
   (`version=2026.2 build=262.11879.672`). 15 of 33 `SKILL.md` files differ from this checkout's
   catalog. That is expected and correct for a "shipped experience" round.
 - `mps_mcp_list_open_projects` returns `mpsVersion`, `mpsBuild`, `mpsEap` and `logDirectory`
-  (`JetBrainsMPSProjectMcpToolset.kt:114-121`). It does **not** return a selector or config
+  (`MPSProjectMcpToolset.kt:114-121`). It does **not** return a selector or config
   path.
 
 ### 2.5 Environment risks

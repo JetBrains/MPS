@@ -146,7 +146,7 @@ class ConceptFunctionParameterBindingIntegrationTest : McpIntegrationTestBase() 
         val returnRef = readOnRepo {
             refOf(bodyOf(validator).children.single())
         }
-        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+        val response = runTool(MPSJavaMcpToolset()) {
             it.mps_mcp_parse_java_and_insert(
                 """
                 {
@@ -227,13 +227,13 @@ class ConceptFunctionParameterBindingIntegrationTest : McpIntegrationTestBase() 
     @Test
     fun `importUsedLanguages false resolves the call when the model imports smodel directly`() {
         val validator = createValidators(withoutAspectDevkit = true).first()
-        expectOk(runTool(JetBrainsMPSModelMcpToolset()) {
+        expectOk(runTool(MPSModelMcpToolset()) {
             it.mps_mcp_model_used_language(
                 modelRefOf(constraintsModel()), "jetbrains.mps.lang.smodel", "language", DependencyOperation.ADD
             )
         })
         val languagesBefore = constraintsModelLanguages()
-        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+        val response = runTool(MPSJavaMcpToolset()) {
             it.mps_mcp_parse_java_and_insert(
                 """
                 {
@@ -344,7 +344,7 @@ class ConceptFunctionParameterBindingIntegrationTest : McpIntegrationTestBase() 
         val validator = createValidators(withoutAspectDevkit = true).first()
         val languagesBefore = constraintsModelLanguages()
         assertFalse("the fixture does not use smodel", languagesBefore.contains("jetbrains.mps.lang.smodel"))
-        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+        val response = runTool(MPSJavaMcpToolset()) {
             it.mps_mcp_parse_java_and_insert(
                 """
                 {
@@ -370,7 +370,7 @@ class ConceptFunctionParameterBindingIntegrationTest : McpIntegrationTestBase() 
         val validator = createValidators().first()
         okEnvelope(parseInto(validator, "return false;"))
         val returnRef = readOnRepo { refOf(bodyOf(validator).children.single()) }
-        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+        val response = runTool(MPSJavaMcpToolset()) {
             it.mps_mcp_parse_java_and_insert(
                 """
                 {
@@ -394,7 +394,7 @@ class ConceptFunctionParameterBindingIntegrationTest : McpIntegrationTestBase() 
     @Test
     fun `resolveReferences false leaves the names as parsed`() {
         val validator = createValidators().first()
-        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+        val response = runTool(MPSJavaMcpToolset()) {
             it.mps_mcp_parse_java_and_insert(
                 """
                 {
@@ -429,7 +429,7 @@ class ConceptFunctionParameterBindingIntegrationTest : McpIntegrationTestBase() 
     @Test
     fun `recovery false still rejects a syntax error`() {
         val validator = createValidators().first()
-        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+        val response = runTool(MPSJavaMcpToolset()) {
             it.mps_mcp_parse_java_and_insert(
                 """
                 {
@@ -452,7 +452,7 @@ class ConceptFunctionParameterBindingIntegrationTest : McpIntegrationTestBase() 
         val constantRef = readOnRepo {
             refOf(bodyOf(validator).children.single().children.single { it.containmentLink?.name == "expression" })
         }
-        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+        val response = runTool(MPSJavaMcpToolset()) {
             it.mps_mcp_parse_java_and_insert(
                 """
                 {
@@ -471,7 +471,7 @@ class ConceptFunctionParameterBindingIntegrationTest : McpIntegrationTestBase() 
     @Test
     fun `an explicit recovery true accepts the repaired code with a warning`() {
         val validator = createValidators().first()
-        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+        val response = runTool(MPSJavaMcpToolset()) {
             it.mps_mcp_parse_java_and_insert(
                 """
                 {
@@ -528,7 +528,7 @@ class ConceptFunctionParameterBindingIntegrationTest : McpIntegrationTestBase() 
               "children": [ { "role": "property", "nodes": [ $propertyConstraints ] } ]
             }
         """.trimIndent()
-        val payload = expectOk(runTool(JetBrainsMPSRootNodeMcpToolset()) {
+        val payload = expectOk(runTool(MPSRootNodeMcpToolset()) {
             it.mps_mcp_insert_root_node_from_json(constraintsModelRef, JsonOrText(json), dryRun = false, responseDetail = "summary")
         })
         val rootRef = payload.get("roots").asJsonArray.single().asJsonObject.get("reference").asString
@@ -556,7 +556,7 @@ class ConceptFunctionParameterBindingIntegrationTest : McpIntegrationTestBase() 
               } ] } ]
             }
         """.trimIndent()
-        val payload = expectOk(runTool(JetBrainsMPSRootNodeMcpToolset()) {
+        val payload = expectOk(runTool(MPSRootNodeMcpToolset()) {
             it.mps_mcp_insert_root_node_from_json(constraintsModelRef, JsonOrText(json), dryRun = false, responseDetail = "summary")
         })
         val rootRef = payload.get("roots").asJsonArray.single().asJsonObject.get("reference").asString
@@ -574,12 +574,12 @@ class ConceptFunctionParameterBindingIntegrationTest : McpIntegrationTestBase() 
     private fun prepareConstraintsModel(withoutAspectDevkit: Boolean = false): String {
         val constraintsModelRef = modelRefOf(constraintsModel())
         for (usedLanguage in listOf("jetbrains.mps.lang.constraints", "jetbrains.mps.baseLanguage")) {
-            expectOk(runTool(JetBrainsMPSModelMcpToolset()) {
+            expectOk(runTool(MPSModelMcpToolset()) {
                 it.mps_mcp_model_used_language(constraintsModelRef, usedLanguage, "language", DependencyOperation.ADD)
             })
         }
         if (withoutAspectDevkit) {
-            expectOk(runTool(JetBrainsMPSModelMcpToolset()) {
+            expectOk(runTool(MPSModelMcpToolset()) {
                 it.mps_mcp_model_used_language(
                     constraintsModelRef, "jetbrains.mps.devkit.aspect.constraints", "devkit", DependencyOperation.DELETE
                 )
@@ -637,7 +637,7 @@ class ConceptFunctionParameterBindingIntegrationTest : McpIntegrationTestBase() 
         )
     }
 
-    private fun parseInto(validatorRef: String, code: String): String = runTool(JetBrainsMPSJavaMcpToolset()) {
+    private fun parseInto(validatorRef: String, code: String): String = runTool(MPSJavaMcpToolset()) {
         it.mps_mcp_parse_java_and_insert(
             """
             {
