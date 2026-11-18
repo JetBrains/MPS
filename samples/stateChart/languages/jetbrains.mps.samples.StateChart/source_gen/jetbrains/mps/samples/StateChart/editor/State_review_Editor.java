@@ -18,6 +18,6 @@ public class State_review_Editor extends DefaultNodeEditor {
     return myContextHints;
   }
   public EditorCell createEditorCell(EditorContext editorContext, SNode node) {
-    return new State_review_EditorBuilder_a(editorContext, node).createCell();
+    return new State_review_EditorBuilder(editorContext, node).createCell();
   }
 }
