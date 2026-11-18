@@ -97,9 +97,15 @@ These concepts live in `jetbrains.mps.lang.smodel` and are not parseable from Ja
 | `node`, `propertyValue`, `editorContext`, … (implicit parameters of the enclosing query function) | `ConceptFunctionParameter_*` of the language that owns the function (e.g. `jetbrains.mps.lang.constraints.structure.ConstraintsFunctionParameter_propertyValue`, `jetbrains.mps.lang.intentions.structure.ConceptFunctionParameter_node`) | **Bound automatically** in `child` / `replace` mode when the insert lands inside a `ConceptFunction` body: a bare name, the receiver of a Java call (`propertyValue.length()`, `editorContext.getSelectedNode()`) and the head of a field chain become the nearest function's parameter, and the response `warnings` list what was bound. A Java API call on a `node<>` / `model<>`-typed parameter (`node.toString()`, `node.getChildren()`) becomes `node/.m()` (`SemanticDowncastExpression` → `InstanceMethodCallOperation`); a name that `SNode` also declares (`getPresentation`, `getName`, `getReference`, …) therefore binds to the Java API, not to a behavior method. Such a call stays unresolved, with a warning, under `postProcess.importUsedLanguages:false` when the model does not use `jetbrains.mps.lang.smodel`. Still manual: `root` / `console` mode, `postProcess.resolveReferences:false`, a name that a variable inside the function also declares (reported as not bound), and smodel access on the parameter — `node.name` stays a Java field reference and `node.someBehaviorMethod()` (a method `SNode` lacks) an unresolved method call on the parameter; replace that operation with `SPropertyAccess` / `SLinkAccess` / `Node_ConceptMethodCall(→method)` by JSON. |
 | `.getCaughtTypes()` (behavior method call) | `Node_ConceptMethodCall` | Cannot be parsed; keep the existing call, or call the behavior descriptor directly: `AbstractCatchClause__BehaviorDescriptor.getCaughtTypes_id2FJPm3OMxhX.invoke(node)` |
 | `node-ptr/Pancakes/.resolve(repo)` (a node known at design time) | `NodePointerExpression` + `NodePointer_ResolveOperation` | Cannot be parsed. Do not parse `new SNodePointer("r:…", "<id>").resolve(repo)` in its place: it runs, but it is no reference (no rename tracking, no Find Usages). Parse the rest with a placeholder expression, then `SET` `CHILD` the blueprint from `references/link-and-concept-literals.md` |
+| `model-ptr/<model>/` (a model known at design time, e.g. the `addModelImport` argument) | `ModelPointerExpression` | Cannot be parsed. `PersistenceFacade.getInstance().createModelReference("r:…(name)")` parses, but is a placeholder: `SET` `CHILD` the blueprint from `references/design-time-identities.md` over the whole call. Pass the literal without `.resolve(repo)` |
+| `module-reference/<module>/` (a module known at design time, e.g. the `addDependency` argument) | `ModuleRefExpression` | Cannot be parsed. `PersistenceFacade.getInstance().createModuleReference("<uuid>(name)")` parses, but is a placeholder; replace it the same way |
 | `node.parent:C` | `DotExpression(Node_GetParentOperation, SNodeTypeCastExpression)` | Cannot be parsed; use `SNodeOperations.getParent(node)` + `SNodeOperations.cast(...)` in parsed Java |
 
 ### `MetaAdapterFactory.getContainmentLink` inside method bodies
+
+This section applies only to a class that already keeps `LINKS` / `CONCEPTS` constants (generated-style
+helpers such as `RulesFunctions_BaseLanguage`). Anywhere else a link or concept is `link/C : role/` /
+`concept/C/` (`references/design-time-identities.md`), not a new constants class.
 
 `MetaAdapterFactory.getContainmentLink(long, long, long, long, String)` does **not**
 reliably resolve when used inline inside a parsed method body.  This causes a cascade of
@@ -110,7 +116,7 @@ breaking all downstream type inference.
 checking / behavior code) never calls `MetaAdapterFactory.getContainmentLink` inline.
 Instead it uses `LINKS.xxx` static inner-class constants.
 
-**Fix**: use the `LINKS.xxx` pattern:
+**Fix** in such a class: use the `LINKS.xxx` pattern:
 
 1. If the constant you need already exists in the class's `LINKS` inner class, use it directly.
 2. If it does not exist, add it first with `parse_java_and_insert`:

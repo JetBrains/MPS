@@ -1,6 +1,8 @@
-# Standalone Literal Expressions: links, concepts, node and model pointers
+# Standalone Literal Expressions: links, concepts and node pointers
 
-These are **top-level expressions**, not DotExpression operations. They produce an `SContainmentLink` / `SReferenceLink` / `SConcept` handle, or a pointer to one specific node or model, without a preceding `node.` operand. Links and concepts are useful as arguments to scope factories, smodel APIs, and behavior methods that take them by identity. For a node or model that already exists when you write the code, see the last section, "A node or model known at design time".
+These are **top-level expressions**, not DotExpression operations. They produce an `SContainmentLink` / `SReferenceLink` / `SConcept` handle, or a pointer to one specific node, without a preceding `node.` operand. Links and concepts are useful as arguments to scope factories, smodel APIs, and behavior methods that take them by identity. For a node that already exists when you write the code, see the last section, "A node known at design time".
+
+They are three of the design-time identity literals. The rule that covers all of them, the `model-ptr/` / `module-reference/` / `language/` blueprints, when to `.resolve`, and the parser placeholder procedure are in `references/design-time-identities.md`. Never build these identities with `MetaAdapterFactory`, `PersistenceFacade` or `SNodePointer` in model code; the only exception is a class that already keeps `LINKS` / `CONCEPTS` constants.
 
 ## `link/C : role/` — a containment/reference link literal
 
@@ -49,7 +51,7 @@ Surface form: `concept/Calculator/`. Produces an `SConcept` handle.
 
 Use when a method or scope factory takes an `SConcept` argument. (For the older, interface-based argument form `RefConcept_Reference` used by `.ancestor<C>`, `isSubConceptOf(C)`, etc., see `references/smodel-concepts-catalog.md` — those live inside an operation, not as a top-level expression.)
 
-## A node or model known at design time: `node-ptr/…/` and `model-ptr/…/`
+## A node known at design time: `node-ptr/…/`
 
 When code needs one specific node that exists when you write the code (a sample root, a sandbox
 recipe, a node in a library model), point at it with a node-pointer literal and resolve it:
@@ -59,7 +61,8 @@ node<Recipe> pancakes = node-ptr/Pancakes/.resolve(project.getRepository());
 ```
 
 Do **not** search a model for its name (`model.roots(Recipe).findFirst({~it => it.name.equals("Pancakes")})`),
-and do not hand-write `new SNodePointer("r:…", "<id>")` or `PersistenceFacade…createNodeReference(…)`.
+and do not hand-write `new SNodePointer("r:…", "<id>")` or `PersistenceFacade…createNodeReference(…)`
+(the same rule for models and modules: `references/design-time-identities.md`).
 `node-ptr/…/` holds a real reference to the node: the editor checks it, a rename updates it (it then
 prints `node-ptr/<new name>/`), and Find Usages lists it. It generates
 `SPointerOperations.resolveNode(new SNodePointer("<model ref>", "<node id>"), repo)`, so it resolves by
@@ -67,7 +70,8 @@ node id. A name in a string is invisible to all of these, and after a rename the
 at run time. A hand-written `SNodePointer` resolves correctly, but nothing checks it, Find Usages
 misses it, and moving the node to another model breaks it.
 
-Not for everything known at design time: a concept is `concept/C/` (above), a Java class, method or
+Not for everything known at design time: a concept is `concept/C/` (above), a model `model-ptr/…/` and a
+module `module-reference/…/` (`references/design-time-identities.md`), a Java class, method or
 field is an ordinary BaseLanguage reference, and a generator template reaches its nodes through
 macros and mapping labels.
 
@@ -111,7 +115,8 @@ Blueprint of the whole `node-ptr/Pancakes/.resolve(project.getRepository())`:
   `code` does not; nor do tools and plugin hooks: wrap the read in `read action { … }` or the model
   access's `runReadAction` (`references/concurrent-access.md`).
 - **The Java parser cannot produce the literal.** Parse the rest, then put this blueprint in place with
-  `mps_mcp_update_node` (`SET` `CHILD` over the placeholder expression).
+  `mps_mcp_update_node` (`SET` `CHILD` over the placeholder expression); the procedure is in
+  `references/design-time-identities.md`.
 - **A node without a name** has only the id form: `NodePointer` (`nodeId` property, `modelRef` child),
   printed `model.name:12345`. MPS checks that the node exists, but it is not a reference: Find Usages
   misses it and a move breaks it. Prefer pointing at a named ancestor and navigating from there.
@@ -125,8 +130,10 @@ Blueprint of the whole `node-ptr/Pancakes/.resolve(project.getRepository())`:
   check. Generator output keeps no ids; reach it through mapping labels (`mps-aspect-generator` skill),
   not `node-ptr`.
 - **Deprecated look-alikes:** `node/<name>/` (`NodeRefExpression`), `nodePointer/<name>/`
-  (`NodePointerExpression_Old`) and `model/<name>/` (`ModelReferenceExpression`). Do not write them, nor
-  `childNode` (`ChildNodeRefExpression`, the child step of a `node/<name>/` path). On an existing
+  (`NodePointerExpression_Old`), `model/<name>/` (`ModelReferenceExpression`), `module/<name>/`,
+  `conceptNode/<name>/` and `linkNode/<role>/`. Do not write them, nor
+  `childNode` (`ChildNodeRefExpression`, the child step of a `node/<name>/` path); the full table with
+  replacements is in `references/design-time-identities.md`. On an existing
   `node/<name>/` or `childNode`, the intention "Replace With node-ptr<>" converts it
   (`mps_mcp_list_node_intentions` lists it on that node).
 
@@ -137,21 +144,8 @@ Related operations on pointers: `node.pointer` gives a `node`'s pointer (`Node_P
 `NamedNodeReference`), and `ptr.model` gives the pointer's `model-ptr`
 (`NodePointer_GetModelOperation`).
 
-### `model-ptr/…/` — a model known at design time
+### A model, module or language known at design time
 
-`model-ptr/mcp.study.kitchen.samples/.resolve(repo)` gives a `model`; the deprecated `model/<name>/`
-finds models by name only. `ModelPointerExpression` holds a `ModelPointer` (property `modelId`, child
-`name`) in its `modelRef` child, and `.resolve(repo)` is `ModelPointer_ResolveOperation` (child
-`repositoryArg`, as above):
-
-```json
-{ "concept": "jetbrains.mps.lang.smodel.structure.ModelPointerExpression", "children": [
-  { "role": "modelRef", "nodes": [
-    { "concept": "jetbrains.mps.lang.modelapi.structure.ModelPointer",
-      "properties": [ { "name": "modelId", "value": "r:38cfdf05-3b6a-4864-b1ba-70dca7ae70da" } ],
-      "children": [ { "role": "name", "nodes": [
-        { "concept": "jetbrains.mps.lang.modelapi.structure.ModelName",
-          "properties": [ { "name": "value", "value": "mcp.study.kitchen.samples" } ] } ] } ] } ] } ] }
-```
-
-To get one node, prefer `node-ptr/…/` over `model-ptr/…/` plus a search of the model.
+`model-ptr/…/`, `module-reference/…/` and `language/…/` (blueprints, and why `addModelImport` /
+`addDependency` take them without `.resolve`) are in `references/design-time-identities.md`. To get one
+node, prefer `node-ptr/…/` over `model-ptr/…/` plus a search of the model.
