@@ -1,7 +1,7 @@
 package jetbrains.mps.agents.mcp.tools.unit
 
-import jetbrains.mps.agents.mcp.tools.JetBrainsMPSNodeMcpToolset
-import jetbrains.mps.agents.mcp.tools.JetBrainsMPSProjectMcpToolset
+import jetbrains.mps.agents.mcp.tools.MPSNodeMcpToolset
+import jetbrains.mps.agents.mcp.tools.MPSProjectMcpToolset
 import jetbrains.mps.agents.mcp.tools.unit.SkillRoutingDocs.assertNamesAll
 import jetbrains.mps.agents.mcp.tools.unit.SkillRoutingDocs.criticalDirectives
 import jetbrains.mps.agents.mcp.tools.unit.SkillRoutingDocs.read
@@ -48,7 +48,7 @@ class SkillPrintNodeRoutingTest {
     fun `print_node tool description names AGENTIC VIEW`() {
         assertNamesAll(
             "@McpDescription of $PRINT_NODE_TOOL",
-            toolDescription(JetBrainsMPSNodeMcpToolset::class, PRINT_NODE_TOOL),
+            toolDescription(MPSNodeMcpToolset::class, PRINT_NODE_TOOL),
             listOf(AGENTIC_VIEW, "nodeDepth", "print-node-agentic-view.md"),
         )
     }
@@ -61,12 +61,12 @@ class SkillPrintNodeRoutingTest {
         }
         assertNamesAll(
             "@McpDescription of $COMPACT_TOOL",
-            toolDescription(JetBrainsMPSProjectMcpToolset::class, COMPACT_TOOL),
+            toolDescription(MPSProjectMcpToolset::class, COMPACT_TOOL),
             listOf(AGENTIC_VIEW, "mps_mcp_get_project_structure", PRINT_NODE_TOOL, "print-node-agentic-view.md"),
         )
         assertNamesAll(
             "@McpDescription of mps_mcp_get_project_structure",
-            toolDescription(JetBrainsMPSProjectMcpToolset::class, "mps_mcp_get_project_structure"),
+            toolDescription(MPSProjectMcpToolset::class, "mps_mcp_get_project_structure"),
             listOf(COMPACT_TOOL),
         )
     }

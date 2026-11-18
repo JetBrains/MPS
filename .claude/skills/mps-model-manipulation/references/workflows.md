@@ -4,7 +4,9 @@ Concrete recipes for the two most common edits in MPS model code, plus rules for
 
 ## Adding a new static method to a checking-rule helper class
 
-This covers the common pattern of adding a method to a class like `RulesFunctions_BaseLanguage`.
+This covers the common pattern of adding a method to a class like `RulesFunctions_BaseLanguage`, which
+already keeps `LINKS`/`CONCEPTS` constants. The constants steps below apply only to such a class;
+elsewhere write `link/C : role/` / `concept/C/` (`references/design-time-identities.md`).
 
 ### Step 1 — Identify what MPS-specific types you need
 

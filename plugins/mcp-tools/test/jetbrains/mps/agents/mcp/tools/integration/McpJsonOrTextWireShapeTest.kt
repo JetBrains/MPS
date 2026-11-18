@@ -50,7 +50,7 @@ import kotlin.reflect.full.valueParameters
  *       - non-null with a default: `search_root_node_by_name.names`, `model_dependency.targetModels`,
  *         `insert_root_node_from_json.json` (semantically required, rejected in the body when
  *         blank), `get_concept_details.conceptRefs` / `.languageRefs` (in
- *         [JetBrainsMPSLanguageMcpToolsetIntegrationTest]), `search_concepts.searchTexts`;
+ *         [MPSLanguageMcpToolsetIntegrationTest]), `search_concepts.searchTexts`;
  *       - nullable optional: `search_root_node_by_name.models`, `create_module.facets`.
  *     The four `scaffold_editor` include-selectors and
  *     `update_root_node_from_json.json` / `insert_console_command_from_json.json` are deliberately
@@ -86,22 +86,22 @@ class McpJsonOrTextWireShapeTest : McpIntegrationTestBase() {
         }
 
     private fun allToolsets(): List<McpToolset> = listOf(
-        JetBrainsMPSLanguageMcpToolset(),
-        JetBrainsMPSRootNodeMcpToolset(),
-        JetBrainsMPSModelMcpToolset(),
-        JetBrainsMPSModuleMcpToolset(),
-        JetBrainsMPSEditorMcpToolset(),
-        JetBrainsMPSConsoleMcpToolset(),
-        JetBrainsMPSNodeMcpToolset(),
-        JetBrainsMPSTypesMcpToolset(),
-        JetBrainsMPSDataflowMcpToolset(),
-        JetBrainsMPSLanguageStructureMcpToolset(),
-        JetBrainsMPSJavaMcpToolset(),
-        JetBrainsMPSIntentionsMcpToolset(),
-        JetBrainsMPSProjectMcpToolset(),
-        JetBrainsMPSRunConfigurationMcpToolset(),
-        JetBrainsMPSMigrationMcpToolset(),
-        JetBrainsMPSGenerationMcpToolset(),
+        MPSLanguageMcpToolset(),
+        MPSRootNodeMcpToolset(),
+        MPSModelMcpToolset(),
+        MPSModuleMcpToolset(),
+        MPSEditorMcpToolset(),
+        MPSConsoleMcpToolset(),
+        MPSNodeMcpToolset(),
+        MPSTypesMcpToolset(),
+        MPSDataflowMcpToolset(),
+        MPSLanguageStructureMcpToolset(),
+        MPSJavaMcpToolset(),
+        MPSIntentionsMcpToolset(),
+        MPSProjectMcpToolset(),
+        MPSRunConfigurationMcpToolset(),
+        MPSMigrationMcpToolset(),
+        MPSGenerationMcpToolset(),
     )
 
     @Test
@@ -210,7 +210,7 @@ class McpJsonOrTextWireShapeTest : McpIntegrationTestBase() {
      * at the end of the suite (see the class comment).
      */
     private fun createNamedRoot(name: String) {
-        val response = runTool(JetBrainsMPSRootNodeMcpToolset()) {
+        val response = runTool(MPSRootNodeMcpToolset()) {
             it.mps_mcp_create_root_node(
                 modelReference = structureModelRef,
                 concept = conceptDeclarationFqn,
@@ -229,7 +229,7 @@ class McpJsonOrTextWireShapeTest : McpIntegrationTestBase() {
         fun found(names: JsonElement, extra: Map<String, JsonElement> = emptyMap()): Set<String> =
             parseDataArray(
                 callThroughBridge(
-                    JetBrainsMPSRootNodeMcpToolset(),
+                    MPSRootNodeMcpToolset(),
                     "mps_mcp_search_root_node_by_name",
                     mapOf("names" to names) + extra,
                 )
@@ -276,7 +276,7 @@ class McpJsonOrTextWireShapeTest : McpIntegrationTestBase() {
                 listOf(JsonPrimitive(modelRefOf(firstTarget)), JsonPrimitive(modelRefOf(secondTarget))),
             ),
         )
-        val response = callThroughBridge(JetBrainsMPSModelMcpToolset(), "mps_mcp_model_dependency", args)
+        val response = callThroughBridge(MPSModelMcpToolset(), "mps_mcp_model_dependency", args)
         assertEquals(
             "both targets of a real JSON array must be imported: $response",
             2, expectOk(response).get("added").asInt,
@@ -284,7 +284,7 @@ class McpJsonOrTextWireShapeTest : McpIntegrationTestBase() {
 
         // A second identical ADD proves the imports really landed (the tool reports an existing
         // import as alreadyPresent), without reaching for SModelInternal from the test.
-        val again = callThroughBridge(JetBrainsMPSModelMcpToolset(), "mps_mcp_model_dependency", args)
+        val again = callThroughBridge(MPSModelMcpToolset(), "mps_mcp_model_dependency", args)
         assertEquals(
             "re-adding the same real JSON array must be a no-op for both entries: $again",
             2, expectOk(again).get("alreadyPresent").asInt,
@@ -307,7 +307,7 @@ class McpJsonOrTextWireShapeTest : McpIntegrationTestBase() {
         )
 
         val response = callThroughBridge(
-            JetBrainsMPSRootNodeMcpToolset(),
+            MPSRootNodeMcpToolset(),
             "mps_mcp_insert_root_node_from_json",
             mapOf(
                 "modelReference" to JsonPrimitive(structureModelRef),
@@ -333,7 +333,7 @@ class McpJsonOrTextWireShapeTest : McpIntegrationTestBase() {
         fun names(searchTexts: JsonElement): Set<String> =
             payloadArrayFromOkData(
                 callThroughBridge(
-                    JetBrainsMPSLanguageMcpToolset(),
+                    MPSLanguageMcpToolset(),
                     "mps_mcp_search_concepts",
                     mapOf("searchTexts" to searchTexts),
                 )
@@ -359,7 +359,7 @@ class McpJsonOrTextWireShapeTest : McpIntegrationTestBase() {
     fun `create-module accepts facets as a real JSON array and treats an omitted facets as before`() {
         val withFacets = "wire.shape.facets${System.nanoTime()}"
         val response = callThroughBridge(
-            JetBrainsMPSModuleMcpToolset(),
+            MPSModuleMcpToolset(),
             "mps_mcp_create_module",
             mapOf(
                 "type" to JsonPrimitive("solution"),
@@ -373,7 +373,7 @@ class McpJsonOrTextWireShapeTest : McpIntegrationTestBase() {
 
         val withoutFacets = "wire.shape.nofacets${System.nanoTime()}"
         val plain = callThroughBridge(
-            JetBrainsMPSModuleMcpToolset(),
+            MPSModuleMcpToolset(),
             "mps_mcp_create_module",
             mapOf(
                 "type" to JsonPrimitive("solution"),
@@ -404,7 +404,7 @@ class McpJsonOrTextWireShapeTest : McpIntegrationTestBase() {
 
         for ((label, value) in malformed) {
             val response = callThroughBridge(
-                JetBrainsMPSLanguageMcpToolset(),
+                MPSLanguageMcpToolset(),
                 "mps_mcp_get_concept_details",
                 mapOf("conceptRefs" to value),
             )
@@ -425,7 +425,7 @@ class McpJsonOrTextWireShapeTest : McpIntegrationTestBase() {
 
     /** Creates a two-member enumeration in the test's structure model, to add a third child to. */
     private fun createColorEnum(): String {
-        val response = runTool(JetBrainsMPSLanguageStructureMcpToolset()) {
+        val response = runTool(MPSLanguageStructureMcpToolset()) {
             it.mps_mcp_alter_structure(
                 MPSStructureAlterOperation.CREATE_ENUM,
                 """
@@ -454,7 +454,7 @@ class McpJsonOrTextWireShapeTest : McpIntegrationTestBase() {
         fun rootName(parameters: JsonElement): String =
             expectOk(
                 callThroughBridge(
-                    JetBrainsMPSNodeMcpToolset(),
+                    MPSNodeMcpToolset(),
                     "mps_mcp_query_nodes",
                     mapOf("operation" to JsonPrimitive("GET_ROOT"), "parameters" to parameters),
                 )
@@ -476,7 +476,7 @@ class McpJsonOrTextWireShapeTest : McpIntegrationTestBase() {
         val enumRef = createColorEnum()
 
         val response = callThroughBridge(
-            JetBrainsMPSNodeMcpToolset(),
+            MPSNodeMcpToolset(),
             "mps_mcp_update_node",
             mapOf(
                 "operation" to JsonPrimitive("ADD"),
@@ -514,7 +514,7 @@ class McpJsonOrTextWireShapeTest : McpIntegrationTestBase() {
 
         expectOk(
             callThroughBridge(
-                JetBrainsMPSModuleMcpToolset(),
+                MPSModuleMcpToolset(),
                 "mps_mcp_update_module_facet",
                 mapOf(
                     "moduleName" to JsonPrimitive(moduleName),
@@ -525,7 +525,7 @@ class McpJsonOrTextWireShapeTest : McpIntegrationTestBase() {
             )
         )
 
-        val facets = expectOk(runTool(JetBrainsMPSModuleMcpToolset()) { it.mps_mcp_get_module_facets(moduleName) })
+        val facets = expectOk(runTool(MPSModuleMcpToolset()) { it.mps_mcp_get_module_facets(moduleName) })
             .getAsJsonArray("persistedFacets")
         val memento = facets.map { it.asJsonObject }.single { it.get("type").asString == "tests" }
             .getAsJsonObject("memento")
@@ -541,7 +541,7 @@ class McpJsonOrTextWireShapeTest : McpIntegrationTestBase() {
         // JsonOrTextSerializer maps it to the empty string for a non-null JsonOrText, so both
         // behave exactly like an absent argument.
         val nullableOmitted = callThroughBridge(
-            JetBrainsMPSRootNodeMcpToolset(),
+            MPSRootNodeMcpToolset(),
             "mps_mcp_search_root_node_by_name",
             mapOf(
                 "names" to JsonPrimitive("DefinitelyNotAnExistingRootName"),
@@ -554,7 +554,7 @@ class McpJsonOrTextWireShapeTest : McpIntegrationTestBase() {
         )
 
         val nonNullOmitted = callThroughBridge(
-            JetBrainsMPSLanguageMcpToolset(),
+            MPSLanguageMcpToolset(),
             "mps_mcp_get_concept_details",
             mapOf("conceptRefs" to kotlinx.serialization.json.JsonNull),
         )

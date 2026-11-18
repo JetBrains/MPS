@@ -23,12 +23,12 @@ import org.junit.runners.Suite;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    JetBrainsMPSLanguageStructureMcpToolsetIntegrationTest.class,
-    JetBrainsMPSLanguageMcpToolsetIntegrationTest.class,
-    JetBrainsMPSEditorMcpToolsetIntegrationTest.class,
+    MPSLanguageStructureMcpToolsetIntegrationTest.class,
+    MPSLanguageMcpToolsetIntegrationTest.class,
+    MPSEditorMcpToolsetIntegrationTest.class,
     ScaffoldEditorStalenessTest.class,
     LanguageReadinessTest.class,
-    JetBrainsMPSIntentionsMcpToolsetIntegrationTest.class,
+    MPSIntentionsMcpToolsetIntegrationTest.class,
     IntentionsCandidateSelectionTest.class,
 })
 public class McpLanguageToolsTestSuite {

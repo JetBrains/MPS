@@ -45,7 +45,7 @@ import org.junit.Test
  */
 class NodeFactoryOnBlueprintPathIntegrationTest : McpIntegrationTestBase() {
 
-    private val rootNodeToolset = JetBrainsMPSRootNodeMcpToolset()
+    private val rootNodeToolset = MPSRootNodeMcpToolset()
 
     private val conceptDeclarationFqn = "jetbrains.mps.lang.structure.structure.ConceptDeclaration"
     private val propertyDeclarationFqn = "jetbrains.mps.lang.structure.structure.PropertyDeclaration"
@@ -57,7 +57,7 @@ class NodeFactoryOnBlueprintPathIntegrationTest : McpIntegrationTestBase() {
         (node.nodeId as SNodeId.Regular).id.toString()
 
     private fun addChild(parentRef: String, role: String, childJson: String, dryRun: Boolean = false): String =
-        runTool(JetBrainsMPSNodeMcpToolset()) {
+        runTool(MPSNodeMcpToolset()) {
             it.mps_mcp_update_node(
                 NodeUpdateOperation.ADD, NodeUpdateKind.CHILD,
                 nodeReference = parentRef, childRole = role, childJson = childJson, dryRun = dryRun,
@@ -65,7 +65,7 @@ class NodeFactoryOnBlueprintPathIntegrationTest : McpIntegrationTestBase() {
         }
 
     private fun setChild(childRef: String, childJson: String, dryRun: Boolean = false): String =
-        runTool(JetBrainsMPSNodeMcpToolset()) {
+        runTool(MPSNodeMcpToolset()) {
             it.mps_mcp_update_node(
                 NodeUpdateOperation.SET, NodeUpdateKind.CHILD,
                 childNodeRef = childRef, childJson = childJson, dryRun = dryRun,
@@ -319,7 +319,7 @@ class NodeFactoryOnBlueprintPathIntegrationTest : McpIntegrationTestBase() {
         // to do after creating a MigrationScript: the factory already did the bump.
         val languageName = readOnRepo { checkNotNull(language.moduleName) { "test language has no name" } }
         val migrationModelRef = run {
-            val response = runTool(JetBrainsMPSModelMcpToolset()) {
+            val response = runTool(MPSModelMcpToolset()) {
                 it.mps_mcp_create_model(languageName, "$languageName.migration")
             }
             expectOk(response).get("reference").asString
@@ -364,7 +364,7 @@ class NodeFactoryOnBlueprintPathIntegrationTest : McpIntegrationTestBase() {
 
     private fun createLanguageModel(simpleName: String): String {
         val languageName = readOnRepo { checkNotNull(language.moduleName) { "test language has no name" } }
-        return expectOk(runTool(JetBrainsMPSModelMcpToolset()) {
+        return expectOk(runTool(MPSModelMcpToolset()) {
             it.mps_mcp_create_model(languageName, "$languageName.$simpleName")
         }).get("reference").asString
     }
@@ -412,7 +412,7 @@ class NodeFactoryOnBlueprintPathIntegrationTest : McpIntegrationTestBase() {
         assertEquals(versionBefore.toString(), fromVersionOf(scriptRef))
         assertEquals("exactly one bump", versionBefore + 1, readOnRepo { language.languageVersion })
         val languageName = readOnRepo { checkNotNull(language.moduleName) }
-        val sync = expectOk(runTool(JetBrainsMPSModuleMcpToolset()) {
+        val sync = expectOk(runTool(MPSModuleMcpToolset()) {
             it.mps_mcp_update_module(languageName, null, ModuleOperation.SYNC_VERSION)
         })
         assertFalse("the factory already did the sync's work: $sync", sync.get("changed").asBoolean)
@@ -500,7 +500,7 @@ class NodeFactoryOnBlueprintPathIntegrationTest : McpIntegrationTestBase() {
         // language-version bump — and `executeShortCommandOnEdt` does not roll a command back. A
         // "validation" call that bumped the version would be worse than the dryRun/real divergence.
         val languageName = readOnRepo { checkNotNull(language.moduleName) { "test language has no name" } }
-        val migrationModelRef = expectOk(runTool(JetBrainsMPSModelMcpToolset()) {
+        val migrationModelRef = expectOk(runTool(MPSModelMcpToolset()) {
             it.mps_mcp_create_model(languageName, "$languageName.migration")
         }).get("reference").asString
 
@@ -926,7 +926,7 @@ class NodeFactoryOnBlueprintPathIntegrationTest : McpIntegrationTestBase() {
             val finalProperty = component.concept.properties.single { it.name == "final" }
             assertFalse("final = false must not be stored", SNodeAccessUtil.hasProperty(component, finalProperty))
         }
-        val printed = payloadObjectFromOkData(runTool(JetBrainsMPSNodeMcpToolset()) { it.mps_mcp_print_node(componentRef, deep = false) })
+        val printed = payloadObjectFromOkData(runTool(MPSNodeMcpToolset()) { it.mps_mcp_print_node(componentRef, deep = false) })
         val printedFinal = printed.getAsJsonArray("properties").map { it.asJsonObject }.singleOrNull { it.get("name").asString == "final" }
         assertTrue("print_node must show final as false or omit it: $printed", printedFinal == null || printedFinal.get("value").asString == "false")
     }
@@ -955,7 +955,7 @@ class NodeFactoryOnBlueprintPathIntegrationTest : McpIntegrationTestBase() {
     private fun behaviorModelWithUsedLanguages(): String {
         val behaviorModel = readOnRepo { language.models.single { it.name.longName.endsWith(".behavior") } }
         val behaviorModelRef = modelRefOf(behaviorModel)
-        val modelToolset = JetBrainsMPSModelMcpToolset()
+        val modelToolset = MPSModelMcpToolset()
         for (usedLanguage in listOf("jetbrains.mps.lang.behavior", "jetbrains.mps.baseLanguage")) {
             expectOk(runTool(modelToolset) {
                 it.mps_mcp_model_used_language(behaviorModelRef, usedLanguage, "language", DependencyOperation.ADD)

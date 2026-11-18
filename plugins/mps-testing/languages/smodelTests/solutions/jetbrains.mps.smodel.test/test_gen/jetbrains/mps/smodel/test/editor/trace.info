@@ -5,6 +5,58 @@
   <concept fqn="c:f3061a53-9226-4cc5-a443-f952ceaf5816/1068580123165:jetbrains.mps.baseLanguage.structure.InstanceMethodDeclaration" />
   <concept fqn="c:f3061a53-9226-4cc5-a443-f952ceaf5816/1070462154015:jetbrains.mps.baseLanguage.structure.StaticFieldDeclaration" />
   <concept fqn="c:f3061a53-9226-4cc5-a443-f952ceaf5816/1070475587102:jetbrains.mps.baseLanguage.structure.SuperConstructorInvocation" />
+  <root nodeRef="r:ac4e0a5b-1a20-4b0d-81c0-8da38271aafd(jetbrains.mps.smodel.test.editor@tests)/1786866911634493454">
+    <file name="QuickFix_IsExactlyInterface_CompareInstanceConcept_Test.java">
+      <node id="1786866911634493454" at="19,68,20,60" concept="4" />
+      <node id="1786866911634493454" at="24,90,25,36" concept="1" />
+      <node id="1786866911634493454" at="30,52,31,19" concept="4" />
+      <node id="1786866911634493454" at="35,51,36,72" concept="1" />
+      <node id="1786866911634493489" at="36,72,37,43" concept="1" />
+      <node id="1786866911634493454" at="16,0,18,0" concept="3" trace="ourParametersCacheExtension" />
+      <node id="1786866911634493454" at="19,0,22,0" concept="0" trace="QuickFix_IsExactlyInterface_CompareInstanceConcept_Test#()V" />
+      <node id="1786866911634493454" at="30,0,33,0" concept="0" trace="TestBody#(Ljetbrains/mps/lang/test/runtime/TransformationTest;)V" />
+      <node id="1786866911634493454" at="23,0,27,0" concept="2" trace="test_QuickFix_IsExactlyInterface_CompareInstanceConcept#()V" />
+      <node id="1786866911634493454" at="34,0,39,0" concept="2" trace="testMethodImpl#()V" />
+      <scope id="1786866911634493454" at="19,68,20,60" />
+      <scope id="1786866911634493454" at="24,90,25,36" />
+      <scope id="1786866911634493454" at="30,52,31,19" />
+      <scope id="1786866911634493454" at="35,51,37,43" />
+      <scope id="1786866911634493454" at="19,0,22,0" />
+      <scope id="1786866911634493454" at="30,0,33,0">
+        <var name="owner" id="1786866911634493454" />
+      </scope>
+      <scope id="1786866911634493454" at="23,0,27,0" />
+      <scope id="1786866911634493454" at="34,0,39,0" />
+      <unit id="1786866911634493454" at="28,0,40,0" name="jetbrains.mps.smodel.test.editor.QuickFix_IsExactlyInterface_CompareInstanceConcept_Test$TestBody" />
+      <unit id="1786866911634493454" at="14,0,41,0" name="jetbrains.mps.smodel.test.editor.QuickFix_IsExactlyInterface_CompareInstanceConcept_Test" />
+    </file>
+  </root>
+  <root nodeRef="r:ac4e0a5b-1a20-4b0d-81c0-8da38271aafd(jetbrains.mps.smodel.test.editor@tests)/2795977714476166519">
+    <file name="QuickFix_IsExactlyInterface_UseSubConceptOf_Test.java">
+      <node id="2795977714476166519" at="19,61,20,60" concept="4" />
+      <node id="2795977714476166519" at="24,83,25,36" concept="1" />
+      <node id="2795977714476166519" at="30,52,31,19" concept="4" />
+      <node id="2795977714476166519" at="35,51,36,72" concept="1" />
+      <node id="2795977714476166560" at="36,72,37,43" concept="1" />
+      <node id="2795977714476166519" at="16,0,18,0" concept="3" trace="ourParametersCacheExtension" />
+      <node id="2795977714476166519" at="19,0,22,0" concept="0" trace="QuickFix_IsExactlyInterface_UseSubConceptOf_Test#()V" />
+      <node id="2795977714476166519" at="30,0,33,0" concept="0" trace="TestBody#(Ljetbrains/mps/lang/test/runtime/TransformationTest;)V" />
+      <node id="2795977714476166519" at="23,0,27,0" concept="2" trace="test_QuickFix_IsExactlyInterface_UseSubConceptOf#()V" />
+      <node id="2795977714476166519" at="34,0,39,0" concept="2" trace="testMethodImpl#()V" />
+      <scope id="2795977714476166519" at="19,61,20,60" />
+      <scope id="2795977714476166519" at="24,83,25,36" />
+      <scope id="2795977714476166519" at="30,52,31,19" />
+      <scope id="2795977714476166519" at="35,51,37,43" />
+      <scope id="2795977714476166519" at="19,0,22,0" />
+      <scope id="2795977714476166519" at="30,0,33,0">
+        <var name="owner" id="2795977714476166519" />
+      </scope>
+      <scope id="2795977714476166519" at="23,0,27,0" />
+      <scope id="2795977714476166519" at="34,0,39,0" />
+      <unit id="2795977714476166519" at="28,0,40,0" name="jetbrains.mps.smodel.test.editor.QuickFix_IsExactlyInterface_UseSubConceptOf_Test$TestBody" />
+      <unit id="2795977714476166519" at="14,0,41,0" name="jetbrains.mps.smodel.test.editor.QuickFix_IsExactlyInterface_UseSubConceptOf_Test" />
+    </file>
+  </root>
   <root nodeRef="r:ac4e0a5b-1a20-4b0d-81c0-8da38271aafd(jetbrains.mps.smodel.test.editor@tests)/6012981979753312673">
     <file name="ModelIdentityCompletion_NodePtr_Test.java">
       <node id="6012981979753312673" at="19,49,20,60" concept="4" />

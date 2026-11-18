@@ -24,12 +24,12 @@ Each finding is tagged with its origin:
 
 | Execution Context | Where Used | Role in Migration Flow |
 |---|---|---|
-| **MCP Server Coroutine / Caller Thread** | `MigrationAssistantGuard.beforeMcpToolCall` / `afterMcpToolCall` (`MigrationAssistantGuard.kt:45-77`), `JetBrainsMPSMigrationMcpToolset.mps_mcp_run_migrations` (`JetBrainsMPSMigrationMcpToolset.kt:53-83`) | Entry/exit hooks for tool calls (`ToolCallListener.TOPIC`); orchestrates `CHECK` and `APPLY` and launches a periodic `500 ms` child coroutine (`JetBrainsMPSMigrationMcpToolset.kt:202-211`) to forward `latestStep` (`AtomicReference<String?>`) to `reportToolActivity`. |
-| **`Dispatchers.Default`** | `AbstractOps.executeBackgroundRead` (`AbstractOps.kt:2787-2795`), `JetBrainsMPSMigrationMcpToolset.kt:66-73, 131-133` | Used for `CHECK` planning, `APPLY` initial planning, post-`APPLY` `remaining` recount, and post-`MAKE` `pendingMigrationCount` (`AbstractOps.kt:4237-4245`). |
-| **`Dispatchers.IO`** | `JetBrainsMPSMigrationMcpToolset.runEngine` (`JetBrainsMPSMigrationMcpToolset.kt:217-230`) | Drives `MigrationTrigger.runHeadlessMigration` and `HeadlessMigrations.run` (which in turn runs `MigrationTask.run`). |
+| **MCP Server Coroutine / Caller Thread** | `MigrationAssistantGuard.beforeMcpToolCall` / `afterMcpToolCall` (`MigrationAssistantGuard.kt:45-77`), `MPSMigrationMcpToolset.mps_mcp_run_migrations` (`MPSMigrationMcpToolset.kt:53-83`) | Entry/exit hooks for tool calls (`ToolCallListener.TOPIC`); orchestrates `CHECK` and `APPLY` and launches a periodic `500 ms` child coroutine (`MPSMigrationMcpToolset.kt:202-211`) to forward `latestStep` (`AtomicReference<String?>`) to `reportToolActivity`. |
+| **`Dispatchers.Default`** | `AbstractOps.executeBackgroundRead` (`AbstractOps.kt:2787-2795`), `MPSMigrationMcpToolset.kt:66-73, 131-133` | Used for `CHECK` planning, `APPLY` initial planning, post-`APPLY` `remaining` recount, and post-`MAKE` `pendingMigrationCount` (`AbstractOps.kt:4237-4245`). |
+| **`Dispatchers.IO`** | `MPSMigrationMcpToolset.runEngine` (`MPSMigrationMcpToolset.kt:217-230`) | Drives `MigrationTrigger.runHeadlessMigration` and `HeadlessMigrations.run` (which in turn runs `MigrationTask.run`). |
 | **IDE Pooled Thread Pool** (`Application.executeOnPooledThread`) | `MigrationTrigger.projectOpened` (`MigrationTrigger.java:166`), `checkMigrationNeeded` (`MigrationTrigger.java:217`), `checkMigrationNeededOnLanguageReload` (`MigrationTrigger.java:224`), `postponeWithoutAssistant` (`MigrationTrigger.java:425`), `MigrationStep.scheduleTaskExecutionInEDT` (`MigrationStep.java:71`) | Background repository checks (`ModelReadRunnable`), background computation of `MigrationSetup` when auto-assistant is suppressed, and background driver for the interactive wizard's `MigrationTask`. |
 | **Scheduled Executor** (`AppExecutorUtil.getAppScheduledExecutorService()`) | `MigrationAssistantSuppression.scheduleExpiration` (`MigrationAssistantGuard.kt:199-203`) | Runs the sliding inactivity lease timer (default `120s`, configurable via `mps.migration.assistant.leaseSeconds` / `leaseMs`). Calls `expireLeaseIfIdle(generation)` on timer expiry. |
-| **AWT Event Dispatch Thread (EDT)** | `MigrationTrigger.scheduleMigration` (`invokeLater` with `ModalityState.nonModal()`, `MigrationTrigger.java:297`), `MigrationTrigger.syncRefresh` (`invokeAndWait`, `MigrationTrigger.java:537, 539`), `MigrationTask` (`invokeAndWait`, `MigrationTask.java:85, 220, 302, 322`), `HeadlessMigrations.run` (`invokeAndWait` with `ModalityState.nonModal()`, `HeadlessMigrations.kt:267`), `JetBrainsMPSMigrationMcpToolset.requireResponsiveEdt` (`Dispatchers.EDT + ModalityState.nonModal()`, `JetBrainsMPSMigrationMcpToolset.kt:241-252`) | Runs UI notifications/dialogs (`Messages.showMessageDialog`, `MigrationWizard.showAndGet()`), modal file sync (`ProgressManager.getInstance().run(new Task.Modal(...))`), VFS save/reload flush, and every write step of `MigrationTask`. |
+| **AWT Event Dispatch Thread (EDT)** | `MigrationTrigger.scheduleMigration` (`invokeLater` with `ModalityState.nonModal()`, `MigrationTrigger.java:297`), `MigrationTrigger.syncRefresh` (`invokeAndWait`, `MigrationTrigger.java:537, 539`), `MigrationTask` (`invokeAndWait`, `MigrationTask.java:85, 220, 302, 322`), `HeadlessMigrations.run` (`invokeAndWait` with `ModalityState.nonModal()`, `HeadlessMigrations.kt:267`), `MPSMigrationMcpToolset.requireResponsiveEdt` (`Dispatchers.EDT + ModalityState.nonModal()`, `MPSMigrationMcpToolset.kt:241-252`) | Runs UI notifications/dialogs (`Messages.showMessageDialog`, `MigrationWizard.showAndGet()`), modal file sync (`ProgressManager.getInstance().run(new Task.Modal(...))`), VFS save/reload flush, and every write step of `MigrationTask`. |
 
 #### Synchronization Primitives
 - **`MigrationTrigger.this` intrinsic monitor**: `synchronized` on `scheduleMigration(final boolean force)` (`MigrationTrigger.java:280`).
@@ -39,7 +39,7 @@ Each finding is tagged with its origin:
 - **`MigrationTrigger.myAssistantSuppressors` (`Set<Disposable>` backed by `ConcurrentHashMap.newKeySet()`)**: Tracks active suppression tokens registered via `suppressAutoAssistant(Disposable)`.
 - **`MigrationTrigger.myPostponedState` (`AtomicReference<PostponedState>`)** & **`myAssistantPostponedState` (`volatile AtomicReference<PostponedState>`)**: Track postponed migration state for human-cancelled wizard runs vs. assistant-suppressed runs.
 - **`MigrationAssistantSuppression.lock`**: Guards `activeCallsCount`, `currentLeaseToken`, `suppressedTrigger`, `scheduledExpiration`, and `expirationGeneration` (`MigrationAssistantGuard.kt:112`).
-- **`JetBrainsMPSMigrationMcpToolset.applyRunning` (`AtomicBoolean`)**: Process-wide guard ensuring at most one `mps_mcp_run_migrations(APPLY)` runs at a time (`JetBrainsMPSMigrationMcpToolset.kt:43`).
+- **`MPSMigrationMcpToolset.applyRunning` (`AtomicBoolean`)**: Process-wide guard ensuring at most one `mps_mcp_run_migrations(APPLY)` runs at a time (`MPSMigrationMcpToolset.kt:43`).
 
 ---
 
@@ -166,14 +166,14 @@ Each finding is tagged with its origin:
      `myAssistantSuppressors.add(owner)` is called *before* `Disposer.register(owner, ...)`. If `owner` were already disposed, `Disposer.register` would throw `IncorrectOperationException` without running the disposal callback, leaving `owner` in `myAssistantSuppressors` permanently. This is theoretical: the owner is always a fresh `LeaseToken`.
 - **Fix**: See R8 — tracking in-flight `callId`s instead of a counter fixes part 1.
 
-#### [LOW–MEDIUM] R7: TOCTOU Window and Dispatcher Choice in `JetBrainsMPSMigrationMcpToolset.apply`
+#### [LOW–MEDIUM] R7: TOCTOU Window and Dispatcher Choice in `MPSMigrationMcpToolset.apply`
 - **Origin**: Introduced.
 - **Location**:
-  - `plugins/mcp-tools/src/jetbrains/mps/agents/mcp/tools/JetBrainsMPSMigrationMcpToolset.kt:66-73, 107-139`
+  - `plugins/mcp-tools/src/jetbrains/mps/agents/mcp/tools/MPSMigrationMcpToolset.kt:66-73, 107-139`
 - **Problem**:
   1. **Make session after `plan`**: `HeadlessMigrations.plan(mpsProject, scope)` (which checks `makeService.isSessionActive`) runs at lines 66-73, *before* `applyRunning.compareAndSet(false, true)` (line 107), `requireResponsiveEdt()` (line 117), and `runHeadlessMigration`. If a make session opens after `plan`, neither `runHeadlessMigration` nor `HeadlessMigrations.run` re-checks `makeService.isSessionActive`, so the migration can run concurrently with an active make session.
   2. **Early `applyRunning.set(false)` before the `remaining` recount**: `applyRunning.set(false)` is released in `finally` at line 123, *before* the post-run `remaining` recount (lines 131-133). A second `APPLY` can start in between; this only affects how accurate the reported `remaining` is.
-  3. **Recount on `Dispatchers.Default`**: At lines 131-133, the `remaining` recount runs `mpsProject.modelAccess.computeReadAction { HeadlessMigrations.plan(mpsProject, scope) }` on `Dispatchers.Default` right after `cleanup()` unloaded all project models, so it blocks a CPU-bound coroutine thread while models are reloaded from disk. `Dispatchers.IO` fits better. (The missing timeout is deliberate, see the comment at `JetBrainsMPSMigrationMcpToolset.kt:126-128`.)
+  3. **Recount on `Dispatchers.Default`**: At lines 131-133, the `remaining` recount runs `mpsProject.modelAccess.computeReadAction { HeadlessMigrations.plan(mpsProject, scope) }` on `Dispatchers.Default` right after `cleanup()` unloaded all project models, so it blocks a CPU-bound coroutine thread while models are reloaded from disk. `Dispatchers.IO` fits better. (The missing timeout is deliberate, see the comment at `MPSMigrationMcpToolset.kt:126-128`.)
 
 #### [TO VERIFY] R8: Is `afterMcpToolCall` Guaranteed for Every `beforeMcpToolCall`?
 - **Status (2026-10-22)**: moot, nothing is paired any more (the platform does fire it on success and in each catch branch of `McpSessionHandler`); see `d48-deadline-suppression-plan.md`.
@@ -196,7 +196,7 @@ Sorted by severity.
 | **D1** | **MEDIUM** | Pre-existing (window widened) | `MigrationTrigger.java` / `MigrationNotificationsSupport.java` | `217, 224, 280-284` / `62-64` | `scheduleMigration(true)` opens a modal `Messages.showMessageDialog` while holding `synchronized (MigrationTrigger.this)`; deadlocks with a `ModelReadRunnable` thread only if a write action runs inside the dialog's event loop, otherwise headless steps stall. |
 | **R5** | **MEDIUM** | Pre-existing | `MigrationBlock.java` / `MigrationTrigger.java` | `16-17, 45-72` / `415-416` | Lazy `subtract()` / `last()` iterate the synchronized set `myBlocks` without holding its lock (`ConcurrentModificationException`), and `myShouldCheckAfterUnblock = false` can overwrite a concurrent `true`. |
 | **R3** | **MEDIUM–LOW** | Introduced | `MigrationTrigger.java` / `MigrationAssistantGuard.kt` | `286-289, 365-375, 421-454` / `206-225` | If the lease expires while `postponeWithoutAssistant()` is queued or scanning, it returns without a balloon; the check is lost only when it originated from `checkMigrationIfNecessary()`, otherwise the unblock re-checks. |
-| **R7** | **LOW–MEDIUM** | Introduced | `JetBrainsMPSMigrationMcpToolset.kt` / `HeadlessMigrations.kt` | `66-73, 107-139, 217-230` / `146-157, 245` | A make session opening after `plan` is not re-checked; `applyRunning` is released before the `remaining` recount; the recount runs on `Dispatchers.Default` instead of `Dispatchers.IO`. |
+| **R7** | **LOW–MEDIUM** | Introduced | `MPSMigrationMcpToolset.kt` / `HeadlessMigrations.kt` | `66-73, 107-139, 217-230` / `146-157, 245` | A make session opening after `plan` is not re-checked; `applyRunning` is released before the `remaining` recount; the recount runs on `Dispatchers.Default` instead of `Dispatchers.IO`. |
 | **R1** | **LOW–MEDIUM** | Mostly pre-existing | `MigrationNotificationsSupport.java` / `MigrationTrigger.java` | `50-51, 66-144` / `215, 258, 323-345, 396, 409, 447` | `myLastNotification` and `myLastDeployWarning` are non-`volatile` and touched from several threads with only partial locking; the NPE is only reachable through the R2 race. |
 | **R8** | **TO VERIFY** | Introduced | `MigrationAssistantGuard.kt` | `45-77, 130-156` | If `afterMcpToolCall` can be skipped, `activeCallsCount` never returns to `0` and suppression stays on for the rest of the session. |
 | **D2** | **LOW** | Introduced | `MigrationTrigger.java` | `395-397, 407-410, 430-449` | `postponeWithoutAssistant()` holds `myPostponeLock` across the `MigrationSetup` scan; no reverse lock order exists, so this is latency for `runHeadlessMigration`, not a deadlock. |
@@ -229,7 +229,7 @@ Sorted by severity.
      runForceSave(m.subTask((save ? 80 : 100)));
      ```
      `MigrationTask.doRun` never checks `if (save)` — it calls `runForceSave` on every project module whenever `MigrationTask.run` executes. The KDoc is only true because of the tool's `nothingToDo` guard.
-   - `JetBrainsMPSMigrationMcpToolset.apply` guards against this via `if (plan.nothingToDo)` (line 101) before calling `runEngine`. But if `syncRefresh()` inside `runHeadlessMigration` resolves the pending state between `plan` and `HeadlessMigrations.run`, `HeadlessMigrations.run` still executes `MigrationTask.run` and force-saves every module in the project.
+   - `MPSMigrationMcpToolset.apply` guards against this via `if (plan.nothingToDo)` (line 101) before calling `runEngine`. But if `syncRefresh()` inside `runHeadlessMigration` resolves the pending state between `plan` and `HeadlessMigrations.run`, `HeadlessMigrations.run` still executes `MigrationTask.run` and force-saves every module in the project.
    - **Fix**: Return early in `HeadlessMigrations.run` when the setup recomputed at line 245 reports `!isRepositorySaveRequired`.
 
 4. **Silent Skip of Version Updates When an Unrelated Module Outside `modules` (`scope`) Uses an Undeployed Language (`HeadlessMigrations.kt:166-190` vs `MigrationSetup.java:64-79`)** — *Pre-existing `MigrationSetup` behaviour, exposed by the new scope*
@@ -278,12 +278,12 @@ Sorted by severity.
    - **In `MigrationTrigger` (`MigrationTrigger.java:217, 264-274, 286-288, 434, 451`)**:
      `checkMigrationNeeded()` computes `new MigrationSetup(myMpsProject)` in `ModelReadRunnable` (line 217) and passes it to `scheduleIfNewMigrations(ms)` (line 264). `scheduleIfNewMigrations` checks `PostponedState.current(ms)` and calls `scheduleMigration(false)` (line 271), **discarding `ms`**. When `isAutoAssistantSuppressed()` is `true`, `scheduleMigration(false)` calls `postponeWithoutAssistant()`, which spawns *another* pooled thread to compute `new MigrationSetup(myMpsProject)` a second time (line 434).
      In addition, the unblock in `postponeWithoutAssistant()`'s `finally` block (line 451) usually re-checks as well, because `myShouldCheckAfterUnblock` is still set. That runs another scan, another postpone and another scan, so each check event costs about four `MigrationSetup` scans while suppression is on.
-   - **In `mps_mcp_run_migrations(APPLY)` (`JetBrainsMPSMigrationMcpToolset.kt:72, 132`, `HeadlessMigrations.kt:245`, `MigrationTrigger.java:415-416`)**:
+   - **In `mps_mcp_run_migrations(APPLY)` (`MPSMigrationMcpToolset.kt:72, 132`, `HeadlessMigrations.kt:245`, `MigrationTrigger.java:415-416`)**:
      A single `APPLY` call computes `MigrationSetup`:
      1. Before the run in `mps_mcp_run_migrations` (`HeadlessMigrations.plan`, line 72),
      2. At the start of `HeadlessMigrations.run` (`setup(mpsProject, scope)`, line 245),
      3. Inside `MigrationTrigger.runHeadlessMigration`'s `finally` block via `unblockMigrationsCheck` -> `checkMigrationNeeded()` (line 416, plus further scans in `postponeWithoutAssistant()` if anything remains pending, see above),
-     4. After `runEngine` returns, in `JetBrainsMPSMigrationMcpToolset.apply` for the `remaining` recount (`HeadlessMigrations.plan`, line 132).
+     4. After `runEngine` returns, in `MPSMigrationMcpToolset.apply` for the `remaining` recount (`HeadlessMigrations.plan`, line 132).
      Scans (3) and (4) run concurrently right after `cleanup()` has unloaded every model in the project.
 
 2. **Redundant `modulesOf(mpsProject, scope)` Resolution in `HeadlessMigrations.plan` (`HeadlessMigrations.kt:113-138, 169`)**

@@ -24,7 +24,7 @@ helps.
 ## 0. Harness state
 
 - **Measured surface**: HEAD `76b0ef4ebfb0` (MPS-40228) **plus the uncommitted MPS-40228 follow-up** in
-  `JetBrainsMPSModuleMcpToolset.kt` and `mps-aspect-accessories/references/module-creation.md`. The plugin classes
+  `MPSModuleMcpToolset.kt` and `mps-aspect-accessories/references/module-creation.md`. The plugin classes
   (21:19) were newer than the sources (21:10), and MPS was started after them (21:21).
   - Inventory `93ca3746…`: 48 tools (39 `mps_mcp_*`), descriptions **59,729 B**, schemas 41,911 B. Round 18: 57,068 B /
     40,493 B.

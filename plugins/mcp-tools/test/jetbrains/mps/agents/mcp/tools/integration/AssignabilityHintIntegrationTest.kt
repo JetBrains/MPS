@@ -70,7 +70,7 @@ class AssignabilityHintIntegrationTest : McpIntegrationTestBase() {
     /** `class Probe { int m() { return 1; } void v() { int x = 0; } }`, parsed into a fresh model. */
     private fun parseProbeClass(): SNode {
         val javaModel = createJavaModel()
-        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+        val response = runTool(MPSJavaMcpToolset()) {
             it.mps_mcp_parse_java_and_insert(
                 """
                 {
@@ -94,7 +94,7 @@ class AssignabilityHintIntegrationTest : McpIntegrationTestBase() {
     private fun envelope(response: String): JsonObject = JsonParser.parseString(response).asJsonObject
 
     private fun addChild(parentRef: String, role: String, childJson: String, dryRun: Boolean = true): String =
-        runTool(JetBrainsMPSNodeMcpToolset()) {
+        runTool(MPSNodeMcpToolset()) {
             it.mps_mcp_update_node(
                 NodeUpdateOperation.ADD, NodeUpdateKind.CHILD,
                 nodeReference = parentRef, childRole = role, childJson = childJson, dryRun = dryRun,
@@ -102,7 +102,7 @@ class AssignabilityHintIntegrationTest : McpIntegrationTestBase() {
         }
 
     private fun setReference(nodeRef: String, role: String, target: String): JsonObject {
-        val response = runTool(JetBrainsMPSNodeMcpToolset()) {
+        val response = runTool(MPSNodeMcpToolset()) {
             it.mps_mcp_update_node(NodeUpdateOperation.SET, NodeUpdateKind.REFERENCE, references = listOf(listOf(nodeRef, role, target)))
         }
         assertFalse("expected the SET REFERENCE batch to fail: $response", envelope(response).get("ok").asBoolean)
@@ -110,7 +110,7 @@ class AssignabilityHintIntegrationTest : McpIntegrationTestBase() {
         return if (row.isJsonObject) row.asJsonObject else JsonParser.parseString(row.asString).asJsonObject
     }
 
-    private fun updateRoot(rootRef: String, json: String): String = runTool(JetBrainsMPSRootNodeMcpToolset()) {
+    private fun updateRoot(rootRef: String, json: String): String = runTool(MPSRootNodeMcpToolset()) {
         it.mps_mcp_update_root_node_from_json(rootRef, json, dryRun = true, operation = RootNodeOperation.UPDATE)
     }
 
@@ -139,7 +139,7 @@ class AssignabilityHintIntegrationTest : McpIntegrationTestBase() {
     @Test
     fun `D51 array creator as a return expression names GenericNewExpression, and its paste shape is accepted`() {
         val javaModelRef = modelRefOf(createJavaModel())
-        val response = runTool(JetBrainsMPSRootNodeMcpToolset()) {
+        val response = runTool(MPSRootNodeMcpToolset()) {
             it.mps_mcp_insert_root_node_from_json(javaModelRef, JsonOrText(classWithReturnJson(arrayCreatorJson)), dryRun = true)
         }
 
@@ -166,7 +166,7 @@ class AssignabilityHintIntegrationTest : McpIntegrationTestBase() {
         assertEquals(1, obj.getAsJsonObject("details").get("wrapperCandidatesTotal").asInt)
 
         val pasteShape = message.lines().last().trim().replace("<the node at this path>", arrayCreatorJson)
-        val retry = runTool(JetBrainsMPSRootNodeMcpToolset()) {
+        val retry = runTool(MPSRootNodeMcpToolset()) {
             it.mps_mcp_insert_root_node_from_json(javaModelRef, JsonOrText(classWithReturnJson(pasteShape)), dryRun = true)
         }
         assertTrue("the suggested shape must be accepted: $retry", envelope(retry).get("ok").asBoolean)
@@ -239,7 +239,7 @@ class AssignabilityHintIntegrationTest : McpIntegrationTestBase() {
             { "concept": "$bl.ReturnStatement", "children": [ { "role": "expression", "nodes": [ $arrayCreatorJson ] } ] }
         """.trimIndent()
 
-        val response = runTool(JetBrainsMPSNodeMcpToolset()) {
+        val response = runTool(MPSNodeMcpToolset()) {
             it.mps_mcp_update_node(
                 NodeUpdateOperation.SET, NodeUpdateKind.CHILD,
                 childNodeRef = refOf(returnStatement), childJson = replacement, dryRun = true,
@@ -311,7 +311,7 @@ class AssignabilityHintIntegrationTest : McpIntegrationTestBase() {
         val concept = conceptOf(behaviorRef)
         // An explicit `extends BaseConcept`, so the walk reaches BaseConcept and has to skip it.
         val baseConceptDecl = readOnRepo { PersistenceFacade.getInstance().asString(SNodeUtil.concept_BaseConcept.sourceNode!!) }
-        val extended = runTool(JetBrainsMPSNodeMcpToolset()) {
+        val extended = runTool(MPSNodeMcpToolset()) {
             it.mps_mcp_update_node(NodeUpdateOperation.SET, NodeUpdateKind.REFERENCE, references = listOf(listOf(refOf(concept), "extends", baseConceptDecl)))
         }
         assertTrue("expected extends to be set: $extended", envelope(extended).get("ok").asBoolean)

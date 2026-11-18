@@ -22,6 +22,7 @@ import com.intellij.mcpserver.impl.util.asTools
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.extensions.ExtensionPoint
+import com.intellij.openapi.diagnostic.awaitLogQueueProcessed
 import com.intellij.openapi.project.DumbService
 import com.intellij.testFramework.IndexingTestUtil
 import jetbrains.mps.ide.ModuleInProjectTest
@@ -136,8 +137,8 @@ abstract class McpIntegrationTestBase : ModuleInProjectTest() {
     }
 
     /** Convenience overload preserving the original concept-test call shape. */
-    protected fun <R> runTool(block: suspend (JetBrainsMPSLanguageStructureMcpToolset) -> R): R =
-        runTool(JetBrainsMPSLanguageStructureMcpToolset(), block)
+    protected fun <R> runTool(block: suspend (MPSLanguageStructureMcpToolset) -> R): R =
+        runTool(MPSLanguageStructureMcpToolset(), block)
 
     /**
      * Invokes the *registered* `@McpTool` overload named [toolName] through the platform's
@@ -245,7 +246,13 @@ abstract class McpIntegrationTestBase : ModuleInProjectTest() {
         return result to records.map { it.message }
     }
 
-    /** Like [captureLogMessages], but keeps each record's level. */
+    /**
+     * Like [captureLogMessages], but keeps each record's level.
+     *
+     * Platform [com.intellij.openapi.diagnostic.Logger] calls reach JUL through an asynchronous queue
+     * (`asyncLog.kt`), so a message logged at the end of [block] may not have reached the handler yet when
+     * [block] returns. The queue is drained before the snapshot is taken.
+     */
     protected fun <T> captureLogRecords(block: () -> T): Pair<T, List<LogRecord>> {
         val records = Collections.synchronizedList(mutableListOf<LogRecord>())
         val handler = object : Handler() {
@@ -260,6 +267,7 @@ abstract class McpIntegrationTestBase : ModuleInProjectTest() {
         rootLogger.addHandler(handler)
         return try {
             val result = block()
+            awaitLogQueueProcessed()
             val snapshot = synchronized(records) { records.toList() }
             result to snapshot
         }
@@ -459,7 +467,7 @@ abstract class McpIntegrationTestBase : ModuleInProjectTest() {
         val behaviorModel = readOnRepo { language.models.single { it.name.longName.endsWith(".behavior") } }
         val behaviorModelRef = modelRefOf(behaviorModel)
 
-        val modelToolset = JetBrainsMPSModelMcpToolset()
+        val modelToolset = MPSModelMcpToolset()
         for (usedLanguage in listOf("jetbrains.mps.lang.behavior", "jetbrains.mps.baseLanguage")) {
             expectOk(runTool(modelToolset) {
                 it.mps_mcp_model_used_language(behaviorModelRef, usedLanguage, "language", DependencyOperation.ADD)
@@ -486,7 +494,7 @@ abstract class McpIntegrationTestBase : ModuleInProjectTest() {
             }
         """.trimIndent()
 
-        val resp = runTool(JetBrainsMPSRootNodeMcpToolset()) {
+        val resp = runTool(MPSRootNodeMcpToolset()) {
             it.mps_mcp_insert_root_node_from_json(behaviorModelRef, JsonOrText(json), dryRun = false, responseDetail = "summary")
         }
         val payload = expectOk(resp)

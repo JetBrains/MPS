@@ -9,14 +9,13 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JTextField;
 import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
 import javax.swing.ButtonGroup;
 import jetbrains.mps.samples.fincalculator.support.runtime.SimulationFunctions;
-import jetbrains.mps.samples.fincalculator.support.runtime.SelectorItem;
 import javax.swing.JPanel;
 import java.awt.FlowLayout;
 import javax.swing.JRadioButton;
 import jetbrains.mps.samples.fincalculator.support.runtime.JRadioButtonWithItem;
+import jetbrains.mps.samples.fincalculator.support.runtime.SelectorItem;
 import javax.swing.JLabel;
 import javax.swing.JFrame;
 import java.util.Enumeration;
@@ -46,35 +45,21 @@ public class Mortgage_Evaluation extends CalculationFrame {
   private JTextField inputField_8bdcbk_a = new JTextField();
   private JTextField inputField_8bdcbk_b = new JTextField();
   private JTextField inputField_8bdcbk_c = new JTextField();
-  private JTextField inputField_8bdcbk_d = new JTextField();
-  private JTextField inputField_8bdcbk_e = new JTextField();
-  private JTextField inputField_8bdcbk_m = new JTextField();
-  private JTextField inputField_8bdcbk_n = new JTextField();
-  private JTextField inputField_8bdcbk_o = new JTextField();
-  private JTextField outputField_8bdcbk_y = new JTextField();
-  private JCheckBox checkbox_8bdcbk_i = new JCheckBox("other properties in possesion");
-  private JCheckBox checkbox_8bdcbk_j = new JCheckBox("retired");
-  private JCheckBox checkbox_8bdcbk_k = new JCheckBox("disabled");
-  private JCheckBox checkbox_8bdcbk_l = new JCheckBox("known history of paying back a mortgage");
-  private JComboBox selector_8bdcbk_f = new JComboBox();
-  private JComboBox selector_8bdcbk_g = new JComboBox();
-  private ButtonGroup group_8bdcbk_h = new ButtonGroup();
+  private JTextField inputField_8bdcbk_h = new JTextField();
+  private JTextField outputField_8bdcbk_r = new JTextField();
+  private JCheckBox checkbox_8bdcbk_e = new JCheckBox("other properties in possesion");
+  private JCheckBox checkbox_8bdcbk_f = new JCheckBox("retired");
+  private JCheckBox checkbox_8bdcbk_g = new JCheckBox("known history of paying back a mortgage");
+  private ButtonGroup group_8bdcbk_d = new ButtonGroup();
 
-  private double age = 0;
   private double total_monthly_income = 0;
-  private double total_debt = 0;
   private double total_monthly_spendings = 0;
   private double monthly_payments_towards_other_loans = 0;
-  private double marital_status = 0;
-  private double kids = 0;
   private double education = 0;
   private boolean other_properties_in_possesion = false;
   private boolean retired = false;
-  private boolean disabled = false;
   private boolean known_history_of_paying_back_a_mortgage = false;
   private double load_amount = 0;
-  private double downpayment = 0;
-  private double interest_rate = 0;
   private boolean isInBalance() {
     return total_monthly_income - total_monthly_spendings - monthly_payments_towards_other_loans > SimulationFunctions.balanceThreashhold();
   }
@@ -106,40 +91,12 @@ public class Mortgage_Evaluation extends CalculationFrame {
 
   public Mortgage_Evaluation() {
     setTitle("Mortgage Evaluation");
-    addToSmallPanel("age", inputField_8bdcbk_a, "");
+    addToSmallPanel("total monthly income", inputField_8bdcbk_a, "$");
     inputField_8bdcbk_a.getDocument().addDocumentListener(this.listener);
-    addToSmallPanel("total monthly income", inputField_8bdcbk_b, "$");
+    addToSmallPanel("total monthly spendings", inputField_8bdcbk_b, "$");
     inputField_8bdcbk_b.getDocument().addDocumentListener(this.listener);
-    addToSmallPanel("total debt", inputField_8bdcbk_c, "$");
+    addToSmallPanel("monthly payments towards other loans", inputField_8bdcbk_c, "$");
     inputField_8bdcbk_c.getDocument().addDocumentListener(this.listener);
-    addToSmallPanel("total monthly spendings", inputField_8bdcbk_d, "$");
-    inputField_8bdcbk_d.getDocument().addDocumentListener(this.listener);
-    addToSmallPanel("monthly payments towards other loans", inputField_8bdcbk_e, "$");
-    inputField_8bdcbk_e.getDocument().addDocumentListener(this.listener);
-    {
-      JComboBox localbox = selector_8bdcbk_f;
-      localbox.addItem(new SelectorItem<Double>("single", Double.parseDouble("1")));
-      localbox.addItem(new SelectorItem<Double>("married", Double.parseDouble("3")));
-      localbox.addItem(new SelectorItem<Double>("divorced", Double.parseDouble("1")));
-      localbox.addItem(new SelectorItem<Double>("widowed", Double.parseDouble("1")));
-
-
-
-      localbox.addActionListener(actionListener);
-      addToSmallPanel("marital status", localbox, "");
-    }
-    {
-      JComboBox localbox = selector_8bdcbk_g;
-      localbox.addItem(new SelectorItem<Double>("None", Double.parseDouble("0")));
-      localbox.addItem(new SelectorItem<Double>("1", Double.parseDouble("1")));
-      localbox.addItem(new SelectorItem<Double>("2", Double.parseDouble("2")));
-      localbox.addItem(new SelectorItem<Double>("3 or more", Double.parseDouble("3")));
-
-
-
-      localbox.addActionListener(actionListener);
-      addToSmallPanel("kids", localbox, "");
-    }
     {
       JPanel panel = new JPanel(new FlowLayout());
 
@@ -147,7 +104,7 @@ public class Mortgage_Evaluation extends CalculationFrame {
         JRadioButton button = null;
         button = new JRadioButtonWithItem<Double>("high school", new SelectorItem<Double>("high school", Double.parseDouble("0")));
 
-        group_8bdcbk_h.add(button);
+        group_8bdcbk_d.add(button);
         panel.add(button);
         button.addActionListener(actionListener);
       }
@@ -155,7 +112,7 @@ public class Mortgage_Evaluation extends CalculationFrame {
         JRadioButton button = null;
         button = new JRadioButtonWithItem<Double>("university", new SelectorItem<Double>("university", Double.parseDouble("1")));
 
-        group_8bdcbk_h.add(button);
+        group_8bdcbk_d.add(button);
         panel.add(button);
         button.addActionListener(actionListener);
       }
@@ -163,47 +120,37 @@ public class Mortgage_Evaluation extends CalculationFrame {
         JRadioButton button = null;
         button = new JRadioButtonWithItem<Double>("PhD", new SelectorItem<Double>("PhD", Double.parseDouble("2")));
 
-        group_8bdcbk_h.add(button);
+        group_8bdcbk_d.add(button);
         panel.add(button);
         button.addActionListener(actionListener);
       }
       addToSmallPanel("education", panel, "");
     }
     {
-      JCheckBox localBox = checkbox_8bdcbk_i;
+      JCheckBox localBox = checkbox_8bdcbk_e;
       addToSmallPanel("", localBox, "");
       localBox.addActionListener(actionListener);
     }
     {
-      JCheckBox localBox = checkbox_8bdcbk_j;
+      JCheckBox localBox = checkbox_8bdcbk_f;
       addToSmallPanel("", localBox, "");
       localBox.addActionListener(actionListener);
     }
     {
-      JCheckBox localBox = checkbox_8bdcbk_k;
+      JCheckBox localBox = checkbox_8bdcbk_g;
       addToSmallPanel("", localBox, "");
       localBox.addActionListener(actionListener);
     }
-    {
-      JCheckBox localBox = checkbox_8bdcbk_l;
-      addToSmallPanel("", localBox, "");
-      localBox.addActionListener(actionListener);
-    }
-    addToSmallPanel("load amount", inputField_8bdcbk_m, "$");
-    inputField_8bdcbk_m.getDocument().addDocumentListener(this.listener);
-    addToSmallPanel("downpayment", inputField_8bdcbk_n, "$");
-    inputField_8bdcbk_n.getDocument().addDocumentListener(this.listener);
-    inputField_8bdcbk_o.setText("5");
-    addToSmallPanel("interest rate", inputField_8bdcbk_o, "%");
+    addToSmallPanel("load amount", inputField_8bdcbk_h, "$");
     addToSmallPanel("", new JLabel(""), "");
-    inputField_8bdcbk_o.getDocument().addDocumentListener(this.listener);
+    inputField_8bdcbk_h.getDocument().addDocumentListener(this.listener);
 
 
 
 
 
-    addToSmallPanel("accepted", this.outputField_8bdcbk_y, "");
-    this.outputField_8bdcbk_y.setEnabled(false);
+    addToSmallPanel("accepted", this.outputField_8bdcbk_r, "");
+    this.outputField_8bdcbk_r.setEnabled(false);
     addToSmallPanel("", new JLabel(""), "");
 
     update();
@@ -214,29 +161,19 @@ public class Mortgage_Evaluation extends CalculationFrame {
 
   public void update() {
     try {
-      age = Double.parseDouble(inputField_8bdcbk_a.getText());
+      total_monthly_income = Double.parseDouble(inputField_8bdcbk_a.getText());
     } catch (NumberFormatException e) {
     }
     try {
-      total_monthly_income = Double.parseDouble(inputField_8bdcbk_b.getText());
+      total_monthly_spendings = Double.parseDouble(inputField_8bdcbk_b.getText());
     } catch (NumberFormatException e) {
     }
     try {
-      total_debt = Double.parseDouble(inputField_8bdcbk_c.getText());
+      monthly_payments_towards_other_loans = Double.parseDouble(inputField_8bdcbk_c.getText());
     } catch (NumberFormatException e) {
     }
-    try {
-      total_monthly_spendings = Double.parseDouble(inputField_8bdcbk_d.getText());
-    } catch (NumberFormatException e) {
-    }
-    try {
-      monthly_payments_towards_other_loans = Double.parseDouble(inputField_8bdcbk_e.getText());
-    } catch (NumberFormatException e) {
-    }
-    marital_status = ((SelectorItem<Double>) ((JComboBox) selector_8bdcbk_f).getSelectedItem()).getValue();
-    kids = ((SelectorItem<Double>) ((JComboBox) selector_8bdcbk_g).getSelectedItem()).getValue();
     {
-      Enumeration<AbstractButton> elements = ((ButtonGroup) group_8bdcbk_h).getElements();
+      Enumeration<AbstractButton> elements = ((ButtonGroup) group_8bdcbk_d).getElements();
       Iterator<AbstractButton> iterator = elements.asIterator();
       JRadioButtonWithItem<Double> selectedButton = null;
       while (iterator.hasNext()) {
@@ -247,24 +184,15 @@ public class Mortgage_Evaluation extends CalculationFrame {
       }
       education = selectedButton.getMyItem().getValue();
     }
-    other_properties_in_possesion = checkbox_8bdcbk_i.isSelected();
-    retired = checkbox_8bdcbk_j.isSelected();
-    disabled = checkbox_8bdcbk_k.isSelected();
-    known_history_of_paying_back_a_mortgage = checkbox_8bdcbk_l.isSelected();
+    other_properties_in_possesion = checkbox_8bdcbk_e.isSelected();
+    retired = checkbox_8bdcbk_f.isSelected();
+    known_history_of_paying_back_a_mortgage = checkbox_8bdcbk_g.isSelected();
     try {
-      load_amount = Double.parseDouble(inputField_8bdcbk_m.getText());
-    } catch (NumberFormatException e) {
-    }
-    try {
-      downpayment = Double.parseDouble(inputField_8bdcbk_n.getText());
-    } catch (NumberFormatException e) {
-    }
-    try {
-      interest_rate = Double.parseDouble(inputField_8bdcbk_o.getText());
+      load_amount = Double.parseDouble(inputField_8bdcbk_h.getText());
     } catch (NumberFormatException e) {
     }
     accepted = accept();
-    outputField_8bdcbk_y.setText("" + ((accepted ? "true" : "false")));
+    outputField_8bdcbk_r.setText("" + ((accepted ? "true" : "false")));
   }
 
   public static void main(String[] args) {

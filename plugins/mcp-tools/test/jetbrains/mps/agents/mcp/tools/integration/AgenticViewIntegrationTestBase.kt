@@ -25,7 +25,7 @@ import org.junit.Assert.assertTrue
  */
 abstract class AgenticViewIntegrationTestBase : McpIntegrationTestBase() {
 
-    protected val toolset = JetBrainsMPSNodeMcpToolset()
+    protected val toolset = MPSNodeMcpToolset()
 
     // ── calls ─────────────────────────────────────────────────────────────────────────────
 
@@ -64,7 +64,7 @@ abstract class AgenticViewIntegrationTestBase : McpIntegrationTestBase() {
     /** A BaseLanguage class root parsed from `public class [name] { [body] }` into a fresh solution model. */
     protected fun classRoot(name: String, body: String): SNode {
         val model = createModel(createSolution(), "agentic.code${System.nanoTime()}")
-        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+        val response = runTool(MPSJavaMcpToolset()) {
             it.mps_mcp_parse_java_and_insert(
                 """{"code":"public class $name { $body }","featureKind":"CLASS",
                     "insert":{"mode":"root","modelRef":"${modelRefOf(model)}"}}"""

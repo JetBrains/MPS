@@ -68,7 +68,7 @@ meant to expand, so it needs `find`, not quotes.
 ### F3. Who reads the template
 
 `AGENTS_template.md` is a product resource, not a study file. `mps_mcp_initialize_project_for_agents` reads it from the
-classpath (`JetBrainsMPSInitMcpToolset.kt:71-73, :353`) and installs it into user projects. `study/scripts/install_skills.py`
+classpath (`MPSInitMcpToolset.kt:71-73, :353`) and installs it into user projects. `study/scripts/install_skills.py`
 asks the **running** plugin to do that for each study project, producing `AGENTS.md` / `CLAUDE.md`. So the text must hold
 for every agent runtime: some have Grep and Glob tools, the study's worker does not, and many users run zsh (the macOS
 default). No test asserts the template's wording.
@@ -116,7 +116,7 @@ check that answered `{"ok":true,"data":"no problems found"}` with no `details`, 
 
 ### F6. The result contract the detector should read
 
-From `JetBrainsMPSNodeMcpToolset.kt:729-731, 863-918, 1038-1089`:
+From `MPSNodeMcpToolset.kt:729-731, 863-918, 1038-1089`:
 
 - **Node scope** (`r:…(…)/<id>`, also module-qualified `<uuid>/r:…(…)/<id>`, `runs-r17 S9-opus-1:17`):
   `data:"no problems found"` with no `details.scope`, or a list of problem nodes, or a temp-file path.

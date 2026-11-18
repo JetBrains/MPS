@@ -49,7 +49,7 @@ analysts counted more (35–65 per run 1) because they include reads the regex m
 - **T1 (fixed):** `mps_mcp_check_root_node_problems` ignored `ISuppressErrors`, so an `EditorTestCase` result
   with an empty mandatory child never checked clean (E1–E3 lost 12–14 steps each). `AbstractOps.runRootCheckers`
   now filters with `ErrorReportHelper.shouldReportError`; integration test in
-  `JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest`. E2 run 2 used `<no right>` results that check clean.
+  `MPSNodeMcpToolsetExtendedIntegrationTest`. E2 run 2 used `<no right>` results that check clean.
 - **T2 (open):** an in-process editor test that pastes a node referencing another model opens
   `AddRequiredImportsDialog`; MPS hangs and every MCP call returns `MODAL_BLOCKED`. No tool lists or dismisses a
   modal. Documented in `mps-tests`; the new cells forbid cross-model paste (`../../scenarios/coverage/editor-shared-criteria.md`).

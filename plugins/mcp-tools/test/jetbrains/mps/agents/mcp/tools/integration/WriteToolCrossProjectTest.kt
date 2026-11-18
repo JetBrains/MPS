@@ -32,7 +32,7 @@ import org.junit.Test
  */
 class WriteToolCrossProjectTest : McpIntegrationTestBase() {
 
-    private val rootNodeToolset = JetBrainsMPSRootNodeMcpToolset()
+    private val rootNodeToolset = MPSRootNodeMcpToolset()
 
     private val conceptDeclarationFqn = "jetbrains.mps.lang.structure.structure.ConceptDeclaration"
 
@@ -133,7 +133,7 @@ class WriteToolCrossProjectTest : McpIntegrationTestBase() {
               "conceptsJson": [ { "name": "$name" } ]
             }
         """.trimIndent()
-        val resp = runToolForProject(project, JetBrainsMPSLanguageStructureMcpToolset()) {
+        val resp = runToolForProject(project, MPSLanguageStructureMcpToolset()) {
             it.mps_mcp_alter_structure(MPSStructureAlterOperation.CREATE_CONCEPTS, params)
         }
         assertTrue(

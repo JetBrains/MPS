@@ -176,7 +176,7 @@ class AbstractOpsModalTimeoutTest : McpIntegrationTestBase() {
         // Intentionally slow (~30s): unlike the tests above, this exercises the real production
         // entry point with its real, unmodified MODEL_OPERATION_TIMEOUT_MS budget, proving the fix
         // is wired correctly at the actual tool boundary rather than only in the shared helper.
-        val toolset = JetBrainsMPSRootNodeMcpToolset()
+        val toolset = MPSRootNodeMcpToolset()
         val entity = enterModal()
         try {
             val response = runTool(toolset) { it.mps_mcp_get_current_editor_root_node() }
@@ -237,7 +237,7 @@ class DumpThreadsAndFailOnTimeout(private val timeoutMs: Long) : TestRule {
 /**
  * Exposes the protected [AbstractOps.withModalTimeout] / [AbstractOps.withModalTimeoutOnEdt] for
  * direct testing. Lives in the same package as the toolsets so the protected members are visible
- * (same pattern as `ScopeProbe` in `JetBrainsMPSRootNodeMcpToolsetIntegrationTest.kt`).
+ * (same pattern as `ScopeProbe` in `MPSRootNodeMcpToolsetIntegrationTest.kt`).
  */
 private class ModalTimeoutProbe : AbstractOps() {
     suspend fun <T> callWithModalTimeout(timeoutMs: Long, block: suspend () -> T): T =

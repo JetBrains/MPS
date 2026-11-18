@@ -188,7 +188,7 @@ look avoidable, concentrated in the sonnet S6/S7/S8/S10 cells.
 | D71 | `mps-tests` `editor-test-case.md:13`, `common-failures.md:9` | The skills never say that the result `AnonymousCellAnnotation` is compared only by `cellId` + `selectionStart`/`selectionEnd`; `caretPosition`/`isLastPosition` are ignored | D |
 | D72 | `mps-project-management` `SKILL.md:51`, `create-empty-project.md:144-150` | "Close the open project first" is a soft note ("may", "can"); the step list goes create → open | D |
 | D73 | `mps-aspect-generator/SKILL.md:56` | The generated Java package is the template class's `packageName` (set by the parser from a `package` line, D34), but no skill says so; opus searched MPS sources for 10 steps | D |
-| D74 | `print_node` `deep` description (`JetBrainsMPSNodeMcpToolset.kt:963`); `mps-model-manipulation/SKILL.md:64` | Recurrence of D23: the skill line recommends a shallow print, and the tool text never says to read a method in one call | D |
+| D74 | `print_node` `deep` description (`MPSNodeMcpToolset.kt:963`); `mps-model-manipulation/SKILL.md:64` | Recurrence of D23: the skill line recommends a shallow print, and the tool text never says to read a method in one call | D |
 | D75 | `mps-language-analysis/references/concept-details.md:66` | `shape` omits `superConcept`; sonnet walks superconcepts hop by hop. `GET_ALL_SUPERCONCEPTS` is documented only in `mps-language-inheritance` | D → S |
 | D76 | `mps-mcp-workflow/scripts/mps_dump.py` | Residual of D58: `roots` on a project or module dump without `rootNodes` prints `{"roots":0}` and exits 0. No `models` or `tree` view | P-off |
 | D77 | `mps-aspect-behavior/SKILL.md:35` | A concept-typed local or foreach variable in parsed Java comes back as an unresolved `ClassifierType` | D → S |

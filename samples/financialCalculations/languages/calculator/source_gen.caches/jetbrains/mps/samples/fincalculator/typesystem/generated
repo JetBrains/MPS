@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<product version="3" modelHash="-22e3gsg55e3l00mbb4v632apjm3ivuq">
-  <files names="TypesystemDescriptor.java:typeof_CalculationReference_InferenceRule.java:typeof_CalculationValueReference_InferenceRule.java:typeof_CalculationValue_InferenceRule.java:typeof_Calculation_InferenceRule.java:typeof_FieldReference_InferenceRule.java:typeof_LogicalReference_InferenceRule.java:typeof_SelectorReference_InferenceRule.java" />
+<product version="3" modelHash="cjqppyoh11hyp0b7q3bwwjbemvwc26f">
+  <files names="OutputReachabilityHelper.java:TypesystemDescriptor.java:check_CalculatorDataflow_NonTypesystemRule.java:check_OutputFieldExpression_NonTypesystemRule.java:check_OutputTable_NonTypesystemRule.java:typeof_CalculationReference_InferenceRule.java:typeof_CalculationValueReference_InferenceRule.java:typeof_CalculationValue_InferenceRule.java:typeof_Calculation_InferenceRule.java:typeof_FieldReference_InferenceRule.java:typeof_LogicalReference_InferenceRule.java:typeof_SelectorReference_InferenceRule.java" />
 </product>
 

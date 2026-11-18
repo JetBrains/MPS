@@ -30,8 +30,8 @@ The fix-references pass (`performFixReferences`, `:1318-1402`) sets each referen
 | `S2-opus-1` | `:33` the same dry run with its own `Guard` concept ref: "Dry run successful". The worker noticed on its own ("Oops"), printed `Transition` at `:34`, and wrote the link ref at `:35`. That is 2 turns. |
 
 Round 20 (S1 only) did not exercise it. D81 (`78401019be1f`) and D87 (`f5ab9e848214`) have touched `applyReferenceUpdate` / `dryRunReferenceWarning` since round 18, but no change closes the gap. The two other causes in the chain also still hold:
-- `mps_mcp_update_concept_link` still ends in `okJson("true")` (`JetBrainsMPSLanguageStructureMcpToolset.kt:1393`; the property variant at `:1328`).
-- `get_concept_details detail:"shape"` entries still carry no `sourceNode` (`JetBrainsMPSLanguageMcpToolset.kt:649-697`; D67 is open).
+- `mps_mcp_update_concept_link` still ends in `okJson("true")` (`MPSLanguageStructureMcpToolset.kt:1393`; the property variant at `:1328`).
+- `get_concept_details detail:"shape"` entries still carry no `sourceNode` (`MPSLanguageMcpToolset.kt:649-697`; D67 is open).
 
 `mps-aspect-editor/references/cell-models.md:11, :13, :14` still say "set `relationDeclaration` to child link" without naming the kind of node or where its ref comes from.
 
@@ -43,8 +43,8 @@ This is not specific to the editor language. Any role whose declared target is b
 
 **One helper**, `outOfScopeReferences(refs): List<OutOfScope>`, next to `performFixReferences`. It takes `(source node, link, target)` triples and returns the out-of-scope ones with their candidates. There are two callers:
 
-- **The fix-references pass**, which the blueprint writes run after the node is attached and its imports are added: insert root (`JetBrainsMPSRootNodeMcpToolset.kt:396`), update root (`:553`), `update_node` ADD / SET CHILD (`AbstractNodeOps.kt:1089`, `:955`), and `alter_nodes FIX_REFERENCES` (`JetBrainsMPSNodeMcpToolset.kt:681`). The helper runs after `resolveScopesOnly` and the import step. It gets every reference whose target is non-null and was **not** produced by the resolver in this pass (`targetAfter == targetBefore`). A reference the pass resolved or repointed came from the scope, so it is in scope by construction.
-- **SET REFERENCE directly.** `update_node_reference` (`:1106-1174`) is reached only through the triplet batch `update_node SET REFERENCE references:[[node, role, target], …]` (`JetBrainsMPSNodeMcpToolset.kt:1322-1350`); there is no public single form. `SNode.setReference(link, SNodeReference)` stores `resolveInfo = null` (`core/kernel/…/SNode.java:741-747`), so for an `r:` target `needsScopeResolution` (`:1147-1148`) is false. `performFixReference` never runs, and the item has no `fixReferences` at all (S2-sonnet `:52`).
+- **The fix-references pass**, which the blueprint writes run after the node is attached and its imports are added: insert root (`MPSRootNodeMcpToolset.kt:396`), update root (`:553`), `update_node` ADD / SET CHILD (`AbstractNodeOps.kt:1089`, `:955`), and `alter_nodes FIX_REFERENCES` (`MPSNodeMcpToolset.kt:681`). The helper runs after `resolveScopesOnly` and the import step. It gets every reference whose target is non-null and was **not** produced by the resolver in this pass (`targetAfter == targetBefore`). A reference the pass resolved or repointed came from the scope, so it is in scope by construction.
+- **SET REFERENCE directly.** `update_node_reference` (`:1106-1174`) is reached only through the triplet batch `update_node SET REFERENCE references:[[node, role, target], …]` (`MPSNodeMcpToolset.kt:1322-1350`); there is no public single form. `SNode.setReference(link, SNodeReference)` stores `resolveInfo = null` (`core/kernel/…/SNode.java:741-747`), so for an `r:` target `needsScopeResolution` (`:1147-1148`) is false. `performFixReference` never runs, and the item has no `fixReferences` at all (S2-sonnet `:52`).
   - After `applyReferenceUpdate` resolves a persistent target, call the helper with that one reference.
   - The item returns `fixReferences: {fixed:0, repointed:0, stillBroken:0, outOfScope:N, message}`, the same shape the name path already returns (`:1167-1169`), plus the warning in the item's `warnings`.
   - The batch concatenates the item envelopes into `data[]` and has no outer `warnings` today. It also copies each item's warnings into the outer envelope's `warnings`, prefixed `references[i]:`, so that they appear where agents read them.
@@ -69,11 +69,11 @@ The saving was small anyway: with no provider, the scope is `allImportedModels` 
 - `getScope` itself logs an ERROR for a scope provider that throws. That is accepted, because it is the same event `check_root_node_problems` would log.
 
 **Result.**
-- A new counter `outOfScope` on the `fixReferences` object (`FixReferencesResult` `:1311`, `withFixReferencesInfo` `:1409`, `aggregateFixReferencesJsonObject` `:1300`, and the `FIX_REFERENCES` envelope `JetBrainsMPSNodeMcpToolset.kt:684-689`). It is always present, like the other three, and 0 when clean.
+- A new counter `outOfScope` on the `fixReferences` object (`FixReferencesResult` `:1311`, `withFixReferencesInfo` `:1409`, `aggregateFixReferencesJsonObject` `:1300`, and the `FIX_REFERENCES` envelope `MPSNodeMcpToolset.kt:684-689`). It is always present, like the other three, and 0 when clean.
 - A message branch of its own when N > 0 (the "All references are already correctly resolved" branch `:1392` must not fire): "N reference(s) resolve but lie outside their role's search scope", joined to the fixed / repointed parts as today.
 - One warning per out-of-scope reference, **capped at 5 per call** (not per root; a 40-root insert would otherwise give 200), then "… and N more (`check_root_node_problems` lists them)".
   - **Mechanism:** `FixReferencesResult` gains `outOfScopeWarnings: List<String>`, uncapped.
-  - Each envelope builder concatenates them across its results and applies the cap once: insert root (whose second pass runs `performFixReferences` per root, `JetBrainsMPSRootNodeMcpToolset.kt:395-401`), ADD/SET CHILD, update root, `FIX_REFERENCES` and the SET REFERENCE batch.
+  - Each envelope builder concatenates them across its results and applies the cap once: insert root (whose second pass runs `performFixReferences` per root, `MPSRootNodeMcpToolset.kt:395-401`), ADD/SET CHILD, update root, `FIX_REFERENCES` and the SET REFERENCE batch.
   - The per-root `fixReferences.outOfScope` counts stay uncapped.
 
   The warning text:
@@ -121,13 +121,13 @@ The warning text is the §1 text with the `Dry run at <path>:` prefix that `dryR
 
 ### 3. Server: `UPDATE_CONCEPT_*` return the declaration's ref (S, as filed, widened to all three)
 
-`mps_mcp_update_concept_link` (`JetBrainsMPSLanguageStructureMcpToolset.kt:1331-1393`, which serves both CHILD and REFERENCE) and `mps_mcp_update_concept_property` (`:1290-1328`) change `data: true` to:
+`mps_mcp_update_concept_link` (`MPSLanguageStructureMcpToolset.kt:1331-1393`, which serves both CHILD and REFERENCE) and `mps_mcp_update_concept_property` (`:1290-1328`) change `data: true` to:
 
 - create / update of a link: `{"role":"guard","sourceNode":"r:…/1640011959845549448","created":true}` (`created:false` when an existing link was updated);
 - create / update of a property: `{"propertyName":"condition","sourceNode":"r:…","created":…}`;
 - delete: `{"role":"guard","deleted":true}` (`propertyName` for a property).
 
-`sourceNode` is the established name for a feature declaration's ref: `get_concept_details` (`JetBrainsMPSLanguageMcpToolset.kt:113`) uses it, and the featureId rejection says "a reference to that declaration takes its `sourceNode`" (`AbstractNodeOps.kt:606`). All three operations get it, because `CellModel_Property.relationDeclaration` and smodel `SPropertyAccess.property` have the same need.
+`sourceNode` is the established name for a feature declaration's ref: `get_concept_details` (`MPSLanguageMcpToolset.kt:113`) uses it, and the featureId rejection says "a reference to that declaration takes its `sourceNode`" (`AbstractNodeOps.kt:606`). All three operations get it, because `CellModel_Property.relationDeclaration` and smodel `SPropertyAccess.property` have the same need.
 
 **Compatibility.** Nothing depends on `data: true`:
 - The UPDATE tests only call `assertOk`. `expectDataBoolean` is used only for `IS_SUBCONCEPT_OF`.
@@ -147,7 +147,7 @@ The per-operation pages (`update-concept-{child,reference,property}.md`) get a "
 - **`fixReferences` shape**: `response-envelope.md` and `mps-mcp-workflow/references/mcp-tools-index.md:36` (the summary shape) add `outOfScope` next to `fixed` / `repointed` / `stillBroken`. Each gets one sentence: what it counts, that it is a warning and not a failure, that the warning lists in-scope candidates, and that SET REFERENCE reports it per item, in `data[i].data.fixReferences`, with the item's warnings copied into the outer `warnings`.
 - **Other `stillBroken` mentions**: `mps-node-editing/SKILL.md`, `references/troubleshooting.md`, `references/staged-construction.md`, `mps-mcp-workflow/references/bulk-creation.md`, and the `scripts/table_to_bulk_insert.py:19` docstring. Each "check `stillBroken`" becomes "check `stillBroken` and `outOfScope`". `staged-construction.md` also gets one sentence: an `outOfScope` warning on a stage whose scope context is not built yet is expected; re-check after the last stage.
 - **Test scenarios**: `plugins/mcp-tools/test_scenarios/…/07_root_nodes_and_node_editing.md:97, :566` describe the `fixReferences` shape. Add `outOfScope`.
-- **Tool descriptions**: wherever an insert / update-root / `update_node` description names `stillBroken` (`JetBrainsMPSRootNodeMcpToolset.kt:313`, `:318`, `:493`; `JetBrainsMPSNodeMcpToolset.kt:1213`), add `outOfScope`. That is about 60 chars each. There is no new parameter.
+- **Tool descriptions**: wherever an insert / update-root / `update_node` description names `stillBroken` (`MPSRootNodeMcpToolset.kt:313`, `:318`, `:493`; `MPSNodeMcpToolset.kt:1213`), add `outOfScope`. That is about 60 chars each. There is no new parameter.
 
 Propagate every skill edit from `plugins/mcp-tools/resources/…/skills/` to `.agents/skills/` and `.claude/skills/` (`SkillCatalogReplicationTest`).
 
@@ -160,7 +160,7 @@ A new integration class `ReferenceScopeCheckIntegrationTest`, **registered in `M
 **Fixtures.**
 - **Editor:** `createConceptRoot("Host", …)` with a singular child link `guard` → `Guard`, and a `Guard` concept. Insert a `ConceptEditorDeclaration` for `Host` into a model of the test language. No MAKE is needed: the scope reads structure nodes (`getConceptDeclaration` → `getAggregationLinkDeclarations`).
 - **BaseLanguage:** `jetbrains.mps.baseLanguage.structure.VariableReference.variableDeclaration`, scoped by `fromHierarchy(VariableDeclaration)` in `VariableReference_Constraints.java:29`.
-- **Generator** (case 9): the base class builds its language `withGenerator(false)`. Use `LanguageProducer(myProject).withGenerator(true)`, as `JetBrainsMPSProjectMcpToolsetIntegrationTest.kt:324` does, for a template model with the generator stereotype.
+- **Generator** (case 9): the base class builds its language `withGenerator(false)`. Use `LanguageProducer(myProject).withGenerator(true)`, as `MPSProjectMcpToolsetIntegrationTest.kt:324` does, for a template model with the generator stereotype.
 
 **Cases.**
 

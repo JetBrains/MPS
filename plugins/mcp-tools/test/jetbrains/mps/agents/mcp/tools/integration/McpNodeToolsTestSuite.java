@@ -31,15 +31,15 @@ import org.junit.runners.Suite;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    JetBrainsMPSNodeMcpToolsetIntegrationTest.class,
-    JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest.class,
-    JetBrainsMPSTypesMcpToolsetIntegrationTest.class,
-    JetBrainsMPSDataflowMcpToolsetIntegrationTest.class,
+    MPSNodeMcpToolsetIntegrationTest.class,
+    MPSNodeMcpToolsetExtendedIntegrationTest.class,
+    MPSTypesMcpToolsetIntegrationTest.class,
+    MPSDataflowMcpToolsetIntegrationTest.class,
     DataflowBuilderFrameTest.class,
-    JetBrainsMPSGenerationMcpToolsetIntegrationTest.class,
-    JetBrainsMPSGenerationTraceIntegrationTest.class,
-    JetBrainsMPSGenerationTransientModelsIntegrationTest.class,
-    JetBrainsMPSRootNodeMcpToolsetIntegrationTest.class,
+    MPSGenerationMcpToolsetIntegrationTest.class,
+    MPSGenerationTraceIntegrationTest.class,
+    MPSGenerationTransientModelsIntegrationTest.class,
+    MPSRootNodeMcpToolsetIntegrationTest.class,
     NodeFactoryOnBlueprintPathIntegrationTest.class,
     AssignabilityHintIntegrationTest.class,
     EditorCaretSelectionSerializerTest.class,

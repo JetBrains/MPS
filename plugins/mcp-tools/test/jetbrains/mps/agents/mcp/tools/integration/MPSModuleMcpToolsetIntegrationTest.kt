@@ -1,0 +1,2739 @@
+package jetbrains.mps.agents.mcp.tools.integration
+
+import jetbrains.mps.agents.mcp.tools.*
+import jetbrains.mps.agents.mcp.tools.common.*
+
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
+import com.intellij.openapi.util.SystemInfo
+import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.openapi.vfs.VfsUtil
+import com.intellij.testFramework.PlatformTestUtil
+import java.io.File
+import java.util.Collections
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
+import jetbrains.mps.library.ModulesMiner
+import jetbrains.mps.project.AbstractModule
+import jetbrains.mps.project.Solution
+import jetbrains.mps.project.modules.LanguageProducer
+import jetbrains.mps.project.structure.modules.LanguageDescriptor
+import jetbrains.mps.smodel.Generator
+import jetbrains.mps.smodel.Language
+import jetbrains.mps.smodel.adapter.MetaAdapterByDeclaration
+import jetbrains.mps.smodel.SModelStereotype
+import org.jetbrains.mps.openapi.module.FacetsFacade
+import org.jetbrains.mps.openapi.module.SDependencyScope
+import org.jetbrains.mps.openapi.module.SModule
+import org.jetbrains.mps.openapi.module.SModuleFacet
+import org.jetbrains.mps.openapi.module.SModuleReference
+import org.jetbrains.mps.openapi.module.SRepositoryListener
+import org.jetbrains.mps.openapi.persistence.PersistenceFacade
+import org.junit.Assert.*
+import org.junit.Assume
+import org.junit.Test
+import kotlinx.serialization.json.JsonPrimitive as McpJsonPrimitive
+
+/**
+ * End-to-end integration tests for [MPSModuleMcpToolset]. Covers the lifecycle
+ * operations (create/get/update/delete), dependency add/remove, facet inspection,
+ * and the language/generator/sandbox/runtime create_module variants.
+ */
+class MPSModuleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
+
+    private val toolset = MPSModuleMcpToolset()
+
+    @Test
+    fun `create_module names type and name when the caller sends wrong keys`() {
+        // D43: the caller sent both required values under plausible neighbouring spellings.
+        val solutionName = "test.wrongkey.create${System.nanoTime()}"
+        val directory = freshPathInProject(solutionName)
+
+        val response = callThroughBridge(
+            toolset, "mps_mcp_create_module",
+            mapOf(
+                "moduleType" to McpJsonPrimitive("solution"),
+                "moduleName" to McpJsonPrimitive(solutionName),
+                "directory" to McpJsonPrimitive(directory),
+            ),
+        )
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        assertEquals(
+            listOf("type", "name"),
+            obj.getAsJsonObject("details").getAsJsonArray("missingParameters").map { it.asString },
+        )
+        val error = obj.get("error").asString
+        assertTrue("must name both keys and their dropped spellings: $error",
+            error.contains("type") && error.contains("name") &&
+                error.contains("'moduleType'") && error.contains("'moduleName'"))
+        readOnRepo {
+            assertNull("rejected create must not register a module",
+                myProject.projectModules.firstOrNull { it.moduleName == solutionName })
+        }
+
+        val retried = callThroughBridge(
+            toolset, "mps_mcp_create_module",
+            mapOf(
+                "type" to McpJsonPrimitive("solution"),
+                "name" to McpJsonPrimitive(solutionName),
+                "directory" to McpJsonPrimitive(directory),
+            ),
+        )
+        expectOk(retried)
+    }
+
+    @Test
+    fun `solution happy path registers a new solution with the project`() {
+        val solutionName = "test.created.solution${System.nanoTime()}"
+        val directory = freshPathInProject(solutionName)
+
+        val response = runTool(MPSModuleMcpToolset()) {
+            it.mps_mcp_create_module(
+                /* type = */ "solution",
+                /* name = */ solutionName,
+                /* directory = */ directory,
+                /* virtualFolder = */ null,
+                /* parentLanguage = */ null,
+                /* withGenerator = */ false,
+                /* withSandbox = */ false,
+                /* withRuntime = */ false,
+            )
+        }
+
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertTrue("expected ok=true envelope, got: $response", obj.get("ok").asBoolean)
+        val data = parseDataObject(obj.get("data"))
+        assertEquals(solutionName, data.get("name").asString)
+        assertNotNull("response must echo a moduleRef/reference: $response", data.get("reference"))
+        // Self-describing create response: kind + facets + loadExtensions remove the need for
+        // a follow-up mps_mcp_get_module_facets call just to verify what was produced.
+        assertEquals("Solution", data.get("kind").asString)
+        val facets = data.getAsJsonArray("facets").map { it.asString }.toSet()
+        assertTrue("Producer must install the default `java` facet: $response", facets.contains("java"))
+        assertFalse("A plain solution must not carry the `tests` facet: $response", facets.contains("tests"))
+        assertEquals("NotAvailable", data.get("loadExtensions").asString)
+
+        readOnRepo {
+            val match = myProject.projectModules.singleOrNull { it.moduleName == solutionName }
+            assertNotNull("created solution must be registered with the project: $response", match)
+        }
+    }
+
+    @Test
+    fun `solution with facets=tests becomes a test-container solution`() {
+        // Modern equivalent of the legacy `solutionKind = OTHER`: the `tests` facet marks the
+        // solution as the container for an `@tests` model. Loading extensions stays
+        // `NotAvailable` (test solutions don't contribute plugin extensions to MPS itself).
+        val solutionName = "test.test.solution${System.nanoTime()}"
+        val directory = freshPathInProject(solutionName)
+
+        val response = runTool(MPSModuleMcpToolset()) {
+            it.mps_mcp_create_module(
+                /* type = */ "solution",
+                /* name = */ solutionName,
+                /* directory = */ directory,
+                /* virtualFolder = */ null,
+                /* parentLanguage = */ null,
+                /* withGenerator = */ false,
+                /* withSandbox = */ false,
+                /* withRuntime = */ false,
+                /* facets = */ listOf("tests"),
+            )
+        }
+
+        val data = expectOk(response)
+        assertEquals("Solution", data.get("kind").asString)
+        val facets = data.getAsJsonArray("facets").map { it.asString }.toSet()
+        assertTrue("Expected `tests` facet to be attached: $response", facets.contains("tests"))
+        assertTrue("Expected default `java` facet alongside `tests`: $response", facets.contains("java"))
+        assertEquals("NotAvailable", data.get("loadExtensions").asString)
+
+        readOnRepo {
+            val match = myProject.projectModules.singleOrNull { it.moduleName == solutionName }
+            assertNotNull("created test solution must be registered: $response", match)
+            val live = match!!.facets.map { it.facetType }.toSet()
+            assertTrue("`tests` facet must be live on the module too: $live", live.contains("tests"))
+        }
+    }
+
+    @Test
+    fun `create_module accepts a single facet type string`() {
+        val solutionName = "test.single.facet${System.nanoTime()}"
+        val response = runTool(toolset) {
+            it.mps_mcp_create_module(
+                type = "solution",
+                name = solutionName,
+                directory = freshPathInProject(solutionName),
+                facets = JsonOrText("tests"),
+            )
+        }
+
+        val facets = expectOk(response).getAsJsonArray("facets").map { it.asString }.toSet()
+        assertTrue("a single facet type must be attached: $response", "tests" in facets)
+    }
+
+    @Test
+    fun `create_module accepts a JSON array string of facet types`() {
+        val solutionName = "test.array.facets${System.nanoTime()}"
+        val response = runTool(toolset) {
+            it.mps_mcp_create_module(
+                type = "solution",
+                name = solutionName,
+                directory = freshPathInProject(solutionName),
+                facets = JsonOrText("[\"tests\", \"documentation\"]"),
+            )
+        }
+
+        val facets = expectOk(response).getAsJsonArray("facets").map { it.asString }.toSet()
+        assertTrue("the tests facet must be attached: $response", "tests" in facets)
+        assertTrue("the documentation facet must be attached: $response", "documentation" in facets)
+    }
+
+    @Test
+    fun `facets are rejected for devkit and generator module types`() {
+        // DevKits carry no JavaModuleFacet by default and Generators inherit their facet
+        // shape from the parent Language — neither has a canonical use case for layering
+        // extra facets, so the tool refuses upfront rather than silently producing a
+        // module with a meaningless facet attached.
+        val devkitName = "test.facet.dk${System.nanoTime()}"
+        val devkitDir = freshPathInProject(devkitName)
+        val devkitResp = runTool(MPSModuleMcpToolset()) {
+            it.mps_mcp_create_module(
+                "devkit", devkitName, devkitDir,
+                null, null, false, false, false,
+                /* facets = */ listOf("tests"),
+            )
+        }
+        val devkitErr = expectErr(devkitResp)
+        assertTrue("devkit + facets must be rejected: $devkitErr",
+            devkitErr.contains("not supported for module type 'devkit'"))
+        readOnRepo {
+            assertNull("rejected devkit must not be registered",
+                myProject.projectModules.firstOrNull { it.moduleName == devkitName })
+        }
+
+        val parentName = language.moduleName!!
+        val genResp = runTool(MPSModuleMcpToolset()) {
+            it.mps_mcp_create_module(
+                "generator", "ignored", "",
+                null, parentName, false, false, false,
+                /* facets = */ listOf("tests"),
+            )
+        }
+        val genErr = expectErr(genResp)
+        assertTrue("generator + facets must be rejected: $genErr",
+            genErr.contains("not supported for module type 'generator'"))
+    }
+
+    @Test
+    fun `unknown facet type is rejected before any module is created`() {
+        val solutionName = "test.bogusFacet${System.nanoTime()}"
+        val directory = freshPathInProject(solutionName)
+
+        val response = runTool(MPSModuleMcpToolset()) {
+            it.mps_mcp_create_module(
+                "solution", solutionName, directory,
+                null, null, false, false, false,
+                /* facets = */ listOf("no-such-facet-type"),
+            )
+        }
+
+        assertTrue(
+            "error should mention the unknown facet type: ${expectErr(response)}",
+            expectErr(response).contains("Unknown facet type")
+        )
+        readOnRepo {
+            val match = myProject.projectModules.firstOrNull { it.moduleName == solutionName }
+            assertEquals("invalid facet must not leave a partial module behind", null, match)
+        }
+    }
+
+    @Test
+    fun `solution with multiple facets attaches all of them`() {
+        val solutionName = "test.multi.facet${System.nanoTime()}"
+        val directory = freshPathInProject(solutionName)
+
+        val response = runTool(MPSModuleMcpToolset()) {
+            it.mps_mcp_create_module(
+                "solution", solutionName, directory,
+                null, null, false, false, false,
+                /* facets = */ listOf("tests", "documentation"),
+            )
+        }
+        val data = expectOk(response)
+        val facets = data.getAsJsonArray("facets").map { it.asString }.toSet()
+        assertTrue("expected `tests` facet attached: $response", facets.contains("tests"))
+        assertTrue("expected `documentation` facet attached: $response", facets.contains("documentation"))
+        assertTrue("default `java` facet must still be present: $response", facets.contains("java"))
+    }
+
+    private fun projectModuleRefs(): Set<SModuleReference> =
+        readOnRepo { myProject.projectModulesWithGenerators.map { it.moduleReference }.toSet() }
+
+    /**
+     * A module the project still tracks after a rollback or delete shows up in MPS's own log: every project-module
+     * listing reports a loader entry whose module is gone, and deleting the module's folder reports file listeners
+     * that were never released (MPS-40228 live review).
+     */
+    private fun assertNoStaleModuleTracking(messages: List<String>) {
+        val stale = messages.filter {
+            it.contains("is not found in the project repository") || it.contains("have not been unregistered for the path")
+        }
+        assertEquals("the project must not keep tracking removed modules", emptyList<String>(), stale)
+    }
+
+    @Test
+    fun `rollbackModulesRegisteredSince un-registers a solution`() {
+        // File removal is CreatedPaths' job, so the helper leaves the descriptor; the folder is cleaned below.
+        val solutionName = "test.rollback.sol${System.nanoTime()}"
+        val directory = Paths.get(freshPathInProject(solutionName))
+        try {
+            val before = projectModuleRefs()
+            expectOk(runTool(toolset) {
+                it.mps_mcp_create_module("solution", solutionName, directory.toString(),
+                    null, null, false, false, false)
+            })
+            val createdSolution = readOnRepo { myProject.projectModules.single { it.moduleName == solutionName } }
+
+            var leftovers: List<String> = listOf("rollback did not run")
+            executeCommand { leftovers = toolset.rollbackModulesRegisteredSince(myProject, before) }
+
+            assertEquals(emptyList<String>(), leftovers)
+            readOnRepo {
+                assertNull("solution must be un-registered from the project after rollback",
+                    myProject.projectModules.firstOrNull { it.moduleName == solutionName })
+                assertFalse("the project must no longer track the solution", myProject.isProjectModule(createdSolution))
+            }
+        } finally {
+            deleteQuietly(directory)
+        }
+    }
+
+    @Test
+    fun `rollbackModulesRegisteredSince un-registers a generator from its surviving parent language`() {
+        // A generator of a language that is not rolled back takes the descriptor-edit path. It was registered
+        // through Language.revalidateGenerators, not ProjectBase.addModule, so it has no loader entry.
+        val parentName = language.moduleName!!
+        val before = projectModuleRefs()
+        val createdName = expectOk(runTool(toolset) {
+            it.mps_mcp_create_module("generator", "ignored", "", null, parentName, false, false, false)
+        }).get("name").asString
+
+        val toRollback = readOnRepo {
+            language.generators.singleOrNull { (it as? Generator)?.moduleName == createdName }
+        }
+        assertNotNull("test precondition: generator must be registered before rollback", toRollback)
+
+        // Capture parent-language descriptor file BEFORE rollback so we can assert it
+        // survives. A naive rollback that deletes `(generator as AbstractModule).descriptorFile`
+        // would actually delete the parent Language's `.mpl` (Generators share their
+        // parent's descriptor file — see `Language.revalidateGenerators`), corrupting
+        // the parent on disk.
+        val parentDescriptorFile = readOnRepo { (language as AbstractModule).descriptorFile!! }
+        assertTrue("test precondition: parent language's .mpl must exist before rollback",
+            parentDescriptorFile.exists())
+
+        var leftovers: List<String> = listOf("rollback did not run")
+        executeCommand { leftovers = toolset.rollbackModulesRegisteredSince(myProject, before) }
+
+        assertEquals(emptyList<String>(), leftovers)
+        readOnRepo {
+            val stillUnderParent = language.generators
+                .firstOrNull { (it as? Generator)?.moduleName == createdName }
+            assertNull("generator must be detached from parent language's `generators`: $stillUnderParent",
+                stillUnderParent)
+            val stillInRepo = myProject.repository.getModule(toRollback!!.moduleReference.moduleId)
+            assertNull("generator must be unregistered from the project repository", stillInRepo)
+            // Data-loss guard: deleting the generator must NOT collateral-damage the parent.
+            assertNotNull("parent language must remain registered with the project",
+                myProject.projectModules.firstOrNull { it.moduleName == language.moduleName })
+        }
+        assertTrue("parent language's descriptor file must survive generator rollback: $parentDescriptorFile",
+            parentDescriptorFile.exists())
+    }
+
+    @Test
+    fun `rollbackModulesRegisteredSince un-registers a language with its generator runtime and sandbox`() {
+        // LanguageProducer adds the generator to the project with ProjectBase.addModule, so it has its own
+        // module-loader entry (keyed to the language's .mpl) and a file listener. Rolling the generator back on
+        // its own through the language descriptor unregistered it but left both behind (MPS-40228 live review).
+        val langName = "test.rollback.lang${System.nanoTime()}"
+        val directory = Paths.get(freshPathInProject(langName))
+        // listOf, not `companionDirs + directory`: a Path is an Iterable<Path>, so `+` would add its name elements.
+        val moduleDirs = listOf(directory, directory.resolveSibling("$langName.runtime"), directory.resolveSibling("$langName.sandbox"))
+        try {
+            val before = projectModuleRefs()
+            expectOk(runTool(toolset) {
+                it.mps_mcp_create_module("language", langName, directory.toString(),
+                    null, null, /* withGenerator = */ true, /* withSandbox = */ true,
+                    /* withRuntime = */ true)
+            })
+            val created = readOnRepo {
+                myProject.projectModulesWithGenerators.filter { it.moduleReference !in before }
+            }
+            assertTrue("test precondition: language, generator, runtime and sandbox: $created", created.size == 4)
+            assertTrue("test precondition: the language must have a generator", created.any { it is Generator })
+
+            val (leftovers, messages) = captureLogMessages {
+                var result: List<String> = listOf("rollback did not run")
+                executeCommand { result = toolset.rollbackModulesRegisteredSince(myProject, before) }
+                // What CreatedPaths does in production: delete the folders through the MPS file system.
+                val fs: jetbrains.mps.vfs.openapi.FileSystem = myProject.fileSystem
+                executeCommand { moduleDirs.forEach { fs.getFile(it.toString()).delete() } }
+                readOnRepo { myProject.projectModules }
+                result
+            }
+
+            // The log check comes first so that on its own it fails for a leaked loader entry or file listener.
+            assertNoStaleModuleTracking(messages)
+            assertEquals(emptyList<String>(), leftovers)
+            readOnRepo {
+                for (module in created) {
+                    assertNull("${module.moduleName} must be unregistered",
+                        myProject.repository.getModule(module.moduleReference.moduleId))
+                    assertFalse("the project must no longer track ${module.moduleName}", myProject.isProjectModule(module))
+                }
+            }
+        } finally {
+            moduleDirs.forEach { deleteQuietly(it) }
+        }
+    }
+
+    @Test
+    fun `listing an already-attached facet is silently deduplicated`() {
+        // The producer installs `java` with default settings; listing it again must NOT
+        // wipe those settings or add a second descriptor entry. Asserting `loadExtensions`
+        // stays `NotAvailable` is the visible proof: an empty-memento overwrite would
+        // leave the field unset.
+        val solutionName = "test.dedup.facet${System.nanoTime()}"
+        val directory = freshPathInProject(solutionName)
+
+        val response = runTool(MPSModuleMcpToolset()) {
+            it.mps_mcp_create_module(
+                "solution", solutionName, directory,
+                null, null, false, false, false,
+                /* facets = */ listOf("java"),
+            )
+        }
+        val data = expectOk(response)
+        val facets = data.getAsJsonArray("facets").map { it.asString }
+        assertEquals(
+            "dedup must yield exactly one `java` facet, not two: $response",
+            1, facets.count { it == "java" },
+        )
+        assertEquals(
+            "producer-installed `java` settings must survive the redundant facet listing: $response",
+            "NotAvailable", data.get("loadExtensions").asString,
+        )
+    }
+
+    @Test
+    fun `unsupported module type is rejected`() {
+        val solutionName = "test.bogus${System.nanoTime()}"
+        val directory = freshPathInProject(solutionName)
+
+        val response = runTool(MPSModuleMcpToolset()) {
+            it.mps_mcp_create_module(
+                "totally-not-a-module-type",
+                solutionName,
+                directory,
+                null,
+                null,
+                false,
+                false,
+                false,
+            )
+        }
+
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        val message = obj.get("error").asString
+        assertTrue(
+            "error should mention unsupported module type: $message",
+            message.contains("Unsupported module type")
+        )
+
+        readOnRepo {
+            val match = myProject.projectModules.firstOrNull { it.moduleName == solutionName }
+            assertEquals("no partial module should be registered with the project", null, match)
+        }
+    }
+
+    // ── MPS-40228: near-root directories and failure-atomic creation ─────────────────────
+
+    private fun createModule(
+        type: String,
+        name: String,
+        directory: String,
+        withGenerator: Boolean = false,
+        withSandbox: Boolean = false,
+        withRuntime: Boolean = false,
+    ): JsonObject = JsonParser.parseString(runTool(toolset) {
+        it.mps_mcp_create_module(type, name, directory, null, null, withGenerator, withSandbox, withRuntime)
+    }).asJsonObject
+
+    private fun projectModuleNames(): Set<String> =
+        readOnRepo { myProject.projectModulesWithGenerators.mapNotNull { it.moduleName }.toSet() }
+
+    private fun listing(dir: Path): Set<String> = Files.list(dir).use { s -> s.map { it.fileName.toString() }.toList().toSet() }
+
+    /** Makes a fixture created with java.io visible to the producers, which read the VFS without refreshing it. */
+    private fun refreshVfs(path: Path) {
+        val vf = LocalFileSystem.getInstance().refreshAndFindFileByNioFile(path)
+        assertNotNull("test precondition: VFS must find $path", vf)
+        VfsUtil.markDirtyAndRefresh(false, true, true, vf)
+    }
+
+    private fun deleteQuietly(path: Path) {
+        // A relative path would resolve against the working directory, i.e. the MPS checkout.
+        require(path.isAbsolute) { "refusing to delete a relative path: $path" }
+        path.toFile().deleteRecursively()
+        LocalFileSystem.getInstance().refreshNioFiles(listOf(path))
+    }
+
+    @Test
+    fun `solution directly under tmp is rejected before anything is created`() {
+        // A module folder two levels below '/' makes MacrosFactory.ModuleMacros.shrink throw during
+        // the first save, after the producer registered the module. The upfront depth check refuses it.
+        Assume.assumeFalse("near-root shrink failure is Unix-only", SystemInfo.isWindows)
+        Assume.assumeTrue("needs /tmp", Files.isDirectory(Paths.get("/tmp")))
+        val name = "mcp40228.near.root${System.nanoTime()}"
+        val dir = Paths.get("/tmp/$name")
+        val before = projectModuleNames()
+        try {
+            val obj = createModule("solution", name, dir.toString())
+
+            assertFalse("expected error envelope: $obj", obj.get("ok").asBoolean)
+            assertEquals("INVALID_REQUEST", obj.get("code").asString)
+            assertTrue("error must name the issue: $obj", obj.get("error").asString.contains("MPS-40228"))
+            assertTrue("error must suggest a deep enough directory: $obj",
+                obj.get("error").asString.contains("e.g. '/tmp/$name/$name'"))
+            assertEquals("no module may be registered", before, projectModuleNames())
+            assertFalse("the directory must not be created: $dir", Files.exists(dir))
+        } finally {
+            deleteQuietly(dir)
+        }
+    }
+
+    @Test
+    fun `a shallow directory whose top-level folder does not exist is rejected too`() {
+        // A folder that does not exist yet cannot be judged through the MPS file system (its
+        // parent chain is sliced from the path string), so the check must go by depth alone.
+        Assume.assumeFalse("near-root shrink failure is Unix-only", SystemInfo.isWindows)
+        val top = Paths.get("/mcp40228-${System.nanoTime()}")
+        Assume.assumeFalse("test precondition: $top must not exist", Files.exists(top))
+        val before = projectModuleNames()
+        try {
+            for ((type, dir) in listOf("solution" to top, "language" to top.resolve("lang"))) {
+                val obj = createModule(type, "test.mcp40228.shallow${System.nanoTime()}", dir.toString())
+                assertFalse("expected error envelope for $dir: $obj", obj.get("ok").asBoolean)
+                assertEquals("INVALID_REQUEST", obj.get("code").asString)
+                assertTrue("error must name the issue: $obj", obj.get("error").asString.contains("MPS-40228"))
+            }
+            assertEquals("no module may be registered", before, projectModuleNames())
+            assertFalse("nothing may be created: $top", Files.exists(top))
+        } finally {
+            deleteQuietly(top)
+        }
+    }
+
+    @Test
+    fun `language withGenerator into a directory that already has generator leaves nothing behind`() {
+        // LanguageProducer registers the language, then throws IAE because 'generator/' exists.
+        val name = "test.mcp40228.gen${System.nanoTime()}"
+        val dir = Paths.get(freshPathInProject(name))
+        try {
+            Files.createDirectories(dir.resolve("generator"))
+            Files.writeString(dir.resolve("keep.txt"), "user data")
+            refreshVfs(dir)
+            val listingBefore = listing(dir)
+            val before = projectModuleNames()
+
+            val obj = createModule("language", name, dir.toString(), withGenerator = true)
+
+            assertFalse("expected error envelope: $obj", obj.get("ok").asBoolean)
+            assertEquals("INVALID_REQUEST", obj.get("code").asString)
+            assertTrue("error must report a complete rollback: $obj",
+                obj.get("error").asString.contains("No module or file was left behind."))
+            assertEquals("no module may stay registered", before, projectModuleNames())
+            assertEquals("the reused directory must keep exactly what it had", listingBefore, listing(dir))
+            assertEquals("user data must survive", "user data", Files.readString(dir.resolve("keep.txt")))
+        } finally {
+            deleteQuietly(dir)
+        }
+    }
+
+    @Test
+    fun `language withRuntime into an occupied runtime folder rolls back language and generator`() {
+        // SolutionProducer throws ISE for the runtime companion after the language and its
+        // generator were registered and saved; all of them must go, the occupied folder must not.
+        // This is the live review's scenario: the project must stop tracking the generator too.
+        val name = "test.mcp40228.rt${System.nanoTime()}"
+        val dir = Paths.get(freshPathInProject(name))
+        val runtimeDir = dir.resolveSibling("$name.runtime")
+        val registered = Collections.synchronizedList(mutableListOf<SModule>())
+        val listener = object : SRepositoryListener {
+            override fun moduleAdded(module: SModule) {
+                if (module.moduleName?.startsWith(name) == true) registered.add(module)
+            }
+        }
+        try {
+            Files.createDirectories(runtimeDir.resolve("models"))
+            Files.writeString(runtimeDir.resolve("models/x.txt"), "user data")
+            refreshVfs(runtimeDir)
+            val before = projectModuleNames()
+            myProject.repository.addRepositoryListener(listener)
+
+            val (obj, messages) = captureLogMessages {
+                createModule("language", name, dir.toString(), withGenerator = true, withRuntime = true)
+                    .also { readOnRepo { myProject.projectModules } }
+            }
+
+            // The log check comes first so that on its own it fails for a leaked loader entry or file listener.
+            assertNoStaleModuleTracking(messages)
+            val captured = synchronized(registered) { registered.toList() }
+            assertTrue("test precondition: the language and its generator were registered: $captured",
+                captured.any { it is Language } && captured.any { it is Generator })
+            readOnRepo {
+                for (module in captured) {
+                    assertFalse("the project must no longer track ${module.moduleName}", myProject.isProjectModule(module))
+                }
+            }
+            assertFalse("expected error envelope: $obj", obj.get("ok").asBoolean)
+            assertEquals("INVALID_REQUEST", obj.get("code").asString)
+            assertTrue("error must report a complete rollback: $obj",
+                obj.get("error").asString.contains("No module or file was left behind."))
+            assertEquals("language, generator and runtime must all be un-registered", before, projectModuleNames())
+            assertFalse("the language folder this call created must be removed: $dir", Files.exists(dir))
+            assertEquals("the pre-existing runtime folder must keep its content",
+                "user data", Files.readString(runtimeDir.resolve("models/x.txt")))
+            assertEquals(setOf("models"), listing(runtimeDir))
+        } finally {
+            myProject.repository.removeRepositoryListener(listener)
+            deleteQuietly(dir)
+            deleteQuietly(runtimeDir)
+        }
+    }
+
+    @Test
+    fun `a failed facet attachment rolls back the language with its folders so a retry succeeds`() {
+        // The producer succeeds, then attaching a facet throws: the call must take back the language, its
+        // generator and every folder it created. The old rollback left generator/ behind, which made the
+        // retry fail on "The generator for the language ... already exists".
+        val name = "test.mcp40228.facet${System.nanoTime()}"
+        val dir = Paths.get(freshPathInProject(name))
+        val facetType = "mcp40228.throwing${System.nanoTime()}"
+        val factory = object : FacetsFacade.FacetFactory {
+            override fun create(module: SModule): SModuleFacet =
+                throw IllegalStateException("facet factory failure staged by the MPS-40228 test")
+        }
+        @Suppress("DEPRECATION") val facets = FacetsFacade.getInstance()
+        facets.addFactory(facetType, factory)
+        try {
+            try {
+                val before = projectModuleNames()
+                val (obj, messages) = captureLogMessages {
+                    JsonParser.parseString(runTool(toolset) {
+                        it.mps_mcp_create_module("language", name, dir.toString(), null, null,
+                            /* withGenerator = */ true, false, false, listOf(facetType))
+                    }).asJsonObject.also { readOnRepo { myProject.projectModules } }
+                }
+
+                assertFalse("expected error envelope: $obj", obj.get("ok").asBoolean)
+                assertEquals("INTERNAL_ERROR: $obj", "INTERNAL_ERROR", obj.get("code")?.asString)
+                assertTrue("error must name the facet failure and a complete rollback: $obj",
+                    obj.get("error").asString.contains("Failed to attach facets") &&
+                        obj.get("error").asString.contains("No module or file was left behind."))
+                assertEquals("the language and its generator must be un-registered", before, projectModuleNames())
+                assertFalse("the language folder this call created must be removed: $dir", Files.exists(dir))
+                assertNoStaleModuleTracking(messages)
+            } finally {
+                facets.removeFactory(factory)
+            }
+            try {
+                val created = createModule("language", name, dir.toString(), withGenerator = true)
+                expectOk(created.toString())
+                // The generator and its template model are named in the answer, no lookup needed.
+                val generator = created.getAsJsonObject("data").getAsJsonArray("generators").single().asJsonObject
+                assertEquals("$name.generator", generator.get("name").asString)
+                assertTrue("the generator's template model must be listed: $generator",
+                    generator.getAsJsonArray("models").any { it.asJsonObject.get("aspect").asString == "generator" })
+            } finally {
+                runTool(toolset) { it.mps_mcp_update_module(name, operation = ModuleOperation.DELETE, deleteFiles = true) }
+            }
+        } finally {
+            deleteQuietly(dir)
+        }
+    }
+
+    @Test
+    fun `CreatedPaths keeps an ancestor the VFS has not seen and removes what was created`() {
+        val root = Files.createTempDirectory("mcp40228")
+        try {
+            // (a) 'p' exists on disk but the VFS has never been told: it must not count as created.
+            val p = Files.createDirectories(root.resolve("p"))
+            val target = p.resolve("m")
+            // (b) an existing folder with user content and an empty 'models/', which new folders are
+            // added to, both at its top level and inside 'models/'.
+            val reused = Files.createDirectories(root.resolve("reused"))
+            Files.writeString(reused.resolve("keep.txt"), "user data")
+            Files.createDirectories(reused.resolve("models"))
+            val fs: jetbrains.mps.vfs.openapi.FileSystem = myProject.fileSystem
+
+            var leftovers: CreatedPaths.Leftovers? = null
+            executeCommand {
+                val snapshot = CreatedPaths.snapshot(listOf(target, reused))
+                fs.getFile(target.resolve("x").toString().replace('\\', '/')).mkdirs()
+                fs.getFile(reused.resolve("source_gen").toString().replace('\\', '/')).mkdirs()
+                fs.getFile(reused.resolve("models/structure").toString().replace('\\', '/')).mkdirs()
+                assertTrue("test precondition: mkdirs must create the folders",
+                    Files.isDirectory(target.resolve("x")) && Files.isDirectory(reused.resolve("source_gen")) &&
+                        Files.isDirectory(reused.resolve("models/structure")))
+                leftovers = snapshot.rollback(fs)
+            }
+
+            assertEquals("everything recorded must be removable", emptyList<String>(), leftovers!!.notRemoved)
+            assertEquals("both targets must be fully checked", emptyList<String>(), leftovers!!.notFullyChecked)
+            assertTrue("an ancestor that predates the call must survive: $p", Files.isDirectory(p))
+            assertFalse("the folder the call created must be removed: $target", Files.exists(target))
+            assertEquals("a reused folder must keep only what it had", setOf("keep.txt", "models"), listing(reused))
+            assertEquals("a pre-existing subfolder must lose what was added to it", emptySet<String>(),
+                listing(reused.resolve("models")))
+        } finally {
+            deleteQuietly(root)
+        }
+    }
+
+    @Test
+    fun `CreatedPaths walks a symlinked target and past the cap checks only the first level`() {
+        Assume.assumeFalse("symlinks need privileges on Windows", SystemInfo.isWindows)
+        val root = Files.createTempDirectory("mcp40228")
+        try {
+            // A reused folder reached through a symlink: its real content must be walked, and the
+            // link itself must survive.
+            val real = Files.createDirectories(root.resolve("real"))
+            Files.writeString(real.resolve("keep.txt"), "user data")
+            Files.createDirectories(real.resolve(".git/objects"))
+            val link = Files.createSymbolicLink(root.resolve("link"), real)
+            // A folder with more entries than the cap: only its first level is recorded.
+            val big = Files.createDirectories(root.resolve("big"))
+            Files.createDirectories(big.resolve("models"))
+            repeat(3) { Files.writeString(big.resolve("f$it.txt"), "user data") }
+            val fs: jetbrains.mps.vfs.openapi.FileSystem = myProject.fileSystem
+
+            var leftovers: CreatedPaths.Leftovers? = null
+            var linkedModelsInVfs = true
+            executeCommand {
+                val snapshot = CreatedPaths.snapshot(listOf(link, big), maxRecordedEntries = 2)
+                fs.getFile(link.resolve("models").toString()).mkdirs()
+                // Dot-named entries belong to other tools and are left alone.
+                fs.getFile(real.resolve(".git/objects/ab").toString()).mkdirs()
+                fs.getFile(big.resolve("source_gen").toString()).mkdirs()
+                fs.getFile(big.resolve("models/structure").toString()).mkdirs()
+                leftovers = snapshot.rollback(fs)
+                // Created through the link's spelling, so it must be deleted through it too.
+                linkedModelsInVfs = fs.getFile(link.resolve("models").toString()).exists()
+            }
+
+            assertEquals(emptyList<String>(), leftovers!!.notRemoved)
+            assertFalse("the VFS must not keep a stale node under the link's spelling", linkedModelsInVfs)
+            assertTrue("the symlink must survive", Files.isSymbolicLink(link))
+            assertEquals("the linked folder must keep only what it had", setOf("keep.txt", ".git"), listing(real))
+            assertTrue("dot-named subtrees must be left alone", Files.isDirectory(real.resolve(".git/objects/ab")))
+            assertEquals("past the cap, first-level additions are still removed",
+                setOf("models", "f0.txt", "f1.txt", "f2.txt"), listing(big))
+            assertTrue("deeper additions past the cap are not seen", Files.isDirectory(big.resolve("models/structure")))
+            assertEquals("the capped target must be reported as not fully checked",
+                listOf(big.toString()), leftovers!!.notFullyChecked)
+        } finally {
+            deleteQuietly(root)
+        }
+    }
+
+    @Test
+    fun `non-absolute and regular-file directory are rejected upfront`() {
+        val before = projectModuleNames()
+        val relative = createModule("solution", "test.mcp40228.rel${System.nanoTime()}", "rel/dir")
+        assertFalse("expected error envelope: $relative", relative.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", relative.get("code").asString)
+        assertTrue("error must say why: $relative", relative.get("error").asString.contains("absolute"))
+
+        val file = Files.createTempFile("mcp40228", ".txt")
+        try {
+            val onFile = createModule("solution", "test.mcp40228.file${System.nanoTime()}", file.toString())
+            assertFalse("expected error envelope: $onFile", onFile.get("ok").asBoolean)
+            assertEquals("INVALID_REQUEST", onFile.get("code").asString)
+            assertTrue("error must say why: $onFile", onFile.get("error").asString.contains("existing file"))
+        } finally {
+            Files.deleteIfExists(file)
+        }
+        assertEquals("no module may be registered", before, projectModuleNames())
+    }
+
+    // ── create_module variants ────────────────────────────────────────────────────────────
+
+    @Test
+    fun `create_module lists the models the new language already owns`() {
+        // R8b / study defect D6: both greenfield workers called mps_mcp_create_model for
+        // `<lang>.structure` after create_module had already produced it, and got
+        // "No suitable model root found ... to create model".
+        val langName = "test.models.lang${System.nanoTime()}"
+        val response = runTool(toolset) {
+            it.mps_mcp_create_module("language", langName, freshPathInProject(langName))
+        }
+
+        val data = expectOk(response)
+        val models = data.getAsJsonArray("models").map { it.asJsonObject }
+        assertFalse("a new language must report its aspect models: $response", models.isEmpty())
+        for (model in models) {
+            assertEquals(
+                "a models entry is {name, reference, aspect}: $model",
+                setOf("name", "reference", "aspect"), model.keySet(),
+            )
+        }
+        val structure = models.singleOrNull { it.get("aspect").asString == "structure" }
+        assertNotNull("the structure aspect model must be listed: $models", structure)
+        assertEquals("$langName.structure", structure!!.get("name").asString)
+
+        readOnRepo {
+            val lang = myProject.projectModules.single { it.moduleName == langName }
+            val listed = models.map { it.get("reference").asString }.toSet()
+            val live = lang.models.map { PersistenceFacade.getInstance().asString(it.reference) }.toSet()
+            assertEquals("every listed reference must be a real model of the module", live, listed)
+        }
+    }
+
+    @Test
+    fun `language creation with companions registers parent generator runtime and sandbox`() {
+        val langName = "test.created.lang${System.nanoTime()}"
+        val directory = freshPathInProject(langName)
+
+        val response = runTool(toolset) {
+            it.mps_mcp_create_module(
+                "language", langName, directory,
+                /* virtualFolder = */ "Test/Languages",
+                /* parentLanguage = */ null,
+                /* withGenerator = */ true,
+                /* withSandbox = */ true,
+                /* withRuntime = */ true,
+            )
+        }
+        val data = expectOk(response)
+        assertEquals(langName, data.get("name").asString)
+        assertEquals("Test/Languages", data.get("virtualFolder").asString)
+
+        readOnRepo {
+            val lang = myProject.projectModules.singleOrNull { it.moduleName == langName } as? Language
+            assertNotNull("created language must be in the project: $response", lang)
+            assertTrue("withGenerator=true must spawn at least one generator",
+                lang!!.generators.isNotEmpty())
+            assertNotNull("withRuntime=true must register a runtime solution",
+                myProject.projectModules.firstOrNull { it.moduleName == "${langName}.runtime" })
+            assertNotNull("withSandbox=true must register a sandbox solution",
+                myProject.projectModules.firstOrNull { it.moduleName == "${langName}.sandbox" })
+        }
+    }
+
+    @Test
+    fun `generator creation requires parentLanguage`() {
+        val response = runTool(toolset) {
+            it.mps_mcp_create_module(
+                "generator", "any", "", null, /* parentLanguage = */ null,
+                false, false, false,
+            )
+        }
+        assertTrue(expectErr(response).contains("requires 'parentLanguage'"))
+    }
+
+    @Test
+    fun `generator creation against unknown parent language fails`() {
+        val response = runTool(toolset) {
+            it.mps_mcp_create_module(
+                "generator", "any", "",
+                null, /* parentLanguage = */ "no.such.language",
+                false, false, false,
+            )
+        }
+        assertTrue(expectErr(response).contains("Parent language not found"))
+    }
+
+    @Test
+    fun `generator creation under existing language adds a new generator`() {
+        // The base class already creates a language (without a generator); use it as parent.
+        val parentName = language.moduleName!!
+        val existingCount = readOnRepo { language.generators.toList().size }
+
+        val response = runTool(toolset) {
+            it.mps_mcp_create_module(
+                "generator", "ignored", /* directory = */ "",
+                null, /* parentLanguage = */ parentName,
+                false, false, false,
+            )
+        }
+        val data = expectOk(response)
+        val createdName = data.get("name").asString
+        assertTrue(
+            "generator name should derive from parent language: $createdName",
+            createdName.startsWith(parentName),
+        )
+
+        readOnRepo {
+            val gens = language.generators.toList()
+            assertEquals("a fresh generator must be registered with the parent language",
+                existingCount + 1, gens.size)
+            val match = gens.firstOrNull { (it as? Generator)?.moduleName == createdName }
+            assertNotNull("created generator must show up under the parent: $createdName", match)
+        }
+    }
+
+    @Test
+    fun `generator creation through the bridge does not require a name`() {
+        // D43: `name` is required for every other type, but a generator's is derived from its
+        // parent language — omitting it must not trip the missing-parameter rejection.
+        val response = callThroughBridge(
+            toolset, "mps_mcp_create_module",
+            mapOf("type" to McpJsonPrimitive("generator"), "parentLanguage" to McpJsonPrimitive(language.moduleName!!)),
+        )
+        assertTrue(
+            "a generator's derived name must be accepted without 'name': $response",
+            expectOk(response).get("name").asString.startsWith(language.moduleName!!),
+        )
+    }
+
+    @Test
+    fun `generator creation into an explicit fresh directory succeeds`() {
+        // Regression for the create-then-abort bug: a non-empty `directory` used to be
+        // pre-created by the shared directory-resolution step, after which the generator
+        // branch's own existence check fired on the folder this tool had just created and
+        // aborted EVERY non-empty-directory generator creation. A brand-new path must succeed.
+        val parentName = language.moduleName!!
+        val existingCount = readOnRepo { language.generators.toList().size }
+        val genDir = freshPathInProject("explicitGen${System.nanoTime()}")
+
+        val response = runTool(toolset) {
+            it.mps_mcp_create_module(
+                "generator", "ignored", /* directory = */ genDir,
+                null, /* parentLanguage = */ parentName,
+                false, false, false,
+            )
+        }
+        val createdName = expectOk(response).get("name").asString
+
+        readOnRepo {
+            assertEquals("a fresh generator must be registered with the parent language",
+                existingCount + 1, language.generators.toList().size)
+        }
+        assertTrue("the explicit generator directory must have been created on disk",
+            projectFile(genDir).exists())
+        assertGeneratorScaffolded(createdName)
+    }
+
+    @Test
+    fun `generator creation reuses a pre-existing empty directory`() {
+        // The conventional '<lang>/generator' folder is often laid out as empty scaffolding.
+        // An empty target directory must be reused, not treated as a fatal collision.
+        val parentName = language.moduleName!!
+        val genDir = freshPathInProject("emptyGen${System.nanoTime()}")
+        executeCommand { projectFile(genDir).mkdirs() }
+
+        val response = runTool(toolset) {
+            it.mps_mcp_create_module(
+                "generator", "ignored", /* directory = */ genDir,
+                null, /* parentLanguage = */ parentName,
+                false, false, false,
+            )
+        }
+        val createdName = expectOk(response).get("name").asString
+        assertGeneratorScaffolded(createdName)
+    }
+
+    @Test
+    fun `generator creation into a non-empty directory is rejected`() {
+        val parentName = language.moduleName!!
+        val genDir = freshPathInProject("nonEmptyGen${System.nanoTime()}")
+        executeCommand {
+            val d = projectFile(genDir)
+            d.mkdirs()
+            d.findChild("marker.txt").createNewFile()
+        }
+
+        val response = runTool(toolset) {
+            it.mps_mcp_create_module(
+                "generator", "ignored", /* directory = */ genDir,
+                null, /* parentLanguage = */ parentName,
+                false, false, false,
+            )
+        }
+        val err = expectErr(response)
+        assertTrue("non-empty target must be rejected with a clear message: $err",
+            err.contains("already exists and is not empty"))
+    }
+
+    @Test
+    fun `generator creation with null directory defaults under the parent language`() {
+        // `directory` is optional: a null/blank value defaults to '<parent-language-dir>/generator'.
+        val parentName = language.moduleName!!
+        val existingCount = readOnRepo { language.generators.toList().size }
+
+        val response = runTool(toolset) {
+            it.mps_mcp_create_module(
+                "generator", "ignored", /* directory = */ null,
+                null, /* parentLanguage = */ parentName,
+                false, false, false,
+            )
+        }
+        val createdName = expectOk(response).get("name").asString
+        readOnRepo {
+            assertEquals("a fresh generator must be registered with the parent language",
+                existingCount + 1, language.generators.toList().size)
+        }
+        assertGeneratorScaffolded(createdName)
+    }
+
+    /**
+     * Resolves an [jetbrains.mps.vfs.IFile] handle for [path] via the project file system.
+     * Routed through the non-deprecated `jetbrains.mps.vfs.openapi.FileSystem` interface type
+     * (mirroring the production toolset) to avoid the `IdeaFileSystem` deprecation flag.
+     */
+    private fun projectFile(path: String): jetbrains.mps.vfs.IFile {
+        val fs: jetbrains.mps.vfs.openapi.FileSystem = myProject.fileSystem
+        return fs.getFile(path)
+    }
+
+    /**
+     * Asserts that the generator named [generatorName] under the test's [language] was scaffolded
+     * with exactly one `@generator`-stereotype templates model holding the auto-created
+     * `MappingConfiguration` root named `main` (produced by
+     * `LanguageProducer.createTemplateModelIfNoneYet`).
+     */
+    private fun assertGeneratorScaffolded(generatorName: String) {
+        readOnRepo {
+            val gen = language.generators.single { it.moduleName == generatorName }
+            val templates = gen.models.filter { SModelStereotype.isGeneratorModel(it) }
+            assertEquals("generator must own exactly one templates model: ${gen.models.toList()}",
+                1, templates.size)
+            val roots = templates.single().rootNodes.toList()
+            assertEquals("templates model must hold the auto-created MappingConfiguration: $roots",
+                1, roots.size)
+            assertEquals("MappingConfiguration", roots.single().concept.name)
+            assertEquals("main", roots.single().getPropertyByName("name"))
+        }
+    }
+
+    @Test
+    fun `devkit creation registers a devkit module`() {
+        val name = "test.created.devkit${System.nanoTime()}"
+        val directory = freshPathInProject(name)
+        val response = runTool(toolset) {
+            it.mps_mcp_create_module("devkit", name, directory, null, null, false, false, false)
+        }
+        val data = expectOk(response)
+        assertEquals(name, data.get("name").asString)
+        readOnRepo {
+            assertNotNull(myProject.projectModules.firstOrNull { it.moduleName == name })
+        }
+    }
+
+    // ── lifecycle: update / delete ────────────────────────────────────────────────────────
+
+    @Test
+    fun `update_module names moduleName when the caller sent moduleReference`() {
+        // D43: 'moduleReference' is a neighbouring tool's spelling of the same idea.
+        val solution = createSolution()
+        val moduleName = solution.moduleName!!
+        val newName = "${moduleName}.renamed"
+
+        val response = callThroughBridge(
+            toolset, "mps_mcp_update_module",
+            mapOf(
+                "moduleReference" to McpJsonPrimitive(moduleName),
+                "newName" to McpJsonPrimitive(newName),
+            ),
+        )
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        assertEquals(listOf("moduleName"), obj.getAsJsonObject("details").getAsJsonArray("missingParameters").map { it.asString })
+        val error = obj.get("error").asString
+        assertTrue("must name the key and the dropped spelling: $error",
+            error.startsWith("moduleName is required.") && error.contains("'moduleReference'"))
+
+        val retried = callThroughBridge(
+            toolset, "mps_mcp_update_module",
+            mapOf(
+                "moduleName" to McpJsonPrimitive(moduleName),
+                "newName" to McpJsonPrimitive(newName),
+            ),
+        )
+        expectOk(retried)
+    }
+
+    @Test
+    fun `update_module sets the virtual folder when only that is requested`() {
+        val solution = createSolution()
+        val moduleName = solution.moduleName!!
+        val response = runTool(toolset) {
+            it.mps_mcp_update_module(moduleName, "Test/Folder", ModuleOperation.CHANGE_VIRTUAL_FOLDER)
+        }
+        val data = expectOk(response)
+        assertEquals("Test/Folder", data.get("virtualFolder").asString)
+        assertEquals("Test/Folder", readOnRepo { myProject.getVirtualFolder(solution) })
+    }
+
+    @Test
+    fun `update_module renames a solution and updates the project registry`() {
+        val solution = createSolution()
+        val oldName = solution.moduleName!!
+        val newName = "${oldName}.renamed"
+
+        val data = expectOk(runTool(toolset) { it.mps_mcp_update_module(oldName, newName) })
+        assertEquals(newName, data.get("name").asString)
+        readOnRepo {
+            assertNotNull("renamed solution must be registered under the new name",
+                myProject.projectModules.firstOrNull { it.moduleName == newName })
+            assertNull("no module should remain under the old name",
+                myProject.projectModules.firstOrNull { it.moduleName == oldName })
+        }
+    }
+
+    @Test
+    fun `update_module renames a language and renames its models accordingly`() {
+        // The base class created a Language with a `<lang>.structure` model. Renaming the
+        // module must cascade-rename that model's namespace to keep the prefix in sync.
+        val oldName = language.moduleName!!
+        val newName = "${oldName}.renamed"
+
+        val data = expectOk(runTool(toolset) { it.mps_mcp_update_module(oldName, newName) })
+        assertEquals(newName, data.get("name").asString)
+        readOnRepo {
+            val renamed = myProject.projectModules.singleOrNull { it.moduleName == newName } as? Language
+            assertNotNull("renamed language must be in the project", renamed)
+            assertTrue(
+                "structure model namespace must follow the new module name",
+                renamed!!.models.any { it.name.longName == "$newName.structure" },
+            )
+        }
+    }
+
+    @Test
+    fun `update_module renames a devkit`() {
+        val name = "test.dk.rename${System.nanoTime()}"
+        val directory = freshPathInProject(name)
+        expectOk(runTool(toolset) {
+            it.mps_mcp_create_module("devkit", name, directory, null, null, false, false, false)
+        })
+        val newName = "$name.renamed"
+
+        val data = expectOk(runTool(toolset) { it.mps_mcp_update_module(name, newName) })
+        assertEquals(newName, data.get("name").asString)
+        readOnRepo {
+            assertNotNull(myProject.projectModules.firstOrNull { it.moduleName == newName })
+        }
+    }
+
+    @Test
+    fun `update_module rejects renaming a generator module`() {
+        // Create a generator owned by the existing language so we have a Generator to target.
+        val parentName = language.moduleName!!
+        val createdName = expectOk(runTool(toolset) {
+            it.mps_mcp_create_module("generator", "ignored", "", null, parentName, false, false, false)
+        }).get("name").asString
+
+        val response = runTool(toolset) {
+            it.mps_mcp_update_module(createdName, "$createdName.renamed")
+        }
+        val err = expectErr(response)
+        assertTrue("error should explain generator rename policy: $err",
+            err.contains("Generator modules cannot be renamed"))
+        readOnRepo {
+            // Generator still present under its original name; parent language unchanged.
+            val gen = language.generators.singleOrNull { (it as? Generator)?.moduleName == createdName }
+            assertNotNull("generator must remain registered under its original name", gen)
+        }
+    }
+
+    @Test
+    fun `update_module rejects an invalid newName`() {
+        val solution = createSolution()
+        // First-char failure: leading digit is rejected before the package-shape check runs.
+        val leadingDigit = expectErr(runTool(toolset) {
+            it.mps_mcp_update_module(solution.moduleName!!, "1bad")
+        })
+        assertTrue("expected leading-char rejection: $leadingDigit",
+            leadingDigit.contains("can't start with"))
+        // Middle-of-name failure: passes the boundary checks but `SourceVersion.isName` rejects
+        // the embedded space, exercising the Java-package validation path.
+        val embeddedSpace = expectErr(runTool(toolset) {
+            it.mps_mcp_update_module(solution.moduleName!!, "bad name")
+        })
+        assertTrue("expected Java-package rejection: $embeddedSpace",
+            embeddedSpace.contains("valid Java package"))
+    }
+
+    @Test
+    fun `update_module rejects a newName that clashes with another module`() {
+        val a = createSolution("test.sol.A${System.nanoTime()}")
+        val b = createSolution("test.sol.B${System.nanoTime()}")
+        val response = runTool(toolset) {
+            it.mps_mcp_update_module(a.moduleName!!, b.moduleName!!)
+        }
+        assertTrue(expectErr(response).contains("already in use"))
+    }
+
+    @Test
+    fun `update_module rename followed by virtualFolder change`() {
+        val solution = createSolution()
+        val oldName = solution.moduleName!!
+        val newName = "${oldName}.renamed"
+
+        val renameData = expectOk(runTool(toolset) {
+            it.mps_mcp_update_module(oldName, newName)
+        })
+        assertEquals(newName, renameData.get("name").asString)
+
+        val folderData = expectOk(runTool(toolset) {
+            it.mps_mcp_update_module(newName, "Test/Renamed", ModuleOperation.CHANGE_VIRTUAL_FOLDER)
+        })
+        assertEquals("Test/Renamed", folderData.get("virtualFolder").asString)
+        readOnRepo {
+            val renamed = myProject.projectModules.singleOrNull { it.moduleName == newName }
+            assertNotNull(renamed)
+            assertEquals("Test/Renamed", myProject.getVirtualFolder(renamed!!))
+        }
+    }
+
+    @Test
+    fun `update_module RENAME fails when newName is not provided`() {
+        val solution = createSolution()
+        val response = runTool(toolset) {
+            it.mps_mcp_update_module(solution.moduleName!!, null)
+        }
+        assertTrue(expectErr(response).contains("Nothing to rename"))
+    }
+
+    // ── lifecycle: SYNC_VERSION (the language's own version, derived from its migrations) ──
+
+    private val pureMigrationScriptFqn = "jetbrains.mps.lang.migration.structure.PureMigrationScript"
+
+    private fun setLanguageVersion(version: Int) = executeCommand { language.setLanguageVersion(version) }
+
+    private fun createMigrationModel(): String {
+        val languageName = readOnRepo { language.moduleName!! }
+        return expectOk(runTool(MPSModelMcpToolset()) {
+            it.mps_mcp_create_model(languageName, "$languageName.migration")
+        }).get("reference").asString
+    }
+
+    /**
+     * Inserts a `PureMigrationScript` root and returns its reference. The concept's node factory
+     * runs first — it sets `fromVersion` to the current language version and bumps the language —
+     * and the blueprint's `fromVersion` then overrides the factory's value. A null [fromVersion]
+     * names the property without a `value`, which unsets it (JSON `null` would be rejected).
+     */
+    private fun insertPureMigrationScript(migrationModelRef: String, name: String, fromVersion: Int?): String {
+        val versionProperty = fromVersion?.let { """, { "name": "fromVersion", "value": "$it" }""" }
+            ?: """, { "name": "fromVersion" }"""
+        val json = """
+            {
+              "concept": "$pureMigrationScriptFqn",
+              "properties": [ { "name": "name", "value": "$name" }$versionProperty ]
+            }
+        """.trimIndent()
+        return expectOk(runTool(MPSRootNodeMcpToolset()) {
+            it.mps_mcp_insert_root_node_from_json(migrationModelRef, JsonOrText(json), dryRun = false)
+        }).get("reference").asString
+    }
+
+    private fun syncVersion(moduleName: String = language.moduleName!!, newName: String? = null): String =
+        runTool(toolset) { it.mps_mcp_update_module(moduleName, newName, ModuleOperation.SYNC_VERSION) }
+
+    private fun warningsOf(response: String): String =
+        JsonParser.parseString(response).asJsonObject.getAsJsonArray("warnings")?.joinToString(" ") { it.asString } ?: ""
+
+    @Test
+    fun `update_module SYNC_VERSION is a no-op for a language without a migration aspect`() {
+        setLanguageVersion(4)
+
+        val data = expectOk(syncVersion())
+
+        assertFalse(data.get("changed").asBoolean)
+        assertEquals("a language without migrations must keep its version, never be reset to 0", 4, data.get("languageVersion").asInt)
+        assertEquals(4, data.get("previousLanguageVersion").asInt)
+        assertEquals(0, data.get("migrationUnitCount").asInt)
+        assertFalse("no script, no maxFromVersion: $data", data.has("maxFromVersion"))
+        assertEquals(0, data.getAsJsonArray("migrationProblems").size())
+        assertTrue("the no-op must be explained: $data", data.get("note").asString.contains("no `migration` aspect"))
+        assertEquals(4, readOnRepo { language.languageVersion })
+    }
+
+    @Test
+    fun `update_module SYNC_VERSION is a no-op for a migration aspect without scripts`() {
+        createMigrationModel()
+        setLanguageVersion(4)
+
+        val data = expectOk(syncVersion())
+
+        assertFalse(data.get("changed").asBoolean)
+        assertEquals(4, data.get("languageVersion").asInt)
+        assertEquals(0, data.get("migrationUnitCount").asInt)
+        assertTrue("the no-op must be explained: $data", data.get("note").asString.contains("has no root nodes"))
+        assertEquals(4, readOnRepo { language.languageVersion })
+    }
+
+    @Test
+    fun `update_module SYNC_VERSION is an idempotent no-op when the version already matches`() {
+        val migrationModelRef = createMigrationModel()
+        insertPureMigrationScript(migrationModelRef, "First", 0)
+        insertPureMigrationScript(migrationModelRef, "Second", 1)
+        setLanguageVersion(2)
+
+        repeat(2) { attempt ->
+            val data = expectOk(syncVersion())
+            assertFalse("attempt $attempt must not change anything: $data", data.get("changed").asBoolean)
+            assertEquals(2, data.get("languageVersion").asInt)
+            assertEquals(2, data.get("previousLanguageVersion").asInt)
+            assertEquals(1, data.get("maxFromVersion").asInt)
+            assertEquals(2, data.get("migrationUnitCount").asInt)
+            assertEquals(0, data.getAsJsonArray("migrationProblems").size())
+            assertFalse("a consistent language needs no note: $data", data.has("note"))
+        }
+        assertEquals(2, readOnRepo { language.languageVersion })
+    }
+
+    @Test
+    fun `update_module SYNC_VERSION is a no-op after a MigrationScript created through an MCP write tool`() {
+        // MigrationScript's node factory sets fromVersion to the current version and bumps the
+        // language itself, so the sync reads the class-based script's own fromVersion property
+        // (a different property id from PureMigrationScript's) and finds nothing to do.
+        val migrationModelRef = createMigrationModel()
+        setLanguageVersion(3)
+        val json = """
+            {
+              "concept": "jetbrains.mps.lang.migration.structure.MigrationScript",
+              "properties": [ { "name": "name", "value": "FactoryBumped" } ]
+            }
+        """.trimIndent()
+        expectOk(runTool(MPSRootNodeMcpToolset()) {
+            it.mps_mcp_insert_root_node_from_json(migrationModelRef, JsonOrText(json), dryRun = false)
+        })
+        assertEquals("precondition: the factory bumped the version", 4, readOnRepo { language.languageVersion })
+
+        val data = expectOk(syncVersion())
+
+        assertFalse("the factory already bumped; syncing must not bump again: $data", data.get("changed").asBoolean)
+        assertEquals(4, data.get("languageVersion").asInt)
+        assertEquals(3, data.get("maxFromVersion").asInt)
+        assertEquals(1, data.get("migrationUnitCount").asInt)
+        assertEquals(0, data.getAsJsonArray("migrationProblems").size())
+    }
+
+    @Test
+    fun `update_module SYNC_VERSION raises the version after a PureMigrationScript and writes the descriptor`() {
+        val migrationModelRef = createMigrationModel()
+        insertPureMigrationScript(migrationModelRef, "FromTwo", 2)
+        // The script's node factory already bumped the language; put the descriptor behind the
+        // script again, as it is after e.g. a VCS update that brought the script but not the .mpl.
+        setLanguageVersion(2)
+        val descriptorPath = readOnRepo { language.descriptorFile!!.path }
+
+        val data = expectOk(syncVersion())
+
+        assertTrue(data.get("changed").asBoolean)
+        assertEquals(3, data.get("languageVersion").asInt)
+        assertEquals(2, data.get("previousLanguageVersion").asInt)
+        assertEquals(2, data.get("maxFromVersion").asInt)
+        assertEquals(3, readOnRepo { language.languageVersion })
+        // Regression guard for a missing save(): setLanguageVersion() only marks the module
+        // dirty, so without the explicit save() the .mpl on disk would still hold the old value.
+        val onDisk = File(descriptorPath).readText()
+        assertTrue("descriptor file must carry the new languageVersion; got:\n$onDisk", onDisk.contains("languageVersion=\"3\""))
+
+        assertFalse("a repeat must be a no-op", expectOk(syncVersion()).get("changed").asBoolean)
+        assertEquals(3, readOnRepo { language.languageVersion })
+    }
+
+    @Test
+    fun `update_module SYNC_VERSION lowers the version after the trailing script is deleted and names consumers ahead`() {
+        val migrationModelRef = createMigrationModel()
+        insertPureMigrationScript(migrationModelRef, "Zero", 0)
+        insertPureMigrationScript(migrationModelRef, "One", 1)
+        val trailing = insertPureMigrationScript(migrationModelRef, "Two", 2)
+        setLanguageVersion(3)
+        val consumer = createSolution()
+        val consumerAtTarget = createSolution()
+        val consumerBelow = createSolution()
+        executeCommand {
+            val slanguage = MetaAdapterByDeclaration.getLanguage(language)
+            consumer.moduleDescriptor.languageVersions[slanguage] = 3
+            consumerAtTarget.moduleDescriptor.languageVersions[slanguage] = 2
+            consumerBelow.moduleDescriptor.languageVersions[slanguage] = 1
+            PersistenceFacade.getInstance().createNodeReference(trailing).resolve(myProject.repository)!!.delete()
+        }
+
+        val response = syncVersion()
+        val data = expectOk(response)
+
+        assertTrue(data.get("changed").asBoolean)
+        assertEquals(2, data.get("languageVersion").asInt)
+        assertEquals(3, data.get("previousLanguageVersion").asInt)
+        val warnings = warningsOf(response)
+        assertTrue("lowering must be reported in warnings: $response", warnings.contains("lowered"))
+        assertTrue("the consumer ahead of the language must be named: $response", warnings.contains(consumer.moduleName!!))
+        assertFalse("a consumer at the new version is not ahead: $response", warnings.contains(consumerAtTarget.moduleName!!))
+        assertFalse("a consumer below the new version is not ahead: $response", warnings.contains(consumerBelow.moduleName!!))
+        assertEquals(2, readOnRepo { language.languageVersion })
+        assertEquals(
+            "lowering must not rewrite the consumer's stamp",
+            3, readOnRepo { consumer.moduleDescriptor.languageVersions[MetaAdapterByDeclaration.getLanguage(language)] },
+        )
+    }
+
+    @Test
+    fun `update_module SYNC_VERSION reports duplicate, gap and unversioned scripts in migrationProblems`() {
+        val migrationModelRef = createMigrationModel()
+        insertPureMigrationScript(migrationModelRef, "DupA", 0)
+        insertPureMigrationScript(migrationModelRef, "DupB", 0)
+        val gap = insertPureMigrationScript(migrationModelRef, "AfterGap", 2)
+        insertPureMigrationScript(migrationModelRef, "Unversioned", null)
+
+        val response = syncVersion()
+        val data = expectOk(response)
+
+        assertEquals("the version still follows the highest fromVersion", 3, data.get("languageVersion").asInt)
+        assertEquals(4, data.get("migrationUnitCount").asInt)
+        val problems = data.getAsJsonArray("migrationProblems").map { it.asJsonObject }
+        val byUnit = problems.groupBy({ it.get("unit").asString }, { it.get("problem").asString })
+        assertEquals("one entry per problem: $problems", 4, problems.size)
+        assertTrue(byUnit["DupA"].orEmpty().single().contains("Multiple scripts for version 0"))
+        assertTrue(byUnit["DupB"].orEmpty().single().contains("Multiple scripts for version 0"))
+        assertTrue(byUnit["AfterGap"].orEmpty().single().contains("Missing script for version 1"))
+        assertTrue(byUnit["Unversioned"].orEmpty().single().contains("does not have version"))
+        assertEquals(gap, problems.single { it.get("unit").asString == "AfterGap" }.get("reference").asString)
+        assertTrue("the caller must be told syncing does not fix them: $response", warningsOf(response).contains("does not fix"))
+    }
+
+    @Test
+    fun `update_module SYNC_VERSION ignores migration-aspect roots that are not migration units`() {
+        val migrationModelRef = createMigrationModel()
+        setLanguageVersion(4)
+        val helperJson = """{ "concept": "jetbrains.mps.baseLanguage.structure.ClassConcept", "properties": [ { "name": "name", "value": "MigrationHelper" } ] }"""
+        expectOk(runTool(MPSRootNodeMcpToolset()) {
+            it.mps_mcp_insert_root_node_from_json(migrationModelRef, JsonOrText(helperJson), dryRun = false)
+        })
+
+        val onlyHelper = expectOk(syncVersion())
+        assertFalse(onlyHelper.get("changed").asBoolean)
+        assertEquals(4, onlyHelper.get("languageVersion").asInt)
+        assertEquals(0, onlyHelper.get("migrationUnitCount").asInt)
+        assertTrue(
+            "the note must say the roots are not migration units: $onlyHelper",
+            onlyHelper.get("note").asString.contains("1 root node(s), none of them a migration unit"),
+        )
+
+        insertPureMigrationScript(migrationModelRef, "FromFour", 4)
+        val withScript = expectOk(syncVersion())
+        assertEquals("the helper class must not count as a unit: $withScript", 1, withScript.get("migrationUnitCount").asInt)
+        assertEquals(5, withScript.get("languageVersion").asInt)
+        assertEquals(0, withScript.getAsJsonArray("migrationProblems").size())
+    }
+
+    @Test
+    fun `update_module SYNC_VERSION reports an unversioned MigrationScript and leaves it out of the maximum`() {
+        // isVersionSet() goes through MigrationScript's own override here, not PureMigrationScript's.
+        val migrationModelRef = createMigrationModel()
+        setLanguageVersion(7)
+        val json = """
+            {
+              "concept": "jetbrains.mps.lang.migration.structure.MigrationScript",
+              "properties": [ { "name": "name", "value": "LostItsVersion" } ]
+            }
+        """.trimIndent()
+        val scriptRef = expectOk(runTool(MPSRootNodeMcpToolset()) {
+            it.mps_mcp_insert_root_node_from_json(migrationModelRef, JsonOrText(json), dryRun = false)
+        }).get("reference").asString
+        executeCommand {
+            val script = PersistenceFacade.getInstance().createNodeReference(scriptRef).resolve(myProject.repository)!!
+            script.setProperty(script.concept.properties.single { it.name == "fromVersion" }, null)
+        }
+        insertPureMigrationScript(migrationModelRef, "FromTwo", 2)
+
+        val data = expectOk(syncVersion())
+
+        assertEquals(2, data.get("migrationUnitCount").asInt)
+        assertEquals("the unversioned script must not feed the maximum: $data", 2, data.get("maxFromVersion").asInt)
+        assertEquals(3, data.get("languageVersion").asInt)
+        val problem = data.getAsJsonArray("migrationProblems").map { it.asJsonObject }.single()
+        assertEquals("LostItsVersion", problem.get("unit").asString)
+        assertEquals("MigrationScript", problem.get("concept").asString)
+        assertTrue(problem.get("problem").asString.contains("does not have version"))
+    }
+
+    @Test
+    fun `update_module SYNC_VERSION rejects an explicit value`() {
+        setLanguageVersion(2)
+        val err = expectErr(syncVersion(newName = "7"))
+        assertTrue("must explain the version is derived: $err", err.contains("derived"))
+        assertTrue("must point at fromVersion as the fix: $err", err.contains("fromVersion"))
+        assertEquals("a rejected request must not change the version", 2, readOnRepo { language.languageVersion })
+    }
+
+    @Test
+    fun `update_module SYNC_VERSION rejects a non-Language module`() {
+        val solution = createSolution()
+        val err = expectErr(syncVersion(moduleName = solution.moduleName!!))
+        assertTrue("error must say the op is Language-only: $err", err.contains("only to Language modules"))
+        assertTrue("error must name the actual kind: $err", err.contains("Solution"))
+    }
+
+    @Test
+    fun `update_module SYNC_VERSION returns NOT_FOUND for an unknown module`() {
+        val err = expectErr(syncVersion(moduleName = "ghost.language"))
+        assertTrue("expected a not-found rejection: $err", err.contains("not found"))
+    }
+
+    @Test
+    fun `update_module SYNC_VERSION reports the runtime as stale for a language that was never built`() {
+        // The fixture language is never made, so the compiled LanguageRuntime either does not
+        // exist or still reports the pre-sync version. Either way the descriptor and the value
+        // MigrationScriptCollector reads disagree, and the caller must be told so.
+        insertPureMigrationScript(createMigrationModel(), "Initial", 0)
+        val data = expectOk(syncVersion())
+        assertEquals(1, data.get("languageVersion").asInt)
+        assertTrue("an unbuilt language must be flagged runtimeStale: $data", data.get("runtimeStale").asBoolean)
+        assertTrue(
+            "recovery action must point at a rebuild: $data",
+            data.get("runtimeRecoveryAction").asString.contains("rebuild=true"),
+        )
+    }
+
+    @Test
+    fun `update_module SYNC_VERSION leaves consumer languageVersions stamps untouched`() {
+        // Refreshing the dependent modules' `languageVersions` stamps here would mark the pending
+        // migration as already applied.
+        val consumer = createSolution()
+        executeCommand { consumer.moduleDescriptor.languageVersions[MetaAdapterByDeclaration.getLanguage(language)] = 0 }
+        val stampsBefore = readOnRepo { consumer.moduleDescriptor.languageVersions.toMap() }
+        val ownStampsBefore = readOnRepo { language.moduleDescriptor!!.languageVersions.toMap() }
+        insertPureMigrationScript(createMigrationModel(), "Initial", 0)
+
+        expectOk(syncVersion())
+
+        assertEquals(
+            "SYNC_VERSION must not touch consumer version stamps",
+            stampsBefore, readOnRepo { consumer.moduleDescriptor.languageVersions.toMap() },
+        )
+        assertEquals(
+            "SYNC_VERSION must not refresh the language's own dependency stamps either",
+            ownStampsBefore,
+            readOnRepo { language.moduleDescriptor!!.languageVersions.toMap() },
+        )
+        // ... while the language's own version did move.
+        assertEquals(1, readOnRepo { language.languageVersion })
+    }
+
+    // ── the checker's FixLanguageVersion quick fix (restored on the version-mismatch error) ──
+
+    private val fixLanguageVersionFqn = "jetbrains.mps.lang.migration.typesystem.FixLanguageVersion_QuickFix"
+
+    /** The problems `check_root_node_problems` reports on the root [nodeRef] itself (empty when clean). */
+    private fun problemsOn(nodeRef: String, autoApplyQuickFixes: Boolean = false): Pair<String, List<JsonObject>> {
+        val response = runTool(MPSNodeMcpToolset()) {
+            it.mps_mcp_check_root_node_problems(nodeRef, autoApplyQuickFixes = autoApplyQuickFixes)
+        }
+        val data = JsonParser.parseString(response).asJsonObject.get("data")
+        if (data.isJsonPrimitive && data.asString == "no problems found") return response to emptyList()
+        val problems = payloadFromOkData(response).asJsonArray
+            .map { it.asJsonObject }
+            .filter { it.get("reference").asString.substringAfterLast('/') == nodeRef.substringAfterLast('/') }
+            .flatMap { node -> node.getAsJsonArray("problems").map { it.asJsonObject } }
+        return response to problems
+    }
+
+    private fun quickFixIds(problem: JsonObject): List<String> =
+        problem.getAsJsonArray("quickFixes")?.map { it.asJsonObject.get("id").asString }.orEmpty()
+
+    private fun descriptorOnDisk(): String = File(readOnRepo { language.descriptorFile!!.path }).readText()
+
+    /** Sets the language version and saves the descriptor, so a later on-disk check sees the tool's own save. */
+    private fun setLanguageVersionOnDisk(version: Int) = executeCommand {
+        language.setLanguageVersion(version)
+        language.save()
+    }
+
+    @Test
+    fun `a language version mismatch carries the FixLanguageVersion quick fix, not auto-applicable`() {
+        val scriptRef = insertPureMigrationScript(createMigrationModel(), "Zero", 0)
+        setLanguageVersion(3)
+
+        val (response, problems) = problemsOn(scriptRef)
+
+        val mismatch = problems.single { it.get("message").asString.contains("Language version (3) is not equal") }
+        val fix = mismatch.getAsJsonArray("quickFixes").map { it.asJsonObject }.single { it.get("id").asString == fixLanguageVersionFqn }
+        assertEquals("Set correct language version", fix.get("description").asString)
+        assertFalse("the fix is Alt+Enter only, never applied behind the user's back: $response", fix.get("autoApplicable").asBoolean)
+    }
+
+    @Test
+    fun `autoApplyQuickFixes leaves a language version mismatch alone`() {
+        val scriptRef = insertPureMigrationScript(createMigrationModel(), "Zero", 0)
+        setLanguageVersion(3)
+
+        val (response, problems) = problemsOn(scriptRef, autoApplyQuickFixes = true)
+
+        val applied = JsonParser.parseString(response).asJsonObject.getAsJsonObject("details")?.getAsJsonArray("appliedQuickFixes")
+        assertTrue("nothing may be auto-applied: $response", applied == null || applied.size() == 0)
+        assertEquals("the version must not change", 3, readOnRepo { language.languageVersion })
+        assertTrue("the mismatch must still be reported: $response", problems.any { fixLanguageVersionFqn in quickFixIds(it) })
+    }
+
+    @Test
+    fun `apply_intention with FixLanguageVersion raises the version and writes the descriptor`() {
+        val scriptRef = insertPureMigrationScript(createMigrationModel(), "Zero", 0)
+        setLanguageVersionOnDisk(0)
+        assertTrue("precondition: the stale version is on disk", descriptorOnDisk().contains("languageVersion=\"0\""))
+
+        val data = expectOk(runTool(MPSIntentionsMcpToolset()) { it.mps_mcp_apply_intention(scriptRef, fixLanguageVersionFqn) })
+
+        assertTrue("apply should report applied=true: $data", data.get("applied").asBoolean)
+        assertEquals("quickFix", data.get("type").asString)
+        assertEquals(1, readOnRepo { language.languageVersion })
+        assertTrue("the descriptor on disk must carry the repaired version", descriptorOnDisk().contains("languageVersion=\"1\""))
+        assertTrue("the mismatch must be gone", problemsOn(scriptRef).second.none { fixLanguageVersionFqn in quickFixIds(it) })
+    }
+
+    @Test
+    fun `apply_intention with FixLanguageVersion lowers the version and writes the descriptor`() {
+        val migrationModelRef = createMigrationModel()
+        val firstRef = insertPureMigrationScript(migrationModelRef, "Zero", 0)
+        val lastRef = insertPureMigrationScript(migrationModelRef, "One", 1)
+        setLanguageVersionOnDisk(7)
+        assertTrue("precondition: the stale version is on disk", descriptorOnDisk().contains("languageVersion=\"7\""))
+        val nonMax = problemsOn(firstRef).second
+        assertTrue("a unit below the maximum carries no mismatch: $nonMax", nonMax.none { it.get("message").asString.contains("Language version") })
+        assertTrue("a unit below the maximum carries no fix: $nonMax", nonMax.none { fixLanguageVersionFqn in quickFixIds(it) })
+
+        val data = expectOk(runTool(MPSIntentionsMcpToolset()) { it.mps_mcp_apply_intention(lastRef, fixLanguageVersionFqn) })
+
+        assertTrue("apply should report applied=true: $data", data.get("applied").asBoolean)
+        assertEquals("wanted is max(fromVersion) + 1", 2, readOnRepo { language.languageVersion })
+        assertTrue("the descriptor on disk must carry the repaired version", descriptorOnDisk().contains("languageVersion=\"2\""))
+    }
+
+    @Test
+    fun `every script at the maximum carries the mismatch and the fix exactly once`() {
+        val migrationModelRef = createMigrationModel()
+        insertPureMigrationScript(migrationModelRef, "Zero", 0)
+        val dupA = insertPureMigrationScript(migrationModelRef, "MaxA", 1)
+        val dupB = insertPureMigrationScript(migrationModelRef, "MaxB", 1)
+        setLanguageVersion(5)
+
+        for (ref in listOf(dupA, dupB)) {
+            val problems = problemsOn(ref).second
+            val mismatches = problems.filter { it.get("message").asString.contains("Language version (5) is not equal") }
+            assertEquals("exactly one mismatch error on $ref: $problems", 1, mismatches.size)
+            assertEquals("exactly one fix on the mismatch of $ref: $problems", 1, quickFixIds(mismatches.single()).count { it == fixLanguageVersionFqn })
+            val duplicate = problems.single { it.get("message").asString.contains("Multiple scripts for version 1") }
+            assertTrue("the duplicate stays a plain error: $problems", fixLanguageVersionFqn !in quickFixIds(duplicate))
+        }
+    }
+
+    @Test
+    fun `a blueprint fromVersion below the current version bumps once and leaves a fixable mismatch`() {
+        val migrationModelRef = createMigrationModel()
+        setLanguageVersion(3)
+
+        val scriptRef = insertPureMigrationScript(migrationModelRef, "Stale", 1)
+
+        assertEquals("the factory bumps exactly once, whatever the blueprint says", 4, readOnRepo { language.languageVersion })
+        val mismatch = problemsOn(scriptRef).second.single { it.get("message").asString.contains("Language version (4) is not equal") }
+        assertTrue("the mismatch carries the fix: $mismatch", fixLanguageVersionFqn in quickFixIds(mismatch))
+    }
+
+    @Test
+    fun `COPY_NODE of a PureMigrationScript does not bump and shows up as a duplicate`() {
+        val migrationModelRef = createMigrationModel()
+        val originalRef = insertPureMigrationScript(migrationModelRef, "Original", 0)
+        val versionBefore = readOnRepo { language.languageVersion }
+
+        val copy = expectOk(runTool(MPSNodeMcpToolset()) {
+            it.mps_mcp_alter_nodes(MPSAlterOperation.COPY_NODE, """{"nodeReference":"$originalRef"}""")
+        })
+        val copyRef = copy.get("reference").asString
+
+        assertEquals("a copy is not a creation: no factory, no bump", versionBefore, readOnRepo { language.languageVersion })
+        val problems = problemsOn(copyRef).second
+        assertTrue("the copy duplicates the original's version: $problems", problems.any { it.get("message").asString.contains("Multiple scripts for version 0") })
+    }
+
+    @Test
+    fun `only the version mismatch carries the quick fix`() {
+        val migrationModelRef = createMigrationModel()
+        val dupA = insertPureMigrationScript(migrationModelRef, "DupA", 0)
+        insertPureMigrationScript(migrationModelRef, "DupB", 0)
+        val unversioned = insertPureMigrationScript(migrationModelRef, "Unversioned", null)
+        setLanguageVersion(1)
+
+        val duplicate = problemsOn(dupA).second
+        assertTrue("the duplicate must be reported: $duplicate", duplicate.any { it.get("message").asString.contains("Multiple scripts for version 0") })
+        assertTrue("a consistent language has no mismatch to fix: $duplicate", duplicate.none { fixLanguageVersionFqn in quickFixIds(it) })
+
+        val missing = problemsOn(unversioned).second
+        assertTrue("the unset version must be reported: $missing", missing.any { it.get("message").asString.contains("does not have version") })
+        assertTrue("an unset version carries no quick fix: $missing", missing.none { fixLanguageVersionFqn in quickFixIds(it) })
+    }
+
+    @Test
+    fun `module info envelope exposes languageVersion for languages and omits it elsewhere`() {
+        // The create_module envelope is built by moduleInfoJsonObject, so this pins the new
+        // Language-only field on the shared read path rather than only on SYNC_VERSION's response.
+        val langName = "test.lang.verfield${System.nanoTime()}"
+        val langInfo = expectOk(runTool(toolset) {
+            it.mps_mcp_create_module("language", langName, freshPathInProject(langName), null, null, false, false, false)
+        })
+        assertTrue("a Language envelope must carry languageVersion: $langInfo", langInfo.has("languageVersion"))
+        assertEquals(0, langInfo.get("languageVersion").asInt)
+
+        val solName = "test.sol.verfield${System.nanoTime()}"
+        val solInfo = expectOk(runTool(toolset) {
+            it.mps_mcp_create_module("solution", solName, freshPathInProject(solName), null, null, false, false, false)
+        })
+        assertFalse("a Solution has no language version: $solInfo", solInfo.has("languageVersion"))
+    }
+
+    @Test
+    fun `delete_module removes the module from the project`() {
+        val solution = createSolution()
+        val moduleName = solution.moduleName!!
+
+        val response = runTool(toolset) { it.mps_mcp_update_module(moduleName, operation = ModuleOperation.DELETE) }
+        val data = expectOk(response)
+        assertTrue(data.get("deleted").asBoolean)
+
+        readOnRepo {
+            assertNull(myProject.projectModules.firstOrNull { it.moduleName == moduleName })
+        }
+    }
+
+    @Test
+    fun `delete_module with deleteFiles removes the module directory from disk`() {
+        val solution = createSolution()
+        val moduleName = solution.moduleName!!
+
+        // Capture the directory the fix deletes (the descriptor file's parent) before the
+        // delete tears the descriptor wiring down. createSolution() laid it out via mkdirs(),
+        // so it is present on disk now.
+        val moduleDirPath = readOnRepo { (solution as AbstractModule).descriptorFile!!.parent!!.path }
+        val moduleDir = File(moduleDirPath)
+        assertTrue("module directory should exist before deletion: $moduleDirPath", moduleDir.exists())
+
+        val response = runTool(toolset) {
+            it.mps_mcp_update_module(moduleName, operation = ModuleOperation.DELETE, deleteFiles = true)
+        }
+        val data = expectOk(response)
+        assertTrue(data.get("deleted").asBoolean)
+        // The pre-fix bug deleted the directory outside a write action, failing the
+        // assertWriteAccessAllowed() check and reporting it as a fileDeletionWarning while the
+        // files survived. With the write action in place there must be no such warning.
+        assertFalse(
+            "deleteFiles=true must not report a fileDeletionWarning: $response",
+            data.has("fileDeletionWarning"),
+        )
+
+        readOnRepo {
+            assertNull(myProject.projectModules.firstOrNull { it.moduleName == moduleName })
+        }
+        assertFalse("module directory should be deleted from disk: $moduleDirPath", moduleDir.exists())
+    }
+
+    @Test
+    fun `delete_module with deleteFiles of a language with a generator leaves no stale module tracking`() {
+        // LanguageProducer adds the generator with ProjectBase.addModule, so it has its own module-loader entry and
+        // a file listener on the language's .mpl. removeModule(language) alone dropped the generator without an
+        // event, and deleting the folder then warned "1 listener(s) have not been unregistered for the path".
+        val langName = "test.delete.lang${System.nanoTime()}"
+        val directory = Paths.get(freshPathInProject(langName))
+        try {
+            val before = projectModuleRefs()
+            expectOk(createModule("language", langName, directory.toString(), withGenerator = true).toString())
+            val created = readOnRepo {
+                myProject.projectModulesWithGenerators.filter { it.moduleReference !in before }
+            }
+            assertTrue("test precondition: a language and its generator: $created",
+                created.size == 2 && created.any { it is Language } && created.any { it is Generator })
+
+            val (response, records) = captureLogRecords {
+                runTool(toolset) {
+                    it.mps_mcp_update_module(langName, operation = ModuleOperation.DELETE, deleteFiles = true)
+                }.also { readOnRepo { myProject.projectModules } }
+            }
+
+            assertNoStaleModuleTracking(records.map { it.message })
+            assertNoProblemsLogged(records)
+            val data = expectOk(response)
+            assertFalse("deleteFiles=true must not report a fileDeletionWarning: $response",
+                data.has("fileDeletionWarning"))
+            assertFalse("the language folder must be deleted: $directory", Files.exists(directory))
+            readOnRepo {
+                for (module in created) {
+                    assertNull("${module.moduleName} must be unregistered",
+                        myProject.repository.getModule(module.moduleReference.moduleId))
+                    assertFalse("the project must no longer track ${module.moduleName}", myProject.isProjectModule(module))
+                }
+            }
+        } finally {
+            deleteQuietly(directory)
+        }
+    }
+
+    /** What the IDE writes to `.mps/modules.xml` for the project's current module list. */
+    private fun savedModulesXml(): String {
+        myProject.save()
+        PlatformTestUtil.saveProject(myProject.project)
+        return File(myProject.projectFile, ".mps/modules.xml").readText()
+    }
+
+    /**
+     * T1-T4 (MPS-40232). A language-owned generator lives in its language's `.mpl`, so its descriptor folder is the
+     * language folder, and `withGenerator` gives it a module-loader entry of its own for that file while
+     * `create_module(type=generator)` does not. DELETE must remove only the generator: from the project, from the
+     * language's descriptor and, with [deleteFiles], its own files. A [strayFile] keeps the generator folder, and the
+     * response says so.
+     */
+    private fun assertDeleteOfOwnedGenerator(
+        deleteFiles: Boolean,
+        generatorViaCreateModule: Boolean = false,
+        byReference: Boolean = false,
+        generatorOutsideLanguage: Boolean = false,
+        strayFile: Boolean = false,
+    ) {
+        val langName = "test.delete.owned.gen${System.nanoTime()}"
+        val directory = Paths.get(freshPathInProject(langName))
+        val generatorDir = if (generatorOutsideLanguage) Paths.get(freshPathInProject("$langName.gen")) else directory.resolve("generator")
+        val mpl = directory.resolve("$langName.mpl")
+        try {
+            expectOk(createModule("language", langName, directory.toString(),
+                withGenerator = !generatorViaCreateModule).toString())
+            if (generatorViaCreateModule) {
+                val generatorDirArg = if (generatorOutsideLanguage) generatorDir.toString() else ""
+                expectOk(runTool(toolset) {
+                    it.mps_mcp_create_module("generator", "ignored", generatorDirArg, null, langName, false, false, false)
+                })
+            }
+            val (language, generator) = readOnRepo {
+                val lang = myProject.projectModules.filterIsInstance<Language>().single { it.moduleName == langName }
+                lang to lang.ownedGenerators.single()
+            }
+            val generatorRef = readOnRepo { generator.moduleReference }
+            val target = readOnRepo {
+                if (byReference) PersistenceFacade.getInstance().asString(generatorRef) else generator.moduleName!!
+            }
+            assertTrue("test precondition: modules.xml lists $mpl", savedModulesXml().contains("$langName.mpl"))
+            listOf(directory.resolve("models"), generatorDir).forEach { assertTrue("test precondition: $it", Files.isDirectory(it)) }
+            if (strayFile) {
+                Files.writeString(generatorDir.resolve("stray.txt"), "not module content")
+                refreshVfs(generatorDir)
+            }
+            val generatorFolderPruned = deleteFiles && !strayFile
+            val languageFolderAfter = listing(directory) - setOf("generator").takeIf { generatorFolderPruned }.orEmpty()
+
+            val (response, records) = captureLogRecords {
+                runTool(toolset) {
+                    it.mps_mcp_update_module(target, operation = ModuleOperation.DELETE, deleteFiles = deleteFiles)
+                }.also { readOnRepo { myProject.projectModules } }
+            }
+
+            assertTrue("modules.xml must still list $mpl: $response", savedModulesXml().contains("$langName.mpl"))
+            readOnRepo {
+                assertNull("the generator must be unregistered", myProject.repository.getModule(generatorRef.moduleId))
+                assertTrue("$langName must stay a project module", language in myProject.projectModules)
+                assertTrue("the language must no longer declare the generator",
+                    language.moduleDescriptor!!.generators.none { it.moduleReference == generatorRef })
+            }
+            val savedLanguage = readOnRepo {
+                ModulesMiner(myProject.platform).collectModules(myProject.fileSystem.getFile(mpl.toFile())).collectedModules
+                    .mapNotNull { it.descriptor as? LanguageDescriptor }.single()
+            }
+            assertTrue("the saved $mpl must no longer declare the generator",
+                savedLanguage.generators.none { it.moduleReference == generatorRef })
+            executeCommandIn(myProject) { language.setModuleDescriptor(language.moduleDescriptor) }
+            readOnRepo {
+                assertNull("reloading the language descriptor must not bring the generator back",
+                    myProject.repository.getModule(generatorRef.moduleId))
+            }
+
+            assertTrue("the language descriptor must survive: $response", Files.isRegularFile(mpl))
+            assertTrue("the language models must survive: $response", Files.isDirectory(directory.resolve("models")))
+            assertEquals("the language folder must lose no more than the generator folder: $response",
+                languageFolderAfter, listing(directory))
+            assertEquals("the generator folder is deleted with files only, when empty: $response",
+                !generatorFolderPruned, Files.exists(generatorDir))
+            assertNoProblemsLogged(records)
+            val data = expectOk(response)
+            assertEquals("parentLanguage: $response", langName, data.get("parentLanguage")?.asString)
+            if (strayFile) {
+                val warning = data.get("fileDeletionWarning")?.asString.orEmpty()
+                assertTrue("the kept generator folder must be reported: $response",
+                    warning.contains("kept $generatorDir: not empty"))
+            } else {
+                assertFalse("nothing of the generator is kept: $response", data.has("fileDeletionWarning"))
+            }
+        } finally {
+            deleteQuietly(directory)
+            deleteQuietly(generatorDir)
+        }
+    }
+
+    @Test
+    fun `delete_module of a language-owned generator keeps the language`() =
+        assertDeleteOfOwnedGenerator(deleteFiles = false)
+
+    @Test
+    fun `delete_module with deleteFiles of a language-owned generator keeps the language files`() =
+        assertDeleteOfOwnedGenerator(deleteFiles = true)
+
+    @Test
+    fun `delete_module with deleteFiles of a language-owned generator reports a folder it keeps`() =
+        assertDeleteOfOwnedGenerator(deleteFiles = true, strayFile = true)
+
+    @Test
+    fun `delete_module of a generator added by create_module keeps the language`() =
+        assertDeleteOfOwnedGenerator(deleteFiles = false, generatorViaCreateModule = true)
+
+    @Test
+    fun `delete_module with deleteFiles of a generator added by create_module, addressed by reference`() =
+        assertDeleteOfOwnedGenerator(deleteFiles = true, generatorViaCreateModule = true, byReference = true)
+
+    @Test
+    fun `delete_module with deleteFiles of a generator outside its language folder deletes only that folder`() =
+        assertDeleteOfOwnedGenerator(deleteFiles = true, generatorViaCreateModule = true, generatorOutsideLanguage = true)
+
+    @Test
+    fun `delete_module returns NOT_FOUND for unknown module`() {
+        val response = runTool(toolset) { it.mps_mcp_update_module("ghost.module", operation = ModuleOperation.DELETE) }
+        assertTrue(expectErr(response).contains("not found"))
+    }
+
+    // ── dependencies ───────────────────────────────────────────────────────────────────────
+
+    @Test
+    fun `module_dependency names moduleName, targetModule and operation when the caller sends wrong keys`() {
+        // D43: the caller sent all three required values under neighbouring-tool spellings at once.
+        val source = createSolution("test.dep.wrongkey.src${System.nanoTime()}")
+        val target = createSolution("test.dep.wrongkey.tgt${System.nanoTime()}")
+        val sourceName = source.moduleName!!
+        val targetName = target.moduleName!!
+
+        val response = callThroughBridge(
+            toolset, "mps_mcp_module_dependency",
+            mapOf(
+                "moduleReference" to McpJsonPrimitive(sourceName),
+                "dependencyModule" to McpJsonPrimitive(targetName),
+                "action" to McpJsonPrimitive("ADD"),
+            ),
+        )
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        assertEquals(
+            listOf("moduleName", "targetModule", "operation"),
+            obj.getAsJsonObject("details").getAsJsonArray("missingParameters").map { it.asString },
+        )
+        val error = obj.get("error").asString
+        assertTrue(
+            "must name every dropped spelling: $error",
+            error.contains("'moduleReference'") && error.contains("'dependencyModule'") && error.contains("'action'"),
+        )
+
+        val retried = callThroughBridge(
+            toolset, "mps_mcp_module_dependency",
+            mapOf(
+                "moduleName" to McpJsonPrimitive(sourceName),
+                "targetModule" to McpJsonPrimitive(targetName),
+                "operation" to McpJsonPrimitive("ADD"),
+            ),
+        )
+        expectOk(retried)
+    }
+
+    @Test
+    fun `add_module_dependency registers a default dependency in the descriptor`() {
+        val source = createSolution("test.dep.module.src${System.nanoTime()}")
+        val target = createSolution("test.dep.module.tgt${System.nanoTime()}")
+
+        val response = runTool(toolset) {
+            it.mps_mcp_module_dependency(
+                source.moduleName!!, target.moduleName!!,
+                /* operation = */DependencyOperation.ADD, /* scope = */ null, /* reexport = */ false,
+            )
+        }
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertTrue("expected ok envelope: $response", obj.get("ok").asBoolean)
+
+        val hit = readOnRepo {
+            (source as AbstractModule).moduleDescriptor!!.dependencies
+                .find { it.moduleRef == target.moduleReference }
+        }
+        assertNotNull("dependency must be present in descriptor", hit)
+        assertEquals(SDependencyScope.DEFAULT, hit!!.scope)
+        assertFalse(hit.isReexport)
+    }
+
+    @Test
+    fun `add_module_dependency self-loop is rejected`() {
+        val solution = createSolution()
+        val name = solution.moduleName!!
+        val response = runTool(toolset) {
+            it.mps_mcp_module_dependency(name, name, DependencyOperation.ADD, null, false)
+        }
+        assertTrue(expectErr(response).contains("itself"))
+    }
+
+    @Test
+    fun `add_module_dependency reports NOT_FOUND on unknown target`() {
+        val solution = createSolution()
+        val response = runTool(toolset) {
+            it.mps_mcp_module_dependency(solution.moduleName!!, "no.such.target", DependencyOperation.ADD, null, false)
+        }
+        assertTrue(expectErr(response).contains("not found"))
+    }
+
+    // ── dependencies: Extends scope ────────────────────────────────────────────────────────
+    // The Extends scope is persisted via a separate descriptor field per module kind, not as
+    // a `<dependency scope="extend">` element. These tests pin that contract.
+
+    /** Creates a fresh Language module registered with the test project. */
+    private fun createLanguage(name: String = "test.lang.extra${System.nanoTime()}"): Language {
+        val dir = createDirInProject(name)
+        var lang: Language? = null
+        executeCommand { lang = LanguageProducer(myProject).withGenerator(false).create(name, dir) }
+        return checkNotNull(lang) { "LanguageProducer returned null" }
+    }
+
+    @Test
+    fun `add_module_dependency with Extends writes to extendedLanguages, not to dependencies`() {
+        // Regression: previously the tool appended a `Dependency(scope=EXTENDS)` to
+        // `descriptor.dependencies`, which serializes as `<dependency scope="extend">` —
+        // a form no real .mpl uses, and which MPS's language-extension mechanism ignores.
+        // The proper persistence target is LanguageDescriptor.extendedLanguages.
+        val target = createLanguage()
+        val response = runTool(toolset) {
+            it.mps_mcp_module_dependency(
+                language.moduleName!!, target.moduleName!!,
+                /* operation = */ DependencyOperation.ADD, /* scope = */ "Extends", /* reexport = */ false,
+            )
+        }
+        assertTrue("expected ok envelope: $response",
+            JsonParser.parseString(response).asJsonObject.get("ok").asBoolean)
+
+        readOnRepo {
+            val descriptor = (language as AbstractModule).moduleDescriptor as LanguageDescriptor
+            assertTrue("target must appear in extendedLanguages: ${descriptor.extendedLanguages}",
+                descriptor.extendedLanguages.contains(target.moduleReference))
+            val strayDep = descriptor.dependencies.firstOrNull { it.moduleRef == target.moduleReference }
+            assertNull("Extends must NOT be persisted as a regular <dependency> entry: $strayDep",
+                strayDep)
+        }
+    }
+
+    @Test
+    fun `add_module_dependency with Extends accepts the JVM enum spelling EXTENDS`() {
+        // The scope parameter is parsed by both presentation ("Extends") and JVM-enum name
+        // ("EXTENDS"); the latter is what the tool's response shape reports back.
+        val target = createLanguage()
+        val response = runTool(toolset) {
+            it.mps_mcp_module_dependency(
+                language.moduleName!!, target.moduleName!!, DependencyOperation.ADD, "EXTENDS", false,
+            )
+        }
+        assertTrue(JsonParser.parseString(response).asJsonObject.get("ok").asBoolean)
+        readOnRepo {
+            val descriptor = (language as AbstractModule).moduleDescriptor as LanguageDescriptor
+            assertTrue(descriptor.extendedLanguages.contains(target.moduleReference))
+        }
+    }
+
+    @Test
+    fun `add_module_dependency with Extends is idempotent on repeated calls`() {
+        val target = createLanguage()
+        val source = language.moduleName!!
+        val targetName = target.moduleName!!
+        repeat(2) {
+            val resp = runTool(toolset) {
+                it.mps_mcp_module_dependency(source, targetName, DependencyOperation.ADD, "Extends", false)
+            }
+            assertTrue(JsonParser.parseString(resp).asJsonObject.get("ok").asBoolean)
+        }
+        readOnRepo {
+            val descriptor = (language as AbstractModule).moduleDescriptor as LanguageDescriptor
+            val count = descriptor.extendedLanguages.count { it == target.moduleReference }
+            assertEquals("extendedLanguages must contain exactly one entry per target", 1, count)
+        }
+    }
+
+    @Test
+    fun `add_module_dependency with Extends rejects a Solution source`() {
+        // Solutions have no extension semantics; the call must fail explicitly rather than
+        // silently write a meaningless `<dependency scope="extend">` entry.
+        val source = createSolution("test.ext.sol.src${System.nanoTime()}")
+        val target = createLanguage()
+        val response = runTool(toolset) {
+            it.mps_mcp_module_dependency(source.moduleName!!, target.moduleName!!, DependencyOperation.ADD, "Extends", false)
+        }
+        val err = expectErr(response)
+        assertTrue("error must mention Solution: $err", err.contains("Solution"))
+    }
+
+    @Test
+    fun `add_module_dependency with Extends rejects a kind-mismatched target`() {
+        // Language can only extend Language. Asking it to extend a Solution is meaningless.
+        val target = createSolution("test.ext.sol.tgt${System.nanoTime()}")
+        val response = runTool(toolset) {
+            it.mps_mcp_module_dependency(
+                language.moduleName!!, target.moduleName!!, DependencyOperation.ADD, "Extends", false,
+            )
+        }
+        val err = expectErr(response)
+        assertTrue("error must mention the kind mismatch: $err",
+            err.contains("Extends") && err.contains("Language") && err.contains("Solution"))
+    }
+
+    @Test
+    fun `remove_module_dependency drops an Extends entry from extendedLanguages`() {
+        // Symmetric reversibility: an Extends added via the tool must be removable via the
+        // same tool. The remove path probes both `<dependencies>` and the Extends-side
+        // collections, so callers don't need a separate API for the two cases.
+        val target = createLanguage()
+        val source = language.moduleName!!
+        val targetName = target.moduleName!!
+
+        expectOk(runTool(toolset) {
+            it.mps_mcp_module_dependency(source, targetName, DependencyOperation.ADD, "Extends", false)
+        })
+        readOnRepo {
+            val descriptor = (language as AbstractModule).moduleDescriptor as LanguageDescriptor
+            assertTrue("test precondition: extension must be in place",
+                descriptor.extendedLanguages.contains(target.moduleReference))
+        }
+
+        val resp = runTool(toolset) {
+            it.mps_mcp_module_dependency(source, targetName, DependencyOperation.DELETE)
+        }
+        assertTrue("expected ok envelope: $resp",
+            JsonParser.parseString(resp).asJsonObject.get("ok").asBoolean)
+
+        readOnRepo {
+            val descriptor = (language as AbstractModule).moduleDescriptor as LanguageDescriptor
+            assertFalse("extendedLanguages must no longer contain the target",
+                descriptor.extendedLanguages.contains(target.moduleReference))
+        }
+    }
+
+    @Test
+    fun `remove_module_dependency drops Extends entry even when target module is gone`() {
+        // After the target is deleted from the project, resolveModule() can't find it. The
+        // remove path falls back to a name/serialized-reference scan that must include the
+        // Extends collections, otherwise the user is stuck with an orphan extendedLanguage entry.
+        val target = createLanguage()
+        val source = language.moduleName!!
+        val targetName = target.moduleName!!
+        val targetRef = target.moduleReference
+
+        expectOk(runTool(toolset) {
+            it.mps_mcp_module_dependency(source, targetName, DependencyOperation.ADD, "Extends", false)
+        })
+
+        // Remove the target module from the project so resolveModule(...) fails for it.
+        expectOk(runTool(toolset) { it.mps_mcp_update_module(targetName, operation = ModuleOperation.DELETE) })
+
+        val resp = runTool(toolset) {
+            it.mps_mcp_module_dependency(source, targetName, DependencyOperation.DELETE)
+        }
+        assertTrue("expected ok envelope: $resp",
+            JsonParser.parseString(resp).asJsonObject.get("ok").asBoolean)
+
+        readOnRepo {
+            val descriptor = (language as AbstractModule).moduleDescriptor as LanguageDescriptor
+            assertFalse("extendedLanguages must no longer contain the (now-deleted) target",
+                descriptor.extendedLanguages.contains(targetRef))
+        }
+    }
+
+    @Test
+    fun `remove_module_dependency drops a previously added dependency`() {
+        val source = createSolution("test.dep.remove.src${System.nanoTime()}")
+        val target = createSolution("test.dep.remove.tgt${System.nanoTime()}")
+        val sourceName = source.moduleName!!
+        val targetName = target.moduleName!!
+
+        // Seed the dependency through the tool itself.
+        val addResp = runTool(toolset) {
+            it.mps_mcp_module_dependency(sourceName, targetName, DependencyOperation.ADD, null, false)
+        }
+        assertTrue(JsonParser.parseString(addResp).asJsonObject.get("ok").asBoolean)
+
+        val removeResp = runTool(toolset) {
+            it.mps_mcp_module_dependency(sourceName, targetName, DependencyOperation.DELETE)
+        }
+        val obj = JsonParser.parseString(removeResp).asJsonObject
+        assertTrue("expected ok envelope: $removeResp", obj.get("ok").asBoolean)
+
+        val hit = readOnRepo {
+            (source as AbstractModule).moduleDescriptor!!.dependencies
+                .firstOrNull { it.moduleRef == target.moduleReference }
+        }
+        assertNull("dependency must be gone from descriptor", hit)
+    }
+
+    @Test
+    fun `remove_module_dependency reports NOT_FOUND when nothing matches`() {
+        val source = createSolution()
+        val response = runTool(toolset) {
+            it.mps_mcp_module_dependency(source.moduleName!!, "ghost.target", DependencyOperation.DELETE)
+        }
+        assertTrue(expectErr(response).contains("not found"))
+    }
+
+    // ── facets ─────────────────────────────────────────────────────────────────────────────
+
+    @Test
+    fun `list_facet_types returns a non-empty list of registered facet types`() {
+        val response = runTool(toolset) { it.mps_mcp_list_facet_types(/* moduleName = */ null) }
+        val data = expectOk(response)
+        val types = data.get("facetTypes").asJsonArray
+        assertTrue("expected at least one registered facet type: $response", types.size() > 0)
+        // Each entry must have a type and presentation, even if applicability is omitted.
+        for (e in types) {
+            val obj = e.asJsonObject
+            assertNotNull(obj.get("type"))
+            assertNotNull(obj.get("presentation"))
+        }
+    }
+
+    @Test
+    fun `list_facet_types annotates applicability when a module is given`() {
+        val solution = createSolution()
+        val response = runTool(toolset) { it.mps_mcp_list_facet_types(solution.moduleName!!) }
+        val data = expectOk(response)
+        val types = data.get("facetTypes").asJsonArray
+        assertTrue(types.size() > 0)
+        for (e in types) {
+            val obj = e.asJsonObject
+            assertTrue("module-scoped listing must include applicability flags: $obj",
+                obj.has("applicableToModule") && obj.has("recommendedForModule"))
+        }
+    }
+
+    @Test
+    fun `get_module_facets names moduleName when the caller sent moduleRef`() {
+        // D43: 'moduleRef' is a neighbouring tool's spelling of the same idea.
+        val solution = createSolution()
+        val moduleName = solution.moduleName!!
+
+        val response = callThroughBridge(
+            toolset, "mps_mcp_get_module_facets",
+            mapOf("moduleRef" to McpJsonPrimitive(moduleName)),
+        )
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        assertEquals(listOf("moduleName"), obj.getAsJsonObject("details").getAsJsonArray("missingParameters").map { it.asString })
+        val error = obj.get("error").asString
+        assertTrue("must name the key and the dropped spelling: $error",
+            error.startsWith("moduleName is required.") && error.contains("'moduleRef'"))
+
+        val retried = callThroughBridge(
+            toolset, "mps_mcp_get_module_facets",
+            mapOf("moduleName" to McpJsonPrimitive(moduleName)),
+        )
+        expectOk(retried)
+    }
+
+    @Test
+    fun `get_module_facets returns containers for active and persisted facets`() {
+        val solution = createSolution()
+        val response = runTool(toolset) { it.mps_mcp_get_module_facets(solution.moduleName!!) }
+        val data = expectOk(response)
+        // For a fresh solution, both lists are typically empty, but they must be present
+        // and well-formed arrays. The "discrepancies" array must also be present.
+        assertNotNull("activeFacets array must be present", data.get("activeFacets"))
+        assertNotNull("persistedFacets array must be present", data.get("persistedFacets"))
+        assertNotNull("discrepancies array must be present", data.get("discrepancies"))
+        assertTrue(data.get("activeFacets").isJsonArray)
+        assertTrue(data.get("persistedFacets").isJsonArray)
+        assertTrue(data.get("discrepancies").isJsonArray)
+    }
+
+    @Test
+    fun `get_module_facets returns NOT_FOUND for unknown module`() {
+        val response = runTool(toolset) { it.mps_mcp_get_module_facets("ghost") }
+        assertTrue(expectErr(response).contains("not found"))
+    }
+
+    @Test
+    fun `update_module_facet names moduleName and facetType when the caller sends wrong keys`() {
+        // D43: the caller sent both required values under neighbouring-tool spellings at once.
+        val solution = createSolution()
+        val moduleName = solution.moduleName!!
+
+        val response = callThroughBridge(
+            toolset, "mps_mcp_update_module_facet",
+            mapOf(
+                "moduleReference" to McpJsonPrimitive(moduleName),
+                "facet" to McpJsonPrimitive("tests"),
+                "enabled" to kotlinx.serialization.json.JsonPrimitive(true),
+            ),
+        )
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        assertEquals(
+            listOf("moduleName", "facetType"),
+            obj.getAsJsonObject("details").getAsJsonArray("missingParameters").map { it.asString },
+        )
+        val error = obj.get("error").asString
+        assertTrue(
+            "must name both dropped spellings: $error",
+            error.contains("'moduleReference'") && error.contains("'facet'"),
+        )
+
+        val retried = callThroughBridge(
+            toolset, "mps_mcp_update_module_facet",
+            mapOf(
+                "moduleName" to McpJsonPrimitive(moduleName),
+                "facetType" to McpJsonPrimitive("tests"),
+                "enabled" to kotlinx.serialization.json.JsonPrimitive(true),
+            ),
+        )
+        expectOk(retried)
+    }
+
+    @Test
+    fun `update_module_facet accepts flat and structured memento formats`() {
+        val solution = createSolution()
+        val moduleName = solution.moduleName!!
+
+        expectOk(updateFacet(moduleName, """{"port":8080,"enabled":true,"properties":"flat","children":42}"""))
+        val flat = persistedFacetMemento(moduleName)
+        val flatProperties = flat.getAsJsonObject("properties")
+        assertEquals("8080", flatProperties.get("port").asString)
+        assertEquals("true", flatProperties.get("enabled").asString)
+        assertEquals("flat", flatProperties.get("properties").asString)
+        assertEquals("42", flatProperties.get("children").asString)
+
+        val structuredSettings = """
+            {
+              "properties": { "port": 8080, "flag": true },
+              "text": 42,
+              "children": [
+                { "type": 7, "text": false },
+                { "type": true, "properties": { "kind": "boolean" } },
+                { "type": "", "text": "" },
+                { "type": "nested", "children": [ { "type": "leaf", "properties": { "value": "ok" } } ] }
+              ]
+            }
+        """.trimIndent()
+        expectOk(updateFacet(moduleName, structuredSettings))
+        val structured = persistedFacetMemento(moduleName)
+        assertEquals("8080", structured.getAsJsonObject("properties").get("port").asString)
+        assertEquals("true", structured.getAsJsonObject("properties").get("flag").asString)
+        assertEquals("42", structured.get("text").asString)
+        val children = structured.getAsJsonArray("children")
+        assertEquals("7", children[0].asJsonObject.get("type").asString)
+        assertEquals("false", children[0].asJsonObject.get("text").asString)
+        assertEquals("true", children[1].asJsonObject.get("type").asString)
+        assertEquals("boolean", children[1].asJsonObject.getAsJsonObject("properties").get("kind").asString)
+        assertEquals("", children[2].asJsonObject.get("type").asString)
+        assertEquals("", children[2].asJsonObject.get("text").asString)
+        val nested = children[3].asJsonObject.getAsJsonArray("children")[0].asJsonObject
+        assertEquals("leaf", nested.get("type").asString)
+        assertEquals("ok", nested.getAsJsonObject("properties").get("value").asString)
+    }
+
+    @Test
+    fun `update_module_facet rejects malformed mementos without replacing existing settings or logging dispatch failures`() {
+        val solution = createSolution()
+        val moduleName = solution.moduleName!!
+        expectOk(updateFacet(moduleName, """{"seed":"keep"}"""))
+        val before = persistedFacetMemento(moduleName)
+        val invalidSettings = listOf(
+            "{" to "settingsJson",
+            "[]" to "settingsJson",
+            """{"text":{}}""" to "settingsJson.text",
+            """{"text":[]}""" to "settingsJson.text",
+            """{"text":null,"properties":{}}""" to "settingsJson.text",
+            """{"properties":{},"children":null}""" to "settingsJson.children",
+            """{"children":[],"properties":[]}""" to "settingsJson.properties",
+            """{"children":[null]}""" to "settingsJson.children[0]",
+            """{"children":[42]}""" to "settingsJson.children[0]",
+            """{"children":[{}]}""" to "settingsJson.children[0].type",
+            """{"children":[{"type":null}]}""" to "settingsJson.children[0].type",
+            """{"children":[{"type":{}}]}""" to "settingsJson.children[0].type",
+            """{"children":[{"type":[]}]}""" to "settingsJson.children[0].type",
+            """{"children":[{"type":"parent","children":[{"type":"child","text":[]}]}]}""" to
+                "settingsJson.children[0].children[0].text",
+            """{"children":[{"type":"valid"},{"type":"parent","children":[{"type":"ok"},{"type":[]}]}]}""" to
+                "settingsJson.children[1].children[1].type",
+        )
+
+        for ((settings, expectedPath) in invalidSettings) {
+            val (response, messages) = captureLogMessages { updateFacet(moduleName, settings) }
+            val envelope = JsonParser.parseString(response).asJsonObject
+            assertFalse("expected error envelope: $response", envelope.get("ok").asBoolean)
+            assertEquals("INVALID_REQUEST", envelope.get("code").asString)
+            assertTrue("error must name '$expectedPath': $response", envelope.get("error").asString.contains(expectedPath))
+            if (settings == "{") {
+                val error = envelope.get("error").asString
+                assertTrue("a truncated settingsJson must get the closer diagnosis: $error", error.contains("unbalanced: 1 closer(s) missing"))
+                assertFalse("settingsJson cannot be a file: $error", error.contains("temp-file"))
+            }
+            assertEquals("invalid settings must leave the persisted memento unchanged", before, persistedFacetMemento(moduleName))
+            assertTrue(
+                "settings validation must not log an action-dispatch failure: $messages",
+                messages.none { it.contains("Action dispatch failed") || it.contains("Unexpected failure in MCP tool") },
+            )
+        }
+    }
+
+    @Test
+    fun `update_module_facet disabling ignores malformed settings`() {
+        val solution = createSolution()
+        val moduleName = solution.moduleName!!
+        expectOk(updateFacet(moduleName, """{"seed":"keep"}"""))
+
+        val response = runTool(toolset) {
+            it.mps_mcp_update_module_facet(moduleName, "tests", enabled = false, settingsJson = JsonOrText("{"))
+        }
+        expectOk(response)
+        val persisted = expectOk(runTool(toolset) { it.mps_mcp_get_module_facets(moduleName) })
+            .getAsJsonArray("persistedFacets")
+        assertTrue(persisted.none { it.asJsonObject.get("type").asString == "tests" })
+    }
+
+    @Test
+    fun `update_module_facet with unknown facet type is rejected`() {
+        val solution = createSolution()
+        val response = runTool(toolset) {
+            it.mps_mcp_update_module_facet(
+                solution.moduleName!!,
+                /* facetType = */ "totally-unknown-facet-type",
+                /* enabled = */ true,
+                /* settingsJson = */ null,
+            )
+        }
+        assertTrue(expectErr(response).contains("Unknown facet type"))
+    }
+
+    @Test
+    fun `update_module_facet with disabled=false on an absent facet is a no-op`() {
+        val solution = createSolution()
+        val response = runTool(toolset) {
+            it.mps_mcp_update_module_facet(
+                solution.moduleName!!,
+                "totally-unknown-facet-type",
+                /* enabled = */ false,
+                null,
+            )
+        }
+        // Disabling an absent facet should succeed without touching the descriptor — the
+        // factory lookup is skipped because we never need to create the memento.
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertTrue("expected ok envelope: $response", obj.get("ok").asBoolean)
+    }
+
+    private fun updateFacet(moduleName: String, settingsJson: String): String =
+        runTool(toolset) {
+            it.mps_mcp_update_module_facet(moduleName, "tests", enabled = true, settingsJson = JsonOrText(settingsJson))
+        }
+
+    private fun persistedFacetMemento(moduleName: String): JsonObject {
+        val facets = expectOk(runTool(toolset) { it.mps_mcp_get_module_facets(moduleName) })
+            .getAsJsonArray("persistedFacets")
+        return facets
+            .map { it.asJsonObject }
+            .single { it.get("type").asString == "tests" }
+            .getAsJsonObject("memento")
+    }
+
+    @Test
+    fun `create_module rejects directory collision with INVALID_REQUEST`() {
+        val name = "test.collision.lang${System.nanoTime()}"
+        val directory = freshPathInProject(name)
+
+        val firstResponse = runTool(toolset) {
+            it.mps_mcp_create_module("language", name, directory, null, null, false, false, false)
+        }
+        expectOk(firstResponse)
+
+        val collisionResponse = runTool(toolset) {
+            it.mps_mcp_create_module("language", name, directory, null, null, false, false, false)
+        }
+        
+        val obj = JsonParser.parseString(collisionResponse).asJsonObject
+        assertFalse("expected error envelope", obj.get("ok").asBoolean)
+        val code = obj.get("code")?.asString
+        assertEquals("expected INVALID_REQUEST", "INVALID_REQUEST", code)
+    }
+
+
+    // ── generation plans: SET/CLEAR_GENERATION_PLAN, DevKit exports ──────────────────────────────────
+
+    /** A model of [solution] whose first root is a one-step plan named [planName]; extra plain plans follow it. */
+    private fun planModel(solution: Solution, modelName: String, planName: String, vararg otherPlans: String): org.jetbrains.mps.openapi.model.SModel {
+        val model = createModel(solution, modelName)
+        executeCommand {
+            for (name in listOf(planName) + otherPlans) {
+                model.addRootNode(GenPlanTestNodes.planNode(name).apply { addChild(GenPlanTestNodes.PLAN_STEPS, GenPlanTestNodes.checkpointNode("cp")) })
+            }
+        }
+        return model
+    }
+
+    private fun createDevkit(): jetbrains.mps.project.DevKit {
+        val name = "test.plan.devkit${System.nanoTime()}"
+        expectOk(runTool(toolset) { it.mps_mcp_create_module("devkit", name, freshPathInProject(name), null, null, false, false, false) })
+        return readOnRepo { myProject.projectModules.single { it.moduleName == name } as jetbrains.mps.project.DevKit }
+    }
+
+    private fun setPlan(module: String, planModel: String?, operation: ModuleOperation = ModuleOperation.SET_GENERATION_PLAN, newName: String? = null): String =
+        runTool(toolset) { it.mps_mcp_update_module(module, newName, operation.name, false, planModel) }
+
+    private fun generationPlanOf(response: String): JsonObject = expectOk(response).getAsJsonObject("generationPlan")
+
+    private fun descriptorText(module: AbstractModule): String = File(module.descriptorFile!!.path).readText()
+
+    private fun persistedFacetTypes(moduleName: String): List<String> =
+        expectOk(runTool(toolset) { it.mps_mcp_get_module_facets(moduleName) })
+            .getAsJsonArray("persistedFacets").map { it.asJsonObject.get("type").asString }
+
+    @Test
+    fun `SET_GENERATION_PLAN on a solution writes the Custom Generation facet, replaces and clears it`() {
+        val plans = createSolution("test.plans${System.nanoTime()}")
+        val first = planModel(plans, "test.plans.first", "FirstPlan", "BranchPlan")
+        val second = planModel(plans, "test.plans.second", "SecondPlan")
+        val target = createSolution("test.plan.target${System.nanoTime()}")
+        val targetName = target.moduleName!!
+        val facetsBefore = persistedFacetTypes(targetName)
+
+        val set = setPlan(targetName, modelRefOf(first))
+        val attached = generationPlanOf(set)
+        assertEquals(set, "FACET", attached.get("attachedVia").asString)
+        assertEquals("FirstPlan", attached.get("plan").asString)
+        assertTrue(attached.get("changed").asBoolean)
+        assertTrue("several Plan roots are explained: $set", warningsOf(set).contains("first in root order"))
+        assertTrue("the missing dependency on the plan's solution is pointed out: $set", warningsOf(set).contains("does not depend"))
+        assertEquals(facetsBefore + "generator", persistedFacetTypes(targetName))
+        readOnRepo {
+            val facet = target.getFacetOfType("generator") as jetbrains.mps.generator.CustomGenerationModuleFacet
+            assertEquals(first.reference, facet.planModelReference)
+            assertNotNull("adding the facet recreates the others from the descriptor", target.getFacetOfType("java"))
+        }
+        assertTrue("the facet reaches the .msd", descriptorText(target).contains(modelRefOf(first)))
+
+        assertFalse("the same plan again changes nothing", generationPlanOf(setPlan(targetName, modelRefOf(first))).get("changed").asBoolean)
+
+        val replaced = generationPlanOf(setPlan(targetName, "test.plans.second"))
+        assertEquals("SecondPlan", replaced.get("plan").asString)
+        assertEquals(modelRefOf(first), replaced.get("previousModel").asString)
+        readOnRepo {
+            val facet = target.getFacetOfType("generator") as jetbrains.mps.generator.CustomGenerationModuleFacet
+            assertEquals(second.reference, facet.planModelReference)
+            assertNotNull("the other facets survive", target.getFacetOfType("java"))
+        }
+        val replacedOnDisk = descriptorText(target)
+        assertTrue("the in-place update reaches the .msd", replacedOnDisk.contains(modelRefOf(second)) && !replacedOnDisk.contains(modelRefOf(first)))
+
+        val cleared = generationPlanOf(setPlan(targetName, null, ModuleOperation.CLEAR_GENERATION_PLAN))
+        assertTrue(cleared.get("changed").asBoolean)
+        assertEquals(facetsBefore, persistedFacetTypes(targetName))
+        readOnRepo {
+            assertNull(target.getFacetOfType("generator"))
+            assertNotNull("removing the facet keeps the others", target.getFacetOfType("java"))
+        }
+        assertFalse("the facet is gone from the .msd", descriptorText(target).contains("planModel"))
+        assertFalse(generationPlanOf(setPlan(targetName, null, ModuleOperation.CLEAR_GENERATION_PLAN)).get("changed").asBoolean)
+    }
+
+    @Test
+    fun `SET_GENERATION_PLAN on a devkit sets its plan and asks for the plan solution export`() {
+        val plans = createSolution("test.plans${System.nanoTime()}")
+        val model = planModel(plans, "test.plans.devkit", "KitPlan")
+        val devkit = createDevkit()
+
+        val set = setPlan(devkit.moduleName!!, modelRefOf(model))
+        assertEquals("DEVKIT", generationPlanOf(set).get("attachedVia").asString)
+        assertTrue("an unexported plan solution is named: $set", warningsOf(set).contains("is not exported"))
+        readOnRepo { assertEquals(model.reference, devkit.moduleDescriptor!!.associatedGenPlan) }
+        assertTrue("the plan is persisted", File(devkit.descriptorFile!!.path).readText().contains("generation-plan"))
+
+        val export = expectOk(runTool(toolset) {
+            it.mps_mcp_module_dependency(devkit.moduleName!!, plans.moduleName!!, DependencyOperation.ADD, null, false)
+        })
+        assertEquals("exportedSolutions", export.get("devkitCollection").asString)
+        val again = setPlan(devkit.moduleName!!, modelRefOf(model))
+        assertFalse(generationPlanOf(again).get("changed").asBoolean)
+        assertFalse("an exported plan solution is not reported: $again", warningsOf(again).contains("is not exported"))
+
+        assertTrue(generationPlanOf(setPlan(devkit.moduleName!!, null, ModuleOperation.CLEAR_GENERATION_PLAN)).get("changed").asBoolean)
+        readOnRepo { assertNull(devkit.moduleDescriptor!!.associatedGenPlan) }
+    }
+
+    @Test
+    fun `SET_GENERATION_PLAN refuses what MPS cannot use and leaves the module alone`() {
+        val plans = createSolution("test.plans${System.nanoTime()}")
+        val planless = createModel(plans, "test.plans.empty")
+        val badFork = createModel(plans, "test.plans.badfork")
+        executeCommand {
+            val branch = GenPlanTestNodes.planNode("Branch").apply { addChild(GenPlanTestNodes.PLAN_STEPS, GenPlanTestNodes.checkpointNode("b")) }
+            badFork.addRootNode(GenPlanTestNodes.planNode("Main").apply { addChild(GenPlanTestNodes.PLAN_STEPS, GenPlanTestNodes.conceptListForkNode(branch)) })
+            badFork.addRootNode(branch)
+        }
+        val mismatch = createModel(plans, "test.plans.mismatch")
+        executeCommand {
+            val other = GenPlanTestNodes.planNode("Other").apply { addChild(GenPlanTestNodes.PLAN_STEPS, GenPlanTestNodes.checkpointNode("o")) }
+            mismatch.addRootNode(GenPlanTestNodes.planNode("Main").apply { addChild(GenPlanTestNodes.PLAN_STEPS, GenPlanTestNodes.checkpointNode("m")) })
+            mismatch.addRootNode(other)
+            mismatch.addRootNode(GenPlanTestNodes.contributionNode(other))
+        }
+        val good = planModel(plans, "test.plans.good", "Good")
+        val target = createSolution("test.plan.target${System.nanoTime()}").moduleName!!
+
+        assertTrue(expectErr(setPlan(target, modelRefOf(planless))).contains("no Plan or PlanContribution root"))
+        assertTrue(expectErr(setPlan(target, modelRefOf(badFork))).contains("ConceptListSelector"))
+        assertTrue(expectErr(setPlan(target, modelRefOf(mismatch))).contains("PlanContribution"))
+        assertTrue(expectErr(setPlan(target, "no.such.model@genplan")).contains("not found"))
+        assertTrue(expectErr(setPlan(language.moduleName!!, modelRefOf(good))).contains("DevKits"))
+        assertTrue(expectErr(setPlan(target, null)).contains("needs planModel"))
+        assertTrue(expectErr(setPlan(target, modelRefOf(good), newName = "x")).contains("takes no newName"))
+        assertTrue(expectErr(setPlan(target, modelRefOf(good), ModuleOperation.RENAME)).contains("SET_GENERATION_PLAN"))
+        assertFalse("nothing was attached", persistedFacetTypes(target).contains("generator"))
+    }
+
+    @Test
+    fun `module_dependency files a devkit's targets into its exports and persists them`() {
+        val devkit = createDevkit()
+        val dk = devkit.moduleName!!
+        val solution = createSolution("test.dk.sol${System.nanoTime()}")
+        val other = createDevkit()
+
+        val lang = expectOk(runTool(toolset) { it.mps_mcp_module_dependency(dk, language.moduleName!!, DependencyOperation.ADD, null, false) })
+        assertEquals("exportedLanguages", lang.get("devkitCollection").asString)
+        assertEquals("exportedSolutions", expectOk(runTool(toolset) {
+            it.mps_mcp_module_dependency(dk, solution.moduleName!!, DependencyOperation.ADD, "Default", false)
+        }).get("devkitCollection").asString)
+        assertEquals("extendedDevkits", expectOk(runTool(toolset) {
+            it.mps_mcp_module_dependency(dk, other.moduleName!!, DependencyOperation.ADD, null, false)
+        }).get("devkitCollection").asString)
+        assertTrue(expectOk(runTool(toolset) {
+            it.mps_mcp_module_dependency(dk, language.moduleName!!, DependencyOperation.ADD, null, false)
+        }).get("alreadyPresent").asBoolean)
+
+        readOnRepo {
+            val descriptor = devkit.moduleDescriptor!!
+            assertEquals(listOf(language.moduleReference), descriptor.exportedLanguages.toList())
+            assertEquals(listOf(solution.moduleReference), descriptor.exportedSolutions.toList())
+            assertEquals(listOf(other.moduleReference), descriptor.extendedDevkits.toList())
+            assertTrue("no unsaved regular dependency is left", descriptor.dependencies.isEmpty())
+        }
+        val saved = File(devkit.descriptorFile!!.path).readText()
+        assertTrue(saved, saved.contains("exported-language") && saved.contains("exported-solution"))
+
+        assertTrue(expectErr(runTool(toolset) { it.mps_mcp_module_dependency(dk, solution.moduleName!!, DependencyOperation.ADD, null, true) })
+            .contains("reexport"))
+        assertTrue(expectErr(runTool(toolset) { it.mps_mcp_module_dependency(dk, solution.moduleName!!, DependencyOperation.ADD, "Design", false) })
+            .contains("does not apply to a DevKit"))
+
+        val removed = expectOk(runTool(toolset) { it.mps_mcp_module_dependency(dk, solution.moduleName!!, DependencyOperation.DELETE, null, false) })
+        assertEquals("exportedSolutions", removed.getAsJsonArray("devkitCollections").single().asString)
+        readOnRepo { assertTrue(devkit.moduleDescriptor!!.exportedSolutions.isEmpty()) }
+    }
+
+    @Test
+    fun `update_module_facet names the settings a facet ignores and refuses a devkit`() {
+        val plans = createSolution("test.plans${System.nanoTime()}")
+        val model = planModel(plans, "test.plans.facet", "FacetPlan")
+        val target = createSolution("test.facet.target${System.nanoTime()}").moduleName!!
+
+        val response = runTool(toolset) {
+            it.mps_mcp_update_module_facet(target, "generator", true, JsonOrText("""{"plan":"${modelRefOf(model)}"}"""))
+        }
+        expectOk(response)
+        assertTrue("the ignored key is named: $response", warningsOf(response).contains("ignores the settings plan"))
+        assertTrue("the right key and the dedicated operation are pointed out: $response",
+            warningsOf(response).contains("planModel") && warningsOf(response).contains("SET_GENERATION_PLAN"))
+
+        val kept = runTool(toolset) {
+            it.mps_mcp_update_module_facet(target, "generator", true, JsonOrText("""{"planModel":"${modelRefOf(model)}"}"""))
+        }
+        assertFalse("a kept key is not reported as ignored: $kept", warningsOf(kept).contains("ignores"))
+        assertTrue("the generator facet always points at the validating operation: $kept", warningsOf(kept).contains("SET_GENERATION_PLAN"))
+
+        val devkit = createDevkit()
+        assertTrue(expectErr(runTool(toolset) {
+            it.mps_mcp_update_module_facet(devkit.moduleName!!, "generator", true, JsonOrText("""{"planModel":"${modelRefOf(model)}"}"""))
+        }).contains("SET_GENERATION_PLAN"))
+    }
+
+    @Test
+    fun `SET_GENERATION_PLAN warns about a plan model its own solution generates and explains contributions and cycles`() {
+        val solution = createSolution("test.plan.self${System.nanoTime()}")
+        val own = planModel(solution, "test.plan.self.plans", "OwnPlan")
+        val self = setPlan(solution.moduleName!!, modelRefOf(own))
+        assertTrue("a generatable plan model in the governed solution is pointed out: $self", warningsOf(self).contains("Do not generate"))
+
+        val plans = createSolution("test.plans${System.nanoTime()}")
+        val contribution = createModel(plans, "test.plans.contribution")
+        val cyclic = createModel(plans, "test.plans.cyclic")
+        executeCommand {
+            val forked = GenPlanTestNodes.planNode("Forked").apply { addChild(GenPlanTestNodes.PLAN_STEPS, GenPlanTestNodes.checkpointNode("f")) }
+            contribution.addRootNode(forked)
+            contribution.addRootNode(GenPlanTestNodes.contributionNode(forked))
+            val loop = GenPlanTestNodes.planNode("Loop")
+            loop.addChild(GenPlanTestNodes.PLAN_STEPS, GenPlanTestNodes.forkNode(loop))
+            cyclic.addRootNode(loop)
+        }
+        val target = createSolution("test.plan.target${System.nanoTime()}").moduleName!!
+        val contributed = setPlan(target, modelRefOf(contribution))
+        assertTrue(generationPlanOf(contributed).get("contributed").asBoolean)
+        assertTrue("a contributed plan's empty main branch is explained: $contributed", warningsOf(contributed).contains("main branch is empty"))
+        assertTrue(expectErr(setPlan(target, modelRefOf(cyclic))).contains("forks or includes itself"))
+    }
+
+    @Test
+    fun `devkit export removal warns about the plan and ghost dependencies are cleaned up`() {
+        val plans = createSolution("test.plans${System.nanoTime()}")
+        val model = planModel(plans, "test.plans.dk", "KitPlan")
+        val devkit = createDevkit()
+        val dk = devkit.moduleName!!
+        // What earlier server versions left behind for a DevKit "dependency": an unsaved regular entry.
+        executeCommand { devkit.moduleDescriptor!!.dependencies.add(jetbrains.mps.project.structure.modules.Dependency(plans.moduleReference, SDependencyScope.DEFAULT, false)) }
+        expectOk(runTool(toolset) { it.mps_mcp_module_dependency(dk, plans.moduleName!!, DependencyOperation.ADD, null, false) })
+        readOnRepo { assertTrue("the ghost entry is dropped", devkit.moduleDescriptor!!.dependencies.isEmpty()) }
+        expectOk(setPlan(dk, modelRefOf(model)))
+
+        val removal = runTool(toolset) { it.mps_mcp_module_dependency(dk, plans.moduleName!!, DependencyOperation.DELETE, null, false) }
+        assertEquals("exportedSolutions", expectOk(removal).getAsJsonArray("devkitCollections").single().asString)
+        assertTrue("un-exporting the plan's solution is reported: $removal", warningsOf(removal).contains("is not exported"))
+
+        val generator = runTool(toolset) {
+            it.mps_mcp_create_module("generator", "ignored", /* directory = */ "", null, /* parentLanguage = */ language.moduleName, false, false, false)
+        }
+        val generatorName = expectOk(generator).get("name").asString
+        assertTrue(expectErr(runTool(toolset) { it.mps_mcp_module_dependency(dk, generatorName, DependencyOperation.ADD, null, false) })
+            .contains("cannot export a generator"))
+    }
+
+    @Test
+    fun `update_module_facet refuses settings the facet cannot load and changes nothing`() {
+        val target = createSolution("test.facet.bad${System.nanoTime()}")
+        val before = persistedFacetTypes(target.moduleName!!)
+        val response = runTool(toolset) {
+            it.mps_mcp_update_module_facet(target.moduleName!!, "generator", true, JsonOrText("""{"planModel":"not a model reference"}"""))
+        }
+        assertTrue(expectErr(response).contains("cannot load these settings"))
+        assertEquals(before, persistedFacetTypes(target.moduleName!!))
+        readOnRepo { assertNotNull(target.getFacetOfType("java")) }
+    }
+}

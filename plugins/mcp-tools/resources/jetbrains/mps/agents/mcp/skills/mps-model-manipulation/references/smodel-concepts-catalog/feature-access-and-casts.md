@@ -11,14 +11,17 @@
 | `RefConcept_Reference` | `1177026924588` | `<ConceptName>` concept argument wrapper |
 | `LinkIdRefExpression` | `2644386474301421077` | `link/C : role/` link literal |
 
-## Node and model pointers
+## Node, model, module and language pointers
 
-Blueprints, prerequisites and when to use them: `references/link-and-concept-literals.md`.
+Blueprints, prerequisites and when to use them: `references/link-and-concept-literals.md` (nodes) and
+`references/design-time-identities.md` (models, modules, languages, and the rule for all of them).
 
 | Concept | ID | MPS notation |
 |---|---|---|
 | `NodePointerExpression` | `7400021826774799413` | `node-ptr/Name/` literal; child `ref` = `NamedNodeReference` (lang.modelapi; ref `target`, optional `child`) or the id form `NodePointer` |
-| `ModelPointerExpression` | `1863527487546129879` | `model-ptr/model.name/` literal; child `modelRef` = `ModelPointer` (lang.modelapi) |
+| `ModelPointerExpression` | `1863527487546129879` | `model-ptr/model.name/` literal; child `modelRef` = `ModelPointer` (lang.modelapi); passes as an `SModelReference` |
+| `ModuleRefExpression` | `1678062499342629858` | `module-reference/module.name/` literal, typed `SModuleReference`; child `moduleId` = `ModulePointer` (lang.modelapi; `moduleId`, `moduleName`) |
+| `LanguageRefExpression` | `4497478346159780083` | `language/language.name/` literal, typed `SLanguage`; child `languageId` = `LanguageId` (`languageId`, `namespace`) |
 | `NodePointer_ResolveOperation` | `3648723375513868532` | `ptr.resolve(repo)` → `node<C>`; child `repositoryArg` |
 | `ModelPointer_ResolveOperation` | `4065387505485742666` | `mptr.resolve(repo)` → `model`; child `repositoryArg` |
 | `NodePointer_GetModelOperation` | `6138838330738724256` | `ptr.model` → `model-ptr` |

@@ -93,6 +93,10 @@ public class SConceptHierarchy_Test extends BaseTransformationTest {
         Assert.assertTrue(((SConcept) defaultIfaceConcept).getSuperConcept().equals(CONCEPTS.BaseConcept$gP));
         Assert.assertTrue(IterableUtil.asCollection(((SConcept) defaultIfaceConcept).getSuperInterfaces()).size() == 1);
         Assert.assertTrue(((SConcept) defaultIfaceConcept).getSuperInterfaces().iterator().next().equals(CONCEPTS.INamedConcept$Kd));
+        // the instance concept of an interface is what node.concept returns for a node created for the interface itself
+        Assert.assertTrue(SConceptOperations.isExactly(SNodeOperations.asSConcept(defaultIfaceConcept), SNodeOperations.asSConcept(SNodeOperations.asInstanceConcept(CONCEPTS.INamedConcept$Kd))));
+        // the deprecated conceptNode gives the concept declaration node, so isExactly(INamedConcept) holds there; check_Concept_IsExactlyOperation does not warn about it
+        Assert.assertTrue(SConceptOperations.isExactly(SNodeOperations.asSConcept(SNodeOperations.getConceptDeclaration(SConceptOperations.createNewNode(SNodeOperations.asInstanceConcept(CONCEPTS.INamedConcept$Kd)))), CONCEPTS.INamedConcept$Kd));
       });
     }
 

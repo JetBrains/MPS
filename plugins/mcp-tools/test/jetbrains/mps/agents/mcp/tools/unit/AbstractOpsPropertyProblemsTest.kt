@@ -239,7 +239,7 @@ class AbstractOpsPropertyProblemsTest {
             instantiationFailed(prefix, e, warnings)
     }
 
-    private val nodeToolset = JetBrainsMPSNodeMcpToolset()
+    private val nodeToolset = MPSNodeMcpToolset()
 
     @Test
     fun enumDefaultLiteralIsNotReportedAsProblem() {
@@ -1682,7 +1682,7 @@ class AbstractOpsPropertyProblemsTest {
 
     @Test
     fun expressionParseSourceTrimsTrailingSemicolonsAndWhitespace() {
-        val source = JetBrainsMPSJavaMcpToolset.effectiveJavaParseSource("left - right;; \n", FeatureKind.STATEMENTS, isExpression = true)
+        val source = MPSJavaMcpToolset.effectiveJavaParseSource("left - right;; \n", FeatureKind.STATEMENTS, isExpression = true)
 
         assertEquals("Object __mcp_expr__ = left - right;", source.code)
         assertEquals(FeatureKind.STATEMENTS, source.featureKind)
@@ -1690,7 +1690,7 @@ class AbstractOpsPropertyProblemsTest {
 
     @Test
     fun memberParseSourceUsesClassContentWithoutChangingCode() {
-        val source = JetBrainsMPSJavaMcpToolset.effectiveJavaParseSource("void run() {}", FeatureKind.METHOD, isExpression = false)
+        val source = MPSJavaMcpToolset.effectiveJavaParseSource("void run() {}", FeatureKind.METHOD, isExpression = false)
 
         assertEquals("void run() {}", source.code)
         assertEquals(FeatureKind.CLASS_CONTENT, source.featureKind)
@@ -2016,7 +2016,7 @@ class AbstractOpsPropertyProblemsTest {
         )
 
         when (result) {
-            is JetBrainsMPSNodeMcpToolset.MakeTargetResolution.Invalid -> {
+            is MPSNodeMcpToolset.MakeTargetResolution.Invalid -> {
                 assertTrue(
                     "Message should explain the expected parameters, was: '${result.message}'",
                     result.message.startsWith("No model or module references were provided") &&
@@ -2049,7 +2049,7 @@ class AbstractOpsPropertyProblemsTest {
         )
 
         when (result) {
-            is JetBrainsMPSNodeMcpToolset.MakeTargetResolution.Invalid -> {
+            is MPSNodeMcpToolset.MakeTargetResolution.Invalid -> {
                 assertEquals("None of the requested models or modules could be resolved", result.message)
                 assertEquals(listOf("missing.model"), result.details["unresolvedModels"])
                 assertEquals(listOf("missing.module"), result.details["unresolvedModules"])
@@ -2074,7 +2074,7 @@ class AbstractOpsPropertyProblemsTest {
         )
 
         when (result) {
-            is JetBrainsMPSNodeMcpToolset.MakeTargetResolution.Ok -> {
+            is MPSNodeMcpToolset.MakeTargetResolution.Ok -> {
                 assertEquals(
                     linkedSetOf("valid.model", "model-for:valid.module"),
                     result.modelsToMake,

@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<product version="3" modelHash="4qvyhmzeohx4z48vnket76ki1unzvlx">
-  <files names="EditorAspectDescriptorImpl.java:EmptyOperation_Editor.java:EmptyOperation_EditorBuilder.java:EmptyOperation_SubstituteMenu.java:Event_Editor.java:Event_EditorBuilder.java:Log_Editor.java:Log_EditorBuilder.java:OperationsList_Editor.java:OperationsList_EditorBuilder.java:Raise_Editor.java:Raise_EditorBuilder.java:StateChartContents.java:StateChartContents_ComponentBuilder.java:StateChart_Editor.java:StateChart_EditorBuilder.java:StateStates.java:StateStates_ComponentBuilder.java:StateTransitions.java:StateTransitions_ComponentBuilder.java:StateTriggers.java:StateTriggers_ComponentBuilder.java:State_Editor.java:State_EditorBuilder.java:Transition_Editor.java:Transition_EditorBuilder.java:Transition_TransformationMenu.java" />
-</product>
-

@@ -34,14 +34,14 @@ import kotlinx.coroutines.CancellationException
 import java.lang.reflect.Field
 
 /**
- * Java parser -> MPS reference-resolution engine for [JetBrainsMPSJavaMcpToolset]. Given freshly
+ * Java parser -> MPS reference-resolution engine for [MPSJavaMcpToolset]. Given freshly
  * parsed-and-inserted baseLanguage nodes, it iteratively resolves their method/type/dynamic
  * references, expands the model's used-languages and cross-model imports, and manages the JDK
  * module dependency needed during resolution. Extracted from the toolset so the toolset stays thin
  * (dispatch + serialization) and this engine is exercisable on its own.
  *
  * Stateless apart from its [logger]; every operation takes the (model, repo, inserted, options) it
- * works on. JetBrainsMPSJavaMcpToolset.finalizeInsertedNodes is the sole caller: it runs
+ * works on. MPSJavaMcpToolset.finalizeInsertedNodes is the sole caller: it runs
  * [addJDKDependency] before [resolveIteratively], then keeps or removes it according to the outcome.
  */
 internal class JavaParseResolver {

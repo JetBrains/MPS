@@ -221,7 +221,7 @@ def plugin_revision() -> str:
     dirty = "+dirty" if git("status", "--porcelain", "--", "plugins/mcp-tools/src") else ""
     classes = CHECKOUT / "plugins/mcp-tools/classes/jetbrains/mps/agents/mcp/tools"
     stamps = []
-    for rel in ["common/AbstractOps.class", "common/CellPlainText.class", "JetBrainsMPSNodeMcpToolset.class"]:
+    for rel in ["common/AbstractOps.class", "common/CellPlainText.class", "MPSNodeMcpToolset.class"]:
         f = classes / rel
         if f.exists():
             stamps.append(f"{Path(rel).stem} {datetime.datetime.fromtimestamp(f.stat().st_mtime):%Y-%m-%dT%H:%M}")

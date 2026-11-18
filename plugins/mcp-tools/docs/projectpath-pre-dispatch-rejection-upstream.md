@@ -172,8 +172,8 @@ public static final McpExpectedError noSuitableProjectError(String);
 MPS uses the tolerant one:
 
 - `com.intellij.mcpserver.projectOrNull` is public platform API, and MPS imports it —
-  `JetBrainsMPSProjectMcpToolset.kt:8`.
-- `mps_mcp_list_open_projects` (`JetBrainsMPSProjectMcpToolset.kt:46-68`) is written against it:
+  `MPSProjectMcpToolset.kt:8`.
+- `mps_mcp_list_open_projects` (`MPSProjectMcpToolset.kt:46-68`) is written against it:
   it reads `ProjectManager.getInstance().openProjects` and describes each one, and it needs no
   resolved project to do so. Its whole purpose is to answer *"which project should I pass?"*
 

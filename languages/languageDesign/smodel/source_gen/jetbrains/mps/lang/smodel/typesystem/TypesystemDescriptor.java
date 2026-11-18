@@ -583,6 +583,10 @@ public class TypesystemDescriptor extends BaseHelginsDescriptor {
       this.myNonTypesystemRules.add(nonTypesystemRule);
     }
     {
+      NonTypesystemRule_Runtime nonTypesystemRule = new check_Concept_IsExactlyOperation_NonTypesystemRule();
+      this.myNonTypesystemRules.add(nonTypesystemRule);
+    }
+    {
       NonTypesystemRule_Runtime nonTypesystemRule = new check_EnumSwitchExpression_NonTypesystemRule();
       this.myNonTypesystemRules.add(nonTypesystemRule);
     }

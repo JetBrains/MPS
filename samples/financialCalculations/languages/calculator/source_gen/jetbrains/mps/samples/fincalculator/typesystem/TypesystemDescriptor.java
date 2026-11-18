@@ -4,6 +4,7 @@ package jetbrains.mps.samples.fincalculator.typesystem;
 
 import jetbrains.mps.lang.typesystem.runtime.BaseHelginsDescriptor;
 import jetbrains.mps.lang.typesystem.runtime.InferenceRule_Runtime;
+import jetbrains.mps.lang.typesystem.runtime.NonTypesystemRule_Runtime;
 
 public class TypesystemDescriptor extends BaseHelginsDescriptor {
   public TypesystemDescriptor() {
@@ -34,6 +35,18 @@ public class TypesystemDescriptor extends BaseHelginsDescriptor {
     {
       InferenceRule_Runtime inferenceRule = new typeof_SelectorReference_InferenceRule();
       this.myInferenceRules.add(inferenceRule);
+    }
+    {
+      NonTypesystemRule_Runtime nonTypesystemRule = new check_CalculatorDataflow_NonTypesystemRule();
+      this.myNonTypesystemRules.add(nonTypesystemRule);
+    }
+    {
+      NonTypesystemRule_Runtime nonTypesystemRule = new check_OutputFieldExpression_NonTypesystemRule();
+      this.myNonTypesystemRules.add(nonTypesystemRule);
+    }
+    {
+      NonTypesystemRule_Runtime nonTypesystemRule = new check_OutputTable_NonTypesystemRule();
+      this.myNonTypesystemRules.add(nonTypesystemRule);
     }
   }
 }

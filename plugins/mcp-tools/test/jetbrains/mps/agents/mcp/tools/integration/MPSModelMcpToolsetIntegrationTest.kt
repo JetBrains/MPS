@@ -1,0 +1,1142 @@
+package jetbrains.mps.agents.mcp.tools.integration
+
+import jetbrains.mps.agents.mcp.tools.*
+import jetbrains.mps.agents.mcp.tools.common.*
+
+import com.google.gson.JsonParser
+import jetbrains.mps.agents.mcp.tools.languages.BaseLanguageMeta
+import jetbrains.mps.extapi.model.GeneratableSModel
+import jetbrains.mps.project.AbstractModule
+import jetbrains.mps.project.DevKit
+import jetbrains.mps.project.structure.modules.DevkitDescriptor
+import jetbrains.mps.smodel.SModelInternal
+import jetbrains.mps.smodel.SNodeUtil
+import jetbrains.mps.smodel.adapter.ids.MetaIdByDeclaration
+import jetbrains.mps.smodel.adapter.ids.MetaIdHelper
+import jetbrains.mps.smodel.adapter.ids.SLanguageId
+import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory
+import jetbrains.mps.smodel.language.LanguageRegistry
+import jetbrains.mps.smodel.tempmodel.TempModuleOptions
+import jetbrains.mps.smodel.tempmodel.TemporaryModels
+import org.jetbrains.mps.openapi.model.EditableSModel
+import org.jetbrains.mps.openapi.model.SModel
+import org.jetbrains.mps.openapi.model.SNode
+import org.jetbrains.mps.openapi.module.SModuleReference
+import org.jetbrains.mps.openapi.module.SModuleId
+import org.jetbrains.mps.openapi.module.SDependencyScope
+import org.jetbrains.mps.openapi.persistence.PersistenceFacade
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
+import org.junit.Test
+import java.util.UUID
+import kotlinx.serialization.json.JsonPrimitive as McpJsonPrimitive
+
+/**
+ * End-to-end integration tests for [MPSModelMcpToolset].
+ *
+ * Covers:
+ *  - Lifecycle: `mps_mcp_create_model`, `mps_mcp_update_model` (RENAME and DELETE operations).
+ *  - Dependencies: `mps_mcp_model_dependency` (single, batch, dedupe, NOT_FOUND target,
+ *    unknown source).
+ *  - Used languages: `mps_mcp_model_used_language`
+ *    including the invalid-kind branch.
+ *  - Console model targets: the alias and admission rules with a temporary model standing in for
+ *    the console model, the tools' refusals without a console, and the import logic run directly on
+ *    a temporary model. The headless fixture has no Console tool window, so the live console lookup
+ *    is verified manually (`test_scenarios/mcp-verification-scenario-console-imports.md`).
+ */
+class MPSModelMcpToolsetIntegrationTest : McpIntegrationTestBase() {
+
+    private val toolset = MPSModelMcpToolset()
+
+    // ── lifecycle ──────────────────────────────────────────────────────────────────────────
+
+    @Test
+    fun `create_model registers a new model with the host solution`() {
+        val solution = createSolution()
+        val solutionName = solution.moduleName!!
+        val newModelName = "test.model${System.nanoTime()}"
+
+        val response = runTool(toolset) { it.mps_mcp_create_model(solutionName, newModelName) }
+        val data = expectOk(response)
+        assertEquals(newModelName, data.get("name").asString)
+        assertNotNull("response must echo a model reference: $response", data.get("reference"))
+        assertEquals(solutionName, data.get("module").asString)
+        assertFalse("new model should be writable", data.get("readOnly").asBoolean)
+
+        readOnRepo {
+            val match = solution.models.singleOrNull { it.name.longName == newModelName }
+            assertNotNull("created model must be registered with its module: $response", match)
+        }
+    }
+
+    @Test
+    fun `create_model rejects unknown module with NOT_FOUND`() {
+        val response = runTool(toolset) { it.mps_mcp_create_model("no.such.module", "irrelevant") }
+        val err = expectErr(response)
+        assertTrue(
+            "error should mention the missing module: $err",
+            err.contains("no.such.module") && err.contains("not found"),
+        )
+    }
+
+    @Test
+    fun `create_model names moduleName when the caller sent moduleReference`() {
+        // D43, round 8 S2:75: the caller sent a valid module reference under the neighbouring
+        // tools' spelling. The bridge used to reject that with "No argument is passed for required
+        // parameter 'moduleName'", which never said the reference had been dropped.
+        val solution = createSolution()
+        val moduleReference = PersistenceFacade.getInstance().asString(solution.moduleReference)
+        val response = callThroughBridge(
+            toolset, "mps_mcp_create_model",
+            mapOf("moduleReference" to McpJsonPrimitive(moduleReference), "modelName" to McpJsonPrimitive("irrelevant")),
+        )
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        assertEquals(listOf("moduleName"), obj.getAsJsonObject("details").getAsJsonArray("missingParameters").map { it.asString })
+        val error = obj.get("error").asString
+        assertTrue("must name the key and say a reference is accepted under it: $error",
+            error.startsWith("moduleName is required.") && error.contains("module reference"))
+        assertTrue("must say the sent spelling never arrived: $error", error.contains("'moduleReference'"))
+
+        val retried = callThroughBridge(
+            toolset, "mps_mcp_create_model",
+            mapOf("moduleName" to McpJsonPrimitive(moduleReference), "modelName" to McpJsonPrimitive("test.retry${System.nanoTime()}")),
+        )
+        expectOk(retried)
+    }
+
+    @Test
+    fun `create_model reports both missing keys at once`() {
+        val obj = JsonParser.parseString(callThroughBridge(toolset, "mps_mcp_create_model", emptyMap())).asJsonObject
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        assertEquals(
+            listOf("moduleName", "modelName"),
+            obj.getAsJsonObject("details").getAsJsonArray("missingParameters").map { it.asString },
+        )
+    }
+
+    @Test
+    fun `update_model names modelReference when the caller sent modelRef`() {
+        // D43: 'modelRef' is the neighbouring tools' spelling for the same target-model idea.
+        val solution = createSolution()
+        val target = createModel(solution, "test.rename.wrongkey${System.nanoTime()}")
+        val ref = modelRefOf(target)
+        val newName = "${target.name.longName}.renamed"
+
+        val response = callThroughBridge(
+            toolset, "mps_mcp_update_model",
+            mapOf(
+                "modelRef" to McpJsonPrimitive(ref),
+                "newModelName" to McpJsonPrimitive(newName),
+            ),
+        )
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        assertEquals(listOf("modelReference"), obj.getAsJsonObject("details").getAsJsonArray("missingParameters").map { it.asString })
+        val error = obj.get("error").asString
+        assertTrue("must name the key and the dropped spelling: $error",
+            error.startsWith("modelReference is required.") && error.contains("'modelRef'"))
+
+        val retried = callThroughBridge(
+            toolset, "mps_mcp_update_model",
+            mapOf(
+                "modelReference" to McpJsonPrimitive(ref),
+                "newModelName" to McpJsonPrimitive(newName),
+            ),
+        )
+        expectOk(retried)
+    }
+
+    @Test
+    fun `update_model renames the target model`() {
+        val solution = createSolution()
+        val original = createModel(solution, "test.rename${System.nanoTime()}")
+        val ref = modelRefOf(original)
+        val newName = "${original.name.longName}.renamed"
+
+        val response = runTool(toolset) { it.mps_mcp_update_model(ref, newName) }
+        val data = expectOk(response)
+        assertEquals(newName, data.get("name").asString)
+
+        readOnRepo {
+            val match = solution.models.singleOrNull { it.name.longName == newName }
+            assertNotNull("model must be found under the new name: $response", match)
+            assertEquals(original.reference, match!!.reference)
+        }
+    }
+
+    @Test
+    fun `update_model returns NOT_FOUND for unknown reference`() {
+        val response = runTool(toolset) { it.mps_mcp_update_model("no.such.model", "irrelevant") }
+        assertTrue(expectErr(response).contains("not found"))
+    }
+
+    @Test
+    fun `delete_model unregisters the model from its module`() {
+        val solution = createSolution()
+        val target = createModel(solution, "test.delete${System.nanoTime()}")
+        val targetRef = modelRefOf(target)
+
+        val response = runTool(toolset) { it.mps_mcp_update_model(targetRef, operation = ModelOperation.DELETE) }
+        // delete_model wraps the payload as a JSON-string in `data`
+        val data = parseDataObject(JsonParser.parseString(response).asJsonObject.get("data"))
+        assertEquals(target.name.value, data.get("name").asString)
+        assertTrue(data.get("deleted").asBoolean)
+
+        readOnRepo {
+            val match = solution.models.firstOrNull { it.reference == target.reference }
+            assertNull("deleted model must be gone from its module: $response", match)
+        }
+    }
+
+    @Test
+    fun `SET_DO_NOT_GENERATE marks the model, project structure reports it, and false clears it`() {
+        val solution = createSolution()
+        val model = createModel(solution, "test.dng${System.nanoTime()}")
+        val ref = modelRefOf(model)
+
+        val set = expectOk(runTool(toolset) { it.mps_mcp_update_model(ref, operation = ModelOperation.SET_DO_NOT_GENERATE) })
+        assertTrue("response carries the new flag: $set", set.get("doNotGenerate").asBoolean)
+        readOnRepo { assertTrue((model as GeneratableSModel).isDoNotGenerate) }
+        val dumped = payloadObjectFromOkData(runTool(MPSProjectMcpToolset()) {
+            it.mps_mcp_get_project_structure(startingPoint = ref)
+        })
+        assertTrue("project structure marks a do-not-generate model: $dumped", dumped.get("doNotGenerate").asBoolean)
+
+        val cleared = expectOk(runTool(toolset) {
+            it.mps_mcp_update_model(ref, operation = ModelOperation.SET_DO_NOT_GENERATE, doNotGenerate = false)
+        })
+        assertFalse(cleared.get("doNotGenerate").asBoolean)
+        readOnRepo { assertFalse((model as GeneratableSModel).isDoNotGenerate) }
+        val redumped = payloadObjectFromOkData(runTool(MPSProjectMcpToolset()) {
+            it.mps_mcp_get_project_structure(startingPoint = ref)
+        })
+        assertFalse("the field is omitted for a generated model: $redumped", redumped.has("doNotGenerate"))
+    }
+
+    @Test
+    fun `SET_DO_NOT_GENERATE returns NOT_FOUND for unknown reference`() {
+        val response = runTool(toolset) { it.mps_mcp_update_model("ghost", operation = ModelOperation.SET_DO_NOT_GENERATE) }
+        assertTrue(expectErr(response).contains("not found"))
+    }
+
+    @Test
+    fun `delete_model returns NOT_FOUND for unknown reference`() {
+        val response = runTool(toolset) { it.mps_mcp_update_model("ghost", operation = ModelOperation.DELETE) }
+        assertTrue(expectErr(response).contains("not found"))
+    }
+
+    // ── dependencies ───────────────────────────────────────────────────────────────────────
+
+    @Test
+    fun `model_dependency names modelReference and targetModels when the caller sends wrong keys`() {
+        // D43: the caller sent both required values under the neighbouring tools' spellings at once.
+        val sourceSolution = createSolution("test.dep.wrongkey.src${System.nanoTime()}")
+        val targetSolution = createSolution("test.dep.wrongkey.tgt${System.nanoTime()}")
+        val sourceModel = createModel(sourceSolution, "test.dep.wrongkey.src.model${System.nanoTime()}")
+        val targetModel = createModel(targetSolution, "test.dep.wrongkey.tgt.model${System.nanoTime()}")
+        val sourceRef = modelRefOf(sourceModel)
+        val targetRef = modelRefOf(targetModel)
+
+        val response = callThroughBridge(
+            toolset, "mps_mcp_model_dependency",
+            mapOf(
+                "modelRef" to McpJsonPrimitive(sourceRef),
+                "targetModel" to McpJsonPrimitive(targetRef),
+            ),
+        )
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        assertEquals(
+            listOf("modelReference", "targetModels"),
+            obj.getAsJsonObject("details").getAsJsonArray("missingParameters").map { it.asString },
+        )
+        val error = obj.get("error").asString
+        assertTrue("must name both dropped spellings: $error",
+            error.contains("'modelRef'") && error.contains("'targetModel'"))
+
+        val retried = callThroughBridge(
+            toolset, "mps_mcp_model_dependency",
+            mapOf(
+                "modelReference" to McpJsonPrimitive(sourceRef),
+                "targetModels" to McpJsonPrimitive(targetRef),
+            ),
+        )
+        expectOk(retried)
+    }
+
+    @Test
+    fun `add_model_dependency imports a model and counts duplicates on the second call`() {
+        val sourceSolution = createSolution("test.dep.src${System.nanoTime()}")
+        val targetSolution = createSolution("test.dep.tgt${System.nanoTime()}")
+        val sourceModel = createModel(sourceSolution, "test.dep.src.model${System.nanoTime()}")
+        val targetModel = createModel(targetSolution, "test.dep.tgt.model${System.nanoTime()}")
+
+        val sourceRef = modelRefOf(sourceModel)
+        val targetRef = modelRefOf(targetModel)
+
+        val first = runTool(toolset) { it.mps_mcp_model_dependency(sourceRef, JsonOrText(targetRef)) }
+        val firstData = parseDataObject(JsonParser.parseString(first).asJsonObject.get("data"))
+        assertEquals(1, firstData.get("added").asInt)
+        assertEquals(0, firstData.get("alreadyPresent").asInt)
+
+        readOnRepo {
+            val imports = (sourceModel as SModelInternal).modelImports.map {
+                PersistenceFacade.getInstance().asString(it)
+            }
+            assertTrue("model imports must include the target: $imports", imports.contains(targetRef))
+        }
+
+        // Second call must be a no-op and report it.
+        val second = runTool(toolset) { it.mps_mcp_model_dependency(sourceRef, JsonOrText(targetRef)) }
+        val secondData = parseDataObject(JsonParser.parseString(second).asJsonObject.get("data"))
+        assertEquals(0, secondData.get("added").asInt)
+        assertEquals(1, secondData.get("alreadyPresent").asInt)
+    }
+
+    @Test
+    fun `add_model_dependency keeps the scope of an existing module dependency`() {
+        // A language importing a structure model of the language it generates into used to see its
+        // Generation Target edge rewritten to Default, which drops the generate-into meaning. Any
+        // declared dependency already makes the model visible, so the edge must stay as it is.
+        val sourceSolution = createSolution("test.dep.scope.src${System.nanoTime()}")
+        val targetSolution = createSolution("test.dep.scope.tgt${System.nanoTime()}")
+        val sourceModel = createModel(sourceSolution, "test.dep.scope.src.model${System.nanoTime()}")
+        val targetModel = createModel(targetSolution, "test.dep.scope.tgt.model${System.nanoTime()}")
+        executeCommand {
+            sourceSolution.moduleDescriptor!!.dependencies.add(
+                jetbrains.mps.project.structure.modules.Dependency(targetSolution.moduleReference, SDependencyScope.DESIGN, false)
+            )
+            sourceSolution.setChanged()
+        }
+
+        val response = runTool(toolset) { it.mps_mcp_model_dependency(modelRefOf(sourceModel), JsonOrText(modelRefOf(targetModel))) }
+        expectOk(response)
+        val warnings = JsonParser.parseString(response).asJsonObject.getAsJsonArray("warnings")?.map { it.asString }.orEmpty()
+        assertTrue("a Design dependency does not load classes, so the answer must say it was kept: $response",
+            warnings.any { it.contains("keeps its Design dependency") })
+
+        readOnRepo {
+            val scopes = sourceSolution.moduleDescriptor!!.dependencies
+                .filter { it.moduleRef.moduleId == targetSolution.moduleReference.moduleId }
+                .map { it.scope }
+            assertEquals("the existing dependency must keep its scope and no second one may be added", listOf(SDependencyScope.DESIGN), scopes)
+            assertTrue((sourceModel as SModelInternal).modelImports.contains(targetModel.reference))
+        }
+    }
+
+    @Test
+    fun `add_model_dependency accepts JSON array of targets`() {
+        val sourceSolution = createSolution("test.dep.batch.src${System.nanoTime()}")
+        val sourceModel = createModel(sourceSolution, "test.dep.batch.src.model${System.nanoTime()}")
+        val sourceRef = modelRefOf(sourceModel)
+
+        val t1Solution = createSolution("test.dep.batch.t1${System.nanoTime()}")
+        val t2Solution = createSolution("test.dep.batch.t2${System.nanoTime()}")
+        val t1 = createModel(t1Solution, "test.dep.batch.t1.model${System.nanoTime()}")
+        val t2 = createModel(t2Solution, "test.dep.batch.t2.model${System.nanoTime()}")
+        val targets = listOf(modelRefOf(t1), modelRefOf(t2))
+
+        val response = runTool(toolset) {
+            it.mps_mcp_model_dependency(
+                sourceRef,
+                JsonOrText("[\"${targets[0]}\",\"${targets[1]}\"]"),
+            )
+        }
+        val data = parseDataObject(JsonParser.parseString(response).asJsonObject.get("data"))
+        assertEquals(2, data.get("added").asInt)
+        assertEquals(0, data.get("alreadyPresent").asInt)
+
+        readOnRepo {
+            val imports = (sourceModel as SModelInternal).modelImports.map {
+                PersistenceFacade.getInstance().asString(it)
+            }
+            assertTrue(imports.containsAll(targets))
+        }
+    }
+
+    @Test
+    fun `add_model_dependency rejects unknown source model`() {
+        val response = runTool(toolset) { it.mps_mcp_model_dependency("no.such.source", JsonOrText("doesnt.matter")) }
+        // Source resolution now goes through the shared resolveEditableModel helper (for cross-project
+        // safety), which emits the unified "Model '<ref>' not found" wording.
+        val err = expectErr(response)
+        assertTrue(err, err.contains("no.such.source") && err.contains("not found"))
+    }
+
+    @Test
+    fun `add_model_dependency rejects unknown target model`() {
+        val sourceSolution = createSolution()
+        val sourceModel = createModel(sourceSolution, "test.dep.unknown.tgt${System.nanoTime()}")
+        val response = runTool(toolset) {
+            it.mps_mcp_model_dependency(modelRefOf(sourceModel), JsonOrText("no.such.target"))
+        }
+        assertTrue(expectErr(response).contains("Target model not found"))
+    }
+
+    @Test
+    fun `remove_model_dependency drops the import added earlier`() {
+        val sourceSolution = createSolution("test.dep.remove.src${System.nanoTime()}")
+        val targetSolution = createSolution("test.dep.remove.tgt${System.nanoTime()}")
+        val sourceModel = createModel(sourceSolution, "test.dep.remove.src.model${System.nanoTime()}")
+        val targetModel = createModel(targetSolution, "test.dep.remove.tgt.model${System.nanoTime()}")
+
+        val sourceRef = modelRefOf(sourceModel)
+        val targetRef = modelRefOf(targetModel)
+
+        // Seed the import.
+        val addResp = runTool(toolset) { it.mps_mcp_model_dependency(sourceRef, JsonOrText(targetRef)) }
+        assertTrue(JsonParser.parseString(addResp).asJsonObject.get("ok").asBoolean)
+
+        val removeResp = runTool(toolset) { it.mps_mcp_model_dependency(sourceRef, targetRef, DependencyOperation.DELETE) }
+        val obj = JsonParser.parseString(removeResp).asJsonObject
+        assertTrue("expected ok envelope: $removeResp", obj.get("ok").asBoolean)
+        val dataArr = obj.get("data").asJsonArray
+        val item = dataArr[0].asJsonObject
+        assertTrue(item.get("ok").asBoolean)
+        assertTrue("expected data[0].data.removed=true: $removeResp", item.get("data").asJsonObject.get("removed").asBoolean)
+
+        readOnRepo {
+            val imports = (sourceModel as SModelInternal).modelImports.map {
+                PersistenceFacade.getInstance().asString(it)
+            }
+            assertFalse("import must be gone: $imports", imports.contains(targetRef))
+        }
+    }
+
+    @Test
+    fun `delete_model_dependency drops multiple imports successfully`() {
+        val sourceSolution = createSolution("test.dep.bulk.src${System.nanoTime()}")
+        val targetSolution1 = createSolution("test.dep.bulk.tgt1${System.nanoTime()}")
+        val targetSolution2 = createSolution("test.dep.bulk.tgt2${System.nanoTime()}")
+        val sourceModel = createModel(sourceSolution, "test.dep.bulk.src.model${System.nanoTime()}")
+        val targetModel1 = createModel(targetSolution1, "test.dep.bulk.tgt1.model${System.nanoTime()}")
+        val targetModel2 = createModel(targetSolution2, "test.dep.bulk.tgt2.model${System.nanoTime()}")
+
+        val sourceRef = modelRefOf(sourceModel)
+        val targetRef1 = modelRefOf(targetModel1)
+        val targetRef2 = modelRefOf(targetModel2)
+
+        // Seed both imports.
+        val addResp = runTool(toolset) {
+            it.mps_mcp_model_dependency(sourceRef, JsonOrText("[\"$targetRef1\", \"$targetRef2\"]"))
+        }
+        assertTrue(JsonParser.parseString(addResp).asJsonObject.get("ok").asBoolean)
+
+        // Delete both imports in batch.
+        val deleteResp = runTool(toolset) {
+            it.mps_mcp_model_dependency(sourceRef, "[\"$targetRef1\", \"$targetRef2\"]", DependencyOperation.DELETE)
+        }
+        val obj = JsonParser.parseString(deleteResp).asJsonObject
+        assertTrue("expected ok envelope: $deleteResp", obj.get("ok").asBoolean)
+
+        val dataArr = obj.get("data").asJsonArray
+        assertEquals(2, dataArr.size())
+
+        val item1 = dataArr[0].asJsonObject
+        assertTrue(item1.get("ok").asBoolean)
+        assertTrue(item1.get("data").asJsonObject.get("removed").asBoolean)
+
+        val item2 = dataArr[1].asJsonObject
+        assertTrue(item2.get("ok").asBoolean)
+        assertTrue(item2.get("data").asJsonObject.get("removed").asBoolean)
+
+        readOnRepo {
+            val imports = (sourceModel as SModelInternal).modelImports.map {
+                PersistenceFacade.getInstance().asString(it)
+            }
+            assertFalse("targetRef1 must be gone", imports.contains(targetRef1))
+            assertFalse("targetRef2 must be gone", imports.contains(targetRef2))
+        }
+    }
+
+    @Test
+    fun `delete_model_dependency reports failure if any target reference is malformed`() {
+        val solution = createSolution()
+        val model = createModel(solution, "test.dep.bulk.bad${System.nanoTime()}")
+        val modelRef = modelRefOf(model)
+
+        val deleteResp = runTool(toolset) {
+            it.mps_mcp_model_dependency(modelRef, "[\"r:00000000-0000-4000-0000-011111111111(some.model)\", \"$$$ not a valid reference $$$\"]",
+                DependencyOperation.DELETE)
+        }
+        val obj = JsonParser.parseString(deleteResp).asJsonObject
+        assertFalse("expected ok=false since one target was malformed: $deleteResp", obj.get("ok").asBoolean)
+
+        val dataArr = obj.get("data").asJsonArray
+        assertEquals(2, dataArr.size())
+
+        val item1 = dataArr[0].asJsonObject
+        assertTrue(item1.get("ok").asBoolean)
+
+        val item2 = dataArr[1].asJsonObject
+        assertFalse(item2.get("ok").asBoolean)
+    }
+
+    @Test
+    fun `remove_model_dependency is idempotent when the import was never present`() {
+        // Mirrors the happy-path test, but skips the seed `add_model_dependency` step so the
+        // target was never imported. The g1 patch made this branch observable via data.removed:
+        // the call must succeed (ok=true) and report removed=false instead of looking
+        // indistinguishable from a real removal.
+        val sourceSolution = createSolution("test.dep.noop.src${System.nanoTime()}")
+        val targetSolution = createSolution("test.dep.noop.tgt${System.nanoTime()}")
+        val sourceModel = createModel(sourceSolution, "test.dep.noop.src.model${System.nanoTime()}")
+        val targetModel = createModel(targetSolution, "test.dep.noop.tgt.model${System.nanoTime()}")
+
+        val sourceRef = modelRefOf(sourceModel)
+        val targetRef = modelRefOf(targetModel)
+
+        val response = runTool(toolset) { it.mps_mcp_model_dependency(sourceRef, targetRef, DependencyOperation.DELETE) }
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertTrue("expected ok envelope: $response", obj.get("ok").asBoolean)
+        val dataArr = obj.get("data").asJsonArray
+        val item = dataArr[0].asJsonObject
+        assertTrue(item.get("ok").asBoolean)
+        assertFalse(
+            "expected data[0].data.removed=false for a no-op call: $response",
+            item.get("data").asJsonObject.get("removed").asBoolean,
+        )
+
+        readOnRepo {
+            val imports = (sourceModel as SModelInternal).modelImports.map {
+                PersistenceFacade.getInstance().asString(it)
+            }
+            assertFalse("import must not have been added: $imports", imports.contains(targetRef))
+        }
+    }
+
+    @Test
+    fun `remove_model_dependency rejects malformed target reference`() {
+        val solution = createSolution()
+        val model = createModel(solution, "test.dep.bad.tgt${System.nanoTime()}")
+        val response = runTool(toolset) {
+            it.mps_mcp_model_dependency(modelRefOf(model), "$$$ not a valid reference $$$", DependencyOperation.DELETE)
+        }
+        val obj = com.google.gson.JsonParser.parseString(response).asJsonObject
+        assertFalse("expected ok=false: $response", obj.get("ok").asBoolean)
+        val dataArr = obj.get("data").asJsonArray
+        val item = dataArr[0].asJsonObject
+        assertFalse(item.get("ok").asBoolean)
+        assertTrue(item.get("error").asString.contains("Invalid target model reference"))
+    }
+
+    // ── used languages / devkits ──────────────────────────────────────────────────────────
+
+    @Test
+    fun `model_used_language names usedLanguage when the caller sent language`() {
+        // D43: 'language' is the natural neighbouring spelling for usedLanguage.
+        val knownLang = "jetbrains.mps.lang.core"
+        val solution = createSolution()
+        val model = createModel(solution, "test.usedlang.wrongkey${System.nanoTime()}")
+        val modelReference = modelRefOf(model)
+
+        val response = callThroughBridge(
+            toolset, "mps_mcp_model_used_language",
+            mapOf(
+                "modelReference" to McpJsonPrimitive(modelReference),
+                "language" to McpJsonPrimitive(knownLang),
+                "kind" to McpJsonPrimitive("language"),
+            ),
+        )
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        assertEquals(listOf("usedLanguage"), obj.getAsJsonObject("details").getAsJsonArray("missingParameters").map { it.asString })
+        val error = obj.get("error").asString
+        assertTrue("must name the key and the dropped spelling: $error",
+            error.startsWith("usedLanguage is required.") && error.contains("'language'"))
+
+        val retried = callThroughBridge(
+            toolset, "mps_mcp_model_used_language",
+            mapOf(
+                "modelReference" to McpJsonPrimitive(modelReference),
+                "usedLanguage" to McpJsonPrimitive(knownLang),
+                "kind" to McpJsonPrimitive("language"),
+            ),
+        )
+        expectOk(retried)
+    }
+
+    @Test
+    fun `add_model_used_language adds a language to the model`() {
+        // jetbrains.mps.lang.core is always loaded as part of the MPS test environment.
+        val knownLang = "jetbrains.mps.lang.core"
+        val solution = createSolution()
+        val targetModel = createModel(solution, "test.usedlang${System.nanoTime()}")
+        val modelReference = modelRefOf(targetModel)
+
+        val response = runTool(toolset) {
+            it.mps_mcp_model_used_language(modelReference, knownLang, "language")
+        }
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertTrue("expected ok envelope: $response", obj.get("ok").asBoolean)
+
+        readOnRepo {
+            val used = (targetModel as SModelInternal).importedLanguageIds()
+                .map { it.qualifiedName }
+            assertTrue("used languages must contain '$knownLang': $used",
+                used.contains(knownLang))
+        }
+    }
+
+    @Test
+    fun `add_model_used_language resolves a freshly-created unbuilt language by plain name`() {
+        // The `language` fixture is created via LanguageProducer but never built, so it has no
+        // LanguageRuntime and is absent from LanguageRegistry.allLanguages. Importing it by its
+        // plain qualified name must still succeed (IMPL-1): the tool falls back to resolving the
+        // Language module by name in the project repository.
+        val unbuiltLangName = language.moduleName!!
+        val solution = createSolution()
+        val targetModel = createModel(solution, "test.usedlang.unbuilt${System.nanoTime()}")
+        val modelReference = modelRefOf(targetModel)
+
+        val response = runTool(toolset) {
+            it.mps_mcp_model_used_language(modelReference, unbuiltLangName, "language")
+        }
+        val data = expectOk(response)
+        assertTrue("expected added:true for the unbuilt language: $response", data.get("added").asBoolean)
+
+        readOnRepo {
+            val used = (targetModel as SModelInternal).importedLanguageIds().map { it.qualifiedName }
+            assertTrue("used languages must contain the unbuilt language '$unbuiltLangName': $used",
+                used.contains(unbuiltLangName))
+        }
+    }
+
+    @Test
+    fun `add_model_used_language rejects unknown language`() {
+        val solution = createSolution()
+        val model = createModel(solution, "test.usedlang.bad${System.nanoTime()}")
+        val response = runTool(toolset) {
+            it.mps_mcp_model_used_language(modelRefOf(model), "totally.unknown.lang", "language")
+        }
+        assertTrue(expectErr(response).contains("Language not found"))
+    }
+
+    @Test
+    fun `add_model_used_language rejects an l reference whose uuid no language owns`() {
+        // A well-formed `l:` string is only a parse. Before the fix it was imported as-is, so an agent
+        // could persist an invented language id under a real-looking name.
+        val invented = UUID.randomUUID()
+        val solution = createSolution()
+        val model = createModel(solution, "test.usedlang.invented${System.nanoTime()}")
+        val response = runTool(toolset) {
+            it.mps_mcp_model_used_language(modelRefOf(model), "l:$invented:jetbrains.mps.lang.editor", "language")
+        }
+        assertTrue(expectErr(response).contains("Language not found"))
+        readOnRepo {
+            val ids = (model as SModelInternal).importedLanguageIds().map { MetaIdHelper.getLanguage(it).idValue }
+            assertFalse("the invented uuid must not be imported: $ids", ids.contains(invented))
+            // The uuid is fresh, so the first adapter cached for it is this probe's, unless the
+            // tool built an SLanguage from the caller's string and cached the caller's name.
+            assertEquals("probe", MetaAdapterFactory.getLanguage(SLanguageId(invented), "probe").qualifiedName)
+        }
+    }
+
+    @Test
+    fun `add_model_used_language rejects a malformed l reference`() {
+        val solution = createSolution()
+        val model = createModel(solution, "test.usedlang.malformed${System.nanoTime()}")
+        for (ref in listOf("l:not-a-uuid:x", "l:${UUID.randomUUID()}", "l:${UUID.randomUUID()}:")) {
+            val response = runTool(toolset) { it.mps_mcp_model_used_language(modelRefOf(model), ref, "language") }
+            assertTrue("'$ref' must be rejected: $response", expectErr(response).contains("Language not found"))
+        }
+        readOnRepo {
+            assertTrue((model as SModelInternal).importedLanguageIds().isEmpty())
+        }
+    }
+
+    @Test
+    fun `add_model_used_language imports a real l reference under the canonical language`() {
+        val (coreRef, coreModuleId) = readOnRepo {
+            val core = LanguageRegistry.getInstance(myProject.repository).getLanguage("jetbrains.mps.lang.core")!!.identity
+            PersistenceFacade.getInstance().asString(core) to core.sourceModuleReference!!.moduleId
+        }
+        // Built from the declaration's id rather than an adapter, so the test adds no cache entry of its
+        // own (fixture setup already caches one; see the wrong-name test below).
+        val unbuiltName = language.moduleName!!
+        val unbuiltRef = "l:${MetaIdByDeclaration.getLanguageId(language).serialize()}:$unbuiltName"
+        assertCanonicalImport(coreRef, "jetbrains.mps.lang.core", coreModuleId)
+        assertCanonicalImport(unbuiltRef, unbuiltName, language.moduleReference.moduleId)
+    }
+
+    @Test
+    fun `add_model_used_language stores the real name for a real id with a wrong name`() {
+        // Locks in the outcome only. A deployed runtime reports its own name whatever the adapter
+        // cache holds, and fixture setup already caches the unbuilt language's adapter under its real
+        // name: with resolveLanguage reverted to `createLanguage(languageRef)` this test still passes.
+        // The invented-uuid test above is the one that catches that regression.
+        val (coreId, coreModuleId) = readOnRepo {
+            val core = LanguageRegistry.getInstance(myProject.repository).getLanguage("jetbrains.mps.lang.core")!!.identity
+            MetaIdHelper.getLanguage(core).serialize() to core.sourceModuleReference!!.moduleId
+        }
+        assertCanonicalImport("l:$coreId:not.the.real.name", "jetbrains.mps.lang.core", coreModuleId)
+        val unbuiltId = MetaIdByDeclaration.getLanguageId(language).serialize()
+        assertCanonicalImport("l:$unbuiltId:not.the.real.name", language.moduleName!!, language.moduleReference.moduleId)
+    }
+
+    /** Adds [languageRef] to a fresh model and asserts the stored language's name and module id. */
+    private fun assertCanonicalImport(languageRef: String, expectedName: String, expectedModuleId: SModuleId) {
+        val solution = createSolution()
+        val model = createModel(solution, "test.usedlang.canonical${System.nanoTime()}")
+        val response = runTool(toolset) { it.mps_mcp_model_used_language(modelRefOf(model), languageRef, "language") }
+        assertTrue("expected added:true for '$languageRef': $response", expectOk(response).get("added").asBoolean)
+        readOnRepo {
+            val stored = (model as SModelInternal).importedLanguageIds()
+                .single { MetaIdHelper.getLanguage(it).serialize() == languageRef.split(':')[1] }
+            assertEquals("stored name for '$languageRef'", expectedName, stored.qualifiedName)
+            assertEquals("stored module id for '$languageRef'", expectedModuleId, stored.sourceModuleReference?.moduleId)
+        }
+    }
+
+    @Test
+    fun `add_model_used_language rejects invalid kind value`() {
+        val solution = createSolution()
+        val model = createModel(solution, "test.usedlang.kind${System.nanoTime()}")
+        val response = runTool(toolset) {
+            it.mps_mcp_model_used_language(modelRefOf(model), "jetbrains.mps.lang.core", "not-a-kind")
+        }
+        assertTrue(expectErr(response).contains("Invalid kind"))
+    }
+
+    @Test
+    fun `remove_model_used_language accepts plain qualified name`() {
+        // Symmetric with add_model_used_language: a bare qualified name (no l:UUID:name form)
+        // must resolve against the model's existing used-language list. Regression for the
+        // asymmetry where remove only accepted the persistent reference form.
+        val knownLang = "jetbrains.mps.lang.core"
+        val solution = createSolution()
+        val model = createModel(solution, "test.usedlang.removebyname${System.nanoTime()}")
+        val modelReference = modelRefOf(model)
+
+        val addResp = runTool(toolset) { it.mps_mcp_model_used_language(modelReference, knownLang, "language") }
+        assertTrue(JsonParser.parseString(addResp).asJsonObject.get("ok").asBoolean)
+
+        val removeResp = runTool(toolset) {
+            it.mps_mcp_model_used_language(modelReference, knownLang, "language", DependencyOperation.DELETE)
+        }
+        val data = expectOk(removeResp)
+        assertTrue("expected removed=true: $removeResp", data.get("removed").asBoolean)
+
+        readOnRepo {
+            val used = (model as SModelInternal).importedLanguageIds().map { it.qualifiedName }
+            assertFalse("language must be gone after name-based removal: $used", used.contains(knownLang))
+        }
+    }
+
+    @Test
+    fun `remove_model_used_language is idempotent on second removal`() {
+        // deleteLanguageId is silently idempotent at the MPS level; the tool surfaces the
+        // distinction via `removed` so callers can tell a real removal apart from a no-op.
+        // We exercise this by removing twice via the persistent-reference path, which is
+        // robust to whichever way PersistenceFacade.createLanguage handles bare names.
+        val knownLang = "jetbrains.mps.lang.core"
+        val solution = createSolution()
+        val model = createModel(solution, "test.usedlang.removetwice${System.nanoTime()}")
+        val modelReference = modelRefOf(model)
+
+        runTool(toolset) { it.mps_mcp_model_used_language(modelReference, knownLang, "language") }
+
+        val langRef = readOnRepo {
+            val match = (model as SModelInternal).importedLanguageIds().single { it.qualifiedName == knownLang }
+            PersistenceFacade.getInstance().asString(match)
+        }
+
+        val firstRemove = runTool(toolset) {
+            it.mps_mcp_model_used_language(modelReference, langRef, "language", DependencyOperation.DELETE)
+        }
+        assertTrue("first remove must report removed=true: $firstRemove",
+            expectOk(firstRemove).get("removed").asBoolean)
+        readOnRepo {
+            val used = (model as SModelInternal).importedLanguageIds().map { it.qualifiedName }
+            assertFalse("language must be gone after removal: $used", used.contains(knownLang))
+        }
+
+        val secondRemove = runTool(toolset) {
+            it.mps_mcp_model_used_language(modelReference, langRef, "language", DependencyOperation.DELETE)
+        }
+        assertFalse("second remove must report removed=false: $secondRemove",
+            expectOk(secondRemove).get("removed").asBoolean)
+    }
+
+    @Test
+    fun `remove_model_used_language rejects unknown language name`() {
+        // Bare name that doesn't match any imported language of the model is a hard error,
+        // distinguishing typos from legitimately-absent-but-known imports.
+        val solution = createSolution()
+        val model = createModel(solution, "test.usedlang.removeunknown${System.nanoTime()}")
+        val response = runTool(toolset) {
+            it.mps_mcp_model_used_language(modelRefOf(model), "totally.unknown.lang", "language", DependencyOperation.DELETE)
+        }
+        val err = expectErr(response)
+        assertTrue("error should mention the missing language: $err",
+            err.contains("totally.unknown.lang"))
+    }
+
+    @Test
+    fun `remove_model_used_language rejects invalid kind`() {
+        val solution = createSolution()
+        val model = createModel(solution, "test.usedlang.removebad${System.nanoTime()}")
+        val response = runTool(toolset) {
+            it.mps_mcp_model_used_language(modelRefOf(model), "jetbrains.mps.lang.core", "not-a-kind", DependencyOperation.DELETE)
+        }
+        assertTrue(expectErr(response).contains("Invalid kind"))
+    }
+
+    // ── devkit-provided languages ──────────────────────────────────────────────────────────
+    // These lock in the contract that a language already supplied by an imported devkit is
+    // neither added to the model's own used languages (the ADD guard) nor hidden from a reader
+    // (the get_project_structure expansion). The shared fixture builds a devkit that exports a
+    // known-loaded language and imports it into a fresh model.
+
+    /**
+     * Creates a devkit that exports [exportedLanguage] (a fully-loaded language, so its module
+     * reference carries the UUID that `DevKit.getAllExportedLanguageIds` relies on) and imports
+     * that devkit into a fresh model. Returns the devkit name and the (live) imported model.
+     */
+    private fun modelImportingDevkitThatExports(exportedLanguage: String): Pair<String, SModel> {
+        val devkitName = "test.dk.exporting${System.nanoTime()}"
+        val devkitDir = freshPathInProject(devkitName)
+        val devkitResp = runTool(MPSModuleMcpToolset()) {
+            it.mps_mcp_create_module("devkit", devkitName, devkitDir, null, null, false, false, false)
+        }
+        assertTrue("devkit creation must succeed: $devkitResp",
+            JsonParser.parseString(devkitResp).asJsonObject.get("ok").asBoolean)
+
+        // Wire the exported language straight into the devkit descriptor. getExportedLanguages()
+        // returns the live mutable set, so DevKit.getAllExportedLanguageIds() reflects this at once.
+        // The ref comes from the registry's SLanguage (sourceModuleReference carries the UUID that
+        // DevKit.getAllExportedLanguageIds -> ref2LangId requires), and the same registry entry is
+        // what the ADD guard resolves the requested language to — so both sides share one identity.
+        executeCommand {
+            val devkit = myProject.projectModules.filterIsInstance<DevKit>().single { it.moduleName == devkitName }
+            val exportedRef = LanguageRegistry.getInstance(myProject.repository).allLanguages
+                .first { it.qualifiedName == exportedLanguage }.sourceModuleReference
+            (devkit.moduleDescriptor as DevkitDescriptor).exportedLanguages.add(exportedRef)
+            devkit.setChanged()
+        }
+
+        val solution = createSolution()
+        val model = createModel(solution, "test.dkprovided${System.nanoTime()}")
+        val dkAddResp = runTool(toolset) { it.mps_mcp_model_used_language(modelRefOf(model), devkitName, "devkit") }
+        assertTrue("importing the devkit must succeed: $dkAddResp",
+            JsonParser.parseString(dkAddResp).asJsonObject.get("ok").asBoolean)
+        return devkitName to model
+    }
+
+    @Test
+    fun `add_model_used_language no-ops a language already provided by an imported devkit`() {
+        // jetbrains.mps.lang.core is always loaded as part of the MPS test environment.
+        val providedLang = "jetbrains.mps.lang.core"
+        val (devkitName, model) = modelImportingDevkitThatExports(providedLang)
+
+        val response = runTool(toolset) {
+            it.mps_mcp_model_used_language(modelRefOf(model), providedLang, "language")
+        }
+        val data = expectOk(response)
+        assertFalse("a devkit-provided language must not be added: $response", data.get("added").asBoolean)
+        assertTrue("the no-op must be reported as providedByDevKit: $response",
+            data.get("providedByDevKit").asBoolean)
+        assertEquals("the supplying devkit must be named: $response", devkitName, data.get("devKit").asString)
+
+        // The guard must keep the language out of the model's OWN used languages — otherwise the
+        // model carries a redundant import that duplicates what the devkit already supplies.
+        readOnRepo {
+            val used = (model as SModelInternal).importedLanguageIds().map { it.qualifiedName }
+            assertFalse("devkit-provided language must not leak into used languages: $used",
+                used.contains(providedLang))
+        }
+    }
+
+    @Test
+    fun `get_project_structure expands an imported devkit into providedLanguages`() {
+        val providedLang = "jetbrains.mps.lang.core"
+        val (devkitName, model) = modelImportingDevkitThatExports(providedLang)
+
+        val response = runTool(MPSProjectMcpToolset()) {
+            it.mps_mcp_get_project_structure(
+                includeDependencies = true,
+                startingPoint = modelRefOf(model),
+            )
+        }
+        // get_project_structure inlines a small dump in `data` and otherwise returns a temp-file
+        // path whose file holds a second {ok, data} envelope — the base helper accepts both.
+        val modelJson = payloadObjectFromOkData(response)
+        val devkitEntry = modelJson.getAsJsonArray("usedLanguages")
+            .map { it.asJsonObject }
+            .single { it.has("kind") && it.get("kind").asString == "devkit" && it.get("name").asString == devkitName }
+        assertTrue("devkit entry must carry providedLanguages: $devkitEntry", devkitEntry.has("providedLanguages"))
+        val providedNames = devkitEntry.getAsJsonArray("providedLanguages").map { it.asJsonObject.get("name").asString }
+        assertTrue("providedLanguages must list the exported language $providedLang: $providedNames",
+            providedNames.contains(providedLang))
+    }
+
+    // ── console model targets ─────────────────────────────────────────────────────────────
+
+    /**
+     * Runs [block] on a fresh editable temporary model in its own `TempModule` — the shape of the
+     * console model — and disposes it afterwards, so it never leaks into other tests' name lookups.
+     */
+    private fun <R> withTempModel(block: (EditableSModel) -> R): R {
+        var temp: SModel? = null
+        executeCommand {
+            temp = TemporaryModels.getInstance().createEditable(false, TempModuleOptions.forNewModule(myProject.repository))
+        }
+        val model = checkNotNull(temp) as EditableSModel
+        try {
+            return block(model)
+        } finally {
+            executeCommand { TemporaryModels.getInstance().dispose(model) }
+        }
+    }
+
+    /** Runs [block] under a write command and returns its result; the internal import overloads need one. */
+    private fun <R> inCommand(block: () -> R): R {
+        var result: R? = null
+        executeCommand { result = block() }
+        @Suppress("UNCHECKED_CAST")
+        return result as R
+    }
+
+    private fun warningsOf(response: String): List<String> =
+        JsonParser.parseString(response).asJsonObject.getAsJsonArray("warnings")?.map { it.asString } ?: emptyList()
+
+    @Test
+    fun `the console alias and the console model reference resolve to the console model`() {
+        withTempModel { console ->
+            readOnRepo {
+                val byAlias = toolset.resolveConsoleModelForTest(myProject, "console", console)
+                assertTrue("alias: $byAlias", byAlias.console && byAlias.model == console)
+                val byReference = toolset.resolveConsoleModelForTest(myProject, modelRefOf(console), console)
+                assertTrue("persistent reference: $byReference", byReference.console && byReference.model == console)
+                assertNotNull("no console, no alias", toolset.resolveConsoleModelForTest(myProject, "console", null).errJson)
+            }
+        }
+    }
+
+    @Test
+    fun `only the current console model is admitted outside the project`() {
+        val projectModel = createModel(createSolution(), "test.console.admit${System.nanoTime()}")
+        withTempModel { console ->
+            withTempModel { other ->
+                readOnRepo {
+                    val refused = toolset.resolveConsoleModelForTest(myProject, modelRefOf(other), console)
+                    assertTrue("another temp model keeps the cross-project refusal: $refused",
+                        refused.errJson!!.contains("not part of the project selected by projectPath"))
+                    val noConsole = toolset.resolveConsoleModelForTest(myProject, modelRefOf(console), null)
+                    assertNotNull("without a console the temp model is refused: $noConsole", noConsole.errJson)
+
+                    val project = toolset.resolveConsoleModelForTest(myProject, modelRefOf(projectModel), console)
+                    assertTrue("a project model is not a console target: $project", project.model == projectModel && !project.console)
+                    val missing = toolset.resolveConsoleModelForTest(myProject, "no.such.model", console)
+                    assertTrue("NOT_FOUND stands: $missing", missing.errJson!!.contains("not found"))
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `the console alias shadows a project model named console`() {
+        val consoleNamed = createModel(createSolution(), "console")
+        withTempModel { console ->
+            readOnRepo {
+                assertEquals(console, toolset.resolveConsoleModelForTest(myProject, "console", console).model)
+                val byReference = toolset.resolveConsoleModelForTest(myProject, modelRefOf(consoleNamed), console)
+                assertTrue("reachable by reference: $byReference", byReference.model == consoleNamed && !byReference.console)
+            }
+        }
+    }
+
+    @Test
+    fun `model tools refuse a temporary model that is not the console model`() {
+        val target = createModel(createSolution(), "test.console.refuse.tgt${System.nanoTime()}")
+        withTempModel { temp ->
+            val tempRef = modelRefOf(temp)
+            val responses = listOf(
+                runTool(toolset) { it.mps_mcp_model_dependency(tempRef, JsonOrText(modelRefOf(target))) },
+                runTool(toolset) { it.mps_mcp_model_used_language(tempRef, "jetbrains.mps.lang.core", "language") },
+                runTool(toolset) {
+                    it.mps_mcp_model_used_language(tempRef, "jetbrains.mps.lang.core", "language", DependencyOperation.DELETE)
+                },
+            )
+            for (response in responses) {
+                assertTrue("expected the cross-project refusal: $response",
+                    expectErr(response).contains("not part of the project selected by projectPath"))
+            }
+            val deleteItem = JsonParser.parseString(
+                runTool(toolset) { it.mps_mcp_model_dependency(tempRef, modelRefOf(target), DependencyOperation.DELETE) }
+            ).asJsonObject.getAsJsonArray("data")[0].asJsonObject
+            assertTrue("expected the cross-project refusal: $deleteItem",
+                deleteItem.get("error").asString.contains("not part of the project selected by projectPath"))
+            readOnRepo {
+                assertTrue("a refused write must not touch the model", (temp as SModelInternal).modelImports.isEmpty())
+            }
+        }
+    }
+
+    @Test
+    fun `a temp model node and model resolve without the module id prefix (D121)`() {
+        withTempModel { temp ->
+            var root: SNode? = null
+            executeCommand {
+                root = jetbrains.mps.smodel.SNode(BaseLanguageMeta.classConceptConcept).also {
+                    it.setProperty(SNodeUtil.property_INamedConcept_name, "D121Root")
+                    temp.addRootNode(it)
+                }
+            }
+            val prefixed = readOnRepo { PersistenceFacade.getInstance().asString(checkNotNull(root).reference) }
+            val moduleIdPrefix = readOnRepo { temp.module.moduleId.toString() } + "/"
+            assertTrue("the premise: a temp model's node reference carries the module id: $prefixed", prefixed.startsWith(moduleIdPrefix))
+            val stripped = prefixed.removePrefix(moduleIdPrefix)
+
+            val nodeTools = MPSNodeMcpToolset()
+            val printed = expectOk(runTool(nodeTools) { it.mps_mcp_print_node(stripped) })
+            assertEquals(prefixed, printed.get("reference").asString)
+            val text = JsonParser.parseString(runTool(nodeTools) { it.mps_mcp_print_node(stripped, format = "PLAIN TEXT") }).asJsonObject
+            assertTrue("PLAIN TEXT: $text", text.get("ok").asBoolean)
+
+            // The model form: the node parse fails and the model fallback resolves it (a bare temp model may report problems).
+            val strippedModel = modelRefOf(temp).removePrefix(moduleIdPrefix)
+            val checked = JsonParser.parseString(runTool(nodeTools) { it.mps_mcp_check_root_node_problems(strippedModel) }).asJsonObject
+            assertTrue("model check: $checked", checked.get("ok").asBoolean)
+            assertEquals("model", checked.getAsJsonObject("details").get("scope").asString)
+        }
+    }
+
+    @Test
+    fun `console alias fails cleanly when no console is available`() {
+        // Like the console toolset's tests: resolveConsoleEditableTab may answer NOT_FOUND or
+        // INTERNAL_ERROR in the headless fixture, so only the error envelope is asserted.
+        val target = createModel(createSolution(), "test.console.alias.tgt${System.nanoTime()}")
+        expectErr(runTool(toolset) { it.mps_mcp_model_dependency("console", JsonOrText(modelRefOf(target))) })
+        expectErr(runTool(toolset) { it.mps_mcp_model_used_language("console", "jetbrains.mps.lang.core", "language") })
+    }
+
+    @Test
+    fun `a project model named console is shadowed by the alias and reachable by reference`() {
+        val solution = createSolution()
+        val consoleNamed = createModel(solution, "console")
+        val target = createModel(createSolution(), "test.console.named.tgt${System.nanoTime()}")
+        val targetRef = modelRefOf(target)
+
+        expectErr(runTool(toolset) { it.mps_mcp_model_dependency("console", JsonOrText(targetRef)) })
+        readOnRepo {
+            assertTrue("the alias must not fall back to the model named console",
+                (consoleNamed as SModelInternal).modelImports.isEmpty())
+        }
+
+        val response = runTool(toolset) { it.mps_mcp_model_dependency(modelRefOf(consoleNamed), JsonOrText(targetRef)) }
+        assertEquals(1, expectOk(response).get("added").asInt)
+        assertFalse("a project model write is not a console write: $response", expectOk(response).has("console"))
+    }
+
+    @Test
+    fun `remove_model_dependency removes an import named by its model name`() {
+        val sourceModel = createModel(createSolution(), "test.dep.byname.src${System.nanoTime()}")
+        val targetName = "test.dep.byname.tgt${System.nanoTime()}"
+        val targetModel = createModel(createSolution(), targetName)
+        expectOk(runTool(toolset) { it.mps_mcp_model_dependency(modelRefOf(sourceModel), JsonOrText(modelRefOf(targetModel))) })
+
+        val response = runTool(toolset) { it.mps_mcp_model_dependency(modelRefOf(sourceModel), targetName, DependencyOperation.DELETE) }
+        val item = JsonParser.parseString(response).asJsonObject.getAsJsonArray("data")[0].asJsonObject
+        assertTrue("a bare model name must match the stored import: $response", item.getAsJsonObject("data").get("removed").asBoolean)
+        readOnRepo {
+            assertFalse((sourceModel as SModelInternal).modelImports.contains(targetModel.reference))
+        }
+    }
+
+    @Test
+    fun `console import logic adds module dependencies, warns, and removes by name`() {
+        val targetSolution = createSolution()
+        val targetName = "test.console.imports.tgt${System.nanoTime()}"
+        val targetModel = createModel(targetSolution, targetName)
+        withTempModel { temp ->
+            val added = inCommand { toolset.addModelImports(myProject, temp, listOf(modelRefOf(targetModel)), console = true) }
+            val addedData = expectOk(added)
+            assertEquals(1, addedData.get("added").asInt)
+            assertTrue("a console write is marked: $added", addedData.get("console").asBoolean)
+            assertTrue("the lifetime warning is reported: $added", warningsOf(added).single().contains("Console > Clear"))
+            readOnRepo {
+                assertTrue((temp as SModelInternal).modelImports.contains(targetModel.reference))
+                val dependencies = (temp.module as AbstractModule).moduleDescriptor!!.dependencies
+                assertTrue("the temp module must depend on the target module",
+                    dependencies.any { it.moduleRef.moduleId == targetSolution.moduleReference.moduleId })
+            }
+
+            val removed = inCommand { toolset.removeModelImport(myProject, temp, targetName, console = true) }
+            assertTrue("removed by bare name: $removed", expectOk(removed).get("removed").asBoolean)
+            assertEquals("nothing references the model, so only the lifetime warning: $removed", 1, warningsOf(removed).size)
+            readOnRepo {
+                assertFalse((temp as SModelInternal).modelImports.contains(targetModel.reference))
+                assertTrue("DELETE leaves the module dependency, as Clear does",
+                    (temp.module as AbstractModule).moduleDescriptor!!.dependencies
+                        .any { it.moduleRef.moduleId == targetSolution.moduleReference.moduleId })
+            }
+        }
+    }
+
+    @Test
+    fun `console DELETE warns when the console still references the import or uses the language`() {
+        val targetModel = createModel(createSolution(), "test.console.rederive.tgt${System.nanoTime()}")
+        val seeded = runTool(MPSJavaMcpToolset()) {
+            it.mps_mcp_parse_java_and_insert(
+                """{"code":"class Target {}","featureKind":"CLASS","insert":{"mode":"root","modelRef":"${modelRefOf(targetModel)}"}}"""
+            )
+        }
+        assertTrue(seeded, JsonParser.parseString(seeded).asJsonObject.get("ok").asBoolean)
+        withTempModel { temp ->
+            executeCommand {
+                val type = jetbrains.mps.smodel.SNode(BaseLanguageMeta.classifierTypeConcept)
+                type.setReferenceTarget(BaseLanguageMeta.classifierTypeClassifierLink, targetModel.rootNodes.single())
+                temp.addRootNode(type)
+            }
+            expectOk(inCommand { toolset.addModelImports(myProject, temp, listOf(modelRefOf(targetModel)), console = true) })
+            expectOk(inCommand { toolset.addUsedLanguage(myProject, temp, "jetbrains.mps.baseLanguage", "language", console = true) })
+
+            val removedImport = inCommand { toolset.removeModelImport(myProject, temp, modelRefOf(targetModel), console = true) }
+            assertTrue(expectOk(removedImport).get("removed").asBoolean)
+            assertTrue("expected the re-derivation note: $removedImport",
+                warningsOf(removedImport).any { it.contains("may add the import back") })
+
+            val removedLanguage = inCommand {
+                toolset.removeUsedLanguage(myProject, temp, "jetbrains.mps.baseLanguage", "language", console = true)
+            }
+            assertTrue(expectOk(removedLanguage).get("removed").asBoolean)
+            assertTrue("expected the re-derivation note: $removedLanguage",
+                warningsOf(removedLanguage).any { it.contains("may add it back") })
+        }
+    }
+
+    @Test
+    fun `console DELETE refuses a built-in console devkit`() {
+        val devkitName = "test.dk.console${System.nanoTime()}"
+        val devkitResp = runTool(MPSModuleMcpToolset()) {
+            it.mps_mcp_create_module("devkit", devkitName, freshPathInProject(devkitName), null, null, false, false, false)
+        }
+        assertTrue(devkitResp, JsonParser.parseString(devkitResp).asJsonObject.get("ok").asBoolean)
+        val devkitRef: SModuleReference = readOnRepo {
+            myProject.projectModules.filterIsInstance<DevKit>().single { it.moduleName == devkitName }.moduleReference
+        }
+        withTempModel { temp ->
+            expectOk(inCommand { toolset.addUsedLanguage(myProject, temp, devkitName, "devkit", console = true) })
+
+            val refused = inCommand {
+                toolset.removeUsedLanguage(myProject, temp, devkitName, "devkit", console = true, protectedDevkits = setOf(devkitRef))
+            }
+            assertEquals("INVALID_REQUEST", JsonParser.parseString(refused).asJsonObject.get("code").asString)
+            assertTrue(expectErr(refused).contains("built-in MPS Console devkit"))
+            readOnRepo { assertTrue((temp as SModelInternal).importedDevkits().contains(devkitRef)) }
+
+            val removed = inCommand { toolset.removeUsedLanguage(myProject, temp, devkitName, "devkit", console = true) }
+            assertTrue("an unprotected devkit is removed: $removed", expectOk(removed).get("removed").asBoolean)
+        }
+    }
+}

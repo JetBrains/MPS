@@ -19,7 +19,7 @@ import java.io.File
  */
 class CompactProjectStructureIntegrationTest : AgenticViewIntegrationTestBase() {
 
-    private val projectToolset = JetBrainsMPSProjectMcpToolset()
+    private val projectToolset = MPSProjectMcpToolset()
 
     private fun compact(startingPoint: String, nodeDepth: Int = -1, maxInlineBytes: Int = 1_000_000): JsonObject =
         JsonParser.parseString(runTool(projectToolset) {
@@ -29,7 +29,7 @@ class CompactProjectStructureIntegrationTest : AgenticViewIntegrationTestBase() 
     /** The classes `public class <name> { <body> }` parsed into [model] as roots, in order. */
     private fun classes(model: SModel, vararg classes: Pair<String, String>) {
         for ((name, body) in classes) {
-            val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+            val response = runTool(MPSJavaMcpToolset()) {
                 it.mps_mcp_parse_java_and_insert(
                     """{"code":"public class $name { $body }","featureKind":"CLASS",
                         "insert":{"mode":"root","modelRef":"${modelRefOf(model)}"}}"""

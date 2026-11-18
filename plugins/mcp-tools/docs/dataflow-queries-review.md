@@ -9,12 +9,12 @@
 
 ### Overview
 These commits introduce:
-- `mps_mcp_query_dataflow` (`PRINT_PROGRAM`, `REACHING_WRITES`, `REACHING_READS`) in `JetBrainsMPSDataflowMcpToolset.kt`, backed by the reflective runtime façade `DataflowRuntime.kt` and additional metamodel handles in `BaseLanguageMeta.kt`.
-- Unit and integration tests (`JetBrainsMPSDataflowMcpToolsetIntegrationTest.kt`, `DataflowBuilderFrameTest.kt`, `SkillDataflowQueryRoutingTest.kt`) and manual test scenario steps (`10.25`–`10.27`).
+- `mps_mcp_query_dataflow` (`PRINT_PROGRAM`, `REACHING_WRITES`, `REACHING_READS`) in `MPSDataflowMcpToolset.kt`, backed by the reflective runtime façade `DataflowRuntime.kt` and additional metamodel handles in `BaseLanguageMeta.kt`.
+- Unit and integration tests (`MPSDataflowMcpToolsetIntegrationTest.kt`, `DataflowBuilderFrameTest.kt`, `SkillDataflowQueryRoutingTest.kt`) and manual test scenario steps (`10.25`–`10.27`).
 - Skill documentation (`dataflow-queries.md`, `mps-aspect-dataflow/SKILL.md`, and routing/index updates replicated cleanly across all three skill catalogs).
 - Study scenarios `S13`, `S14`, and `S16`, `families.py` counters (`DF_*`), `DISALLOWED_TOOLS` support in `run_worker.sh`, and Round 40/41 evaluation notes in `reports/assessments/dataflow-exposure.md`.
 
-Overall, the implementation is clean, well-structured, and closely aligned with `JetBrainsMPSTypesMcpToolset.kt`. Below are the findings across **Correctness**, **Consistency**, and **Duplication**.
+Overall, the implementation is clean, well-structured, and closely aligned with `MPSTypesMcpToolset.kt`. Below are the findings across **Correctness**, **Consistency**, and **Duplication**.
 
 ---
 
@@ -36,7 +36,7 @@ Each finding was checked against the code on `261/vaclav/MPS-40318`, the generat
 | 3.5 | Control-flow rethrow diverges | **Not a defect**: the divergence is deliberate | Not changed |
 | 3.6 | Routing test helpers copied | **Valid** | Refactored |
 
-Tests: the new tests in `JetBrainsMPSDataflowMcpToolsetIntegrationTest` (`an initializer node is its own default program root`, `a ReplaceBlock closure node defaults to the enclosing body`, `a field and a node in its initializer default to the field`) each fail on the toolset as it was before the review: root `ClassConcept` with `size: 1` for the initializer and the field, and root `ReplaceBlock` for the closure. They pass with the fixes. See "Second round" at the end for the full-suite results.
+Tests: the new tests in `MPSDataflowMcpToolsetIntegrationTest` (`an initializer node is its own default program root`, `a ReplaceBlock closure node defaults to the enclosing body`, `a field and a node in its initializer default to the field`) each fail on the toolset as it was before the review: root `ClassConcept` with `size: 1` for the initializer and the field, and root `ReplaceBlock` for the closure. They pass with the fixes. See "Second round" at the end for the full-suite results.
 
 ---
 
@@ -44,14 +44,14 @@ Tests: the new tests in `JetBrainsMPSDataflowMcpToolsetIntegrationTest` (`an ini
 
 ### What works well
 - **Reflective runtime access (`DataflowRuntime.kt`):** Loading `jetbrains.mps.dataFlow.runtime` via `ClassLoaderManager.getClassLoader(module)` and resolving `Class`/`Method` handles per call avoids stale reflection handles across language reloads. Building the program via `LanguageRegistry.withAvailableExtensions(MPSProgramFactory.class, ...)` inside `executeBackgroundRead` matches the IDE devkit actions without requiring the EDT.
-- **Def-use and partial-program semantics (`DataflowRuntime.kt:125-146`, `JetBrainsMPSDataflowMcpToolset.kt:254-263, 389-395`):**
+- **Def-use and partial-program semantics (`DataflowRuntime.kt:125-146`, `MPSDataflowMcpToolset.kt:254-263, 389-395`):**
   - `reachingReads` queries `ReachingReadsAnalyzer` at `instructions[write].successors` rather than at `write` itself (where the write's own variable reads have already been killed), matching `InlineVariableRefactoring.optimizeAssignment`.
   - `outsideVariables` accurately distinguishes variables declared outside `root` that are written on entry from an outside source (such as `ParameterDeclaration` writes emitted by `StatementList_DataFlow` when `root` is a method body) from true uninitialized outer variables (fields, enclosing locals, loop variables when `root` is the loop body).
-- **Builder failure handling (`DataflowRuntime.kt:66-73, 195-199`, `JetBrainsMPSDataflowMcpToolset.kt:228-247, 401-419`):** Unwrapping `InvocationTargetException`, rethrowing cancellation/control-flow/VM errors, surfacing builder exceptions as `data.builderFailure`, and detecting `LinkageError` (excluding `ExceptionInInitializerError`) to warn about rebuilding with `MAKE` is well handled.
+- **Builder failure handling (`DataflowRuntime.kt:66-73, 195-199`, `MPSDataflowMcpToolset.kt:228-247, 401-419`):** Unwrapping `InvocationTargetException`, rethrowing cancellation/control-flow/VM errors, surfacing builder exceptions as `data.builderFailure`, and detecting `LinkageError` (excluding `ExceptionInInitializerError`) to warn about rebuilding with `MAKE` is well handled.
 - **Unreachable instructions fix (`a4123fb6fc67`):** Returning all `Program.getUnreachableInstructions()` indices in `unreachable` while keeping `mayBeUnreachable: true` per instruction fixes the mismatch found in Round 41 where Kaja's `check_KajaDataflow` reports unreachable instructions that BaseLanguage's `DataFlowUtil.getUnreachableNodes` ignores.
 
 ### Edge cases & minor issues
-1. **`defaultProgramRoot` when `node` is a `StaticInitializer` or `InstanceInitializer` (`JetBrainsMPSDataflowMcpToolset.kt:441-459`):**
+1. **`defaultProgramRoot` when `node` is a `StaticInitializer` or `InstanceInitializer` (`MPSDataflowMcpToolset.kt:441-459`):**
    ```kotlin
    val buildsItsBody = node.concept.isSubConceptOf(BaseLanguageMeta.baseMethodDeclarationConcept) ||
        node.concept.isSubConceptOf(BaseLanguageMeta.conceptFunctionConcept)
@@ -60,7 +60,7 @@ Tests: the new tests in `JetBrainsMPSDataflowMcpToolsetIntegrationTest` (`an ini
    Both `StaticInitializer_DataFlow` and `InstanceInitializer_DataFlow` delegate directly to their `statementList` child (just as `BaseMethodDeclaration_DataFlow` and `ConceptFunction_DataFlow` delegate to `body`). Because `buildsItsBody` does not include `staticInitializerConcept` or `instanceInitializerConcept`, passing a `StaticInitializer` or `InstanceInitializer` node itself to `REACHING_WRITES` / `REACHING_READS` starts the ancestor walk at `node.parent` (`ClassConcept`) and falls back to `node.containingRoot` (`ClassConcept`), which has no dataflow builder and produces an empty `0: end` program.
 
    **Verdict: confirmed.** Neither initializer implements `IMethodLike` (their parents are `ClassifierMember`, `IStatementListContainer` and a core interface), and BaseLanguage has no `ClassConcept_DataFlow`. A test reproduced it: root `ClassConcept`, `size: 1`, no writes. **Fixed:** `buildsItsBody` now includes both initializer concepts, so an initializer node is its own root, like a method. The KDoc, the `@McpDescription`, `dataflow-queries.md` (all three catalogs) and the assessment's "facts settled" bullet now say so. Covered by `an initializer node is its own default program root`.
-2. **`defaultProgramRoot` when `node` is a legacy `jetbrains.mps.baseLanguage.structure.Closure` (`JetBrainsMPSDataflowMcpToolset.kt:443-444`):**
+2. **`defaultProgramRoot` when `node` is a legacy `jetbrains.mps.baseLanguage.structure.Closure` (`MPSDataflowMcpToolset.kt:443-444`):**
    In BaseLanguage, `Closure` (`0x10c63f4f3f3L`, whose builder `Closure_DataFlow` only emits reads of external variables referenced in the closure, just like `closures.ClosureLiteral`) is a subconcept of `ConceptFunction`. Because `buildsItsBody` checks `node.concept.isSubConceptOf(BaseLanguageMeta.conceptFunctionConcept)` without `!node.concept.isSubConceptOf(BaseLanguageMeta.closureConcept)` (compare `ConceptFunctionParameterBinder.kt:142-143`, which explicitly guards against `BaseLanguageMeta.closureConcept`), a legacy `Closure` node is treated as `buildsItsBody = true` instead of defaulting to its enclosing body as documented.
 
    **Verdict: confirmed.** `Closure`'s descriptor has `super_(… 0x108bbca0f48L)` (`ConceptFunction`), and `Closure_DataFlow.build` emits only `emitRead` for `getVariablesReferencedInClosure`. `Closure` itself is abstract (`class_(false, true, false)`). Its one concrete subconcept is regexp's `ReplaceBlock`, the block of `replace with /…/ { … }`, which has no builder of its own and inherits `Closure_DataFlow`: `MPSProgramBuilder.build` walks `getAllSuperConcepts`. **Fixed:** the `ConceptFunction` clause excludes `closureConcept`, so a `ReplaceBlock` node, like a `ClosureLiteral` node, gets the enclosing body. A node inside the block's body was already handled correctly and is unchanged. Covered by `a ReplaceBlock closure node defaults to the enclosing body`. That test builds a `ReplaceBlock` whose body reads the method's `total` and checks three things: the root is the method body, there is no `builderFailure`, and the block's own captured read is reached by `total`'s writes.
@@ -95,24 +95,24 @@ Tests: the new tests in `JetBrainsMPSDataflowMcpToolsetIntegrationTest` (`an ini
 
 ## 3. Duplication
 
-1. **Rule-reference JSON wrapper (`JetBrainsMPSDataflowMcpToolset.kt:374-382` vs `JetBrainsMPSTypesMcpToolset.kt:523-530`):**
+1. **Rule-reference JSON wrapper (`MPSDataflowMcpToolset.kt:374-382` vs `MPSTypesMcpToolset.kt:523-530`):**
    Both toolsets wrap `AbstractOps.ruleJsonObject(statement: SNodeReference, root: SNode?)` with the exact same fallback object `{rule: null, ruleReference: null, statement: ...}` when parsing the node reference fails. Moving a string/nullable-pointer overload into `AbstractOps` would avoid duplicating the fallback shape.
 
    **Verdict: valid.** The two wrappers parse differently (a `<model>/<node>` string versus a model id and a node id), but the resolve-to-root step and the fallback shape are identical. **Refactored:** `AbstractOps.ruleJsonObject(statement: SNodeReference?, unparsed: String, repository: SRepository)` holds both, and each toolset keeps only its own parsing.
-2. **Generated aspect class → root node lookup (`JetBrainsMPSDataflowMcpToolset.kt:421-432` vs `JetBrainsMPSTypesMcpToolset.kt:869-879`):**
+2. **Generated aspect class → root node lookup (`MPSDataflowMcpToolset.kt:421-432` vs `MPSTypesMcpToolset.kt:869-879`):**
    `Query.builderRoot` and `TypeTrace.runtimeRuleJson` use the same `ModuleRepositoryFacade(repository).getModulesByName(modelName.removeSuffix(".$aspect")).asSequence().filterIsInstance<Language>().flatMap { it.models.asSequence() }.filter { it.name.longName == modelName }.flatMap { it.rootNodes.asSequence() }` traversal to find the aspect root node for a compiled class in `<language>.<aspect>.*`.
 
    **Verdict: valid.** **Refactored:** `aspectModelRoots(repository, modelName, aspect)` in the new `common/NodeNavigation.kt`. Each caller keeps its own matching rule (a builder by presentation, a rule by concept and name).
-3. **Node summary JSON (`JetBrainsMPSDataflowMcpToolset.kt:464-472` vs `GenerationTraceOps.kt:293-298, 351-355`):**
+3. **Node summary JSON (`MPSDataflowMcpToolset.kt:464-472` vs `GenerationTraceOps.kt:293-298, 351-355`):**
    Both construct `{reference, concept, presentation}` `JsonObject`s for `SNode`s; a small shared helper in `common/` would keep this wire shape in a single place.
 
    **Verdict: partly valid; not changed.** The three key names match, but the shapes do not. `GenerationTraceOps.nodeJson` adds `model` and assumes an attached node. The dataflow `nodeJson` returns `null` for a detached node's `reference`, `JsonNull` for no node, and a string for a non-`SNode` variable, which a builder may use. `templateRoot` (`GenerationTraceOps.kt:351-355`) is the three keys inline. A shared helper would need flags for every difference, so this was left alone.
-4. **Subtree containment checks (`JetBrainsMPSDataflowMcpToolset.kt:179, 284, 390, 456` and `GenerationTraceOps.kt:341-342`):**
-   `generateSequence(node) { it.parent }.any { it == root }` (and `.none { it == root }`) is written inline four times in `JetBrainsMPSDataflowMcpToolset.kt` alone. A small `SNode.isInSubtreeOf(root: SNode)` extension in `common/` would remove the repetition and make `defaultProgramRoot`, `outsideVariables`, and `reaching` easier to read.
+4. **Subtree containment checks (`MPSDataflowMcpToolset.kt:179, 284, 390, 456` and `GenerationTraceOps.kt:341-342`):**
+   `generateSequence(node) { it.parent }.any { it == root }` (and `.none { it == root }`) is written inline four times in `MPSDataflowMcpToolset.kt` alone. A small `SNode.isInSubtreeOf(root: SNode)` extension in `common/` would remove the repetition and make `defaultProgramRoot`, `outsideVariables`, and `reaching` easier to read.
 
    **Verdict: valid.** **Refactored:** `SNode.isInSubtreeOf(root)` (inclusive) in `common/NodeNavigation.kt` replaces all four dataflow sites. `GenerationTraceOps.isAncestor` is a *strict* ancestor test with different semantics, so it was not touched. Neither were the similar private helpers in `java/` (`SmodelReceiverCalls.isAncestor`, `ConceptFunctionParameterBinder.isUnderAny`), which are outside this review's commits.
-5. **Control-flow exception rethrow (`DataflowRuntime.kt:195-199` vs `JetBrainsMPSTypesMcpToolset.kt:643-648` vs `AbstractOps.kt:476-480`):**
-   `DataflowRuntime.rethrowIfControlFlow` checks `ProcessCanceledException || ControlFlowException || CancellationException || VirtualMachineError`, while `JetBrainsMPSTypesMcpToolset.tryOrNull` checks the first three. Centralizing `rethrowIfControlFlow` in `common/` would prevent subtle divergence.
+5. **Control-flow exception rethrow (`DataflowRuntime.kt:195-199` vs `MPSTypesMcpToolset.kt:643-648` vs `AbstractOps.kt:476-480`):**
+   `DataflowRuntime.rethrowIfControlFlow` checks `ProcessCanceledException || ControlFlowException || CancellationException || VirtualMachineError`, while `MPSTypesMcpToolset.tryOrNull` checks the first three. Centralizing `rethrowIfControlFlow` in `common/` would prevent subtle divergence.
 
    **Verdict: not a defect; not changed.** The difference is intended. `tryOrNull`'s KDoc says it returns null for *"a rule's `StackOverflowError` or `LinkageError`"*, and `StackOverflowError` is a `VirtualMachineError`, so a shared helper that rethrows `VirtualMachineError` would break that contract. `AbstractOps.rethrowIfCancellation` covers yet another set: it only rethrows `CancellationException`. These are three policies, not one policy copied three times. A shared helper would need the `VirtualMachineError` choice as a parameter, which only names the difference. Side note: because of the dataflow choice, a builder that recurses without bound comes back as `INTERNAL_ERROR` rather than as `builderFailure`. That is a design decision, recorded here and left unchanged.
 6. **Routing test helpers (`SkillDataflowQueryRoutingTest.kt:89-114` vs `SkillTypeQueryRoutingTest.kt:126-155`):**
