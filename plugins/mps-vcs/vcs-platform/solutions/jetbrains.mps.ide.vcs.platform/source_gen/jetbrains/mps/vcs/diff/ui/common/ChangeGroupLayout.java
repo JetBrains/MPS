@@ -185,7 +185,7 @@ public abstract class ChangeGroupLayout {
     if (myDisposed || !(isValid())) {
       return;
     }
-    getLeftComponent().getEditorContext().getRepository().getModelAccess().runReadAction(() -> myChangeGroups.set(calculateChangeGroups()));
+    getRightComponent().getEditorContext().getRepository().getModelAccess().runReadAction(() -> getLeftComponent().getEditorContext().getRepository().getModelAccess().runReadAction(() -> myChangeGroups.set(calculateChangeGroups())));
     ListSequence.fromList(myInvalidateListeners).visitAll((it) -> it.changeGroupsInvalidated());
     getLeftComponent().getLeftEditorHighlighter().repaint();
     if (getLeftComponent() != getRightComponent()) {

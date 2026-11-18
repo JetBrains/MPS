@@ -9371,34 +9371,53 @@
             <node concept="3cpWs6" id="6ID7N5AwtJn" role="3cqZAp" />
           </node>
         </node>
-        <node concept="1QHqEK" id="5K5qAIpunFl" role="3cqZAp">
-          <node concept="1QHqEC" id="5K5qAIpunFm" role="1QHqEI">
-            <node concept="3clFbS" id="6ID7N5Ax0xn" role="1bW5cS">
-              <node concept="3clFbF" id="6ID7N5Ax0xo" role="3cqZAp">
-                <node concept="2OqwBi" id="6I8tQNTENKA" role="3clFbG">
-                  <node concept="37vLTw" id="2BHiRxeuoUZ" role="2Oq$k0">
-                    <ref role="3cqZAo" node="42hl10VHanV" resolve="myChangeGroups" />
-                  </node>
-                  <node concept="liA8E" id="6I8tQNTEPI_" role="2OqNvi">
-                    <ref role="37wK5l" to="i5cy:~AtomicReference.set(java.lang.Object)" resolve="set" />
-                    <node concept="1rXfSq" id="6I8tQNTDPR1" role="37wK5m">
-                      <ref role="37wK5l" node="42hl10VHaiB" resolve="calculateChangeGroups" />
+        <node concept="1QHqEK" id="3map0JEnIsD" role="3cqZAp">
+          <node concept="1QHqEC" id="3map0JEnIsE" role="1QHqEI">
+            <node concept="3clFbS" id="3map0JEnIsF" role="1bW5cS">
+              <node concept="1QHqEK" id="5K5qAIpunFl" role="3cqZAp">
+                <node concept="1QHqEC" id="5K5qAIpunFm" role="1QHqEI">
+                  <node concept="3clFbS" id="6ID7N5Ax0xn" role="1bW5cS">
+                    <node concept="3clFbF" id="6ID7N5Ax0xo" role="3cqZAp">
+                      <node concept="2OqwBi" id="6I8tQNTENKA" role="3clFbG">
+                        <node concept="37vLTw" id="2BHiRxeuoUZ" role="2Oq$k0">
+                          <ref role="3cqZAo" node="42hl10VHanV" resolve="myChangeGroups" />
+                        </node>
+                        <node concept="liA8E" id="6I8tQNTEPI_" role="2OqNvi">
+                          <ref role="37wK5l" to="i5cy:~AtomicReference.set(java.lang.Object)" resolve="set" />
+                          <node concept="1rXfSq" id="6I8tQNTDPR1" role="37wK5m">
+                            <ref role="37wK5l" node="42hl10VHaiB" resolve="calculateChangeGroups" />
+                          </node>
+                        </node>
+                      </node>
                     </node>
+                  </node>
+                </node>
+                <node concept="2OqwBi" id="6ID7N5Ax0mX" role="ukAjM">
+                  <node concept="2OqwBi" id="6ID7N5Ax0kd" role="2Oq$k0">
+                    <node concept="1rXfSq" id="6ID7N5AwtJu" role="2Oq$k0">
+                      <ref role="37wK5l" node="42hl10VHail" resolve="getLeftComponent" />
+                    </node>
+                    <node concept="liA8E" id="6ID7N5Ax0ke" role="2OqNvi">
+                      <ref role="37wK5l" to="exr9:~EditorComponent.getEditorContext()" resolve="getEditorContext" />
+                    </node>
+                  </node>
+                  <node concept="liA8E" id="6ID7N5Ax0mY" role="2OqNvi">
+                    <ref role="37wK5l" to="exr9:~EditorContext.getRepository()" resolve="getRepository" />
                   </node>
                 </node>
               </node>
             </node>
           </node>
-          <node concept="2OqwBi" id="6ID7N5Ax0mX" role="ukAjM">
-            <node concept="2OqwBi" id="6ID7N5Ax0kd" role="2Oq$k0">
-              <node concept="1rXfSq" id="6ID7N5AwtJu" role="2Oq$k0">
-                <ref role="37wK5l" node="42hl10VHail" resolve="getLeftComponent" />
+          <node concept="2OqwBi" id="3map0JEnIsL" role="ukAjM">
+            <node concept="2OqwBi" id="3map0JEnIsM" role="2Oq$k0">
+              <node concept="1rXfSq" id="3map0JEnIsN" role="2Oq$k0">
+                <ref role="37wK5l" node="42hl10VHaiu" resolve="getRightComponent" />
               </node>
-              <node concept="liA8E" id="6ID7N5Ax0ke" role="2OqNvi">
+              <node concept="liA8E" id="3map0JEnIsO" role="2OqNvi">
                 <ref role="37wK5l" to="exr9:~EditorComponent.getEditorContext()" resolve="getEditorContext" />
               </node>
             </node>
-            <node concept="liA8E" id="6ID7N5Ax0mY" role="2OqNvi">
+            <node concept="liA8E" id="3map0JEnIsP" role="2OqNvi">
               <ref role="37wK5l" to="exr9:~EditorContext.getRepository()" resolve="getRepository" />
             </node>
           </node>

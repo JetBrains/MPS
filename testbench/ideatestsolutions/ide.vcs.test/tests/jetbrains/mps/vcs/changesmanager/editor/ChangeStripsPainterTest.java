@@ -23,6 +23,7 @@ import jetbrains.mps.openapi.editor.menus.transformation.SPropertyInfo;
 import jetbrains.mps.openapi.editor.update.UpdaterListener;
 import jetbrains.mps.project.MPSProject;
 import jetbrains.mps.smodel.IllegalModelAccessError;
+import jetbrains.mps.smodel.RepositoryFacade;
 import jetbrains.mps.smodel.SNode;
 import jetbrains.mps.smodel.SNodeUtil;
 import jetbrains.mps.smodel.tempmodel.TempModuleOptions;
@@ -31,8 +32,11 @@ import jetbrains.mps.testsuites.PlatformTestSuite;
 import jetbrains.mps.vcs.changesmanager.CurrentDifferenceRegistry;
 import jetbrains.mps.vcs.changesmanager.SimpleCommandQueue;
 import jetbrains.mps.vcs.changesmanager.editor.ChangeGroupTestCase.RecordingHighlighter;
+import jetbrains.mps.vcs.diff.ChangeSet;
+import jetbrains.mps.vcs.diff.ChangeSetBuilder;
 import jetbrains.mps.vcs.diff.changes.ChangeType;
 import jetbrains.mps.vcs.diff.changes.ModelChange;
+import jetbrains.mps.vcs.diff.merge.ModelLot;
 import jetbrains.mps.vcs.diff.ui.common.Bounds;
 import jetbrains.mps.vcs.diff.ui.common.ButtonsPainter;
 import jetbrains.mps.vcs.diff.ui.common.ChangeColors;
@@ -300,6 +304,73 @@ public class ChangeStripsPainterTest {
         }
         finally {
           editor.dispose();
+        }
+      });
+    }
+
+    @Test
+    public void workingCopyDiffCalculatesGroupsWithHistoricalModelOnLeft() throws Exception {
+      assertMixedRepositoryGroups(true);
+    }
+
+    @Test
+    public void workingCopyDiffCalculatesGroupsWithHistoricalModelOnRight() throws Exception {
+      assertMixedRepositoryGroups(false);
+    }
+
+    private void assertMixedRepositoryGroups(boolean historicalOnLeft) throws Exception {
+      onEdt(() -> {
+        RepositoryFacade historicalRepository = RepositoryFacade.createPlainRegistrationRepo(myProject.getRepository());
+        ModelLot historicalModels = new ModelLot(historicalRepository);
+        SModel[] models = new SModel[2];
+        DiffEditor[] editors = new DiffEditor[2];
+        SNode root = new SNode(SNodeUtil.concept_BaseConcept);
+        try {
+          myProject.getModelAccess().executeCommand(() -> {
+            models[1] = TemporaryModels.getInstance().createEditable(
+                true, TempModuleOptions.nonReloadableModule(myProject.getRepository()));
+            root.setProperty(SNodeUtil.property_BaseConcept_virtualPackage, "before");
+            models[1].addRootNode(root);
+            models[0] = historicalModels.addCloneOf(models[1], "base", true);
+            historicalModels.registerModels();
+            root.setProperty(SNodeUtil.property_BaseConcept_virtualPackage, "after");
+          });
+          DiffChangeGroupLayout layout = myProject.getModelAccess().computeReadAction(() -> {
+            SModel leftModel = models[historicalOnLeft ? 0 : 1];
+            SModel rightModel = models[historicalOnLeft ? 1 : 0];
+            editors[0] = new DiffEditor(myProject, leftModel, root.getNodeId(), "left", false, true, false);
+            editors[1] = new DiffEditor(myProject, rightModel, root.getNodeId(), "right", false, true, false);
+            ChangeSet changes = ChangeSetBuilder.buildChangeSet(leftModel, rightModel);
+            assertEquals("Fixture must contain a property change", 1, changes.getModelChanges().size());
+            editors[0].highlightChanges(leftModel, changes.getModelChanges(), true, null);
+            editors[1].highlightChanges(rightModel, changes.getModelChanges(), false, null);
+            return new DiffChangeGroupLayout(null, changes, editors[0], editors[1], null, false);
+          });
+          try {
+            assertSame(historicalRepository.get(), editors[historicalOnLeft ? 0 : 1].getMainEditor().getEditorContext().getRepository());
+            assertSame(myProject.getRepository(), editors[historicalOnLeft ? 1 : 0].getMainEditor().getEditorContext().getRepository());
+            assertFalse("Group calculation must acquire its own project read access", myProject.getModelAccess().canRead());
+            layout.invalidate();
+            updateQueue(layout).flush();
+            ChangeGroup group = onlyGroup(layout.getChangeGroups());
+            assertTrue("Historical side has no change bounds", group.getBounds(historicalOnLeft).length() > 0);
+            assertTrue("Working-copy side has no change bounds", group.getBounds(!historicalOnLeft).length() > 0);
+          }
+          finally {
+            layout.dispose();
+          }
+        }
+        finally {
+          for (DiffEditor editor : editors) {
+            if (editor != null) {
+              editor.dispose();
+            }
+          }
+          historicalModels.discard();
+          historicalRepository.dispose();
+          if (models[1] != null) {
+            myProject.getModelAccess().executeCommand(() -> TemporaryModels.getInstance().dispose(models[1]));
+          }
         }
       });
     }
