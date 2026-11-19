@@ -1,0 +1,48 @@
+From 56fa37e2cd0226155eb33804102409eb4ee41b66 Mon Sep 17 00:00:00 2001
+From: Fedor Isakov <fedor.isakov@jetbrains.com>
+Date: Thu, 12 Nov 2026 12:09:16 +0100
+Subject: [PATCH 3/3] MPS-40475 MPS: Drop obsolete patch
+
+---
+ community/mps/build/build/build.xml              |  1 -
+ .../patches/DisableSlowOperationsInEAP.patch     | 16 ----------------
+ 2 files changed, 17 deletions(-)
+ delete mode 100644 community/mps/build/build/patches/DisableSlowOperationsInEAP.patch
+
+diff --git a/community/mps/build/build/build.xml b/community/mps/build/build/build.xml
+index 49c6f87d916ac..9e02ccd87138b 100644
+--- a/community/mps/build/build/build.xml
++++ b/community/mps/build/build/build.xml
+@@ -58,7 +58,6 @@
+   <!-- Code changes required for MPS not yet integrated into the codebase -->
+   <target name="patch" description="Apply MPS patches to IDEA Community sources">
+     <apply.patch file="${basedir}/patches/Custom_project_settings_store_folder_name_and__project_file_extension_for_MPS_.patch"/>
+-    <apply.patch file="${basedir}/patches/DisableSlowOperationsInEAP.patch"/>
+     <apply.patch file="${basedir}/patches/IJPL-156181.patch"/>
+     <apply.patch file="${basedir}/patches/jps.patch"/>
+     <apply.patch file="${basedir}/patches/MPS-36060.patch"/>
+diff --git a/community/mps/build/build/patches/DisableSlowOperationsInEAP.patch b/community/mps/build/build/patches/DisableSlowOperationsInEAP.patch
+deleted file mode 100644
+index aa29b857be8b3..0000000000000
+--- a/community/mps/build/build/patches/DisableSlowOperationsInEAP.patch
++++ /dev/null
+@@ -1,16 +0,0 @@
+-Index: community/platform/core-api/src/com/intellij/util/SlowOperations.java
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/community/platform/core-api/src/com/intellij/util/SlowOperations.java b/community/platform/core-api/src/com/intellij/util/SlowOperations.java
+---- a/community/platform/core-api/src/com/intellij/util/SlowOperations.java	(revision 8a1a672da13308f30ce9e532de7abb50bb48a0f7)
+-+++ b/community/platform/core-api/src/com/intellij/util/SlowOperations.java	(date 1742823108696)
+-@@ -188,6 +188,7 @@
+-     boolean result = System.getenv("TEAMCITY_VERSION") != null ||
+-                      application.isUnitTestMode() ||
+-                      application.isCommandLine() ||
+-+                     application.isEAP() ||
+-                      !application.isEAP() && !application.isInternal() && !SystemProperties
+-                        .getBooleanProperty(IDEA_PLUGIN_SANDBOX_MODE, false);
+-     ourAlwaysAllow = result ? 1 : 0;
+-- 
+2.56.1
+

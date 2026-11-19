@@ -1,7 +1,7 @@
-From ca385b950d2b828c729378f6dc40281bcdc4cac5 Mon Sep 17 00:00:00 2001
+From 527c274f5c0314adf9daa8d89142d03008a959b0 Mon Sep 17 00:00:00 2001
 From: Fedor Isakov <fedor.isakov@jetbrains.com>
 Date: Tue, 3 Nov 2026 10:29:34 +0100
-Subject: [PATCH 3/3] MPS-40414 Update layout to include idea_rt in lib/
+Subject: [PATCH 2/3] MPS-40414 Update layout to include idea_rt in lib/
 
 To satisfy classloading dependencies of testFramework, this jar has to be located in lib/.
 ---
@@ -22,5 +22,5 @@ index 6ee06feb1ecab..585f49badd7a2 100644
              // Contains the expanded plugin.xml inside
              layout.withModule("intellij.mps.resources", "mps-resources.zip")
 -- 
-2.56.0
+2.56.1
 
