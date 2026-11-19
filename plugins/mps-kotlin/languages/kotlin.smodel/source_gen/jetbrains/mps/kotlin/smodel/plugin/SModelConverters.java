@@ -31,7 +31,7 @@ public class SModelConverters extends Extension.Default<TypeConverterEngine<SNod
     engine = new TypeConverterEngine<>();
     engine.declareMapping(CONCEPTS.SNodeType$hR, (it) -> createNodeType_1wzh1g_a0a1a0b0e(asConceptProjection(SLinkOperations.getTarget(SNodeOperations.as(it, CONCEPTS.SNodeType$hR), LINKS.concept$OMgE))));
 
-    engine.declareMapping(CONCEPTS.SConceptType$pb, (it) -> createConceptType_1wzh1g_a0a1a0d0e(SLinkOperations.getTarget(SNodeOperations.as(it, CONCEPTS.SConceptType$pb), LINKS.conceptDeclaraton$K4R0)));
+    engine.declareMapping(CONCEPTS.SConceptType$pb, (it) -> createConceptType_1wzh1g_a0a1a0d0e(SLinkOperations.getTarget(SNodeOperations.as(it, CONCEPTS.SConceptType$pb), LINKS.conceptDeclaration$K4R0)));
 
     engine.declareMapping(CONCEPTS.SNodePointerType$3X, (it) -> createNodeReferenceType_1wzh1g_a0a1a0f0e(asConceptProjection(SLinkOperations.getTarget(SNodeOperations.as(it, CONCEPTS.SNodePointerType$3X), LINKS.concept$cytz))));
 
@@ -98,7 +98,7 @@ public class SModelConverters extends Extension.Default<TypeConverterEngine<SNod
 
   private static final class LINKS {
     /*package*/ static final SReferenceLink concept$OMgE = MetaAdapterFactory.getReferenceLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x108f968b3caL, 0x1090e46ca51L, "concept");
-    /*package*/ static final SReferenceLink conceptDeclaraton$K4R0 = MetaAdapterFactory.getReferenceLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x5cab42cd97571ceeL, 0x5cab42cd97571cefL, "conceptDeclaraton");
+    /*package*/ static final SReferenceLink conceptDeclaration$K4R0 = MetaAdapterFactory.getReferenceLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x5cab42cd97571ceeL, 0x5cab42cd97571cefL, "conceptDeclaration");
     /*package*/ static final SReferenceLink concept$cytz = MetaAdapterFactory.getReferenceLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x66b228a4fad6b29eL, 0x66b228a4fad6b2adL, "concept");
     /*package*/ static final SReferenceLink concept$PItp = MetaAdapterFactory.getReferenceLink(0xeb56ebf4df56438eL, 0xaf06fc1cd08b495aL, 0x22287f28956a12d2L, 0x22287f28956a1e69L, "concept");
     /*package*/ static final SContainmentLink projection$IJnO = MetaAdapterFactory.getContainmentLink(0xeb56ebf4df56438eL, 0xaf06fc1cd08b495aL, 0x98a03f0443be11fL, 0x22287f2895685750L, "projection");

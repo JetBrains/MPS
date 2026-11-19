@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<product version="3" modelHash="-dzoqrtrcmylkuogd5ef2er7emyie8s">
+<product version="3" modelHash="10mrppdu6fvmxo2ff5w38d1ehpxtutu">
   <files names="TypesystemDescriptor.java:check_QueryDuplicatedParameters_NonTypesystemRule.java:typeof_CustomScope_InferenceRule.java:typeof_InstancesExpression_InferenceRule.java:typeof_ModelScopeLiteral_InferenceRule.java:typeof_ModelsExpression_InferenceRule.java:typeof_ModuleScopeLiteral_InferenceRule.java:typeof_ModulesExpression_InferenceRule.java:typeof_NodesExpresiion_InferenceRule.java:typeof_ReferencesExpression_InferenceRule.java:typeof_ScopeProvider_InferenceRule.java:typeof_UsagesExpression_InferenceRule.java" />
 </product>
 

@@ -36,13 +36,13 @@ public class typeof_ConceptIdRefExpression_InferenceRule extends AbstractInferen
   }
   private static SNode createSConceptTypeLiteral_8j47c6_a1a0c0a0b(SNode p0) {
     SNodeBuilder n0 = new SNodeBuilder().init(CONCEPTS.SConceptTypeLiteral$6t);
-    n0.setReferenceTarget(LINKS.conceptDeclaraton$PVw0, p0);
+    n0.setReferenceTarget(LINKS.conceptDeclaration$PVw0, p0);
     return n0.getResult();
   }
 
   private static final class LINKS {
     /*package*/ static final SReferenceLink conceptDeclaration$l13w = MetaAdapterFactory.getReferenceLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x24b2bf7ce180eb54L, 0x24b2bf7ce180eb55L, "conceptDeclaration");
-    /*package*/ static final SReferenceLink conceptDeclaraton$PVw0 = MetaAdapterFactory.getReferenceLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x4bf20760d53f89eaL, 0x4bf20760d53f89ebL, "conceptDeclaraton");
+    /*package*/ static final SReferenceLink conceptDeclaration$PVw0 = MetaAdapterFactory.getReferenceLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x4bf20760d53f89eaL, 0x4bf20760d53f89ebL, "conceptDeclaration");
   }
 
   private static final class CONCEPTS {

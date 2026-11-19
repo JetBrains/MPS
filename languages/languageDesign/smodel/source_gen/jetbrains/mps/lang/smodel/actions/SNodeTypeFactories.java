@@ -23,7 +23,7 @@ public class SNodeTypeFactories {
       {
         final SNode conceptType = sampleNode;
         if (SNodeOperations.isInstanceOf(conceptType, CONCEPTS.SConceptType$pb)) {
-          SLinkOperations.setTarget(newNode, LINKS.concept$cytz, SLinkOperations.getTarget(conceptType, LINKS.conceptDeclaraton$K4R0));
+          SLinkOperations.setTarget(newNode, LINKS.concept$cytz, SLinkOperations.getTarget(conceptType, LINKS.conceptDeclaration$K4R0));
         }
       }
     }
@@ -39,7 +39,7 @@ public class SNodeTypeFactories {
       {
         final SNode conceptType = sampleNode;
         if (SNodeOperations.isInstanceOf(conceptType, CONCEPTS.SConceptType$pb)) {
-          SLinkOperations.setTarget(newNode, LINKS.concept$OMgE, SLinkOperations.getTarget(conceptType, LINKS.conceptDeclaraton$K4R0));
+          SLinkOperations.setTarget(newNode, LINKS.concept$OMgE, SLinkOperations.getTarget(conceptType, LINKS.conceptDeclaration$K4R0));
         }
       }
     }
@@ -49,13 +49,13 @@ public class SNodeTypeFactories {
       {
         final SNode nodeType = sampleNode;
         if (SNodeOperations.isInstanceOf(nodeType, CONCEPTS.SNodeType$hR)) {
-          SLinkOperations.setTarget(newNode, LINKS.conceptDeclaraton$K4R0, SLinkOperations.getTarget(nodeType, LINKS.concept$OMgE));
+          SLinkOperations.setTarget(newNode, LINKS.conceptDeclaration$K4R0, SLinkOperations.getTarget(nodeType, LINKS.concept$OMgE));
         }
       }
       {
         final SNode nodePointerType = sampleNode;
         if (SNodeOperations.isInstanceOf(nodePointerType, CONCEPTS.SNodePointerType$3X)) {
-          SLinkOperations.setTarget(newNode, LINKS.conceptDeclaraton$K4R0, SLinkOperations.getTarget(nodePointerType, LINKS.concept$cytz));
+          SLinkOperations.setTarget(newNode, LINKS.conceptDeclaration$K4R0, SLinkOperations.getTarget(nodePointerType, LINKS.concept$cytz));
         }
       }
     }
@@ -70,6 +70,6 @@ public class SNodeTypeFactories {
   private static final class LINKS {
     /*package*/ static final SReferenceLink concept$cytz = MetaAdapterFactory.getReferenceLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x66b228a4fad6b29eL, 0x66b228a4fad6b2adL, "concept");
     /*package*/ static final SReferenceLink concept$OMgE = MetaAdapterFactory.getReferenceLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x108f968b3caL, 0x1090e46ca51L, "concept");
-    /*package*/ static final SReferenceLink conceptDeclaraton$K4R0 = MetaAdapterFactory.getReferenceLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x5cab42cd97571ceeL, 0x5cab42cd97571cefL, "conceptDeclaraton");
+    /*package*/ static final SReferenceLink conceptDeclaration$K4R0 = MetaAdapterFactory.getReferenceLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x5cab42cd97571ceeL, 0x5cab42cd97571cefL, "conceptDeclaration");
   }
 }

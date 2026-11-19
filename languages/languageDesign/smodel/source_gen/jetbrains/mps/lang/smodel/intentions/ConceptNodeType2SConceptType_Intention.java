@@ -54,7 +54,7 @@ public final class ConceptNodeType2SConceptType_Intention extends AbstractIntent
     @Override
     public void execute(final SNode node, final EditorContext editorContext) {
       SNode repl = SConceptOperations.createNewNode(MetaAdapterFactory.getConcept(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x5cab42cd97571ceeL, "jetbrains.mps.lang.smodel.structure.SConceptType"));
-      SLinkOperations.setTarget(repl, LINKS.conceptDeclaraton$K4R0, SLinkOperations.getTarget(node, LINKS.conceptDeclaraton$Pc1V));
+      SLinkOperations.setTarget(repl, LINKS.conceptDeclaration$K4R0, SLinkOperations.getTarget(node, LINKS.conceptDeclaraton$Pc1V));
       SNodeOperations.replaceWithAnother(node, repl);
     }
 
@@ -73,7 +73,7 @@ public final class ConceptNodeType2SConceptType_Intention extends AbstractIntent
   }
 
   private static final class LINKS {
-    /*package*/ static final SReferenceLink conceptDeclaraton$K4R0 = MetaAdapterFactory.getReferenceLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x5cab42cd97571ceeL, 0x5cab42cd97571cefL, "conceptDeclaraton");
+    /*package*/ static final SReferenceLink conceptDeclaration$K4R0 = MetaAdapterFactory.getReferenceLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x5cab42cd97571ceeL, 0x5cab42cd97571cefL, "conceptDeclaration");
     /*package*/ static final SReferenceLink conceptDeclaraton$Pc1V = MetaAdapterFactory.getReferenceLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x110f9b63680L, 0x112da284156L, "conceptDeclaraton");
   }
 }

@@ -62,7 +62,7 @@ public class Node_ConceptMethodCall_Constraints extends BaseConstraintsDescripto
           //  when there's a concept type, there's no node to invoke instance method on.
           SNode conceptType = TypecheckingFacade.getFromContext().strongCoerceType(leftType, CONCEPTS.SConceptType$pb);
           if ((conceptType != null)) {
-            SNode decl = SLinkOperations.getTarget(conceptType, LINKS.conceptDeclaraton$K4R0);
+            SNode decl = SLinkOperations.getTarget(conceptType, LINKS.conceptDeclaration$K4R0);
             conceptNode = (decl != null ? decl : defaultConceptTypeValue);
           }
 
@@ -76,7 +76,7 @@ public class Node_ConceptMethodCall_Constraints extends BaseConstraintsDescripto
           if ((conceptNode == null)) {
             SNode conceptTypeLit = TypecheckingFacade.getFromContext().strongCoerceType(leftType, CONCEPTS.SConceptTypeLiteral$6t);
             if ((conceptTypeLit != null)) {
-              SNode decl = SLinkOperations.getTarget(conceptTypeLit, LINKS.conceptDeclaraton$PVw0);
+              SNode decl = SLinkOperations.getTarget(conceptTypeLit, LINKS.conceptDeclaration$PVw0);
               conceptNode = (decl != null ? decl : defaultConceptTypeValue);
             }
           }
@@ -119,9 +119,9 @@ public class Node_ConceptMethodCall_Constraints extends BaseConstraintsDescripto
   private static final class LINKS {
     /*package*/ static final SReferenceLink baseMethodDeclaration$pyYw = MetaAdapterFactory.getReferenceLink(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0x11857355952L, 0xf8c78301adL, "baseMethodDeclaration");
     /*package*/ static final SContainmentLink operand$w6IR = MetaAdapterFactory.getContainmentLink(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0x116b46a08c4L, 0x116b46a4416L, "operand");
-    /*package*/ static final SReferenceLink conceptDeclaraton$K4R0 = MetaAdapterFactory.getReferenceLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x5cab42cd97571ceeL, 0x5cab42cd97571cefL, "conceptDeclaraton");
+    /*package*/ static final SReferenceLink conceptDeclaration$K4R0 = MetaAdapterFactory.getReferenceLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x5cab42cd97571ceeL, 0x5cab42cd97571cefL, "conceptDeclaration");
     /*package*/ static final SReferenceLink conceptDeclaraton$Pc1V = MetaAdapterFactory.getReferenceLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x110f9b63680L, 0x112da284156L, "conceptDeclaraton");
-    /*package*/ static final SReferenceLink conceptDeclaraton$PVw0 = MetaAdapterFactory.getReferenceLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x4bf20760d53f89eaL, 0x4bf20760d53f89ebL, "conceptDeclaraton");
+    /*package*/ static final SReferenceLink conceptDeclaration$PVw0 = MetaAdapterFactory.getReferenceLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x4bf20760d53f89eaL, 0x4bf20760d53f89ebL, "conceptDeclaration");
     /*package*/ static final SReferenceLink concept$OMgE = MetaAdapterFactory.getReferenceLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x108f968b3caL, 0x1090e46ca51L, "concept");
   }
 

@@ -27,7 +27,7 @@ public final class SConceptTypeLiteral__BehaviorDescriptor extends BaseBHDescrip
 
 
   /*package*/ static String getPresentation_idhEwIMiw(@NotNull SNode __thisNode__) {
-    return "concept_lit<" + SNodeOperations.present(SLinkOperations.getTarget(__thisNode__, LINKS.conceptDeclaraton$PVw0)) + ">";
+    return "concept_lit<" + SNodeOperations.present(SLinkOperations.getTarget(__thisNode__, LINKS.conceptDeclaration$PVw0)) + ">";
   }
 
   /*package*/ SConceptTypeLiteral__BehaviorDescriptor() {
@@ -73,6 +73,6 @@ public final class SConceptTypeLiteral__BehaviorDescriptor extends BaseBHDescrip
   }
 
   private static final class LINKS {
-    /*package*/ static final SReferenceLink conceptDeclaraton$PVw0 = MetaAdapterFactory.getReferenceLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x4bf20760d53f89eaL, 0x4bf20760d53f89ebL, "conceptDeclaraton");
+    /*package*/ static final SReferenceLink conceptDeclaration$PVw0 = MetaAdapterFactory.getReferenceLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x4bf20760d53f89eaL, 0x4bf20760d53f89ebL, "conceptDeclaration");
   }
 }

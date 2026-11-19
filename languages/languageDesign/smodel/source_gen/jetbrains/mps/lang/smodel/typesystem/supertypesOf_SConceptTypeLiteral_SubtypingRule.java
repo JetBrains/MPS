@@ -24,12 +24,12 @@ public class supertypesOf_SConceptTypeLiteral_SubtypingRule extends SubtypingRul
   }
   public List<SNode> getSubOrSuperTypes(SNode type, TypeCheckingContext typeCheckingContext, IsApplicableStatus status) {
     List<SNode> list = ListSequence.fromList(new ArrayList<SNode>());
-    if (SNodeOperations.isInstanceOf(SLinkOperations.getTarget(type, LINKS.conceptDeclaraton$PVw0), CONCEPTS.InterfaceConceptDeclaration$CG)) {
+    if (SNodeOperations.isInstanceOf(SLinkOperations.getTarget(type, LINKS.conceptDeclaration$PVw0), CONCEPTS.InterfaceConceptDeclaration$CG)) {
       ListSequence.fromList(list).addElement(_quotation_createNode_fta3ut_a0a0a1a1());
     } else {
       ListSequence.fromList(list).addElement(_quotation_createNode_fta3ut_a0a0a0b0b());
     }
-    ListSequence.fromList(list).addElement(_quotation_createNode_fta3ut_a0a2a1(SLinkOperations.getTarget(type, LINKS.conceptDeclaraton$PVw0)));
+    ListSequence.fromList(list).addElement(_quotation_createNode_fta3ut_a0a2a1(SLinkOperations.getTarget(type, LINKS.conceptDeclaration$PVw0)));
     return list;
   }
   public SAbstractConcept getApplicableConcept() {
@@ -64,7 +64,7 @@ public class supertypesOf_SConceptTypeLiteral_SubtypingRule extends SubtypingRul
   }
 
   private static final class LINKS {
-    /*package*/ static final SReferenceLink conceptDeclaraton$PVw0 = MetaAdapterFactory.getReferenceLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x4bf20760d53f89eaL, 0x4bf20760d53f89ebL, "conceptDeclaraton");
+    /*package*/ static final SReferenceLink conceptDeclaration$PVw0 = MetaAdapterFactory.getReferenceLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x4bf20760d53f89eaL, 0x4bf20760d53f89ebL, "conceptDeclaration");
   }
 
   private static final class CONCEPTS {

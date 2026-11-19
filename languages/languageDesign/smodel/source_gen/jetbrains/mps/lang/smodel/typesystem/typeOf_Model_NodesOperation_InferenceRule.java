@@ -34,7 +34,7 @@ public class typeOf_Model_NodesOperation_InferenceRule extends AbstractInference
           {
             SNode _nodeToCheck_1029348928467 = node;
             EquationInfo _info_12389875345 = new EquationInfo(_nodeToCheck_1029348928467, null, "r:00000000-0000-4000-0000-011c895902fe(jetbrains.mps.lang.smodel.typesystem)", "8775200129631074574", 0, null);
-            typeCheckingContext.createEquation((SNode) typeCheckingContext.typeOf(_nodeToCheck_1029348928467, "r:00000000-0000-4000-0000-011c895902fe(jetbrains.mps.lang.smodel.typesystem)", "8775200129631074576", true), (SNode) _quotation_createNode_pxwv6g_a1a0c0a0b0a1a1a0a1(SLinkOperations.getTarget(SNodeOperations.as(typeCheckingContext.getExpandedNode(conceptArgument), CONCEPTS.SConceptType$pb), LINKS.conceptDeclaraton$K4R0)), _info_12389875345);
+            typeCheckingContext.createEquation((SNode) typeCheckingContext.typeOf(_nodeToCheck_1029348928467, "r:00000000-0000-4000-0000-011c895902fe(jetbrains.mps.lang.smodel.typesystem)", "8775200129631074576", true), (SNode) _quotation_createNode_pxwv6g_a1a0c0a0b0a1a1a0a1(SLinkOperations.getTarget(SNodeOperations.as(typeCheckingContext.getExpandedNode(conceptArgument), CONCEPTS.SConceptType$pb), LINKS.conceptDeclaration$K4R0)), _info_12389875345);
           }
         }, "r:00000000-0000-4000-0000-011c895902fe(jetbrains.mps.lang.smodel.typesystem)", "1758937410081685353", false, false);
       }
@@ -77,7 +77,7 @@ public class typeOf_Model_NodesOperation_InferenceRule extends AbstractInference
 
   private static final class LINKS {
     /*package*/ static final SContainmentLink conceptArgument$whYM = MetaAdapterFactory.getContainmentLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x110b8590897L, 0x1869004155f6ce22L, "conceptArgument");
-    /*package*/ static final SReferenceLink conceptDeclaraton$K4R0 = MetaAdapterFactory.getReferenceLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x5cab42cd97571ceeL, 0x5cab42cd97571cefL, "conceptDeclaraton");
+    /*package*/ static final SReferenceLink conceptDeclaration$K4R0 = MetaAdapterFactory.getReferenceLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x5cab42cd97571ceeL, 0x5cab42cd97571cefL, "conceptDeclaration");
   }
 
   private static final class CONCEPTS {

@@ -11007,7 +11007,7 @@
                                   <uo k="s:originTrace" v="n:7363014363602846634" />
                                 </node>
                                 <node concept="3TrEf2" id="JC" role="2OqNvi">
-                                  <ref role="3Tt5mk" to="tp25:5MFgGQnlLNJ" resolve="conceptDeclaraton" />
+                                  <ref role="3Tt5mk" to="tp25:5MFgGQnlLNJ" resolve="conceptDeclaration" />
                                   <uo k="s:originTrace" v="n:7363014363602846635" />
                                 </node>
                               </node>
@@ -11214,7 +11214,7 @@
                                       <uo k="s:originTrace" v="n:7363014363602951077" />
                                     </node>
                                     <node concept="3TrEf2" id="Ky" role="2OqNvi">
-                                      <ref role="3Tt5mk" to="tp25:4JM1Q3lfSBF" resolve="conceptDeclaraton" />
+                                      <ref role="3Tt5mk" to="tp25:4JM1Q3lfSBF" resolve="conceptDeclaration" />
                                       <uo k="s:originTrace" v="n:7363014363602951078" />
                                     </node>
                                   </node>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<product version="3" modelHash="-545wngl7geoza6kj5jani2iuwt95x7x">
+<product version="3" modelHash="4mqx4ygzqwjxstown0cmrqyaus72ryc">
   <files names="AddOperationParameter_Intention.java:AddSNodeCastStatement_Intention.java:ChangeAsCast_Intention.java:ConceptNodeType2NodeType_Intention.java:ConceptNodeType2SConceptType_Intention.java:ConceptRef2Concept_Intention.java:ConvertCastToNodeCast_Intention.java:ConvertCastToSConceptType_Intention.java:ConvertConceptNodeToSCOncept_Intention.java:ConvertInstanceofToNodeInstanceof_Intention.java:ConvertLinkSetToAssignment_Intention.java:ConvertPropertySetToAssignment_Intention.java:IntentionsDescriptor.java:LinkRef2Link_Intention.java:ReplaceSingleConceptWithList_Intention.java:ReplaceWithModuleRef_Intention.java:ReplaceWithPointer_Intention.java:ReplaceWithResolveExpr_Intention.java:Replace_ListType_withNodeListType_Intention.java" />
 </product>
 

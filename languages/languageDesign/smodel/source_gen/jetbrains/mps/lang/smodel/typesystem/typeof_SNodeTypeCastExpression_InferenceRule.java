@@ -44,7 +44,7 @@ public class typeof_SNodeTypeCastExpression_InferenceRule extends AbstractInfere
           {
             final SNode conceptType = typeCheckingContext.typeOf(SLinkOperations.getTarget(expr, LINKS.conceptArgument$lGRx), "r:00000000-0000-4000-0000-011c895902fe(jetbrains.mps.lang.smodel.typesystem)", "3906496115199051519", true);
             typeCheckingContext.whenConcrete(conceptType, () -> {
-              SNode conceptDecl = (SNodeOperations.isInstanceOf(typeCheckingContext.getExpandedNode(conceptType), CONCEPTS.SConceptType$pb) ? SLinkOperations.getTarget((SNodeOperations.cast(typeCheckingContext.getExpandedNode(conceptType), CONCEPTS.SConceptType$pb)), LINKS.conceptDeclaraton$K4R0) : SLinkOperations.getTarget((SNodeOperations.as(typeCheckingContext.getExpandedNode(conceptType), CONCEPTS.SConceptTypeLiteral$6t)), LINKS.conceptDeclaraton$PVw0));
+              SNode conceptDecl = (SNodeOperations.isInstanceOf(typeCheckingContext.getExpandedNode(conceptType), CONCEPTS.SConceptType$pb) ? SLinkOperations.getTarget((SNodeOperations.cast(typeCheckingContext.getExpandedNode(conceptType), CONCEPTS.SConceptType$pb)), LINKS.conceptDeclaration$K4R0) : SLinkOperations.getTarget((SNodeOperations.as(typeCheckingContext.getExpandedNode(conceptType), CONCEPTS.SConceptTypeLiteral$6t)), LINKS.conceptDeclaration$PVw0));
               {
                 SNode _nodeToCheck_1029348928467 = expr;
                 EquationInfo _info_12389875345 = new EquationInfo(_nodeToCheck_1029348928467, null, "r:00000000-0000-4000-0000-011c895902fe(jetbrains.mps.lang.smodel.typesystem)", "4923258421765082810", 0, null);
@@ -109,8 +109,8 @@ public class typeof_SNodeTypeCastExpression_InferenceRule extends AbstractInfere
     /*package*/ static final SContainmentLink leftExpression$uiR3 = MetaAdapterFactory.getContainmentLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x2143399c0554e687L, 0x5d71a86e0b67cd19L, "leftExpression");
     /*package*/ static final SReferenceLink concept$C5xM = MetaAdapterFactory.getReferenceLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x2143399c0554e687L, 0x5d71a86e0b67ce04L, "concept");
     /*package*/ static final SContainmentLink conceptArgument$lGRx = MetaAdapterFactory.getContainmentLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x2143399c0554e687L, 0x3636a984eed504f9L, "conceptArgument");
-    /*package*/ static final SReferenceLink conceptDeclaraton$K4R0 = MetaAdapterFactory.getReferenceLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x5cab42cd97571ceeL, 0x5cab42cd97571cefL, "conceptDeclaraton");
-    /*package*/ static final SReferenceLink conceptDeclaraton$PVw0 = MetaAdapterFactory.getReferenceLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x4bf20760d53f89eaL, 0x4bf20760d53f89ebL, "conceptDeclaraton");
+    /*package*/ static final SReferenceLink conceptDeclaration$K4R0 = MetaAdapterFactory.getReferenceLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x5cab42cd97571ceeL, 0x5cab42cd97571cefL, "conceptDeclaration");
+    /*package*/ static final SReferenceLink conceptDeclaration$PVw0 = MetaAdapterFactory.getReferenceLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x4bf20760d53f89eaL, 0x4bf20760d53f89ebL, "conceptDeclaration");
   }
 
   private static final class CONCEPTS {

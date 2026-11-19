@@ -41,7 +41,7 @@ public class typeof_AsNodeOperation_InferenceRule extends AbstractInferenceRule_
         }
         if (SNodeOperations.isInstanceOf(typeCheckingContext.getExpandedNode(operandType), CONCEPTS.SConceptType$pb)) {
           // todo: use something like isInterfaceConcept() or isConcreteConcept() methods in SConcept instead?
-          if (SNodeOperations.isInstanceOf(SLinkOperations.getTarget(SNodeOperations.cast(typeCheckingContext.getExpandedNode(operandType), CONCEPTS.SConceptType$pb), LINKS.conceptDeclaraton$K4R0), CONCEPTS.ConceptDeclaration$gH)) {
+          if (SNodeOperations.isInstanceOf(SLinkOperations.getTarget(SNodeOperations.cast(typeCheckingContext.getExpandedNode(operandType), CONCEPTS.SConceptType$pb), LINKS.conceptDeclaration$K4R0), CONCEPTS.ConceptDeclaration$gH)) {
             {
               SNode _nodeToCheck_1029348928467 = operation;
               EquationInfo _info_12389875345 = new EquationInfo(_nodeToCheck_1029348928467, null, "r:00000000-0000-4000-0000-011c895902fe(jetbrains.mps.lang.smodel.typesystem)", "1003943594868306463", 0, null);
@@ -56,14 +56,14 @@ public class typeof_AsNodeOperation_InferenceRule extends AbstractInferenceRule_
           }
         }
         if (SNodeOperations.isInstanceOf(typeCheckingContext.getExpandedNode(operandType), CONCEPTS.SConceptTypeLiteral$6t)) {
-          if (SNodeOperations.isInstanceOf(SLinkOperations.getTarget(SNodeOperations.cast(typeCheckingContext.getExpandedNode(operandType), CONCEPTS.SConceptTypeLiteral$6t), LINKS.conceptDeclaraton$PVw0), CONCEPTS.ConceptDeclaration$gH)) {
+          if (SNodeOperations.isInstanceOf(SLinkOperations.getTarget(SNodeOperations.cast(typeCheckingContext.getExpandedNode(operandType), CONCEPTS.SConceptTypeLiteral$6t), LINKS.conceptDeclaration$PVw0), CONCEPTS.ConceptDeclaration$gH)) {
             {
               SNode _nodeToCheck_1029348928467 = operation;
               EquationInfo _info_12389875345 = new EquationInfo(_nodeToCheck_1029348928467, null, "r:00000000-0000-4000-0000-011c895902fe(jetbrains.mps.lang.smodel.typesystem)", "5476670926300562483", 0, null);
               typeCheckingContext.createEquation((SNode) typeCheckingContext.typeOf(_nodeToCheck_1029348928467, "r:00000000-0000-4000-0000-011c895902fe(jetbrains.mps.lang.smodel.typesystem)", "5476670926300562485", true), (SNode) _quotation_createNode_x39xdp_a1a0c0a0a0c0b0a1a0a1(), _info_12389875345);
             }
           }
-          if (SNodeOperations.isInstanceOf(SLinkOperations.getTarget(SNodeOperations.cast(typeCheckingContext.getExpandedNode(operandType), CONCEPTS.SConceptTypeLiteral$6t), LINKS.conceptDeclaraton$PVw0), CONCEPTS.InterfaceConceptDeclaration$CG)) {
+          if (SNodeOperations.isInstanceOf(SLinkOperations.getTarget(SNodeOperations.cast(typeCheckingContext.getExpandedNode(operandType), CONCEPTS.SConceptTypeLiteral$6t), LINKS.conceptDeclaration$PVw0), CONCEPTS.InterfaceConceptDeclaration$CG)) {
             {
               SNode _nodeToCheck_1029348928467 = operation;
               EquationInfo _info_12389875345 = new EquationInfo(_nodeToCheck_1029348928467, null, "r:00000000-0000-4000-0000-011c895902fe(jetbrains.mps.lang.smodel.typesystem)", "5476670926300566476", 0, null);
@@ -141,7 +141,7 @@ public class typeof_AsNodeOperation_InferenceRule extends AbstractInferenceRule_
 
   private static final class LINKS {
     /*package*/ static final SReferenceLink conceptDeclaraton$Pc1V = MetaAdapterFactory.getReferenceLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x110f9b63680L, 0x112da284156L, "conceptDeclaraton");
-    /*package*/ static final SReferenceLink conceptDeclaraton$K4R0 = MetaAdapterFactory.getReferenceLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x5cab42cd97571ceeL, 0x5cab42cd97571cefL, "conceptDeclaraton");
-    /*package*/ static final SReferenceLink conceptDeclaraton$PVw0 = MetaAdapterFactory.getReferenceLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x4bf20760d53f89eaL, 0x4bf20760d53f89ebL, "conceptDeclaraton");
+    /*package*/ static final SReferenceLink conceptDeclaration$K4R0 = MetaAdapterFactory.getReferenceLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x5cab42cd97571ceeL, 0x5cab42cd97571cefL, "conceptDeclaration");
+    /*package*/ static final SReferenceLink conceptDeclaration$PVw0 = MetaAdapterFactory.getReferenceLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x4bf20760d53f89eaL, 0x4bf20760d53f89ebL, "conceptDeclaration");
   }
 }

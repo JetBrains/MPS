@@ -326,7 +326,7 @@
                                 </node>
                               </node>
                               <node concept="3TrEf2" id="117xv0QD$qC" role="2OqNvi">
-                                <ref role="3Tt5mk" to="tp25:5MFgGQnlLNJ" resolve="conceptDeclaraton" />
+                                <ref role="3Tt5mk" to="tp25:5MFgGQnlLNJ" resolve="conceptDeclaration" />
                               </node>
                             </node>
                           </node>

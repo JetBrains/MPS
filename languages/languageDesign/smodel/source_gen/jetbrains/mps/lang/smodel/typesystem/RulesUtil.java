@@ -278,7 +278,7 @@ public class RulesUtil {
               {
                 SNode _nodeToCheck_1029348928467 = op;
                 EquationInfo _info_12389875345 = new EquationInfo(_nodeToCheck_1029348928467, null, "r:00000000-0000-4000-0000-011c895902fe(jetbrains.mps.lang.smodel.typesystem)", "4092750117108438764", 0, null);
-                typeCheckingContext.createEquation((SNode) typeCheckingContext.getRepresentative(Concept_typevar_1226669497837), (SNode) SLinkOperations.getTarget(coercedNode_yxkngc_a0b0a2a11, LINKS.conceptDeclaraton$K4R0), _info_12389875345);
+                typeCheckingContext.createEquation((SNode) typeCheckingContext.getRepresentative(Concept_typevar_1226669497837), (SNode) SLinkOperations.getTarget(coercedNode_yxkngc_a0b0a2a11, LINKS.conceptDeclaration$K4R0), _info_12389875345);
               }
             } else {
               if (SNodeOperations.isInstanceOf(typeCheckingContext.getExpandedNode(conceptType), CONCEPTS.ConceptNodeType$92)) {
@@ -569,7 +569,7 @@ public class RulesUtil {
     /*package*/ static final SReferenceLink conceptDeclaraton$Pc1V = MetaAdapterFactory.getReferenceLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x110f9b63680L, 0x112da284156L, "conceptDeclaraton");
     /*package*/ static final SContainmentLink conceptArgument$xapp = MetaAdapterFactory.getContainmentLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x10a61caab68L, 0x1191b4a4d54L, "conceptArgument");
     /*package*/ static final SReferenceLink conceptDeclaration$3mP7 = MetaAdapterFactory.getReferenceLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x1120c45902cL, 0x1120c45d024L, "conceptDeclaration");
-    /*package*/ static final SReferenceLink conceptDeclaraton$K4R0 = MetaAdapterFactory.getReferenceLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x5cab42cd97571ceeL, 0x5cab42cd97571cefL, "conceptDeclaraton");
+    /*package*/ static final SReferenceLink conceptDeclaration$K4R0 = MetaAdapterFactory.getReferenceLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x5cab42cd97571ceeL, 0x5cab42cd97571cefL, "conceptDeclaration");
     /*package*/ static final SContainmentLink concept$D$8x = MetaAdapterFactory.getContainmentLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x10cd05bec71L, 0x10cd05bec73L, "concept");
     /*package*/ static final SReferenceLink concept$WQBy = MetaAdapterFactory.getReferenceLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x10cd05c601dL, 0x10cd05d18efL, "concept");
   }

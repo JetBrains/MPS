@@ -2276,7 +2276,7 @@
     <property role="EcuMT" value="6677504323281689838" />
     <ref role="1TJDcQ" to="tpee:fz3vP1H" resolve="Type" />
     <node concept="1TJgyj" id="5MFgGQnlLNJ" role="1TKVEi">
-      <property role="20kJfa" value="conceptDeclaraton" />
+      <property role="20kJfa" value="conceptDeclaration" />
       <property role="IQ2ns" value="6677504323281689839" />
       <ref role="20lvS9" to="tpce:h0PkWnZ" resolve="AbstractConceptDeclaration" />
     </node>
@@ -2725,7 +2725,7 @@
     <property role="R4oN_" value="literal of a concept type" />
     <ref role="1TJDcQ" to="tpee:fz3vP1H" resolve="Type" />
     <node concept="1TJgyj" id="4JM1Q3lfSBF" role="1TKVEi">
-      <property role="20kJfa" value="conceptDeclaraton" />
+      <property role="20kJfa" value="conceptDeclaration" />
       <property role="IQ2ns" value="5472444609684539883" />
       <property role="20lbJX" value="fLJekj4" />
       <ref role="20lvS9" to="tpce:h0PkWnZ" resolve="AbstractConceptDeclaration" />

@@ -16935,7 +16935,7 @@
                           <uo k="s:originTrace" v="n:5472444609684539882" />
                         </node>
                         <node concept="Xl_RD" id="1zk" role="37wK5m">
-                          <property role="Xl_RC" value="conceptDeclaraton" />
+                          <property role="Xl_RC" value="conceptDeclaration" />
                           <uo k="s:originTrace" v="n:5472444609684539882" />
                         </node>
                         <node concept="Xl_RD" id="1zl" role="37wK5m">
@@ -63573,7 +63573,7 @@
                     <node concept="liA8E" id="5Ny" role="2OqNvi">
                       <ref role="37wK5l" to="bzg8:~ConceptDescriptorBuilder2.associate(java.lang.String,long)" resolve="associate" />
                       <node concept="Xl_RD" id="5Nz" role="37wK5m">
-                        <property role="Xl_RC" value="conceptDeclaraton" />
+                        <property role="Xl_RC" value="conceptDeclaration" />
                       </node>
                       <node concept="11gdke" id="5N$" role="37wK5m">
                         <property role="11gdj1" value="5cab42cd97571cefL" />
@@ -63930,7 +63930,7 @@
                     <node concept="liA8E" id="5PA" role="2OqNvi">
                       <ref role="37wK5l" to="bzg8:~ConceptDescriptorBuilder2.associate(java.lang.String,long)" resolve="associate" />
                       <node concept="Xl_RD" id="5PB" role="37wK5m">
-                        <property role="Xl_RC" value="conceptDeclaraton" />
+                        <property role="Xl_RC" value="conceptDeclaration" />
                       </node>
                       <node concept="11gdke" id="5PC" role="37wK5m">
                         <property role="11gdj1" value="4bf20760d53f89ebL" />

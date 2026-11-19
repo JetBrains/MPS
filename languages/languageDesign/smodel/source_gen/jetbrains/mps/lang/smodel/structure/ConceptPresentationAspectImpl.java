@@ -1662,7 +1662,7 @@ public class ConceptPresentationAspectImpl extends ConceptPresentationAspectBase
         if (props_SConceptTypeLiteral == null) {
           ConceptPresentationBuilder cpb = new ConceptPresentationBuilder();
           cpb.shortDesc("literal of a concept type");
-          cpb.presentationByReference(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x4bf20760d53f89eaL, 0x4bf20760d53f89ebL, "conceptDeclaraton", "", "");
+          cpb.presentationByReference(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x4bf20760d53f89eaL, 0x4bf20760d53f89ebL, "conceptDeclaration", "", "");
           props_SConceptTypeLiteral = cpb.create();
         }
         return props_SConceptTypeLiteral;

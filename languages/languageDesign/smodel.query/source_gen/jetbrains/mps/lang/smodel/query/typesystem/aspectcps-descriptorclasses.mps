@@ -2436,7 +2436,7 @@
                                   <node concept="2OqwBi" id="bS" role="3uHU7B">
                                     <uo k="s:originTrace" v="n:6864030874024661085" />
                                     <node concept="3TrEf2" id="bT" role="2OqNvi">
-                                      <ref role="3Tt5mk" to="tp25:5MFgGQnlLNJ" resolve="conceptDeclaraton" />
+                                      <ref role="3Tt5mk" to="tp25:5MFgGQnlLNJ" resolve="conceptDeclaration" />
                                       <uo k="s:originTrace" v="n:6963130675034169927" />
                                     </node>
                                     <node concept="37vLTw" id="bU" role="2Oq$k0">
@@ -2560,7 +2560,7 @@
                                                         <node concept="2OqwBi" id="cB" role="2c44t1">
                                                           <uo k="s:originTrace" v="n:8269419424195796706" />
                                                           <node concept="3TrEf2" id="cC" role="2OqNvi">
-                                                            <ref role="3Tt5mk" to="tp25:5MFgGQnlLNJ" resolve="conceptDeclaraton" />
+                                                            <ref role="3Tt5mk" to="tp25:5MFgGQnlLNJ" resolve="conceptDeclaration" />
                                                             <uo k="s:originTrace" v="n:8269419424195796707" />
                                                           </node>
                                                           <node concept="37vLTw" id="cD" role="2Oq$k0">

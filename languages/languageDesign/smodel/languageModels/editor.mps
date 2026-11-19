@@ -4673,7 +4673,7 @@
       </node>
       <node concept="1iCGBv" id="5MFgGQnlLTp" role="3EZMnx">
         <property role="39s7Ar" value="true" />
-        <ref role="1NtTu8" to="tp25:5MFgGQnlLNJ" resolve="conceptDeclaraton" />
+        <ref role="1NtTu8" to="tp25:5MFgGQnlLNJ" resolve="conceptDeclaration" />
         <node concept="1sVBvm" id="5MFgGQnlLTq" role="1sWHZn">
           <node concept="3F0A7n" id="5MFgGQnlLTr" role="2wV5jI">
             <property role="1Intyy" value="true" />
@@ -6350,7 +6350,7 @@
       </node>
       <node concept="1iCGBv" id="4JM1Q3lgdjQ" role="3EZMnx">
         <property role="39s7Ar" value="true" />
-        <ref role="1NtTu8" to="tp25:4JM1Q3lfSBF" resolve="conceptDeclaraton" />
+        <ref role="1NtTu8" to="tp25:4JM1Q3lfSBF" resolve="conceptDeclaration" />
         <node concept="1sVBvm" id="4JM1Q3lgdjR" role="1sWHZn">
           <node concept="3F0A7n" id="4JM1Q3lgdjS" role="2wV5jI">
             <property role="1Intyy" value="true" />

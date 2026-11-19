@@ -1555,7 +1555,7 @@
                       <ref role="3cqZAo" node="6oIFCQ2AUJi" resolve="conceptType" />
                     </node>
                     <node concept="3TrEf2" id="6oIFCQ2DoeF" role="2OqNvi">
-                      <ref role="3Tt5mk" to="tp25:5MFgGQnlLNJ" resolve="conceptDeclaraton" />
+                      <ref role="3Tt5mk" to="tp25:5MFgGQnlLNJ" resolve="conceptDeclaration" />
                     </node>
                   </node>
                 </node>
@@ -1696,7 +1696,7 @@
                           <ref role="3cqZAo" node="6oIFCQ2ByHM" resolve="conceptTypeLit" />
                         </node>
                         <node concept="3TrEf2" id="6oIFCQ2DLIA" role="2OqNvi">
-                          <ref role="3Tt5mk" to="tp25:4JM1Q3lfSBF" resolve="conceptDeclaraton" />
+                          <ref role="3Tt5mk" to="tp25:4JM1Q3lfSBF" resolve="conceptDeclaration" />
                         </node>
                       </node>
                     </node>

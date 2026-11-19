@@ -79,13 +79,13 @@ import org.jetbrains.mps.openapi.language.SProperty;
 @Generated
 public class QueriesGenerated {
   public static boolean rule_Condition_0_0(final BaseMappingRuleContext _context) {
-    return AbstractConceptUtil.hasSurelyNoInterfacesBeneath(SLinkOperations.getTarget(_context.getNode(), LINKS.conceptDeclaraton$K4R0));
+    return AbstractConceptUtil.hasSurelyNoInterfacesBeneath(SLinkOperations.getTarget(_context.getNode(), LINKS.conceptDeclaration$K4R0));
   }
   public static boolean rule_Condition_0_1(final BaseMappingRuleContext _context) {
-    return SNodeOperations.isInstanceOf(SLinkOperations.getTarget(_context.getNode(), LINKS.conceptDeclaraton$PVw0), CONCEPTS.InterfaceConceptDeclaration$CG);
+    return SNodeOperations.isInstanceOf(SLinkOperations.getTarget(_context.getNode(), LINKS.conceptDeclaration$PVw0), CONCEPTS.InterfaceConceptDeclaration$CG);
   }
   public static boolean rule_Condition_0_2(final BaseMappingRuleContext _context) {
-    return SNodeOperations.isInstanceOf(SLinkOperations.getTarget(_context.getNode(), LINKS.conceptDeclaraton$PVw0), CONCEPTS.ConceptDeclaration$gH);
+    return SNodeOperations.isInstanceOf(SLinkOperations.getTarget(_context.getNode(), LINKS.conceptDeclaration$PVw0), CONCEPTS.ConceptDeclaration$gH);
   }
   public static boolean rule_Condition_0_3(final BaseMappingRuleContext _context) {
     return !(SPropertyOperations.getBoolean(_context.getNode(), PROPS.asCast$Egst)) && (boolean) SNodeTypeCastExpression__BehaviorDescriptor.isSNodeCast_idi1Btg5H.invoke(_context.getNode());
@@ -103,7 +103,7 @@ public class QueriesGenerated {
     {
       SNode coercedNode_x583g4_a0h = TypecheckingFacade.getFromContext().coerceType(TypecheckingFacade.getFromContext().getTypeOf(SLinkOperations.getTarget(_context.getNode(), LINKS.conceptArgument$lGRx)), CONCEPTS.SConceptType$pb);
       if (coercedNode_x583g4_a0h != null) {
-        SNode targetConcept = SLinkOperations.getTarget(coercedNode_x583g4_a0h, LINKS.conceptDeclaraton$K4R0);
+        SNode targetConcept = SLinkOperations.getTarget(coercedNode_x583g4_a0h, LINKS.conceptDeclaration$K4R0);
         return (targetConcept == null) || SNodeOperations.is(targetConcept, new SNodePointer("r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)", "1133920641626"));
       } else {
         return false;
@@ -877,7 +877,7 @@ public class QueriesGenerated {
     {
       SNode coercedNode_x583g4_a0li = TypecheckingFacade.getFromContext().coerceType(TypecheckingFacade.getFromContext().getTypeOf(SLinkOperations.getTarget(_context.getNode(), LINKS.conceptArgument$lGRx)), CONCEPTS.SConceptType$pb);
       if (coercedNode_x583g4_a0li != null) {
-        SNode targetConcept = SLinkOperations.getTarget(coercedNode_x583g4_a0li, LINKS.conceptDeclaraton$K4R0);
+        SNode targetConcept = SLinkOperations.getTarget(coercedNode_x583g4_a0li, LINKS.conceptDeclaration$K4R0);
         if (AbstractConceptUtil.hasSurelyNoInterfacesBeneath(targetConcept)) {
           return new SNodePointer("r:c3548bac-30eb-4a2a-937c-0111d5697309(jetbrains.mps.lang.smodel.generator.smodelAdapter)", "6410670351274205144");
         }
@@ -913,11 +913,11 @@ public class QueriesGenerated {
     } else {
       SNode targetConcept = null;
       if (SNodeOperations.isInstanceOf(operandType, CONCEPTS.SConceptType$pb)) {
-        targetConcept = SLinkOperations.getTarget(SNodeOperations.as(operandType, CONCEPTS.SConceptType$pb), LINKS.conceptDeclaraton$K4R0);
+        targetConcept = SLinkOperations.getTarget(SNodeOperations.as(operandType, CONCEPTS.SConceptType$pb), LINKS.conceptDeclaration$K4R0);
       } else if (SNodeOperations.isInstanceOf(operandType, CONCEPTS.SConceptTypeLiteral$6t)) {
         // XXX I'm not quite sure SConceptTypeLiteral being independent from SConceptType (i.e. extending Type) directly)
         // is the right way to go
-        targetConcept = SLinkOperations.getTarget(SNodeOperations.as(operandType, CONCEPTS.SConceptTypeLiteral$6t), LINKS.conceptDeclaraton$PVw0);
+        targetConcept = SLinkOperations.getTarget(SNodeOperations.as(operandType, CONCEPTS.SConceptTypeLiteral$6t), LINKS.conceptDeclaration$PVw0);
       }
       if (AbstractConceptUtil.hasSurelyNoInterfacesBeneath(targetConcept)) {
         return new SNodePointer("r:c3548bac-30eb-4a2a-937c-0111d5697309(jetbrains.mps.lang.smodel.generator.smodelAdapter)", "2698333680010051295");
@@ -2221,8 +2221,8 @@ public class QueriesGenerated {
   }
 
   private static final class LINKS {
-    /*package*/ static final SReferenceLink conceptDeclaraton$K4R0 = MetaAdapterFactory.getReferenceLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x5cab42cd97571ceeL, 0x5cab42cd97571cefL, "conceptDeclaraton");
-    /*package*/ static final SReferenceLink conceptDeclaraton$PVw0 = MetaAdapterFactory.getReferenceLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x4bf20760d53f89eaL, 0x4bf20760d53f89ebL, "conceptDeclaraton");
+    /*package*/ static final SReferenceLink conceptDeclaration$K4R0 = MetaAdapterFactory.getReferenceLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x5cab42cd97571ceeL, 0x5cab42cd97571cefL, "conceptDeclaration");
+    /*package*/ static final SReferenceLink conceptDeclaration$PVw0 = MetaAdapterFactory.getReferenceLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x4bf20760d53f89eaL, 0x4bf20760d53f89ebL, "conceptDeclaration");
     /*package*/ static final SContainmentLink conceptArgument$lGRx = MetaAdapterFactory.getContainmentLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x2143399c0554e687L, 0x3636a984eed504f9L, "conceptArgument");
     /*package*/ static final SContainmentLink creator$BsHW = MetaAdapterFactory.getContainmentLink(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0x10ab8473cc5L, 0x10ab847b486L, "creator");
     /*package*/ static final SContainmentLink operation$gs9E = MetaAdapterFactory.getContainmentLink(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0x116b46a08c4L, 0x116b46b36c4L, "operation");

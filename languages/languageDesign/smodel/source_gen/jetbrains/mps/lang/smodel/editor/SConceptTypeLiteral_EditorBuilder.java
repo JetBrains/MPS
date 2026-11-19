@@ -104,10 +104,10 @@ import org.jetbrains.mps.openapi.language.SConcept;
     return editorCell;
   }
   private EditorCell createRefCell_0() {
-    final SReferenceLink referenceLink = LINKS.conceptDeclaraton$PVw0;
+    final SReferenceLink referenceLink = LINKS.conceptDeclaration$PVw0;
     SReferenceCellProvider provider = new SReferenceCellProvider(getNode(), referenceLink, getEditorContext()) {
       protected EditorCell createReferenceCell(final SNode targetNode) {
-        EditorCell cell = getUpdateSession().updateReferencedNodeCell(() -> new Inline_Builder0(getEditorContext(), getNode(), targetNode).createCell(), targetNode, LINKS.conceptDeclaraton$PVw0);
+        EditorCell cell = getUpdateSession().updateReferencedNodeCell(() -> new Inline_Builder0(getEditorContext(), getNode(), targetNode).createCell(), targetNode, LINKS.conceptDeclaration$PVw0);
         CellUtil.setupIDeprecatableStyles(targetNode, cell);
         setSemanticNodeToCells(cell, getNode());
         installDeleteActions_notnull_smartReference(cell);
@@ -127,7 +127,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
 
     if (editorCell.getSRole() == null) {
       editorCell.setReferenceCell(true);
-      editorCell.setSRole(LINKS.conceptDeclaraton$PVw0);
+      editorCell.setSRole(LINKS.conceptDeclaration$PVw0);
     }
     Style style = new StyleImpl();
     style.set(StyleAttributes.PADDING_RIGHT, new Padding(0.0, Measure.SPACES));
@@ -199,7 +199,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
   }
 
   private static final class LINKS {
-    /*package*/ static final SReferenceLink conceptDeclaraton$PVw0 = MetaAdapterFactory.getReferenceLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x4bf20760d53f89eaL, 0x4bf20760d53f89ebL, "conceptDeclaraton");
+    /*package*/ static final SReferenceLink conceptDeclaration$PVw0 = MetaAdapterFactory.getReferenceLink(0x7866978ea0f04cc7L, 0x81bc4d213d9375e1L, 0x4bf20760d53f89eaL, 0x4bf20760d53f89ebL, "conceptDeclaration");
   }
 
   private static final class CONCEPTS {
