@@ -20,6 +20,7 @@ import jetbrains.mps.internal.collections.runtime.Sequence;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.AttributeOperations;
 import jetbrains.mps.nodeEditor.selection.SingularSelectionListenerAdapter;
 import jetbrains.mps.openapi.editor.selection.SingularSelection;
+import jetbrains.mps.smodel.ModelAccessHelper;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.JViewport;
@@ -141,19 +142,27 @@ public class DiffEditorsGroup {
     public MyCellSelectionListener() {
     }
     @Override
-    protected void selectionChangedTo(final jetbrains.mps.openapi.editor.EditorComponent component, final SingularSelection newSelection) {
-      component.getEditorContext().getRepository().getModelAccess().runReadAction(() -> {
-        SNodeId selectionId = check_s6qw4f_a0a0a0a0a1u(check_s6qw4f_a0a0a0a0a0b02(newSelection.getEditorCell()));
-        if (selectionId != null) {
-          DiffEditor diffEditor0 = getDiffEditor(component);
-          for (DiffEditor diffEditor : ListSequence.fromList(myDiffEditors)) {
-            jetbrains.mps.openapi.editor.EditorComponent mainEditor = diffEditor.getEditorComponent(false);
-            SNodeId nodeId = mapID(diffEditor0, selectionId, diffEditor);
-            SNode node = (nodeId != null ? check_s6qw4f_a0a2a1a1a0a0a0b02(check_s6qw4f_a0a0c0b0b0a0a0a1u(mainEditor.getEditedNode()), nodeId) : null);
-            diffEditor.inspect(node);
-          }
-        }
+    protected void selectionChangedTo(jetbrains.mps.openapi.editor.EditorComponent component, final SingularSelection newSelection) {
+      final SNodeId selectionId = new ModelAccessHelper(component.getEditorContext().getRepository()).runReadAction(() -> {
+        EditorCell cell = newSelection.getEditorCell();
+        SNode selectedNode = ((cell == null ? null : cell.getSNode()));
+        return ((selectedNode == null ? null : selectedNode.getNodeId()));
       });
+      if (selectionId == null) {
+        return;
+      }
+      final DiffEditor diffEditor0 = getDiffEditor(component);
+      for (final DiffEditor diffEditor : myDiffEditors) {
+        final jetbrains.mps.openapi.editor.EditorComponent mainEditor = diffEditor.getEditorComponent(false);
+        final SNodeId nodeId = mapID(diffEditor0, selectionId, diffEditor);
+        // diff editors may belong to different repositories (e.g. a temporary one for a revision and the project one for the working copy),
+        // therefore read each editor's model under its own repository lock
+        mainEditor.getEditorContext().getRepository().getModelAccess().runReadAction(() -> {
+          SNode editedNode = mainEditor.getEditedNode();
+          SModel model = ((editedNode == null ? null : editedNode.getModel()));
+          diffEditor.inspect(((nodeId == null || model == null ? null : model.getNode(nodeId))));
+        });
+      }
     }
   }
   private class MyViewportChangeListener implements ChangeListener {
@@ -196,30 +205,6 @@ public class DiffEditorsGroup {
     return null;
   }
   private static SModel check_s6qw4f_a0d0a0a8a91(SNode checkedDotOperand) {
-    if (null != checkedDotOperand) {
-      return checkedDotOperand.getModel();
-    }
-    return null;
-  }
-  private static SNodeId check_s6qw4f_a0a0a0a0a1u(SNode checkedDotOperand) {
-    if (null != checkedDotOperand) {
-      return checkedDotOperand.getNodeId();
-    }
-    return null;
-  }
-  private static SNode check_s6qw4f_a0a0a0a0a0b02(EditorCell checkedDotOperand) {
-    if (null != checkedDotOperand) {
-      return checkedDotOperand.getSNode();
-    }
-    return null;
-  }
-  private static SNode check_s6qw4f_a0a2a1a1a0a0a0b02(SModel checkedDotOperand, SNodeId nodeId) {
-    if (null != checkedDotOperand) {
-      return checkedDotOperand.getNode(nodeId);
-    }
-    return null;
-  }
-  private static SModel check_s6qw4f_a0a0c0b0b0a0a0a1u(SNode checkedDotOperand) {
     if (null != checkedDotOperand) {
       return checkedDotOperand.getModel();
     }
