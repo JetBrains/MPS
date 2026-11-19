@@ -177,12 +177,17 @@ public class DiffEditor implements EditorMessageOwner {
     getMainEditor().editNode(node);
   }
 
-  public void inspect(SNode node) {
-    String[] initialEditorHints = myMainEditorComponent.getEditorHintsForNode(node);
-    boolean needToEdit = myInspectorComponent.getUpdater().setInitialEditorHints(initialEditorHints);
-    if (needToEdit || myInspectorComponent.getEditedNode() != node) {
-      myInspectorComponent.editNode(node);
-    }
+  public void inspect(final SNode node) {
+    // The editor may work against a temporary repository (a revision), which delegates resolution of references
+    // to other models to the project repository (RepositoryFacade). Building the inspector cells resolves such references,
+    // hence read access to the project repository is needed, too (as for highlightChange()).
+    myMpsProject.getRepository().getModelAccess().runReadAction(() -> {
+      String[] initialEditorHints = myMainEditorComponent.getEditorHintsForNode(node);
+      boolean needToEdit = myInspectorComponent.getUpdater().setInitialEditorHints(initialEditorHints);
+      if (needToEdit || myInspectorComponent.getEditedNode() != node) {
+        myInspectorComponent.editNode(node);
+      }
+    });
   }
 
   public JComponent getTopComponent() {

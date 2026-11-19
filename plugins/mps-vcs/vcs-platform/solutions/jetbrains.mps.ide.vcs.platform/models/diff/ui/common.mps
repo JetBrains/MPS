@@ -11078,77 +11078,242 @@
     <node concept="3clFb_" id="42hl10VHa_j" role="jymVt">
       <property role="TrG5h" value="inspect" />
       <node concept="3clFbS" id="42hl10VHa_o" role="3clF47">
-        <node concept="3cpWs8" id="5njRL54RpR$" role="3cqZAp">
-          <node concept="3cpWsn" id="5njRL54RpR_" role="3cpWs9">
-            <property role="TrG5h" value="initialEditorHints" />
-            <node concept="10Q1$e" id="5njRL54RpRp" role="1tU5fm">
-              <node concept="17QB3L" id="1Wi$SPWjAOa" role="10Q1$1" />
+        <node concept="3SKdUt" id="39XURhIIJI7" role="3cqZAp">
+          <node concept="1PaTwC" id="39XURhIIJI8" role="1aUNEU">
+            <node concept="3oM_SD" id="39XURhIIJIa" role="1PaTwD">
+              <property role="3oM_SC" value="The" />
             </node>
-            <node concept="2OqwBi" id="5njRL54RpRA" role="33vP2m">
-              <node concept="37vLTw" id="5njRL54RpRB" role="2Oq$k0">
-                <ref role="3cqZAo" node="42hl10VHayP" resolve="myMainEditorComponent" />
-              </node>
-              <node concept="liA8E" id="5njRL54RpRC" role="2OqNvi">
-                <ref role="37wK5l" to="exr9:~EditorComponent.getEditorHintsForNode(org.jetbrains.mps.openapi.model.SNode)" resolve="getEditorHintsForNode" />
-                <node concept="37vLTw" id="5njRL54RpRD" role="37wK5m">
-                  <ref role="3cqZAo" node="42hl10VHa_m" resolve="node" />
-                </node>
-              </node>
+            <node concept="3oM_SD" id="39XURhIIJIb" role="1PaTwD">
+              <property role="3oM_SC" value="editor" />
+            </node>
+            <node concept="3oM_SD" id="39XURhIIJIc" role="1PaTwD">
+              <property role="3oM_SC" value="may" />
+            </node>
+            <node concept="3oM_SD" id="39XURhIIJId" role="1PaTwD">
+              <property role="3oM_SC" value="work" />
+            </node>
+            <node concept="3oM_SD" id="39XURhIIJIe" role="1PaTwD">
+              <property role="3oM_SC" value="against" />
+            </node>
+            <node concept="3oM_SD" id="39XURhIIJIf" role="1PaTwD">
+              <property role="3oM_SC" value="a" />
+            </node>
+            <node concept="3oM_SD" id="39XURhIIJIg" role="1PaTwD">
+              <property role="3oM_SC" value="temporary" />
+            </node>
+            <node concept="3oM_SD" id="39XURhIIJIh" role="1PaTwD">
+              <property role="3oM_SC" value="repository" />
+            </node>
+            <node concept="3oM_SD" id="39XURhIIJIi" role="1PaTwD">
+              <property role="3oM_SC" value="(a" />
+            </node>
+            <node concept="3oM_SD" id="39XURhIIJIj" role="1PaTwD">
+              <property role="3oM_SC" value="revision)," />
+            </node>
+            <node concept="3oM_SD" id="39XURhIIJIk" role="1PaTwD">
+              <property role="3oM_SC" value="which" />
+            </node>
+            <node concept="3oM_SD" id="39XURhIIJIl" role="1PaTwD">
+              <property role="3oM_SC" value="delegates" />
+            </node>
+            <node concept="3oM_SD" id="39XURhIIJIm" role="1PaTwD">
+              <property role="3oM_SC" value="resolution" />
+            </node>
+            <node concept="3oM_SD" id="39XURhIIJIn" role="1PaTwD">
+              <property role="3oM_SC" value="of" />
+            </node>
+            <node concept="3oM_SD" id="39XURhIIJIo" role="1PaTwD">
+              <property role="3oM_SC" value="references" />
             </node>
           </node>
         </node>
-        <node concept="3cpWs8" id="1Wi$SPWjw4T" role="3cqZAp">
-          <node concept="3cpWsn" id="1Wi$SPWjw4S" role="3cpWs9">
-            <property role="3TUv4t" value="false" />
-            <property role="TrG5h" value="needToEdit" />
-            <node concept="10P_77" id="1Wi$SPWjw4U" role="1tU5fm" />
-            <node concept="2OqwBi" id="1Wi$SPWjw4V" role="33vP2m">
-              <node concept="2OqwBi" id="1Wi$SPWjw5k" role="2Oq$k0">
-                <node concept="37vLTw" id="1Wi$SPWjw5j" role="2Oq$k0">
-                  <ref role="3cqZAo" node="42hl10VHayV" resolve="myInspectorComponent" />
-                </node>
-                <node concept="liA8E" id="1Wi$SPWjw5l" role="2OqNvi">
-                  <ref role="37wK5l" to="exr9:~EditorComponent.getUpdater()" resolve="getUpdater" />
-                </node>
-              </node>
-              <node concept="liA8E" id="1Wi$SPWjw4X" role="2OqNvi">
-                <ref role="37wK5l" to="22ra:~Updater.setInitialEditorHints(java.lang.String[])" resolve="setInitialEditorHints" />
-                <node concept="37vLTw" id="1Wi$SPWjAE2" role="37wK5m">
-                  <ref role="3cqZAo" node="5njRL54RpR_" resolve="initialEditorHints" />
-                </node>
-              </node>
+        <node concept="3SKdUt" id="39XURhIIJIp" role="3cqZAp">
+          <node concept="1PaTwC" id="39XURhIIJIq" role="1aUNEU">
+            <node concept="3oM_SD" id="39XURhIIJIs" role="1PaTwD">
+              <property role="3oM_SC" value="to" />
+            </node>
+            <node concept="3oM_SD" id="39XURhIIJIt" role="1PaTwD">
+              <property role="3oM_SC" value="other" />
+            </node>
+            <node concept="3oM_SD" id="39XURhIIJIu" role="1PaTwD">
+              <property role="3oM_SC" value="models" />
+            </node>
+            <node concept="3oM_SD" id="39XURhIIJIv" role="1PaTwD">
+              <property role="3oM_SC" value="to" />
+            </node>
+            <node concept="3oM_SD" id="39XURhIIJIw" role="1PaTwD">
+              <property role="3oM_SC" value="the" />
+            </node>
+            <node concept="3oM_SD" id="39XURhIIJIx" role="1PaTwD">
+              <property role="3oM_SC" value="project" />
+            </node>
+            <node concept="3oM_SD" id="39XURhIIJIy" role="1PaTwD">
+              <property role="3oM_SC" value="repository" />
+            </node>
+            <node concept="3oM_SD" id="39XURhIIJIz" role="1PaTwD">
+              <property role="3oM_SC" value="(RepositoryFacade)." />
+            </node>
+            <node concept="3oM_SD" id="39XURhIIJI$" role="1PaTwD">
+              <property role="3oM_SC" value="Building" />
+            </node>
+            <node concept="3oM_SD" id="39XURhIIJI_" role="1PaTwD">
+              <property role="3oM_SC" value="the" />
+            </node>
+            <node concept="3oM_SD" id="39XURhIIJIA" role="1PaTwD">
+              <property role="3oM_SC" value="inspector" />
+            </node>
+            <node concept="3oM_SD" id="39XURhIIJIB" role="1PaTwD">
+              <property role="3oM_SC" value="cells" />
+            </node>
+            <node concept="3oM_SD" id="39XURhIIJIC" role="1PaTwD">
+              <property role="3oM_SC" value="resolves" />
+            </node>
+            <node concept="3oM_SD" id="39XURhIIJID" role="1PaTwD">
+              <property role="3oM_SC" value="such" />
+            </node>
+            <node concept="3oM_SD" id="39XURhIIJIE" role="1PaTwD">
+              <property role="3oM_SC" value="references," />
             </node>
           </node>
         </node>
-        <node concept="3clFbJ" id="1Wi$SPWjw4Z" role="3cqZAp">
-          <node concept="22lmx$" id="1Wi$SPWjw50" role="3clFbw">
-            <node concept="37vLTw" id="1Wi$SPWjw51" role="3uHU7B">
-              <ref role="3cqZAo" node="1Wi$SPWjw4S" resolve="needToEdit" />
+        <node concept="3SKdUt" id="39XURhIIJIF" role="3cqZAp">
+          <node concept="1PaTwC" id="39XURhIIJIG" role="1aUNEU">
+            <node concept="3oM_SD" id="39XURhIIJII" role="1PaTwD">
+              <property role="3oM_SC" value="hence" />
             </node>
-            <node concept="3y3z36" id="1Wi$SPWjw52" role="3uHU7w">
-              <node concept="2OqwBi" id="1Wi$SPWjw5w" role="3uHU7B">
-                <node concept="37vLTw" id="1Wi$SPWjw5v" role="2Oq$k0">
-                  <ref role="3cqZAo" node="42hl10VHayV" resolve="myInspectorComponent" />
-                </node>
-                <node concept="liA8E" id="1Wi$SPWjw5x" role="2OqNvi">
-                  <ref role="37wK5l" to="exr9:~EditorComponent.getEditedNode()" resolve="getEditedNode" />
-                </node>
-              </node>
-              <node concept="37vLTw" id="1Wi$SPWjw54" role="3uHU7w">
-                <ref role="3cqZAo" node="42hl10VHa_m" resolve="node" />
-              </node>
+            <node concept="3oM_SD" id="39XURhIIJIJ" role="1PaTwD">
+              <property role="3oM_SC" value="read" />
+            </node>
+            <node concept="3oM_SD" id="39XURhIIJIK" role="1PaTwD">
+              <property role="3oM_SC" value="access" />
+            </node>
+            <node concept="3oM_SD" id="39XURhIIJIL" role="1PaTwD">
+              <property role="3oM_SC" value="to" />
+            </node>
+            <node concept="3oM_SD" id="39XURhIIJIM" role="1PaTwD">
+              <property role="3oM_SC" value="the" />
+            </node>
+            <node concept="3oM_SD" id="39XURhIIJIN" role="1PaTwD">
+              <property role="3oM_SC" value="project" />
+            </node>
+            <node concept="3oM_SD" id="39XURhIIJIO" role="1PaTwD">
+              <property role="3oM_SC" value="repository" />
+            </node>
+            <node concept="3oM_SD" id="39XURhIIJIP" role="1PaTwD">
+              <property role="3oM_SC" value="is" />
+            </node>
+            <node concept="3oM_SD" id="39XURhIIJIQ" role="1PaTwD">
+              <property role="3oM_SC" value="needed," />
+            </node>
+            <node concept="3oM_SD" id="39XURhIIJIR" role="1PaTwD">
+              <property role="3oM_SC" value="too" />
+            </node>
+            <node concept="3oM_SD" id="39XURhIIJIS" role="1PaTwD">
+              <property role="3oM_SC" value="(as" />
+            </node>
+            <node concept="3oM_SD" id="39XURhIIJIT" role="1PaTwD">
+              <property role="3oM_SC" value="for" />
+            </node>
+            <node concept="3oM_SD" id="39XURhIIJIU" role="1PaTwD">
+              <property role="3oM_SC" value="highlightChange())." />
             </node>
           </node>
-          <node concept="3clFbS" id="1Wi$SPWjw56" role="3clFbx">
-            <node concept="3clFbF" id="1Wi$SPWjw57" role="3cqZAp">
-              <node concept="2OqwBi" id="1Wi$SPWjw5G" role="3clFbG">
-                <node concept="37vLTw" id="1Wi$SPWjw5F" role="2Oq$k0">
-                  <ref role="3cqZAo" node="42hl10VHayV" resolve="myInspectorComponent" />
+        </node>
+        <node concept="3clFbF" id="39XURhIIJHZ" role="3cqZAp">
+          <node concept="2OqwBi" id="39XURhIIJOk" role="3clFbG">
+            <node concept="2OqwBi" id="39XURhIIJNo" role="2Oq$k0">
+              <node concept="2OqwBi" id="39XURhIIJMt" role="2Oq$k0">
+                <node concept="37vLTw" id="39XURhIIJKR" role="2Oq$k0">
+                  <ref role="3cqZAo" node="20BFwKpQeTM" resolve="myMpsProject" />
                 </node>
-                <node concept="liA8E" id="1Wi$SPWjw5H" role="2OqNvi">
-                  <ref role="37wK5l" to="exr9:~EditorComponent.editNode(org.jetbrains.mps.openapi.model.SNode)" resolve="editNode" />
-                  <node concept="37vLTw" id="1Wi$SPWjw59" role="37wK5m">
-                    <ref role="3cqZAo" node="42hl10VHa_m" resolve="node" />
+                <node concept="liA8E" id="39XURhIIJMu" role="2OqNvi">
+                  <ref role="37wK5l" to="z1c3:~Project.getRepository()" resolve="getRepository" />
+                </node>
+              </node>
+              <node concept="liA8E" id="39XURhIIJNp" role="2OqNvi">
+                <ref role="37wK5l" to="lui2:~SRepository.getModelAccess()" resolve="getModelAccess" />
+              </node>
+            </node>
+            <node concept="liA8E" id="39XURhIIJOl" role="2OqNvi">
+              <ref role="37wK5l" to="lui2:~ModelAccess.runReadAction(java.lang.Runnable)" resolve="runReadAction" />
+              <node concept="1bVj0M" id="39XURhIIJOm" role="37wK5m">
+                <node concept="3clFbS" id="39XURhIIJOn" role="1bW5cS">
+                  <node concept="3cpWs8" id="5njRL54RpR$" role="3cqZAp">
+                    <node concept="3cpWsn" id="5njRL54RpR_" role="3cpWs9">
+                      <property role="TrG5h" value="initialEditorHints" />
+                      <node concept="10Q1$e" id="5njRL54RpRp" role="1tU5fm">
+                        <node concept="17QB3L" id="1Wi$SPWjAOa" role="10Q1$1" />
+                      </node>
+                      <node concept="2OqwBi" id="5njRL54RpRA" role="33vP2m">
+                        <node concept="37vLTw" id="5njRL54RpRB" role="2Oq$k0">
+                          <ref role="3cqZAo" node="42hl10VHayP" resolve="myMainEditorComponent" />
+                        </node>
+                        <node concept="liA8E" id="5njRL54RpRC" role="2OqNvi">
+                          <ref role="37wK5l" to="exr9:~EditorComponent.getEditorHintsForNode(org.jetbrains.mps.openapi.model.SNode)" resolve="getEditorHintsForNode" />
+                          <node concept="37vLTw" id="5njRL54RpRD" role="37wK5m">
+                            <ref role="3cqZAo" node="42hl10VHa_m" resolve="node" />
+                          </node>
+                        </node>
+                      </node>
+                    </node>
+                  </node>
+                  <node concept="3cpWs8" id="1Wi$SPWjw4T" role="3cqZAp">
+                    <node concept="3cpWsn" id="1Wi$SPWjw4S" role="3cpWs9">
+                      <property role="3TUv4t" value="false" />
+                      <property role="TrG5h" value="needToEdit" />
+                      <node concept="10P_77" id="1Wi$SPWjw4U" role="1tU5fm" />
+                      <node concept="2OqwBi" id="1Wi$SPWjw4V" role="33vP2m">
+                        <node concept="2OqwBi" id="1Wi$SPWjw5k" role="2Oq$k0">
+                          <node concept="37vLTw" id="1Wi$SPWjw5j" role="2Oq$k0">
+                            <ref role="3cqZAo" node="42hl10VHayV" resolve="myInspectorComponent" />
+                          </node>
+                          <node concept="liA8E" id="1Wi$SPWjw5l" role="2OqNvi">
+                            <ref role="37wK5l" to="exr9:~EditorComponent.getUpdater()" resolve="getUpdater" />
+                          </node>
+                        </node>
+                        <node concept="liA8E" id="1Wi$SPWjw4X" role="2OqNvi">
+                          <ref role="37wK5l" to="22ra:~Updater.setInitialEditorHints(java.lang.String[])" resolve="setInitialEditorHints" />
+                          <node concept="37vLTw" id="1Wi$SPWjAE2" role="37wK5m">
+                            <ref role="3cqZAo" node="5njRL54RpR_" resolve="initialEditorHints" />
+                          </node>
+                        </node>
+                      </node>
+                    </node>
+                  </node>
+                  <node concept="3clFbJ" id="1Wi$SPWjw4Z" role="3cqZAp">
+                    <node concept="22lmx$" id="1Wi$SPWjw50" role="3clFbw">
+                      <node concept="37vLTw" id="1Wi$SPWjw51" role="3uHU7B">
+                        <ref role="3cqZAo" node="1Wi$SPWjw4S" resolve="needToEdit" />
+                      </node>
+                      <node concept="3y3z36" id="1Wi$SPWjw52" role="3uHU7w">
+                        <node concept="2OqwBi" id="1Wi$SPWjw5w" role="3uHU7B">
+                          <node concept="37vLTw" id="1Wi$SPWjw5v" role="2Oq$k0">
+                            <ref role="3cqZAo" node="42hl10VHayV" resolve="myInspectorComponent" />
+                          </node>
+                          <node concept="liA8E" id="1Wi$SPWjw5x" role="2OqNvi">
+                            <ref role="37wK5l" to="exr9:~EditorComponent.getEditedNode()" resolve="getEditedNode" />
+                          </node>
+                        </node>
+                        <node concept="37vLTw" id="1Wi$SPWjw54" role="3uHU7w">
+                          <ref role="3cqZAo" node="42hl10VHa_m" resolve="node" />
+                        </node>
+                      </node>
+                    </node>
+                    <node concept="3clFbS" id="1Wi$SPWjw56" role="3clFbx">
+                      <node concept="3clFbF" id="1Wi$SPWjw57" role="3cqZAp">
+                        <node concept="2OqwBi" id="1Wi$SPWjw5G" role="3clFbG">
+                          <node concept="37vLTw" id="1Wi$SPWjw5F" role="2Oq$k0">
+                            <ref role="3cqZAo" node="42hl10VHayV" resolve="myInspectorComponent" />
+                          </node>
+                          <node concept="liA8E" id="1Wi$SPWjw5H" role="2OqNvi">
+                            <ref role="37wK5l" to="exr9:~EditorComponent.editNode(org.jetbrains.mps.openapi.model.SNode)" resolve="editNode" />
+                            <node concept="37vLTw" id="1Wi$SPWjw59" role="37wK5m">
+                              <ref role="3cqZAo" node="42hl10VHa_m" resolve="node" />
+                            </node>
+                          </node>
+                        </node>
+                      </node>
+                    </node>
                   </node>
                 </node>
               </node>
