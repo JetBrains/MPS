@@ -90,17 +90,17 @@ public class DiffEditorsGroup {
     final EditorComponent thisEditor = thisDiffEditor.getEditorComponent(inspector);
     final EditorComponent otherEditor = otherDiffEditor.getEditorComponent(inspector);
 
-    // XXX used to assert both editors come from the same repo, as we need to lock one while working with nodes of both editors.
-    //    However, it's perfectly ok for editors to belong to different repositories, and the algorithm below shall respect that.
-    //    Meanwhile, an attempt to tell editors working against real (project) repo by looking at read-only flag (DiffEditor receives one for all models but one)
-    final SRepository editorRepo = (thisEditor.isReadOnly() ? otherEditor.getEditorContext().getRepository() : thisEditor.getEditorContext().getRepository());
-    editorRepo.getModelAccess().runReadAction(() -> {
+    // Editors may belong to different repositories (e.g. a temporary one for a revision and the project one for the working copy).
+    // The code below works with nodes of both editors, hence it needs read access to both repositories.
+    final SRepository thisRepo = thisEditor.getEditorContext().getRepository();
+    final SRepository otherRepo = otherEditor.getEditorContext().getRepository();
+    thisRepo.getModelAccess().runReadAction(() -> otherRepo.getModelAccess().runReadAction(() -> {
       int viewY = thisEditor.getViewport().getViewPosition().y;
       SNode visibleNode = thisEditor.getEditedNode();
       if (viewY > thisEditor.getRootCell().getY()) {
-        visibleNode = check_s6qw4f_a0a0c0a0a8a91(thisEditor.findCellWeak(1, viewY));
+        visibleNode = check_s6qw4f_a0a0c0a0a0a0a0i0t(thisEditor.findCellWeak(1, viewY));
       }
-      SModel otherModel = check_s6qw4f_a0d0a0a8a91(otherEditor.getEditedNode());
+      SModel otherModel = check_s6qw4f_a0d0a0a0a0a0i0t(otherEditor.getEditedNode());
       if (otherModel == null) {
         return;
       }
@@ -136,7 +136,7 @@ public class DiffEditorsGroup {
           visibleNode = parent;
         }
       }
-    });
+    }));
   }
   private class MyCellSelectionListener extends SingularSelectionListenerAdapter {
     public MyCellSelectionListener() {
@@ -198,13 +198,13 @@ public class DiffEditorsGroup {
   public List<DiffEditor> getEditors() {
     return myDiffEditors;
   }
-  private static SNode check_s6qw4f_a0a0c0a0a8a91(EditorCell checkedDotOperand) {
+  private static SNode check_s6qw4f_a0a0c0a0a0a0a0i0t(EditorCell checkedDotOperand) {
     if (null != checkedDotOperand) {
       return checkedDotOperand.getSNode();
     }
     return null;
   }
-  private static SModel check_s6qw4f_a0d0a0a8a91(SNode checkedDotOperand) {
+  private static SModel check_s6qw4f_a0d0a0a0a0a0i0t(SNode checkedDotOperand) {
     if (null != checkedDotOperand) {
       return checkedDotOperand.getModel();
     }
