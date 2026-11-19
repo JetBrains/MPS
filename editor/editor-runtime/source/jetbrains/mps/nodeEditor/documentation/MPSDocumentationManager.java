@@ -94,8 +94,10 @@ public class MPSDocumentationManager {
    * <p>
    * The code in {@code continuation} is called after the popup window has been created, so that
    * the caller has a chance to install appropriate callbacks, etc.
+   * <p>
+   * {@code project} may be null only if {@code provider} is null, i.e. when only the editor tooltip is to be shown.
    */
-  public void showHintPopup(Project project, Editor editor, @Nullable DocumentationProvider provider, TooltipRenderer tooltipRenderer,
+  public void showHintPopup(@Nullable Project project, Editor editor, @Nullable DocumentationProvider provider, TooltipRenderer tooltipRenderer,
                             TooltipGroup tooltipGroup, RelativePoint showPoint, Consumer<AbstractPopup> continuation) {
     cancelProgress();
     ProgressManager.getInstance().executeProcessUnderProgress(() -> {

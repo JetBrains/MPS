@@ -684,8 +684,11 @@ public final class PlatformEditorEmulation implements Editor {
     if (getComponent().getRootPane() == null || MPSDocumentationManager.getInstance().isQuickDocPopupShown()) {
       return;
     }
-    //Do not show the documentation popup/tool window when inside a dialog
-    DocumentationProvider provider = (getComponent().getRootPane() instanceof IdeRootPane) ? getDocumentationProvider(event) : null;
+    Project project = ProjectHelper.toIdeaProject(ProjectHelper.getProject(myEditorComponent.getRepository()));
+    // Do not show the documentation popup/tool window when inside a dialog or when the editor is not backed by a project repository
+    // (e.g. VCS diff editors over temporary repositories). Editor tooltips (like change descriptions) are still shown.
+    DocumentationProvider provider =
+        (project != null && getComponent().getRootPane() instanceof IdeRootPane) ? getDocumentationProvider(event) : null;
 
     boolean isGutter = event.getSource() == myEditorComponent.getLeftEditorHighlighter();
     final EditorTooltipProvider tooltipProvider =
@@ -702,8 +705,6 @@ public final class PlatformEditorEmulation implements Editor {
     }
 
     final RelativePoint showPoint = getShowPoint(event, isGutter);
-    Project project = ProjectHelper.toIdeaProject(ProjectHelper.getProject(myEditorComponent.getRepository()));
-    if (project==null) return;
     myHintPopupController.showInfoToolTip(project, this, provider, tooltipRenderer, tooltipGroup, showPoint);
   }
 

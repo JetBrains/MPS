@@ -122,7 +122,7 @@ class HintPopupController {
     myKeepHintOnMouseMove = keep;
   }
 
-  public void showInfoToolTip(Project project, Editor editor, @Nullable DocumentationProvider provider, TooltipRenderer tooltipRenderer, TooltipGroup tooltipGroup, RelativePoint showPoint) {
+  public void showInfoToolTip(@Nullable Project project, Editor editor, @Nullable DocumentationProvider provider, TooltipRenderer tooltipRenderer, TooltipGroup tooltipGroup, RelativePoint showPoint) {
     // this clears the hint window on mouse move
     setKeepHintOnMouseMove(false);
 
