@@ -540,8 +540,8 @@
       <node id="1703835097132692859" at="40,83,41,30" concept="9" />
       <node id="1703835097132692859" at="41,30,42,227" concept="9" />
       <node id="1703835097132692859" at="42,227,43,34" concept="4" />
-      <node id="1703835097132692859" at="43,34,44,216" concept="4" />
-      <node id="1703835097132692859" at="44,216,45,24" concept="10" />
+      <node id="1703835097132692859" at="43,34,44,217" concept="4" />
+      <node id="1703835097132692859" at="44,217,45,24" concept="10" />
       <node id="1703835097132691941" at="49,0,50,0" concept="13" trace="ConceptBehavior$2" />
       <node id="1703835097132691941" at="50,0,51,0" concept="13" trace="ThisConceptExpression$KM" />
       <node id="1703835097132691941" at="54,0,55,0" concept="13" trace="concept$u6dL" />
@@ -733,8 +733,8 @@
       <node id="7613853987897909610" at="38,83,39,30" concept="9" />
       <node id="7613853987897909610" at="39,30,40,227" concept="9" />
       <node id="7613853987897909610" at="40,227,41,34" concept="4" />
-      <node id="7613853987897909610" at="41,34,42,216" concept="4" />
-      <node id="7613853987897909610" at="42,216,43,24" concept="10" />
+      <node id="7613853987897909610" at="41,34,42,217" concept="4" />
+      <node id="7613853987897909610" at="42,217,43,24" concept="10" />
       <node id="7613853987897909595" at="47,0,48,0" concept="13" trace="SuperConceptExpression$_4" />
       <node id="7613853987897909595" at="19,0,21,0" concept="3" trace="typeof_SuperConceptExpression_InferenceRule#()V" />
       <node id="7613853987897909595" at="29,0,32,0" concept="8" trace="getApplicableConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
