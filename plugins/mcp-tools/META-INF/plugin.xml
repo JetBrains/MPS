@@ -4,6 +4,8 @@
   <vendor>JetBrains</vendor>
   <description>A plugin enabling MPS mcp tools to AI coding agents.</description>
   <vendor url="http://www.jetbrains.com/mps/">JetBrains</vendor>
+  <version>2026.1.3</version>
+  <idea-version since-build="261.1" until-build="262.1"/>
 
   <depends>com.intellij.mcpServer</depends>
   <depends>jetbrains.mps.core</depends>

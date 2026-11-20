@@ -115,6 +115,11 @@
       <unit id="6503539749405386437" at="1,0,2554,10" name="jetbrains.mps.ide.build.mpsCore" />
     </file>
   </root>
+  <root nodeRef="r:874d959d-e3b4-4d04-b931-ca849af130dd(jetbrains.mps.ide.build)/671610231658829673">
+    <file name="mpsMcpToolsDistribution.xml">
+      <unit id="671610231658829673" at="1,0,45,10" name="jetbrains.mps.ide.build.mpsMcpToolsDistribution" />
+    </file>
+  </root>
   <root nodeRef="r:874d959d-e3b4-4d04-b931-ca849af130dd(jetbrains.mps.ide.build)/716066598061903713">
     <file name="Info.plist.xml">
       <unit id="716066598061903713" at="1,0,88,8" name="jetbrains.mps.ide.build.Info$plist" />

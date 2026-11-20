@@ -31,6 +31,8 @@
     <ant antfile="mpsDistribution.xml" inheritAll="true" useNativeBasedir="true" target="publishTCArtifacts"/>
     <ant antfile="mpsMaven.xml" inheritAll="true" useNativeBasedir="true" target="assemble"/>
     <ant antfile="mpsMaven.xml" inheritAll="true" useNativeBasedir="true" target="publishTCArtifact"/>
+    <ant antfile="mpsMcpToolsDistribution.xml" inheritAll="true" useNativeBasedir="true" target="assemble"/>
+    <ant antfile="mpsMcpToolsDistribution.xml" inheritAll="true" useNativeBasedir="true" target="publishTCArtifact"/>
   </target>
 
   <target name="base" depends="platform, getResourcesAndBuildAll, assemble">

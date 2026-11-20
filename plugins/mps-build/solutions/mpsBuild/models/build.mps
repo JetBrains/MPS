@@ -66886,5 +66886,91 @@
       <ref role="1l3spb" node="77ZqjhZbLRc" resolve="mpsMigrationCore" />
     </node>
   </node>
+  <node concept="1l3spW" id="_i2va5yHtD">
+    <property role="3GE5qa" value="ide" />
+    <property role="TrG5h" value="mpsMcpToolsDistribution" />
+    <property role="turDy" value="mpsMcpToolsDistribution.xml" />
+    <property role="2DA0ip" value="../../../../" />
+    <node concept="1y0Vig" id="_i2va5yHtE" role="1hWBAP">
+      <node concept="2VaFvF" id="_i2va5yHtF" role="1y0Vin">
+        <property role="TrG5h" value="publishTCArtifact" />
+        <node concept="2VaFvH" id="_i2va5yHtG" role="2VaFvJ">
+          <property role="TrG5h" value="mcp-tools" />
+          <node concept="2Vbh7Z" id="_i2va5yHtH" role="2VaTZU">
+            <node concept="2pNNFK" id="_i2va5yHtI" role="2Vbh7K">
+              <property role="2pNNFO" value="echo" />
+              <node concept="2pNUuL" id="_i2va5yHtJ" role="2pNNFR">
+                <property role="2pNUuO" value="message" />
+                <node concept="2pMdtt" id="_i2va5yHtK" role="2pMdts">
+                  <property role="2pMdty" value="##teamcity[publishArtifacts '${build.layout}/mcp-tools-${build.num}.zip']" />
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
+      </node>
+    </node>
+    <node concept="398rNT" id="_i2va5yHtL" role="1l3spd">
+      <property role="TrG5h" value="mpsLayout" />
+      <node concept="55IIr" id="_i2va5yHtM" role="398pKh">
+        <node concept="2Ry0Ak" id="_i2va5yHtN" role="iGT6I">
+          <property role="2Ry0Am" value="build" />
+          <node concept="2Ry0Ak" id="_i2va5yHtO" role="2Ry0An">
+            <property role="2Ry0Am" value="artifacts" />
+            <node concept="2Ry0Ak" id="_i2va5yHtP" role="2Ry0An">
+              <property role="2Ry0Am" value="mps" />
+            </node>
+          </node>
+        </node>
+      </node>
+    </node>
+    <node concept="2kB4xC" id="_i2va5yHtQ" role="1l3spd">
+      <property role="TrG5h" value="build.num" />
+      <node concept="3SJUkW" id="_i2va5yHtR" role="aVJcv">
+        <node concept="398BVA" id="_i2va5yHtS" role="3SIlUQ">
+          <ref role="398BVh" node="_i2va5yHtL" resolve="mpsLayout" />
+          <node concept="2Ry0Ak" id="_i2va5yHtT" role="iGT6I">
+            <property role="2Ry0Am" value="build.txt" />
+          </node>
+        </node>
+      </node>
+    </node>
+    <node concept="55IIr" id="_i2va5yHtU" role="auvoZ">
+      <node concept="2Ry0Ak" id="_i2va5yHtV" role="iGT6I">
+        <property role="2Ry0Am" value="build" />
+      </node>
+    </node>
+    <node concept="1l3spV" id="_i2va5yHtW" role="1l3spN">
+      <node concept="3981dG" id="_i2va5G1pc" role="39821P">
+        <node concept="3_J27D" id="_i2va5G1pd" role="Nbhlr">
+          <node concept="3Mxwew" id="_i2va5G1pe" role="3MwsjC">
+            <property role="3MwjfP" value="mcp-tools-" />
+          </node>
+          <node concept="3Mxwey" id="_i2va5G1pf" role="3MwsjC">
+            <ref role="3Mxwex" node="_i2va5yHtQ" resolve="build.num" />
+          </node>
+          <node concept="3Mxwew" id="_i2va5G1pg" role="3MwsjC">
+            <property role="3MwjfP" value=".zip" />
+          </node>
+        </node>
+        <node concept="398223" id="_i2va5yMzR" role="39821P">
+          <node concept="3_J27D" id="_i2va5yMzT" role="Nbhlr">
+            <node concept="3Mxwew" id="_i2va5yMB8" role="3MwsjC">
+              <property role="3MwjfP" value="mcp-tools" />
+            </node>
+          </node>
+          <node concept="3ygNvl" id="_i2va5yNkG" role="39821P">
+            <ref role="3ygNvj" node="X5qzrNTLMv" resolve="mcp-tools" />
+          </node>
+        </node>
+      </node>
+    </node>
+    <node concept="2sgV4H" id="_i2va5yHu5" role="1l3spa">
+      <ref role="1l3spb" node="3IKDaVZmzS6" resolve="mps" />
+      <node concept="398BVA" id="_i2va5yHu6" role="2JcizS">
+        <ref role="398BVh" node="_i2va5yHtL" resolve="mpsLayout" />
+      </node>
+    </node>
+  </node>
 </model>
 
