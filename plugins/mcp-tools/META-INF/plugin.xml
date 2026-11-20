@@ -1,8 +1,12 @@
 <idea-plugin>
   <id>jetbrains.mps.agents.mcp.tools</id>
   <name>Projectional Agent Toolkit</name>
-  <vendor>JetBrains</vendor>
-  <description>A plugin enabling MPS mcp tools to AI coding agents.</description>
+  <description><![CDATA[
+    <p>Gives AI coding agents access to JetBrains MPS through MCP tools: they can navigate, query, edit,
+    validate, and generate MPS models and languages in the open project.</p>
+    <p>This is the same plugin that comes bundled with MPS, published separately so that it can be
+    updated more frequently than MPS itself.</p>
+  ]]></description>
   <vendor url="http://www.jetbrains.com/mps/">JetBrains</vendor>
   <version>2026.1.3</version>
   <idea-version since-build="261.1" until-build="262.1"/>
