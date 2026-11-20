@@ -117,7 +117,7 @@
   </root>
   <root nodeRef="r:874d959d-e3b4-4d04-b931-ca849af130dd(jetbrains.mps.ide.build)/671610231658829673">
     <file name="mpsMcpToolsDistribution.xml">
-      <unit id="671610231658829673" at="1,0,76,10" name="jetbrains.mps.ide.build.mpsMcpToolsDistribution" />
+      <unit id="671610231658829673" at="1,0,79,10" name="jetbrains.mps.ide.build.mpsMcpToolsDistribution" />
     </file>
   </root>
   <root nodeRef="r:874d959d-e3b4-4d04-b931-ca849af130dd(jetbrains.mps.ide.build)/716066598061903713">

@@ -42,6 +42,9 @@
         <tokenfilter>
           <replaceregex pattern="&lt;version>[^&lt;]*&lt;/version>" replace="&lt;version>${plugin.version}&lt;/version>" flags="" />
         </tokenfilter>
+        <tokenfilter>
+          <replaceregex pattern="&lt;version>([0-9]+\.[0-9]+)-pre\." replace="&lt;version>\1.0-pre." flags="" />
+        </tokenfilter>
       </filterchain>
     </copy>
     <jar destfile="${build.tmp}/default/mcp-tools-_dl__lbrace_plugin.version_rbrace_.zip/mcp-tools/lib/mcp-tools.jar" duplicate="preserve">

@@ -66996,6 +66996,14 @@
                       </node>
                     </node>
                   </node>
+                  <node concept="1688n2" id="_i2va69TS8" role="28jJR8">
+                    <property role="1688n3" value="&lt;version&gt;([0-9]+\.[0-9]+)-pre\." />
+                    <node concept="NbPM2" id="_i2va69TS9" role="1688n0">
+                      <node concept="3Mxwew" id="_i2va69TSa" role="3MwsjC">
+                        <property role="3MwjfP" value="&lt;version&gt;\1.0-pre." />
+                      </node>
+                    </node>
+                  </node>
                 </node>
               </node>
             </node>
