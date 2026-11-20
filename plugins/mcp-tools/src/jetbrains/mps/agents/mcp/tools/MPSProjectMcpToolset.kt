@@ -87,8 +87,12 @@ class MPSProjectMcpToolset(
         `mps_mcp_*` tools; `agentConfigRoot` is the repository/workspace root where
         `mps_mcp_initialize_project_for_agents.targetDirectory` belongs. Top-level `mpsVersion`,
         `mpsBuild`, and `mpsEap` are this IDE's identity, not a property of any listed project;
-        all three are omitted when the IDE cannot report them. Read the running version here —
-        do not call the initializer for it. Top-level `logDirectory` (absolute) and `logFile`
+        all three are omitted when the IDE cannot report them. Top-level `mcpToolsVersion` is the
+        version of the loaded MCP tools plugin, which ships the skill catalog (omitted when unknown).
+        Read the running version here — do not call the initializer for it. The installed skills
+        are current only when the `build` and `pluginVersion` lines of `MPS_MCP_SKILL_VERSION.txt`
+        equal `mpsBuild` and `mcpToolsVersion`; compare for equality only, never order these strings
+        (`2026.1.3-pre.1176` comes before `2026.1.3`). Top-level `logDirectory` (absolute) and `logFile`
         (`<logDirectory>/idea.log`, the live IDE log; rotated files are `idea.1.log`, `idea.2.log`, …
         in the same directory) locate the IDE log, which is IDE-wide and omitted when unavailable;
         the MCP `read_file` tool reads it only when it lies inside a project/library/SDK root,
@@ -116,6 +120,7 @@ class MPSProjectMcpToolset(
                         addProperty("mpsVersion", identity.version)
                         addProperty("mpsBuild", identity.build)
                         addProperty("mpsEap", identity.eap)
+                        identity.pluginVersion?.let { addProperty("mcpToolsVersion", it) }
                     }
                     ideLogDirectoryOrNull()?.let { logDirectory ->
                         addProperty("logDirectory", logDirectory.toString())

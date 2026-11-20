@@ -69,6 +69,13 @@ class MPSInitMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             assertEquals(live.version, data.get("mpsVersion").asString)
             assertEquals(live.build, data.get("mpsBuild").asString)
             assertEquals(live.eap, data.get("mpsEap").asBoolean)
+            // The test environment calls the toolsets from the classpath without loading this plugin,
+            // so there is usually no plugin version to report; a running MPS has one.
+            if (live.pluginVersion != null) {
+                assertEquals(live.pluginVersion, data.get("mcpToolsVersion").asString)
+            } else {
+                assertTrue("no plugin version must mean no mcpToolsVersion: $data", !data.has("mcpToolsVersion"))
+            }
         } finally {
             // Tidy the artifacts we created. The harness also deletes the temp project directory on
             // teardown, but removing them here keeps the project's own close/save unaffected and is

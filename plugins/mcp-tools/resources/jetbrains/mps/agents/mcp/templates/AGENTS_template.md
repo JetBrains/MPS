@@ -43,10 +43,10 @@ If MCP calls fail session-wide with `java.net.URISyntaxException: Illegal charac
 
 Skills live in `.agents/skills/<skill-name>/SKILL.md` or `.claude/skills/<skill-name>/SKILL.md`; start with `mps-mcp-workflow` for the overview and a directory of every other skill. The `mps-*` skills and this guide were installed by the `mps_mcp_initialize_project_for_agents` MCP tool; for details on re-installing and refreshing them — the install arguments (`targetDirectory` vs `projectPath`), the version stamps, and the refresh procedure — see `.agents/skills/mps-mcp-workflow/references/catalog-install-and-refresh.md`.
 
-Before substantial MPS work, compare the `build` line in `.agents/skills/MPS_MCP_SKILL_VERSION.txt` and `.claude/skills/MPS_MCP_SKILL_VERSION.txt` with top-level `mpsBuild` from `mps_mcp_list_open_projects`. Do not call the initializer to learn the version — it writes files.
+Before substantial MPS work, compare the `build` and `pluginVersion` lines in `.agents/skills/MPS_MCP_SKILL_VERSION.txt` and `.claude/skills/MPS_MCP_SKILL_VERSION.txt` with top-level `mpsBuild` and `mcpToolsVersion` from `mps_mcp_list_open_projects`. The skills ship with the MCP tools plugin, which can be updated separately from MPS, so either value can change on its own. Compare the values as exact strings for equality; never order them (`2026.1.3-pre.1176` is a pre-release of `2026.1.3`, so a text comparison gets it backwards). A key absent on one side and present on the other counts as different. Do not call the initializer to learn the version — it writes files.
 
-- Equal `build` → continue. Mention `version` only when talking to the user.
-- Different `build` → say the skills were installed from version/build X and this MPS is version/build Y, then ask before refreshing. Do not refresh silently, and do not block ordinary MPS work.
+- Equal `build` and equal `pluginVersion` → continue. Mention `version` only when talking to the user.
+- Different `build` or different `pluginVersion` → say the skills were installed from version/build/plugin X and this MPS runs version/build/plugin Y, then ask before refreshing. Do not claim which one is newer. Do not refresh silently, and do not block ordinary MPS work.
 - Missing file → legacy install. Say so once. Absence is not proven staleness.
 - The two stamps disagree, or only one exists → inconsistent. Offer one refresh of both trees.
 - `mpsBuild` absent → the running IDE is too old to report its identity. Do not judge staleness.

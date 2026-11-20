@@ -19,11 +19,16 @@ the MPS project directory when the project sits in a subdirectory (e.g. `tools/B
 
 ## Version stamps
 
-A successful install writes the same `MPS_MCP_SKILL_VERSION.txt` (`version`, `build`, `eap`) into
-both `.agents/skills/` and `.claude/skills/`. Compare its `build` with top-level `mpsBuild` from
-`mps_mcp_list_open_projects`; never call the initializer to learn the version — it writes files,
-and a run that aborts on colliding skill folders does not move the stamps. The installed
-`AGENTS.md` states the staleness rules.
+A successful install writes the same `MPS_MCP_SKILL_VERSION.txt` (`version`, `build`, `eap`,
+`pluginVersion`) into both `.agents/skills/` and `.claude/skills/`. Compare its `build` with
+top-level `mpsBuild` and its `pluginVersion` with top-level `mcpToolsVersion` from
+`mps_mcp_list_open_projects`. The skills are current only when both are equal: the MCP tools
+plugin ships the catalog and can be updated without a new MPS build. Compare for equality only,
+never order the strings — a separately distributed plugin is versioned
+`<next MPS version>-pre.<build counter>` (`2026.1.3-pre.1176`), which a text comparison puts after
+`2026.1.3` although it comes before it. A key absent on one side only counts as different. Never
+call the initializer to learn the version — it writes files, and a run that aborts on colliding
+skill folders does not move the stamps. The installed `AGENTS.md` states the staleness rules.
 
 ## Refreshing (only with the user's approval)
 
