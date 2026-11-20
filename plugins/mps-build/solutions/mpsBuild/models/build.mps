@@ -66902,7 +66902,7 @@
               <node concept="2pNUuL" id="_i2va5yHtJ" role="2pNNFR">
                 <property role="2pNUuO" value="message" />
                 <node concept="2pMdtt" id="_i2va5yHtK" role="2pMdts">
-                  <property role="2pMdty" value="##teamcity[publishArtifacts '${build.layout}/mcp-tools-${build.num}.zip']" />
+                  <property role="2pMdty" value="##teamcity[publishArtifacts '${build.layout}/mcp-tools-${plugin.version}.zip']" />
                 </node>
               </node>
             </node>
@@ -66924,17 +66924,6 @@
         </node>
       </node>
     </node>
-    <node concept="2kB4xC" id="_i2va5yHtQ" role="1l3spd">
-      <property role="TrG5h" value="build.num" />
-      <node concept="3SJUkW" id="_i2va5yHtR" role="aVJcv">
-        <node concept="398BVA" id="_i2va5yHtS" role="3SIlUQ">
-          <ref role="398BVh" node="_i2va5yHtL" resolve="mpsLayout" />
-          <node concept="2Ry0Ak" id="_i2va5yHtT" role="iGT6I">
-            <property role="2Ry0Am" value="build.txt" />
-          </node>
-        </node>
-      </node>
-    </node>
     <node concept="55IIr" id="_i2va5yHtU" role="auvoZ">
       <node concept="2Ry0Ak" id="_i2va5yHtV" role="iGT6I">
         <property role="2Ry0Am" value="build" />
@@ -66947,7 +66936,7 @@
             <property role="3MwjfP" value="mcp-tools-" />
           </node>
           <node concept="3Mxwey" id="_i2va5G1pf" role="3MwsjC">
-            <ref role="3Mxwex" node="_i2va5yHtQ" resolve="build.num" />
+            <ref role="3Mxwex" node="_i2va5R6AX" resolve="plugin.version" />
           </node>
           <node concept="3Mxwew" id="_i2va5G1pg" role="3MwsjC">
             <property role="3MwjfP" value=".zip" />
@@ -66959,8 +66948,57 @@
               <property role="3MwjfP" value="mcp-tools" />
             </node>
           </node>
-          <node concept="3ygNvl" id="_i2va5yNkG" role="39821P">
-            <ref role="3ygNvj" node="X5qzrNTLMv" resolve="mcp-tools" />
+          <node concept="398223" id="_i2va5R6ZJ" role="39821P">
+            <node concept="3_J27D" id="_i2va5R6ZK" role="Nbhlr">
+              <node concept="3Mxwew" id="_i2va5R6ZL" role="3MwsjC">
+                <property role="3MwjfP" value="lib" />
+              </node>
+            </node>
+            <node concept="3981dx" id="_i2va5R6ZM" role="39821P">
+              <node concept="3_J27D" id="_i2va5R6ZN" role="Nbhlr">
+                <node concept="3Mxwew" id="_i2va5R6ZO" role="3MwsjC">
+                  <property role="3MwjfP" value="mcp-tools.jar" />
+                </node>
+              </node>
+              <node concept="3ygNvl" id="_i2va5R6ZP" role="39821P">
+                <ref role="3ygNvj" node="X5qzrNTLM$" resolve="mcp-tools.jar" />
+                <node concept="3LWZYq" id="_i2va5R6ZQ" role="1juEy9">
+                  <property role="3LWZYl" value="META-INF/plugin.xml" />
+                </node>
+              </node>
+              <node concept="398223" id="_i2va5R6ZR" role="39821P">
+                <node concept="3_J27D" id="_i2va5R6ZS" role="Nbhlr">
+                  <node concept="3Mxwew" id="_i2va5R6ZT" role="3MwsjC">
+                    <property role="3MwjfP" value="META-INF" />
+                  </node>
+                </node>
+                <node concept="28jJK3" id="_i2va5R6ZU" role="39821P">
+                  <node concept="398BVA" id="_i2va5R6ZV" role="28jJRO">
+                    <ref role="398BVh" node="_i2va5R62_" resolve="plugin_home" />
+                    <node concept="2Ry0Ak" id="_i2va5R6ZW" role="iGT6I">
+                      <property role="2Ry0Am" value="META-INF" />
+                      <node concept="2Ry0Ak" id="_i2va5R6ZX" role="2Ry0An">
+                        <property role="2Ry0Am" value="plugin.xml" />
+                      </node>
+                    </node>
+                  </node>
+                  <node concept="1688n2" id="_i2va5R6ZY" role="28jJR8">
+                    <property role="1688n3" value="&lt;version&gt;[^&lt;]*&lt;/version&gt;" />
+                    <node concept="NbPM2" id="_i2va5R6ZZ" role="1688n0">
+                      <node concept="3Mxwew" id="_i2va5R700" role="3MwsjC">
+                        <property role="3MwjfP" value="&lt;version&gt;" />
+                      </node>
+                      <node concept="3Mxwey" id="_i2va5R701" role="3MwsjC">
+                        <ref role="3Mxwex" node="_i2va5R6AX" resolve="plugin.version" />
+                      </node>
+                      <node concept="3Mxwew" id="_i2va5R702" role="3MwsjC">
+                        <property role="3MwjfP" value="&lt;/version&gt;" />
+                      </node>
+                    </node>
+                  </node>
+                </node>
+              </node>
+            </node>
           </node>
         </node>
       </node>
@@ -66969,6 +67007,86 @@
       <ref role="1l3spb" node="3IKDaVZmzS6" resolve="mps" />
       <node concept="398BVA" id="_i2va5yHu6" role="2JcizS">
         <ref role="398BVh" node="_i2va5yHtL" resolve="mpsLayout" />
+      </node>
+    </node>
+    <node concept="398rNT" id="_i2va5R62_" role="1l3spd">
+      <property role="TrG5h" value="plugin_home" />
+      <node concept="55IIr" id="_i2va5R62A" role="398pKh">
+        <node concept="2Ry0Ak" id="_i2va5R62B" role="iGT6I">
+          <property role="2Ry0Am" value="plugins" />
+          <node concept="2Ry0Ak" id="_i2va5R62C" role="2Ry0An">
+            <property role="2Ry0Am" value="mcp-tools" />
+          </node>
+        </node>
+      </node>
+    </node>
+    <node concept="2kB4xC" id="_i2va5R6n$" role="1l3spd">
+      <property role="TrG5h" value="mps.mps.build.counter" />
+      <node concept="hGsBp" id="_i2va5R6n_" role="aVJcv">
+        <node concept="398BVA" id="_i2va5R6nA" role="hGsBm">
+          <ref role="398BVh" node="_i2va5yHtL" resolve="mpsLayout" />
+          <node concept="2Ry0Ak" id="_i2va5R6nB" role="iGT6I">
+            <property role="2Ry0Am" value="build.properties" />
+          </node>
+        </node>
+      </node>
+    </node>
+    <node concept="2kB4xC" id="_i2va5R6wJ" role="1l3spd">
+      <property role="TrG5h" value="mpsBootstrapCore.version.major" />
+      <node concept="hGsBp" id="_i2va5R6wK" role="aVJcv">
+        <node concept="398BVA" id="_i2va5R6wL" role="hGsBm">
+          <ref role="398BVh" node="_i2va5yHtL" resolve="mpsLayout" />
+          <node concept="2Ry0Ak" id="_i2va5R6wM" role="iGT6I">
+            <property role="2Ry0Am" value="build.properties" />
+          </node>
+        </node>
+      </node>
+    </node>
+    <node concept="2kB4xC" id="_i2va60gRD" role="1l3spd">
+      <property role="TrG5h" value="mpsBootstrapCore.version.minor" />
+      <node concept="hGsBp" id="_i2va60gRE" role="aVJcv">
+        <node concept="398BVA" id="_i2va60gRF" role="hGsBm">
+          <ref role="398BVh" node="_i2va5yHtL" resolve="mpsLayout" />
+          <node concept="2Ry0Ak" id="_i2va60gRG" role="iGT6I">
+            <property role="2Ry0Am" value="build.properties" />
+          </node>
+        </node>
+      </node>
+    </node>
+    <node concept="2kB4xC" id="_i2va60gII" role="1l3spd">
+      <property role="TrG5h" value="mpsBootstrapCore.version.bugfixNr" />
+      <node concept="hGsBp" id="_i2va60gIJ" role="aVJcv">
+        <node concept="398BVA" id="_i2va60gIK" role="hGsBm">
+          <ref role="398BVh" node="_i2va5yHtL" resolve="mpsLayout" />
+          <node concept="2Ry0Ak" id="_i2va60gIL" role="iGT6I">
+            <property role="2Ry0Am" value="build.properties" />
+          </node>
+        </node>
+      </node>
+    </node>
+    <node concept="2kB4xC" id="_i2va5R6AX" role="1l3spd">
+      <property role="TrG5h" value="plugin.version" />
+      <node concept="aVJcg" id="_i2va5R6AY" role="aVJcv">
+        <node concept="NbPM2" id="_i2va60h6Y" role="aVJcq">
+          <node concept="3Mxwey" id="_i2va60h6Z" role="3MwsjC">
+            <ref role="3Mxwex" node="_i2va5R6wJ" resolve="mpsBootstrapCore.version.major" />
+          </node>
+          <node concept="3Mxwew" id="_i2va60h70" role="3MwsjC">
+            <property role="3MwjfP" value="." />
+          </node>
+          <node concept="3Mxwey" id="_i2va60h71" role="3MwsjC">
+            <ref role="3Mxwex" node="_i2va60gRD" resolve="mpsBootstrapCore.version.minor" />
+          </node>
+          <node concept="3Mxwey" id="_i2va60h72" role="3MwsjC">
+            <ref role="3Mxwex" node="_i2va60gII" resolve="mpsBootstrapCore.version.bugfixNr" />
+          </node>
+          <node concept="3Mxwew" id="_i2va60h73" role="3MwsjC">
+            <property role="3MwjfP" value="-pre." />
+          </node>
+          <node concept="3Mxwey" id="_i2va60h74" role="3MwsjC">
+            <ref role="3Mxwex" node="_i2va5R6n$" resolve="mps.mps.build.counter" />
+          </node>
+        </node>
       </node>
     </node>
   </node>
