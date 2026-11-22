@@ -1,4 +1,4 @@
-<idea-plugin>
+<idea-plugin allow-bundled-update="true">
   <id>jetbrains.mps.agents.mcp.tools</id>
   <name>Projectional Agent Toolkit</name>
   <description><![CDATA[
