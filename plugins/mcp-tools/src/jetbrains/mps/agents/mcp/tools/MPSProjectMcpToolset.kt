@@ -91,8 +91,9 @@ class MPSProjectMcpToolset(
         version of the loaded MCP tools plugin, which ships the skill catalog (omitted when unknown).
         Read the running version here — do not call the initializer for it. The installed skills
         are current only when the `build` and `pluginVersion` lines of `MPS_MCP_SKILL_VERSION.txt`
-        equal `mpsBuild` and `mcpToolsVersion`; compare for equality only, never order these strings
-        (a text comparison puts `261.27258.999` after `261.27258.1000`). A differing `pluginVersion`
+        equal `mpsBuild` and `mcpToolsVersion` — use exact string equality to decide whether they
+        match (any difference matters, and plain text sorting puts `261.27258.999` after
+        `261.27258.1000`). A differing `pluginVersion`
         — or a stamp without a `pluginVersion` line while `mcpToolsVersion` is present (such as from
         an older bundled copy) — is a real mismatch even when `build` matches `mpsBuild`, because
         the plugin ships the skill catalog; do not ignore or postpone it because `build` matches.

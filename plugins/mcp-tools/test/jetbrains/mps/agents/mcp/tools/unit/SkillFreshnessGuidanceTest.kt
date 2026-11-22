@@ -89,6 +89,10 @@ class SkillFreshnessGuidanceTest {
             "$AGENTS_TEMPLATE re-introduced the 'do not block' escape hatch",
             template.contains("do not block", ignoreCase = true),
         )
+        assertFalse(
+            "$AGENTS_TEMPLATE re-introduced the blanket 'do not claim which one is newer' disclaimer",
+            template.contains("do not claim which one is newer", ignoreCase = true),
+        )
     }
 
     @Test
@@ -124,6 +128,10 @@ class SkillFreshnessGuidanceTest {
         assertFalse(
             "$CATALOG_REFRESH slipped back to passive 'only with the user's approval' heading",
             catalogRefresh.contains("only with the user's approval", ignoreCase = true),
+        )
+        assertFalse(
+            "$CATALOG_REFRESH re-introduced the blanket 'without claiming which is newer' disclaimer",
+            catalogRefresh.contains("without claiming which is newer", ignoreCase = true),
         )
 
         assertNamesAll(
