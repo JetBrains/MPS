@@ -73649,5 +73649,148 @@
       </node>
     </node>
   </node>
+  <node concept="1l3spW" id="_i2va5yHtD">
+    <property role="3GE5qa" value="ide" />
+    <property role="TrG5h" value="mpsMcpToolsDistribution" />
+    <property role="turDy" value="mpsMcpToolsDistribution.xml" />
+    <property role="2DA0ip" value="../../../../" />
+    <node concept="1y0Vig" id="_i2va5yHtE" role="1hWBAP">
+      <node concept="2VaFvF" id="_i2va5yHtF" role="1y0Vin">
+        <property role="TrG5h" value="publishTCArtifact" />
+        <node concept="2VaFvH" id="_i2va5yHtG" role="2VaFvJ">
+          <property role="TrG5h" value="mcp-tools" />
+          <node concept="2Vbh7Z" id="_i2va5yHtH" role="2VaTZU">
+            <node concept="2pNNFK" id="_i2va5yHtI" role="2Vbh7K">
+              <property role="2pNNFO" value="echo" />
+              <node concept="2pNUuL" id="_i2va5yHtJ" role="2pNNFR">
+                <property role="2pNUuO" value="message" />
+                <node concept="2pMdtt" id="_i2va5yHtK" role="2pMdts">
+                  <property role="2pMdty" value="##teamcity[publishArtifacts '${build.layout}/mcp-tools-${mps.build.number}.zip']" />
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
+      </node>
+    </node>
+    <node concept="398rNT" id="_i2va5yHtL" role="1l3spd">
+      <property role="TrG5h" value="mpsLayout" />
+      <node concept="55IIr" id="_i2va5yHtM" role="398pKh">
+        <node concept="2Ry0Ak" id="_i2va5yHtN" role="iGT6I">
+          <property role="2Ry0Am" value="build" />
+          <node concept="2Ry0Ak" id="_i2va5yHtO" role="2Ry0An">
+            <property role="2Ry0Am" value="artifacts" />
+            <node concept="2Ry0Ak" id="_i2va5yHtP" role="2Ry0An">
+              <property role="2Ry0Am" value="mps" />
+            </node>
+          </node>
+        </node>
+      </node>
+    </node>
+    <node concept="55IIr" id="_i2va5yHtU" role="auvoZ">
+      <node concept="2Ry0Ak" id="_i2va5yHtV" role="iGT6I">
+        <property role="2Ry0Am" value="build" />
+      </node>
+    </node>
+    <node concept="1l3spV" id="_i2va5yHtW" role="1l3spN">
+      <node concept="3981dG" id="_i2va5G1pc" role="39821P">
+        <node concept="3_J27D" id="_i2va5G1pd" role="Nbhlr">
+          <node concept="3Mxwew" id="_i2va5G1pe" role="3MwsjC">
+            <property role="3MwjfP" value="mcp-tools-" />
+          </node>
+          <node concept="3Mxwey" id="_i2va5G1pf" role="3MwsjC">
+            <ref role="3Mxwex" node="3IKDaVZnAxg" resolve="build.number" />
+          </node>
+          <node concept="3Mxwew" id="_i2va5G1pg" role="3MwsjC">
+            <property role="3MwjfP" value=".zip" />
+          </node>
+        </node>
+        <node concept="398223" id="_i2va5yMzR" role="39821P">
+          <node concept="3_J27D" id="_i2va5yMzT" role="Nbhlr">
+            <node concept="3Mxwew" id="_i2va5yMB8" role="3MwsjC">
+              <property role="3MwjfP" value="mcp-tools" />
+            </node>
+          </node>
+          <node concept="398223" id="_i2va5R6ZJ" role="39821P">
+            <node concept="3_J27D" id="_i2va5R6ZK" role="Nbhlr">
+              <node concept="3Mxwew" id="_i2va5R6ZL" role="3MwsjC">
+                <property role="3MwjfP" value="lib" />
+              </node>
+            </node>
+            <node concept="3981dx" id="_i2va5R6ZM" role="39821P">
+              <node concept="3_J27D" id="_i2va5R6ZN" role="Nbhlr">
+                <node concept="3Mxwew" id="_i2va5R6ZO" role="3MwsjC">
+                  <property role="3MwjfP" value="mcp-tools.jar" />
+                </node>
+              </node>
+              <node concept="3ygNvl" id="_i2va5R6ZP" role="39821P">
+                <ref role="3ygNvj" node="X5qzrNTLM$" resolve="mcp-tools.jar" />
+                <node concept="3LWZYq" id="_i2va5R6ZQ" role="1juEy9">
+                  <property role="3LWZYl" value="META-INF/plugin.xml" />
+                </node>
+              </node>
+              <node concept="398223" id="_i2va5R6ZR" role="39821P">
+                <node concept="3_J27D" id="_i2va5R6ZS" role="Nbhlr">
+                  <node concept="3Mxwew" id="_i2va5R6ZT" role="3MwsjC">
+                    <property role="3MwjfP" value="META-INF" />
+                  </node>
+                </node>
+                <node concept="28jJK3" id="_i2va5R6ZU" role="39821P">
+                  <node concept="398BVA" id="_i2va5R6ZV" role="28jJRO">
+                    <ref role="398BVh" node="_i2va5R62_" resolve="plugin_home" />
+                    <node concept="2Ry0Ak" id="_i2va5R6ZW" role="iGT6I">
+                      <property role="2Ry0Am" value="META-INF" />
+                      <node concept="2Ry0Ak" id="_i2va5R6ZX" role="2Ry0An">
+                        <property role="2Ry0Am" value="plugin.xml" />
+                      </node>
+                    </node>
+                  </node>
+                  <node concept="1688n2" id="_i2va5R6ZY" role="28jJR8">
+                    <property role="1688n3" value="&lt;!-- @plugin\.version@ --&gt;" />
+                    <node concept="NbPM2" id="_i2va5R6ZZ" role="1688n0">
+                      <node concept="3Mxwew" id="_i2va5R700" role="3MwsjC">
+                        <property role="3MwjfP" value="&lt;version&gt;" />
+                      </node>
+                      <node concept="3Mxwey" id="_i2va5R701" role="3MwsjC">
+                        <ref role="3Mxwex" node="3IKDaVZnAxg" resolve="build.number" />
+                      </node>
+                      <node concept="3Mxwew" id="_i2va5R702" role="3MwsjC">
+                        <property role="3MwjfP" value="&lt;/version&gt;" />
+                      </node>
+                    </node>
+                  </node>
+                  <node concept="1688n2" id="_i2va69TS8" role="28jJR8">
+                    <property role="1688n3" value="&lt;version&gt;MPS-([^&lt;]+)&lt;/version&gt;" />
+                    <node concept="NbPM2" id="_i2va69TS9" role="1688n0">
+                      <node concept="3Mxwew" id="_i2va69TSa" role="3MwsjC">
+                        <property role="3MwjfP" value="&lt;version&gt;\1&lt;/version&gt;" />
+                      </node>
+                    </node>
+                  </node>
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
+      </node>
+    </node>
+    <node concept="2sgV4H" id="_i2va5yHu5" role="1l3spa">
+      <ref role="1l3spb" node="3IKDaVZmzS6" resolve="mps" />
+      <node concept="398BVA" id="_i2va5yHu6" role="2JcizS">
+        <ref role="398BVh" node="_i2va5yHtL" resolve="mpsLayout" />
+      </node>
+    </node>
+    <node concept="398rNT" id="_i2va5R62_" role="1l3spd">
+      <property role="TrG5h" value="plugin_home" />
+      <node concept="55IIr" id="_i2va5R62A" role="398pKh">
+        <node concept="2Ry0Ak" id="_i2va5R62B" role="iGT6I">
+          <property role="2Ry0Am" value="plugins" />
+          <node concept="2Ry0Ak" id="_i2va5R62C" role="2Ry0An">
+            <property role="2Ry0Am" value="mcp-tools" />
+          </node>
+        </node>
+      </node>
+    </node>
+  </node>
 </model>
 

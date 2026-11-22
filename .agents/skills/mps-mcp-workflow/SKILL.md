@@ -56,7 +56,7 @@ Read this together with `AGENTS.md` whenever the task involves MPS artifacts or 
 
 The MPS catalog contains companion skills for focused task families. Load whichever ones apply to your current task, following the origin rules above.
 
-Installing or refreshing this catalog: `references/catalog-install-and-refresh.md`. Not relevant when working on the MPS sources themselves.
+Installing, version-checking, or refreshing this catalog: `references/catalog-install-and-refresh.md`. Not relevant when working on the MPS sources themselves.
 
 | Skill | What it covers |
 |-------|---------------|
@@ -110,11 +110,12 @@ MPS is a projectional editor and a language workbench. Unlike text-based IDEs, M
 
 ## Common Workflow — Initialize a Session
 
-1. **Check generated DSL skills** under `.agents/skills/*-dsl/` before starting unfamiliar DSL work. Use the relevant project-local DSL skill when it exists; if it is missing or stale, load `mps-dsl-memory` to create or refresh it.
-2. **Anchor on the user's focus** — call `mps_mcp_get_current_editor_root_node` so you know which root the user is looking at.
-3. **Identify the task family**: defining a language → load `mps-language-aspects-overview`. Editing user code → load `mps-node-editing` and (often) `mps-baselanguage`. Creating many roots from a table (CSV or JSON rows) → load `mps-node-editing` and run its `scripts/table_to_bulk_insert.py`; do not write your own converter. Investigating an unfamiliar language → load `mps-language-analysis`. Asking a type question (fit, expected type, or why a node has its type) → open `references/analysis-tools/type-queries.md`; no aspect skill is needed. Authoring or changing typesystem rules (inference, subtyping, replacement, checking) → load `mps-aspect-typesystem`; its Common-Path step 9 live-checks the rules on a scratch sandbox model.
-4. **Follow the matching aspect skill** for the specific aspect you're touching.
-5. **Validate frequently** with `mps_mcp_check_root_node_problems`. Rebuild (`MAKE`) after compiled-aspect changes.
+1. **Check skill freshness** (unless `AGENTS.md` exempts this checkout, as in the MPS sources repository): compare `build` and `pluginVersion` in `.agents/skills/MPS_MCP_SKILL_VERSION.txt` and `.claude/skills/MPS_MCP_SKILL_VERSION.txt` with top-level `mpsBuild` and `mcpToolsVersion` from `mps_mcp_list_open_projects`. If either differs or `pluginVersion` is absent on one side — including when `build` matches `mpsBuild` — pause before substantial MPS work, recommend refreshing now (`references/catalog-install-and-refresh.md`), and proceed with the existing skills only if the user declines.
+2. **Check generated DSL skills** under `.agents/skills/*-dsl/` before starting unfamiliar DSL work. Use the relevant project-local DSL skill when it exists; if it is missing or stale, load `mps-dsl-memory` to create or refresh it.
+3. **Anchor on the user's focus** — call `mps_mcp_get_current_editor_root_node` so you know which root the user is looking at.
+4. **Identify the task family**: defining a language → load `mps-language-aspects-overview`. Editing user code → load `mps-node-editing` and (often) `mps-baselanguage`. Creating many roots from a table (CSV or JSON rows) → load `mps-node-editing` and run its `scripts/table_to_bulk_insert.py`; do not write your own converter. Investigating an unfamiliar language → load `mps-language-analysis`. Asking a type question (fit, expected type, or why a node has its type) → open `references/analysis-tools/type-queries.md`; no aspect skill is needed. Authoring or changing typesystem rules (inference, subtyping, replacement, checking) → load `mps-aspect-typesystem`; its Common-Path step 9 live-checks the rules on a scratch sandbox model.
+5. **Follow the matching aspect skill** for the specific aspect you're touching.
+6. **Validate frequently** with `mps_mcp_check_root_node_problems`. Rebuild (`MAKE`) after compiled-aspect changes.
 
 ## Essential Skills (Detail)
 

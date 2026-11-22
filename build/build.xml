@@ -3,9 +3,7 @@
   <property name="resources" location="${basedir}/resources"/>
 
   <target name="platform">
-    <ant antfile="getDependencies.xml" target="install" inheritAll="true" useNativeBasedir="true">
-      <property name="prepare.overlay" value="true"/>
-    </ant>
+    <ant antfile="getDependencies.xml" target="install" inheritAll="true" useNativeBasedir="true"/>
   </target>
 
   <target name="getOpenjdkWin">
@@ -24,25 +22,17 @@
     <ant antfile="getResources.xml" inheritall="true" usenativebasedir="true" target="getOpenjdkLinux" />
   </target>
 
-  <target name="getOpenjdkLinuxArm">
-    <ant antfile="getResources.xml" inheritall="true" usenativebasedir="true" target="getOpenjdkLinuxArm" />
-  </target>
-
-  <target name="getResourcesAndBuildAll" depends="getOpenjdkWin,getOpenjdkMac,getOpenjdkMacM1,getOpenjdkLinux,getOpenjdkLinuxArm">
+  <target name="getResourcesAndBuildAll" depends="getOpenjdkWin">
     <ant antfile="mpsDistribution.xml" inheritAll="true" useNativeBasedir="true" target="buildDependents"/>
   </target>
 
-  <target name="prepareJbrArchives">
-    <gunzip src="${resources}/openJDK/jbr-linux-x64.tar.gz" dest="${resources}/openJDK/jbr-linux-x64.tar"/>
-    <gunzip src="${resources}/openJDK/jbr-windows-x64.tar.gz" dest="${resources}/openJDK/jbr-windows-x64.tar"/>
-    <gunzip src="${resources}/openJDK/jbr-linux-aarch64.tar.gz" dest="${resources}/openJDK/jbr-linux-aarch64.tar"/>
-    <gunzip src="${resources}/openJDK/jbr-osx-x64.tar.gz" dest="${resources}/openJDK/jbr-osx-x64.tar"/>
-    <gunzip src="${resources}/openJDK/jbr-osx-aarch64.tar.gz" dest="${resources}/openJDK/jbr-osx-aarch64.tar"/>
-  </target>
-
-  <target name="assemble" depends="prepareJbrArchives">
+  <target name="assemble">
     <ant antfile="mpsDistribution.xml" inheritAll="true" useNativeBasedir="true" target="assemble"/>
+    <ant antfile="mpsDistribution.xml" inheritAll="true" useNativeBasedir="true" target="publishTCArtifacts"/>
     <ant antfile="mpsMaven.xml" inheritAll="true" useNativeBasedir="true" target="assemble"/>
+    <ant antfile="mpsMaven.xml" inheritAll="true" useNativeBasedir="true" target="publishTCArtifact"/>
+    <ant antfile="mpsMcpToolsDistribution.xml" inheritAll="true" useNativeBasedir="true" target="assemble"/>
+    <ant antfile="mpsMcpToolsDistribution.xml" inheritAll="true" useNativeBasedir="true" target="publishTCArtifact"/>
   </target>
 
   <target name="base" depends="platform, getResourcesAndBuildAll, assemble">

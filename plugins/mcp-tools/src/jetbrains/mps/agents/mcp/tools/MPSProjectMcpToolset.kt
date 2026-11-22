@@ -87,8 +87,22 @@ class MPSProjectMcpToolset(
         `mps_mcp_*` tools; `agentConfigRoot` is the repository/workspace root where
         `mps_mcp_initialize_project_for_agents.targetDirectory` belongs. Top-level `mpsVersion`,
         `mpsBuild`, and `mpsEap` are this IDE's identity, not a property of any listed project;
-        all three are omitted when the IDE cannot report them. Read the running version here —
-        do not call the initializer for it. Top-level `logDirectory` (absolute) and `logFile`
+        all three are omitted when the IDE cannot report them. Top-level `mcpToolsVersion` is the
+        version of the loaded MCP tools plugin, which ships the skill catalog (omitted when unknown).
+        Read the running version here — do not call the initializer for it. The installed skills
+        are current only when the `build` and `pluginVersion` lines of `MPS_MCP_SKILL_VERSION.txt`
+        equal `mpsBuild` and `mcpToolsVersion` — use exact string equality to decide whether they
+        match (any difference matters, and plain text sorting puts `261.27258.999` after
+        `261.27258.1000`). A differing `pluginVersion`
+        — or a stamp without a `pluginVersion` line while `mcpToolsVersion` is present (such as from
+        an older bundled copy) — is a real mismatch even when `build` matches `mpsBuild`, because
+        the plugin ships the skill catalog; do not ignore or postpone it because `build` matches.
+        When `build` or `pluginVersion` differs, before starting substantial MPS work, report both
+        versions, recommend refreshing the skills now so they match the loaded plugin, and ask to
+        run the refresh first; proceed with the existing skills only if the user declines (never
+        refresh silently). This takes precedence over older installed `AGENTS.md` files that check
+        only `build` or defer refreshes.
+        Top-level `logDirectory` (absolute) and `logFile`
         (`<logDirectory>/idea.log`, the live IDE log; rotated files are `idea.1.log`, `idea.2.log`, …
         in the same directory) locate the IDE log, which is IDE-wide and omitted when unavailable;
         the MCP `read_file` tool reads it only when it lies inside a project/library/SDK root,
@@ -116,6 +130,7 @@ class MPSProjectMcpToolset(
                         addProperty("mpsVersion", identity.version)
                         addProperty("mpsBuild", identity.build)
                         addProperty("mpsEap", identity.eap)
+                        identity.pluginVersion?.let { addProperty("mcpToolsVersion", it) }
                     }
                     ideLogDirectoryOrNull()?.let { logDirectory ->
                         addProperty("logDirectory", logDirectory.toString())
