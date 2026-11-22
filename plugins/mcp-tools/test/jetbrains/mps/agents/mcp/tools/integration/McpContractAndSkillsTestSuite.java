@@ -20,6 +20,7 @@ import jetbrains.mps.agents.mcp.tools.unit.MigrationXmlExampleTest;
 import jetbrains.mps.agents.mcp.tools.unit.MpsRuntimeVersionTest;
 import jetbrains.mps.agents.mcp.tools.unit.SkillCatalogReplicationTest;
 import jetbrains.mps.agents.mcp.tools.unit.SkillDataflowQueryRoutingTest;
+import jetbrains.mps.agents.mcp.tools.unit.SkillFreshnessGuidanceTest;
 import jetbrains.mps.agents.mcp.tools.unit.SkillPrintNodeRoutingTest;
 import jetbrains.mps.agents.mcp.tools.unit.SkillReferenceLayoutTest;
 import jetbrains.mps.agents.mcp.tools.unit.SkillScriptsPackagingTest;
@@ -56,6 +57,7 @@ import org.junit.runners.Suite;
     SkillTypeQueryRoutingTest.class,
     SkillDataflowQueryRoutingTest.class,
     SkillPrintNodeRoutingTest.class,
+    SkillFreshnessGuidanceTest.class,
     MigrationXmlExampleTest.class,
     MpsRuntimeVersionTest.class,
     IdeLogReaderTest.class,

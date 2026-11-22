@@ -23,14 +23,21 @@ A successful install writes the same `MPS_MCP_SKILL_VERSION.txt` (`version`, `bu
 `pluginVersion`) into both `.agents/skills/` and `.claude/skills/`. Compare its `build` with
 top-level `mpsBuild` and its `pluginVersion` with top-level `mcpToolsVersion` from
 `mps_mcp_list_open_projects`. The skills are current only when both are equal: the MCP tools
-plugin ships the catalog and can be updated without a new MPS build. Compare for equality only,
-never order the strings — both the bundled and separately distributed plugin carry the MPS build
-number without product code (e.g. `261.27258.1176`), whose numeric counter is not zero-padded, so
-a text comparison puts `261.27258.999` after `261.27258.1000`. A key absent on one side only counts as different. Never
-call the initializer to learn the version — it writes files, and a run that aborts on colliding
-skill folders does not move the stamps. The installed `AGENTS.md` states the staleness rules.
+plugin ships the catalog and can be updated without a new MPS build, so a matching `build` does
+not make a different or missing `pluginVersion` safe to ignore or postpone. Compare for equality
+only, never order the strings — both the bundled and separately distributed plugin carry the MPS
+build number without product code (e.g. `261.27258.1176`), whose numeric counter is not zero-padded,
+so a text comparison puts `261.27258.999` after `261.27258.1000`. A key absent on one side only
+counts as different. Never call the initializer to learn the version — it writes files, and a run
+that aborts on colliding skill folders does not move the stamps.
 
-## Refreshing (only with the user's approval)
+When `build` or `pluginVersion` differs (including when `build` matches and only `pluginVersion`
+differs or is missing), or when the two stamps disagree, pause before substantial MPS work: report
+installed vs. running versions without claiming which is newer, recommend refreshing now as the
+default, and ask to proceed. Continue with the existing skills only if the user declines. The
+installed `AGENTS.md` states the remaining edge cases (missing file, absent `mpsBuild`).
+
+## Refreshing (recommended default on mismatch, requires user approval)
 
 1. Delete every `mps-*` skill folder from both `.agents/skills/` and `.claude/skills/`, so dropped
    or renamed skills do not linger. Keep repository-local skills, such as `bugfix-workflow` and
