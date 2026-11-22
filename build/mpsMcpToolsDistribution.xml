@@ -5,15 +5,6 @@
   <property name="build.layout" location="${build.dir}/artifacts/mpsMcpToolsDistribution" />
   <property name="mpsLayout" location="${basedir}/build/artifacts/mps" />
   <property name="plugin_home" location="${basedir}/plugins/mcp-tools" />
-  <property file="${mpsLayout}/build.properties" prefix="loaded.for.mps.mps.build.counter" />
-  <property name="mps.mps.build.counter" value="${loaded.for.mps.mps.build.counter.mps.mps.build.counter}" />
-  <property file="${mpsLayout}/build.properties" prefix="loaded.for.mpsBootstrapCore.version.major" />
-  <property name="mpsBootstrapCore.version.major" value="${loaded.for.mpsBootstrapCore.version.major.mpsBootstrapCore.version.major}" />
-  <property file="${mpsLayout}/build.properties" prefix="loaded.for.mpsBootstrapCore.version.minor" />
-  <property name="mpsBootstrapCore.version.minor" value="${loaded.for.mpsBootstrapCore.version.minor.mpsBootstrapCore.version.minor}" />
-  <property file="${mpsLayout}/build.properties" prefix="loaded.for.mpsBootstrapCore.version.bugfixNr" />
-  <property name="mpsBootstrapCore.version.bugfixNr" value="${loaded.for.mpsBootstrapCore.version.bugfixNr.mpsBootstrapCore.version.bugfixNr}" />
-  <property name="plugin.version" value="${mpsBootstrapCore.version.major}.${mpsBootstrapCore.version.minor}${mpsBootstrapCore.version.bugfixNr}-pre.${mps.mps.build.counter}" />
   <property name="artifacts.mps" location="${mpsLayout}" />
   <property file="${artifacts.mps}/build.properties" prefix="import.mps" />
   <property name="mps.build.number" value="${import.mps.mps.build.number}" />
@@ -21,42 +12,42 @@
   <property name="mps.build.vcs.number" value="${import.mps.mps.build.vcs.number}" />
   <property name="mps.teamcity.buildConfName" value="${import.mps.mps.teamcity.buildConfName}" />
   <property name="mps.idea.platform.build.number" value="${import.mps.mps.idea.platform.build.number}" />
-  <property name="mps.mps.build.counter1" value="${import.mps.mps.mps.build.counter}" />
+  <property name="mps.mps.build.counter" value="${import.mps.mps.mps.build.counter}" />
   <property name="mps.runtimeBuild" value="${import.mps.mps.runtimeBuild}" />
-  <property name="mpsBootstrapCore.version.major1" value="${import.mps.mpsBootstrapCore.version.major}" />
-  <property name="mpsBootstrapCore.version.minor1" value="${import.mps.mpsBootstrapCore.version.minor}" />
-  <property name="mpsBootstrapCore.version.bugfixNr1" value="${import.mps.mpsBootstrapCore.version.bugfixNr}" />
+  <property name="mpsBootstrapCore.version.major" value="${import.mps.mpsBootstrapCore.version.major}" />
+  <property name="mpsBootstrapCore.version.minor" value="${import.mps.mpsBootstrapCore.version.minor}" />
+  <property name="mpsBootstrapCore.version.bugfixNr" value="${import.mps.mpsBootstrapCore.version.bugfixNr}" />
   <property name="mpsBootstrapCore.version.eap" value="${import.mps.mpsBootstrapCore.version.eap}" />
   <property name="mpsBootstrapCore.version" value="${import.mps.mpsBootstrapCore.version}" />
   
   <target name="assemble" depends="fetchDependencies">
     <mkdir dir="${build.layout}" />
-    <mkdir dir="${build.tmp}/default/mcp-tools-_dl__lbrace_plugin.version_rbrace_.zip" />
-    <mkdir dir="${build.tmp}/default/mcp-tools-_dl__lbrace_plugin.version_rbrace_.zip/mcp-tools" />
-    <mkdir dir="${build.tmp}/default/mcp-tools-_dl__lbrace_plugin.version_rbrace_.zip/mcp-tools/lib" />
+    <mkdir dir="${build.tmp}/default/mcp-tools-_dl__lbrace_build.number_rbrace_.zip" />
+    <mkdir dir="${build.tmp}/default/mcp-tools-_dl__lbrace_build.number_rbrace_.zip/mcp-tools" />
+    <mkdir dir="${build.tmp}/default/mcp-tools-_dl__lbrace_build.number_rbrace_.zip/mcp-tools/lib" />
     <mkdir dir="${build.tmp}/default/mcp-tools.jar" />
     <mkdir dir="${build.tmp}/default/mcp-tools.jar/META-INF" />
     <copy todir="${build.tmp}/default/mcp-tools.jar/META-INF">
       <fileset file="${plugin_home}/META-INF/plugin.xml" />
       <filterchain>
         <tokenfilter>
-          <replaceregex pattern="&lt;version>[^&lt;]*&lt;/version>" replace="&lt;version>${plugin.version}&lt;/version>" flags="" />
+          <replaceregex pattern="&lt;!-- @plugin\.version@ -->" replace="&lt;version>${mps.build.number}&lt;/version>" flags="" />
         </tokenfilter>
         <tokenfilter>
-          <replaceregex pattern="&lt;version>([0-9]+\.[0-9]+)-pre\." replace="&lt;version>\1.0-pre." flags="" />
+          <replaceregex pattern="&lt;version>MPS-([^&lt;]+)&lt;/version>" replace="&lt;version>\1&lt;/version>" flags="" />
         </tokenfilter>
       </filterchain>
     </copy>
-    <jar destfile="${build.tmp}/default/mcp-tools-_dl__lbrace_plugin.version_rbrace_.zip/mcp-tools/lib/mcp-tools.jar" duplicate="preserve">
+    <jar destfile="${build.tmp}/default/mcp-tools-_dl__lbrace_build.number_rbrace_.zip/mcp-tools/lib/mcp-tools.jar" duplicate="preserve">
       <fileset dir="${build.tmp}/deps/mpsMcpTools/mcp-tools.jar1">
         <exclude name="META-INF/plugin.xml" />
       </fileset>
       <fileset dir="${build.tmp}/default/mcp-tools.jar" />
     </jar>
-    <zip destfile="${build.layout}/mcp-tools-${plugin.version}.zip">
-      <fileset dir="${build.tmp}/default/mcp-tools-_dl__lbrace_plugin.version_rbrace_.zip" />
+    <zip destfile="${build.layout}/mcp-tools-${mps.build.number}.zip">
+      <fileset dir="${build.tmp}/default/mcp-tools-_dl__lbrace_build.number_rbrace_.zip" />
     </zip>
-    <echo file="${build.layout}/build.properties">mpsMcpToolsDistribution.mps.mps.build.counter=${mps.mps.build.counter}${line.separator}mpsMcpToolsDistribution.mpsBootstrapCore.version.major=${mpsBootstrapCore.version.major}${line.separator}mpsMcpToolsDistribution.mpsBootstrapCore.version.minor=${mpsBootstrapCore.version.minor}${line.separator}mpsMcpToolsDistribution.mpsBootstrapCore.version.bugfixNr=${mpsBootstrapCore.version.bugfixNr}${line.separator}mpsMcpToolsDistribution.plugin.version=${plugin.version}${line.separator}mps.build.number=${mps.build.number}${line.separator}mps.date=${mps.date}${line.separator}mps.build.vcs.number=${mps.build.vcs.number}${line.separator}mps.teamcity.buildConfName=${mps.teamcity.buildConfName}${line.separator}mps.idea.platform.build.number=${mps.idea.platform.build.number}${line.separator}mps.mps.build.counter=${mps.mps.build.counter1}${line.separator}mps.runtimeBuild=${mps.runtimeBuild}${line.separator}mpsBootstrapCore.version.major=${mpsBootstrapCore.version.major1}${line.separator}mpsBootstrapCore.version.minor=${mpsBootstrapCore.version.minor1}${line.separator}mpsBootstrapCore.version.bugfixNr=${mpsBootstrapCore.version.bugfixNr1}${line.separator}mpsBootstrapCore.version.eap=${mpsBootstrapCore.version.eap}${line.separator}mpsBootstrapCore.version=${mpsBootstrapCore.version}</echo>
+    <echo file="${build.layout}/build.properties">mps.build.number=${mps.build.number}${line.separator}mps.date=${mps.date}${line.separator}mps.build.vcs.number=${mps.build.vcs.number}${line.separator}mps.teamcity.buildConfName=${mps.teamcity.buildConfName}${line.separator}mps.idea.platform.build.number=${mps.idea.platform.build.number}${line.separator}mps.mps.build.counter=${mps.mps.build.counter}${line.separator}mps.runtimeBuild=${mps.runtimeBuild}${line.separator}mpsBootstrapCore.version.major=${mpsBootstrapCore.version.major}${line.separator}mpsBootstrapCore.version.minor=${mpsBootstrapCore.version.minor}${line.separator}mpsBootstrapCore.version.bugfixNr=${mpsBootstrapCore.version.bugfixNr}${line.separator}mpsBootstrapCore.version.eap=${mpsBootstrapCore.version.eap}${line.separator}mpsBootstrapCore.version=${mpsBootstrapCore.version}</echo>
   </target>
   
   <target name="buildDependents" />
@@ -74,6 +65,6 @@
   </target>
   
   <target name="publishTCArtifact">
-    <echo message="##teamcity[publishArtifacts '${build.layout}/mcp-tools-${plugin.version}.zip']" />
+    <echo message="##teamcity[publishArtifacts '${build.layout}/mcp-tools-${mps.build.number}.zip']" />
   </target>
 </project>

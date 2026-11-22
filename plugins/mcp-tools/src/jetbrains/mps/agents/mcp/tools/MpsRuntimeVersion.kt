@@ -11,10 +11,11 @@ import com.intellij.openapi.extensions.PluginId
  *
  * `build` and `pluginVersion` together are the staleness key; agents compare each for equality and
  * never order them. `build` changes with every MPS build. `pluginVersion` is the version of the loaded
- * MCP tools plugin, which ships the skill catalog: the bundled copy carries the MPS version
- * (`2026.1.3`), a separately installed update carries `<next MPS version>-pre.<build counter>`
- * (`2026.1.3-pre.1176`), so a plugin update with an unchanged MPS build still marks the skills stale.
- * A text comparison would order those two wrongly, which is why only equality is asked for.
+ * MCP tools plugin, which ships the skill catalog: both the bundled copy (inheriting the MPS build
+ * number when `<version>` is omitted) and a separately installed update carry the MPS build number
+ * without product code (e.g. `261.27258.1176`), so a plugin update with an unchanged MPS build still
+ * marks the skills stale. A plain text comparison orders unpadded numeric build counters wrongly
+ * (`"261.27258.999" > "261.27258.1000"`), which is why only equality is asked for.
  * `version` is the marketing string agents show the user.
  */
 data class MpsRuntimeVersion(

@@ -37,27 +37,28 @@ class MpsRuntimeVersionTest {
 
     @Test
     fun `stamp text ends with the plugin version when it is known`() {
-        val identity = MpsRuntimeVersion(version = "2026.1.2", build = "261.27258.1100", eap = false, pluginVersion = "2026.1.3-pre.1176")
+        val identity = MpsRuntimeVersion(version = "2026.1.2", build = "261.27258.1100", eap = false, pluginVersion = "261.27258.1176")
         assertEquals(
-            "version=2026.1.2\nbuild=261.27258.1100\neap=false\npluginVersion=2026.1.3-pre.1176\n",
+            "version=2026.1.2\nbuild=261.27258.1100\neap=false\npluginVersion=261.27258.1176\n",
             identity.toStampText(),
         )
     }
 
     /**
-     * Why agents compare `pluginVersion` for equality only. The IDE orders a separately distributed
-     * plugin (`<next MPS version>-pre.<counter>`) above the last release and below the release that
-     * bundles the same code; plain text comparison orders it after that release. If either half of
-     * this changes, the versioning scheme in `mpsMcpToolsDistribution` and the staleness rules must
-     * be revisited together.
+     * Why agents compare `pluginVersion` for equality only. Both the bundled and separately
+     * distributed plugin carry the MPS build number without product code (`261.27258.<counter>`),
+     * so the IDE orders later builds monotonically across releases and EAPs, whereas plain text
+     * comparison orders unpadded numeric counters backwards. If either half of this changes, the
+     * versioning scheme in `mpsMcpToolsDistribution` and the staleness rules must be revisited
+     * together.
      */
     @Test
-    fun `the IDE orders a pre-release plugin between the releases around it while text comparison does not`() {
-        assertTrue(VersionComparatorUtil.compare("2026.1.2", "2026.1.3-pre.1176") < 0)
-        assertTrue(VersionComparatorUtil.compare("2026.1.3-pre.1176", "2026.1.3-pre.1180") < 0)
-        assertTrue(VersionComparatorUtil.compare("2026.1.3-pre.1180", "2026.1.3") < 0)
-        assertTrue(VersionComparatorUtil.compare("2026.1 EAP", "2026.1-pre.1176") < 0)
-        assertTrue(VersionComparatorUtil.compare("2026.1-pre.1176", "2026.1") < 0)
-        assertTrue("2026.1.3-pre.1180" > "2026.1.3")
+    fun `the IDE orders build-number plugin versions monotonically while text comparison does not`() {
+        assertTrue(VersionComparatorUtil.compare("261.27258.SNAPSHOT", "261.27258.1") < 0)
+        assertTrue(VersionComparatorUtil.compare("261.27258.999", "261.27258.1000") < 0)
+        assertTrue(VersionComparatorUtil.compare("261.27258.1000", "261.27258.1176") < 0)
+        assertTrue(VersionComparatorUtil.compare("261.27258.1176", "261.28000.1") < 0)
+        assertTrue(VersionComparatorUtil.compare("261.28000.1", "262.1000.1") < 0)
+        assertTrue("261.27258.999" > "261.27258.1000")
     }
 }

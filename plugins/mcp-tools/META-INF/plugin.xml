@@ -8,7 +8,8 @@
     updated more frequently than MPS itself.</p>
   ]]></description>
   <vendor url="http://www.jetbrains.com/mps/">JetBrains</vendor>
-  <version>2026.1.3</version>
+  <!-- Bundled copy omits <version> so MPS assigns its build number; mpsMcpToolsDistribution stamps <version> here for the standalone zip. -->
+  <!-- @plugin.version@ -->
   <idea-version since-build="261.1" until-build="262.1"/>
 
   <depends>com.intellij.mcpServer</depends>

@@ -92,9 +92,10 @@ class MPSProjectMcpToolset(
         Read the running version here — do not call the initializer for it. The installed skills
         are current only when the `build` and `pluginVersion` lines of `MPS_MCP_SKILL_VERSION.txt`
         equal `mpsBuild` and `mcpToolsVersion`; compare for equality only, never order these strings
-        (`2026.1.3-pre.1176` comes before `2026.1.3`). A stamp without a `pluginVersion` line while
-        `mcpToolsVersion` is present was written by another copy of the plugin, such as the one
-        bundled with MPS: treat it as different and offer a refresh, even when `build` matches.
+        (a text comparison puts `261.27258.999` after `261.27258.1000`). A stamp without a
+        `pluginVersion` line while `mcpToolsVersion` is present was written by another copy of the
+        plugin, such as an older bundled copy: treat it as different and offer a refresh, even when
+        `build` matches.
         Top-level `logDirectory` (absolute) and `logFile`
         (`<logDirectory>/idea.log`, the live IDE log; rotated files are `idea.1.log`, `idea.2.log`, …
         in the same directory) locate the IDE log, which is IDE-wide and omitted when unavailable;

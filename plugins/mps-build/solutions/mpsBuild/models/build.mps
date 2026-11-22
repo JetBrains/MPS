@@ -66902,7 +66902,7 @@
               <node concept="2pNUuL" id="_i2va5yHtJ" role="2pNNFR">
                 <property role="2pNUuO" value="message" />
                 <node concept="2pMdtt" id="_i2va5yHtK" role="2pMdts">
-                  <property role="2pMdty" value="##teamcity[publishArtifacts '${build.layout}/mcp-tools-${plugin.version}.zip']" />
+                  <property role="2pMdty" value="##teamcity[publishArtifacts '${build.layout}/mcp-tools-${mps.build.number}.zip']" />
                 </node>
               </node>
             </node>
@@ -66936,7 +66936,7 @@
             <property role="3MwjfP" value="mcp-tools-" />
           </node>
           <node concept="3Mxwey" id="_i2va5G1pf" role="3MwsjC">
-            <ref role="3Mxwex" node="_i2va5R6AX" resolve="plugin.version" />
+            <ref role="3Mxwex" node="3IKDaVZnAxg" resolve="build.number" />
           </node>
           <node concept="3Mxwew" id="_i2va5G1pg" role="3MwsjC">
             <property role="3MwjfP" value=".zip" />
@@ -66983,13 +66983,13 @@
                     </node>
                   </node>
                   <node concept="1688n2" id="_i2va5R6ZY" role="28jJR8">
-                    <property role="1688n3" value="&lt;version&gt;[^&lt;]*&lt;/version&gt;" />
+                    <property role="1688n3" value="&lt;!-- @plugin\.version@ --&gt;" />
                     <node concept="NbPM2" id="_i2va5R6ZZ" role="1688n0">
                       <node concept="3Mxwew" id="_i2va5R700" role="3MwsjC">
                         <property role="3MwjfP" value="&lt;version&gt;" />
                       </node>
                       <node concept="3Mxwey" id="_i2va5R701" role="3MwsjC">
-                        <ref role="3Mxwex" node="_i2va5R6AX" resolve="plugin.version" />
+                        <ref role="3Mxwex" node="3IKDaVZnAxg" resolve="build.number" />
                       </node>
                       <node concept="3Mxwew" id="_i2va5R702" role="3MwsjC">
                         <property role="3MwjfP" value="&lt;/version&gt;" />
@@ -66997,10 +66997,10 @@
                     </node>
                   </node>
                   <node concept="1688n2" id="_i2va69TS8" role="28jJR8">
-                    <property role="1688n3" value="&lt;version&gt;([0-9]+\.[0-9]+)-pre\." />
+                    <property role="1688n3" value="&lt;version&gt;MPS-([^&lt;]+)&lt;/version&gt;" />
                     <node concept="NbPM2" id="_i2va69TS9" role="1688n0">
                       <node concept="3Mxwew" id="_i2va69TSa" role="3MwsjC">
-                        <property role="3MwjfP" value="&lt;version&gt;\1.0-pre." />
+                        <property role="3MwjfP" value="&lt;version&gt;\1&lt;/version&gt;" />
                       </node>
                     </node>
                   </node>
@@ -67024,75 +67024,6 @@
           <property role="2Ry0Am" value="plugins" />
           <node concept="2Ry0Ak" id="_i2va5R62C" role="2Ry0An">
             <property role="2Ry0Am" value="mcp-tools" />
-          </node>
-        </node>
-      </node>
-    </node>
-    <node concept="2kB4xC" id="_i2va5R6n$" role="1l3spd">
-      <property role="TrG5h" value="mps.mps.build.counter" />
-      <node concept="hGsBp" id="_i2va5R6n_" role="aVJcv">
-        <node concept="398BVA" id="_i2va5R6nA" role="hGsBm">
-          <ref role="398BVh" node="_i2va5yHtL" resolve="mpsLayout" />
-          <node concept="2Ry0Ak" id="_i2va5R6nB" role="iGT6I">
-            <property role="2Ry0Am" value="build.properties" />
-          </node>
-        </node>
-      </node>
-    </node>
-    <node concept="2kB4xC" id="_i2va5R6wJ" role="1l3spd">
-      <property role="TrG5h" value="mpsBootstrapCore.version.major" />
-      <node concept="hGsBp" id="_i2va5R6wK" role="aVJcv">
-        <node concept="398BVA" id="_i2va5R6wL" role="hGsBm">
-          <ref role="398BVh" node="_i2va5yHtL" resolve="mpsLayout" />
-          <node concept="2Ry0Ak" id="_i2va5R6wM" role="iGT6I">
-            <property role="2Ry0Am" value="build.properties" />
-          </node>
-        </node>
-      </node>
-    </node>
-    <node concept="2kB4xC" id="_i2va60gRD" role="1l3spd">
-      <property role="TrG5h" value="mpsBootstrapCore.version.minor" />
-      <node concept="hGsBp" id="_i2va60gRE" role="aVJcv">
-        <node concept="398BVA" id="_i2va60gRF" role="hGsBm">
-          <ref role="398BVh" node="_i2va5yHtL" resolve="mpsLayout" />
-          <node concept="2Ry0Ak" id="_i2va60gRG" role="iGT6I">
-            <property role="2Ry0Am" value="build.properties" />
-          </node>
-        </node>
-      </node>
-    </node>
-    <node concept="2kB4xC" id="_i2va60gII" role="1l3spd">
-      <property role="TrG5h" value="mpsBootstrapCore.version.bugfixNr" />
-      <node concept="hGsBp" id="_i2va60gIJ" role="aVJcv">
-        <node concept="398BVA" id="_i2va60gIK" role="hGsBm">
-          <ref role="398BVh" node="_i2va5yHtL" resolve="mpsLayout" />
-          <node concept="2Ry0Ak" id="_i2va60gIL" role="iGT6I">
-            <property role="2Ry0Am" value="build.properties" />
-          </node>
-        </node>
-      </node>
-    </node>
-    <node concept="2kB4xC" id="_i2va5R6AX" role="1l3spd">
-      <property role="TrG5h" value="plugin.version" />
-      <node concept="aVJcg" id="_i2va5R6AY" role="aVJcv">
-        <node concept="NbPM2" id="_i2va60h6Y" role="aVJcq">
-          <node concept="3Mxwey" id="_i2va60h6Z" role="3MwsjC">
-            <ref role="3Mxwex" node="_i2va5R6wJ" resolve="mpsBootstrapCore.version.major" />
-          </node>
-          <node concept="3Mxwew" id="_i2va60h70" role="3MwsjC">
-            <property role="3MwjfP" value="." />
-          </node>
-          <node concept="3Mxwey" id="_i2va60h71" role="3MwsjC">
-            <ref role="3Mxwex" node="_i2va60gRD" resolve="mpsBootstrapCore.version.minor" />
-          </node>
-          <node concept="3Mxwey" id="_i2va60h72" role="3MwsjC">
-            <ref role="3Mxwex" node="_i2va60gII" resolve="mpsBootstrapCore.version.bugfixNr" />
-          </node>
-          <node concept="3Mxwew" id="_i2va60h73" role="3MwsjC">
-            <property role="3MwjfP" value="-pre." />
-          </node>
-          <node concept="3Mxwey" id="_i2va60h74" role="3MwsjC">
-            <ref role="3Mxwex" node="_i2va5R6n$" resolve="mps.mps.build.counter" />
           </node>
         </node>
       </node>

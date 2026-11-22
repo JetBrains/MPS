@@ -171,13 +171,13 @@ class MPSInitMcpToolsetTest {
         assertEquals("2026.1", data.get("mpsVersion").asString)
         assertEquals("261.25134", data.get("mpsBuild").asString)
         assertTrue(data.get("mpsEap").asBoolean)
-        assertEquals("2026.1-pre.1176", data.get("mcpToolsVersion").asString)
+        assertEquals("261.25134.1176", data.get("mcpToolsVersion").asString)
         assertFalse(data.has("skillVersionWarning"))
         val reported = stringArray(data, "skillVersionFiles")
         val stamps = stampPaths()
         assertEquals(stamps.map { it.toString() }, reported)
         val expected = SAMPLE_VERSION.toStampText()
-        assertTrue("the stamp must carry the plugin version: $expected", expected.contains("pluginVersion=2026.1-pre.1176\n"))
+        assertTrue("the stamp must carry the plugin version: $expected", expected.contains("pluginVersion=261.25134.1176\n"))
         for (stamp in stamps) {
             assertEquals(expected, Files.readString(stamp))
         }
@@ -516,7 +516,7 @@ class MPSInitMcpToolsetTest {
 
     private companion object {
         private val SAMPLE_VERSION =
-            MpsRuntimeVersion(version = "2026.1", build = "261.25134", eap = true, pluginVersion = "2026.1-pre.1176")
+            MpsRuntimeVersion(version = "2026.1", build = "261.25134", eap = true, pluginVersion = "261.25134.1176")
 
         // A real bundled skill that ships only with `SKILL.md` at its root — used to verify
         // the simple per-skill copy and the collision-error path. Keep this in sync with
