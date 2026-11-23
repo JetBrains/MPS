@@ -37,7 +37,7 @@ Two separate nodes are involved. `BuildMps_IdeaPlugin` (a *part*, editor keyword
 | `dependencies` | `BuildMps_IdeaPluginDependency` (reference `target` → another `BuildMps_IdeaPlugin`, local or from a dependency script) |
 | `pluginXml`, `pluginXmlProvided` (property), `xml` | Choose the `plugin.xml` strategy and hold extra XML, see below |
 
-Every plugin that contains languages needs the MPS core plugin (`jetbrains.mps.core`, which provides `BaseConcept` and `INamedConcept`) among its dependencies (node `…/4973949960459588488`, declared in the `mpsCore` script of `jetbrains.mps.ide.build`; used by `samples/sampleJavaExtensions`). Many scripts in this repo (for example `SampleCustomAspect.build` and MPS's own plugin scripts) depend on `com.intellij.modules.mps` instead (node `…/4973949960459706697`, declared in `mpsWorkbench`); it is an equally valid choice. Both resolve through the `mps` dependency script.
+Every plugin that contains languages needs the MPS core plugin (`jetbrains.mps.core`, which provides `BaseConcept` and `INamedConcept`) among its dependencies (node `…/4973949960459588488`, declared in the `mpsCore` script of `jetbrains.mps.ide.build`; used by `samples/sampleJavaExtensions`). Many scripts in this repo (for example `SampleCustomAspect.build` and MPS's own plugin scripts) declare `com.intellij.modules.mps` instead (node `…/4973949960459706697`, declared in `mpsWorkbench`); either satisfies the type system, and both resolve through the `mps` dependency script. The synthesized `plugin.xml` lists `<depends>com.intellij.modules.mps</depends>` even when you declare only `jetbrains.mps.core`.
 
 If a module in plugin A depends on a module in plugin B, plugin A **must** list B as a `BuildMps_IdeaPluginDependency` — the build-language type system reports the violation.
 
@@ -61,14 +61,31 @@ The synthesized `plugin.xml` registers the packaged modules through the `com.int
 {
   "concept": "jetbrains.mps.build.mps.structure.BuildMpsLayout_Plugin",
   "references": [{ "role": "plugin", "target": "MyPlugin" }],
-  "children": [{
-    "role": "packagingType",
-    "nodes": [{
-      "concept": "jetbrains.mps.build.mps.structure.BuildMpsLayout_AutoPluginLayoutType"
-    }]
-  }]
+  "children": [
+    {
+      "role": "packagingType",
+      "nodes": [{
+        "concept": "jetbrains.mps.build.mps.structure.BuildMpsLayout_AutoPluginLayoutType"
+      }]
+    },
+    {
+      "role": "children",
+      "nodes": [{
+        "concept": "jetbrains.mps.build.structure.BuildLayout_Folder",
+        "children": [
+          { "role": "containerName", "nodes": [ /* BuildStringNotEmpty: "lib" */ ] },
+          { "role": "children", "nodes": [{
+              "concept": "jetbrains.mps.build.structure.BuildLayout_File",
+              "children": [{ "role": "path", "nodes": [ /* BuildSourceProjectRelativePath to solutions/MySolution/lib/foo.jar */ ] }]
+          }]}
+        ]
+      }]
+    }
+  ]
 }
 ```
+
+The `children` role holds extra files inside the plugin folder. Leave it empty unless a module needs a jar, see below.
 
 `BuildMpsLayout_PluginDescriptor` (keyword `plugin descriptor of`, reference `plugin`) places only the generated `plugin.xml`, for hand-built layouts.
 
@@ -76,10 +93,22 @@ The synthesized `plugin.xml` registers the packaged modules through the `com.int
 
 | Concept | Behavior |
 |---|---|
-| `BuildMpsLayout_AutoPluginLayoutType` (`auto packaging`) | **Auto**: module jars go into the plugin's `languages/` folder; the generated `plugin.xml` is packed into a jar under the plugin's `lib/`. Use this unless you have a specific reason not to. |
+| `BuildMpsLayout_AutoPluginLayoutType` (`auto packaging`) | **Auto**: module jars (plus a `-src.jar` per language and solution) go into `<containerName>/languages/<group name>/`; the generated `plugin.xml` is packed as `META-INF/plugin.xml` into `<containerName>/lib/<containerName>.jar`. Use this unless you have a specific reason not to. |
 | `BuildMpsLayout_ManualPluginLayoutType` (`manual packaging`) | **Manual**: you specify the plugin's nested layout of folders and jars yourself. More work, total control. |
 
-Library jars that the plugin needs at runtime go into subfolders of the plugin folder (copied with `BuildLayout_File`); the platform adds them to the plugin classpath.
+Library jars that the plugin needs at runtime go into subfolders of the plugin folder (copied with `BuildLayout_File` into the `children` of `BuildMpsLayout_Plugin`); the platform adds them to the plugin classpath.
+
+**A jar referenced from a module descriptor must be in the layout.** When a solution's `.msd` lists a library jar (the robot Kaja runtime solution uses `solutions/JavaKajak/images/kaja_images.jar`), Reload Modules From Disk adds a `BuildMps_ModuleDependencyJar`, and the generator resolves that jar against the layout. If the layout does not contain it, the root check stays clean, but MAKE fails with ``cannot build relative path to `kaja_images.jar': No such path in local layout``. Add `folder lib { file <path to the jar> }` under the plugin entry; the packaged `module.xml` then points at it (`<library jar="../../lib/kaja_images.jar"/>`).
+
+## Checking the Built Zip
+
+After Ant, unzip `build/artifacts/<script name>/<zip>` and check:
+
+- `<containerName>/lib/<containerName>.jar` holds `META-INF/plugin.xml` with the expected `<id>`, `<version>`, `<depends>` entries and `<mps.LanguageLibrary dir="/languages" />`.
+- `<containerName>/languages/<group>/` holds a jar per language, generator and solution, including the languages' runtime solutions.
+- Each module jar's `META-INF/module.xml` resolves its `<library jar=…>` paths to files that exist in the plugin folder.
+- Languages whose concepts declare icons have the generated `TextIcon*.png` in their jar; if they are missing, set `copyResources = true` (`references/java-parts.md`).
+
 
 ## Installing the Result
 

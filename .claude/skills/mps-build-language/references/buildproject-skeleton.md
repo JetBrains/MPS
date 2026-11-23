@@ -36,7 +36,7 @@ The root concept `jetbrains.mps.build.structure.BuildProject` has seven top-leve
 |---|---|
 | `name` | Script name (also used as Ant project name) |
 | `internalBaseDirectory` | Base dir for all relative paths inside the script, relative to the build **solution's** directory (where its `.msd` lives). Commonly `../../` for a solution at `<project>/solutions/<name>.build`, which makes the project folder the base. The editor shows the resolved absolute path. Module descriptors must lie inside it. |
-| `fileName` | Name of the generated Ant file, written into the base directory. Empty means `build.xml`; give each script its own name when several share a base directory. |
+| `fileName` | Name of the generated Ant file, written into the base directory. Empty means `build.xml`; give each script its own name when several share a base directory. The generated Ant writes to `build/tmp/<name>` and `build/artifacts/<name>` under the base directory, and `clean` deletes only those, so scripts with different `name`s do not overwrite each other's output. |
 
 ## Top-level Roles
 

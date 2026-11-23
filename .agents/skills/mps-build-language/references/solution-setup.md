@@ -55,4 +55,8 @@ Create one model inside the solution (conventionally `<project>.build`). Its **u
   - `plugins/mps-build/solutions/jetbrains.mps.build.sandbox/models/build1.mps` — plain-Java multi-module build with inter-script dependencies.
   - `plugins/mps-build/solutions/mpsBuild/models/build.mps` — model `jetbrains.mps.ide.build` of module `jetbrains.mps.ide.build`: the build of MPS itself and the catalog your scripts depend on (`mps`, `mpsStandalone`, `mpsCore`, …); reference for plugin declarations, groups, test configs (see `mps-distribution-build`).
   - `samples/sampleJavaExtensions/solutions/Build` (`buildOfSampleJavaExtensions`) — the docs' JavaExtensionsSample: only the `mps` dependency, default compiler, a `jetbrains.mps.core` plugin dependency and an extra `xml` element in the synthesized `plugin.xml`. The cleanest language-plugin template.
-  - The docs' robot Kaja standalone IDE is built with the wizard; `samples/robot_Kaja` holds the languages only.
+  - The docs' robot Kaja standalone IDE is built with the wizard; `samples/robot_Kaja` holds the languages only (`languages/Kajak` is `jetbrains.mps.samples.Kaja`; the runtime solution `jetbrains.mps.samples.JavaKaja` (`solutions/JavaKajak`) references `solutions/JavaKajak/images/kaja_images.jar`). Without the wizard, follow `references/standalone-manual-recipe.md`.
+
+## Version Control Side Effects
+
+With MPS's VCS integration enabled, MPS stages new module and model files, and sometimes generated output (`source_gen`, the generated Ant file), in git as soon as it writes them. When a task says not to commit or not to touch the index, check `git status` afterwards and report or undo what MPS staged.

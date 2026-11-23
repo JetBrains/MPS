@@ -4,15 +4,15 @@ A standalone IDE is a reduced MPS that ships only what end users need: your lang
 
 ## Setup
 
-- **Wizard (preferred):** the **Build Solution** wizard (launched from the Project View), output *Standalone IDE*. It creates the solution and model and three roots: two build scripts and an `MpsStartupScript`.
-- **Manual:** a solution and model with used languages `jetbrains.mps.build`, `jetbrains.mps.build.mps` and `jetbrains.mps.build.startup`, importing `jetbrains.mps.ide.build`.
+- **Wizard (for users in the MPS UI):** the **Build Solution** wizard (launched from the Project View), output *Standalone IDE*. It creates the solution and model and three roots: two build scripts and an `MpsStartupScript`, and copies `splash.png`, `<name>.svg` and `<name>_16.svg` (`<name>` lowercased) into `<project>/icons/`. No MCP tool runs the wizard.
+- **Manual (agents, or ask the user to run the wizard):** a solution and model with used languages `jetbrains.mps.build`, `jetbrains.mps.build.mps` and `jetbrains.mps.build.startup`, importing `jetbrains.mps.ide.build` (see `references/solution-setup.md`). Then rebuild what the wizard would create — see `references/standalone-manual-recipe.md`.
 
-After the wizard: point `mps_home` in both scripts at a **generic** MPS distribution, run **Reload Modules From Disk** (or the **Load required information from file** quick fix) where the editor reports dependency errors, package runtime resources (e.g. images) into the language plugin, then rebuild the build model and run both scripts.
+After either: point `mps_home` in both scripts at a **generic** MPS distribution, run **Reload Modules From Disk** (twice for a fresh group) where the editor reports dependency errors, package runtime jars (e.g. images) into the language plugin (`references/mps-plugins.md`), then make the build model and run both scripts.
 
 ## Two Scripts
 
 1. **The plugin script** (Kaja sample: `Kajak`) generates and compiles the modules and packages them, plus branding and the platform-neutral distribution layout.
-2. **The distribution script** (`KajakDistribution`) depends on the first and builds the per-OS distributions with native launchers for Windows, macOS and Linux. Its `mps_home` must point to a **generic** MPS, because a single-platform MPS lacks files other platforms need.
+2. **The distribution script** (`KajakDistribution`) depends on the first and builds the per-OS distributions with native launchers for Windows, macOS and Linux. Its `mps_home` must point to a **generic** MPS, because a single-platform MPS lacks files other platforms need. With only a macOS `.app`, see `references/standalone-distribution.md`.
 
 Give each script its own `fileName` so the generated Ant files don't overwrite each other.
 
@@ -51,6 +51,10 @@ All are `BuildProjectDependency`s on `BuildProject` roots of `jetbrains.mps.ide.
 
 A root (language `jetbrains.mps.build.startup`) defining the branding reference, boot classpath (`bootClasspath`) and VM options (`vmOptions`, `vmOptions64`). Put launcher VM options such as `-Dide.no.platform.update=true` or `-Didea.trust.disabled=true` here.
 
+Making the model writes the launcher files into `<solution output>/<model path>/` (for example `solutions/Kaja.ide.build/source_gen/Kaja/ide/build/`): `<script>.sh`, `<script>.bat`, `<script>.vmoptions` (from `vmOptions`; nearly empty by default), `<script>64.vmoptions` (from `vmOptions64`), `Info.plist.xml` and `product-info-{windows-amd64,linux-amd64,macos-amd64,macos-aarch64}.json`. `<script>` is the branding's `script` name. `Info.plist.xml` contains `$version$`, `$build$` and `$platform$`; the `product-info-*.json` files contain `$version$`, `$build$` and `$path.selector$`. The distribution layout replaces them with copy filters (`replace regex`), as `references/standalone-distribution.md` lists.
+
+The generated `<script>.sh` reads `<script>64.vmoptions` only when the JDK is x86_64; started on an aarch64 JDK (Linux ARM, or the `.sh` on Apple silicon) it reads the nearly empty `<script>.vmoptions`. Fill `vmOptions` as well, or ship the 64-bit file under both names. The wizard's macOS archive already copies the 64-bit options as `<script>.vmoptions`.
+
 ## Tips and Tricks
 
 `BuildMps_Tips` takes one of three sources: reuse all MPS tips (wizard default); import a directory with the structure of `mps-tips.jar` (HTML files plus css and image folders); or import from a solution whose `MPSTipsAndTricks` root (languages `jetbrains.mps.build.tips` + `jetbrains.mps.core.xml`) holds the tips — each tip is HTML text with at most one image. Package the tips into `lib` in the layout (the wizard does this).
@@ -75,6 +79,6 @@ Since MPS 2022.2 a two-button "Trust project" dialog appears in MPS and MPS-base
 
 ## Generating and Running
 
-Generate with **Rebuild Model** on the build model; run each generated file with `ant -buildfile <fileName>` or from the script's context menu in MPS. Output appears under `build/artifacts`.
+Generate with **Rebuild Model** on the build model; run the main script first, then the distribution script, each with `ant -f <fileName> build` from the base directory or from the script's context menu in MPS. Output appears under `build/artifacts/<script name>/`.
 
-The build script **compiles and packages** your languages but does **not regenerate** them. Make sure your languages are fully generated first, or set *Execute a complete MPS make task* (`useMakeTask`) on the `mps` build plugin in the Inspector.
+The build script **compiles and packages** your languages but does **not regenerate** them. Make your languages in MPS first, run `ant -f <fileName> generate build`, or set *Execute a complete MPS make task* (`useMakeTask`) on the `mps` build plugin in the Inspector.

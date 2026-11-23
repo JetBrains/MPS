@@ -1,6 +1,6 @@
 # Declaring MPS Modules (`BuildMps_Language` / `_Solution` / `_Generator`)
 
-A `BuildMps_Language`, `BuildMps_Solution`, or `BuildMps_Generator` is a *declaration* of an MPS module that participates in the build. Enter the descriptor `path`, then run the **Reload Modules From Disk** intention (Alt+Enter on the `BuildProject`, a group, or any node containing module declarations) to auto-fill name, uuid, dependencies, runtime solutions and extended languages from the descriptor on disk; the docs call this *Load required information from file*, which is also the name of the quick fix offered on a module whose declaration is out of sync. **Re-apply it after any dependency change.** Alternatively, the Model Checker reports out-of-sync declarations, and **Perform Quick Fixes** updates them. Declarations read the descriptor files on disk, so the modules need not be loaded in MPS.
+A `BuildMps_Language`, `BuildMps_Solution`, or `BuildMps_Generator` is a *declaration* of an MPS module that participates in the build. Enter the descriptor `path`, then run the **Reload Modules From Disk** intention (Alt+Enter on the `BuildProject`, a group, or any node containing module declarations) to auto-fill name, uuid, dependencies, runtime solutions, extended languages and referenced library jars (`BuildMps_ModuleDependencyJar`) from the descriptor on disk. The intention is offered on a group or module, but its target node is the `BuildProject` root (`mps_mcp_apply_intention` with `jetbrains.mps.build.mps.intentions.ReloadModulesFromDisk_Intention`). When you declare several modules that depend on each other, one pass is not enough: it fills names and uuids, but dependencies between the new declarations stay as "… should be extracted into build script" errors. Apply it again until the error count stops changing (usually twice); the docs call this *Load required information from file*, which is also the name of the quick fix offered on a module whose declaration is out of sync. **Re-apply it after any dependency change.** Alternatively, the Model Checker reports out-of-sync declarations, and **Perform Quick Fixes** updates them. Declarations read the descriptor files on disk, so the modules need not be loaded in MPS.
 
 ## Common Roles (on `BuildMps_AbstractModule` / `BuildMps_Module`)
 
@@ -12,7 +12,7 @@ A `BuildMps_Language`, `BuildMps_Solution`, or `BuildMps_Generator` is a *declar
 | `dependencies` | `BuildMps_ExtractedModuleDependency` wrapping `BuildMps_ModuleDependencyOnModule` (reference `module`) | Other modules this one depends on |
 | `runtime` | `BuildMps_ModuleSolutionRuntime` (reference `solution`) | (on `Language`) runtime solution(s) |
 | `generator` | `BuildMps_Generator` | (on `Language`) the language's generator module |
-| `sourcesKind` (property) | enum `sources` (default) / `tests` / `sources_and_tests` / `none` | (on `Solution`) which roots are compiled — see `references/tests-and-workflow.md` |
+| `sourcesKind` (property) | enum `sources` / `tests` / `sources_and_tests` / `none` | (on `Solution`) which roots are compiled — see `references/tests-and-workflow.md`. The enum has no stored default and Reload does not fill it. An empty value builds as `sources` (`hasSources()` treats it so), but `mps_mcp_check_root_node_problems` reports it as "Empty enumeration property"; set `sources` explicitly to keep the MCP check clean |
 
 `compact` only folds the node in the editor (intention *Fold* / *Unfold <name>*); new nodes get `compact = true`. It has no effect on the build.
 
@@ -102,7 +102,9 @@ A language's generator module, nested under the language's `generator` child:
 
 ## `BuildMps_Solution`
 
-Same as Language but without `generator` / `runtime` (and `accessory` / `managedGenerators`), plus `sourcesKind`. Use `BuildMps_ModuleModelRoot` for each model root directory.
+Same as Language but without `generator` / `runtime` (and `accessory` / `managedGenerators`), plus `sourcesKind`; set it explicitly (`{ "name": "sourcesKind", "value": "sources" }`) — empty behaves as `sources` but fails the MCP check. Use `BuildMps_ModuleModelRoot` for each model root directory.
+
+If the solution's descriptor references a library jar, Reload adds a `BuildMps_ModuleDependencyJar` for it, and that jar must also appear in the layout — see `references/mps-plugins.md`.
 
 ## Dependency Wiring
 

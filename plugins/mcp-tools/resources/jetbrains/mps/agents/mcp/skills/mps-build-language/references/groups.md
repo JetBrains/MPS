@@ -1,6 +1,6 @@
 # Grouping Modules: `BuildMps_Group`
 
-A named set of MPS modules that can be referenced as a unit (e.g. from a `BuildMps_IdeaPlugin`'s `content` or from an MPS test configuration). Each language reference needs the real language name and the path to its `.mpl`; enter the path first and run **Reload Modules From Disk** (Alt+Enter; the docs' *Load required information from file*) to fill in the name and dependencies.
+A named set of MPS modules that can be referenced as a unit (e.g. from a `BuildMps_IdeaPlugin`'s `content` or from an MPS test configuration). Each language reference needs the real language name and the path to its `.mpl`; enter the path first and run **Reload Modules From Disk** (Alt+Enter; the docs' *Load required information from file*) to fill in the name and dependencies. For a fresh group of interdependent modules, apply it a second time: the first pass names the modules, the second wires their dependencies on each other.
 
 ```json
 {

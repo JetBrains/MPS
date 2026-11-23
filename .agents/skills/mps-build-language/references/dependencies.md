@@ -22,7 +22,7 @@ Used for MPS's own build scripts in `jetbrains.mps.ide.build` — `mps`, `mpsSta
 
 (`…/4301118715654192646` is the `mps` script; resolve others with `mps_mcp_search_root_node_by_name`, `scope: "all"`.)
 
-- **Prebuilt script** (anything from `jetbrains.mps.ide.build`): set `artifacts` to the installation that holds its output — an MPS installation for `mps`; for plugin scripts the docs' standalone-IDE example uses `$mps_home/plugins`. Standalone IDE builds must point at a **generic** MPS distribution.
+- **Prebuilt script** (anything from `jetbrains.mps.ide.build`): set `artifacts` to the installation that holds its output — an MPS installation for `mps`; for plugin scripts the docs' standalone-IDE example uses `$mps_home/plugins`. Standalone IDE builds must point at a **generic** MPS distribution (with only a macOS `.app`, see *Building Against a macOS MPS* in `references/standalone-distribution.md`).
 - **Sibling script in the same project**: omit `artifacts`; the generated `buildDependents` target builds it first.
 
 Typical usage:

@@ -26,7 +26,7 @@ Two flavors. **Folder macros** represent filesystem folders; **Var macros** are 
 
 ### `BuildFolderMacro`
 
-Named placeholder for a path, optionally with a `defaultPath` relative to the base directory. With no default, the value comes from the MPS path variable of the same name (Settings → Path Variables) or at **Ant time** via `-D<name>=...`.
+Named placeholder for a path, optionally with a `defaultPath` relative to the base directory. With no default, the value comes from the MPS path variable of the same name (Settings → Path Variables) or at **Ant time** via `-D<name>=...`; `-D` overrides the default too.
 
 ```json
 {
@@ -34,6 +34,31 @@ Named placeholder for a path, optionally with a `defaultPath` relative to the ba
   "properties": [{ "name": "name", "value": "mps_home" }]
 }
 ```
+
+An `mps_home` **without** `defaultPath` always gets the warning "mps_home macro should point to the unzipped generic MPS distribution" (rule `check_BuildFolderMacro`); the wizard creates it that way too. To keep the check clean, add a `defaultPath` pointing at an MPS installation, relative to the base directory as `samples/sampleJavaExtensions` does:
+
+```json
+{
+  "concept": "jetbrains.mps.build.structure.BuildFolderMacro",
+  "properties": [{ "name": "name", "value": "mps_home" }],
+  "children": [{
+    "role": "defaultPath",
+    "nodes": [{
+      "concept": "jetbrains.mps.build.structure.BuildSourceProjectRelativePath",
+      "children": [{ "role": "compositePart", "nodes": [{
+        "concept": "jetbrains.mps.build.structure.BuildCompositePath",
+        "properties": [{ "name": "head", "value": ".." }],
+        "children": [{ "role": "tail", "nodes": [{
+          "concept": "jetbrains.mps.build.structure.BuildCompositePath",
+          "properties": [{ "name": "head", "value": "MPS" }]
+        }]}]
+      }]}]
+    }]
+  }]
+}
+```
+
+Such a default is machine-specific; for a shared script either keep the warning or document the expected location.
 
 Reference it inside a path with `BuildSourceMacroRelativePath`:
 
@@ -87,4 +112,4 @@ A Var macro without an initializer can also be set later, from Path Variables or
 
 ## `BuildString` Composition
 
-`BuildString` is composed of `parts`: `BuildTextStringPart` (plain text) and `BuildVarRefStringPart` (reference `macro` → another macro). Most places in the build language that take a "string" use `BuildString` / `BuildStringNotEmpty` — not a raw property — so they can interpolate other macros.
+`BuildString` is composed of `parts`: `BuildTextStringPart` (plain text) and `BuildVarRefStringPart` (reference `macro` → another macro). Set `macro` by node reference (`r:…/<macro id>`, e.g. with `mps_mcp_update_node` SET REFERENCE after inserting the macros): a plain name such as `"version"` can stay unresolved, because dependency scripts in scope declare macros of the same name. Most places in the build language that take a "string" use `BuildString` / `BuildStringNotEmpty` — not a raw property — so they can interpolate other macros.
