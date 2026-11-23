@@ -22,7 +22,7 @@ The **Build Solution** wizard (launched from the Project View) creates or reuses
 
 ## Java Facet
 
-Set up the solution's Java facet with `compile="mps" classes="mps"` so the generated Ant helper classes compile.
+The solution's Java facet must be `compile="mps" classes="mps"` so the generated Ant helper classes compile. A solution created with `mps_mcp_create_module` already has it; check it only when the solution was created another way (`mps_mcp_get_module_facets`).
 
 ## Model
 

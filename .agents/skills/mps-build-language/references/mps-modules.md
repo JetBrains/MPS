@@ -16,6 +16,8 @@ A `BuildMps_Language`, `BuildMps_Solution`, or `BuildMps_Generator` is a *declar
 
 `compact` only folds the node in the editor (intention *Fold* / *Unfold <name>*); new nodes get `compact = true`. It has no effect on the build.
 
+**Resources entry.** The wizard gives every language a `BuildMps_ModuleResources` (`resources files from <module folder> includes icons/**, resources/**`). It gives a solution one only when the solution uses `jetbrains.mps.lang.resources` or has `FileIcon` nodes. The checker reports the info "… Need resources entry …" on any language or solution declaration whose module uses `jetbrains.mps.lang.resources` and has no such entry. Apply its quick fix `jetbrains.mps.build.mps.typesystem.addModuleResources_QuickFix` with `mps_mcp_apply_intention` on that declaration. It is offered only where the info is reported, and it is not auto-applicable (`applyImmediately = false`), so `mps_mcp_check_root_node_problems` `autoApplyQuickFixes` skips it. It packages the module's own icon and resource folders; generated icons need `copyResources` (`references/java-parts.md`).
+
 ## Minimal `BuildMps_Language`
 
 ```json

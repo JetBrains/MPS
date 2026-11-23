@@ -39,6 +39,15 @@ FQN reference for the commonly used concepts of the build-language stack. For ex
 | `BuildLayout_Files` | `...structure.BuildLayout_Files` | layout (`files from`) |
 | `BuildLayout_Import` | `...structure.BuildLayout_Import` | layout (`import`) |
 | `BuildLayout_ImportContent` | `...structure.BuildLayout_ImportContent` | layout (`import files from`) |
+| `BuildLayout_Tar` | `...structure.BuildLayout_Tar` | layout (`tar`; `compression` = `none` / `gzip` / `bzip2`) |
+| `BuildLayout_Filemode` | `...structure.BuildLayout_Filemode` | layout (`filemode`, `dirmode`; wraps `children`) |
+| `BuildLayout_EchoProperties` | `...structure.BuildLayout_EchoProperties` | layout (`properties file`; child `fileName`, `entries` of `BuildLayout_EchoPropertyEntry`: property `key`, child `value`) |
+| `BuildLayout_FilesOf` | `...structure.BuildLayout_FilesOf` | layout (`files of`, reference `element`, e.g. the branding) |
+| `BuildLayout_CopyFilterReplaceRegex` | `...structure.BuildLayout_CopyFilterReplaceRegex` | `parameters` of `BuildLayout_File` / `_Files` (`replace regex`: `pattern`, `flags`, child `value`) |
+| `BuildLayout_CopyFilterFixCRLF` | `...structure.BuildLayout_CopyFilterFixCRLF` | `parameters` (`fix eol`: `eol` = `local` / `asis` / `cr` / `lf` / `crlf`, `removeEOF`) |
+| `BuildLayout_CopyGlobMapper` | `...structure.BuildLayout_CopyGlobMapper` | `parameters` (`filename glob mapper`: `from`, child `to`) |
+| `BuildLayout_CopyRegexMapper` | `...structure.BuildLayout_CopyRegexMapper` | `parameters` (`filename regex mapper`: `pattern`, `replace`) |
+| `BuildFileIncludeSelector` / `BuildFileExcludeSelector` | `...structure.BuildFileIncludeSelector` / `...BuildFileExcludeSelector` | `selectors` of `BuildLayout_ImportContent`, and `parameters` of `BuildLayout_Files` (`include` / `exclude`: `pattern`) |
 | `BuildLayout_CompileOutputOf` | `...structure.BuildLayout_CompileOutputOf` (reference `module`) | layout: compiled classes of a declared `BuildSource_CompilablePart` — a `BuildSource_JavaModule` or an MPS `BuildMps_Module` |
 
 ## `jetbrains.mps.build.mps` (`0cf935df-4699-4e9c-a132-fa109541cba3`)
@@ -69,6 +78,7 @@ FQN reference for the commonly used concepts of the build-language stack. For ex
 | `BuildMps_Branding` | `...structure.BuildMps_Branding` (`idea branding`, standalone IDE) |
 | `BuildMps_BrandingUpdateSite` | `...structure.BuildMps_BrandingUpdateSite` (`Update website`) |
 | `BuildMps_Tips` | `...structure.BuildMps_Tips` (`tips & tricks`) |
+| `BuildMps_TipsPackage` | `...structure.BuildMps_TipsPackage` (layout; alias `package tips & tricks`, shown as `tips of <tips> -> <name>`; reference `tips`, property `name` = the jar name, e.g. `mps-tips.jar`) |
 
 ## `jetbrains.mps.build.mps.tests`
 

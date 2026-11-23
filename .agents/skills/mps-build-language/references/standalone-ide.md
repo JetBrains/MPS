@@ -71,11 +71,17 @@ The JetBrains Runtime ships in `$MPS_HOME/jbr` of the regular distribution — *
 
 - **Windows**: `MPS_JDK` env var → `mps64.exe.jdk` property → `..\jbr` → `JDK_HOME` → `JAVA_HOME`.
 - **Linux**: `MPS_JDK` → `mps.jdk`, `jbr` or `jbr-x86` folders → `JDK_HOME` → `JAVA_HOME` → `java` on `$PATH`.
-- **macOS**: `java` on `$PATH`.
+- **macOS**: the docs say `java` on `$PATH`, but the 2026.1.2 launcher never uses `PATH`. It tries `$<envVarBaseName>_JDK` (`envVarBaseName` from `product-info.json`, the branding's product name, case-sensitive: `Kaja_JDK`, `MPS_JDK` for MPS itself) → `~/Library/Application Support/<company>/<path selector>/<script>.jdk` → `Contents/jbr` → `$JDK_HOME` → `$JAVA_HOME`. Every candidate must be a JDK **bundle** directory, because the launcher appends `Contents/Home` itself: `Kaja_JDK=<MPS>.app/Contents/jbr` works, `…/jbr/Contents/Home` does not (the same holds for `JDK_HOME` and `JAVA_HOME`). Without a usable runtime it prints nothing to the terminal: it may exit with code 1, or show a modal error alert and wait, so a background launch looks hung. If no `idea.log` appears within about 10 seconds, stop the process and rerun it with `IJ_LAUNCHER_DEBUG=1` to see the lookup. To make a macOS app self-contained, copy a JBR into `Contents/jbr`. This is untested, and possible only when `$mps_home` is a macOS `.app/Contents` (the generic distribution has no `jbr`, see above). The JBR's architecture must match the archive (2026.1.2's `Contents/jbr` is arm64 only), and its executables (`Contents/Home/bin/*`, `Contents/Home/lib/jspawnhelper`) need mode 755 in the layout.
+
+For your own IDE, `MPS_JDK` in the Windows and Linux lines becomes `<product>_JDK` as well (branding `product`, case-sensitive). The startup generator writes `%<product>_JDK%` into `<script>.bat` and `$<product>_JDK` into `<script>.sh`, and `envVarBaseName` in `product-info.json` is that same product name.
 
 ## Trust Dialog
 
 Since MPS 2022.2 a two-button "Trust project" dialog appears in MPS and MPS-based IDEs; the wizard enables it for standalone IDEs. Disable it with `-Didea.trust.disabled=true` in the startup script or `vmoptions` file.
+
+## First-Start Wizard
+
+With an empty config folder, the first start of a standalone IDE stops in the IntelliJ startup wizard, which offers to import settings from other IDEs (it scans, for example, VS Code's settings). The build language has no option for it. In 2026.1.2 the platform runs the wizard only while the system property `intellij.startup.wizard` is not `false` (`InitialConfigImportState.isStartupWizardEnabled`); with the wizard off, the older import-settings dialog can appear instead when no previous config is found, unless `idea.initially.ask.config` is `never`. Add `-Dintellij.startup.wizard=false -Didea.initially.ask.config=never` where you add `-Didea.trust.disabled=true`. This was read from the 2026.1.2 bytecode, not tried in a launch; until it is, treat reaching the wizard as a successful start.
 
 ## Generating and Running
 
