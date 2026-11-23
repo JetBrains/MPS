@@ -4,6 +4,9 @@ What ends up in `build.xml`.
 
 | Target | Plugin | Purpose |
 |---|---|---|
+| `build` / `clean` | common preset | Entry point (depends on `assemble`) / delete build output |
+| `assemble` | common preset | Produce the `layout` under `build/artifacts` |
+| `fetchDependencies` | common preset | Hook that `generate` and compilation depend on; prepares dependency artifacts (empty in simple scripts) |
 | `compileJava` | java | Compile all Java modules |
 | `processResources` | java | Hook for resource processing |
 | `classes` | java | Full compile + resources |
@@ -13,7 +16,8 @@ What ends up in `build.xml`.
 | `cleanSources` | mps | Delete generated code (except bootstrap deps) |
 | `declare-mps-tasks` | mps | Helper: registers MPS Ant tasks |
 | `makeDependents` | mps | Regenerate transitive deps then assemble |
-| `gentest` | mps (with `testGeneration=true`) | Run Test.Generating + Test.Diffing |
+| `buildDependents` | common preset | Build sibling scripts referenced through `BuildProjectDependency` without an artifacts location |
+| (`gentest` task inside `test`) | mps (with `testGeneration=true`) | Runs Test.Generating + Test.Diffing per module |
 
 ## Generation Chunks
 

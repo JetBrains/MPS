@@ -8,6 +8,6 @@
 - `build/mps<PluginName>.xml` — one per MPS-owned plugin/module.
 - `plugins/mps-build/solutions/mpsBuild/models/build.mps` — single source of truth that generates all of the above.
 - `plugins/mps-build/solutions/mpsBuild/source_gen/jetbrains/mps/ide/build/` — template files (`mps.sh`, `mps.bat`, `product-info-*.json`, `mps*.vmoptions`, `Info.plist.xml`) used during `mpsDistribution.assemble`.
-- `.idea/libraries/*.xml` — IDEA project libraries pointing at `$PROJECT_DIR$/plugins/<idea-plugin>/lib/*.jar`; the canonical path convention for referencing fetched IDEA platform plugin jars.
+- `.idea/libraries/*.xml` — IDEA project libraries pointing at `$PROJECT_DIR$/plugins/<platform-plugin>/lib/*.jar`; the canonical path convention for referencing fetched platform plugin jars.
 - `build/getDependencies.xml` — Ivy-based fetch of the IDEA platform; invoked by `build.xml platform`.
 - `build/run_build.sh` — canonical CI/developer entry point that invokes `build.xml`.

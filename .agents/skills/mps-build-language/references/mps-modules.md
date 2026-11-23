@@ -1,18 +1,20 @@
 # Declaring MPS Modules (`BuildMps_Language` / `_Solution` / `_Generator`)
 
-A `BuildMps_Language`, `BuildMps_Solution`, or `BuildMps_Generator` is a *declaration* of an MPS module that participates in the build. Use the **Load required information from file** intention (Alt+Enter on the node) to auto-fill uuid, dependencies, runtime solutions, and extended languages from the module's descriptor on disk. **Re-apply it after any dependency change.**
+A `BuildMps_Language`, `BuildMps_Solution`, or `BuildMps_Generator` is a *declaration* of an MPS module that participates in the build. Enter the descriptor `path`, then run the **Reload Modules From Disk** intention (Alt+Enter on the `BuildProject`, a group, or any node containing module declarations) to auto-fill name, uuid, dependencies, runtime solutions and extended languages from the descriptor on disk; the docs call this *Load required information from file*, which is also the name of the quick fix offered on a module whose declaration is out of sync. **Re-apply it after any dependency change.** Alternatively, the Model Checker reports out-of-sync declarations, and **Perform Quick Fixes** updates them. Declarations read the descriptor files on disk, so the modules need not be loaded in MPS.
 
-## Common Child Roles (on `BuildMps_AbstractModule` / `BuildMps_Module`)
+## Common Roles (on `BuildMps_AbstractModule` / `BuildMps_Module`)
 
-| Role | XML id | Concept | Purpose |
-|---|---|---|---|
-| `path` | `3LF7KH` | `BuildSourceProjectRelativePath` | Path to the `.mpl` / `.msd` file |
-| `sources` | `3bR31x` | `BuildMps_ModuleModelRoot`, `BuildMps_ModuleResources` | Model roots and icon/resource folders |
-| `dependencies` | `3bR37C` | `BuildMps_ExtractedModuleDependency` wrapping `BuildMps_ModuleDependencyOnModule` | Other modules this one depends on |
-| `runtime` | `1E1XAP` | `BuildMps_ModuleSolutionRuntime` | (on `Language`) runtime solution(s) |
-| `generator` | `1TViLv` | `BuildMps_Generator` | (on `Language`) the language's generator module |
+| Role | Concept | Purpose |
+|---|---|---|
+| `name`, `uuid` (properties) | — | Module name and id, filled from the descriptor |
+| `path` | `BuildSourcePath`, usually `BuildSourceProjectRelativePath` | Path to the `.mpl` / `.msd` file |
+| `sources` | `BuildMps_ModuleModelRoot`, `BuildMps_ModuleResources` (child `files`) | Model roots and icon/resource folders |
+| `dependencies` | `BuildMps_ExtractedModuleDependency` wrapping `BuildMps_ModuleDependencyOnModule` (reference `module`) | Other modules this one depends on |
+| `runtime` | `BuildMps_ModuleSolutionRuntime` (reference `solution`) | (on `Language`) runtime solution(s) |
+| `generator` | `BuildMps_Generator` | (on `Language`) the language's generator module |
+| `sourcesKind` (property) | enum `sources` (default) / `tests` / `sources_and_tests` / `none` | (on `Solution`) which roots are compiled — see `references/tests-and-workflow.md` |
 
-`compact=true` keeps MPS's own memory representation lean — include it on every `BuildMps_*` module.
+`compact` only folds the node in the editor (intention *Fold* / *Unfold <name>*); new nodes get `compact = true`. It has no effect on the build.
 
 ## Minimal `BuildMps_Language`
 
@@ -100,11 +102,11 @@ A language's generator module, nested under the language's `generator` child:
 
 ## `BuildMps_Solution`
 
-Same as Language but without `generator` / `runtime`. Use `BuildMps_ModuleModelRoot` for each model root directory.
+Same as Language but without `generator` / `runtime` (and `accessory` / `managedGenerators`), plus `sourcesKind`. Use `BuildMps_ModuleModelRoot` for each model root directory.
 
-## Dependency Wiring (`3bR37C`)
+## Dependency Wiring
 
-Always wrap the dependency in a `BuildMps_ExtractedModuleDependency` (marker that **Load required information from file** filled this in):
+Always wrap the dependency in a `BuildMps_ExtractedModuleDependency` (marker that **Reload Modules From Disk** filled this in):
 
 ```json
 {
@@ -122,6 +124,6 @@ Always wrap the dependency in a `BuildMps_ExtractedModuleDependency` (marker tha
 
 ## Common Target Modules in `jetbrains.mps.ide.build`
 
-Import index often `ffeo` in real files: `JDK`, `MPS.Core`, `MPS.OpenAPI`, `MPS.IDEA`, `MPS.Platform`, `MPS.Editor`, `Annotations`, `jetbrains.mps.lang.core`, `jetbrains.mps.lang.descriptor`, `jetbrains.mps.lang.aspect`, …
+`JDK`, `MPS.Core`, `MPS.OpenAPI`, `MPS.IDEA`, `MPS.Platform`, `MPS.Editor`, `Annotations`, `jetbrains.mps.lang.core`, `jetbrains.mps.lang.descriptor`, `jetbrains.mps.lang.aspect`, … — `BuildMps_Solution` / `BuildMps_Language` nodes inside the scripts of `jetbrains.mps.ide.build` (e.g. `JDK` and `MPS.IDEA` in `mpsBootstrapCore`). Find one with `mps_mcp_query_nodes` `FIND_INSTANCES` (`conceptRef` `jetbrains.mps.build.mps.structure.BuildMps_AbstractModule`, `propertyFilter` on `name`).
 
 **Cross-dependency to another module in the same script:** use a node reference to that module's id.

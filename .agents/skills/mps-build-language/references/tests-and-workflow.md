@@ -2,7 +2,7 @@
 
 ## Module Tests (`BuildModuleTestsPlugin`)
 
-Runs `NodeTestCase`s and `EditorTestCase`s in an MPS-like environment. The actual concepts in `jetbrains.mps.build.mps.tests.structure` are `BuildAspect_MpsTestModules` (an aspect added to `BuildProject.aspects`), its optional `options` child `BuildMps_TestModules_Options`, `BuildMps_TestModules_Content`, `BuildMps_TestModuleGroup`, and `BuildMps_TestModule`. The run settings live on the options node, each as a child rather than a property: `haltonfailure`, `compressArgs`, `openTestReport` and `jvmArgs` (each a `BuildString`), `reportsDir` and `projectPath` (`BuildSourcePath`), and `requiredPlugins` (`RequiredPlugin`, reference `plugin` → a `BuildMps_IdeaPlugin`, for IDEA plugins auto-detection misses).
+Runs `NodeTestCase`s and `EditorTestCase`s in an MPS-like environment. The actual concepts in `jetbrains.mps.build.mps.tests.structure` are `BuildAspect_MpsTestModules` (an aspect added to `BuildProject.aspects`), its optional `options` child `BuildMps_TestModules_Options`, `BuildMps_TestModules_Content`, `BuildMps_TestModuleGroup`, and `BuildMps_TestModule`. The run settings live on the options node, each as a child rather than a property: `haltonfailure`, `compressArgs`, `openTestReport` and `jvmArgs` (each a `BuildString`), `reportsDir` and `projectPath` (`BuildSourcePath`), and `requiredPlugins` (`RequiredPlugin`, reference `plugin` → a `BuildMps_IdeaPlugin`, for plugins auto-detection misses).
 
 ```json
 {
@@ -33,11 +33,11 @@ Runs `NodeTestCase`s and `EditorTestCase`s in an MPS-like environment. The actua
 }
 ```
 
-> Solutions containing test models (model stereotype `@tests`, or marked "with tests") must have that set in the corresponding `BuildMps_Solution` (`testModels` property / child) — otherwise tests go into `tests_gen` but are never compiled/run.
+> Models with the `@tests` stereotype are generated into `tests_gen`, which is not compiled by default. Set `sourcesKind` on the `BuildMps_Solution` to `tests` or `sources_and_tests` (Inspector: "with tests" / "with sources and tests"; default `sources` = "with sources") — otherwise the tests are never compiled or run. Every test module group needs at least one such solution.
 
-## `BuildMps_RunCodeFromSolution` (mps-runner plugin)
+## `run code from solution` (mps-runner plugin)
 
-Executes a method from a solution inside a stripped-down MPS environment. Add `BuildSolutionRunnerPlugin` to `plugins` first.
+Executes code from a solution inside an MPS environment during the build. Import `jetbrains.mps.build.mps.runner`, add `BuildSolutionRunnerPlugin` to `plugins`, then add a `BuildSolutionRunnerAspect` (keyword `run code`, reference `solution`, property `classSimpleName`) to `BuildProject.aspects`. Its `requiredPlugin` children (`RequiredPlugin` → a `BuildMps_IdeaPlugin`) enable plugins, with their dependencies, in that MPS instance.
 
 ## Workflow-Style Custom Tasks (`jetbrains.mps.build.workflow`)
 

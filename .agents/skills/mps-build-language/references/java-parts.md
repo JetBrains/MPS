@@ -6,16 +6,17 @@ One default options node + optional per-module overrides.
 
 | Property | Default | Meaning |
 |---|---|---|
-| `generateDebugInfo` | true | Passes `debug="true"` to javac |
-| `generateNoWarnings` | false | Suppresses warnings |
+| `optionsName` | (empty) | Name of a non-default options node, so modules can pick it |
+| `generateDebugInfo` | true (set by the node factory) | Passes `debug="true"` to javac |
+| `noWarnings` | false | *generate no warnings* — suppresses warnings |
 | `fork` | false | Runs javac in a forked process |
-| `heapSize` | (none) | `-Xmx` for forked javac / MPS generator in megabytes |
-| `compiler` | `Eclipse` | `Eclipse` \| `IntelliJ` \| `Javac` |
-| `javaLevel` | (required) | Source/target level, e.g. `"21"` |
-| `compilerOptions` (child) | — | Extra javac args (UTF-8 is added automatically if missing) |
-| `generatorJvmOptions` (child) | — | JVM args for the MPS generator task |
-| `copyResources` | true | Copies non-`.java` files from `source_gen` |
-| `resourceSelectors` (child) | — | File-name masks identifying resources |
+| `heapSize` | (none) | *maximum heap size (MB)* for javac |
+| `compiler` | empty = `<default compiler>` (Ant's javac) | `modern` \| `IntelliJ` \| `jikes` \| `gcj`. `IntelliJ` uses the platform's `javac2` task and **requires a folder macro named `idea_home`** — see `references/dependencies.md` |
+| `javaLevel` | (empty) | *java compliance level*, e.g. `"21"`; set it explicitly |
+| `compilerOptions` | (empty) | *java compiler options* — extra javac args (string; UTF-8 encoding is added if missing) |
+| `generatorJvmOptions` | (empty) | *generator jvm options* — JVM args for the generate task (string) |
+| `copyResources` | false | Copies non-`.java` files from `source_gen` (needed e.g. for icons from `jetbrains.mps.lang.resources`) |
+| `resourceSelectors` (child) | — | *resource patterns* — file masks identifying resources |
 
 ```json
 {
@@ -24,7 +25,6 @@ One default options node + optional per-module overrides.
     { "name": "generateDebugInfo", "value": "true" },
     { "name": "copyResources",     "value": "true" },
     { "name": "heapSize",          "value": "1024" },
-    { "name": "compiler",          "value": "IntelliJ" },
     { "name": "javaLevel",         "value": "21" }
   ],
   "children": [{

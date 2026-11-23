@@ -32,7 +32,7 @@ Prefer `ElementListContents` unless you truly need dynamic contents.
 
 ## Contributing to an Existing Group — `ModificationStatement`
 
-To add your group (or actions wrapped inside a group) under an existing MPS/IDEA group:
+To add your group (or actions wrapped inside a group) under an existing MPS or IntelliJ platform group:
 
 1. Declare your `ActionGroupDeclaration` with the actions you want to contribute.
 2. Add a `ModificationStatement` under its `modifier` child with:
