@@ -145,43 +145,43 @@
 }, {
   "name" : "Compose Multiplatform",
   "url" : "https://github.com/JetBrains/compose-multiplatform",
-  "version" : "1.12.1",
+  "version" : "1.13.0-beta01",
   "license" : "Apache 2.0",
   "licenseUrl" : "https://github.com/JetBrains/compose-multiplatform/blob/master/LICENSE.txt"
 }, {
   "name" : "Compose Runtime",
   "url" : "https://source.android.com/",
-  "version" : "1.12.1",
+  "version" : "1.13.0-beta01",
   "license" : "Apache 2.0",
   "licenseUrl" : "https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:LICENSE.txt"
 }, {
   "name" : "Compose Runtime Retained",
   "url" : "https://source.android.com/",
-  "version" : "1.12.1",
+  "version" : "1.13.0-beta01",
   "license" : "Apache 2.0",
   "licenseUrl" : "https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:LICENSE.txt"
 }, {
   "name" : "Compose Runtime Saveable Desktop",
   "url" : "https://source.android.com/",
-  "version" : "1.12.1",
+  "version" : "1.13.0-beta01",
   "license" : "Apache 2.0",
   "licenseUrl" : "https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:LICENSE.txt"
 }, {
   "name" : "Compose Swing UI",
   "url" : "https://github.com/JetBrains/compose-swing-ui",
-  "version" : "0.1.0-alpha06",
+  "version" : "0.1.0-alpha07",
   "license" : "Apache 2.0",
   "licenseUrl" : "https://github.com/JetBrains/compose-swing-ui/blob/master/LICENSE"
 }, {
   "name" : "Compose Swing UI Animation",
   "url" : "https://github.com/JetBrains/compose-swing-ui",
-  "version" : "0.1.0-alpha06",
+  "version" : "0.1.0-alpha07",
   "license" : "Apache 2.0",
   "licenseUrl" : "https://github.com/JetBrains/compose-swing-ui/blob/master/LICENSE"
 }, {
   "name" : "Compose Swing UI Foundation",
   "url" : "https://github.com/JetBrains/compose-swing-ui",
-  "version" : "0.1.0-alpha06",
+  "version" : "0.1.0-alpha07",
   "license" : "Apache 2.0",
   "licenseUrl" : "https://github.com/JetBrains/compose-swing-ui/blob/master/LICENSE"
 }, {
@@ -259,7 +259,7 @@
 }, {
   "name" : "JCEF",
   "url" : "https://bitbucket.org/chromiumembedded/java-cef",
-  "version" : "150.0.14-g7c1aa68-chromium-150.0.7871.129-api-1.21-263-b16",
+  "version" : "150.0.14-g7c1aa68-chromium-150.0.7871.129-api-1.21-263-b18",
   "license" : "BSD 3-Clause",
   "licenseUrl" : "https://bitbucket.org/chromiumembedded/java-cef/src/master/LICENSE.txt"
 }, {
@@ -643,13 +643,13 @@
 }, {
   "name" : "Skiko",
   "url" : "https://github.com/JetBrains/skiko/",
-  "version" : "0.150.1",
+  "version" : "0.156.0",
   "license" : "Apache 2.0",
   "licenseUrl" : "https://github.com/JetBrains/skiko/blob/master/LICENSE"
 }, {
   "name" : "Skiko Runtime",
   "url" : "https://github.com/JetBrains/skiko/",
-  "version" : "0.150.1",
+  "version" : "0.156.0",
   "license" : "Apache 2.0",
   "licenseUrl" : "https://github.com/JetBrains/skiko/blob/master/LICENSE"
 }, {
@@ -1273,7 +1273,7 @@
 }, {
   "name" : "zip-signer",
   "url" : "https://github.com/JetBrains/marketplace-zip-signer",
-  "version" : "0.1.43",
+  "version" : "0.1.45",
   "license" : "Apache 2.0",
   "licenseUrl" : "https://github.com/JetBrains/marketplace-zip-signer/blob/master/LICENSE"
 } ]
