@@ -38,7 +38,9 @@ If a task requires model-aware editing and the MPS MCP server is not connected (
 - Prefer targeted validation first: inspect the affected file, build the affected module, run the smallest relevant test or run configuration.
 - Follow existing module and test structure rather than introducing new build or test conventions.
 
-Typical JVM-side areas: `core/`, `editor/`, `workbench/`, `platform/`, `plugins/`, `startup/`, `testbench/`, `jps/`, `IdeaPlugin/`.
+Typical JVM-side areas: `core/`, `editor/`, `workbench/`, `platform/`, `plugins/`, `startup/`, `testbench/`, `jps/`.
+
+Ignore `IdeaPlugin/`: it is unmaintained and not part of the distribution. Do not modify `IdeaPlugin/` unless needed to fix a failing MPS compilation.
 
 ## Project Resolution
 
