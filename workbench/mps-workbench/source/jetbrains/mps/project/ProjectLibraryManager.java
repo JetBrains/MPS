@@ -15,11 +15,13 @@
  */
 package jetbrains.mps.project;
 
+import com.intellij.openapi.application.AccessToken;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManagerListener;
+import com.intellij.util.SlowOperations;
 import jetbrains.mps.ide.MPSCoreComponents;
 import jetbrains.mps.library.BaseLibraryManager;
 import jetbrains.mps.library.contributor.LibraryContributor;
@@ -102,7 +104,11 @@ public class ProjectLibraryManager extends BaseLibraryManager {
       }
       VFSManager vfsManager = MPSCoreComponents.getInstance().getPlatform().findComponent(VFSManager.class);
       myContributor = ProjectLibraryManager.getInstance(project).createContributor(vfsManager.getFileSystem(VFSManager.FILE_FS));
-      MPSCoreComponents.getInstance().getLibraryInitializer().load(Collections.singletonList(myContributor));
+      // projectOpened runs on EDT, and the library scan does VFS I/O there.
+      // Remove this section when the scan moves to a background thread.
+      try(AccessToken ignore = SlowOperations.knownIssue("MPS-40512")) {
+        MPSCoreComponents.getInstance().getLibraryInitializer().load(Collections.singletonList(myContributor));
+      }
     }
 
     @Override
