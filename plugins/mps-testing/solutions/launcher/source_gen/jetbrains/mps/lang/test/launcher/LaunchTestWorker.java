@@ -7,6 +7,7 @@ import jetbrains.mps.tool.common.WorkerCallback;
 import jetbrains.mps.tool.common.Script;
 import jetbrains.mps.tool.environment.Environment;
 import jetbrains.mps.tool.environment.EnvironmentConfig;
+import jetbrains.mps.tool.common.PluginData;
 import jetbrains.mps.tool.environment.IdeaEnvironment;
 import java.util.concurrent.atomic.AtomicReference;
 import java.lang.reflect.Method;
@@ -49,6 +50,16 @@ public class LaunchTestWorker extends WorkerBase implements WorkerCallback {
   @Override
   protected Environment createEnvironment() {
     EnvironmentConfig config = createEnvironmentConfig(myWhatToDo).withTestModeOn();
+    boolean hasVcsPlugin = false;
+    for (PluginData pd : config.getPlugins()) {
+      if ("com.intellij.platform.vcs".equals(pd.id)) {
+        hasVcsPlugin = true;
+        break;
+      }
+    }
+    if (!(hasVcsPlugin)) {
+      config = config.withPlatformVcsPlugin();
+    }
     // XXX perhaps, it's better to add myWhatToDo.getModules() into config here
     //    than to deal with LibraryInitializer explicitly later?
     IdeaEnvironment environment = new IdeaEnvironment(config);
