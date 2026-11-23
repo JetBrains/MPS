@@ -10,7 +10,7 @@
   <vendor url="http://www.jetbrains.com/mps/">JetBrains</vendor>
   <!-- Bundled copy omits <version> so MPS assigns its build number; mpsMcpToolsDistribution stamps <version> here for the standalone zip. -->
   <!-- @plugin.version@ -->
-  <idea-version since-build="262.1" until-build="262.*"/>
+  <idea-version since-build="263.1" until-build="263.*"/>
 
   <depends>com.intellij.mcpServer</depends>
   <depends>jetbrains.mps.core</depends>
