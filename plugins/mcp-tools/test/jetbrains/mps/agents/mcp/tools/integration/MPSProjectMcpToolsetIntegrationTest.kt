@@ -105,6 +105,13 @@ class MPSProjectMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         assertEquals(live!!.version, data.get("mpsVersion").asString)
         assertEquals(live.build, data.get("mpsBuild").asString)
         assertEquals(live.eap, data.get("mpsEap").asBoolean)
+        // The test environment calls the toolsets from the classpath without loading this plugin, so
+        // there is usually no plugin version to report; a running MPS has one.
+        if (live.pluginVersion != null) {
+            assertEquals(live.pluginVersion, data.get("mcpToolsVersion").asString)
+        } else {
+            assertFalse("no plugin version must mean no mcpToolsVersion: $data", data.has("mcpToolsVersion"))
+        }
 
         assertTrue("listing must report the IDE log directory: $data", data.has("logDirectory"))
         assertTrue("listing must report the IDE log file: $data", data.has("logFile"))

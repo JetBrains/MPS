@@ -3,9 +3,7 @@
   <property name="resources" location="${basedir}/resources"/>
 
   <target name="platform">
-    <ant antfile="getDependencies.xml" target="install" inheritAll="true" useNativeBasedir="true">
-      <property name="prepare.overlay" value="true"/>
-    </ant>
+    <ant antfile="getDependencies.xml" target="install" inheritAll="true" useNativeBasedir="true"/>
   </target>
 
   <target name="getOpenjdkWin">
@@ -37,7 +35,11 @@
 
   <target name="assemble" depends="prepareJbrArchives">
     <ant antfile="mpsDistribution.xml" inheritAll="true" useNativeBasedir="true" target="assemble"/>
+    <ant antfile="mpsDistribution.xml" inheritAll="true" useNativeBasedir="true" target="publishTCArtifacts"/>
     <ant antfile="mpsMaven.xml" inheritAll="true" useNativeBasedir="true" target="assemble"/>
+    <ant antfile="mpsMaven.xml" inheritAll="true" useNativeBasedir="true" target="publishTCArtifact"/>
+    <ant antfile="mpsMcpToolsDistribution.xml" inheritAll="true" useNativeBasedir="true" target="assemble"/>
+    <ant antfile="mpsMcpToolsDistribution.xml" inheritAll="true" useNativeBasedir="true" target="publishTCArtifact"/>
   </target>
 
   <target name="base" depends="platform, getResourcesAndBuildAll, assemble">

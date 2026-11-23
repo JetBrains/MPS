@@ -43,15 +43,15 @@ If MCP calls fail session-wide with `java.net.URISyntaxException: Illegal charac
 
 Skills live in `.agents/skills/<skill-name>/SKILL.md` or `.claude/skills/<skill-name>/SKILL.md`; start with `mps-mcp-workflow` for the overview and a directory of every other skill. The `mps-*` skills and this guide were installed by the `mps_mcp_initialize_project_for_agents` MCP tool; for details on re-installing and refreshing them — the install arguments (`targetDirectory` vs `projectPath`), the version stamps, and the refresh procedure — see `.agents/skills/mps-mcp-workflow/references/catalog-install-and-refresh.md`.
 
-Before substantial MPS work, compare the `build` line in `.agents/skills/MPS_MCP_SKILL_VERSION.txt` and `.claude/skills/MPS_MCP_SKILL_VERSION.txt` with top-level `mpsBuild` from `mps_mcp_list_open_projects`. Do not call the initializer to learn the version — it writes files.
+Before substantial MPS work, compare the `build` and `pluginVersion` lines in `.agents/skills/MPS_MCP_SKILL_VERSION.txt` and `.claude/skills/MPS_MCP_SKILL_VERSION.txt` with top-level `mpsBuild` and `mcpToolsVersion` from `mps_mcp_list_open_projects`. The skills ship with the MCP tools plugin, which can be updated separately from MPS, so either value can change on its own — a matching `build` with a different or missing `pluginVersion` is still a real mismatch and must not be ignored or postponed. Use exact string equality to decide whether they match (any difference matters, and plain text sorting misorders unpadded counters such as `261.27258.999` vs `261.27258.1000`). A key absent on one side and present on the other counts as different. Do not call the initializer to learn the version — it writes files.
 
-- Equal `build` → continue. Mention `version` only when talking to the user.
-- Different `build` → say the skills were installed from version/build X and this MPS is version/build Y, then ask before refreshing. Do not refresh silently, and do not block ordinary MPS work.
+- Equal `build` and equal `pluginVersion` → continue. Mention `version` only when talking to the user.
+- Different `build` or different `pluginVersion` (including when `build` matches and only `pluginVersion` differs or is missing) → pause before substantial MPS work, report the installed vs. running version/build/plugin (avoiding a newer/older claim only when formats are not directly comparable, such as `SNAPSHOT` or a missing `pluginVersion`), recommend refreshing now so the skills match the loaded plugin, and ask to proceed with the refresh. Proceed with the existing skills only if the user declines, and never refresh silently.
 - Missing file → legacy install. Say so once. Absence is not proven staleness.
-- The two stamps disagree, or only one exists → inconsistent. Offer one refresh of both trees.
+- The two stamps disagree, or only one exists → inconsistent. Before substantial MPS work, recommend one refresh of both trees and ask to proceed; continue without refreshing only if the user declines.
 - `mpsBuild` absent → the running IDE is too old to report its identity. Do not judge staleness.
 
-A refresh needs the user's approval, deletes only `mps-*` skill folders (project-local `*-dsl` and other skills stay), and preserves the Project-Specific Notes below when the new guide text is merged into this file.
+A refresh is the recommended default on a mismatch, needs the user's approval, deletes only `mps-*` skill folders (project-local `*-dsl` and other skills stay), and preserves the Project-Specific Notes below when the new guide text is merged into this file.
 
 ---
 
