@@ -430,12 +430,12 @@ class AbstractOpsPropertyProblemsTest {
             com.intellij.mcpserver.McpToolSchema.DEFAULT_DEFINITIONS_PATH,
         )
         val descriptor = com.intellij.mcpserver.McpToolDescriptor(
-            "mps_mcp_run_migrations",
-            "",
-            com.intellij.mcpserver.McpToolCategory("test", "test"),
-            "mps_mcp_run_migrations",
-            emptySchema,
-            emptySchema,
+            name = "mps_mcp_run_migrations",
+            description = "",
+            category = com.intellij.mcpserver.McpToolCategory("test", "test"),
+            fullyQualifiedName = "mps_mcp_run_migrations",
+            inputSchema = emptySchema,
+            outputSchema = emptySchema,
         )
         fun callWithRawArgs(rawArgs: Map<String, kotlinx.serialization.json.JsonElement>): String? {
             val callInfo = com.intellij.mcpserver.McpCallInfo(
