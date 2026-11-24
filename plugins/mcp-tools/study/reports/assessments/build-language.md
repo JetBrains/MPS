@@ -102,6 +102,6 @@ New in this round:
 
 ## Open
 
-- D148 (path selector) is open.
+- D148 (path selector) is fixed in the skill (`<product><major>.<minor>`, as the startup script writes it) but not re-measured; the wizard's own `scriptName + "1.0"` mismatch is not filed.
 - Variant P (an installed MPS of the release) has not been rehearsed. Compare S40b runs only within a variant.
 - n = 1 per model and cell. These are regression and cost cells, not model discriminators.
