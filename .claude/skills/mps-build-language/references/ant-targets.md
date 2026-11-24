@@ -4,7 +4,7 @@ What ends up in `build.xml`.
 
 | Target | Plugin | Purpose |
 |---|---|---|
-| `build` / `clean` | common preset | Entry point (depends on `assemble`, **not** on `generate`) / delete this script's `build/tmp/<name>` and `build/artifacts/<name>` |
+| `build` / `clean` | common preset | Entry point (depends on `assemble`, **not** on `generate`) / delete this script's `build/tmp/<name>` and `build/artifacts/<name>`; run `clean build` after changing a copy filter or the layout, because the generated `<copy>` tasks skip up-to-date files |
 | `assemble` | common preset | Produce the `layout` under `build/artifacts` |
 | `fetchDependencies` | common preset | Hook that `generate` and compilation depend on; prepares dependency artifacts (empty in simple scripts) |
 | `compileJava` | java | Compile all Java modules; with `useMakeTask` its `java.compile.*` targets are skipped unless `-Dforce.java.compile=true` |

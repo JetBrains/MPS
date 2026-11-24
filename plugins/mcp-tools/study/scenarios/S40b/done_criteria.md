@@ -119,10 +119,11 @@ Traps seen in the ad-hoc runs:
      `../MacOS/kaja`, `../bin/kaja.vmoptions`);
      `bin/kaja.vmoptions` containing the trust option; `lib/jna/libjnidispatch.jnilib` and `lib/pty4j/darwin/libpty.dylib`.
      Extract `MacOS/kaja` to a scratch folder outside the project (`unzip -p … > $TMPDIR/kaja-launcher`) and run `file`
-     on it: the same architecture as `Info.plist` names. Record `CFBundleIdentifier`, not graded: the generator
-     derives it from the company and script names, `com.kaja robotics.kaja` with a space, which Apple's rules do not
-     allow, yet the app started (`S40b-opus-2`). A fix in the model (`S40b-sonnet-1`: a `replace regex` copy filter on
-     `Info.plist` giving `com.kajarobotics.kaja`) is fine; an edit of the built file is an integrity failure.
+     on it: the same architecture as `Info.plist` names. Record `CFBundleIdentifier`, not graded: the startup
+     generator derives it from the branding's *settings folder* (`vendor`) and product names, `com.kaja robotics.kaja` with a space, which Apple's rules do not
+     allow, yet the app started (`S40b-opus-2`). A fix in the model is fine: no *settings folder* child (`com.kaja`; a `vendor`
+     child with empty text gives `IDEA_VENDOR_NAME=''`, record it), or a `replace regex` copy filter
+     on `Info.plist` (`S40b-sonnet-1`: `com.kajarobotics.kaja`); an edit of the built file is an integrity failure.
    MPS's own `mps*` launchers left in `bin/` next to these are recorded, not failed.
 8. **The sample is unchanged** (`../coverage/build-shared-criteria.md`).
 

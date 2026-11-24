@@ -14,6 +14,12 @@ The wizard's distribution script `<Name>Distribution` (file `buildDistribution.x
 
 Each platform archive copies `gen/product-info-<platform>.json` as `product-info.json` (macOS: into `Resources/`; others: the archive root) with `replace regex` `\$version\$` → `${version}`, `\$build\$` → `${build.number}` (the main script's macro), `\$path\.selector\$` → `<script>1.0`. `Info.plist` gets the first two plus `\$platform\$` → `x86_64` (`arm64` for aarch64). Text files get LF line endings, Windows ones CRLF.
 
+After changing a copy filter or the layout, run the distribution script with `clean build`: Ant's `copy` skips a target file that is newer than its source, even when the filters changed.
+
+**Bundle id.** The startup script writes `CFBundleIdentifier` into `gen/Info.plist.xml` as `com.<settings folder>.<product>`, lower-cased, with spaces kept. The settings folder is the branding's `vendor` child (labelled *settings folder*); with no `vendor` child, the id is `com.<product>`. The company name is not used. A settings folder `Kaja Robotics` with product `Kaja` gives `com.kaja robotics.kaja`. Apple allows only ASCII letters, digits, hyphens and periods in a bundle id, and macOS names the app's preferences file after it (`~/Library/Preferences/com.kaja robotics.kaja.plist`). An ad hoc signed app with that id still starts; Developer ID signing and notarization were not tried.
+
+The settings folder is also the vendor folder of the user's config, caches and logs (`IDEA_VENDOR_NAME`, `idea.vendor.name`); when there is no `vendor` child, that folder falls back to the company name. A `vendor` child with empty text is not the same: the id drops it, but the vendor folder becomes empty. So the simplest fix is to delete the *settings folder* child (the editor then shows `<no vendor>`): the id becomes `com.kaja`, and the folder is still `Kaja Robotics`. To keep the settings folder and still get a valid id, add a fourth `replace regex` to each macOS `Info.plist` copy, for example `com\.kaja robotics\.kaja` → `com.kajarobotics.kaja` (no flags, a plain-text value).
+
 ## Building Against a macOS MPS
 
 The distribution script needs a **generic** MPS, because it collects the native files of every platform. If only a macOS `.app` is available, `$mps_home` is `<MPS>.app/Contents`, and you can build only the platform-neutral layout plus a macOS archive for the installed app's architecture (drop the other macOS zip, and make the `Info.plist` copy filter's `$platform$` replacement match: `arm64` or `x86_64`). The wizard's generic paths map to:

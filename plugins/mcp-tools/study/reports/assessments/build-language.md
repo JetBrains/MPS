@@ -68,7 +68,7 @@ The worker prompts did not change.
 ## Defects filed
 
 - D145: a `BuildMps_Generator` the worker inserts gets an empty `path` from the module node factory, which breaks the `useMakeTask` route with `bad file`. The skill told workers to write the declaration themselves. Fixed afterwards: Reload creates it.
-- D146: the generated bundle id carries the company's space.
+- D146: the generated bundle id carries the space of the branding's settings folder.
 - D147: a distribution re-run after a filter change needs `clean`.
 
 ## Open
