@@ -270,4 +270,41 @@ class MPSMigrationMcpToolsetIntegrationTest : McpIntegrationTestBase() {
 
         assertEquals(0, expectOk(runMigrations("CHECK")).getAsJsonArray("pendingModuleMigrations").size())
     }
+
+    @Test
+    fun `unknown top-level keys are rejected with INVALID_REQUEST instead of running whole-project CHECK`() {
+        val response = callThroughBridge(
+            toolset,
+            "mps_mcp_run_migrations",
+            mapOf(
+                "action" to kotlinx.serialization.json.JsonPrimitive("CHECK"),
+                "moduleRefs" to kotlinx.serialization.json.JsonPrimitive("some.module"),
+                "echoedNull" to kotlinx.serialization.json.JsonNull,
+            ),
+        )
+        val envelope = JsonParser.parseString(response).asJsonObject
+        assertFalse("unknown keys must be rejected: $response", envelope.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", envelope.get("code").asString)
+        assertEquals(
+            listOf("action", "moduleRefs"),
+            envelope.getAsJsonObject("details").getAsJsonArray("unknownParameters").map { it.asString },
+        )
+        val msg = envelope.get("error").asString
+        assertTrue(
+            "error must name unknown keys with near-miss suggestions and allowed keys: $msg",
+            msg.contains("'action' (did you mean 'operation'?)") &&
+                msg.contains("'moduleRefs' (did you mean 'modules'?)") &&
+                msg.contains("Allowed:"),
+        )
+
+        val nullOnly = callThroughBridge(
+            toolset,
+            "mps_mcp_run_migrations",
+            mapOf(
+                "operation" to kotlinx.serialization.json.JsonPrimitive("CHECK"),
+                "echoedNull" to kotlinx.serialization.json.JsonNull,
+            ),
+        )
+        expectOk(nullOnly)
+    }
 }

@@ -1138,6 +1138,9 @@ class MPSNodeMcpToolset : AbstractNodeOps() {
         val node = sNodeRef?.resolve(repo)
 
         if (node != null) {
+            val nodeScopeWarnings = nearMissWarnings + listOfNotNull(
+                if (perRoot) "perRoot applies only to model and module references; ignored for node reference '$nodeReference'" else null,
+            )
             val nodeRef = node.reference
             val root = node.containingRoot
             val rootRef = root.reference
@@ -1193,6 +1196,7 @@ class MPSNodeMcpToolset : AbstractNodeOps() {
                     if (result.failed.isNotEmpty()) detailsMap["failedQuickFixes"] = result.failed
                     return okJson(
                         JsonPrimitive("node no longer exists after applied quick fixes — re-run the check on the containing root"),
+                        warnings = nodeScopeWarnings,
                         details = detailsMap,
                     )
                 }
@@ -1215,7 +1219,7 @@ class MPSNodeMcpToolset : AbstractNodeOps() {
             if (unchecked > 0) details["uncheckedSubtrees"] = unchecked
             addInfoMessages(details, infoSummary(reportNode, problems).values)
             return if (!hasAnyProblems(reportNode, problems)) {
-                val warnings = nearMissWarnings + listOfNotNull(uncheckedSubtreesWarning(unchecked))
+                val warnings = nodeScopeWarnings + listOfNotNull(uncheckedSubtreesWarning(unchecked))
                 if (details.isEmpty() && warnings.isEmpty()) okJson("\"no problems found\"")
                 else okJson(JsonPrimitive(cleanVerdict(unchecked)), warnings = warnings, details = details)
             } else {
@@ -1224,7 +1228,7 @@ class MPSNodeMcpToolset : AbstractNodeOps() {
                 } else {
                     nodeWithProblemsToJson(reportNode, problems, currentProject = mpsProject)
                 }
-                finalizeResult(json, maxInlineBytes, details, nearMissWarnings)
+                finalizeResult(json, maxInlineBytes, details, nodeScopeWarnings)
             }
         }
 

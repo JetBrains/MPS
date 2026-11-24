@@ -61,6 +61,11 @@ For any other smodel operation, see `references/property-and-mutation-ops.md` in
 
 After the three writes, run `mps_mcp_check_root_node_problems` on the script, which should report no problems. To report what the sweep could not migrate, add a `check()`: [check-method.md](check-method.md). Then `SYNC_VERSION` (idempotent; it confirms the factory's bump), `MAKE`, and `mps_mcp_run_migrations` as in the skill's workflow.
 
+### Node-replacing sweeps: preserve `smodelAttribute` annotations and check subconcept link IDs
+
+- **Copy `smodelAttribute` children before `replace with`**: `oldNode.replace with(newNode)` detaches `oldNode` along with every `smodelAttribute` attached to it. In `@tests` models that silently deletes `has error`, `ScopesTest`, and `TestNodeAnnotation` labels, leaving tests vacuously green! Move `newNode.@smodelAttribute.addAll(oldNode.@smodelAttribute.toList)` (or copy via `SNodeOperations`) before `replace with`.
+- **Redeclared subconcept roles carry distinct link IDs**: if a subconcept redeclared a child role with the same name as a superconcept role, each `LinkDeclaration` has its own `featureId` — check which declaration the editor/instances actually bind to (`mps_mcp_get_concept_details`) before migrating by link.
+
 ## Transform Pattern Variables
 
 When using pattern-matching transforms inside `MigrationScript.execute()`, references to pattern-captured nodes/links/properties are represented by:

@@ -29,7 +29,10 @@ import java.util.concurrent.atomic.AtomicReference
 // analysis flags them as "never used".
 @Suppress("FunctionName", "unused")
 class MPSMigrationMcpToolset : AbstractOps() {
-    private companion object {
+    internal companion object {
+        internal val RUN_MIGRATIONS_ALLOWED_PARAMETERS: Set<String> =
+            setOf("operation", "modules", "haltOnPrecheckFailure", "haltOnDependencyError")
+
         /** How long APPLY waits for the EDT before concluding that a modal dialog blocks it. */
         const val EDT_PROBE_TIMEOUT_MS: Long = 10_000
 
@@ -53,7 +56,10 @@ class MPSMigrationMcpToolset : AbstractOps() {
         haltOnPrecheckFailure: Boolean = true,
         @McpDescription("APPLY only: stop when a module the project depends on is not migrated yet (default true).")
         haltOnDependencyError: Boolean = true,
-    ): String = withMpsProject("Running MPS migrations") { mpsProject ->
+    ): String = rejectUnknownTopLevelParameters(
+        "mps_mcp_run_migrations",
+        RUN_MIGRATIONS_ALLOWED_PARAMETERS,
+    ) ?: withMpsProject("Running MPS migrations") { mpsProject ->
         val op = resolveOperationOrNull<MigrationOperation>(operation)
             ?: return@withMpsProject unknownOperation<MigrationOperation>(operation)
         val requested = parseNullableStringOrJsonArray(modules)
@@ -259,12 +265,15 @@ class MPSMigrationMcpToolset : AbstractOps() {
         try {
             withModalTimeoutOnEdt(EDT_PROBE_TIMEOUT_MS) { }
         } catch (e: McpModalBlockedException) {
-            throw McpModalBlockedException(
-                "The IDE did not respond within ${EDT_PROBE_TIMEOUT_MS}ms, so no migration was started. A modal " +
+            val message = when (e.errorDetails["modalDialogOpen"] as? Boolean) {
+                false -> "The IDE did not respond within ${EDT_PROBE_TIMEOUT_MS}ms (no active modal dialog detected), " +
+                    "so no migration was started. MPS is busy with another operation (such as a build, check, or test run); " +
+                    "wait for it to finish and call again."
+                else -> "The IDE did not respond within ${EDT_PROBE_TIMEOUT_MS}ms, so no migration was started. A modal " +
                     "dialog is probably open — often the Migration Assistant wizard. Close it (Cancel postpones " +
-                    "the migration, it applies nothing) and call again.",
-                e.errorDetails,
-            )
+                    "the migration, it applies nothing) and call again."
+            }
+            throw McpModalBlockedException(message, e.errorDetails)
         }
     }
 

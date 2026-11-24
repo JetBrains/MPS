@@ -237,6 +237,9 @@ class AbstractOpsPropertyProblemsTest {
 
         fun instantiationFailedForTest(prefix: String, e: Exception, warnings: List<String>) =
             instantiationFailed(prefix, e, warnings)
+
+        suspend fun rejectUnknownTopLevelParametersForTest(tool: String, allowed: Set<String>) =
+            rejectUnknownTopLevelParameters(tool, allowed)
     }
 
     private val nodeToolset = MPSNodeMcpToolset()
@@ -270,6 +273,216 @@ class AbstractOpsPropertyProblemsTest {
 
         val json = ops.nodeWithProblemsToJsonForTest(node, problems)
         assertTrue(json.contains("Empty enumeration property"))
+    }
+
+    @Test
+    fun nullableUnsetEnumIsNotReportedAsProblemWhileCorruptStoredValueIs_D151() {
+        val property = TestNullableEnumProperty()
+        val unsetNode = jetbrains.mps.smodel.SNode(TestConcept(listOf(property))).also { it.setId(SNodeId.Regular(201L)) }
+        val problems = emptyMap<SNode, List<NodeReportItem>>()
+
+        assertFalse("unset nullable enum must not report a local problem", ops.hasLocalProblemsForTest(unsetNode, problems))
+        val cleanJson = ops.nodeWithProblemsToJsonForTest(unsetNode, problems)
+        assertFalse("unset nullable enum must not synthesize Empty enumeration property: $cleanJson", cleanJson.contains("Empty enumeration property"))
+        val (cleanErrors, cleanWarnings, cleanRow) = ops.problemSummaryForTest(unsetNode, problems)
+        assertEquals(0, cleanErrors)
+        assertEquals(0, cleanWarnings)
+        assertFalse(cleanRow.has("messages"))
+
+        val corruptNode = jetbrains.mps.smodel.SNode(TestConcept(listOf(property))).also { it.setId(SNodeId.Regular(202L)) }
+        TEST_ACCESS_UTIL.setRawProperty(corruptNode, property, SType.NOT_A_VALUE)
+        assertTrue("corrupt stored nullable enum must still report a local problem", ops.hasLocalProblemsForTest(corruptNode, problems))
+        val corruptJson = ops.nodeWithProblemsToJsonForTest(corruptNode, problems)
+        assertTrue("corrupt stored nullable enum must report Empty enumeration property: $corruptJson", corruptJson.contains("Empty enumeration property"))
+        val (corruptErrors, _, _) = ops.problemSummaryForTest(corruptNode, problems)
+        assertEquals(1, corruptErrors)
+    }
+
+    @Test
+    fun printedUnnamedNodeOmitsNameFromPropertiesWhileRecordingFallbackPresentation_D149() {
+        val namedConceptNameProp = object : jetbrains.mps.smodel.adapter.structure.property.SPropertyAdapterById(
+            (jetbrains.mps.smodel.SNodeUtil.property_INamedConcept_name as jetbrains.mps.smodel.adapter.structure.property.SPropertyAdapterById).id,
+            "name",
+        ) {
+            override fun getPropertyDescriptor(): jetbrains.mps.smodel.runtime.PropertyDescriptor? = null
+            override fun getType(): SDataType = jetbrains.mps.smodel.adapter.structure.types.SPrimitiveTypes.STRING
+        }
+        val namedConcept = TestConcept(listOf(namedConceptNameProp))
+        val unnamed = jetbrains.mps.smodel.SNode(namedConcept).also { it.setId(SNodeId.Regular(203L)) }
+        val unnamedJson = JsonParser.parseString(ops.nodeHierarchyToJsonForTest(unnamed)).asJsonObject
+        assertTrue("printed node carries reference + empty properties when name is unset: $unnamedJson", unnamedJson.has("reference"))
+        assertEquals(unnamedJson.get("name").asString, unnamedJson.get("presentation").asString)
+        assertEquals(0, unnamedJson.getAsJsonArray("properties").size())
+
+        val customNameProperty = TestStringProperty("name")
+        val nonNamedConceptNode = jetbrains.mps.smodel.SNode(TestConcept(listOf(customNameProperty))).also { it.setId(SNodeId.Regular(204L)) }
+        val nonNamedJson = JsonParser.parseString(ops.nodeHierarchyToJsonForTest(nonNamedConceptNode)).asJsonObject
+        assertFalse(
+            "non-INamedConcept concept with custom 'name' property must not emit fallback presentation: $nonNamedJson",
+            nonNamedJson.has("presentation"),
+        )
+    }
+
+    @Test
+    fun isDefaultTrueOnNonEnumOrNullableEnumPreservesValue() {
+        val aliasProp = TestStringProperty("alias")
+        val nullableEnumProp = TestNullableEnumProperty()
+        val concept = TestConcept(listOf(aliasProp, nullableEnumProp))
+        val dummyModelRef = jetbrains.mps.smodel.SModelReference(null, jetbrains.mps.smodel.SModelId.regular(UUID(0L, 100L)), "diag.isDefault")
+        val dummyModel = Proxy.newProxyInstance(
+            SModel::class.java.classLoader,
+            arrayOf(SModel::class.java),
+        ) { _, method, _ ->
+            when (method.name) {
+                "getReference" -> dummyModelRef
+                "getRepository" -> null
+                "isReadOnly" -> false
+                else -> null
+            }
+        } as SModel
+        val node = object : jetbrains.mps.smodel.SNode(concept) {
+            override fun getModel(): SModel = dummyModel
+        }.also { it.setId(SNodeId.Regular(206L)) }
+
+        val blueprint = JsonParser.parseString(
+            """
+            {
+              "concept": "test.lang.structure.TestConcept",
+              "properties": [
+                { "name": "alias", "value": "keptAlias", "isDefault": true },
+                { "name": "nullableEnumProp", "value": "OPT_A", "isDefault": true }
+              ]
+            }
+            """.trimIndent()
+        ).asJsonObject
+
+        nodeOps.updateNodeFromBlueprint(node, blueprint, dryRun = false)
+        assertEquals("non-enum property with isDefault:true must not be dropped", "keptAlias", node.getProperty(aliasProp))
+        assertEquals(
+            "nullable enum property with isDefault:true and explicit value must not be dropped",
+            "OPT_A",
+            (SNodeAccessUtil.getPropertyValue(node, nullableEnumProp) as TestEnumLiteral).name,
+        )
+    }
+
+    @Test
+    fun updateNodeFromBlueprintAcceptsExplicitJsonNullInPropertiesAndReferences() {
+        val aliasProp = TestStringProperty("alias")
+        val concept = TestConcept(listOf(aliasProp))
+        val dummyModelRef = jetbrains.mps.smodel.SModelReference(null, jetbrains.mps.smodel.SModelId.regular(UUID(0L, 99L)), "diag.model")
+        val dummyModel = Proxy.newProxyInstance(
+            SModel::class.java.classLoader,
+            arrayOf(SModel::class.java),
+        ) { _, method, _ ->
+            when (method.name) {
+                "getReference" -> dummyModelRef
+                "getRepository" -> null
+                "isReadOnly" -> false
+                else -> null
+            }
+        } as SModel
+        val node = object : jetbrains.mps.smodel.SNode(concept) {
+            override fun getModel(): SModel = dummyModel
+        }.also { it.setId(SNodeId.Regular(205L)) }
+        node.setProperty(aliasProp, "oldAlias")
+
+        val blueprint = JsonParser.parseString(
+            """
+            {
+              "concept": "test.lang.structure.TestConcept",
+              "properties": [
+                { "name": null, "value": "ignored" },
+                { "name": "alias", "value": null }
+              ],
+              "references": [
+                { "role": null, "target": null }
+              ]
+            }
+            """.trimIndent()
+        ).asJsonObject
+
+        nodeOps.updateNodeFromBlueprint(node, blueprint, dryRun = true)
+        assertEquals("dryRun must preserve existing property", "oldAlias", node.getProperty(aliasProp))
+
+        nodeOps.updateNodeFromBlueprint(node, blueprint, dryRun = false)
+        assertNull("non-dryRun value:null must clear property without crashing", node.getProperty(aliasProp))
+    }
+
+    @Test
+    fun rejectUnknownTopLevelParametersSkipsExplicitJsonNullAndSuggestsNearMiss_D138() {
+        val dummyProject = Proxy.newProxyInstance(
+            com.intellij.openapi.project.Project::class.java.classLoader,
+            arrayOf(com.intellij.openapi.project.Project::class.java),
+        ) { _, method, _ ->
+            when (method.name) {
+                "getName" -> "dummy"
+                "isDisposed" -> false
+                "hashCode" -> 0
+                "equals" -> false
+                "toString" -> "dummyProject"
+                else -> null
+            }
+        } as com.intellij.openapi.project.Project
+        val emptySchema = com.intellij.mcpserver.McpToolSchema(
+            kotlinx.serialization.json.JsonObject(emptyMap()),
+            emptySet(),
+            emptyMap(),
+            com.intellij.mcpserver.McpToolSchema.DEFAULT_DEFINITIONS_PATH,
+        )
+        val descriptor = com.intellij.mcpserver.McpToolDescriptor(
+            name = "mps_mcp_run_migrations",
+            description = "",
+            category = com.intellij.mcpserver.McpToolCategory("test", "test"),
+            fullyQualifiedName = "mps_mcp_run_migrations",
+            inputSchema = emptySchema,
+            outputSchema = emptySchema,
+        )
+        fun callWithRawArgs(rawArgs: Map<String, kotlinx.serialization.json.JsonElement>): String? {
+            val callInfo = com.intellij.mcpserver.McpCallInfo(
+                0,
+                com.intellij.mcpserver.ClientInfo("diag", "0"),
+                dummyProject,
+                descriptor,
+                kotlinx.serialization.json.JsonObject(rawArgs),
+                kotlinx.serialization.json.JsonObject(emptyMap()),
+                com.intellij.mcpserver.impl.McpServerService.McpSessionOptions(
+                    com.intellij.mcpserver.impl.McpServerService.AskCommandExecutionMode.DONT_ASK,
+                    com.intellij.mcpserver.McpToolFilter.AllowAll,
+                ),
+                emptyMap(),
+            )
+            return runBlocking(com.intellij.mcpserver.McpCallAdditionalDataElement(callInfo)) {
+                nodeOps.rejectUnknownTopLevelParametersForTest(
+                    "mps_mcp_run_migrations",
+                    setOf("operation", "modules", "haltOnPrecheckFailure", "haltOnDependencyError"),
+                )
+            }
+        }
+
+        assertNull(
+            "explicit JsonNull and projectPath must be tolerated",
+            callWithRawArgs(
+                mapOf(
+                    "operation" to kotlinx.serialization.json.JsonPrimitive("CHECK"),
+                    "echoedUnsetKey" to kotlinx.serialization.json.JsonNull,
+                    "projectPath" to kotlinx.serialization.json.JsonPrimitive("/tmp/p"),
+                )
+            ),
+        )
+
+        val rejection = callWithRawArgs(
+            mapOf(
+                "action" to kotlinx.serialization.json.JsonPrimitive("CHECK"),
+                "Action" to kotlinx.serialization.json.JsonPrimitive("CHECK"),
+                "module" to kotlinx.serialization.json.JsonPrimitive("my.mod"),
+            )
+        )
+        assertTrue("expected rejection for non-null unknown keys", rejection != null)
+        val envelope = JsonParser.parseString(rejection!!).asJsonObject
+        val error = envelope.get("error").asString
+        assertTrue("expected near-miss hint for 'module': $error", error.contains("'module' (did you mean 'modules'?)"))
+        assertTrue("expected RequiredParameterNearMisses hint for 'action': $error", error.contains("'action' (did you mean 'operation'?)"))
+        assertTrue("expected case-insensitive RequiredParameterNearMisses hint for 'Action': $error", error.contains("'Action' (did you mean 'operation'?)"))
     }
 
     @Test
@@ -2520,6 +2733,47 @@ class AbstractOpsPropertyProblemsTest {
         override fun getSourceNode(): SNodeReference? = null
     }
 
+    private class TestNullableEnumProperty : SProperty {
+        private val enumType = TestNullableEnumeration()
+
+        override fun getName(): String = "nullableEnumProp"
+
+        override fun getOwner(): SAbstractConcept = TestConcept(emptyList())
+
+        override fun isValid(): Boolean = true
+
+        override fun getType(): SDataType = enumType
+
+        override fun isValid(string: String?): Boolean = string == "OPT_A" || string == "OPT_B"
+
+        override fun getSourceNode(): SNodeReference? = null
+
+        override fun isTransient(): Boolean = false
+    }
+
+    private class TestNullableEnumeration : SEnumeration {
+        override fun getName(): String = "TestNullableEnum"
+
+        override fun getLiteral(name: String?): SEnumerationLiteral? = getLiterals().firstOrNull { it.name == name }
+
+        override fun fromString(string: String?): Any? = when (string) {
+            "OPT_A" -> TestEnumLiteral("OPT_A")
+            "OPT_B" -> TestEnumLiteral("OPT_B")
+            else -> SType.NOT_A_VALUE
+        }
+
+        override fun toString(value: Any?): String? = null
+
+        override fun isInstanceOf(value: Any?): Boolean = value is TestEnumLiteral
+
+        override fun getLiterals(): MutableList<out SEnumerationLiteral> =
+            mutableListOf(TestEnumLiteral("OPT_A"), TestEnumLiteral("OPT_B"))
+
+        override fun getDefault(): SEnumerationLiteral? = null
+
+        override fun getSourceNode(): SNodeReference? = null
+    }
+
     private class TestPresentationEnumProperty : SProperty {
         private val enumType = TestPresentationEnumeration()
 
@@ -2635,8 +2889,8 @@ class AbstractOpsPropertyProblemsTest {
         override fun getEnumeration(): SEnumeration = TestEncodedEnumeration()
     }
 
-    private class TestStringProperty : SProperty {
-        override fun getName(): String = "stringProp"
+    private class TestStringProperty(private val propName: String = "stringProp") : SProperty {
+        override fun getName(): String = propName
 
         override fun getOwner(): SAbstractConcept = TestConcept(emptyList())
 

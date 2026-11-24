@@ -855,6 +855,7 @@ class MPSProjectMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             assertTrue("error must direct the caller to mps_mcp_list_open_projects: $error", error.contains("mps_mcp_list_open_projects"))
             val details = envelope.getAsJsonObject("details")
             assertTrue("MODAL_BLOCKED details must carry closePending=true: $details", details.get("closePending").asBoolean)
+            assertTrue("MODAL_BLOCKED details must carry modalDialogOpen=true while modal is open: $details", details.get("modalDialogOpen").asBoolean)
             assertFalse("project must still be open while the modal blocks the EDT", targetIdeaProject.isDisposed)
 
             val (_, records) = captureLogRecords {
@@ -877,6 +878,25 @@ class MPSProjectMcpToolsetIntegrationTest : McpIntegrationTestBase() {
                 ApplicationManager.getApplication().invokeAndWait({ LaterInvocator.leaveModal(modal) }, ModalityState.any())
             }
         }
+    }
+
+    @Test
+    fun `close-project non-force timeout without a modal dialog reports busy IDE instead of modal prompt`() {
+        val target = (mcpEnvironment.createEmptyProject() as MPSProject).also { extraProject = it }
+        val toolset = MPSProjectMcpToolset(closeProjectTimeoutMs = 0L)
+        val response = runToolForProject(target, toolset) {
+            it.mps_mcp_close_project(force = false)
+        }
+        val envelope = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected MODAL_BLOCKED envelope: $response", envelope.get("ok").asBoolean)
+        assertEquals("MODAL_BLOCKED", envelope.get("code").asString)
+        val error = envelope.get("error").asString
+        assertTrue("error must say no active modal dialog was detected: $error", error.contains("no active modal dialog detected"))
+        assertTrue("error must say the close is still pending: $error", error.contains("still pending"))
+        assertFalse("error must not ask the user to close a blocking modal dialog: $error", error.contains("blocking modal dialog"))
+        val details = envelope.getAsJsonObject("details")
+        assertTrue("MODAL_BLOCKED details must carry closePending=true: $details", details.get("closePending").asBoolean)
+        assertFalse("MODAL_BLOCKED details must carry modalDialogOpen=false when no modal is open: $details", details.get("modalDialogOpen").asBoolean)
     }
 
     private fun rootNamed(payload: JsonObject, rootName: String): JsonObject =

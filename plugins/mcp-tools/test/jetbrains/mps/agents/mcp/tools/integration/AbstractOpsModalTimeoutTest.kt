@@ -10,8 +10,12 @@ import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.TransactionGuard
 import com.intellij.openapi.application.impl.LaterInvocator
 import com.intellij.testFramework.IndexingTestUtil
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -111,6 +115,59 @@ class AbstractOpsModalTimeoutTest : McpIntegrationTestBase() {
             ex.message!!.contains("close any open dialogs")
         )
         assertEquals(timeoutMs, ex.errorDetails["timeoutMs"])
+        assertEquals(false, ex.errorDetails["modalDialogOpen"])
+        assertTrue(
+            "non-modal timeout must say no active modal dialog was detected: ${ex.message}",
+            ex.message!!.contains("no active modal dialog detected"),
+        )
+        assertTrue(
+            "non-modal timeout must give slow-operation / smaller-scope guidance: ${ex.message}",
+            ex.message!!.contains("smaller scope"),
+        )
+    }
+
+    @Test
+    fun `withModalTimeout propagates outer cancellation instead of converting to MODAL_BLOCKED`() {
+        var caught: Throwable? = null
+        try {
+            runBlocking {
+                withTimeout(50L) {
+                    probe.callWithModalTimeout(5_000L) { delay(5_000L) }
+                }
+            }
+            throw AssertionError("expected TimeoutCancellationException from outer withTimeout")
+        } catch (t: Throwable) {
+            caught = t
+        }
+        assertTrue("outer timeout must propagate TimeoutCancellationException, got: $caught", caught is TimeoutCancellationException)
+        assertFalse("outer timeout must not convert to McpModalBlockedException", caught is AbstractOps.McpModalBlockedException)
+    }
+
+    @Test
+    fun `withModalTimeout omits modalDialogOpen when EDT probe times out`() {
+        val edtEntered = CountDownLatch(1)
+        val releaseEdt = CountDownLatch(1)
+        ApplicationManager.getApplication().invokeLater({
+            edtEntered.countDown()
+            releaseEdt.await(5, TimeUnit.SECONDS)
+        }, ModalityState.any())
+        assertTrue("EDT blocker must start", edtEntered.await(5, TimeUnit.SECONDS))
+        val ex = try {
+            assertThrowsModalBlocked {
+                runBlocking { probe.callWithModalTimeout(50L) { delay(5_000L) } }
+            }
+        } finally {
+            releaseEdt.countDown()
+        }
+        assertEquals(AbstractOps.McpErrorCode.MODAL_BLOCKED, ex.errorCode)
+        assertFalse(
+            "indeterminate EDT probe must omit modalDialogOpen rather than asserting false: ${ex.errorDetails}",
+            "modalDialogOpen" in ex.errorDetails,
+        )
+        assertTrue(
+            "indeterminate probe message must explain that modality could not be confirmed: ${ex.message}",
+            ex.message!!.contains("could not confirm whether a modal dialog is open"),
+        )
     }
 
     @Test
@@ -139,6 +196,11 @@ class AbstractOpsModalTimeoutTest : McpIntegrationTestBase() {
             }
             val elapsedMs = (System.nanoTime() - startNanos) / 1_000_000
             assertEquals(AbstractOps.McpErrorCode.MODAL_BLOCKED, ex.errorCode)
+            assertEquals(true, ex.errorDetails["modalDialogOpen"])
+            assertTrue(
+                "open-modal timeout must report that a modal dialog is open: ${ex.message}",
+                ex.message!!.contains("modal dialog is open"),
+            )
             assertTrue(
                 "must not report the timeout before the budget elapses: ${elapsedMs}ms < ${timeoutMs}ms",
                 elapsedMs >= timeoutMs

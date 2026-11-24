@@ -46,14 +46,14 @@ Lookup rules:
  "properties": [{"name": "name", "value": "handlers"}],
  "children": [
   {"role": "preProcessor", "nodes": [{"concept": "jetbrains.mps.lang.actions.structure.CopyPreProcessor",
-    "references": [{"role": "concept", "target": "jetbrains.mps.baseLanguage.structure.LocalVariableReference"}],
+    "references": [{"role": "concept", "target": "jetbrains.mps.baseLanguage.structure.VariableReference"}],
     "children": [{"role": "preProcessFunction", "nodes": [{"concept": "jetbrains.mps.lang.actions.structure.CopyPreProcessFunction",
       "children": [{"role": "body", "nodes": [ /* mutate copy */ ]}]}]}]}]},
   {"role": "postProcessor", "nodes": [{"concept": "jetbrains.mps.lang.actions.structure.PastePostProcessor",
-    "references": [{"role": "concept", "target": "jetbrains.mps.baseLanguage.structure.LocalVariableReference"}],
+    "references": [{"role": "concept", "target": "jetbrains.mps.baseLanguage.structure.VariableReference"}],
     "children": [{"role": "postProcessFunction", "nodes": [{"concept": "jetbrains.mps.lang.actions.structure.PastePostProcessFunction",
       "children": [{"role": "body", "nodes": [
         /* node<LocalVariableDeclaration> decl = pastedNode.ancestor<ClassifierMember>.descendants<LocalVariableDeclaration>
-             .findFirst({~d => d.name :eq: pastedNode.variable.name; });
-           if (decl != null) { pastedNode.variable.set(decl); } */ ]}]}]}]}]}]}
+             .findFirst({~d => d.name :eq: pastedNode.variableDeclaration.name; });
+           if (decl != null) { pastedNode.variableDeclaration.set(decl); } */ ]}]}]}]}]}]}
 ```

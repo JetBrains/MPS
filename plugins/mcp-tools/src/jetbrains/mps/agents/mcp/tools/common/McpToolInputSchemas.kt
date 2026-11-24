@@ -576,11 +576,6 @@ fun parseJavaParseInsertRequest(parameters: String): JavaParseInsertRequest {
   val recoveryParam = obj.optionalBoolean("recovery", "parameters")
   val recovery = recoveryParam ?: true
   val contextNodeRef = obj.optionalString("contextNodeRef", "parameters")
-  if (contextNodeRef.isNullOrEmpty() &&
-      (featureKind == FeatureKind.FIELD || featureKind == FeatureKind.METHOD ||
-       featureKind == FeatureKind.NESTED_CLASS || featureKind == FeatureKind.CLASS_CONTENT)) {
-    throw ToolInputSchemaException("'contextNodeRef' is required for featureKind '$featureKindText' to provide the target Classifier (or ConceptBehavior for METHOD/CLASS_CONTENT)")
-  }
 
   val insertObj = obj.requiredObject("insert", "parameters")
   val insertPath = "parameters.insert"
@@ -599,6 +594,13 @@ fun parseJavaParseInsertRequest(parameters: String): JavaParseInsertRequest {
     virtualPackage = insertObj.optionalString("virtualPackage", insertPath),
   )
   validateInsertTarget(insertTarget)
+
+  if (contextNodeRef.isNullOrEmpty() &&
+      insertTarget.mode != "child" &&
+      (featureKind == FeatureKind.FIELD || featureKind == FeatureKind.METHOD ||
+       featureKind == FeatureKind.NESTED_CLASS || featureKind == FeatureKind.CLASS_CONTENT)) {
+    throw ToolInputSchemaException("'contextNodeRef' is required for featureKind '$featureKindText' to provide the target Classifier (or ConceptBehavior for METHOD/CLASS_CONTENT)")
+  }
 
   val postProcess = obj.optionalObject("postProcess", "parameters")
   postProcess?.rejectUnknownKeys(setOf("importUsedLanguages", "resolveReferences"), "parameters.postProcess")

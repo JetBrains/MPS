@@ -1256,6 +1256,31 @@ class McpToolInputSchemasTest {
     }
 
     @Test
+    fun javaInsertAllowsMissingContextNodeRefOnlyInChildModeForMemberFeatureKinds_D141() {
+        for (kind in listOf("FIELD", "METHOD", "NESTED_CLASS", "CLASS_CONTENT")) {
+            val childReq = parseJavaParseInsertRequest(
+                """{"code":"void run() {}","featureKind":"$kind","insert":{"mode":"child","parentRef":"r:m/1","role":"member"}}"""
+            )
+            assertNull("child mode may omit contextNodeRef for $kind so toolset can infer from parentRef", read(childReq, "getContextNodeRef"))
+
+            for (nonChildInsert in listOf(
+                """{"mode":"replace","targetRef":"r:m/1"}""",
+                """{"mode":"console"}""",
+            )) {
+                val message = catchSchemaFailure {
+                    parseJavaParseInsertRequest(
+                        """{"code":"void run() {}","featureKind":"$kind","insert":$nonChildInsert}"""
+                    )
+                }
+                assertTrue(
+                    "Expected non-child mode $nonChildInsert to require contextNodeRef for $kind, was: $message",
+                    message.contains("contextNodeRef") && message.contains(kind),
+                )
+            }
+        }
+    }
+
+    @Test
     fun javaInsertRejectsMissingFeatureKind() {
         assertSchemaFailure("Missing 'parameters.featureKind'") {
             parseJavaParseInsertRequest(

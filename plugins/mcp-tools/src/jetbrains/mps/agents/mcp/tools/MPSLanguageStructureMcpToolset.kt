@@ -981,14 +981,17 @@ class MPSLanguageStructureMcpToolset : AbstractNodeOps() {
         }
     }
 
+    private fun resolveLinkSourceCardinalityId(cardinalityName: String): Long? = when (cardinalityName) {
+        "_0__1" -> ENUM_MEMBER_CARDINALITY_0_1_ID
+        "_1" -> ENUM_MEMBER_CARDINALITY_1_ID
+        "_0__n" -> ENUM_MEMBER_CARDINALITY_0_N_ID
+        "_1__n" -> ENUM_MEMBER_CARDINALITY_1_N_ID
+        else -> null
+    }
+
     private fun setLinkSourceCardinality(linkNode: SNode, cardinalityName: String): String? {
-        val cardinalityId = when (cardinalityName) {
-            "_0__1" -> ENUM_MEMBER_CARDINALITY_0_1_ID
-            "_1" -> ENUM_MEMBER_CARDINALITY_1_ID
-            "_0__n" -> ENUM_MEMBER_CARDINALITY_0_N_ID
-            "_1__n" -> ENUM_MEMBER_CARDINALITY_1_N_ID
-            else -> return "Unsupported cardinality '$cardinalityName'"
-        }
+        val cardinalityId = resolveLinkSourceCardinalityId(cardinalityName)
+            ?: return "Unsupported cardinality '$cardinalityName'"
         SPropertyOperations.setEnum(linkNode, PROP_LinkDeclaration_SourceCardinality, cardinalityId, cardinalityName)
         return null
     }
@@ -1257,15 +1260,14 @@ class MPSLanguageStructureMcpToolset : AbstractNodeOps() {
                     return@executeShortCommandOnEdt
                 }
             } else {
-                val propNode = existingProp ?: SNodeFactoryOperations.addNewChild(conceptNode, LINK_PropertyDeclaration, CONCEPT_PropertyDeclaration)
-                propNode.setProperty(PROP_Name, propertyName)
                 val dataTypeNode = resolveDataType(dataType, mpsProject, conceptNode.model)
-                if (dataTypeNode != null) {
-                    propNode.setReferenceTarget(LINK_PropertyDeclaration_DataType, dataTypeNode)
-                } else {
+                if (dataTypeNode == null) {
                     error = "Failed to resolve data type '$dataType'"
                     return@executeShortCommandOnEdt
                 }
+                val propNode = existingProp ?: SNodeFactoryOperations.addNewChild(conceptNode, LINK_PropertyDeclaration, CONCEPT_PropertyDeclaration)
+                propNode.setProperty(PROP_Name, propertyName)
+                propNode.setReferenceTarget(LINK_PropertyDeclaration_DataType, dataTypeNode)
             }
             saveModelAndModule(model)
         }
@@ -1303,18 +1305,11 @@ class MPSLanguageStructureMcpToolset : AbstractNodeOps() {
                     return@executeShortCommandOnEdt
                 }
             } else {
-                val linkNode = existingLink ?: SNodeFactoryOperations.addNewChild(conceptNode, LINK_LinkDeclaration, CONCEPT_LinkDeclaration)
-                linkNode.setProperty(PROP_LinkDeclaration_Role, role)
-
                 val targetNode = resolveConceptOrNode(targetConcept, mpsProject, model, emptyMap())
                 if (targetNode == null) {
                     error = "Failed to resolve target concept '$targetConcept'"
                     return@executeShortCommandOnEdt
                 }
-                linkNode.setReferenceTarget(LINK_LinkDeclaration_Target, targetNode)
-
-                setLinkMetaClass(linkNode, isChild)
-
                 val cardinalityName = if (isChild) {
                     when {
                         multiple && optional -> "_0__n"
@@ -1325,12 +1320,18 @@ class MPSLanguageStructureMcpToolset : AbstractNodeOps() {
                 } else {
                     if (optional) "_0__1" else "_1"
                 }
-
-                val cardinalityError = setLinkSourceCardinality(linkNode, cardinalityName)
-                if (cardinalityError != null) {
-                    error = cardinalityError
+                val cardinalityId = resolveLinkSourceCardinalityId(cardinalityName)
+                if (cardinalityId == null) {
+                    error = "Unsupported cardinality '$cardinalityName'"
                     return@executeShortCommandOnEdt
                 }
+
+                val linkNode = existingLink ?: SNodeFactoryOperations.addNewChild(conceptNode, LINK_LinkDeclaration, CONCEPT_LinkDeclaration)
+                linkNode.setProperty(PROP_LinkDeclaration_Role, role)
+                linkNode.setReferenceTarget(LINK_LinkDeclaration_Target, targetNode)
+
+                setLinkMetaClass(linkNode, isChild)
+                SPropertyOperations.setEnum(linkNode, PROP_LinkDeclaration_SourceCardinality, cardinalityId, cardinalityName)
             }
             saveModelAndModule(model)
         }

@@ -2502,6 +2502,116 @@ class MPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         assertEquals("Base", text)
     }
 
+    @Test
+    fun `check_root_node_problems warns when perRoot is passed with a node reference`() {
+        val conceptRef = createConceptRoot("SingleRootPerRootCheck")
+        val response = runTool(MPSNodeMcpToolset()) {
+            it.mps_mcp_check_root_node_problems(conceptRef, perRoot = true)
+        }
+        val envelope = JsonParser.parseString(response).asJsonObject
+        assertTrue("expected clean ok envelope: $response", envelope.get("ok").asBoolean)
+        val warnings = envelope.getAsJsonArray("warnings")?.map { it.asString }.orEmpty()
+        assertTrue(
+            "must warn that perRoot is ignored for a node reference: $warnings",
+            warnings.any { it.contains("perRoot applies only to model and module references") },
+        )
+    }
+
+    @Test
+    fun `print_node JSON round-trips StringLiteral value through SET PROPERTY without double escaping`() {
+        val solution = createSolution()
+        val javaModel = createModel(solution, "${solution.moduleName}.strings")
+        val javaModelRef = modelRefOf(javaModel)
+        assertOk(runTool(MPSModelMcpToolset()) {
+            it.mps_mcp_model_used_language(
+                modelReference = javaModelRef,
+                usedLanguage = "jetbrains.mps.baseLanguage",
+                kind = "language",
+                operation = "ADD",
+            )
+        })
+        assertOk(runTool(MPSModelMcpToolset()) {
+            it.mps_mcp_model_dependency(
+                modelReference = javaModelRef,
+                targetModels = JsonOrText("6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:java.lang(JDK/)"),
+                operation = "ADD",
+            )
+        })
+        val javaToolset = MPSJavaMcpToolset()
+        val nodeToolset = MPSNodeMcpToolset()
+
+        val seedRequest = com.google.gson.JsonObject().apply {
+            addProperty("code", """class Esc { String s = "line1\n\"quoted\""; }""")
+            addProperty("featureKind", "CLASS")
+            add("insert", com.google.gson.JsonObject().apply {
+                addProperty("mode", "root")
+                addProperty("modelRef", javaModelRef)
+            })
+        }.toString()
+        val seeded = runTool(javaToolset) {
+            it.mps_mcp_parse_java_and_insert(seedRequest)
+        }
+        assertOk(seeded)
+        val literalRef = readOnRepo {
+            val root = javaModel.rootNodes.single { it.name == "Esc" }
+            val lit = jetbrains.mps.lang.smodel.generator.smodelAdapter.SNodeOperations.getNodeDescendants(root, null, false, emptyArray())
+                .single { it.concept.name == "StringLiteral" }
+            PersistenceFacade.getInstance().asString(lit.reference)
+        }
+        val originalStored = readOnRepo { resolveNodeRef(literalRef).getPropertyByName("value") }
+        val printed = runTool(nodeToolset) { it.mps_mcp_print_node(literalRef, deep = false, format = "JSON") }
+        val printedObj = JsonParser.parseString(printed).asJsonObject.get("data").asNodeInfo()
+        val printedValue = printedObj.getAsJsonArray("properties")
+            .map { it.asJsonObject }
+            .single { it.get("name").asString == "value" }
+            .get("value").asString
+        assertEquals("JSON print_node must emit exact stored StringLiteral.value", originalStored, printedValue)
+
+        assertOk(runTool(nodeToolset) {
+            it.mps_mcp_update_node(NodeUpdateOperation.SET, NodeUpdateKind.PROPERTY, properties = listOf(listOf(literalRef, "value", printedValue)))
+        })
+        assertEquals("round-trip through SET PROPERTY must not double-escape", originalStored, readOnRepo { resolveNodeRef(literalRef).getPropertyByName("value") })
+    }
+
+    @Test
+    fun `typeOperandNode honors edited value when isDefault true remains on an enum property`() {
+        val targetRef = createConceptRoot("TypeOperandTarget")
+        val probe = BlueprintProbe()
+        val editedBlueprint = JsonParser.parseString(
+            """
+            {
+              "concept": "jetbrains.mps.lang.structure.structure.LinkDeclaration",
+              "properties": [
+                { "name": "role", "value": "items" },
+                { "name": "metaClass", "value": "aggregation", "isDefault": true },
+                { "name": "sourceCardinality", "value": "_0__1", "isDefault": true }
+              ],
+              "references": [
+                { "role": "target", "targetReference": "$targetRef" }
+              ]
+            }
+            """.trimIndent()
+        ).asJsonObject
+
+        readOnRepo {
+            val built = probe.typeOperand(editedBlueprint, myProject)
+            val metaClassProp = built.concept.properties.single { it.name == "metaClass" }
+            val cardinalityProp = built.concept.properties.single { it.name == "sourceCardinality" }
+            assertTrue(
+                "edited non-default enum value must apply even when isDefault:true remains",
+                org.jetbrains.mps.openapi.model.SNodeAccessUtil.hasProperty(built, metaClassProp),
+            )
+            assertEquals(
+                "aggregation",
+                (org.jetbrains.mps.openapi.model.SNodeAccessUtil.getPropertyValue(built, metaClassProp) as org.jetbrains.mps.openapi.language.SEnumerationLiteral).name,
+            )
+            assertFalse(
+                "unedited default enum literal with isDefault:true must remain unset",
+                org.jetbrains.mps.openapi.model.SNodeAccessUtil.hasProperty(built, cardinalityProp),
+            )
+        }
+    }
+
     /** Concepts `Base`, `Other` and `Derived extends Base`; returns the references of `Derived` and `Other`. */
     private fun createExtendsFixture(): Pair<String, String> {
         createConceptRoot("Base")

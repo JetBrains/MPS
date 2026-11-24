@@ -10,7 +10,7 @@ indentation buffer := 0
 │ increase depth / with indent {...}        │  → buffer++ (no output)
 │ decrease depth                            │  → buffer-- (no output)
 │ NodeAppendPart with withIndent = true     │  → buffer++ while evaluating the part
-│ indent buffer                             │  → emit "\t" × buffer into output
+│ indent buffer                             │  → emit "  " × buffer into output (2 spaces/level default)
 │ append \n                                 │  → emit newline (does NOT auto-indent)
 └───────────────────────────────────────────┘
 ```
