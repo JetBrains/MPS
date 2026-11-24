@@ -461,12 +461,12 @@ abstract class AbstractOps : McpToolset {
         val nearMissTargets = buildMap<String, String> {
             for (param in sortedAllowed) {
                 for (alias in RequiredParameterNearMisses.of(tool, param)) {
-                    putIfAbsent(alias, param)
+                    putIfAbsent(alias.lowercase(), param)
                 }
             }
         }
         val named = unknown.joinToString(", ") { key ->
-            val suggestion = nearMissTargets[key] ?: suggestParameterName(key, sortedAllowed)
+            val suggestion = nearMissTargets[key.lowercase()] ?: suggestParameterName(key, sortedAllowed)
             if (suggestion != null) "'$key' (did you mean '$suggestion'?)" else "'$key'"
         }
         return McpCallOutcomes.record(

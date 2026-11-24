@@ -300,7 +300,14 @@ class AbstractOpsPropertyProblemsTest {
 
     @Test
     fun printedUnnamedNodeOmitsNameFromPropertiesWhileRecordingFallbackPresentation_D149() {
-        val namedConcept = TestConcept(listOf(jetbrains.mps.smodel.SNodeUtil.property_INamedConcept_name))
+        val namedConceptNameProp = object : jetbrains.mps.smodel.adapter.structure.property.SPropertyAdapterById(
+            (jetbrains.mps.smodel.SNodeUtil.property_INamedConcept_name as jetbrains.mps.smodel.adapter.structure.property.SPropertyAdapterById).id,
+            "name",
+        ) {
+            override fun getPropertyDescriptor(): jetbrains.mps.smodel.runtime.PropertyDescriptor? = null
+            override fun getType(): SDataType = jetbrains.mps.smodel.adapter.structure.types.SPrimitiveTypes.STRING
+        }
+        val namedConcept = TestConcept(listOf(namedConceptNameProp))
         val unnamed = jetbrains.mps.smodel.SNode(namedConcept).also { it.setId(SNodeId.Regular(203L)) }
         val unnamedJson = JsonParser.parseString(ops.nodeHierarchyToJsonForTest(unnamed)).asJsonObject
         assertTrue("printed node carries reference + empty properties when name is unset: $unnamedJson", unnamedJson.has("reference"))
@@ -466,6 +473,7 @@ class AbstractOpsPropertyProblemsTest {
         val rejection = callWithRawArgs(
             mapOf(
                 "action" to kotlinx.serialization.json.JsonPrimitive("CHECK"),
+                "Action" to kotlinx.serialization.json.JsonPrimitive("CHECK"),
                 "module" to kotlinx.serialization.json.JsonPrimitive("my.mod"),
             )
         )
@@ -474,6 +482,7 @@ class AbstractOpsPropertyProblemsTest {
         val error = envelope.get("error").asString
         assertTrue("expected near-miss hint for 'module': $error", error.contains("'module' (did you mean 'modules'?)"))
         assertTrue("expected RequiredParameterNearMisses hint for 'action': $error", error.contains("'action' (did you mean 'operation'?)"))
+        assertTrue("expected case-insensitive RequiredParameterNearMisses hint for 'Action': $error", error.contains("'Action' (did you mean 'operation'?)"))
     }
 
     @Test

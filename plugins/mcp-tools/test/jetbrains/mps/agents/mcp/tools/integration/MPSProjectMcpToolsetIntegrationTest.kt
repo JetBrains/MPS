@@ -880,6 +880,25 @@ class MPSProjectMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         }
     }
 
+    @Test
+    fun `close-project non-force timeout without a modal dialog reports busy IDE instead of modal prompt`() {
+        val target = (mcpEnvironment.createEmptyProject() as MPSProject).also { extraProject = it }
+        val toolset = MPSProjectMcpToolset(closeProjectTimeoutMs = 0L)
+        val response = runToolForProject(target, toolset) {
+            it.mps_mcp_close_project(force = false)
+        }
+        val envelope = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected MODAL_BLOCKED envelope: $response", envelope.get("ok").asBoolean)
+        assertEquals("MODAL_BLOCKED", envelope.get("code").asString)
+        val error = envelope.get("error").asString
+        assertTrue("error must say no active modal dialog was detected: $error", error.contains("no active modal dialog detected"))
+        assertTrue("error must say the close is still pending: $error", error.contains("still pending"))
+        assertFalse("error must not ask the user to close a blocking modal dialog: $error", error.contains("blocking modal dialog"))
+        val details = envelope.getAsJsonObject("details")
+        assertTrue("MODAL_BLOCKED details must carry closePending=true: $details", details.get("closePending").asBoolean)
+        assertFalse("MODAL_BLOCKED details must carry modalDialogOpen=false when no modal is open: $details", details.get("modalDialogOpen").asBoolean)
+    }
+
     private fun rootNamed(payload: JsonObject, rootName: String): JsonObject =
         payload.getAsJsonArray("rootNodes")?.map { it.asJsonObject }?.singleOrNull { it.get("name").asString == rootName }
             ?: error("root '$rootName' must appear in the dump: $payload")
