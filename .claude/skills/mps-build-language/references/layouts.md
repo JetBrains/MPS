@@ -1,28 +1,28 @@
 # Layouts (`BuildProject.layout`)
 
-Exactly one `BuildLayout` node whose `children` are layout entries. Layout entries compose: a folder contains jars, a jar contains compiled modules, etc.
+Exactly one `BuildLayout` node whose `children` are layout entries. Layout entries compose: a folder contains jars, a jar contains compiled modules, etc. The layout can also pull in artifacts from the scripts this one depends on.
 
 ## Layout Concepts
 
-| Concept | Purpose |
+| Concept (editor keyword) | Purpose |
 |---|---|
 | `BuildLayout` | Root of the output spec (single node) |
-| `BuildLayout_Folder` (`398223`) | A named folder |
-| `BuildLayout_Zip` (`3981dG`) | A zip file — children become its contents |
-| `BuildLayout_Jar` (`3981dx`) | A jar file — children are its contents |
-| `BuildLayout_File` (`28jJK3`) | Copies a source file into this location |
-| `BuildLayout_ImportContent` (`3ygNvl`) | Inlines the contents of another layout node referenced by id |
-| `BuildLayout_CopyOfContainer` (`3_I8Xc`) | Includes the *container itself* (folder/jar) from another location |
+| `BuildLayout_Folder` | A named folder |
+| `BuildLayout_Zip` / `BuildLayout_Tar` | An archive — children become its contents |
+| `BuildLayout_Jar` | A jar file — children are its contents |
+| `BuildLayout_File` | Copies a single source file into this location |
+| `BuildLayout_Files` (`files from`) | Copies files from a source `path`, filtered by selectors in `parameters` |
+| `BuildLayout_Import` (`import`) | Copies a folder or file node (reference `target`) from a dependency's layout, e.g. `mpsStandalone::bin` |
+| `BuildLayout_ImportContent` (`import files from`) | Copies the *contents* of a dependency's layout node (reference `target`), filtered by `selectors` — e.g. `mpsStandalone::lib` minus `branding.jar` |
 | `BuildLayout_CompileOutputOf` | Compiled classes of a declared `BuildSource_CompilablePart` — a `BuildSource_JavaModule` or an MPS `BuildMps_Module` (reference `module`) |
 | `BuildMpsLayout_ModuleJars` | The jar(s) of a declared `BuildMps_AbstractModule` (reference `module`) |
-| `BuildMpsLayout_Plugin` | A declared `BuildMps_IdeaPlugin`, see `references/idea-plugins.md` |
-| `BuildLayout_IdeaPlugin` | Standalone IDEA-plugin layout (independent of `BuildMps_IdeaPlugin`) |
-| `BuildLayout_Fileset` (`2HvfSZ`) | Generic file inclusion via a path + selectors |
-| `BuildLayout_Ace`* | Additional content extractors — project-specific |
+| `BuildMpsLayout_Plugin` (`plugin`) | A declared `BuildMps_IdeaPlugin`, see `references/mps-plugins.md` |
+| `BuildMpsLayout_PluginDescriptor` (`plugin descriptor of`) | Only the generated `plugin.xml` of a declared plugin |
+| `BuildLayout_EchoProperties` / `BuildLayout_EchoXml` | Writes a generated properties / XML file (e.g. the `build.number` property file of a standalone IDE) |
 
 ## Named Containers
 
-`BuildLayout_Folder`, `BuildLayout_Zip`, `BuildLayout_Jar` all take a `containerName` child (role `Nbhlr`, a `BuildStringNotEmpty`) — that's the folder/jar/zip file name.
+`BuildLayout_Folder`, `BuildLayout_Zip`, `BuildLayout_Jar` all take a required `containerName` child (a `BuildStringNotEmpty`) — that's the folder/jar/zip file name.
 
 ## Typical MPS-Plugin Layout (from `SampleCustomAspect.build`)
 

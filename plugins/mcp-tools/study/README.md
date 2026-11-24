@@ -10,7 +10,7 @@ This folder is the git home of the measurement loop. Working data is outside the
 |---|---|---|
 | `instructions/` | how to run, look up a cell, regenerate a fixture, score a round, and read a defect | round results |
 | `scenarios/<S>/` | frozen `worker_prompt.md` and `done_criteria.md` | fixture inputs |
-| `scenarios/coverage/` | the generator design matrix | a measured cell |
+| `scenarios/coverage/` | the generator and editor design matrices and shared criteria (`*-shared-criteria.md`) | a measured cell |
 | `fixtures/inputs/` | small checked-in inputs, copied into the scratch project before launch | tarballs |
 | `fixtures/pins.md` | sha256 and date of the current external tarballs, once | a second copy of a hash |
 | `reports/` | one hotspot file per written-up round, assessments, audits | the open defect list |
@@ -29,6 +29,7 @@ This folder is the git home of the measurement loop. Working data is outside the
   fixtures/     current tarballs only. No empty-project tarball.
   build/        empty except while a tarball is being rebuilt
   workspace/    one scratch at a time: harness/ and <run-id>-<UTC stamp>/
+  dist/         S40a/S40b only: MPS (a symlink to the machine's MPS of the release under test) and jdk (a JDK symlink)
   runs/         active round evidence
   archive/      closed rounds, old tarballs, old scratches, launch notes
 ```
