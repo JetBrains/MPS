@@ -71,10 +71,11 @@ Traps seen in the ad-hoc runs:
      (`standalone-ide.md`).
 4. **Ant runs against `dist/`** (either variant). In the transcript: `ant` on the main script's file, then on the distribution
    script's file, each `BUILD SUCCESSFUL`, with `mps_home` resolving to `~/MPSProjects/mcp-study/dist/MPS` or to that symlink's target (`readlink`; record which). A run
-   against the MPS under test fails. With more runs than two (`S40b-sonnet-1`: five, all successful), grade the last
+   against the MPS under test fails. With more runs than two (rehearsal `S40b-sonnet-1`: five, all successful), grade the last
    distribution run, the one that produced the archives (integrity mtimes), and the last main run before it; record
    the others. A distribution run after a model change needs `clean`: Ant's `copy` skips up-to-date files even when
-   a filter changed (`S40b-sonnet-1` steps 97 → 99).
+   a filter changed (rehearsal `S40b-sonnet-1` steps 97 → 99). Whether the main run included `generate` is recorded,
+   not required (re-measure `S40b-sonnet-1` ran `build` only, so its jars come from the fixture's `source_gen`).
 5. **The downloads.** Under `<project>/build/artifacts/KajaDistribution/` (or the folder the generated file sets,
    record):
    - variant G: one Linux x86-64 archive (the generic distribution has Linux natives for amd64 only) and one macOS
@@ -120,10 +121,11 @@ Traps seen in the ad-hoc runs:
      `bin/kaja.vmoptions` containing the trust option; `lib/jna/libjnidispatch.jnilib` and `lib/pty4j/darwin/libpty.dylib`.
      Extract `MacOS/kaja` to a scratch folder outside the project (`unzip -p … > $TMPDIR/kaja-launcher`) and run `file`
      on it: the same architecture as `Info.plist` names. Record `CFBundleIdentifier`, not graded: the startup
-     generator derives it from the branding's *settings folder* (`vendor`) and product names, `com.kaja robotics.kaja` with a space, which Apple's rules do not
-     allow, yet the app started (`S40b-opus-2`). A fix in the model is fine: no *settings folder* child (`com.kaja`; a `vendor`
+     generator derives it from the branding's *settings folder* (`vendor`) and product names. With the D146 text both
+     re-measure runs had no settings folder and `com.kaja`; the rehearsal runs set it and got `com.kaja robotics.kaja`,
+     which Apple's rules do not allow, yet the app started (`S40b-opus-2`). A fix in the model is fine: no *settings folder* child (`com.kaja`; a `vendor`
      child with empty text gives `IDEA_VENDOR_NAME=''`, record it), or a `replace regex` copy filter
-     on `Info.plist` (`S40b-sonnet-1`: `com.kajarobotics.kaja`); an edit of the built file is an integrity failure.
+     on `Info.plist` (rehearsal `S40b-sonnet-1`: `com.kajarobotics.kaja`); an edit of the built file is an integrity failure.
    MPS's own `mps*` launchers left in `bin/` next to these are recorded, not failed.
 8. **The sample is unchanged** (`../coverage/build-shared-criteria.md`).
 

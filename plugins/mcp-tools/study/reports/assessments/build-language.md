@@ -71,7 +71,37 @@ The worker prompts did not change.
 - D146: the generated bundle id carries the space of the branding's settings folder.
 - D147: a distribution re-run after a filter change needs `clean`.
 
+## Re-measure after the D145–D147 fixes (2026-11-24)
+
+The same matrix again: opus and sonnet at `medium`, variant G, one restart and SMOKE per run, the fixed catalog
+(`skillsSha256 6225d7cc7ffe…`; commits `dbcdee68b9a0`, `283a663a1b5e`). The from-sources MPS installs skills from the plugin's
+compiled `classes/` copy, which was stale after the fixes. It was synced from `resources/` before the round; the installed
+`mps-modules.md` and `standalone-distribution.md` carried the new text in every run. Evidence:
+`archive/runs/s40-remeasure-2026-11-24/`.
+
+| Run | Verdict | Tool calls (MCP) | Min | $ | Rehearsal calls | Fix signals |
+|---|---|---|---|---|---|---|
+| S40a-opus-1 | PASS | 37 (19) | 3.2 | 1.97 | 31 | generators from Reload; `copyResources`; 3 Ant runs (two diagnostic); replay passed |
+| S40a-sonnet-1 | PASS | 33 (18) | 2.3 | 0.77 | 44 | generators from Reload, no `useMakeTask`, 1 Ant run, no `bad file`; replay passed |
+| S40b-opus-1 | PASS | 81 (30) | 9.5 | 4.98 | 94 | no settings folder, `com.kaja`; one distribution run with `clean build`; extended check started the IDE (`com.kaja.plist`) |
+| S40b-sonnet-1 | PASS | 75 (38) | 6.6 | 2.00 | 101 | no settings folder, `com.kaja`; 2 Ant runs (rehearsal: 5); main run without `generate` |
+
+D145, D146 and D147 were absent wherever they could occur. The sonnet run that hit D145 in the rehearsal now leaves the
+generators to Reload and needs one Ant run; both S40b runs ship a valid bundle id with no copy filter and need no stale-output
+rerun. Opus took slightly more calls in S40a, from two diagnostic Ant runs to see whether `generate` really ran: the run is
+silent at `warn`.
+
+New in this round:
+
+- **D148:** the skill's `$path.selector$` replacement `<script>1.0` gives `kaja1.0` in `product-info.json`, while the
+  generated `kaja.sh` uses `Kaja1.0`. That breaks on case-sensitive file systems (`S40b-sonnet-1`; opus happened to use `Kaja1.0`).
+- S40b does not require `generate` in the main Ant run, so `S40b-sonnet-1` packaged the fixture's `source_gen` from the MPS under
+  test. It is recorded, not graded; criterion 4 says so now.
+- Observer process: a timestamp sweep of the temp folders also moved the running MPS's files (restored at once), and
+  `-newer <meta>` finds nothing. Shared preflight 5 now takes the paths from the transcript.
+
 ## Open
 
+- D148 (path selector) is open.
 - Variant P (an installed MPS of the release) has not been rehearsed. Compare S40b runs only within a variant.
 - n = 1 per model and cell. These are regression and cost cells, not model discriminators.

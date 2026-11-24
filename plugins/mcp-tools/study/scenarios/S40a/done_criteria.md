@@ -43,8 +43,8 @@ Traps the ad-hoc run hit, and where the skill now carries them:
      an additional `BuildExternalLayoutDependency` on `IDEA` is recorded (needed only with `compiler = IntelliJ`);
    - `BuildMps_Language` declarations of the three languages with their `BuildMps_Generator`s and a `BuildMps_Solution`
      `jetbrains.mps.samples.JavaKaja`, all inside the plugin's content, directly or through a group the content
-     references (`BuildMps_IdeaPluginGroup`, as both rehearsal runs did); the sandbox is not inside it (declared
-     outside every packaged group is recorded);
+     references (`BuildMps_IdeaPluginGroup`, as both rehearsal runs did); the sandbox is not inside it (not declared, or
+     declared outside every packaged group, is recorded);
    - one `BuildMps_IdeaPlugin`: `id` `jetbrains.mps.samples.Kaja`, name `Robot Kaja`, version `1.0`, a plugin dependency
      on `jetbrains.mps.core` (`…/4973949960459588488`) or `com.intellij.modules.mps` (`…/4973949960459706697`);
    - the icons are packaged by the model, not by luck: `copyResources = true` on the `BuildSource_JavaOptions` in
@@ -75,13 +75,15 @@ Traps the ad-hoc run hit, and where the skill now carries them:
 5. **One Ant run, generating first, against `dist/`.**
    - In the transcript, or in a log file the worker sent the output to (read it, do not change it): an `ant`
      invocation on `build-plugin.xml` that ends `BUILD SUCCESSFUL` and does everything alone. Earlier
-     invocations that failed are recorded, not failed, as long as the last successful one did the whole job
-     (`S40a-sonnet-1` failed once on an inserted generator's empty `path`, then succeeded). Two separate successful
+     invocations that failed, and further successful ones (diagnostic `generate` runs, repeats), are recorded, not
+     failed, as long as the last successful one did the whole job; grade that one, from the transcript when the
+     worker reused its log file name (rehearsal `S40a-sonnet-1` failed once on an inserted generator's empty
+     `path`, then succeeded; re-measure `S40a-opus-1` ran three full or partial runs). Two separate successful
      invocations as the only route (for example `generate`, then `build`) fail: the prompt says one run.
    - `mps_home` (or `artifacts.mps`) resolves to `~/MPSProjects/mcp-study/dist/MPS` or to that symlink's target
      (`readlink`; record which), through `-D…` or the macro's `defaultPath`. A `defaultPath` relative to the
      project (both rehearsal runs: `../../dist/MPS`, which resolves only because scratches sit in
-     `mcp-study/workspace/`) is accepted; record it. The packaged `build.properties` names the `dist/` build
+     `mcp-study/workspace/`) is accepted; record it. `build/artifacts/KajaPlugin/build.properties`, beside the zip, names the `dist/` build
      (`MPS-261.27258.1085` for 2026.1.2), not the MPS under test. A run against the MPS under test fails.
    - Generation is part of that run: the `generate` target named before `build`/`assemble` (the output shows
      `generate:` and `[echo] generating` before the first `java.compile.*` target). `useMakeTask = true` on the

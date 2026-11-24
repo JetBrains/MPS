@@ -38,13 +38,16 @@ evidence that the skill generalises to another project. A generalisation cell ne
    passes it through `env -i`) and some write blueprints and Ant logs to `$TMPDIR/kaja*` or `/tmp/kaja*`. A later
    worker that finds an earlier run's or an ad-hoc trial's blueprints there can reuse them, and the names are the
    worker's choice (`$TMPDIR/kaja`, `$TMPDIR/kajagen`, `$TMPDIR/kajabuild`, `/tmp/kajabuild`, `/tmp/kw` in the
-   rehearsal). Before every launch, `ls -d $TMPDIR/[Kk]aja* /tmp/[Kk]aja*` prints nothing; after every run,
-   `find $TMPDIR /tmp -maxdepth 1 -user $USER -newer $RUNS/<id>.meta.json` lists what the worker created (ignore
-   `claude-*`, `cc-socks`, `hsperfdata_*`, `mps-study-*`, the MPS under test's `mps-node-*`): move its files to
+   rehearsal). Before every launch, `ls -d $TMPDIR/[Kk]aja* /tmp/[Kk]aja*` prints nothing; after every run, take
+   the paths the transcript names (`grep -o` for `$TMPDIR/…`, `/tmp/…` and `/var/folders/…/T/…` in the tool inputs,
+   minus the MCP server's `mps-node-*.json`) and move those files to
    `$RUNS/<id>-worker-tmp/` (evidence: criterion 5 of S40a may need the Ant log) and delete unpacked archive copies
    (S40b workers leave up to 2.3 GB). The 2026-11-24 rehearsal found the
    2026-11-23 trial blueprints (`kaja-main-*.json`, `kaja-dist-*.json`, `kaja-startup-*.json`, `kajaplug/`) in
    `$TMPDIR` and aborted `S40b-opus-1` after 5 calls; they are archived under `archive/tmpdir-adhoc-2026-11-23/`.
+   Do not move by timestamp: a `find -newer` sweep also catches files of the running MPS and Ant (`jlinenative-*`,
+   `mps-workbench-make-*.alive`, `dictionary-storage*`, `jetbrainsd-*`, `mps-<date>-<n>`), and `run_worker.sh` rewrites
+   `<id>.meta.json` at the end, so `-newer` that file finds nothing (both seen in the 2026-11-24 re-measure).
 
 ## Variants
 

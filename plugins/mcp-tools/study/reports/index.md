@@ -67,5 +67,5 @@ Other reports:
 - [`assessments/dataflow-exposure.md`](assessments/dataflow-exposure.md)
 - [`assessments/editor-dynamics.md`](assessments/editor-dynamics.md) — editor-dynamics probe E1–E4, skill correction, S30–S35 origin, opus and sonnet rehearsal, test-first rule (2026-11-01)
 - [`assessments/editor-hints.md`](assessments/editor-hints.md) — editor-hints probe H1–H3, the new hints references, S38a/S38b origin, walks and opus rehearsal (2026-11-09)
-- [`assessments/build-language.md`](assessments/build-language.md) — S40a/S40b (`mps-build-language`: Kaja plugin, standalone Kaja IDE) rehearsed in variant G with opus and sonnet, 4/4 PASS, clean-room replay, frozen (2026-11-24)
+- [`assessments/build-language.md`](assessments/build-language.md) — S40a/S40b (`mps-build-language`: Kaja plugin, standalone Kaja IDE) rehearsed in variant G with opus and sonnet, 4/4 PASS, clean-room replay, frozen; re-measure after the D145–D147 fixes, 4/4 PASS, D148 found (2026-11-24)
 - [`audits/2026-10-23-consistency.md`](audits/2026-10-23-consistency.md)
