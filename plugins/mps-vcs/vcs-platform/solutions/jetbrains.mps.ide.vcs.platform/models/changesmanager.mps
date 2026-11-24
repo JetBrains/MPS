@@ -71,6 +71,7 @@
     <import index="v18h" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:kotlin(MPS.IDEA/)" />
     <import index="tpcu" ref="r:00000000-0000-4000-0000-011c89590282(jetbrains.mps.lang.core.behavior)" />
     <import index="tpck" ref="r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)" />
+    <import index="l45u" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.ide.lightEdit(MPS.IDEA/)" />
   </imports>
   <registry>
     <language id="a247e09e-2435-45ba-b8d2-07e93feba96a" name="jetbrains.mps.baseLanguage.tuples">
@@ -6118,6 +6119,18 @@
           </node>
         </node>
         <node concept="3clFbS" id="3lAtKYMSQTF" role="3clF47">
+          <node concept="3clFbJ" id="2foBfaed1OF" role="3cqZAp">
+            <node concept="2YIFZM" id="2foBfaedajl" role="3clFbw">
+              <ref role="1Pybhc" to="l45u:~LightEdit" resolve="LightEdit" />
+              <ref role="37wK5l" to="l45u:~LightEdit.owns(com.intellij.openapi.project.Project)" resolve="owns" />
+              <node concept="37vLTw" id="2foBfaedajm" role="37wK5m">
+                <ref role="3cqZAo" node="3lAtKYMSQTC" resolve="project" />
+              </node>
+            </node>
+            <node concept="3clFbS" id="2foBfaed1OJ" role="3clFbx">
+              <node concept="3cpWs6" id="2foBfaed1OK" role="3cqZAp" />
+            </node>
+          </node>
           <node concept="3cpWs8" id="3lAtKYMSS1L" role="3cqZAp">
             <node concept="3cpWsn" id="3lAtKYMSS1K" role="3cpWs9">
               <property role="TrG5h" value="registry" />
@@ -6166,6 +6179,18 @@
           </node>
         </node>
         <node concept="3clFbS" id="3lAtKYMSQTV" role="3clF47">
+          <node concept="3clFbJ" id="2foBfaedgGW" role="3cqZAp">
+            <node concept="2YIFZM" id="2foBfaedgH6" role="3clFbw">
+              <ref role="1Pybhc" to="l45u:~LightEdit" resolve="LightEdit" />
+              <ref role="37wK5l" to="l45u:~LightEdit.owns(com.intellij.openapi.project.Project)" resolve="owns" />
+              <node concept="37vLTw" id="2foBfaedgH7" role="37wK5m">
+                <ref role="3cqZAo" node="3lAtKYMSQTS" resolve="project" />
+              </node>
+            </node>
+            <node concept="3clFbS" id="2foBfaedgH0" role="3clFbx">
+              <node concept="3cpWs6" id="2foBfaedgH1" role="3cqZAp" />
+            </node>
+          </node>
           <node concept="3cpWs8" id="3lAtKYMST2v" role="3cqZAp">
             <node concept="3cpWsn" id="3lAtKYMST2w" role="3cpWs9">
               <property role="TrG5h" value="registry" />

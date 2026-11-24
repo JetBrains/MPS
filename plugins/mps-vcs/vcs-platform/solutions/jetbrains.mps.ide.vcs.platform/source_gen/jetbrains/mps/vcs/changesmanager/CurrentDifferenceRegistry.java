@@ -26,6 +26,7 @@ import com.intellij.openapi.vcs.FileStatusListener;
 import org.jetbrains.mps.openapi.module.SModule;
 import org.jetbrains.mps.openapi.model.SModel;
 import com.intellij.openapi.project.ProjectManagerListener;
+import com.intellij.ide.lightEdit.LightEdit;
 
 @GeneratedClass(nodeId = "3161776655522589894", model = "r:d634c129-ecb4-4acd-bd8c-5f057c144ffa(jetbrains.mps.vcs.changesmanager)")
 public class CurrentDifferenceRegistry {
@@ -227,11 +228,17 @@ public class CurrentDifferenceRegistry {
 
     @Override
     public void projectOpened(@NotNull Project project) {
+      if (LightEdit.owns(project)) {
+        return;
+      }
       CurrentDifferenceRegistry registry = project.getService(CurrentDifferenceRegistry.class);
       registry.projectOpened();
     }
     @Override
     public void projectClosed(@NotNull Project project) {
+      if (LightEdit.owns(project)) {
+        return;
+      }
       CurrentDifferenceRegistry registry = project.getServiceIfCreated(CurrentDifferenceRegistry.class);
       if (registry == null) {
         return;
