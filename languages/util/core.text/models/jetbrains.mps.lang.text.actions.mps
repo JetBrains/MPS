@@ -3,6 +3,7 @@
   <persistence version="9" />
   <languages>
     <use id="aee9cad2-acd4-4608-aef2-0004f6a1cdbd" name="jetbrains.mps.lang.actions" version="4" />
+    <use id="af65afd8-f0dd-4942-87d9-63a55f2a9db1" name="jetbrains.mps.lang.behavior" version="2" />
     <devkit ref="fbc25dd2-5da4-483a-8b19-70928e1b62d7(jetbrains.mps.devkit.general-purpose)" />
   </languages>
   <imports>
@@ -73,7 +74,6 @@
       </concept>
     </language>
     <language id="7866978e-a0f0-4cc7-81bc-4d213d9375e1" name="jetbrains.mps.lang.smodel">
-      <concept id="1179409122411" name="jetbrains.mps.lang.smodel.structure.Node_ConceptMethodCall" flags="nn" index="2qgKlT" />
       <concept id="1883223317721008708" name="jetbrains.mps.lang.smodel.structure.IfInstanceOfStatement" flags="nn" index="Jncv_">
         <reference id="1883223317721008712" name="nodeConcept" index="JncvD" />
         <child id="1883223317721008709" name="body" index="Jncv$" />
@@ -217,7 +217,7 @@
                       <node concept="Jnkvi" id="70OdufORcna" role="2Oq$k0">
                         <ref role="1M0zk5" node="2HIX00NtQiR" resolve="p" />
                       </node>
-                      <node concept="2qgKlT" id="70OdufORcnb" role="2OqNvi">
+                      <node concept="3zqWPK" id="47jP3PjRldT" role="2OqNvi">
                         <ref role="37wK5l" to="vdrq:250QDwq2ueg" resolve="getTextualElements" />
                       </node>
                     </node>
@@ -250,7 +250,7 @@
                       <node concept="Jnkvi" id="70OdufORcnh" role="2Oq$k0">
                         <ref role="1M0zk5" node="WJz9iAY4HT" resolve="l" />
                       </node>
-                      <node concept="2qgKlT" id="70OdufORcni" role="2OqNvi">
+                      <node concept="3zqWPK" id="47jP3PjRldV" role="2OqNvi">
                         <ref role="37wK5l" to="vdrq:WJz9iATjyN" resolve="getTextElements" />
                       </node>
                     </node>

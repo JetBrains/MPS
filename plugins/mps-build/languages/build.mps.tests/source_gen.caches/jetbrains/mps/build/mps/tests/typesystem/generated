@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<product version="3" modelHash="-bakygje63b1f8wge3uf9kp8lol01iax">
+<product version="3" modelHash="eot5sz9sodrkmqa1kxgmfgypy28h6bi">
   <files names="TypesystemDescriptor.java:addTestSources_QuickFix.java:check_BuildMpsLayout_TestModuleGroupHasTestSources_NonTypesystemRule.java:check_BuildMpsLayout_TestModuleHasTestSources_NonTypesystemRule.java:check_BuildMpsLayout_TestModules_NonTypesystemRule.java:check_BuildMpsLayout_TestModules_haltonfailure_option_NonTypesystemRule.java:check_BuildMpsLayout_TestModules_openTestReport_option_NonTypesystemRule.java:includeIntoLayout_QuickFix.java" />
 </product>
 

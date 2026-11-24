@@ -2,6 +2,7 @@
 <model ref="r:cec599e3-51d2-48a7-af31-989e3cbd593c(jetbrains.mps.lang.core.typesystem)">
   <persistence version="9" />
   <languages>
+    <use id="af65afd8-f0dd-4942-87d9-63a55f2a9db1" name="jetbrains.mps.lang.behavior" version="2" />
     <devkit ref="00000000-0000-4000-0000-1de82b3a4936(jetbrains.mps.devkit.aspect.typesystem)" />
   </languages>
   <imports>
@@ -211,7 +212,6 @@
       <concept id="1177026924588" name="jetbrains.mps.lang.smodel.structure.RefConcept_Reference" flags="nn" index="chp4Y">
         <reference id="1177026940964" name="conceptDeclaration" index="cht4Q" />
       </concept>
-      <concept id="1179409122411" name="jetbrains.mps.lang.smodel.structure.Node_ConceptMethodCall" flags="nn" index="2qgKlT" />
       <concept id="7453996997717780434" name="jetbrains.mps.lang.smodel.structure.Node_GetSConceptOperation" flags="nn" index="2yIwOk" />
       <concept id="2396822768958367367" name="jetbrains.mps.lang.smodel.structure.AbstractTypeCastExpression" flags="nn" index="$5XWr">
         <child id="6733348108486823193" name="leftExpression" index="1m5AlR" />
@@ -1444,7 +1444,7 @@
                 <node concept="37vLTw" id="70OdufORh6k" role="2Oq$k0">
                   <ref role="3cqZAo" node="7yp37p9$vdx" resolve="propertyAttribute" />
                 </node>
-                <node concept="2qgKlT" id="70OdufORh6l" role="2OqNvi">
+                <node concept="3zqWPK" id="47jP3PjRlfo" role="2OqNvi">
                   <ref role="37wK5l" to="tpcu:1avfQ4BBzOo" resolve="getProperty" />
                 </node>
               </node>
@@ -1494,7 +1494,7 @@
                 <node concept="37vLTw" id="70OdufORh6r" role="2Oq$k0">
                   <ref role="3cqZAo" node="7yp37p9$qE_" resolve="linkAttribute" />
                 </node>
-                <node concept="2qgKlT" id="70OdufORh6s" role="2OqNvi">
+                <node concept="3zqWPK" id="47jP3PjRlfq" role="2OqNvi">
                   <ref role="37wK5l" to="tpcu:1avfQ4BEFo6" resolve="getLink" />
                 </node>
               </node>
@@ -1739,7 +1739,7 @@
                 <node concept="37vLTw" id="70OdufORh6A" role="2Oq$k0">
                   <ref role="3cqZAo" node="43t9AOL1_Sr" resolve="childAttribute" />
                 </node>
-                <node concept="2qgKlT" id="70OdufORh6B" role="2OqNvi">
+                <node concept="3zqWPK" id="47jP3PjRlfs" role="2OqNvi">
                   <ref role="37wK5l" to="tpcu:BpxLfMirzf" resolve="getLink" />
                 </node>
               </node>

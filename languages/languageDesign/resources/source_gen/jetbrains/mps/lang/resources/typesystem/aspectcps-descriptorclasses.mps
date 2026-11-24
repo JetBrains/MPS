@@ -223,7 +223,6 @@
       <concept id="1177026924588" name="jetbrains.mps.lang.smodel.structure.RefConcept_Reference" flags="nn" index="chp4Y">
         <reference id="1177026940964" name="conceptDeclaration" index="cht4Q" />
       </concept>
-      <concept id="1179409122411" name="jetbrains.mps.lang.smodel.structure.Node_ConceptMethodCall" flags="nn" index="2qgKlT" />
       <concept id="2396822768958367367" name="jetbrains.mps.lang.smodel.structure.AbstractTypeCastExpression" flags="nn" index="$5XWr">
         <child id="6733348108486823193" name="leftExpression" index="1m5AlR" />
         <child id="3906496115198199033" name="conceptArgument" index="3oSUPX" />
@@ -1754,9 +1753,9 @@
                       <ref role="3cqZAo" node="7c" resolve="fileIcon" />
                       <uo k="s:originTrace" v="n:8085146484218845388" />
                     </node>
-                    <node concept="2qgKlT" id="86" role="2OqNvi">
+                    <node concept="3zqWPK" id="86" role="2OqNvi">
                       <ref role="37wK5l" to="3767:1$fQzw7$wcx" resolve="getNamingConventionNewuiFileName" />
-                      <uo k="s:originTrace" v="n:8085146484218845389" />
+                      <uo k="s:originTrace" v="n:4743368192416371670" />
                     </node>
                   </node>
                 </node>

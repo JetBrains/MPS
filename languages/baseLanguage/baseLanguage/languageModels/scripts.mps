@@ -4,6 +4,7 @@
   <languages>
     <use id="aee9cad2-acd4-4608-aef2-0004f6a1cdbd" name="jetbrains.mps.lang.actions" version="4" />
     <use id="0eddeefa-c2d6-4437-bc2c-de50fd4ce470" name="jetbrains.mps.lang.script" version="1" />
+    <use id="af65afd8-f0dd-4942-87d9-63a55f2a9db1" name="jetbrains.mps.lang.behavior" version="2" />
     <devkit ref="fbc25dd2-5da4-483a-8b19-70928e1b62d7(jetbrains.mps.devkit.general-purpose)" />
   </languages>
   <imports>
@@ -218,7 +219,6 @@
       <concept id="1140725362528" name="jetbrains.mps.lang.smodel.structure.Link_SetTargetOperation" flags="nn" index="2oxUTD">
         <child id="1140725362529" name="linkTarget" index="2oxUTC" />
       </concept>
-      <concept id="1179409122411" name="jetbrains.mps.lang.smodel.structure.Node_ConceptMethodCall" flags="nn" index="2qgKlT" />
       <concept id="1138661924179" name="jetbrains.mps.lang.smodel.structure.Property_SetOperation" flags="nn" index="tyxLq">
         <child id="1138662048170" name="value" index="tz02z" />
       </concept>
@@ -3125,7 +3125,7 @@
                                       <ref role="2Gs0qQ" node="1GH7oWJfx3A" resolve="attribute" />
                                     </node>
                                   </node>
-                                  <node concept="2qgKlT" id="70OdufORege" role="2OqNvi">
+                                  <node concept="3zqWPK" id="47jP3PjRlem" role="2OqNvi">
                                     <ref role="37wK5l" to="tpcu:BpxLfMirzf" resolve="getLink" />
                                   </node>
                                 </node>
@@ -3398,7 +3398,7 @@
                                   <ref role="2Gs0qQ" node="1GH7oWJdInw" resolve="attribute" />
                                 </node>
                               </node>
-                              <node concept="2qgKlT" id="70OdufORegs" role="2OqNvi">
+                              <node concept="3zqWPK" id="47jP3PjRleo" role="2OqNvi">
                                 <ref role="37wK5l" to="tpcu:BpxLfMirzf" resolve="getLink" />
                               </node>
                             </node>
@@ -3533,7 +3533,7 @@
                               <ref role="2Gs0qQ" node="1GH7oWJdN6R" resolve="attribute" />
                             </node>
                           </node>
-                          <node concept="2qgKlT" id="70OdufORegC" role="2OqNvi">
+                          <node concept="3zqWPK" id="47jP3PjRleq" role="2OqNvi">
                             <ref role="37wK5l" to="tpcu:BpxLfMirzf" resolve="getLink" />
                           </node>
                         </node>

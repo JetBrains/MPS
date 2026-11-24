@@ -5,6 +5,7 @@
     <use id="aee9cad2-acd4-4608-aef2-0004f6a1cdbd" name="jetbrains.mps.lang.actions" version="-1" />
     <use id="18bc6592-03a6-4e29-a83a-7ff23bde13ba" name="jetbrains.mps.lang.editor" version="15" />
     <use id="daafa647-f1f7-4b0b-b096-69cd7c8408c0" name="jetbrains.mps.baseLanguage.regexp" version="-1" />
+    <use id="af65afd8-f0dd-4942-87d9-63a55f2a9db1" name="jetbrains.mps.lang.behavior" version="2" />
     <devkit ref="fbc25dd2-5da4-483a-8b19-70928e1b62d7(jetbrains.mps.devkit.general-purpose)" />
   </languages>
   <imports>
@@ -29,7 +30,6 @@
     <import index="w1kc" ref="6ed54515-acc8-4d1e-a16c-9fd6cfe951ea/java:jetbrains.mps.smodel(MPS.Core/)" />
     <import index="ap4t" ref="215c4c45-ba99-49f5-9ab7-4b6901a63cfd/java:jetbrains.mps.generator(MPS.Generator/)" />
     <import index="lzb2" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.ui(MPS.IDEA/)" />
-    <import index="18ew" ref="6ed54515-acc8-4d1e-a16c-9fd6cfe951ea/java:jetbrains.mps.util(MPS.Core/)" />
     <import index="tpck" ref="r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)" implicit="true" />
     <import index="c17a" ref="8865b7a8-5271-43d3-884c-6fd1d9cfdd34/java:org.jetbrains.mps.openapi.language(MPS.OpenAPI/)" implicit="true" />
     <import index="tpcu" ref="r:00000000-0000-4000-0000-011c89590282(jetbrains.mps.lang.core.behavior)" implicit="true" />
@@ -647,7 +647,6 @@
       <concept id="1140725362528" name="jetbrains.mps.lang.smodel.structure.Link_SetTargetOperation" flags="nn" index="2oxUTD">
         <child id="1140725362529" name="linkTarget" index="2oxUTC" />
       </concept>
-      <concept id="1179409122411" name="jetbrains.mps.lang.smodel.structure.Node_ConceptMethodCall" flags="nn" index="2qgKlT" />
       <concept id="1138661924179" name="jetbrains.mps.lang.smodel.structure.Property_SetOperation" flags="nn" index="tyxLq">
         <child id="1138662048170" name="value" index="tz02z" />
       </concept>
@@ -2990,9 +2989,9 @@
                           </node>
                           <node concept="3GMtW1" id="70OdufORf32" role="2Oq$k0" />
                         </node>
-                        <node concept="2qgKlT" id="70OdufORf33" role="2OqNvi">
+                        <node concept="3zqWPK" id="47jP3PjRlfe" role="2OqNvi">
                           <ref role="37wK5l" to="vbkb:4jjtc7WZMYz" resolve="getBasePath" />
-                          <node concept="2YIFZM" id="70OdufORf34" role="37wK5m">
+                          <node concept="2YIFZM" id="47jP3PjRlfg" role="37wK5m">
                             <ref role="1Pybhc" to="o3n2:4jjtc7WZOAv" resolve="Context" />
                             <ref role="37wK5l" to="o3n2:4jjtc7WZTjd" resolve="defaultContext" />
                           </node>
@@ -10399,9 +10398,9 @@
                     </node>
                     <node concept="1yR$tW" id="70OdufORf4s" role="2Oq$k0" />
                   </node>
-                  <node concept="2qgKlT" id="70OdufORf4t" role="2OqNvi">
+                  <node concept="3zqWPK" id="47jP3PjRlfh" role="2OqNvi">
                     <ref role="37wK5l" to="vbkb:4jjtc7WZMYz" resolve="getBasePath" />
-                    <node concept="2YIFZM" id="70OdufORf4u" role="37wK5m">
+                    <node concept="2YIFZM" id="47jP3PjRlfj" role="37wK5m">
                       <ref role="1Pybhc" to="o3n2:4jjtc7WZOAv" resolve="Context" />
                       <ref role="37wK5l" to="o3n2:4jjtc7WZTjd" resolve="defaultContext" />
                     </node>

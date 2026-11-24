@@ -6,6 +6,7 @@
     <use id="69b8a993-9b87-4d96-bf0c-3559f4bb0c63" name="jetbrains.mps.lang.slanguage" version="-1" />
     <use id="7a5dda62-9140-4668-ab76-d5ed1746f2b2" name="jetbrains.mps.lang.typesystem" version="5" />
     <use id="3f4bc5f5-c6c1-4a28-8b10-c83066ffa4a1" name="jetbrains.mps.lang.constraints" version="6" />
+    <use id="af65afd8-f0dd-4942-87d9-63a55f2a9db1" name="jetbrains.mps.lang.behavior" version="2" />
     <devkit ref="00000000-0000-4000-0000-5604ebd4f22c(jetbrains.mps.devkit.aspect.constraints)" />
   </languages>
   <imports>
@@ -265,7 +266,6 @@
       <concept id="1138411891628" name="jetbrains.mps.lang.smodel.structure.SNodeOperation" flags="nn" index="eCIE_">
         <child id="1144104376918" name="parameter" index="1xVPHs" />
       </concept>
-      <concept id="1179409122411" name="jetbrains.mps.lang.smodel.structure.Node_ConceptMethodCall" flags="nn" index="2qgKlT" />
       <concept id="7453996997717780434" name="jetbrains.mps.lang.smodel.structure.Node_GetSConceptOperation" flags="nn" index="2yIwOk" />
       <concept id="1173122760281" name="jetbrains.mps.lang.smodel.structure.Node_GetAncestorsOperation" flags="nn" index="z$bX8" />
       <concept id="2396822768958367367" name="jetbrains.mps.lang.smodel.structure.AbstractTypeCastExpression" flags="nn" index="$5XWr">
@@ -295,7 +295,7 @@
         <reference id="2644386474300074837" name="conceptDeclaration" index="35c_gD" />
       </concept>
       <concept id="6677504323281689838" name="jetbrains.mps.lang.smodel.structure.SConceptType" flags="in" index="3bZ5Sz">
-        <reference id="6677504323281689839" name="conceptDeclaraton" index="3bZ5Sy" />
+        <reference id="6677504323281689839" name="conceptDeclaration" index="3bZ5Sy" />
       </concept>
       <concept id="1154546920561" name="jetbrains.mps.lang.smodel.structure.OperationParm_ConceptList" flags="ng" index="3gmYPX">
         <child id="1154546920563" name="concept" index="3gmYPZ" />
@@ -469,7 +469,7 @@
                           <ref role="37wK5l" to="tpcb:itlittOTie" resolve="isApplicableForLayout" />
                           <node concept="2OqwBi" id="70OdufORgf9" role="37wK5m">
                             <node concept="2OqwBi" id="70OdufORgfa" role="2Oq$k0">
-                              <node concept="2qgKlT" id="70OdufORgfb" role="2OqNvi">
+                              <node concept="3zqWPK" id="47jP3PjRlfu" role="2OqNvi">
                                 <ref role="37wK5l" to="tpcb:itlittTD4U" resolve="getLayout" />
                               </node>
                               <node concept="1PxgMI" id="70OdufORgfc" role="2Oq$k0">
@@ -495,7 +495,7 @@
                         <ref role="37wK5l" to="tpcb:itlittOTkB" resolve="isApplicableInLayout" />
                         <node concept="2OqwBi" id="70OdufORgfk" role="37wK5m">
                           <node concept="2OqwBi" id="70OdufORgfl" role="2Oq$k0">
-                            <node concept="2qgKlT" id="70OdufORgfm" role="2OqNvi">
+                            <node concept="3zqWPK" id="47jP3PjRlfw" role="2OqNvi">
                               <ref role="37wK5l" to="tpcb:itlittTD4U" resolve="getLayout" />
                             </node>
                             <node concept="1PxgMI" id="70OdufORgfn" role="2Oq$k0">
@@ -3787,7 +3787,7 @@
                       <ref role="37wK5l" to="tpcb:itlittOTie" resolve="isApplicableForLayout" />
                       <node concept="2OqwBi" id="70OdufORggy" role="37wK5m">
                         <node concept="2OqwBi" id="70OdufORggz" role="2Oq$k0">
-                          <node concept="2qgKlT" id="70OdufORgg$" role="2OqNvi">
+                          <node concept="3zqWPK" id="47jP3PjRlfy" role="2OqNvi">
                             <ref role="37wK5l" to="tpcb:itlittTD4U" resolve="getLayout" />
                           </node>
                           <node concept="1PxgMI" id="70OdufORgg_" role="2Oq$k0">
@@ -3811,7 +3811,7 @@
                     <ref role="37wK5l" to="tpcb:itlittOTkB" resolve="isApplicableInLayout" />
                     <node concept="2OqwBi" id="70OdufORggH" role="37wK5m">
                       <node concept="2OqwBi" id="70OdufORggI" role="2Oq$k0">
-                        <node concept="2qgKlT" id="70OdufORggJ" role="2OqNvi">
+                        <node concept="3zqWPK" id="47jP3PjRlf$" role="2OqNvi">
                           <ref role="37wK5l" to="tpcb:itlittTD4U" resolve="getLayout" />
                         </node>
                         <node concept="1PxgMI" id="70OdufORggK" role="2Oq$k0">
@@ -3903,7 +3903,7 @@
                     <ref role="37wK5l" to="tpcb:itlittOTkB" resolve="isApplicableInLayout" />
                     <node concept="2OqwBi" id="70OdufORgh0" role="37wK5m">
                       <node concept="2OqwBi" id="70OdufORgh1" role="2Oq$k0">
-                        <node concept="2qgKlT" id="70OdufORgh2" role="2OqNvi">
+                        <node concept="3zqWPK" id="47jP3PjRlfA" role="2OqNvi">
                           <ref role="37wK5l" to="tpcb:itlittTD4U" resolve="getLayout" />
                         </node>
                         <node concept="1PxgMI" id="70OdufORgh3" role="2Oq$k0">

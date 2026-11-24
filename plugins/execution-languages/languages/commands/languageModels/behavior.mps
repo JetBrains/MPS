@@ -172,7 +172,6 @@
       <concept id="1140725362528" name="jetbrains.mps.lang.smodel.structure.Link_SetTargetOperation" flags="nn" index="2oxUTD">
         <child id="1140725362529" name="linkTarget" index="2oxUTC" />
       </concept>
-      <concept id="1179409122411" name="jetbrains.mps.lang.smodel.structure.Node_ConceptMethodCall" flags="nn" index="2qgKlT" />
       <concept id="1138757581985" name="jetbrains.mps.lang.smodel.structure.Link_SetNewChildOperation" flags="nn" index="zfrQC">
         <reference id="1139880128956" name="concept" index="1A9B2P" />
       </concept>
@@ -1291,7 +1290,7 @@
                 <node concept="37vLTw" id="70OdufORd2I" role="2Oq$k0">
                   <ref role="3cqZAo" node="3gpm$NHlXWc" resolve="type" />
                 </node>
-                <node concept="2qgKlT" id="70OdufORd2J" role="2OqNvi">
+                <node concept="3zqWPK" id="47jP3PjRleC" role="2OqNvi">
                   <ref role="37wK5l" to="tpcu:hEwIMiw" resolve="getPresentation" />
                 </node>
               </node>

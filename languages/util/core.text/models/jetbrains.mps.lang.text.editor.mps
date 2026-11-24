@@ -4,6 +4,7 @@
   <languages>
     <use id="18bc6592-03a6-4e29-a83a-7ff23bde13ba" name="jetbrains.mps.lang.editor" version="15" />
     <use id="c64fb051-a02a-4400-8f65-1735dd616a7c" name="jetbrains.mps.lang.editor.doc" version="0" />
+    <use id="af65afd8-f0dd-4942-87d9-63a55f2a9db1" name="jetbrains.mps.lang.behavior" version="2" />
     <devkit ref="2677cb18-f558-4e33-bc38-a5139cee06dc(jetbrains.mps.devkit.language-design)" />
   </languages>
   <imports>
@@ -15,7 +16,6 @@
     <import index="b8lf" ref="1ed103c3-3aa6-49b7-9c21-6765ee11f224/java:jetbrains.mps.nodeEditor.selection(MPS.Editor/)" />
     <import index="tpcu" ref="r:00000000-0000-4000-0000-011c89590282(jetbrains.mps.lang.core.behavior)" />
     <import index="f4zo" ref="1ed103c3-3aa6-49b7-9c21-6765ee11f224/java:jetbrains.mps.openapi.editor.cells(MPS.Editor/)" />
-    <import index="guwi" ref="6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:java.io(JDK/)" />
     <import index="kt01" ref="6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:java.awt.datatransfer(JDK/)" />
     <import index="ddhc" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.ide(MPS.IDEA/)" />
     <import index="qzxn" ref="6ed54515-acc8-4d1e-a16c-9fd6cfe951ea/java:jetbrains.mps.datatransfer(MPS.Core/)" />
@@ -668,7 +668,6 @@
       <concept id="1138411891628" name="jetbrains.mps.lang.smodel.structure.SNodeOperation" flags="nn" index="eCIE_">
         <child id="1144104376918" name="parameter" index="1xVPHs" />
       </concept>
-      <concept id="1179409122411" name="jetbrains.mps.lang.smodel.structure.Node_ConceptMethodCall" flags="nn" index="2qgKlT" />
       <concept id="8432949284911505116" name="jetbrains.mps.lang.smodel.structure.Node_HasPrevSiblingOperation" flags="nn" index="2t3KhH" />
       <concept id="4693937538533521280" name="jetbrains.mps.lang.smodel.structure.OfConceptOperation" flags="ng" index="v3k3i">
         <child id="4693937538533538124" name="requestedConcept" index="v3oSu" />
@@ -2506,7 +2505,7 @@
                   <node concept="37vLTw" id="70OdufORcpF" role="2Oq$k0">
                     <ref role="3cqZAo" node="3xhyJYa67mE" resolve="parent" />
                   </node>
-                  <node concept="2qgKlT" id="70OdufORcpG" role="2OqNvi">
+                  <node concept="3zqWPK" id="47jP3PjRlew" role="2OqNvi">
                     <ref role="37wK5l" to="tpcu:BpxLfMirzf" resolve="getLink" />
                   </node>
                 </node>
@@ -2592,7 +2591,7 @@
                   <node concept="37vLTw" id="70OdufORcpM" role="2Oq$k0">
                     <ref role="3cqZAo" node="qmyvdpO40v" resolve="parent" />
                   </node>
-                  <node concept="2qgKlT" id="70OdufORcpN" role="2OqNvi">
+                  <node concept="3zqWPK" id="47jP3PjRley" role="2OqNvi">
                     <ref role="37wK5l" to="tpcu:BpxLfMirzf" resolve="getLink" />
                   </node>
                 </node>
@@ -20660,7 +20659,7 @@
                             <node concept="37vLTw" id="70OdufORcrF" role="2Oq$k0">
                               <ref role="3cqZAo" node="4HRvI$sgkFV" resolve="nextParagraph" />
                             </node>
-                            <node concept="2qgKlT" id="70OdufORcrG" role="2OqNvi">
+                            <node concept="3zqWPK" id="47jP3PjRle$" role="2OqNvi">
                               <ref role="37wK5l" to="vdrq:250QDwq53RO" resolve="getNonEmptyTextualElements" />
                             </node>
                           </node>
@@ -26510,7 +26509,7 @@
                         <node concept="37vLTw" id="70OdufORcss" role="2Oq$k0">
                           <ref role="3cqZAo" node="4HqBHuNxSqN" resolve="l" />
                         </node>
-                        <node concept="2qgKlT" id="70OdufORcst" role="2OqNvi">
+                        <node concept="3zqWPK" id="47jP3PjRleA" role="2OqNvi">
                           <ref role="37wK5l" to="vdrq:250QDwq2ueg" resolve="getTextualElements" />
                         </node>
                       </node>

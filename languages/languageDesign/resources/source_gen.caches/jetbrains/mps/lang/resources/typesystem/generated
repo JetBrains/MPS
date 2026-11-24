@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<product version="3" modelHash="5a20uv8dniryvbdkfzzkrufwyo2licd">
+<product version="3" modelHash="cdvd8l6c9mvhfy88qe998gg1ov5pmym">
   <files names="ReplaceUnneededJBColorLiteral_QuickFix.java:TypesystemDescriptor.java:URLCheckUtil.java:check_FileIcon_NonTypesystemRule.java:check_HelpURL_NonTypesystemRule.java:check_JBColorLiteral_NonTypesystemRule.java:check_TextIcon_NonTypesystemRule.java:check_URLLiteral_NonTypesystemRule.java:typeof_BaseURLFunction_InferenceRule.java:typeof_ConceptIconResourceExpression_InferenceRule.java:typeof_ConstantFieldIcon_InferenceRule.java:typeof_FactoryMethodIcon_InferenceRule.java:typeof_IconExpression_InferenceRule.java:typeof_IconResourceExpression_InferenceRule.java:typeof_NodeIconResourceExpression_InferenceRule.java" />
 </product>
 

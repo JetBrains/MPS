@@ -11,6 +11,7 @@
     <use id="69b8a993-9b87-4d96-bf0c-3559f4bb0c63" name="jetbrains.mps.lang.slanguage" version="-1" />
     <use id="f3061a53-9226-4cc5-a443-f952ceaf5816" name="jetbrains.mps.baseLanguage" version="12" />
     <use id="7866978e-a0f0-4cc7-81bc-4d213d9375e1" name="jetbrains.mps.lang.smodel" version="19" />
+    <use id="af65afd8-f0dd-4942-87d9-63a55f2a9db1" name="jetbrains.mps.lang.behavior" version="2" />
     <devkit ref="fbc25dd2-5da4-483a-8b19-70928e1b62d7(jetbrains.mps.devkit.general-purpose)" />
   </languages>
   <imports>
@@ -493,7 +494,6 @@
       <concept id="1138411891628" name="jetbrains.mps.lang.smodel.structure.SNodeOperation" flags="nn" index="eCIE_">
         <child id="1144104376918" name="parameter" index="1xVPHs" />
       </concept>
-      <concept id="1179409122411" name="jetbrains.mps.lang.smodel.structure.Node_ConceptMethodCall" flags="nn" index="2qgKlT" />
       <concept id="7400021826774799413" name="jetbrains.mps.lang.smodel.structure.NodePointerExpression" flags="ng" index="2tJFMh">
         <child id="7400021826774799510" name="ref" index="2tJFKM" />
       </concept>
@@ -3021,7 +3021,7 @@
                               <ref role="3Tt5mk" to="tpd4:h5YbcJD" resolve="pattern" />
                             </node>
                           </node>
-                          <node concept="2qgKlT" id="70OdufOReAQ" role="2OqNvi">
+                          <node concept="3zqWPK" id="47jP3PjRleI" role="2OqNvi">
                             <ref role="37wK5l" to="tp2b:4vXWNHn1_L$" resolve="getQuotedNodeConcept" />
                           </node>
                         </node>
@@ -10590,7 +10590,7 @@
                               <ref role="3Tt5mk" to="tpd4:h5YbcJD" resolve="pattern" />
                             </node>
                           </node>
-                          <node concept="2qgKlT" id="70OdufOReBp" role="2OqNvi">
+                          <node concept="3zqWPK" id="47jP3PjRleK" role="2OqNvi">
                             <ref role="37wK5l" to="tp2b:4vXWNHn1_L$" resolve="getQuotedNodeConcept" />
                           </node>
                         </node>
@@ -10733,7 +10733,7 @@
                               <ref role="3Tt5mk" to="tpd4:h5YbcJD" resolve="pattern" />
                             </node>
                           </node>
-                          <node concept="2qgKlT" id="70OdufOReBA" role="2OqNvi">
+                          <node concept="3zqWPK" id="47jP3PjRleM" role="2OqNvi">
                             <ref role="37wK5l" to="tp2b:4vXWNHn1_L$" resolve="getQuotedNodeConcept" />
                           </node>
                         </node>
@@ -12538,7 +12538,7 @@
                               <ref role="3Tt5mk" to="tpd4:h5YbcJD" resolve="pattern" />
                             </node>
                           </node>
-                          <node concept="2qgKlT" id="70OdufOReBR" role="2OqNvi">
+                          <node concept="3zqWPK" id="47jP3PjRleO" role="2OqNvi">
                             <ref role="37wK5l" to="tp2b:4vXWNHn1_L$" resolve="getQuotedNodeConcept" />
                           </node>
                         </node>
@@ -12681,7 +12681,7 @@
                               <ref role="3Tt5mk" to="tpd4:h5YbcJD" resolve="pattern" />
                             </node>
                           </node>
-                          <node concept="2qgKlT" id="70OdufOReC4" role="2OqNvi">
+                          <node concept="3zqWPK" id="47jP3PjRleQ" role="2OqNvi">
                             <ref role="37wK5l" to="tp2b:4vXWNHn1_L$" resolve="getQuotedNodeConcept" />
                           </node>
                         </node>

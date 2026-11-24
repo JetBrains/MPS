@@ -10,6 +10,7 @@
     <use id="f3061a53-9226-4cc5-a443-f952ceaf5816" name="jetbrains.mps.baseLanguage" version="12" />
     <use id="774bf8a0-62e5-41e1-af63-f4812e60e48b" name="jetbrains.mps.baseLanguage.checkedDots" version="-1" />
     <use id="c7d5b9dd-a05f-4be2-bc73-f2e16994cc67" name="jetbrains.mps.baseLanguage.lightweightdsl" version="-1" />
+    <use id="af65afd8-f0dd-4942-87d9-63a55f2a9db1" name="jetbrains.mps.lang.behavior" version="2" />
     <devkit ref="fbc25dd2-5da4-483a-8b19-70928e1b62d7(jetbrains.mps.devkit.general-purpose)" />
   </languages>
   <imports>
@@ -273,7 +274,6 @@
       <concept id="1140725362528" name="jetbrains.mps.lang.smodel.structure.Link_SetTargetOperation" flags="nn" index="2oxUTD">
         <child id="1140725362529" name="linkTarget" index="2oxUTC" />
       </concept>
-      <concept id="1179409122411" name="jetbrains.mps.lang.smodel.structure.Node_ConceptMethodCall" flags="nn" index="2qgKlT" />
       <concept id="2396822768958367367" name="jetbrains.mps.lang.smodel.structure.AbstractTypeCastExpression" flags="nn" index="$5XWr">
         <child id="6733348108486823193" name="leftExpression" index="1m5AlR" />
         <child id="3906496115198199033" name="conceptArgument" index="3oSUPX" />
@@ -3162,9 +3162,9 @@
             <node concept="37vLTw" id="18QbqASqWbI" role="2Oq$k0">
               <ref role="3cqZAo" node="18QbqASqWbx" resolve="m" />
             </node>
-            <node concept="2qgKlT" id="18QbqASqWbJ" role="2OqNvi">
+            <node concept="3zqWPK" id="47jP3PjRldN" role="2OqNvi">
               <ref role="37wK5l" to="tpcu:6Gg5Klvu8CV" resolve="setProperty" />
-              <node concept="37vLTw" id="18QbqASqWbK" role="37wK5m">
+              <node concept="37vLTw" id="47jP3PjRldP" role="37wK5m">
                 <ref role="3cqZAo" node="18QbqASqWbe" resolve="p" />
               </node>
             </node>
@@ -3473,9 +3473,9 @@
             <node concept="37vLTw" id="18QbqASqX_W" role="2Oq$k0">
               <ref role="3cqZAo" node="18QbqASqX_J" resolve="m" />
             </node>
-            <node concept="2qgKlT" id="18QbqASqX_X" role="2OqNvi">
+            <node concept="3zqWPK" id="47jP3PjRldQ" role="2OqNvi">
               <ref role="37wK5l" to="tpcu:6Gg5KlvuxxF" resolve="setLink" />
-              <node concept="37vLTw" id="18QbqASqX_Y" role="37wK5m">
+              <node concept="37vLTw" id="47jP3PjRldS" role="37wK5m">
                 <ref role="3cqZAo" node="18QbqASqX_l" resolve="ref" />
               </node>
             </node>

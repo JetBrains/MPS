@@ -488,7 +488,6 @@
         <child id="1144104376918" name="parameter" index="1xVPHs" />
       </concept>
       <concept id="5045161044515397667" name="jetbrains.mps.lang.smodel.structure.Node_PointerOperation" flags="ng" index="iZEcu" />
-      <concept id="1179409122411" name="jetbrains.mps.lang.smodel.structure.Node_ConceptMethodCall" flags="nn" index="2qgKlT" />
       <concept id="7400021826771268254" name="jetbrains.mps.lang.smodel.structure.SNodePointerType" flags="ig" index="2sp9CU">
         <reference id="7400021826771268269" name="concept" index="2sp9C9" />
       </concept>
@@ -3398,7 +3397,7 @@
                             <ref role="cht4Q" to="tpck:2ULFgo8_XDm" resolve="PropertyAttribute" />
                           </node>
                         </node>
-                        <node concept="2qgKlT" id="18QbqASwkHi" role="2OqNvi">
+                        <node concept="3zqWPK" id="47jP3PjRles" role="2OqNvi">
                           <ref role="37wK5l" to="tpcu:1avfQ4BBzOo" resolve="getProperty" />
                         </node>
                       </node>
@@ -3459,7 +3458,7 @@
                             <ref role="cht4Q" to="tpck:2ULFgo8_XDh" resolve="LinkAttribute" />
                           </node>
                         </node>
-                        <node concept="2qgKlT" id="18QbqASwkHY" role="2OqNvi">
+                        <node concept="3zqWPK" id="47jP3PjRleu" role="2OqNvi">
                           <ref role="37wK5l" to="tpcu:1avfQ4BEFo6" resolve="getLink" />
                         </node>
                       </node>

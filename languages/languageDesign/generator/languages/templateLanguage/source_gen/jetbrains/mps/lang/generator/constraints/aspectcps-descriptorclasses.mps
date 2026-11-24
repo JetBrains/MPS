@@ -258,7 +258,6 @@
       <concept id="1138411891628" name="jetbrains.mps.lang.smodel.structure.SNodeOperation" flags="nn" index="eCIE_">
         <child id="1144104376918" name="parameter" index="1xVPHs" />
       </concept>
-      <concept id="1179409122411" name="jetbrains.mps.lang.smodel.structure.Node_ConceptMethodCall" flags="nn" index="2qgKlT" />
       <concept id="2396822768958367367" name="jetbrains.mps.lang.smodel.structure.AbstractTypeCastExpression" flags="nn" index="$5XWr">
         <child id="6733348108486823193" name="leftExpression" index="1m5AlR" />
         <child id="3906496115198199033" name="conceptArgument" index="3oSUPX" />
@@ -794,9 +793,9 @@
                         <ref role="3cqZAo" node="1v" resolve="nsConcept" />
                         <uo k="s:originTrace" v="n:8085146484218859032" />
                       </node>
-                      <node concept="2qgKlT" id="24" role="2OqNvi">
+                      <node concept="3zqWPK" id="24" role="2OqNvi">
                         <ref role="37wK5l" to="tpfh:2vVmcK3iiCI" resolve="getMacroConcept" />
-                        <uo k="s:originTrace" v="n:8085146484218859033" />
+                        <uo k="s:originTrace" v="n:4743368192416371598" />
                       </node>
                     </node>
                     <node concept="37vLTw" id="22" role="37wK5m">

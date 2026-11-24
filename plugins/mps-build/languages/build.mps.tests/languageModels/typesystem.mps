@@ -2,6 +2,7 @@
 <model ref="r:f8814f89-9801-40d6-822f-e0e0a3a2c53d(jetbrains.mps.build.mps.tests.typesystem)">
   <persistence version="9" />
   <languages>
+    <use id="af65afd8-f0dd-4942-87d9-63a55f2a9db1" name="jetbrains.mps.lang.behavior" version="2" />
     <devkit ref="00000000-0000-4000-0000-1de82b3a4936(jetbrains.mps.devkit.aspect.typesystem)" />
   </languages>
   <imports>
@@ -159,7 +160,6 @@
       <concept id="1138411891628" name="jetbrains.mps.lang.smodel.structure.SNodeOperation" flags="nn" index="eCIE_">
         <child id="1144104376918" name="parameter" index="1xVPHs" />
       </concept>
-      <concept id="1179409122411" name="jetbrains.mps.lang.smodel.structure.Node_ConceptMethodCall" flags="nn" index="2qgKlT" />
       <concept id="4693937538533521280" name="jetbrains.mps.lang.smodel.structure.OfConceptOperation" flags="ng" index="v3k3i">
         <child id="4693937538533538124" name="requestedConcept" index="v3oSu" />
       </concept>
@@ -262,9 +262,9 @@
                       <ref role="3Tt5mk" to="5tjl:5I1s5NvGMfd" resolve="haltonfailure" />
                     </node>
                   </node>
-                  <node concept="2qgKlT" id="70OdufORfvk" role="2OqNvi">
+                  <node concept="3zqWPK" id="47jP3PjRle8" role="2OqNvi">
                     <ref role="37wK5l" to="vbkb:3NagsOfTioI" resolve="getText" />
-                    <node concept="10Nm6u" id="70OdufORfvl" role="37wK5m" />
+                    <node concept="10Nm6u" id="47jP3PjRlea" role="37wK5m" />
                   </node>
                 </node>
               </node>
@@ -748,9 +748,9 @@
                       <ref role="3Tt5mk" to="5tjl:51DD0tdLLzh" resolve="openTestReport" />
                     </node>
                   </node>
-                  <node concept="2qgKlT" id="70OdufORfvB" role="2OqNvi">
+                  <node concept="3zqWPK" id="47jP3PjRleb" role="2OqNvi">
                     <ref role="37wK5l" to="vbkb:3NagsOfTioI" resolve="getText" />
-                    <node concept="10Nm6u" id="70OdufORfvC" role="37wK5m" />
+                    <node concept="10Nm6u" id="47jP3PjRled" role="37wK5m" />
                   </node>
                 </node>
               </node>

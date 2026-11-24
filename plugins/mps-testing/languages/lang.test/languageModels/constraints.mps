@@ -9,6 +9,7 @@
     <use id="c72da2b9-7cce-4447-8389-f407dc1158b7" name="jetbrains.mps.lang.structure" version="9" />
     <use id="83888646-71ce-4f1c-9c53-c54016f6ad4f" name="jetbrains.mps.baseLanguage.collections" version="2" />
     <use id="fd392034-7849-419d-9071-12563d152375" name="jetbrains.mps.baseLanguage.closures" version="0" />
+    <use id="af65afd8-f0dd-4942-87d9-63a55f2a9db1" name="jetbrains.mps.lang.behavior" version="2" />
     <devkit ref="00000000-0000-4000-0000-5604ebd4f22c(jetbrains.mps.devkit.aspect.constraints)" />
   </languages>
   <imports>
@@ -258,7 +259,6 @@
       <concept id="1138411891628" name="jetbrains.mps.lang.smodel.structure.SNodeOperation" flags="nn" index="eCIE_">
         <child id="1144104376918" name="parameter" index="1xVPHs" />
       </concept>
-      <concept id="1179409122411" name="jetbrains.mps.lang.smodel.structure.Node_ConceptMethodCall" flags="nn" index="2qgKlT" />
       <concept id="8758390115028452779" name="jetbrains.mps.lang.smodel.structure.Node_GetReferencesOperation" flags="nn" index="2z74zc" />
       <concept id="2396822768958367367" name="jetbrains.mps.lang.smodel.structure.AbstractTypeCastExpression" flags="nn" index="$5XWr">
         <child id="6733348108486823193" name="leftExpression" index="1m5AlR" />
@@ -1222,7 +1222,7 @@
                       </node>
                       <node concept="3NT_Vc" id="18QbqAT0xGk" role="2OqNvi" />
                     </node>
-                    <node concept="2qgKlT" id="18QbqAT0xGl" role="2OqNvi">
+                    <node concept="3zqWPK" id="47jP3PjRleg" role="2OqNvi">
                       <ref role="37wK5l" to="tpcn:hEwILLp" resolve="getAggregationLinkDeclarations" />
                     </node>
                   </node>
@@ -1239,7 +1239,7 @@
                               <node concept="37vLTw" id="18QbqAT0xGC" role="2Oq$k0">
                                 <ref role="3cqZAo" node="18QbqAT0xGt" resolve="it" />
                               </node>
-                              <node concept="2qgKlT" id="18QbqAT0xGD" role="2OqNvi">
+                              <node concept="3zqWPK" id="47jP3PjRlei" role="2OqNvi">
                                 <ref role="37wK5l" to="tpcn:hEwIfAt" resolve="isSingular" />
                               </node>
                             </node>

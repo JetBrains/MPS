@@ -10,6 +10,7 @@
     <use id="ceab5195-25ea-4f22-9b92-103b95ca8c0c" name="jetbrains.mps.lang.core" version="2" />
     <use id="7866978e-a0f0-4cc7-81bc-4d213d9375e1" name="jetbrains.mps.lang.smodel" version="19" />
     <use id="f3061a53-9226-4cc5-a443-f952ceaf5816" name="jetbrains.mps.baseLanguage" version="12" />
+    <use id="af65afd8-f0dd-4942-87d9-63a55f2a9db1" name="jetbrains.mps.lang.behavior" version="2" />
     <devkit ref="fbc25dd2-5da4-483a-8b19-70928e1b62d7(jetbrains.mps.devkit.general-purpose)" />
   </languages>
   <imports>
@@ -425,7 +426,6 @@
         <child id="1144104376918" name="parameter" index="1xVPHs" />
       </concept>
       <concept id="5045161044515397667" name="jetbrains.mps.lang.smodel.structure.Node_PointerOperation" flags="ng" index="iZEcu" />
-      <concept id="1179409122411" name="jetbrains.mps.lang.smodel.structure.Node_ConceptMethodCall" flags="nn" index="2qgKlT" />
       <concept id="7400021826771268254" name="jetbrains.mps.lang.smodel.structure.SNodePointerType" flags="ig" index="2sp9CU" />
       <concept id="4693937538533521280" name="jetbrains.mps.lang.smodel.structure.OfConceptOperation" flags="ng" index="v3k3i">
         <child id="4693937538533538124" name="requestedConcept" index="v3oSu" />
@@ -5985,7 +5985,7 @@
                                     <node concept="2OqwBi" id="70OdufORdC8" role="37wK5m">
                                       <node concept="2OqwBi" id="70OdufORdC9" role="2Oq$k0">
                                         <node concept="30H73N" id="70OdufORdCa" role="2Oq$k0" />
-                                        <node concept="2qgKlT" id="70OdufORdCb" role="2OqNvi">
+                                        <node concept="3zqWPK" id="47jP3PjRldF" role="2OqNvi">
                                           <ref role="37wK5l" to="tp5o:4IvydoGvimX" resolve="getCheckingReference" />
                                         </node>
                                       </node>

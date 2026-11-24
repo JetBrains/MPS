@@ -14,6 +14,7 @@
     <use id="fd392034-7849-419d-9071-12563d152375" name="jetbrains.mps.baseLanguage.closures" version="-1" />
     <use id="64d34fcd-ad02-4e73-aff8-a581124c2e30" name="jetbrains.mps.lang.findUsages" version="0" />
     <use id="3ecd7c84-cde3-45de-886c-135ecc69b742" name="jetbrains.mps.lang.refactoring" version="0" />
+    <use id="af65afd8-f0dd-4942-87d9-63a55f2a9db1" name="jetbrains.mps.lang.behavior" version="2" />
     <devkit ref="fbc25dd2-5da4-483a-8b19-70928e1b62d7(jetbrains.mps.devkit.general-purpose)" />
   </languages>
   <imports>
@@ -443,7 +444,6 @@
       <concept id="1140725362528" name="jetbrains.mps.lang.smodel.structure.Link_SetTargetOperation" flags="nn" index="2oxUTD">
         <child id="1140725362529" name="linkTarget" index="2oxUTC" />
       </concept>
-      <concept id="1179409122411" name="jetbrains.mps.lang.smodel.structure.Node_ConceptMethodCall" flags="nn" index="2qgKlT" />
       <concept id="1138661924179" name="jetbrains.mps.lang.smodel.structure.Property_SetOperation" flags="nn" index="tyxLq">
         <child id="1138662048170" name="value" index="tz02z" />
       </concept>
@@ -26305,7 +26305,7 @@
                   <node concept="2OqwBi" id="70OdufOReeQ" role="37wK5m">
                     <node concept="2OqwBi" id="70OdufOReeR" role="2Oq$k0">
                       <node concept="2Sf5sV" id="70OdufOReeS" role="2Oq$k0" />
-                      <node concept="2qgKlT" id="70OdufOReeT" role="2OqNvi">
+                      <node concept="3zqWPK" id="47jP3PjRldt" role="2OqNvi">
                         <ref role="37wK5l" to="vdrq:6GJhO0n1Xys" resolve="getLines" />
                       </node>
                     </node>
