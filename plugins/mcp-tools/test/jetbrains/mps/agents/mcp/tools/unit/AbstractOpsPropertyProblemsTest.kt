@@ -449,7 +449,6 @@ class AbstractOpsPropertyProblemsTest {
                     com.intellij.mcpserver.impl.McpServerService.AskCommandExecutionMode.DONT_ASK,
                     com.intellij.mcpserver.McpToolFilter.AllowAll,
                 ),
-                emptyMap(),
             )
             return runBlocking(com.intellij.mcpserver.McpCallAdditionalDataElement(callInfo)) {
                 nodeOps.rejectUnknownTopLevelParametersForTest(
