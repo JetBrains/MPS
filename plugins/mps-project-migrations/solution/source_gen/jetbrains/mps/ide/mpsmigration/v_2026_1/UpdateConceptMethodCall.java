@@ -12,7 +12,10 @@ import java.util.Collections;
 import jetbrains.mps.progress.EmptyProgressMonitor;
 import java.util.HashSet;
 import org.jetbrains.mps.openapi.model.SModel;
+import java.util.ArrayDeque;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SNodeOperations;
+import jetbrains.mps.internal.collections.runtime.ListSequence;
+import org.jetbrains.mps.openapi.language.SAbstractConcept;
 import jetbrains.mps.smodel.action.SNodeFactoryOperations;
 import org.jetbrains.mps.openapi.language.SLanguage;
 import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
@@ -45,10 +48,34 @@ public class UpdateConceptMethodCall extends BaseProjectMigration {
     CollectConsumer<SNode> cc = new CollectConsumer<>(new ArrayList<>(1000));
     fum.findInstances(project.getScope(), Collections.singleton(CONCEPTS.Node_ConceptMethodCall$mz), true, cc, new EmptyProgressMonitor());
     HashSet<SModel> modelsTouched = new HashSet<>();
+    ArrayDeque<SNode> secondPass = new ArrayDeque<>(100);
     for (SNode n : cc.getResult()) {
       SModel model = SNodeOperations.getModel(n);
       modelsTouched.add(model);
-      SNodeFactoryOperations.replaceWithNewChild(n, CONCEPTS.Node_ConceptMethodCall$RC);
+      if (ListSequence.fromList(SNodeOperations.getNodeDescendants(n, CONCEPTS.Node_ConceptMethodCall$mz, false, new SAbstractConcept[]{})).isNotEmpty()) {
+        secondPass.add(n);
+      } else {
+        // replace right away
+        SNodeFactoryOperations.replaceWithNewChild(n, CONCEPTS.Node_ConceptMethodCall$RC);
+      }
+    }
+    int sinceLastReplace = 0;
+    while (!(secondPass.isEmpty())) {
+      SNode f = secondPass.removeFirst();
+      // indeed, *all* calls with nested calls would be in secondPass already, however, we don't know the order they come in,
+      // so, to replace bottom first, we move those on top to the tail
+      if (ListSequence.fromList(SNodeOperations.getNodeDescendants(f, CONCEPTS.Node_ConceptMethodCall$mz, false, new SAbstractConcept[]{})).isNotEmpty()) {
+        // guard against any descendant missing from initial collection (e.g. due to incomplete index)
+        if (++sinceLastReplace > secondPass.size()) {
+          break;
+        }
+        // re-visit later
+        secondPass.addLast(f);
+      } else {
+        // no more nested old calls - replace now
+        SNodeFactoryOperations.replaceWithNewChild(f, CONCEPTS.Node_ConceptMethodCall$RC);
+        sinceLastReplace = 0;
+      }
     }
     // occasionally, use of behavior methods doesn't drag j.m.lang.behavior use
     SLanguage lang_behavior = MetaAdapterFactory.getLanguage(0xaf65afd8f0dd4942L, 0x87d963a55f2a9db1L, "jetbrains.mps.lang.behavior");
