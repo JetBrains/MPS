@@ -7,7 +7,7 @@ These are **build-language plugins** (DSL extensions that register task concepts
 | Concept | Qualified name | Enables |
 |---|---|---|
 | `BuildJavaPlugin` | `jetbrains.mps.build.structure.BuildJavaPlugin` | Java compilation, jars, libraries (`BuildSource_JavaModule`, …) |
-| `BuildMPSPlugin` | `jetbrains.mps.build.mps.structure.BuildMPSPlugin` | MPS modules, groups, MPS plugin declarations (`idea plugin`), branding. Property `useMakeTask` (*Execute a complete MPS make task* in the Inspector) makes the build regenerate languages first |
+| `BuildMPSPlugin` | `jetbrains.mps.build.mps.structure.BuildMPSPlugin` | MPS modules, groups, MPS plugin declarations (`idea plugin`), branding. Property `useMakeTask` (*Execute a complete MPS make task* in the Inspector) makes the `generate` target run one `<mps.make>` (generate and compile in MPS, into `classes_gen`) instead of `<generate>` chunks; `assemble` then packages that output without `javac` (unless the run sets `-Dforce.java.compile=true`). `build` still does not depend on `generate`, so run `ant … generate build` either way |
 | `BuildModuleTestsPlugin` (`module-tests`) | `jetbrains.mps.build.mps.tests.structure.BuildModuleTestsPlugin` | Node/Editor test configurations |
 | `BuildSolutionRunnerPlugin` (`mps-runner`) | `jetbrains.mps.build.mps.runner.structure.BuildSolutionRunnerPlugin` | `run code from solution` |
 

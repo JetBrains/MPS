@@ -7,12 +7,12 @@ What ends up in `build.xml`.
 | `build` / `clean` | common preset | Entry point (depends on `assemble`, **not** on `generate`) / delete this script's `build/tmp/<name>` and `build/artifacts/<name>` |
 | `assemble` | common preset | Produce the `layout` under `build/artifacts` |
 | `fetchDependencies` | common preset | Hook that `generate` and compilation depend on; prepares dependency artifacts (empty in simple scripts) |
-| `compileJava` | java | Compile all Java modules |
+| `compileJava` | java | Compile all Java modules; with `useMakeTask` its `java.compile.*` targets are skipped unless `-Dforce.java.compile=true` |
 | `processResources` | java | Hook for resource processing |
 | `classes` | java | Full compile + resources |
 | `test` | java | Extension point for unit tests |
 | `check` | java | Tests + validation |
-| `generate` | mps | Generate all declared MPS modules (in chunk order) with the MPS at `mps_home`; rewrites the modules' `source_gen` in place |
+| `generate` | mps | Generate all declared MPS modules (in chunk order) with the MPS at `mps_home`; rewrites the modules' `source_gen` in place; with `useMakeTask` one `<mps.make>` instead, which also compiles into `classes_gen` |
 | `cleanSources` | mps | Delete generated code (except bootstrap deps) |
 | `declare-mps-tasks` | mps | Helper: registers MPS Ant tasks |
 | `makeDependents` | mps | Regenerate transitive deps then assemble |

@@ -15,7 +15,7 @@ One default options node + optional per-module overrides.
 | `javaLevel` | (empty) | *java compliance level*, e.g. `"21"`; set it explicitly |
 | `compilerOptions` | (empty) | *java compiler options* — extra javac args (string; UTF-8 encoding is added if missing) |
 | `generatorJvmOptions` | (empty) | *generator jvm options* — JVM args for the generate task (string) |
-| `copyResources` | false | Copies non-`.java` files from `source_gen` into the class output. **Set it to `true` for language plugins**: MPS generates concept icons (`TextIcon*.png` next to the structure aspect) into `source_gen`, and with `false` they are missing from the jar while the check stays clean. The checker's "Need resources entry" quick fix only adds the module's own `icons/**, resources/**` folders and does not cover this |
+| `copyResources` | false | Copies non-`.java` files from `source_gen` into the class output. **Set it to `true` for language plugins**: MPS generates concept icons (`TextIcon*.png` next to the structure aspect) into `source_gen`, and with `false` they are missing from the jar while the check stays clean. The checker's "Need resources entry" quick fix only adds the module's own `icons/**, resources/**` folders and does not cover this. With `useMakeTask = true` the setting has no effect unless the run sets `-Dforce.java.compile=true`: the `java.compile.*` targets it controls are skipped, and the MPS make task's `classes_gen` already holds the icons |
 | `resourceSelectors` (child) | — | *resource patterns* — file masks identifying resources |
 
 ```json

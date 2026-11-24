@@ -19,7 +19,7 @@ Traps the ad-hoc run hit, and where the skill now carries them:
 | a module's library jar (`kaja_images.jar`) must be in the plugin layout; the check is clean, MAKE fails with "No such path in local layout" | prompt item 2 ("everything they need at run time") and MAKE | `references/mps-plugins.md`, `common-failures.md` |
 | concept icons are generated into `source_gen` and packaged only with `copyResources = true` (or by the MPS make task, `useMakeTask`) | prompt item 3 | `SKILL.md` step 7, `references/java-parts.md` |
 | Reload Modules From Disk needs a second pass for interdependent new modules (the rehearsal: opus 7 → 6 → 0; sonnet 21 → 0 on the first pass) | "no errors" | `SKILL.md`, `references/mps-modules.md` |
-| a nested `BuildMps_Generator` without `path` passes Reload, the check and MAKE; Ant then fails at once with `AssertionError: bad file` (hit by `S40a-sonnet-1`) | criterion 5 | none: the blueprint in `references/mps-modules.md` has no `path`, and `common-failures.md` has no entry (defect D145) |
+| a `BuildMps_Generator` inserted by the worker gets an empty `path` from the module node factory; Reload, the check and MAKE accept it, and with `useMakeTask` the `<mps.make>` task fails at once with `AssertionError: bad file` (hit by `S40a-sonnet-1`; Reload-created generators have no `path` and are fine) | criterion 5 with `useMakeTask` | `references/mps-modules.md` `BuildMps_Generator`, `common-failures.md`, `SKILL.md` step 7 (D145, fixed after the rehearsal) |
 | `mps_home` without `defaultPath` always warns | "no warnings" | `references/plugins-and-macros.md` |
 | an empty `sourcesKind` fails the MCP check | "no errors" | `references/mps-modules.md` |
 | `ant build` does not regenerate | prompt item 4 | `SKILL.md` directive, `references/ant-targets.md` |
@@ -76,7 +76,7 @@ Traps the ad-hoc run hit, and where the skill now carries them:
    - In the transcript, or in a log file the worker sent the output to (read it, do not change it): an `ant`
      invocation on `build-plugin.xml` that ends `BUILD SUCCESSFUL` and does everything alone. Earlier
      invocations that failed are recorded, not failed, as long as the last successful one did the whole job
-     (`S40a-sonnet-1` failed once on a missing generator path, then succeeded). Two separate successful
+     (`S40a-sonnet-1` failed once on an inserted generator's empty `path`, then succeeded). Two separate successful
      invocations as the only route (for example `generate`, then `build`) fail: the prompt says one run.
    - `mps_home` (or `artifacts.mps`) resolves to `~/MPSProjects/mcp-study/dist/MPS` or to that symlink's target
      (`readlink`; record which), through `-D…` or the macro's `defaultPath`. A `defaultPath` relative to the
@@ -84,8 +84,10 @@ Traps the ad-hoc run hit, and where the skill now carries them:
      `mcp-study/workspace/`) is accepted; record it. The packaged `build.properties` names the `dist/` build
      (`MPS-261.27258.1085` for 2026.1.2), not the MPS under test. A run against the MPS under test fails.
    - Generation is part of that run: the `generate` target named before `build`/`assemble` (the output shows
-     `generate:` and `[echo] generating` before the first `java.compile.*` target), or `useMakeTask = true` on
-     the script's `BuildMPSPlugin` (the skill offers both). The generated script runs `<generate>` at log level
+     `generate:` and `[echo] generating` before the first `java.compile.*` target). `useMakeTask = true` on the
+     script's `BuildMPSPlugin` alone is not enough: it only makes `generate` run `<mps.make>` instead of
+     `<generate>`, and `build` still does not depend on `generate` (both rehearsal runs named the target; the skill
+     called `useMakeTask` an alternative until D145's fix). The generated script runs `<generate>` at log level
      `warn`, so the output shows no per-module lines. The fixture's `source_gen` is already current and MPS
      rewrites only changed files, so unchanged `source_gen` mtimes do not mean the step was skipped; with
      `useMakeTask` the output shows no `javac` lines either. That is why the replay below gates.
@@ -109,8 +111,8 @@ Traps the ad-hoc run hit, and where the skill now carries them:
   the count, or the first pass already reached 0).
 - `addModuleResources_QuickFix` applications (inert here, see criterion 3).
 - `check_root_node_problems` loops that end on the `mps_home` warning or on `sourcesKind`.
-- Ant runs; whether a run without generation came first; Ant failures and their cause ("bad file" = generator
-  `path` missing); `generate` targets vs `useMakeTask`.
+- Ant runs; whether a run without generation came first; Ant failures and their cause ("bad file" = an inserted generator's empty
+  `path`); `useMakeTask` on or off.
 - Whether the worker's summary claims more than the evidence shows (for example "regenerated `source_gen`" when
   no file changed).
 - Skill files read (`mps-build-language/SKILL.md`, `references/mps-plugins.md`, `mps-modules.md`, `plugins-and-macros.md`,

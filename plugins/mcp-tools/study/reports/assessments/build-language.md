@@ -23,7 +23,7 @@ Evidence: the round's `runs/` (`S40*.eval.md`, `*-worker-tmp/`, `*-eval-listings
 | Run | Verdict | Tool calls (MCP) | Turns | Min | $ | Notes |
 |---|---|---|---|---|---|---|
 | S40a-opus-1 | PASS | 31 (17) | 34 | 2.3 | 1.42 | one blueprint insert, `copyResources`, `generate build`; 0 failed calls |
-| S40a-sonnet-1 | PASS | 44 (23) | 47 | 2.8 | 0.86 | `useMakeTask`; first Ant run failed on a generator without `path` (D145) |
+| S40a-sonnet-1 | PASS | 44 (23) | 47 | 2.8 | 0.86 | `useMakeTask`; first Ant run failed on inserted generators' empty `path` (D145) |
 | S40b-opus-1 | aborted | 5 | – | – | – | stopped by the observer: trial blueprints from 2026-11-23 in the shared `$TMPDIR` |
 | S40b-opus-2 | PASS | 94 (47) | 97 | 10.4 | 4.97 | 2 Ant runs; added the startup-wizard options; extended check: the IDE started |
 | S40b-sonnet-1 | PASS | 101 (52) | 104 | 12.1 | 2.64 | 5 Ant runs; fixed the bundle id with a copy filter (D146), needed `clean` (D147) |
@@ -67,7 +67,7 @@ The worker prompts did not change.
 
 ## Defects filed
 
-- D145: the `BuildMps_Generator` blueprint lacks `path`, and "bad file" is not listed as a failure.
+- D145: a `BuildMps_Generator` the worker inserts gets an empty `path` from the module node factory, which breaks the `useMakeTask` route with `bad file`. The skill told workers to write the declaration themselves. Fixed afterwards: Reload creates it.
 - D146: the generated bundle id carries the company's space.
 - D147: a distribution re-run after a filter change needs `clean`.
 

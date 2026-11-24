@@ -87,4 +87,4 @@ With an empty config folder, the first start of a standalone IDE stops in the In
 
 Generate with **Rebuild Model** on the build model; run the main script first, then the distribution script, each with `ant -f <fileName> build` from the base directory or from the script's context menu in MPS. Output appears under `build/artifacts/<script name>/`.
 
-The build script **compiles and packages** your languages but does **not regenerate** them. Make your languages in MPS first, run `ant -f <fileName> generate build`, or set *Execute a complete MPS make task* (`useMakeTask`) on the `mps` build plugin in the Inspector.
+The build script **compiles and packages** your languages but does **not regenerate** them. Make your languages in MPS first, or run `ant -f <fileName> generate build`; with `useMakeTask`, `generate` also compiles and `build` only packages (`references/plugins-and-macros.md`).
