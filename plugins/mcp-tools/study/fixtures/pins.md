@@ -20,6 +20,7 @@ Files live in `~/MPSProjects/mcp-study/fixtures/`, not in git. An empty project 
 | `kaja-dataflow` | `e8ee8fc579774969e883d18326243075a1fa16666409e3804dac446899406aec` | file date not separately documented |
 | `kaja-dataflow-2` | `47964de81ba0999d06db198f12ec603492412fbc91454f64d048536160113acf` | file date not separately documented |
 | `kaja-editor` | `8a64206f7adac869e93c812fa7faf3019337f0595744b756505a26f12ae1c312` | 2026-11-01 (S35) |
+| `kaja-build` | `9e47ad47f886bdf85aac167e7546d67afa9db2293a50f1d7c537751e7df6cfb7` | 2026-11-24 (S40a, S40b; `samples/robot_Kaja` at `b2b3c24ae8d8`, made with MPS 261.25134 from sources) |
 | `loans` | `a1dd53cc86df503c25fd523513d54fc0064425073b8a0d1e89ab859218870711` | 2026-10-31 |
 | `recipes` | `40f91e40596ec449625663e92658c16336ff4da75dd3a008824a45b0c440ce81` | 2026-09-24 (the r3/r4/r12 copy; the 2026-09-16 file pinned before was `recipes-full` plus a doc surface, now `archive/fixtures/wrong-recipes-2026-09-16/`) |
 | `recipes-editor` | `fb40e0c196cd14f25a39d5e0bbd1f579552c92d2340da871f14ab29d893dbaa5` | 2026-11-01 (S32) |
@@ -33,3 +34,12 @@ Files live in `~/MPSProjects/mcp-study/fixtures/`, not in git. An empty project 
 | `tickets` | `6d45a25cb5c7c85fed139a08f9de89322b1e99c385bafa8fa49a02c1921e732b` | 2026-10-31 |
 
 The current `statechart` file is the copy shared by the later `fixtures-r8` and `fixtures-r12` archives. The older `fixtures-r6` copy differed and was not promoted; it remains under `archive/fixtures/r6/`.
+
+## `dist/` for S40a and S40b (outside the tarballs)
+
+`~/MPSProjects/mcp-study/dist/` on the observer machine, as of 2026-11-24 (variant G):
+
+| link | target | build | source |
+|---|---|---|---|
+| `dist/MPS` | `dist/MPS-2026.1.2/MPS 2026.1.2` (unpacked `MPS-2026.1.2.zip`) | `MPS-261.27258.1085` | `https://download.jetbrains.com/mps/2026.1/MPS-2026.1.2.zip`, sha256 `adcc8a2bfd1f6f32518e386c523f608aba157fdb41ab503372fbcf7a9365d75d` (matches the published `.sha256`), 699,807,194 bytes, kept in `dist/dl-2026.1.2/` |
+| `dist/jdk` | `~/Library/Java/JavaVirtualMachines/jbr-25.0.4/Contents/Home` | JBR 25.0.4 | the machine's JBR |

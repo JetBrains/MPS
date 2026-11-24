@@ -1,6 +1,6 @@
 # Grouping Modules: `BuildMps_Group`
 
-A named set of MPS modules that can be referenced as a unit (e.g. from an IDEA plugin's `content` or from an MPS test configuration).
+A named set of MPS modules that can be referenced as a unit (e.g. from a `BuildMps_IdeaPlugin`'s `content` or from an MPS test configuration). Each language reference needs the real language name and the path to its `.mpl`; enter the path first and run **Reload Modules From Disk** (Alt+Enter; the docs' *Load required information from file*) to fill in the name and dependencies. For a fresh group of interdependent modules, apply it a second time: the first pass names the modules, the second wires their dependencies on each other.
 
 ```json
 {
@@ -24,4 +24,4 @@ A named set of MPS modules that can be referenced as a unit (e.g. from an IDEA p
 
 ## Transitive-Closure Rule
 
-A group must include the **transitive closure** of language dependencies. If Language A → B, both must be in the group. Missing members show as red squiggles at build-script generation time.
+A group must include the **transitive closure** of language dependencies. If Language A → B, both must be in the group. A missing language shows as a red squiggle; after adding it, rerun **Reload Modules From Disk** or apply the **Load required information from file** quick fix on the module that reported the error. The Inspector shows the dependency details of the selected module.

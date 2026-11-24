@@ -358,3 +358,20 @@
     transcript, and the evaluator's own timeout. → Before filing a tooling gap, read the column's docstring line,
     then find the call it should have counted with `show_steps.py` at a full `--input-chars`; the default 400
     cut off the triplet that renamed the S27 property (lesson 48's rule for MPS internals, applied to the harness).
+
+## From the S40a/S40b rehearsal (2026-11-24; opus and sonnet medium, n=1, variant G)
+
+53. **Workers share the observer's `TMPDIR`, so whatever an earlier session left there is in reach.** `run_worker.sh`
+    passes `TMPDIR` through `env -i`, and build workers write blueprints, scripts and Ant logs there or in `/tmp`
+    under names of their choosing. The ad-hoc trials that the S40 cells were written from had left their working
+    blueprints for the very same task (`kaja-main-*.json`, `kaja-dist-*.json`, `kaja-startup-*.json`, `kajaplug/`)
+    and struggle logs (`/tmp/kaja-*-log.md`) behind; `S40b-opus-1` was aborted after 5 calls when the observer saw
+    them. → Before the first launch of a cell that has ad-hoc history, list `$TMPDIR` and `/tmp` for the task's
+    names; after every run, `find $TMPDIR /tmp -maxdepth 1 -user $USER -newer <meta>` and move the worker's files to
+    `$RUNS/<id>-worker-tmp/` (`build-shared-criteria.md` preflight 5). The evidence is useful too: S40a's Ant log
+    existed only there.
+54. **A fixture whose generated files are current cannot show that a build step regenerated them.** MPS rewrites only
+    changed files, and the generated Ant script runs `<generate>` at log level `warn`, so neither mtimes nor output
+    proved S40a's "the Ant run regenerates first"; with `useMakeTask` the zip even carried the classes the MPS under
+    test had compiled. → Gate such a claim with an observer replay of the worker's own command on a copy with the
+    generated folders deleted (S40a criterion 5), not with a fixture change that alters what the worker sees.
