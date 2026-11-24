@@ -1950,6 +1950,86 @@ class MPSJavaMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         }
     }
 
+    @Test
+    fun `child mode infers contextNodeRef from Classifier and ConceptBehavior parentRef`() {
+        val toolset = MPSJavaMcpToolset()
+        val javaModel = createJavaModel()
+        val javaModelRef = modelRefOf(javaModel)
+        val classRef = seedClassRoot(toolset, javaModelRef, "InferredContextHolder")
+
+        val classResponse = runTool(toolset) {
+            it.mps_mcp_parse_java_and_insert(
+                """{"code":"public int compute() { return 7; }","featureKind":"METHOD",
+                    "insert":{"mode":"child","parentRef":"$classRef","role":"member"}}"""
+            )
+        }
+        val classEnvelope = JsonParser.parseString(classResponse).asJsonObject
+        assertTrue("child mode on Classifier must infer contextNodeRef: $classResponse", classEnvelope.get("ok").asBoolean)
+        val classDetails = classEnvelope.getAsJsonObject("details")
+        assertEquals(listOf("contextNodeRef"), classDetails.getAsJsonArray("inferredParameters").map { it.asString })
+        assertEquals(classRef, classDetails.get("contextNodeRef").asString)
+
+        val behaviorRef = createConceptBehaviorRoot("InferredBehaviorConcept${System.nanoTime()}")
+        val behaviorResponse = runTool(toolset) {
+            it.mps_mcp_parse_java_and_insert(
+                """{"code":"public String label() { return \"ok\"; }","featureKind":"METHOD",
+                    "insert":{"mode":"child","parentRef":"$behaviorRef","role":"method"}}"""
+            )
+        }
+        val behaviorEnvelope = JsonParser.parseString(behaviorResponse).asJsonObject
+        assertTrue("child mode on ConceptBehavior must infer contextNodeRef: $behaviorResponse", behaviorEnvelope.get("ok").asBoolean)
+        val behaviorDetails = behaviorEnvelope.getAsJsonObject("details")
+        assertEquals(listOf("contextNodeRef"), behaviorDetails.getAsJsonArray("inferredParameters").map { it.asString })
+        assertEquals(behaviorRef, behaviorDetails.get("contextNodeRef").asString)
+
+        // Negative cases for child-mode contextNodeRef inference (D141):
+        for (unsupportedKind in listOf("FIELD", "NESTED_CLASS")) {
+            val unsupportedResp = JsonParser.parseString(
+                runTool(toolset) {
+                    it.mps_mcp_parse_java_and_insert(
+                        """{"code":"int x;","featureKind":"$unsupportedKind",
+                            "insert":{"mode":"child","parentRef":"$behaviorRef","role":"method"}}"""
+                    )
+                }
+            ).asJsonObject
+            assertFalse("ConceptBehavior + $unsupportedKind must fail: $unsupportedResp", unsupportedResp.get("ok").asBoolean)
+            assertEquals("INVALID_REQUEST", unsupportedResp.get("code").asString)
+            val err = unsupportedResp.get("error").asString
+            assertTrue(
+                "must report unsupported featureKind on ConceptBehavior rather than missing contextNodeRef: $err",
+                err.contains("featureKind '$unsupportedKind' is not supported") && err.contains("ConceptBehavior only supports parsing METHOD/CLASS_CONTENT"),
+            )
+        }
+
+        val methodRef = assertOkData(behaviorResponse).getAsJsonArray("inserted").first().asJsonObject.get("reference").asString
+        val nonClassifierResp = JsonParser.parseString(
+            runTool(toolset) {
+                it.mps_mcp_parse_java_and_insert(
+                    """{"code":"void inner() {}","featureKind":"METHOD",
+                        "insert":{"mode":"child","parentRef":"$methodRef","role":"body"}}"""
+                )
+            }
+        ).asJsonObject
+        assertFalse("non-Classifier/non-ConceptBehavior parentRef must fail without contextNodeRef: $nonClassifierResp", nonClassifierResp.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", nonClassifierResp.get("code").asString)
+        assertTrue(
+            "must explain that contextNodeRef is required and name the resolved parent concept: $nonClassifierResp",
+            nonClassifierResp.get("error").asString.contains("'contextNodeRef' is required") &&
+                nonClassifierResp.get("error").asString.contains("ConceptMethodDeclaration"),
+        )
+
+        val missingParentResp = JsonParser.parseString(
+            runTool(toolset) {
+                it.mps_mcp_parse_java_and_insert(
+                    """{"code":"void inner() {}","featureKind":"METHOD",
+                        "insert":{"mode":"child","parentRef":"r:00000000-0000-0000-0000-000000000000(missing)/999","role":"member"}}"""
+                )
+            }
+        ).asJsonObject
+        assertFalse("unresolved parentRef must fail: $missingParentResp", missingParentResp.get("ok").asBoolean)
+        assertEquals("NOT_FOUND", missingParentResp.get("code").asString)
+    }
+
     /** Seeds an empty class root via root-mode insertion and returns its SNodeReference string. */
     private fun seedClassRoot(toolset: MPSJavaMcpToolset, modelRef: String, name: String): String {
         val seed = runTool(toolset) {

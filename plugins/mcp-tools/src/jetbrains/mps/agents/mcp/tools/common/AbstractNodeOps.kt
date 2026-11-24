@@ -420,8 +420,8 @@ abstract class AbstractNodeOps : AbstractOps() {
         link: SContainmentLink?,
         index: Int
     ): SNode {
-        val conceptName = jsonObject.get("concept")?.asString
-        val conceptRef = jsonObject.get("conceptReference")?.asString
+        val conceptName = jsonObject.optionalBlueprintString("concept", jsonPath)
+        val conceptRef = jsonObject.optionalBlueprintString("conceptReference", jsonPath)
         
         if (conceptName.isNullOrEmpty() && conceptRef.isNullOrEmpty()) {
             throw McpInvalidRequestException("Missing 'concept' or 'conceptReference' property in JSON at path '$jsonPath'")
@@ -523,7 +523,22 @@ abstract class AbstractNodeOps : AbstractOps() {
             }
         }
 
-        val name = jsonObject.get("name")?.asString
+        // Properties
+        val properties = jsonObject.requireArray("properties", jsonPath)
+        val topLevelName = jsonObject.optionalBlueprintString("name", jsonPath)
+        val printedPresentation = jsonObject.optionalBlueprintString("presentation", jsonPath)
+        val parsedProperties = properties?.mapIndexed { propIndex, propElement ->
+            val propPath = "$jsonPath.properties[$propIndex]"
+            val propObject = propElement.asBlueprintObject(propPath)
+            val propName = propObject.optionalBlueprintString("name", propPath)
+            Triple(propPath, propObject, propName)
+        }
+        val hasStoredNameInProperties = parsedProperties?.any { (_, _, propName) -> propName == "name" } == true
+        val isUneditedPresentationFallback = topLevelName != null &&
+            !hasStoredNameInProperties &&
+            printedPresentation != null &&
+            topLevelName == printedPresentation
+        val name = if (isUneditedPresentationFallback) null else topLevelName
         if (name != null) {
             val nameProperty = SNodeUtil.property_INamedConcept_name
             if (sConcept.properties.contains(nameProperty)) {
@@ -531,25 +546,26 @@ abstract class AbstractNodeOps : AbstractOps() {
             }
         }
 
-        // Properties
-        val properties = jsonObject.requireArray("properties", jsonPath)
-        if (properties != null) {
-            properties.forEachIndexed { propIndex, propElement ->
-                val propObject = propElement.asJsonObject
-                val propName = propObject.get("name")?.asString ?: return@forEachIndexed
-                val propValue = propObject.get("value")?.asString
+        if (parsedProperties != null) {
+            for ((propPath, propObject, propName) in parsedProperties) {
+                if (propName == null) continue
+                val propValue = propObject.optionalBlueprintString("value", propPath)
                 val sProperty = sConcept.properties.find { it.name == propName }
-                    ?: run {
-                        gate?.staleFeature(sConcept, StructureDeclarations.FeatureKind.PROPERTY, propName, "$jsonPath.properties[$propIndex]")?.let { throw it }
-                        if (isMarkedUndeclared(propObject)) {
-                            warnings?.add(undeclaredPropertyWarning("$jsonPath.properties[$propIndex]", propName, sConcept, stored = false))
-                            return@forEachIndexed
-                        }
-                        throw McpInvalidRequestException(
-                            "Unknown property '$propName' at $jsonPath.properties[$propIndex]: " +
-                                    "concept '${sConcept.name}' has no such property"
-                        )
+                if (sProperty == null) {
+                    gate?.staleFeature(sConcept, StructureDeclarations.FeatureKind.PROPERTY, propName, propPath)?.let { throw it }
+                    if (isMarkedUndeclared(propObject)) {
+                        warnings?.add(undeclaredPropertyWarning(propPath, propName, sConcept, stored = false))
+                        continue
                     }
+                    throw McpInvalidRequestException(
+                        "Unknown property '$propName' at $propPath: " +
+                                "concept '${sConcept.name}' has no such property"
+                    )
+                }
+                if (isUnsetDefaultProperty(propObject, sProperty, propValue)) {
+                    newNode.setProperty(sProperty, null)
+                    continue
+                }
                 setProperty(newNode, sProperty, propValue)
             }
         }
@@ -569,15 +585,17 @@ abstract class AbstractNodeOps : AbstractOps() {
         val references = jsonObject.requireArray("references", jsonPath)
         if (references != null) {
             references.forEachIndexed { index, refElement ->
-                val refObject = refElement.asJsonObject
-                val roleName = refObject.get("role")?.asString ?: return@forEachIndexed
-                val targetRefStr = (refObject.get("targetReference") ?: refObject.get("target"))?.asString
+                val refPath = "$jsonPath.references[$index]"
+                val refObject = refElement.asBlueprintObject(refPath)
+                val roleName = refObject.optionalBlueprintString("role", refPath) ?: return@forEachIndexed
+                val targetRefStr = refObject.optionalBlueprintString("targetReference", refPath)
+                    ?: refObject.optionalBlueprintString("target", refPath)
                 val link = sConcept.referenceLinks.find { it.name == roleName }
-                    ?: throw gate?.staleFeature(sConcept, StructureDeclarations.FeatureKind.REFERENCE, roleName, "$jsonPath.references[$index]")
+                    ?: throw gate?.staleFeature(sConcept, StructureDeclarations.FeatureKind.REFERENCE, roleName, refPath)
                         ?: if (isMarkedUndeclared(refObject)) {
-                        undeclaredRoleRejection("Reference role", roleName, "$jsonPath.references[$index]", sConcept, "stored reference")
+                        undeclaredRoleRejection("Reference role", roleName, refPath, sConcept, "stored reference")
                     } else McpInvalidRequestException(
-                        "Unknown reference role '$roleName' at $jsonPath.references[$index]: " +
+                        "Unknown reference role '$roleName' at $refPath: " +
                                 "concept '${sConcept.name}' has no such reference link"
                     )
                 if (!targetRefStr.isNullOrEmpty()) {
@@ -589,7 +607,7 @@ abstract class AbstractNodeOps : AbstractOps() {
                         repository = model.repository,
                         parentConceptName = sConcept.name,
                         roleName = roleName,
-                        errorPath = "$jsonPath.references[$index]",
+                        errorPath = refPath,
                         xmlReferencePath = jsonPath,
                         xmlReferenceIndex = index,
                         dryRun = dryRun,
@@ -601,6 +619,14 @@ abstract class AbstractNodeOps : AbstractOps() {
         }
 
         return newNode
+    }
+
+    private fun isUnsetDefaultProperty(propObject: JsonObject, sProperty: SProperty, propValue: String?): Boolean {
+        if (propObject.get("isDefault")?.takeIf { it.isJsonPrimitive && it.asJsonPrimitive.isBoolean }?.asBoolean != true) {
+            return false
+        }
+        val defaultLiteral = defaultEnumLiteralName(sProperty)
+        return defaultLiteral != null && propValue == defaultLiteral
     }
 
     /**
@@ -628,15 +654,16 @@ abstract class AbstractNodeOps : AbstractOps() {
         // Roles whose factory-produced content has already been dropped, see below.
         val clearedRoles = mutableSetOf<String>()
         children.forEachIndexed { roleIndex, childRoleElement ->
-            val childRoleObject = childRoleElement.asJsonObject
-            val roleName = childRoleObject.get("role")?.asString ?: return@forEachIndexed
-            val childNodes = childRoleObject.requireArray("nodes", "$jsonPath.children[$roleIndex]") ?: return@forEachIndexed
+            val rolePath = "$jsonPath.children[$roleIndex]"
+            val childRoleObject = childRoleElement.asBlueprintObject(rolePath)
+            val roleName = childRoleObject.optionalBlueprintString("role", rolePath) ?: return@forEachIndexed
+            val childNodes = childRoleObject.requireArray("nodes", rolePath) ?: return@forEachIndexed
             val link = sConcept.containmentLinks.find { it.name == roleName }
-                ?: throw gate?.staleFeature(sConcept, StructureDeclarations.FeatureKind.CHILD, roleName, "$jsonPath.children[$roleIndex]")
+                ?: throw gate?.staleFeature(sConcept, StructureDeclarations.FeatureKind.CHILD, roleName, rolePath)
                     ?: if (isMarkedUndeclared(childRoleObject)) {
-                    undeclaredRoleRejection("Child role", roleName, "$jsonPath.children[$roleIndex]", sConcept, "stored children")
+                    undeclaredRoleRejection("Child role", roleName, rolePath, sConcept, "stored children")
                 } else McpInvalidRequestException(
-                    "Unknown child role '$roleName' at $jsonPath.children[$roleIndex]: " +
+                    "Unknown child role '$roleName' at $rolePath: " +
                             "concept '${sConcept.name}' has no such containment link"
                 )
             // The blueprint is authoritative for the roles it names: drop whatever the node factory
@@ -650,8 +677,8 @@ abstract class AbstractNodeOps : AbstractOps() {
                 node.getChildren(link).toList().forEach { it.delete() }
             }
             childNodes.forEachIndexed { nodeIndex, nodeElement ->
-                val childPath = "$jsonPath.children[$roleIndex].nodes[$nodeIndex]"
-                val childObject = nodeElement.asJsonObject
+                val childPath = "$rolePath.nodes[$nodeIndex]"
+                val childObject = nodeElement.asBlueprintObject(childPath)
                 val childNode = createNode(
                     childObject, model, dryRun, childPath, warnings, mpsProject, gate,
                     enclosingNode = node, link = link, index = node.getChildren(link).count()
@@ -1067,10 +1094,12 @@ abstract class AbstractNodeOps : AbstractOps() {
             val property = concept.properties.find { it.name == propName }
                 ?: throw if (isMarkedUndeclared(entry)) undeclaredTypeFeature("Property", propName, path, concept)
                 else McpInvalidRequestException("Unknown property '$propName' at $path: concept '${concept.name}' has no such property")
-            if (entry.get("isDefault")?.let { it.isJsonPrimitive && it.asJsonPrimitive.isBoolean && it.asBoolean } == true) {
+            val propValue = entry.optionalBlueprintString("value", path)
+            if (isUnsetDefaultProperty(entry, property, propValue)) {
+                node.setProperty(property, null)
                 return@forEachIndexed
             }
-            setProperty(node, property, entry.optionalBlueprintString("value", path))
+            setProperty(node, property, propValue)
         }
 
         blueprint.requireArray("references", jsonPath)?.forEachIndexed { index, element ->
@@ -1196,21 +1225,25 @@ abstract class AbstractNodeOps : AbstractOps() {
         val properties = jsonObject.requireArray("properties", jsonPath)
         if (properties != null) {
             properties.forEachIndexed { propIndex, propElement ->
-                val propObject = propElement.asJsonObject
-                val propName = propObject.get("name")?.asString ?: return@forEachIndexed
-                val propValue = propObject.get("value")?.asString
+                val propPath = "$jsonPath.properties[$propIndex]"
+                val propObject = propElement.asBlueprintObject(propPath)
+                val propName = propObject.optionalBlueprintString("name", propPath) ?: return@forEachIndexed
+                val propValue = propObject.optionalBlueprintString("value", propPath)
                 val sProperty = sConcept.properties.find { it.name == propName }
                     ?: run {
-                        gate?.staleFeature(sConcept, StructureDeclarations.FeatureKind.PROPERTY, propName, "$jsonPath.properties[$propIndex]")?.let { throw it }
+                        gate?.staleFeature(sConcept, StructureDeclarations.FeatureKind.PROPERTY, propName, propPath)?.let { throw it }
                         if (isMarkedUndeclared(propObject)) {
-                            warnings?.add(undeclaredPropertyWarning("$jsonPath.properties[$propIndex]", propName, sConcept, stored = true))
+                            warnings?.add(undeclaredPropertyWarning(propPath, propName, sConcept, stored = true))
                             return@forEachIndexed
                         }
                         throw McpInvalidRequestException(
-                            "Unknown property '$propName' at $jsonPath.properties[$propIndex]: " +
+                            "Unknown property '$propName' at $propPath: " +
                                     "concept '${sConcept.name}' has no such property"
                         )
                     }
+                if (isUnsetDefaultProperty(propObject, sProperty, propValue)) {
+                    return@forEachIndexed
+                }
                 stagedProperties += sProperty to propValue
             }
         }
@@ -1232,20 +1265,21 @@ abstract class AbstractNodeOps : AbstractOps() {
             val children = jsonObject.requireArray("children", jsonPath)
             if (children != null) {
                 children.forEachIndexed { roleIndex, childRoleElement ->
-                    val childRoleObject = childRoleElement.asJsonObject
-                    val roleName = childRoleObject.get("role")?.asString ?: return@forEachIndexed
-                    val childNodes = childRoleObject.requireArray("nodes", "$jsonPath.children[$roleIndex]") ?: return@forEachIndexed
+                    val rolePath = "$jsonPath.children[$roleIndex]"
+                    val childRoleObject = childRoleElement.asBlueprintObject(rolePath)
+                    val roleName = childRoleObject.optionalBlueprintString("role", rolePath) ?: return@forEachIndexed
+                    val childNodes = childRoleObject.requireArray("nodes", rolePath) ?: return@forEachIndexed
                     val link = sConcept.containmentLinks.find { it.name == roleName }
-                        ?: throw gate?.staleFeature(sConcept, StructureDeclarations.FeatureKind.CHILD, roleName, "$jsonPath.children[$roleIndex]")
+                        ?: throw gate?.staleFeature(sConcept, StructureDeclarations.FeatureKind.CHILD, roleName, rolePath)
                             ?: if (isMarkedUndeclared(childRoleObject)) {
-                            undeclaredRoleRejection("Child role", roleName, "$jsonPath.children[$roleIndex]", sConcept, "stored children")
+                            undeclaredRoleRejection("Child role", roleName, rolePath, sConcept, "stored children")
                         } else McpInvalidRequestException(
-                            "Unknown child role '$roleName' at $jsonPath.children[$roleIndex]: " +
+                            "Unknown child role '$roleName' at $rolePath: " +
                                     "concept '${sConcept.name}' has no such containment link"
                         )
                     childNodes.forEachIndexed { nodeIndex, nodeElement ->
-                        val childPath = "$jsonPath.children[$roleIndex].nodes[$nodeIndex]"
-                        val childObject = nodeElement.asJsonObject
+                        val childPath = "$rolePath.nodes[$nodeIndex]"
+                        val childObject = nodeElement.asBlueprintObject(childPath)
                         val childNode = createNode(
                             childObject, model, dryRun, childPath, warnings, mpsProject, gate,
                             enclosingNode = node, link = link, index = stagedChildren.count { it.first == link }
@@ -1265,32 +1299,34 @@ abstract class AbstractNodeOps : AbstractOps() {
             val references = jsonObject.requireArray("references", jsonPath)
             if (references != null) {
                 references.forEachIndexed { index, refElement ->
-                    val refObject = refElement.asJsonObject
-                    val roleName = refObject.get("role")?.asString ?: return@forEachIndexed
-                    val targetRefStr = (refObject.get("targetReference") ?: refObject.get("target"))?.asString
+                    val refPath = "$jsonPath.references[$index]"
+                    val refObject = refElement.asBlueprintObject(refPath)
+                    val roleName = refObject.optionalBlueprintString("role", refPath) ?: return@forEachIndexed
+                    val targetRefStr = refObject.optionalBlueprintString("targetReference", refPath)
+                        ?: refObject.optionalBlueprintString("target", refPath)
                     val link = sConcept.referenceLinks.find { it.name == roleName }
-                        ?: throw gate?.staleFeature(sConcept, StructureDeclarations.FeatureKind.REFERENCE, roleName, "$jsonPath.references[$index]")
+                        ?: throw gate?.staleFeature(sConcept, StructureDeclarations.FeatureKind.REFERENCE, roleName, refPath)
                             ?: if (isMarkedUndeclared(refObject)) {
-                            undeclaredRoleRejection("Reference role", roleName, "$jsonPath.references[$index]", sConcept, "stored reference")
+                            undeclaredRoleRejection("Reference role", roleName, refPath, sConcept, "stored reference")
                         } else McpInvalidRequestException(
-                            "Unknown reference role '$roleName' at $jsonPath.references[$index]: " +
+                            "Unknown reference role '$roleName' at $refPath: " +
                                     "concept '${sConcept.name}' has no such reference link"
                         )
                     if (targetRefStr.isNullOrEmpty()) return@forEachIndexed
 
                     failIfXMLReferenceIsUsed(targetRefStr, jsonPath, index)
-                    val targetRef = resolveReferenceTarget(mpsProject, model.repository, targetRefStr, "$jsonPath.references[$index]")
+                    val targetRef = resolveReferenceTarget(mpsProject, model.repository, targetRefStr, refPath)
                     val targetNode = targetRef?.resolve(model.repository)
                     if (targetNode != null) {
-                        validateReferenceTarget(targetNode, link, sConcept.name, roleName, "$jsonPath.references[$index]")
+                        validateReferenceTarget(targetNode, link, sConcept.name, roleName, refPath)
                     } else if (dryRun) {
-                        warnings?.add(dryRunReferenceWarning("$jsonPath.references[$index]", targetRefStr))
+                        warnings?.add(dryRunReferenceWarning(refPath, targetRefStr))
                     }
 
                     stagedReferences += StagedReference(
                         link = link,
                         targetRefStr = targetRefStr,
-                        errorPath = "$jsonPath.references[$index]",
+                        errorPath = refPath,
                         xmlReferencePath = jsonPath,
                         xmlReferenceIndex = index
                     )

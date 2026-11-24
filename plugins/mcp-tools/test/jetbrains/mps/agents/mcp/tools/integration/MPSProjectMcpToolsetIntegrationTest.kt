@@ -855,6 +855,7 @@ class MPSProjectMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             assertTrue("error must direct the caller to mps_mcp_list_open_projects: $error", error.contains("mps_mcp_list_open_projects"))
             val details = envelope.getAsJsonObject("details")
             assertTrue("MODAL_BLOCKED details must carry closePending=true: $details", details.get("closePending").asBoolean)
+            assertTrue("MODAL_BLOCKED details must carry modalDialogOpen=true while modal is open: $details", details.get("modalDialogOpen").asBoolean)
             assertFalse("project must still be open while the modal blocks the EDT", targetIdeaProject.isDisposed)
 
             val (_, records) = captureLogRecords {
