@@ -28,8 +28,10 @@ reviewed, built and rehearsed twice on 2026-11-11 — a hardening between the re
 each time, opus `high` and sonnet `medium`; [`../reports/assessments/editor-checking.md`](../reports/assessments/editor-checking.md)); frozen since 2026-11-11 as
 regression and cost cells, not as model discriminators.
 S40a/S40b (`mps-build-language`: an MPS plugin and a standalone IDE from the Kaja sample) were drafted and reviewed on
-2026-11-23 and are **not rehearsed and not frozen**; they need a `dist/` MPS and the revised build-language catalog
-([`../scenarios/coverage/build-shared-criteria.md`](../scenarios/coverage/build-shared-criteria.md)).
+2026-11-23, rehearsed on 2026-11-24 in variant G (4/4 PASS, opus and sonnet `medium`;
+[`../reports/assessments/build-language.md`](../reports/assessments/build-language.md)) and are frozen since then as regression and
+cost cells; they need a `dist/` MPS and the revised build-language catalog
+([`../scenarios/coverage/build-shared-criteria.md`](../scenarios/coverage/build-shared-criteria.md)). Variant P is not rehearsed.
 
 A pass means the worker met `done_criteria.md`. It is evidence about the skills that cell
 **forces**. It is weak evidence about skills it only happens to read.
@@ -79,8 +81,8 @@ A pass means the worker met `done_criteria.md`. It is evidence about the skills 
 | S38b | A review language extending alerts on `alerts2-compact`: a `>>` decorator on the members' super-concept through a next-editor cell, a hinted header override, nested parentheses by cell-tree inheritance, thresholds opted out with `removeHints` (landing rule), two-hint editors (AND, the cross- and same-concept ties, a base hint through a model import), the Inspector under both views, the sandbox using the extension; ten shipped tests kept. Drafted 2026-11-09, walked 2026-11-09 (`walk-2.md` in the ad-hoc notes); rehearsed with opus and sonnet 2026-11-09, frozen (`../reports/assessments/editor-hints.md`). |
 | S39a | Alerts on `alerts3`: a "Triage" view — nested block layout, severity classes (darkMagenta / red), a muted class that `dominates over` the keyword class into the condition's editors, a conditional pink header (picture-only check), a hinted header override, a threshold's value shown after its reference with plain constants, a note style, an Inspector; normal and Compact views unchanged. Frozen 2026-11-11 (`../reports/assessments/editor-checking.md`). |
 | S39b | Audit the Triage view on `alerts3-hard` against its specification: seven deviations from eight planted causes (a dominance priority tie, a same-named class of a second style sheet, a hinted editor of an abstract superconcept, one deviation with three causes, a rendering condition wrong for one data combination, a shared-component leak into two views, a picture-only background), Q1/Q2 on which definition draws a part and why a style value wins, a Defects report. Frozen 2026-11-11 (`../reports/assessments/editor-checking.md`). |
-| S40a | Kaja as an MPS plugin: a build solution and script written by hand, the three languages, their generators and the runtime solution with its image jar in one `idea plugin`, concept icons packaged, no warnings, then one Ant run against `dist/` that regenerates first and builds `Kaja.zip`. Draft 2026-11-23, not rehearsed. |
-| S40b | "Kaja IDE", a standalone IDE on the machine's MPS of the release (`dist/`): the wizard's three roots rebuilt without the wizard (main script with branding, the Kaja plugin, Git and make plugins; distribution script; startup script), no MPS update feed, no trust dialog, downloads ready to run (Linux and macOS aarch64 from a platform-independent MPS; the host's only from an installed one). Draft 2026-11-23, not rehearsed. |
+| S40a | Kaja as an MPS plugin: a build solution and script written by hand, the three languages, their generators and the runtime solution with its image jar in one `idea plugin`, concept icons packaged, no warnings, then one Ant run against `dist/` that regenerates first and builds `Kaja.zip`, checked by an observer replay on a copy without generated folders. Frozen 2026-11-24 (`../reports/assessments/build-language.md`). |
+| S40b | "Kaja IDE", a standalone IDE on the machine's MPS of the release (`dist/`): the wizard's three roots rebuilt without the wizard (main script with branding, the Kaja plugin, Git and make plugins; distribution script; startup script), no MPS update feed, no trust dialog, downloads ready to run (Linux and macOS aarch64 from a platform-independent MPS; the host's only from an installed one). Frozen 2026-11-24 after a variant-G rehearsal (`../reports/assessments/build-language.md`); variant P not rehearsed. |
 | SMOKE | Not an eval. Lists open projects and stops. Readiness check after every MPS start. |
 
 ## Directory
@@ -681,7 +683,7 @@ default); `mps-language-inheritance`; `mps-aspect-accessories` (a used language 
 Compact-alone assertion, then item 4's Inspector sentence; never items 2–3. Isolation: `alerts2` ids (restart before and after;
 never next to another `alerts2*` copy, nor to the live H1-opus-2 scratch the fixture was taken from).
 
-**S40a — Kaja as an MPS plugin.** Draft 2026-11-23 (rev 5 after four Fable reviews), not rehearsed, prompt not frozen.
+**S40a — Kaja as an MPS plugin.** Drafted 2026-11-23 (rev 5 after four Fable reviews); rehearsed 2026-11-24 (rev 6), prompt frozen.
 Fixture: `kaja-build` (stock `samples/robot_Kaja` at a pinned commit, made) plus the observer's
 `~/MPSProjects/mcp-study/dist/` ([`fixtures.md`](fixtures.md)). Preflight, integrity, side effects and isolation for
 both S40 cells: [`../scenarios/coverage/build-shared-criteria.md`](../scenarios/coverage/build-shared-criteria.md); the MPS under test and `dist/` must be of
@@ -691,17 +693,18 @@ one release line, and the installed catalog must carry the 2026-11-23 `mps-build
 `BuildProject` written by hand, the `mps` dependency as a `BuildProjectDependency`, module declarations wired by
 Reload Modules From Disk (two passes), `sourcesKind`, an `mps_home` default (no warnings), an `idea plugin` with the
 core-plugin dependency, the runtime solution's library jar in the plugin layout (MAKE fails otherwise),
-`copyResources` for the generated concept icons, and one Ant run that generates first. Run to verify:
+`copyResources` (or `useMakeTask`) for the generated concept icons, and one Ant run that generates first; the observer
+replays the worker's Ant command on a copy without `source_gen`/`classes_gen` (criterion 5). Run to verify:
 `mps-build-language` (`SKILL.md` Common-Path workflow, `references/mps-plugins.md`, `mps-modules.md`,
 `plugins-and-macros.md`, `java-parts.md`, `dependencies.md`, `ant-targets.md`, `common-failures.md`). Read failed
 MAKEs, Reload passes, Ant runs. A regression and cost cell for the revised skill text, which quotes this sample; not
-evidence that the skill generalises. Size 60–95 (to be confirmed). Does not cover standalone IDEs, tests or the
+evidence that the skill generalises. Size 30–50 (rehearsal: 31 and 44). Does not cover standalone IDEs, tests or the
 workflow language.
 
-**S40b — Kaja IDE, standalone.** Draft 2026-11-23 (rev 5), not rehearsed, prompt not frozen. Fixture, prerequisite,
+**S40b — Kaja IDE, standalone.** Drafted 2026-11-23 (rev 5); rehearsed 2026-11-24 in variant G (rev 6), prompt frozen; variant P not rehearsed. Fixture, prerequisite,
 preflight and isolation as S40a; run S40a first on the same model and read S40b's plugin-part failures only when S40a
 passed. Mutates the project: adds `solutions/Kaja.build`, two generated Ant files, the launcher files in the
-solution's `source_gen`, and `build/` (about 1 GB; delete after the evaluation, keep the listings). Forces the
+solution's `source_gen`, and `build/` (about 2 GB in variant G; delete after the evaluation, keep the listings). Forces the
 wizard-less route of `references/standalone-manual-recipe.md` (the prompt says nobody can use the MPS UI), branding
 referenced by node, the `vcs-git` and `mps-make` imports from the right scripts, the update-feed and trust-dialog
 settings of `standalone-ide.md`, and the archives of `references/standalone-distribution.md`: Linux and macOS aarch64 in variant G (a
@@ -709,7 +712,7 @@ platform-independent `dist/`), the host's archive from an installation's paths i
 variant).
 Run to verify: `mps-build-language` (`standalone-ide.md`, `standalone-manual-recipe.md`, `standalone-distribution.md`,
 plus S40a's references for the plugin part). Read MAKE failures, references repaired after inserts, "out of search
-scope" import errors, the template source, Ant runs. Size 80–130 (to be confirmed). Does not cover the Windows
+scope" import errors, the template source, Ant runs. Size 80–130 (rehearsal: 94 and 101). Does not cover the Windows
 archive, signing for distribution, or starting the IDE (the observer's extended
 check only).
 
@@ -753,7 +756,7 @@ skill whose **Run** column is not S1 or S3.
 | `mps-language-inheritance` | | S38b (sub-concepts of `Member`, the abstract `BinaryExpr`) | |
 | `mps-dsl-memory` | S8 | | |
 | `mps-tests` | S7 (NodesTestCase, one typing editor test), S17 (editor tests: MPS actions and platform action ids, undo and clipboard, `is action applicable`, two-step deletion, non-vacuity), S18 (`GeneratorTest`: arguments, match options, an explicit plan, "Do not generate", the skipped trap), S36 (the fail-first rule for generator tests: a red mismatch before the fix, not `null vs <root>`), S37 (a test of a stored node through `node-ptr/…/`); frozen 2026-11-01: S30–S35 (completion items before typing, prefix via `Complete`, keystrokes, inspector, two-step both ways, Undo, context assistant, red run first in S34); S38a/S38b (`editor-test-case/hinted-editors.md`: pushed hints without a dialog, asserting the rendering editor, the Inspector under hints; `invoke intention` in S38a) | | — |
-| `mps-build-language` | S40a (plugin: declaration, layout, library jars, icons, `mps_home`, generation in the Ant run), S40b (standalone IDE without the wizard: branding, startup script, layout imports, update feed, trust dialog, per-platform archives: variant G Linux and macOS aarch64, variant P the host's); drafts, not rehearsed | | `jetbrains.mps.build.workflow`, module tests, `run code from solution`, plain Java modules, the Windows archive (no cell) |
+| `mps-build-language` | S40a (plugin: declaration, layout, library jars, icons, `mps_home`, generation in the Ant run), S40b (standalone IDE without the wizard: branding, startup script, layout imports, update feed, trust dialog, per-platform archives: variant G Linux and macOS aarch64, variant P the host's); frozen 2026-11-24, variant P not rehearsed | | `jetbrains.mps.build.workflow`, module tests, `run code from solution`, plain Java modules, the Windows archive (no cell) |
 | `mps-run-configurations` | S7, S17, S18, S36, S38a, S38b; drafts S30, S35 | S37 | |
 | `mps-console` | S9 (read-only), S28 (writing commands that migrate values) | | evaluate before close |
 | `mps-project-management` | S10 | | observer opens for S1–S9 and S11–S24 do not measure this skill |
