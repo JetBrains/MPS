@@ -2107,6 +2107,74 @@ class MPSLanguageStructureMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         assertTrue(response, obj.get("error").asString.contains("Unknown operation 'DELETE_CONCEPT'"))
     }
 
+    @Test
+    fun `failed UPDATE_CONCEPT_CHILD and UPDATE_CONCEPT_PROPERTY do not leave orphan half-created declarations`() {
+        val conceptRef = createConceptRoot("NoOrphanStubs")
+        val childFail = runTool {
+            it.mps_mcp_alter_structure(
+                MPSStructureAlterOperation.UPDATE_CONCEPT_CHILD,
+                """{"conceptRef":"$conceptRef","role":"badChild","targetConcept":"no.such.Concept","multiple":false,"optional":true}""",
+            )
+        }
+        assertFalse(JsonParser.parseString(childFail).asJsonObject.get("ok").asBoolean)
+
+        val propFail = runTool {
+            it.mps_mcp_alter_structure(
+                MPSStructureAlterOperation.UPDATE_CONCEPT_PROPERTY,
+                """{"conceptRef":"$conceptRef","propertyName":"badProp","dataType":"no_such_datatype"}""",
+            )
+        }
+        assertFalse(JsonParser.parseString(propFail).asJsonObject.get("ok").asBoolean)
+
+        readOnRepo {
+            val conceptNode = PersistenceFacade.getInstance().createNodeReference(conceptRef).resolve(myProject.repository)!!
+            assertEquals("failed link creation must leave zero LinkDeclarations", emptyList<SNode>(), conceptNode.getChildrenByName("linkDeclaration"))
+            assertEquals("failed property creation must leave zero PropertyDeclarations", emptyList<SNode>(), conceptNode.getChildrenByName("propertyDeclaration"))
+        }
+    }
+
+    @Test
+    fun `unset nullable enum property passes check_root_node_problems without Empty enumeration property`() {
+        assertOk(runTool {
+            it.mps_mcp_alter_structure(
+                MPSStructureAlterOperation.CREATE_ENUM,
+                """{"structureModelRef":"$structureModelRef","enumName":"OptionalVisibility",
+                    "valuesJson":[{"enumName":"PUBLIC"},{"enumName":"PRIVATE"}]}""",
+            )
+        })
+        assertOk(runTool {
+            it.mps_mcp_alter_structure(
+                MPSStructureAlterOperation.CREATE_CONCEPTS,
+                """{"structureModelRef":"$structureModelRef","make":true,
+                    "conceptsJson":[{"name":"VisibilityHolder","rootable":true,
+                        "properties":[{"name":"visibility","type":"OptionalVisibility"}]}]}""",
+            )
+        })
+        val solution = createSolution()
+        val sampleModel = createModel(solution, "${solution.moduleName}.sample")
+        val sampleModelRef = modelRefOf(sampleModel)
+        val langName = readOnRepo { language.moduleName!! }
+        assertOk(runTool(MPSModelMcpToolset()) {
+            it.mps_mcp_model_used_language(sampleModelRef, langName, "language", "ADD")
+        })
+        val rootCreated = runTool(MPSRootNodeMcpToolset()) {
+            it.mps_mcp_create_root_node(
+                modelReference = sampleModelRef,
+                concept = "$langName.structure.VisibilityHolder",
+                name = "HolderInstance",
+            )
+        }
+        assertOk(rootCreated)
+        val instanceRef = payloadObjectFromOkData(rootCreated).get("reference").asString
+
+        val checkResponse = runTool(MPSNodeMcpToolset()) {
+            it.mps_mcp_check_root_node_problems(instanceRef)
+        }
+        val checkEnvelope = JsonParser.parseString(checkResponse).asJsonObject
+        assertTrue("expected ok envelope: $checkResponse", checkEnvelope.get("ok").asBoolean)
+        assertEquals("no problems found", checkEnvelope.get("data").asString)
+    }
+
     /**
      * Returns the java.io.File for the test language's structure model on disk.
      * The path follows the MPS convention: `<moduleDir>/languageModels/<longModelName>.mps`.

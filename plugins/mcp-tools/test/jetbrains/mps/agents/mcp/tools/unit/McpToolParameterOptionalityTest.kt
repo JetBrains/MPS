@@ -165,6 +165,16 @@ class McpToolParameterOptionalityTest {
         )
     }
 
+    @Test
+    fun `rejectUnknownTopLevelParameters allowed sets match declared tool parameters`() {
+        val migrationTool = tools.getValue("mps_mcp_run_migrations")
+        assertEquals(
+            "MPSMigrationMcpToolset.RUN_MIGRATIONS_ALLOWED_PARAMETERS must match mps_mcp_run_migrations Kotlin parameters",
+            parameterNames(migrationTool),
+            jetbrains.mps.agents.mcp.tools.MPSMigrationMcpToolset.RUN_MIGRATIONS_ALLOWED_PARAMETERS,
+        )
+    }
+
     private companion object {
         const val PLUGIN_XML = "plugins/mcp-tools/META-INF/plugin.xml"
         val MCP_TOOLSET = Regex("""<mcpServer\.mcpToolset\s+implementation="([^"]+)"""")

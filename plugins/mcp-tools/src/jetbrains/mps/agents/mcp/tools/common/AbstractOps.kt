@@ -9,6 +9,7 @@ import com.intellij.mcpserver.McpCallAdditionalDataElement
 import com.intellij.mcpserver.McpToolset
 import com.intellij.mcpserver.project
 import com.intellij.mcpserver.reportToolActivity
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.asContextElement
@@ -436,6 +437,46 @@ abstract class AbstractOps : McpToolset {
             val value = raw[key]?.takeIf { it !is kotlinx.serialization.json.JsonNull } ?: return@mapNotNull null
             key to ((value as? kotlinx.serialization.json.JsonPrimitive)?.takeIf { it.isString }?.content ?: value.toString())
         }
+    }
+
+    /**
+     * Rejects unrecognized top-level arguments recorded in the MCP call's `rawArguments` (study defect D138).
+     * The platform's parameter binder silently ignores keys that do not match a `@McpTool` method's Kotlin
+     * parameters, which otherwise turns a mistyped filter or action key into an unfiltered default run.
+     */
+    protected suspend fun rejectUnknownTopLevelParameters(
+        tool: String,
+        allowed: Set<String>,
+    ): String? {
+        val raw = currentCoroutineContext()[McpCallAdditionalDataElement.Key]?.additionalData?.rawArguments
+            ?: return null
+        val sortedAllowed = allowed.sorted()
+        val unknown = raw.entries
+            .filterNot { (key, value) ->
+                key in allowed || key in TOLERATED_PARAMETER_KEYS || value is kotlinx.serialization.json.JsonNull
+            }
+            .map { it.key }
+            .sorted()
+        if (unknown.isEmpty()) return null
+        val nearMissTargets = buildMap<String, String> {
+            for (param in sortedAllowed) {
+                for (alias in RequiredParameterNearMisses.of(tool, param)) {
+                    putIfAbsent(alias.lowercase(), param)
+                }
+            }
+        }
+        val named = unknown.joinToString(", ") { key ->
+            val suggestion = nearMissTargets[key.lowercase()] ?: suggestParameterName(key, sortedAllowed)
+            if (suggestion != null) "'$key' (did you mean '$suggestion'?)" else "'$key'"
+        }
+        return McpCallOutcomes.record(
+            errJson(
+                "Unknown ${if (unknown.size == 1) "parameter" else "parameters"} in '$tool': " +
+                    "$named. Allowed: ${sortedAllowed.joinToString(", ") { "'$it'" }}.",
+                McpErrorCode.INVALID_REQUEST,
+                mapOf("unknownParameters" to unknown),
+            )
+        )
     }
 
     protected fun invalidJson(message: String?, details: Map<String, Any?> = emptyMap()): String =
@@ -1794,7 +1835,14 @@ abstract class AbstractOps : McpToolset {
         val c = cache ?: ProjectMembershipCache(currentProject)
         val names = projection.names
         val obj = JsonObject()
-        obj.addProperty("name", node.name ?: node.presentation)
+        val storedName = node.name
+        val fallbackPresentation = if (storedName == null) node.presentation else null
+        obj.addProperty("name", storedName ?: fallbackPresentation)
+        if (!names && storedName == null && fallbackPresentation != null &&
+            SNodeUtil.property_INamedConcept_name in node.concept.properties
+        ) {
+            obj.addProperty("presentation", fallbackPresentation)
+        }
         obj.addProperty("concept", node.concept.name)
         if (!names) {
             val declarationNode = node.concept.sourceNode?.resolve(repository)
@@ -2013,10 +2061,11 @@ abstract class AbstractOps : McpToolset {
 
     private fun getPropertyState(node: SNode, prop: SProperty): PropertyState {
         val rawValue = SNodeAccessUtil.getPropertyValue(node, prop)
-        val isEnum = prop.type is SEnumeration
+        val enumType = prop.type as? SEnumeration
         val value = propertyDisplayValue(node, prop)
         val hasValue = !value.isNullOrEmpty()
-        val isEmptyEnum = isEnum && rawValue !is SEnumerationLiteral
+        val stored = SNodeAccessUtil.hasProperty(node, prop)
+        val isEmptyEnum = enumType != null && rawValue !is SEnumerationLiteral && (stored || enumType.default != null)
         val isInvalid = hasValue && !prop.isValid(value)
         return PropertyState(value, isEmptyEnum, isInvalid)
     }
@@ -3296,6 +3345,28 @@ abstract class AbstractOps : McpToolset {
     }
 
     /**
+     * Probes whether a modal dialog is currently open on the EDT without letting a saturated EDT
+     * block indefinitely. Returns `null` when the probe itself times out or fails with a non-fatal
+     * exception (indeterminate), and propagates coroutine cancellation and JVM [Error]s.
+     */
+    protected suspend fun detectModalDialogOpen(): Boolean? = try {
+        val app = ApplicationManager.getApplication()
+        when {
+            app == null -> false
+            app.isDispatchThread -> !ModalityState.current().accepts(ModalityState.nonModal())
+            else -> withTimeoutOrNull(250L) {
+                withContext(Dispatchers.EDT + ModalityState.any().asContextElement()) {
+                    !ModalityState.current().accepts(ModalityState.nonModal())
+                }
+            }
+        }
+    } catch (t: Throwable) {
+        rethrowIfCancellation(t)
+        if (t is Error) throw t
+        null
+    }
+
+    /**
      * Wraps a suspending block with a timeout.  On timeout, throws [McpModalBlockedException]
      * with a user-friendly message instead of the raw [TimeoutCancellationException].
      *
@@ -3312,12 +3383,27 @@ abstract class AbstractOps : McpToolset {
         return try {
             withTimeout(timeoutMs) { block() }
         } catch (e: TimeoutCancellationException) {
-            throw McpModalBlockedException(
-                "Operation timed out after ${timeoutMs}ms. " +
-                "This may indicate a modal dialog or a long-running operation blocking MPS. " +
-                "Please close any open dialogs (Find Usages, Search, confirmation prompts, etc.) and try again.",
-                mapOf("timeoutMs" to timeoutMs)
-            )
+            currentCoroutineContext().ensureActive()
+            val modalDialogOpen = detectModalDialogOpen()
+            val message = when (modalDialogOpen) {
+                true -> "Operation timed out after ${timeoutMs}ms because a modal dialog is open and blocking the MPS UI thread. " +
+                    "Please close any open dialogs (Find Usages, Search, confirmation prompts, etc.) and try again."
+                false -> "Operation timed out after ${timeoutMs}ms (no active modal dialog detected). " +
+                    "If a modal dialog is open, please close any open dialogs and try again; otherwise MPS is busy with " +
+                    "a slow operation (such as a model check, a concurrent MAKE, or an active test run) — wait for active " +
+                    "builds/tests to finish or retry on a smaller scope."
+                null -> "Operation timed out after ${timeoutMs}ms (could not confirm whether a modal dialog is open because " +
+                    "the MPS UI thread did not respond to the probe). If a modal dialog is open, please close any open " +
+                    "dialogs and try again; otherwise MPS is busy with a slow operation — wait for active work to finish " +
+                    "or retry on a smaller scope."
+            }
+            val details = buildMap<String, Any?> {
+                put("timeoutMs", timeoutMs)
+                if (modalDialogOpen != null) {
+                    put("modalDialogOpen", modalDialogOpen)
+                }
+            }
+            throw McpModalBlockedException(message, details)
         }
     }
 

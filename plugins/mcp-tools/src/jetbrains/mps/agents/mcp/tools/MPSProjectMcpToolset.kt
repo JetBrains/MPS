@@ -43,6 +43,7 @@ import jetbrains.mps.workbench.action.ActionUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
@@ -970,21 +971,30 @@ class MPSProjectMcpToolset(
                             closeIdeaProjectOnEdt(ideaProject, shutdownWithLastProject, force)
                         }
                     } catch (e: TimeoutCancellationException) {
+                        currentCoroutineContext().ensureActive()
+                        val modalDialogOpen = detectModalDialogOpen()
                         // A timed-out force close is withdrawn if it has not started (closeIdeaProjectOnEdt).
-                        val message = if (force) {
-                            "Force-closing the project timed out after ${closeProjectTimeoutMs}ms and the close was " +
+                        val message = when {
+                            force -> "Force-closing the project timed out after ${closeProjectTimeoutMs}ms and the close was " +
                                     "withdrawn. Check with `mps_mcp_list_open_projects` whether the project is still open."
-                        } else {
-                            "Closing the project timed out after ${closeProjectTimeoutMs}ms, but the close is still " +
+                            modalDialogOpen == false -> "Closing the project timed out after ${closeProjectTimeoutMs}ms " +
+                                    "(no active modal dialog detected), and the close is still pending on the EDT. " +
+                                    "MPS is likely busy with another operation; wait for it to finish, then check " +
+                                    "`mps_mcp_list_open_projects` before retrying. To skip save/confirmation dialogs " +
+                                    "that this close itself would show, retry with force=true only if the project is still open."
+                            else -> "Closing the project timed out after ${closeProjectTimeoutMs}ms, but the close is still " +
                                     "pending on the EDT and completes once the blocking modal dialog is answered. " +
                                     "Ask the user to answer or close the dialog, then check `mps_mcp_list_open_projects` " +
                                     "before retrying. To skip save/confirmation dialogs that this close itself would show, " +
                                     "retry with force=true only if the project is still open."
                         }
-                        throw McpModalBlockedException(
-                            message,
-                            mapOf("timeoutMs" to closeProjectTimeoutMs, "force" to force, "closePending" to !force),
-                        )
+                        val details = buildMap<String, Any?> {
+                            put("timeoutMs", closeProjectTimeoutMs)
+                            put("force", force)
+                            put("closePending", !force)
+                            if (modalDialogOpen != null) put("modalDialogOpen", modalDialogOpen)
+                        }
+                        throw McpModalBlockedException(message, details)
                     }
                     if (!closed) {
                         errJson(

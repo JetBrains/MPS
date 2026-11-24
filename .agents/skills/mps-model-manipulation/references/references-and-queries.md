@@ -65,7 +65,7 @@ All are leaf operations — no parameter or child. Drop the concept into the `op
 { "concept": "jetbrains.mps.lang.smodel.structure.Node_HasPrevSiblingOperation" }
 ```
 
-The plural `next-siblings` / `prev-siblings` return `sequence<node<BaseConcept>>` from the anchor onward (or toward the start of the list).
+The plural `next-siblings` / `prev-siblings` return `sequence<node<BaseConcept>>` from the anchor onward (or toward the start of the list). Prefer smodel `.next-sibling` / `.prev-sibling` over raw Java `node/.getNextSibling()`: the raw `SNode` walk visits `smodelAttribute` annotations (`TestNodeAnnotation`, `ScopesTest`, `has error`) as siblings, whereas the smodel operations stay within the node's containment role.
 
 ### `.containingRoot`, `.containingLink`, `.model`, `.index`
 
@@ -95,7 +95,7 @@ All leaf operations:
 }
 ```
 
-Contrast with `Node_IsInstanceOfOperation` which also matches subconcepts.
+Contrast with `Node_IsInstanceOfOperation` which also matches subconcepts. To test against a dynamic `concept<>` expression at runtime instead of a static concept literal, put a `PoundExpression` (`jetbrains.mps.lang.smodel.structure.PoundExpression`, child role `expression`) inside `conceptArgument` (`#expr#`).
 
 ### `seq.ofConcept<C>` — filter a sequence to nodes of a specific concept
 
@@ -142,7 +142,7 @@ Search the concept for its parameter role before use.
 { "concept": "jetbrains.mps.lang.smodel.structure.EnumMember_PresentationOperation" }
 ```
 
-A direct reference to an enum member value (for assignment or comparison) uses:
+A direct reference to an enum member value (for comparison or `Property_SetOperation`) uses:
 
 ```json
 {
@@ -150,3 +150,5 @@ A direct reference to an enum member value (for assignment or comparison) uses:
   "references": [{ "role": "decl", "target": "<EnumerationMember-noderef>" }]
 }
 ```
+
+Writing an enum property in smodel **must** use `Property_SetOperation` (`node.enumProp.set(EnumMemberReference)` — a `DotExpression` on the `SPropertyAccess` chain whose `operation` is `jetbrains.mps.lang.smodel.structure.Property_SetOperation` with child role `value` holding the `EnumMemberReference`), never a BaseLanguage `AssignmentExpression` (which passes type-checking in some contexts and fails `MAKE` with `No textgen for EnumMemberReference`).

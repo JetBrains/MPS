@@ -18,6 +18,9 @@ All live in `jetbrains.mps.baseLanguage.unitTest.structure`:
 
 These tests run as ordinary JUnit; they do **not** need a `@tests` model stereotype, but most projects keep them in one for consistency.
 
+- **No live `SNode` / repository platform singletons.** `BTestCase` runs plain JUnit without bootstrapping MPS repository or `NodeIdentityComponent` singletons, so `new node<C>()` or live model manipulation throws `NullPointerException` — use `NodesTestCase` whenever a test creates or inspects `SNode`s.
+- **Author assertions as `unitTest` nodes, not `org.junit.Assert.*` Java calls.** `mps_mcp_parse_java_and_insert` leaves bare or qualified `org.junit.Assert.assertTrue(...)` calls unresolved in `@tests` bodies unless JUnit stubs are manually imported; insert `AssertTrue` / `AssertFalse` / `AssertEquals` / `Fail` blueprints instead.
+
 ## Concept summary
 
 | Concept | Purpose |

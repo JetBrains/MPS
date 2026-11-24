@@ -1746,6 +1746,197 @@ class MPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         )
     }
 
+    @Test
+    fun `replaying printed JSON preserves null INamedConcept name and unset isDefault enum properties`() {
+        val nodeToolset = MPSNodeMcpToolset()
+        lateinit var unnamedRootRef: String
+        executeCommand {
+            val unnamed = jetbrains.mps.smodel.SNode(SNodeUtil.concept_ConceptDeclaration)
+            val linkRole = unnamed.concept.containmentLinks.single { it.name == "linkDeclaration" }
+            val unsetDefaultLink = jetbrains.mps.smodel.SNode(SNodeUtil.concept_LinkDeclaration)
+            val roleProp = unsetDefaultLink.concept.properties.single { it.name == "role" }
+            unsetDefaultLink.setProperty(roleProp, "items")
+            unnamed.addChild(linkRole, unsetDefaultLink)
+            structureModel.addRootNode(unnamed)
+            unnamedRootRef = PersistenceFacade.getInstance().asString(unnamed.reference)
+        }
+
+        val printedResponse = runTool(nodeToolset) {
+            it.mps_mcp_print_node(unnamedRootRef, deep = true, format = "JSON")
+        }
+        val printedEnvelope = JsonParser.parseString(printedResponse).asJsonObject
+        val printedJson = printedEnvelope.get("data").let { if (it.isJsonPrimitive) it.asString else it.toString() }
+        val parsedPrint = JsonParser.parseString(printedJson).asJsonObject
+        assertFalse(
+            "unnamed root print must not emit a 'name' entry in properties: $parsedPrint",
+            parsedPrint.getAsJsonArray("properties").any { it.asJsonObject.get("name").asString == "name" },
+        )
+
+        val insertResponse = runTool(toolset) {
+            it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText(printedJson), dryRun = false)
+        }
+        val insertedRef = expectOk(insertResponse).get("reference").asString
+
+        // Editing top-level "name" on a printed unnamed-node blueprint (keeping doc/deprecated/reference/presentation)
+        // must apply the new name rather than dropping it.
+        val editedPrinted = parsedPrint.deepCopy().apply { addProperty("name", "RenamedFromPrintedUnnamed") }
+        val editedPrintedRef = expectOk(
+            runTool(toolset) {
+                it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText(editedPrinted.toString()), dryRun = false)
+            }
+        ).get("reference").asString
+
+        val handAuthoredNamed = """
+            {
+              "concept": "$conceptDeclarationFqn",
+              "name": "HandAuthoredNamed",
+              "properties": [
+                { "name": null, "value": "ignored" },
+                { "name": "conceptAlias", "value": "hand" }
+              ]
+            }
+        """.trimIndent()
+        val handAuthoredRef = expectOk(
+            runTool(toolset) {
+                it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText(handAuthoredNamed), dryRun = false)
+            }
+        ).get("reference").asString
+
+        // Factory-initialized non-default enum (NodesTestCase_specify_accessMode sets accessMode = "command",
+        // while ExecutionModelAccessMode's default is "unset"): replaying a printed node whose accessMode was
+        // cleared to unset ("isDefault": true) must clear the factory-set value, while editing "value" to "none"
+        // without stripping "isDefault": true must apply "none".
+        val testSolution = createSolution()
+        val testModel = createModel(testSolution, "${testSolution.moduleName}.tests")
+        val testModelRef = PersistenceFacade.getInstance().asString(testModel.reference)
+        val createdTestCaseRef = expectOk(
+            runTool(toolset) {
+                it.mps_mcp_create_root_node(
+                    modelReference = testModelRef,
+                    concept = "jetbrains.mps.lang.test.structure.NodesTestCase",
+                    conceptReference = null,
+                    name = "SourceNodesTestCase",
+                )
+            }
+        ).get("reference").asString
+        executeCommand {
+            val tc = PersistenceFacade.getInstance().createNodeReference(createdTestCaseRef).resolve(myProject.repository)!!
+            val accessModeProp = tc.concept.properties.single { it.name == "accessMode" }
+            assertTrue("NodesTestCase factory must initialize accessMode before clearing", org.jetbrains.mps.openapi.model.SNodeAccessUtil.hasProperty(tc, accessModeProp))
+            tc.setProperty(accessModeProp, null)
+        }
+        val printedTestCaseEnvelope = JsonParser.parseString(
+            runTool(nodeToolset) { it.mps_mcp_print_node(createdTestCaseRef, deep = true, format = "JSON") }
+        ).asJsonObject
+        val printedTestCaseJson = printedTestCaseEnvelope.get("data").let { if (it.isJsonPrimitive) it.asString else it.toString() }
+        val parsedTestCasePrint = JsonParser.parseString(printedTestCaseJson).asJsonObject
+        val accessModeEntry = parsedTestCasePrint.getAsJsonArray("properties")
+            .map { it.asJsonObject }
+            .single { it.get("name").asString == "accessMode" }
+        assertTrue("unset accessMode must print with isDefault:true: $accessModeEntry", accessModeEntry.get("isDefault").asBoolean)
+
+        val replayedTestCaseRef = expectOk(
+            runTool(toolset) {
+                it.mps_mcp_insert_root_node_from_json(testModelRef, JsonOrText(printedTestCaseJson), dryRun = false)
+            }
+        ).get("reference").asString
+
+        val editedEnumPrint = parsedTestCasePrint.deepCopy().apply {
+            getAsJsonArray("properties")
+                .map { it.asJsonObject }
+                .single { it.get("name").asString == "accessMode" }
+                .addProperty("value", "none")
+        }
+        val editedEnumTestCaseRef = expectOk(
+            runTool(toolset) {
+                it.mps_mcp_insert_root_node_from_json(testModelRef, JsonOrText(editedEnumPrint.toString()), dryRun = false)
+            }
+        ).get("reference").asString
+
+        // Explicit null property values/names in update_root_node_from_json must clear properties cleanly instead of crashing.
+        val clearAliasBlueprint = """
+            {
+              "concept": "$conceptDeclarationFqn",
+              "properties": [
+                { "name": "name", "value": "HandAuthoredNamed" },
+                { "name": null, "value": "ignored" },
+                { "name": "conceptAlias", "value": null }
+              ]
+            }
+        """.trimIndent()
+        expectOk(runTool(toolset) { it.mps_mcp_update_root_node_from_json(handAuthoredRef, JsonOrText(clearAliasBlueprint), dryRun = false) })
+
+        readOnRepo {
+            val replayed = PersistenceFacade.getInstance().createNodeReference(insertedRef).resolve(myProject.repository)!!
+            assertNull("replayed unnamed root must keep INamedConcept.name == null instead of presentation", replayed.name)
+            val replayedLink = replayed.children.single { it.containmentLink?.name == "linkDeclaration" }
+            val metaClassProp = replayedLink.concept.properties.single { it.name == "metaClass" }
+            val cardProp = replayedLink.concept.properties.single { it.name == "sourceCardinality" }
+            assertFalse("unset default metaClass must not be materialized on replay", org.jetbrains.mps.openapi.model.SNodeAccessUtil.hasProperty(replayedLink, metaClassProp))
+            assertFalse("unset default sourceCardinality must not be materialized on replay", org.jetbrains.mps.openapi.model.SNodeAccessUtil.hasProperty(replayedLink, cardProp))
+
+            val editedUnnamed = PersistenceFacade.getInstance().createNodeReference(editedPrintedRef).resolve(myProject.repository)!!
+            assertEquals("edited top-level name on printed unnamed root must be applied", "RenamedFromPrintedUnnamed", editedUnnamed.name)
+
+            val handAuthored = PersistenceFacade.getInstance().createNodeReference(handAuthoredRef).resolve(myProject.repository)!!
+            assertEquals("hand-authored top-level name must still be applied", "HandAuthoredNamed", handAuthored.name)
+            val aliasProp = handAuthored.concept.properties.single { it.name == "conceptAlias" }
+            assertFalse("value:null in update_root_node_from_json must clear conceptAlias", org.jetbrains.mps.openapi.model.SNodeAccessUtil.hasProperty(handAuthored, aliasProp))
+
+            val replayedTc = PersistenceFacade.getInstance().createNodeReference(replayedTestCaseRef).resolve(myProject.repository)!!
+            val accessModeProp = replayedTc.concept.properties.single { it.name == "accessMode" }
+            assertFalse(
+                "replaying isDefault:true must clear factory-set non-default accessMode",
+                org.jetbrains.mps.openapi.model.SNodeAccessUtil.hasProperty(replayedTc, accessModeProp),
+            )
+
+            val editedTc = PersistenceFacade.getInstance().createNodeReference(editedEnumTestCaseRef).resolve(myProject.repository)!!
+            assertTrue(
+                "editing value to non-default literal must apply even if isDefault:true remained",
+                org.jetbrains.mps.openapi.model.SNodeAccessUtil.hasProperty(editedTc, accessModeProp),
+            )
+            assertEquals(
+                "none",
+                (org.jetbrains.mps.openapi.model.SNodeAccessUtil.getPropertyValue(editedTc, accessModeProp) as org.jetbrains.mps.openapi.language.SEnumerationLiteral).name,
+            )
+        }
+    }
+
+    @Test
+    fun `createNode reports exact property index path and validates property entries in order`() {
+        val nonStringNameBlueprint = """
+            {
+              "concept": "$conceptDeclarationFqn",
+              "properties": [ { "name": [] } ]
+            }
+        """.trimIndent()
+        val nonStringNameEnv = JsonParser.parseString(
+            runTool(toolset) { it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText(nonStringNameBlueprint), dryRun = true) }
+        ).asJsonObject
+        assertFalse("non-string property name must fail: $nonStringNameEnv", nonStringNameEnv.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", nonStringNameEnv.get("code").asString)
+        assertTrue(
+            "error must point at $.properties[0], not $: ${nonStringNameEnv.get("error")}",
+            nonStringNameEnv.get("error").asString.contains("$.properties[0]"),
+        )
+
+        val nonObjectFirstBlueprint = """
+            {
+              "concept": "$conceptDeclarationFqn",
+              "properties": [ 123, { "name": [] } ]
+            }
+        """.trimIndent()
+        val nonObjectFirstEnv = JsonParser.parseString(
+            runTool(toolset) { it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText(nonObjectFirstBlueprint), dryRun = true) }
+        ).asJsonObject
+        assertFalse("non-object property entry must fail: $nonObjectFirstEnv", nonObjectFirstEnv.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", nonObjectFirstEnv.get("code").asString)
+        assertTrue(
+            "error must fail on properties[0] first as non-object: ${nonObjectFirstEnv.get("error")}",
+            nonObjectFirstEnv.get("error").asString.contains("$.properties[0] must be a JSON object"),
+        )
+    }
+
 }
 
 /**
