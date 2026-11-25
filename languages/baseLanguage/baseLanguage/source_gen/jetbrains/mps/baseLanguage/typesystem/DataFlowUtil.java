@@ -264,26 +264,31 @@ public class DataFlowUtil {
   @CheckingMethod
   public static void checkUnusedVariables(final TypeCheckingContext typeCheckingContext, @NotNull SNode statementList, Program program) {
     Set<SNode> usedVariables = DataFlow.getUsedVariables(program, statementList);
+    final int stmtListLevel = (int) BaseConcept__BehaviorDescriptor.getMetaLevel_id3t0v3yFOD1A.invoke(statementList);
     for (SNode var : SNodeOperations.getNodeDescendants(statementList, CONCEPTS.IVariableDeclaration$Zo, false, new SAbstractConcept[]{})) {
       if (program.getInstructionsFor(var).isEmpty()) {
         continue;
       }
-      if (!(SNodeOperations.isInstanceOf(SNodeOperations.getParent(var), CONCEPTS.CatchClause$Ig)) && SNodeOperations.getNodeAncestor(var, CONCEPTS.Quotation$Vl, false, false) == null) {
-        if (!(SetSequence.fromSet(usedVariables).contains(var))) {
-          if (!(SNodeOperations.isInstanceOf(var, CONCEPTS.LocalVariableDeclaration$41))) {
+      if (SetSequence.fromSet(usedVariables).contains(var)) {
+        continue;
+      }
+      if (SNodeOperations.isInstanceOf(SNodeOperations.getParent(var), CONCEPTS.CatchClause$Ig)) {
+        continue;
+      }
+      if ((int) BaseConcept__BehaviorDescriptor.getMetaLevel_id3t0v3yFOD1A.invoke(var) == stmtListLevel) {
+        if (SNodeOperations.isInstanceOf(var, CONCEPTS.LocalVariableDeclaration$41)) {
+          {
+            final MessageTarget errorTarget = new NodeMessageTarget();
+            IErrorReporter _reporter_2309309498 = typeCheckingContext.reportWarning(var, "Unused variable", "r:00000000-0000-4000-0000-011c895902c5(jetbrains.mps.baseLanguage.typesystem)", "4056233746948448436", null, errorTarget);
             {
-              final MessageTarget errorTarget = new NodeMessageTarget();
-              IErrorReporter _reporter_2309309498 = typeCheckingContext.reportWarning(var, "Unused variable", "r:00000000-0000-4000-0000-011c895902c5(jetbrains.mps.baseLanguage.typesystem)", "8937659523942275424", null, errorTarget);
+              BaseQuickFixProvider intentionProvider = new BaseQuickFixProvider("jetbrains.mps.baseLanguage.typesystem.RemoveUnusedLocalVariable_QuickFix", "4056233746948450889", false);
+              _reporter_2309309498.addIntentionProvider(intentionProvider);
             }
-          } else {
-            {
-              final MessageTarget errorTarget = new NodeMessageTarget();
-              IErrorReporter _reporter_2309309498 = typeCheckingContext.reportWarning(var, "Unused variable", "r:00000000-0000-4000-0000-011c895902c5(jetbrains.mps.baseLanguage.typesystem)", "4056233746948448436", null, errorTarget);
-              {
-                BaseQuickFixProvider intentionProvider = new BaseQuickFixProvider("jetbrains.mps.baseLanguage.typesystem.RemoveUnusedLocalVariable_QuickFix", "4056233746948450889", false);
-                _reporter_2309309498.addIntentionProvider(intentionProvider);
-              }
-            }
+          }
+        } else {
+          {
+            final MessageTarget errorTarget = new NodeMessageTarget();
+            IErrorReporter _reporter_2309309498 = typeCheckingContext.reportWarning(var, "Unused variable", "r:00000000-0000-4000-0000-011c895902c5(jetbrains.mps.baseLanguage.typesystem)", "8937659523942275424", null, errorTarget);
           }
         }
       }
@@ -310,7 +315,6 @@ public class DataFlowUtil {
     /*package*/ static final SInterfaceConcept IVariableAssignment$mo = MetaAdapterFactory.getInterfaceConcept(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0x11cfb3b82a4L, "jetbrains.mps.baseLanguage.structure.IVariableAssignment");
     /*package*/ static final SInterfaceConcept IVariableDeclaration$Zo = MetaAdapterFactory.getInterfaceConcept(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0x4b64b50fb2fc7720L, "jetbrains.mps.baseLanguage.structure.IVariableDeclaration");
     /*package*/ static final SConcept CatchClause$Ig = MetaAdapterFactory.getConcept(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0x10f39a56e2fL, "jetbrains.mps.baseLanguage.structure.CatchClause");
-    /*package*/ static final SConcept Quotation$Vl = MetaAdapterFactory.getConcept(0x3a13115c633c4c5cL, 0xbbcc75c4219e9555L, 0x1168c104659L, "jetbrains.mps.lang.quotation.structure.Quotation");
   }
 
   private static final class LINKS {

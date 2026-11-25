@@ -52,6 +52,7 @@ public class RulesFunctions_BaseLanguage {
   public RulesFunctions_BaseLanguage() {
   }
   public static Iterable<SNode> collectReturnStatements(SNode node) {
+    // FWIW, it's only node<StatementList> that comes from outside, I'd rather have internal impl that is node-agnostic, and keep node<StatementList> for public API
     Iterable<SNode> returnStatements = ListSequence.fromList(SNodeOperations.getChildren(node)).translate((it) -> {
       return (Iterable<SNode>) () -> {
         return new YieldingIterator<SNode>() {
@@ -82,7 +83,7 @@ __switch__:
                   this.__CP__ = 7;
                   break;
                 case 7:
-                  if (SNodeOperations.isInstanceOf(it, CONCEPTS.ConceptFunction$mf) || SNodeOperations.isInstanceOf(it, CONCEPTS.SingleLineComment$Kw) || SNodeOperations.isInstanceOf(it, CONCEPTS.IStatementListContainer$xz) || SNodeOperations.isInstanceOf(it, CONCEPTS.AnonymousClass$Bt) || SNodeOperations.isInstanceOf(it, CONCEPTS.Quotation$Vl)) {
+                  if (SNodeOperations.isInstanceOf(it, CONCEPTS.ConceptFunction$mf) || SNodeOperations.isInstanceOf(it, CONCEPTS.SingleLineComment$Kw) || SNodeOperations.isInstanceOf(it, CONCEPTS.IStatementListContainer$xz) || SNodeOperations.isInstanceOf(it, CONCEPTS.AnonymousClass$Bt) || SNodeOperations.isInstanceOf(it, CONCEPTS.IMetaLevelChanger$w$)) {
                     this.__CP__ = 8;
                     break;
                   }
@@ -441,7 +442,7 @@ __switch__:
     /*package*/ static final SConcept SingleLineComment$Kw = MetaAdapterFactory.getConcept(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0x57d533a7af15ed3aL, "jetbrains.mps.baseLanguage.structure.SingleLineComment");
     /*package*/ static final SConcept ConceptFunction$mf = MetaAdapterFactory.getConcept(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0x108bbca0f48L, "jetbrains.mps.baseLanguage.structure.ConceptFunction");
     /*package*/ static final SInterfaceConcept IStatementListContainer$xz = MetaAdapterFactory.getInterfaceConcept(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0x11750ef8265L, "jetbrains.mps.baseLanguage.structure.IStatementListContainer");
-    /*package*/ static final SConcept Quotation$Vl = MetaAdapterFactory.getConcept(0x3a13115c633c4c5cL, 0xbbcc75c4219e9555L, 0x1168c104659L, "jetbrains.mps.lang.quotation.structure.Quotation");
+    /*package*/ static final SInterfaceConcept IMetaLevelChanger$w$ = MetaAdapterFactory.getInterfaceConcept(0xceab519525ea4f22L, 0x9b92103b95ca8c0cL, 0x2cc012b1584bd3aL, "jetbrains.mps.lang.core.structure.IMetaLevelChanger");
     /*package*/ static final SConcept Classifier$Ix = MetaAdapterFactory.getConcept(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0x101d9d3ca30L, "jetbrains.mps.baseLanguage.structure.Classifier");
     /*package*/ static final SConcept StatementList$m_ = MetaAdapterFactory.getConcept(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0xf8cc56b200L, "jetbrains.mps.baseLanguage.structure.StatementList");
     /*package*/ static final SConcept TryFinallyStatement$oi = MetaAdapterFactory.getConcept(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0x10cacebf556L, "jetbrains.mps.baseLanguage.structure.TryFinallyStatement");
