@@ -1139,6 +1139,18 @@
   "license" : "Apache 2.0",
   "licenseUrl" : "https://github.com/ota4j-team/opentest4j/blob/master/LICENSE"
 }, {
+  "name" : "org.eclipse.lsp4j.jsonrpc:0.14.0",
+  "url" : "https://github.com/eclipse/lsp4j",
+  "version" : "0.24.0",
+  "license" : "EPL 2.0",
+  "licenseUrl" : "https://github.com/eclipse-lsp4j/lsp4j/blob/main/LICENSE"
+}, {
+  "name" : "org.eclipse.lsp4j:0.14.0",
+  "url" : "https://github.com/eclipse/lsp4j",
+  "version" : "0.24.0",
+  "license" : "EPL 2.0",
+  "licenseUrl" : "https://github.com/eclipse-lsp4j/lsp4j/blob/main/LICENSE"
+}, {
   "name" : "org.eclipse.xtext.xbase",
   "url" : "https://github.com/eclipse/xtext-lib",
   "version" : "2.40.0",
