@@ -865,7 +865,7 @@
 }, {
   "name" : "java-atk-wrapper",
   "url" : "https://github.com/JetBrains/intellij-deps-java-atk-wrapper",
-  "version" : "263.33",
+  "version" : "263.35",
   "license" : "LGPL 2.1",
   "licenseUrl" : "https://github.com/JetBrains/intellij-deps-java-atk-wrapper/blob/master/COPYING.LESSER"
 }, {
@@ -1261,7 +1261,7 @@
 }, {
   "name" : "zip-signer",
   "url" : "https://github.com/JetBrains/marketplace-zip-signer",
-  "version" : "0.1.43",
+  "version" : "0.1.45",
   "license" : "Apache 2.0",
   "licenseUrl" : "https://github.com/JetBrains/marketplace-zip-signer/blob/master/LICENSE"
 }, {
