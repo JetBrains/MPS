@@ -50,6 +50,7 @@ import org.junit.runners.Suite.SuiteClasses;
     jetbrains.mps.reloading.JarClassPathItemTest.class,
     jetbrains.mps.core.platform.DynamicComponentsTest.class,
     jetbrains.mps.vcs.diff.merge.MergeDriverChildOrderTest.class,
+    jetbrains.mps.vcs.diff.merge.MergeReferenceTest.class,
     jetbrains.mps.vcs.diff.merge.PostMergeSortingTest.class,
     jetbrains.mps.vcs.diff.merge.PostMergeSortingDriverScenarioTest.class,
     jetbrains.mps.vcs.diff.merge.SortingScenarioTest.class,
