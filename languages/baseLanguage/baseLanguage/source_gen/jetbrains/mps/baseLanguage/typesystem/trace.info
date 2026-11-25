@@ -12038,54 +12038,55 @@
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c895902c5(jetbrains.mps.baseLanguage.typesystem)/1240394564106">
     <file name="NonFinalParametersInAnonymousClass_NonTypesystemRule.java">
-      <node id="7074068829090132490" at="27,151,28,159" concept="12" />
-      <node id="1240395578471" at="31,11,32,70" concept="12" />
-      <node id="1240395578471" at="32,70,33,249" concept="12" />
-      <node id="1240394564106" at="39,50,40,41" concept="13" />
-      <node id="1240394564106" at="42,68,43,102" concept="13" />
-      <node id="1240394564106" at="45,30,46,17" concept="13" />
-      <node id="1240394564106" at="50,0,51,0" concept="16" trace="variableDeclaration$N1XG" />
-      <node id="1240394564106" at="54,0,55,0" concept="16" trace="ParameterDeclaration$RG" />
+      <node id="7074068829090132490" at="26,151,27,159" concept="12" />
+      <node id="1240395578471" at="30,11,31,70" concept="12" />
+      <node id="1240395578471" at="31,70,32,249" concept="12" />
+      <node id="1240394564106" at="38,50,39,41" concept="13" />
+      <node id="1240394564106" at="41,68,42,102" concept="13" />
+      <node id="1240394564106" at="44,30,45,17" concept="13" />
+      <node id="1240394564106" at="49,0,50,0" concept="16" trace="variableDeclaration$N1XG" />
+      <node id="1240394564106" at="53,0,54,0" concept="16" trace="ParameterDeclaration$RG" />
+      <node id="1240394564106" at="54,0,55,0" concept="16" trace="BaseMethodDeclaration$kD" />
       <node id="1240394564106" at="55,0,56,0" concept="16" trace="VariableReference$TC" />
       <node id="1240394564106" at="59,0,60,0" concept="16" trace="isFinal$gvTP" />
-      <node id="1240394564106" at="24,0,26,0" concept="3" trace="NonFinalParametersInAnonymousClass_NonTypesystemRule#()V" />
-      <node id="1240394564106" at="39,0,42,0" concept="11" trace="getApplicableConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
-      <node id="1240394564106" at="42,0,45,0" concept="11" trace="isApplicableAndPattern#(Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/lang/typesystem/runtime/IsApplicableStatus;" />
-      <node id="1240394564106" at="45,0,48,0" concept="11" trace="overrides#()Z" />
-      <node id="1240395578471" at="30,125,34,11" concept="1" />
-      <node id="1240395578465" at="29,104,35,9" concept="10" />
-      <node id="1240395578457" at="28,159,36,7" concept="10" />
-      <node id="7074068829090132425" at="26,130,37,5" concept="10" />
-      <node id="1240394564106" at="26,0,39,0" concept="11" trace="applyRule#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/typesystem/inference/TypeCheckingContext;Ljetbrains/mps/lang/typesystem/runtime/IsApplicableStatus;)V" />
-      <scope id="1240394564106" at="24,65,24,65" />
-      <scope id="1240394564106" at="39,50,40,41" />
-      <scope id="1240394564106" at="42,68,43,102" />
-      <scope id="1240394564106" at="45,30,46,17" />
-      <scope id="1240394564106" at="24,0,26,0" />
-      <scope id="1240395578471" at="31,11,33,249">
+      <node id="1240394564106" at="23,0,25,0" concept="3" trace="NonFinalParametersInAnonymousClass_NonTypesystemRule#()V" />
+      <node id="1240394564106" at="38,0,41,0" concept="11" trace="getApplicableConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
+      <node id="1240394564106" at="41,0,44,0" concept="11" trace="isApplicableAndPattern#(Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/lang/typesystem/runtime/IsApplicableStatus;" />
+      <node id="1240394564106" at="44,0,47,0" concept="11" trace="overrides#()Z" />
+      <node id="1240395578471" at="29,211,33,11" concept="1" />
+      <node id="1240395578465" at="28,104,34,9" concept="10" />
+      <node id="1240395578457" at="27,159,35,7" concept="10" />
+      <node id="7074068829090132425" at="25,130,36,5" concept="10" />
+      <node id="1240394564106" at="25,0,38,0" concept="11" trace="applyRule#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/typesystem/inference/TypeCheckingContext;Ljetbrains/mps/lang/typesystem/runtime/IsApplicableStatus;)V" />
+      <scope id="1240394564106" at="23,65,23,65" />
+      <scope id="1240394564106" at="38,50,39,41" />
+      <scope id="1240394564106" at="41,68,42,102" />
+      <scope id="1240394564106" at="44,30,45,17" />
+      <scope id="1240394564106" at="23,0,25,0" />
+      <scope id="1240395578471" at="30,11,32,249">
         <var name="_reporter_2309309498" id="1240395578471" />
         <var name="errorTarget" id="1240395578471" />
       </scope>
-      <scope id="1240394564106" at="39,0,42,0" />
-      <scope id="1240394564106" at="42,0,45,0">
+      <scope id="1240394564106" at="38,0,41,0" />
+      <scope id="1240394564106" at="41,0,44,0">
         <var name="argument" id="1240394564106" />
       </scope>
-      <scope id="1240394564106" at="45,0,48,0" />
-      <scope id="1240395578470" at="30,125,34,11" />
-      <scope id="1240395578464" at="29,104,35,9" />
-      <scope id="7074068829090132426" at="27,151,36,7">
+      <scope id="1240394564106" at="44,0,47,0" />
+      <scope id="1240395578470" at="29,211,33,11" />
+      <scope id="1240395578464" at="28,104,34,9" />
+      <scope id="7074068829090132426" at="26,151,35,7">
         <var name="declaration" id="7074068829090132491" />
       </scope>
-      <scope id="1240394564107" at="26,130,37,5" />
-      <scope id="1240394564106" at="26,0,39,0">
+      <scope id="1240394564107" at="25,130,36,5" />
+      <scope id="1240394564106" at="25,0,38,0">
         <var name="status" id="1240394564106" />
         <var name="typeCheckingContext" id="1240394564106" />
         <var name="variableReference" id="1240394564106" />
       </scope>
-      <unit id="1240394564106" at="49,0,52,0" name="jetbrains.mps.baseLanguage.typesystem.NonFinalParametersInAnonymousClass_NonTypesystemRule$LINKS" />
+      <unit id="1240394564106" at="48,0,51,0" name="jetbrains.mps.baseLanguage.typesystem.NonFinalParametersInAnonymousClass_NonTypesystemRule$LINKS" />
       <unit id="1240394564106" at="58,0,61,0" name="jetbrains.mps.baseLanguage.typesystem.NonFinalParametersInAnonymousClass_NonTypesystemRule$PROPS" />
-      <unit id="1240394564106" at="53,0,57,0" name="jetbrains.mps.baseLanguage.typesystem.NonFinalParametersInAnonymousClass_NonTypesystemRule$CONCEPTS" />
-      <unit id="1240394564106" at="23,0,62,0" name="jetbrains.mps.baseLanguage.typesystem.NonFinalParametersInAnonymousClass_NonTypesystemRule" />
+      <unit id="1240394564106" at="52,0,57,0" name="jetbrains.mps.baseLanguage.typesystem.NonFinalParametersInAnonymousClass_NonTypesystemRule$CONCEPTS" />
+      <unit id="1240394564106" at="22,0,62,0" name="jetbrains.mps.baseLanguage.typesystem.NonFinalParametersInAnonymousClass_NonTypesystemRule" />
     </file>
     <file name="TypesystemDescriptor.java">
       <node id="1240394564106" at="460,5,461,111" concept="12" />

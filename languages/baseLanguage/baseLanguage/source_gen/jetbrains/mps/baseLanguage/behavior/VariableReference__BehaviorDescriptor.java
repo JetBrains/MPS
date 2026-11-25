@@ -20,6 +20,7 @@ import jetbrains.mps.lang.smodel.generator.smodelAdapter.SPropertyOperations;
 import jetbrains.mps.smodel.SModelStereotype;
 import jetbrains.mps.baseLanguage.util.ReflectionUtil;
 import jetbrains.mps.internal.collections.runtime.ListSequence;
+import jetbrains.mps.lang.core.behavior.IMetaLevelChanger__BehaviorDescriptor;
 import org.jetbrains.annotations.Nullable;
 import jetbrains.mps.core.aspects.behaviour.api.BHMethodNotFoundException;
 import org.jetbrains.mps.openapi.model.SModel;
@@ -36,14 +37,13 @@ public final class VariableReference__BehaviorDescriptor extends BaseBHDescripto
   public static final SMethod<SNode> getVariable_idSORzhOpB6t = new SMethodBuilder<>(SNode.class).name("getVariable").modifiers(8, AccessPrivileges.PUBLIC).concept(CONCEPT).baseMethodId(1023687332192481693L).languageId(0xa443f952ceaf5816L, 0xf3061a5392264cc5L).build2();
   public static final SMethod<Object> getCompileTimeConstantValue_idi1LP2xI = new SMethodBuilder<>(Object.class).name("getCompileTimeConstantValue").modifiers(8, AccessPrivileges.PUBLIC).concept(CONCEPT).baseMethodId(1238860310638L).languageId(0xa443f952ceaf5816L, 0xf3061a5392264cc5L).build2(SMethodBuilder.createJavaParameter(SModule.class, "module"));
   public static final SMethod<Boolean> isCompileTimeConstant_idi1LOPRp = new SMethodBuilder<>(Boolean.TYPE).name("isCompileTimeConstant").modifiers(8, AccessPrivileges.PUBLIC).concept(CONCEPT).baseMethodId(1238860258777L).languageId(0xa443f952ceaf5816L, 0xf3061a5392264cc5L).build2();
-  public static final SMethod<Boolean> isParameterOfThisMethod_idi3dhek3 = new SMethodBuilder<>(Boolean.TYPE).name("isParameterOfThisMethod").modifiers(0, AccessPrivileges.PUBLIC).concept(CONCEPT).baseMethodId(1240394425603L).languageId(0xa443f952ceaf5816L, 0xf3061a5392264cc5L).build2();
   public static final SMethod<Boolean> isVariableDefinedInThisMethod_idhPiSGi6 = new SMethodBuilder<>(Boolean.TYPE).name("isVariableDefinedInThisMethod").modifiers(0, AccessPrivileges.PUBLIC).concept(CONCEPT).baseMethodId(1225456272518L).languageId(0xa443f952ceaf5816L, 0xf3061a5392264cc5L).build2();
   public static final SMethod<SNode> getDeclaration_id2P5W1FWMYZ5 = new SMethodBuilder<>(SNode.class).name("getDeclaration").modifiers(8, AccessPrivileges.PUBLIC).concept(CONCEPT).baseMethodId(3262277503800831941L).languageId(0xa443f952ceaf5816L, 0xf3061a5392264cc5L).build2();
   public static final SMethod<Boolean> lvalue_id1653mnvAgpj = new SMethodBuilder<>(Boolean.TYPE).name("lvalue").modifiers(9, AccessPrivileges.PUBLIC).concept(CONCEPT).baseMethodId(1262430001741497939L).languageId(0xa443f952ceaf5816L, 0xf3061a5392264cc5L).build2();
   public static final SMethod<Boolean> singleValue_id1o8Ht9sES3u = new SMethodBuilder<>(Boolean.TYPE).name("singleValue").modifiers(9, AccessPrivileges.PUBLIC).concept(CONCEPT).baseMethodId(1587718783750602974L).languageId(0xa443f952ceaf5816L, 0xf3061a5392264cc5L).build2();
   public static final SMethod<PrecedenceUtil.Precedence> getPrecedenceLevel_id1O90zDONSxM = new SMethodBuilder<>(PrecedenceUtil.Precedence.class).name("getPrecedenceLevel").modifiers(9, AccessPrivileges.PUBLIC).concept(CONCEPT).baseMethodId(2092205951981422706L).languageId(0xa443f952ceaf5816L, 0xf3061a5392264cc5L).build2();
 
-  private final List<SMethod<?>> BH_METHODS = Arrays.<SMethod<?>>asList(getTypeAnnotation_idhXbqSv6, getVariable_idSORzhOpB6t, getCompileTimeConstantValue_idi1LP2xI, isCompileTimeConstant_idi1LOPRp, isParameterOfThisMethod_idi3dhek3, isVariableDefinedInThisMethod_idhPiSGi6, getDeclaration_id2P5W1FWMYZ5, lvalue_id1653mnvAgpj, singleValue_id1o8Ht9sES3u, getPrecedenceLevel_id1O90zDONSxM);
+  private final List<SMethod<?>> BH_METHODS = Arrays.<SMethod<?>>asList(getTypeAnnotation_idhXbqSv6, getVariable_idSORzhOpB6t, getCompileTimeConstantValue_idi1LP2xI, isCompileTimeConstant_idi1LOPRp, isVariableDefinedInThisMethod_idhPiSGi6, getDeclaration_id2P5W1FWMYZ5, lvalue_id1653mnvAgpj, singleValue_id1o8Ht9sES3u, getPrecedenceLevel_id1O90zDONSxM);
 
 
   /*package*/ static SNode getTypeAnnotation_idhXbqSv6(@NotNull SNode __thisNode__) {
@@ -100,33 +100,23 @@ public final class VariableReference__BehaviorDescriptor extends BaseBHDescripto
 
     return ((boolean) Expression__BehaviorDescriptor.isCompileTimeConstant_idi1LOPRp.invokeSuper(__thisNode__, CONCEPTS.VariableReference$TC));
   }
-  /*package*/ static boolean isParameterOfThisMethod_idi3dhek3(@NotNull SNode __thisNode__) {
-    // todo: method from ParameterReference. Remove.
-    if (!(SNodeOperations.isInstanceOf(SLinkOperations.getTarget(__thisNode__, LINKS.variableDeclaration$N1XG), CONCEPTS.ParameterDeclaration$RG))) {
-      throw new IllegalArgumentException();
-    }
-    if (SNodeOperations.getNodeAncestor(__thisNode__, CONCEPTS.BaseMethodDeclaration$kD, false, false) == SNodeOperations.getNodeAncestor(SLinkOperations.getTarget(__thisNode__, LINKS.variableDeclaration$N1XG), CONCEPTS.BaseMethodDeclaration$kD, false, false)) {
-      if (SNodeOperations.getNodeAncestor(__thisNode__, CONCEPTS.Closureoid$kl, false, false) == SNodeOperations.getNodeAncestor(SLinkOperations.getTarget(__thisNode__, LINKS.variableDeclaration$N1XG), CONCEPTS.Closureoid$kl, false, false)) {
-        return true;
-      }
-    }
-    return false;
-  }
   /*package*/ static boolean isVariableDefinedInThisMethod_idhPiSGi6(@NotNull SNode __thisNode__) {
     // todo: method from LocalVariableReference. Remove
     if (!(SNodeOperations.isInstanceOf(SLinkOperations.getTarget(__thisNode__, LINKS.variableDeclaration$N1XG), CONCEPTS.LocalVariableDeclaration$41))) {
       throw new IllegalArgumentException();
     }
     SNode anchor = __thisNode__;
-    if ((SNodeOperations.getNodeAncestor(__thisNode__, CONCEPTS.AbstractAntiquotation$TS, false, false) != null)) {
-      anchor = SNodeOperations.getNodeAncestor(__thisNode__, CONCEPTS.Quotation$Vl, false, false);
-    }
-    if (SNodeOperations.getNodeAncestor(anchor, CONCEPTS.BaseMethodDeclaration$kD, false, false) == SNodeOperations.getNodeAncestor(SLinkOperations.getTarget(__thisNode__, LINKS.variableDeclaration$N1XG), CONCEPTS.BaseMethodDeclaration$kD, false, false)) {
-      if (SNodeOperations.getNodeAncestor(anchor, CONCEPTS.Closureoid$kl, false, false) == SNodeOperations.getNodeAncestor(SLinkOperations.getTarget(__thisNode__, LINKS.variableDeclaration$N1XG), CONCEPTS.Closureoid$kl, false, false)) {
-        return true;
+    // aka BaseConcept.getMetaLevel, yet I find 'meta' here confusing
+    int sameTreeLevel = 0;
+    do {
+      anchor = SNodeOperations.getParent(anchor);
+      //  indeed, use of deprecated concept is unfortunate, yet better than lang.quotation dependency
+      if (SNodeOperations.isInstanceOf(anchor, CONCEPTS.IMetaLevelChanger$w$)) {
+        sameTreeLevel += (int) IMetaLevelChanger__BehaviorDescriptor.getMetaLevelChange_idbc0iGlxcsE.invoke(SNodeOperations.cast(anchor, CONCEPTS.IMetaLevelChanger$w$));
       }
-    }
-    return false;
+    } while ((anchor != null) && !(SNodeOperations.isInstanceOf(anchor, CONCEPTS.BaseMethodDeclaration$kD) && sameTreeLevel == 0));
+
+    return anchor == SNodeOperations.getNodeAncestor(SLinkOperations.getTarget(__thisNode__, LINKS.variableDeclaration$N1XG), CONCEPTS.BaseMethodDeclaration$kD, false, false);
   }
   /*package*/ static SNode getDeclaration_id2P5W1FWMYZ5(@NotNull SNode __thisNode__) {
     // todo: method from LocalVariableReference. Remove
@@ -166,10 +156,8 @@ public final class VariableReference__BehaviorDescriptor extends BaseBHDescripto
       case 3:
         return (T) ((Boolean) isCompileTimeConstant_idi1LOPRp(node));
       case 4:
-        return (T) ((Boolean) isParameterOfThisMethod_idi3dhek3(node));
-      case 5:
         return (T) ((Boolean) isVariableDefinedInThisMethod_idhPiSGi6(node));
-      case 6:
+      case 5:
         return (T) ((SNode) getDeclaration_id2P5W1FWMYZ5(node));
       default:
         throw new BHMethodNotFoundException(this, method);
@@ -183,11 +171,11 @@ public final class VariableReference__BehaviorDescriptor extends BaseBHDescripto
       throw new BHMethodNotFoundException(this, method);
     }
     switch (methodIndex) {
-      case 7:
+      case 6:
         return (T) ((Boolean) lvalue_id1653mnvAgpj(concept));
-      case 8:
+      case 7:
         return (T) ((Boolean) singleValue_id1o8Ht9sES3u(concept));
-      case 9:
+      case 8:
         return (T) ((PrecedenceUtil.Precedence) getPrecedenceLevel_id1O90zDONSxM(concept));
       default:
         throw new BHMethodNotFoundException(this, method);
@@ -223,11 +211,8 @@ public final class VariableReference__BehaviorDescriptor extends BaseBHDescripto
     /*package*/ static final SConcept LocalVariableDeclaration$41 = MetaAdapterFactory.getConcept(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0xf8cc67c7efL, "jetbrains.mps.baseLanguage.structure.LocalVariableDeclaration");
     /*package*/ static final SConcept VariableReference$TC = MetaAdapterFactory.getConcept(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0xf8c77f1e98L, "jetbrains.mps.baseLanguage.structure.VariableReference");
     /*package*/ static final SConcept Expression$mB = MetaAdapterFactory.getConcept(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0xf8c37f506fL, "jetbrains.mps.baseLanguage.structure.Expression");
-    /*package*/ static final SConcept ParameterDeclaration$RG = MetaAdapterFactory.getConcept(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0xf8c77f1e94L, "jetbrains.mps.baseLanguage.structure.ParameterDeclaration");
-    /*package*/ static final SInterfaceConcept Closureoid$kl = MetaAdapterFactory.getInterfaceConcept(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0x1192e7dfdd1L, "jetbrains.mps.baseLanguage.structure.Closureoid");
+    /*package*/ static final SInterfaceConcept IMetaLevelChanger$w$ = MetaAdapterFactory.getInterfaceConcept(0xceab519525ea4f22L, 0x9b92103b95ca8c0cL, 0x2cc012b1584bd3aL, "jetbrains.mps.lang.core.structure.IMetaLevelChanger");
     /*package*/ static final SConcept BaseMethodDeclaration$kD = MetaAdapterFactory.getConcept(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0xf8cc56b1fcL, "jetbrains.mps.baseLanguage.structure.BaseMethodDeclaration");
-    /*package*/ static final SConcept Quotation$Vl = MetaAdapterFactory.getConcept(0x3a13115c633c4c5cL, 0xbbcc75c4219e9555L, 0x1168c104659L, "jetbrains.mps.lang.quotation.structure.Quotation");
-    /*package*/ static final SInterfaceConcept AbstractAntiquotation$TS = MetaAdapterFactory.getInterfaceConcept(0x3a13115c633c4c5cL, 0xbbcc75c4219e9555L, 0x1168c104656L, "jetbrains.mps.lang.quotation.structure.AbstractAntiquotation");
   }
 
   private static final class PROPS {

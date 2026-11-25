@@ -837,7 +837,7 @@
         <child id="5168775467716640653" name="linkQualifier" index="1aIX9E" />
       </concept>
       <concept id="6677504323281689838" name="jetbrains.mps.lang.smodel.structure.SConceptType" flags="in" index="3bZ5Sz">
-        <reference id="6677504323281689839" name="conceptDeclaraton" index="3bZ5Sy" />
+        <reference id="6677504323281689839" name="conceptDeclaration" index="3bZ5Sy" />
       </concept>
       <concept id="1154546920561" name="jetbrains.mps.lang.smodel.structure.OperationParm_ConceptList" flags="ng" index="3gmYPX">
         <child id="1154546920563" name="concept" index="3gmYPZ" />
@@ -23034,13 +23034,29 @@
             </node>
             <node concept="3clFbS" id="i3dlBLw" role="3clFbx">
               <node concept="3clFbJ" id="i3dlBLx" role="3cqZAp">
-                <node concept="3fqX7Q" id="i3dlBLy" role="3clFbw">
-                  <node concept="2OqwBi" id="i3dlBLz" role="3fr31v">
-                    <node concept="1YBJjd" id="i3dlGlG" role="2Oq$k0">
+                <node concept="3y3z36" id="2rAWcbXGyP8" role="3clFbw">
+                  <node concept="2OqwBi" id="i3i72jZ" role="3uHU7B">
+                    <node concept="1YBJjd" id="2rAWcbXGyzb" role="2Oq$k0">
                       <ref role="1YBMHb" node="i3dlwFx" resolve="variableReference" />
                     </node>
-                    <node concept="3zqWPK" id="70OdufORelN" role="2OqNvi">
-                      <ref role="37wK5l" to="tpek:i3dhek3" resolve="isParameterOfThisMethod" />
+                    <node concept="2Xjw5R" id="i3i72k1" role="2OqNvi">
+                      <node concept="1xMEDy" id="i3i72k2" role="1xVPHs">
+                        <node concept="chp4Y" id="i3i72k3" role="ri$Ld">
+                          <ref role="cht4Q" to="tpee:fzclF7W" resolve="BaseMethodDeclaration" />
+                        </node>
+                      </node>
+                    </node>
+                  </node>
+                  <node concept="2OqwBi" id="i3i72jS" role="3uHU7w">
+                    <node concept="37vLTw" id="2rAWcbXGzkG" role="2Oq$k0">
+                      <ref role="3cqZAo" node="68G91UU_b8b" resolve="declaration" />
+                    </node>
+                    <node concept="2Xjw5R" id="i3i72jW" role="2OqNvi">
+                      <node concept="1xMEDy" id="i3i72jX" role="1xVPHs">
+                        <node concept="chp4Y" id="i3i72jY" role="ri$Ld">
+                          <ref role="cht4Q" to="tpee:fzclF7W" resolve="BaseMethodDeclaration" />
+                        </node>
+                      </node>
                     </node>
                   </node>
                 </node>

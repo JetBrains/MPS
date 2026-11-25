@@ -316,9 +316,6 @@
       <property role="IQ2ns" value="1206534244140" />
       <ref role="20lvS9" node="hz_D2po" resolve="EmitStatement" />
     </node>
-    <node concept="PrWs8" id="2QBA9FvkNjQ" role="PzmwI">
-      <ref role="PrY4T" to="tpee:h$IvvRh" resolve="Closureoid" />
-    </node>
   </node>
   <node concept="1TIwiD" id="h$4dLjP">
     <property role="R5$K7" value="false" />
