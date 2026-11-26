@@ -2763,6 +2763,9 @@
     <node concept="2DRAP_" id="2_gL36cKoQM" role="2DRAPQ">
       <property role="2DPR8u" value="  %ALL_JVM_ARGS% ^" />
     </node>
+    <node concept="2DRAP_" id="4XUSFVeWRj$" role="2DRAPQ">
+      <property role="2DPR8u" value="  -XX:-UseBASE64Intrinsics ^" />
+    </node>
     <node concept="2DRAP_" id="3zmidjZjDBA" role="2DRAPQ">
       <property role="2DPR8u" value="  -Dide.native.launcher=false ^" />
     </node>
@@ -4508,6 +4511,9 @@
     <node concept="2DRAP_" id="7C7qUK4tdSW" role="2DRAPQ">
       <property role="2DPR8u" value="  ${IDE_JVM_ARGS} \" />
     </node>
+    <node concept="2DRAP_" id="4XUSFVeWV8Q" role="2DRAPQ">
+      <property role="2DPR8u" value="  -XX:-UseBASE64Intrinsics \" />
+    </node>
     <node concept="2DRAP_" id="BsOHnjn547" role="2DRAPQ">
       <property role="2DPR8u" value="  -Didea.jre.check=true \" />
     </node>
@@ -5699,6 +5705,10 @@
       <node concept="2DRAP_" id="6GoDrz8MA0e" role="2DRAPQ">
         <property role="2DPR8u" value="        &quot;-XX:+UseCompressedOops&quot;," />
         <node concept="raruj" id="6GoDrz8MJ2h" role="lGtFl" />
+      </node>
+      <node concept="2DRAP_" id="4XUSFVeWX9O" role="2DRAPQ">
+        <property role="2DPR8u" value="        &quot;-XX:-UseBASE64Intrinsics&quot;," />
+        <node concept="raruj" id="4XUSFVeWX9P" role="lGtFl" />
       </node>
       <node concept="2DRAP_" id="6GoDrz8MA0f" role="2DRAPQ">
         <property role="2DPR8u" value="        &quot;-XX:ErrorFile=$USER_HOME/java_error_in_idea_%p.log&quot;," />

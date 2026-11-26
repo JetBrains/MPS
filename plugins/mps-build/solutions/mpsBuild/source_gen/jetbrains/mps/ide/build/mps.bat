@@ -141,6 +141,7 @@ IF NOT "%IDEA_CLASS_PATH%" == "" SET CLASS_PATH=%CLASS_PATH%;%IDEA_CLASS_PATH%
 SET MAIN_CLASS=jetbrains.mps.Launcher
 start "" "%JAVA_EXE%" ^
   %ALL_JVM_ARGS% ^
+  -XX:-UseBASE64Intrinsics ^
   -Dide.native.launcher=false ^
   -Didea.main.class.name=%MAIN_CLASS% ^
   -cp "%CLASS_PATH%" ^
