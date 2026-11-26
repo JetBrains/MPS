@@ -61,7 +61,7 @@ public final class UnsuppressError_Intention extends AbstractIntentionDescriptor
 
     @Override
     public String getDescription(final SNode node, final EditorContext editorContext) {
-      return "Don't suppress error '" + SPropertyOperations.getString(myParameter, PROPS.message$_mpB) + "' for " + ICanSuppressErrors__BehaviorDescriptor.nodeDescription_id4oS1ku9jIXr.invoke(node);
+      return "Don't suppress error '" + SuppressionUtil.ensureNotTooLong(SPropertyOperations.getString(myParameter, PROPS.message$_mpB)) + "' for " + ICanSuppressErrors__BehaviorDescriptor.nodeDescription_id4oS1ku9jIXr.invoke(node);
     }
 
     @Override
