@@ -177,7 +177,11 @@ internal class ParameterKeys private constructor(
  * spellings of one key.
  */
 @OptIn(ExperimentalContracts::class)
-internal fun JsonObject?.rejectUnknownParameterKeys(context: String, keys: ParameterKeys) {
+internal fun JsonObject?.rejectUnknownParameterKeys(
+  context: String,
+  keys: ParameterKeys,
+  hintForUnknown: ((List<String>) -> String?)? = null,
+) {
   // Lets a caller use a blob parsed by AbstractOps.parseParametersBlob as non-null after this check.
   contract { returns() implies (this@rejectUnknownParameterKeys != null) }
   // Gson answers `null` for a blank blob (a literal `null` fails the parse instead), which the
@@ -198,11 +202,12 @@ internal fun JsonObject?.rejectUnknownParameterKeys(context: String, keys: Param
     val suggestion = suggestParameterName(key, keys.canonical)
     if (suggestion != null) "'$key' (did you mean '$suggestion'?)" else "'$key'"
   }
+  val hint = hintForUnknown?.invoke(unknown)?.takeIf { it.isNotBlank() }?.let { " $it" }.orEmpty()
   throw ToolInputSchemaException(
     "Unknown ${if (unknown.size == 1) "parameter" else "parameters"} in '$PARAMETERS_PATH' for " +
       "$context: $named. Accepted: ${keys.canonical.joinToString(", ") { "'$it'" }}. " +
       "An unrecognised key is rejected rather than ignored, so a misspelling cannot silently " +
-      "drop the value you passed."
+      "drop the value you passed.$hint"
   )
 }
 
@@ -525,6 +530,14 @@ private val JAVA_INSERT_PARAMETER_KEYS = ParameterKeys.of(
   "code", "featureKind", "recovery", "contextNodeRef", "insert", "postProcess",
 )
 
+private val JAVA_INSERT_IMPORTS_UNKNOWN_KEYS = setOf("imports", "import")
+
+private const val JAVA_INSERT_IMPORTS_HINT =
+  "There is no 'imports' parameter (and only featureKind 'CLASS' accepts leading `import` statements): " +
+    "write external classes fully qualified (`java.util.List`) so they resolve against module dependencies " +
+    "and auto-import into the target model, or add model imports first with `mps_mcp_model_dependency` " +
+    "when using short names, adding a new module dependency, or targeting `modelReference: \"console\"`."
+
 /**
  * The `featureKind` values `mps_mcp_parse_java_and_insert` accepts, in the order
  * `parameters-schema.md` lists them. Not [FeatureKind.entries]: `CLASS_STUB` is rejected, and
@@ -542,7 +555,9 @@ fun parseJavaParseInsertRequest(parameters: String): JavaParseInsertRequest {
   // instead of being silently dropped. In particular `dryRun` is NOT supported by this tool
   // (unlike `mps_mcp_update_node`); previously passing it was a no-op and the model was mutated
   // anyway, hiding caller misuse.
-  obj.rejectUnknownParameterKeys("mps_mcp_parse_java_and_insert", JAVA_INSERT_PARAMETER_KEYS)
+  obj.rejectUnknownParameterKeys("mps_mcp_parse_java_and_insert", JAVA_INSERT_PARAMETER_KEYS) { unknown ->
+    if (unknown.any { it.lowercase() in JAVA_INSERT_IMPORTS_UNKNOWN_KEYS }) JAVA_INSERT_IMPORTS_HINT else null
+  }
   val code = obj.requiredString("code", "parameters")
   if (code.length > 50_000) {
     throw ToolInputSchemaException("Code exceeds maximum allowed length of 50_000 characters")
