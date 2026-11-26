@@ -285,6 +285,7 @@ MAIN_CLASS=jetbrains.mps.Launcher
   -Didea.paths.selector=$IDEA_PATHS_SELECTOR \
   ${IDE_PROPERTIES_PROPERTY} \
   ${IDE_JVM_ARGS} \
+  -XX:-UseBASE64Intrinsics \
   -Didea.jre.check=true \
   -Djna.boot.library.path="${IDE_HOME}/lib/jna" \
   -Dintellij.platform.load.app.info.from.resources=true \
