@@ -27,28 +27,28 @@ public class ConceptIsExactlyInterface_Test extends BaseTransformationTest {
   }
 
   @Test
-  public void test_NodeThisConceptIsNeverAnInterfaceCheck2795977714474729510() throws Throwable {
-    new TestBody(this).test_NodeThisConceptIsNeverAnInterfaceCheck2795977714474729510();
+  public void test_NodeIsexactlyIsAlwaysFalseCheck2795977714474729510() throws Throwable {
+    new TestBody(this).test_NodeIsexactlyIsAlwaysFalseCheck2795977714474729510();
   }
   @Test
-  public void test_NodeThisConceptIsNeverAnInterfaceCheck2795977714474729519() throws Throwable {
-    new TestBody(this).test_NodeThisConceptIsNeverAnInterfaceCheck2795977714474729519();
+  public void test_NodeIsexactlyIsAlwaysFalseCheck2795977714474729519() throws Throwable {
+    new TestBody(this).test_NodeIsexactlyIsAlwaysFalseCheck2795977714474729519();
   }
   @Test
-  public void test_NodeThisConceptIsNeverAnInterfaceCheck2795977714474729528() throws Throwable {
-    new TestBody(this).test_NodeThisConceptIsNeverAnInterfaceCheck2795977714474729528();
+  public void test_NodeIsexactlyIsAlwaysFalseCheck2795977714474729528() throws Throwable {
+    new TestBody(this).test_NodeIsexactlyIsAlwaysFalseCheck2795977714474729528();
   }
   @Test
-  public void test_NodeThisConceptIsNeverAnInterfaceCheck1786866911643191008() throws Throwable {
-    new TestBody(this).test_NodeThisConceptIsNeverAnInterfaceCheck1786866911643191008();
+  public void test_NodeIsexactlyIsAlwaysFalseCheck1786866911643191008() throws Throwable {
+    new TestBody(this).test_NodeIsexactlyIsAlwaysFalseCheck1786866911643191008();
   }
   @Test
-  public void test_NodeThisConceptIsNeverAnInterfaceCheck1786866911643191177() throws Throwable {
-    new TestBody(this).test_NodeThisConceptIsNeverAnInterfaceCheck1786866911643191177();
+  public void test_NodeIsexactlyIsAlwaysFalseCheck1786866911643191177() throws Throwable {
+    new TestBody(this).test_NodeIsexactlyIsAlwaysFalseCheck1786866911643191177();
   }
   @Test
-  public void test_NodeThisConceptIsNeverAnInterfaceCheck1786866911643191339() throws Throwable {
-    new TestBody(this).test_NodeThisConceptIsNeverAnInterfaceCheck1786866911643191339();
+  public void test_NodeIsexactlyIsAlwaysFalseCheck1786866911643191339() throws Throwable {
+    new TestBody(this).test_NodeIsexactlyIsAlwaysFalseCheck1786866911643191339();
   }
   @Test
   public void test_ErrorMessagesCheck2795977714474729558() throws Throwable {
@@ -66,42 +66,42 @@ public class ConceptIsExactlyInterface_Test extends BaseTransformationTest {
       prepareTestNodes("2795977714474729480");
     }
 
-    public void test_NodeThisConceptIsNeverAnInterfaceCheck2795977714474729510() throws Exception {
+    public void test_NodeIsexactlyIsAlwaysFalseCheck2795977714474729510() throws Exception {
       initTestNodes();
       runWithinCommand(() -> {
         SNode nodeToCheck = getNodeById("2795977714474729507");
         new CheckExpectedMessageRunnable.CheckExpectedRuleMessageRunnable(nodeToCheck, MessageStatus.WARNING, new SNodePointer("r:00000000-0000-4000-0000-011c895902fe(jetbrains.mps.lang.smodel.typesystem)", "2795977714474804731"), "", myProject.getRepository(), myProject.getPlatform()).run();
       });
     }
-    public void test_NodeThisConceptIsNeverAnInterfaceCheck2795977714474729519() throws Exception {
+    public void test_NodeIsexactlyIsAlwaysFalseCheck2795977714474729519() throws Exception {
       initTestNodes();
       runWithinCommand(() -> {
         SNode nodeToCheck = getNodeById("2795977714474729515");
         new CheckExpectedMessageRunnable.CheckExpectedRuleMessageRunnable(nodeToCheck, MessageStatus.WARNING, new SNodePointer("r:00000000-0000-4000-0000-011c895902fe(jetbrains.mps.lang.smodel.typesystem)", "2795977714474804731"), "", myProject.getRepository(), myProject.getPlatform()).run();
       });
     }
-    public void test_NodeThisConceptIsNeverAnInterfaceCheck2795977714474729528() throws Exception {
+    public void test_NodeIsexactlyIsAlwaysFalseCheck2795977714474729528() throws Exception {
       initTestNodes();
       runWithinCommand(() -> {
         SNode nodeToCheck = getNodeById("2795977714474729525");
         new CheckExpectedMessageRunnable.CheckExpectedRuleMessageRunnable(nodeToCheck, MessageStatus.WARNING, new SNodePointer("r:00000000-0000-4000-0000-011c895902fe(jetbrains.mps.lang.smodel.typesystem)", "2795977714474804731"), "", myProject.getRepository(), myProject.getPlatform()).run();
       });
     }
-    public void test_NodeThisConceptIsNeverAnInterfaceCheck1786866911643191008() throws Exception {
+    public void test_NodeIsexactlyIsAlwaysFalseCheck1786866911643191008() throws Exception {
       initTestNodes();
       runWithinCommand(() -> {
         SNode nodeToCheck = getNodeById("1786866911643191005");
         new CheckExpectedMessageRunnable.CheckExpectedRuleMessageRunnable(nodeToCheck, MessageStatus.WARNING, new SNodePointer("r:00000000-0000-4000-0000-011c895902fe(jetbrains.mps.lang.smodel.typesystem)", "2795977714474804731"), "", myProject.getRepository(), myProject.getPlatform()).run();
       });
     }
-    public void test_NodeThisConceptIsNeverAnInterfaceCheck1786866911643191177() throws Exception {
+    public void test_NodeIsexactlyIsAlwaysFalseCheck1786866911643191177() throws Exception {
       initTestNodes();
       runWithinCommand(() -> {
         SNode nodeToCheck = getNodeById("1786866911643191173");
         new CheckExpectedMessageRunnable.CheckExpectedRuleMessageRunnable(nodeToCheck, MessageStatus.WARNING, new SNodePointer("r:00000000-0000-4000-0000-011c895902fe(jetbrains.mps.lang.smodel.typesystem)", "2795977714474804731"), "", myProject.getRepository(), myProject.getPlatform()).run();
       });
     }
-    public void test_NodeThisConceptIsNeverAnInterfaceCheck1786866911643191339() throws Exception {
+    public void test_NodeIsexactlyIsAlwaysFalseCheck1786866911643191339() throws Exception {
       initTestNodes();
       runWithinCommand(() -> {
         SNode nodeToCheck = getNodeById("1786866911643191336");

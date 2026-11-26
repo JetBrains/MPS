@@ -11,31 +11,31 @@
   <root nodeRef="r:783567bb-6a97-47d3-ab6c-d2a82efd2145(jetbrains.mps.smodel.test.concepts@tests)/2795977714474729479">
     <file name="ConceptIsExactlyInterface_Test.java">
       <node id="2795977714474729479" at="25,43,26,60" concept="7" />
-      <node id="2795977714474729510" at="30,97,31,88" concept="1" />
-      <node id="2795977714474729519" at="34,97,35,88" concept="1" />
-      <node id="2795977714474729528" at="38,97,39,88" concept="1" />
-      <node id="1786866911643191008" at="42,97,43,88" concept="1" />
-      <node id="1786866911643191177" at="46,97,47,88" concept="1" />
-      <node id="1786866911643191339" at="50,97,51,88" concept="1" />
+      <node id="2795977714474729510" at="30,90,31,81" concept="1" />
+      <node id="2795977714474729519" at="34,90,35,81" concept="1" />
+      <node id="2795977714474729528" at="38,90,39,81" concept="1" />
+      <node id="1786866911643191008" at="42,90,43,81" concept="1" />
+      <node id="1786866911643191177" at="46,90,47,81" concept="1" />
+      <node id="1786866911643191339" at="50,90,51,81" concept="1" />
       <node id="2795977714474729558" at="54,77,55,68" concept="1" />
       <node id="2795977714474729479" at="60,52,61,19" concept="7" />
       <node id="2795977714474729479" at="65,36,66,46" concept="1" />
-      <node id="2795977714474729510" at="69,99,70,22" concept="1" />
+      <node id="2795977714474729510" at="69,92,70,22" concept="1" />
       <node id="2795977714474729510" at="71,30,72,63" concept="3" />
       <node id="2795977714474729510" at="72,63,73,293" concept="1" />
-      <node id="2795977714474729519" at="76,99,77,22" concept="1" />
+      <node id="2795977714474729519" at="76,92,77,22" concept="1" />
       <node id="2795977714474729519" at="78,30,79,63" concept="3" />
       <node id="2795977714474729519" at="79,63,80,293" concept="1" />
-      <node id="2795977714474729528" at="83,99,84,22" concept="1" />
+      <node id="2795977714474729528" at="83,92,84,22" concept="1" />
       <node id="2795977714474729528" at="85,30,86,63" concept="3" />
       <node id="2795977714474729528" at="86,63,87,293" concept="1" />
-      <node id="1786866911643191008" at="90,99,91,22" concept="1" />
+      <node id="1786866911643191008" at="90,92,91,22" concept="1" />
       <node id="1786866911643191008" at="92,30,93,63" concept="3" />
       <node id="1786866911643191008" at="93,63,94,293" concept="1" />
-      <node id="1786866911643191177" at="97,99,98,22" concept="1" />
+      <node id="1786866911643191177" at="97,92,98,22" concept="1" />
       <node id="1786866911643191177" at="99,30,100,63" concept="3" />
       <node id="1786866911643191177" at="100,63,101,293" concept="1" />
-      <node id="1786866911643191339" at="104,99,105,22" concept="1" />
+      <node id="1786866911643191339" at="104,92,105,22" concept="1" />
       <node id="1786866911643191339" at="106,30,107,63" concept="3" />
       <node id="1786866911643191339" at="107,63,108,293" concept="1" />
       <node id="2795977714474729558" at="111,79,112,22" concept="1" />
@@ -44,12 +44,12 @@
       <node id="2795977714474729479" at="22,0,24,0" concept="6" trace="ourParametersCacheExtension" />
       <node id="2795977714474729479" at="25,0,28,0" concept="0" trace="ConceptIsExactlyInterface_Test#()V" />
       <node id="2795977714474729479" at="60,0,63,0" concept="0" trace="TestBody#(Ljetbrains/mps/lang/test/runtime/TransformationTest;)V" />
-      <node id="2795977714474729510" at="29,0,33,0" concept="2" trace="test_NodeThisConceptIsNeverAnInterfaceCheck2795977714474729510#()V" />
-      <node id="2795977714474729519" at="33,0,37,0" concept="2" trace="test_NodeThisConceptIsNeverAnInterfaceCheck2795977714474729519#()V" />
-      <node id="2795977714474729528" at="37,0,41,0" concept="2" trace="test_NodeThisConceptIsNeverAnInterfaceCheck2795977714474729528#()V" />
-      <node id="1786866911643191008" at="41,0,45,0" concept="2" trace="test_NodeThisConceptIsNeverAnInterfaceCheck1786866911643191008#()V" />
-      <node id="1786866911643191177" at="45,0,49,0" concept="2" trace="test_NodeThisConceptIsNeverAnInterfaceCheck1786866911643191177#()V" />
-      <node id="1786866911643191339" at="49,0,53,0" concept="2" trace="test_NodeThisConceptIsNeverAnInterfaceCheck1786866911643191339#()V" />
+      <node id="2795977714474729510" at="29,0,33,0" concept="2" trace="test_NodeIsexactlyIsAlwaysFalseCheck2795977714474729510#()V" />
+      <node id="2795977714474729519" at="33,0,37,0" concept="2" trace="test_NodeIsexactlyIsAlwaysFalseCheck2795977714474729519#()V" />
+      <node id="2795977714474729528" at="37,0,41,0" concept="2" trace="test_NodeIsexactlyIsAlwaysFalseCheck2795977714474729528#()V" />
+      <node id="1786866911643191008" at="41,0,45,0" concept="2" trace="test_NodeIsexactlyIsAlwaysFalseCheck1786866911643191008#()V" />
+      <node id="1786866911643191177" at="45,0,49,0" concept="2" trace="test_NodeIsexactlyIsAlwaysFalseCheck1786866911643191177#()V" />
+      <node id="1786866911643191339" at="49,0,53,0" concept="2" trace="test_NodeIsexactlyIsAlwaysFalseCheck1786866911643191339#()V" />
       <node id="2795977714474729558" at="53,0,57,0" concept="2" trace="test_ErrorMessagesCheck2795977714474729558#()V" />
       <node id="2795977714474729479" at="64,0,68,0" concept="2" trace="initTestNodes#()V" />
       <node id="2795977714474729510" at="70,22,74,9" concept="1" />
@@ -59,20 +59,20 @@
       <node id="1786866911643191177" at="98,22,102,9" concept="1" />
       <node id="1786866911643191339" at="105,22,109,9" concept="1" />
       <node id="2795977714474729558" at="112,22,116,9" concept="1" />
-      <node id="2795977714474729510" at="69,0,76,0" concept="2" trace="test_NodeThisConceptIsNeverAnInterfaceCheck2795977714474729510#()V" />
-      <node id="2795977714474729519" at="76,0,83,0" concept="2" trace="test_NodeThisConceptIsNeverAnInterfaceCheck2795977714474729519#()V" />
-      <node id="2795977714474729528" at="83,0,90,0" concept="2" trace="test_NodeThisConceptIsNeverAnInterfaceCheck2795977714474729528#()V" />
-      <node id="1786866911643191008" at="90,0,97,0" concept="2" trace="test_NodeThisConceptIsNeverAnInterfaceCheck1786866911643191008#()V" />
-      <node id="1786866911643191177" at="97,0,104,0" concept="2" trace="test_NodeThisConceptIsNeverAnInterfaceCheck1786866911643191177#()V" />
-      <node id="1786866911643191339" at="104,0,111,0" concept="2" trace="test_NodeThisConceptIsNeverAnInterfaceCheck1786866911643191339#()V" />
+      <node id="2795977714474729510" at="69,0,76,0" concept="2" trace="test_NodeIsexactlyIsAlwaysFalseCheck2795977714474729510#()V" />
+      <node id="2795977714474729519" at="76,0,83,0" concept="2" trace="test_NodeIsexactlyIsAlwaysFalseCheck2795977714474729519#()V" />
+      <node id="2795977714474729528" at="83,0,90,0" concept="2" trace="test_NodeIsexactlyIsAlwaysFalseCheck2795977714474729528#()V" />
+      <node id="1786866911643191008" at="90,0,97,0" concept="2" trace="test_NodeIsexactlyIsAlwaysFalseCheck1786866911643191008#()V" />
+      <node id="1786866911643191177" at="97,0,104,0" concept="2" trace="test_NodeIsexactlyIsAlwaysFalseCheck1786866911643191177#()V" />
+      <node id="1786866911643191339" at="104,0,111,0" concept="2" trace="test_NodeIsexactlyIsAlwaysFalseCheck1786866911643191339#()V" />
       <node id="2795977714474729558" at="111,0,118,0" concept="2" trace="test_ErrorMessagesCheck2795977714474729558#()V" />
       <scope id="2795977714474729479" at="25,43,26,60" />
-      <scope id="2795977714474729510" at="30,97,31,88" />
-      <scope id="2795977714474729519" at="34,97,35,88" />
-      <scope id="2795977714474729528" at="38,97,39,88" />
-      <scope id="1786866911643191008" at="42,97,43,88" />
-      <scope id="1786866911643191177" at="46,97,47,88" />
-      <scope id="1786866911643191339" at="50,97,51,88" />
+      <scope id="2795977714474729510" at="30,90,31,81" />
+      <scope id="2795977714474729519" at="34,90,35,81" />
+      <scope id="2795977714474729528" at="38,90,39,81" />
+      <scope id="1786866911643191008" at="42,90,43,81" />
+      <scope id="1786866911643191177" at="46,90,47,81" />
+      <scope id="1786866911643191339" at="50,90,51,81" />
       <scope id="2795977714474729558" at="54,77,55,68" />
       <scope id="2795977714474729479" at="60,52,61,19" />
       <scope id="2795977714474729479" at="65,36,66,46" />
@@ -109,12 +109,12 @@
       <scope id="1786866911643191339" at="49,0,53,0" />
       <scope id="2795977714474729558" at="53,0,57,0" />
       <scope id="2795977714474729479" at="64,0,68,0" />
-      <scope id="2795977714474729510" at="69,99,74,9" />
-      <scope id="2795977714474729519" at="76,99,81,9" />
-      <scope id="2795977714474729528" at="83,99,88,9" />
-      <scope id="1786866911643191008" at="90,99,95,9" />
-      <scope id="1786866911643191177" at="97,99,102,9" />
-      <scope id="1786866911643191339" at="104,99,109,9" />
+      <scope id="2795977714474729510" at="69,92,74,9" />
+      <scope id="2795977714474729519" at="76,92,81,9" />
+      <scope id="2795977714474729528" at="83,92,88,9" />
+      <scope id="1786866911643191008" at="90,92,95,9" />
+      <scope id="1786866911643191177" at="97,92,102,9" />
+      <scope id="1786866911643191339" at="104,92,109,9" />
       <scope id="2795977714474729558" at="111,79,116,9" />
       <scope id="2795977714474729510" at="69,0,76,0" />
       <scope id="2795977714474729519" at="76,0,83,0" />
