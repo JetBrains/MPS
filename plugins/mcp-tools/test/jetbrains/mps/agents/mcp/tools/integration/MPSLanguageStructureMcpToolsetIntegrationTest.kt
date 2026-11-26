@@ -2260,7 +2260,7 @@ class MPSLanguageStructureMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         assertEquals("stale", renameEnv.getAsJsonObject("details").getAsJsonObject("languageBuild").get("status").asString)
 
         val detailsResp = runTool(MPSLanguageMcpToolset()) {
-            it.mps_mcp_get_concept_details(conceptRefs = conceptFqn)
+            it.mps_mcp_get_concept_details(conceptRefs = listOf(conceptFqn))
         }
         val detailsEnv = JsonParser.parseString(detailsResp).asJsonObject
         assertTrue("expected ok=true: $detailsResp", detailsEnv.get("ok").asBoolean)
