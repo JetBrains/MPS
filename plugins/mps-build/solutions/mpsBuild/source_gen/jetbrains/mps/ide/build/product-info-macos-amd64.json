@@ -92,6 +92,7 @@
       ],
       "additionalJvmArguments": [
         "-XX:+UseCompressedOops",
+        "-XX:-UseBASE64Intrinsics",
         "-XX:ErrorFile=$USER_HOME/java_error_in_idea_%p.log",
         "-XX:HeapDumpPath=$USER_HOME/java_error_in_idea.hprof",
         "--add-opens=java.base/java.io=ALL-UNNAMED",
