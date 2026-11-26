@@ -408,6 +408,7 @@
         "--add-opens=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED",
         "--add-opens=jdk.internal.jvmstat/sun.jvmstat.monitor=ALL-UNNAMED",
         "--add-opens=jdk.jdi/com.sun.tools.jdi=ALL-UNNAMED",
+        "-XX:-UseBASE64Intrinsics",
         "--add-opens=java.desktop/sun.lwawt=ALL-UNNAMED",
         "--add-opens=java.desktop/sun.lwawt.macosx=ALL-UNNAMED",
         "--add-opens=java.desktop/com.apple.laf=ALL-UNNAMED",
