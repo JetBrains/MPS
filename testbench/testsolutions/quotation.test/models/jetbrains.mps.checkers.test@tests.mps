@@ -5,22 +5,23 @@
     <use id="8585453e-6bfb-4d80-98de-b16074f1d86c" name="jetbrains.mps.lang.test" version="6" />
     <use id="3a13115c-633c-4c5c-bbcc-75c4219e9555" name="jetbrains.mps.lang.quotation" version="5" />
     <use id="c72da2b9-7cce-4447-8389-f407dc1158b7" name="jetbrains.mps.lang.structure" version="9" />
-    <use id="f3061a53-9226-4cc5-a443-f952ceaf5816" name="jetbrains.mps.baseLanguage" version="12" />
     <use id="c7fb639f-be78-4307-89b0-b5959c3fa8c8" name="jetbrains.mps.lang.text" version="0" />
     <use id="f2801650-65d5-424e-bb1b-463a8781b786" name="jetbrains.mps.baseLanguage.javadoc" version="3" />
+    <use id="f3061a53-9226-4cc5-a443-f952ceaf5816" name="jetbrains.mps.baseLanguage" version="12" />
   </languages>
   <imports>
-    <import index="mhbf" ref="8865b7a8-5271-43d3-884c-6fd1d9cfdd34/java:org.jetbrains.mps.openapi.model(MPS.OpenAPI/)" />
     <import index="tpeh" ref="r:00000000-0000-4000-0000-011c895902c5(jetbrains.mps.baseLanguage.typesystem)" />
-    <import index="tpcj" ref="r:00000000-0000-4000-0000-011c8959028f(jetbrains.mps.lang.structure.typesystem)" />
-    <import index="tpcg" ref="r:00000000-0000-4000-0000-011c8959028c(jetbrains.mps.lang.structure.constraints)" />
-    <import index="rl1i" ref="r:8a82b7a4-1180-4262-8f18-8c96a5d3ac16(jetbrains.mps.ide.hierarchy)" />
-    <import index="lui2" ref="8865b7a8-5271-43d3-884c-6fd1d9cfdd34/java:org.jetbrains.mps.openapi.module(MPS.OpenAPI/)" />
     <import index="rjhg" ref="49808fad-9d41-4b96-83fa-9231640f6b2b/java:org.junit(JUnit/)" />
+    <import index="lui2" ref="8865b7a8-5271-43d3-884c-6fd1d9cfdd34/java:org.jetbrains.mps.openapi.module(MPS.OpenAPI/)" />
+    <import index="tpcg" ref="r:00000000-0000-4000-0000-011c8959028c(jetbrains.mps.lang.structure.constraints)" />
     <import index="7e8u" ref="742f6602-5a2f-4313-aa6e-ae1cd4ffdc61/java:jetbrains.mps.ide.ui.tree(MPS.Platform/)" />
-    <import index="57ty" ref="742f6602-5a2f-4313-aa6e-ae1cd4ffdc61/java:jetbrains.mps.ide.messages(MPS.Platform/)" />
+    <import index="tpcj" ref="r:00000000-0000-4000-0000-011c8959028f(jetbrains.mps.lang.structure.typesystem)" />
     <import index="lzb2" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.ui(MPS.IDEA/)" />
+    <import index="57ty" ref="742f6602-5a2f-4313-aa6e-ae1cd4ffdc61/java:jetbrains.mps.ide.messages(MPS.Platform/)" />
+    <import index="rl1i" ref="r:8a82b7a4-1180-4262-8f18-8c96a5d3ac16(jetbrains.mps.ide.hierarchy)" />
     <import index="wyt6" ref="6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:java.lang(JDK/)" />
+    <import index="tpcp" ref="r:00000000-0000-4000-0000-011c89590285(jetbrains.mps.lang.core.intentions)" />
+    <import index="mhbf" ref="8865b7a8-5271-43d3-884c-6fd1d9cfdd34/java:org.jetbrains.mps.openapi.model(MPS.OpenAPI/)" />
   </imports>
   <registry>
     <language id="8585453e-6bfb-4d80-98de-b16074f1d86c" name="jetbrains.mps.lang.test">
@@ -202,6 +203,26 @@
         <property id="2173356959483005420" name="stringValueMigrated" index="3qcH_f" />
       </concept>
       <concept id="1196866233735" name="jetbrains.mps.lang.quotation.structure.PropertyAntiquotation" flags="ng" index="2EMmih" />
+    </language>
+    <language id="f61473f9-130f-42f6-b98d-6c438812c2f6" name="jetbrains.mps.baseLanguage.unitTest">
+      <concept id="1171931690126" name="jetbrains.mps.baseLanguage.unitTest.structure.TestMethod" flags="ig" index="3s$Bmu">
+        <property id="1171931690128" name="methodName" index="3s$Bm0" />
+      </concept>
+      <concept id="1171931851043" name="jetbrains.mps.baseLanguage.unitTest.structure.BTestCase" flags="ig" index="3s_ewN">
+        <property id="1171931851045" name="testCaseName" index="3s_ewP" />
+        <child id="1171931851044" name="testMethodList" index="3s_ewO" />
+      </concept>
+      <concept id="1171931858461" name="jetbrains.mps.baseLanguage.unitTest.structure.TestMethodList" flags="ng" index="3s_gsd">
+        <child id="1171931858462" name="testMethod" index="3s_gse" />
+      </concept>
+      <concept id="8427750732757990717" name="jetbrains.mps.baseLanguage.unitTest.structure.BinaryAssert" flags="nn" index="3tpDYu">
+        <child id="8427750732757990725" name="actual" index="3tpDZA" />
+        <child id="8427750732757990724" name="expected" index="3tpDZB" />
+      </concept>
+      <concept id="1171978097730" name="jetbrains.mps.baseLanguage.unitTest.structure.AssertEquals" flags="nn" index="3vlDli" />
+      <concept id="1172028177041" name="jetbrains.mps.baseLanguage.unitTest.structure.AssertIsNull" flags="nn" index="3ykFI1">
+        <child id="1172028236559" name="expression" index="3ykU8v" />
+      </concept>
     </language>
     <language id="c72da2b9-7cce-4447-8389-f407dc1158b7" name="jetbrains.mps.lang.structure">
       <concept id="1169125787135" name="jetbrains.mps.lang.structure.structure.AbstractConceptDeclaration" flags="ig" index="PkWjJ">
@@ -1423,6 +1444,182 @@
         </node>
         <node concept="3cpWs6" id="1NJXWPm8uoa" role="3cqZAp">
           <node concept="10Nm6u" id="1NJXWPm8uob" role="3cqZAk" />
+        </node>
+      </node>
+    </node>
+  </node>
+  <node concept="3s_ewN" id="4Ijpa7sNnxm">
+    <property role="TrG5h" value="SuppressionUtil" />
+    <property role="3s_ewP" value="SuppressionUtil" />
+    <node concept="3Tm1VV" id="4Ijpa7sNnxn" role="1B3o_S" />
+    <node concept="3s_gsd" id="4Ijpa7sNnAz" role="3s_ewO">
+      <node concept="3s$Bmu" id="4Ijpa7sNnA$" role="3s_gse">
+        <property role="3s$Bm0" value="nullAndShortMessages" />
+        <node concept="3Tm1VV" id="4Ijpa7sNnAB" role="1B3o_S" />
+        <node concept="3cqZAl" id="4Ijpa7sNnAC" role="3clF45" />
+        <node concept="3clFbS" id="4Ijpa7sNnAD" role="3clF47">
+          <node concept="3ykFI1" id="4Ijpa7sNnAE" role="3cqZAp">
+            <node concept="2YIFZM" id="4Ijpa7sNnAF" role="3ykU8v">
+              <ref role="1Pybhc" to="tpcp:4Ijpa7sLFz4" resolve="SuppressionUtil" />
+              <ref role="37wK5l" to="tpcp:4Ijpa7sLJhv" resolve="ensureNotTooLong" />
+              <node concept="10Nm6u" id="4Ijpa7sNnAG" role="37wK5m" />
+            </node>
+          </node>
+          <node concept="3vlDli" id="4Ijpa7sNnAH" role="3cqZAp">
+            <node concept="Xl_RD" id="4Ijpa7sNnAI" role="3tpDZB">
+              <property role="Xl_RC" value="" />
+            </node>
+            <node concept="2YIFZM" id="4Ijpa7sNnAJ" role="3tpDZA">
+              <ref role="1Pybhc" to="tpcp:4Ijpa7sLFz4" resolve="SuppressionUtil" />
+              <ref role="37wK5l" to="tpcp:4Ijpa7sLJhv" resolve="ensureNotTooLong" />
+              <node concept="Xl_RD" id="4Ijpa7sNnAK" role="37wK5m">
+                <property role="Xl_RC" value="" />
+              </node>
+            </node>
+          </node>
+          <node concept="3vlDli" id="4Ijpa7sNnAL" role="3cqZAp">
+            <node concept="Xl_RD" id="4Ijpa7sNnAM" role="3tpDZB">
+              <property role="Xl_RC" value="Short error message" />
+            </node>
+            <node concept="2YIFZM" id="4Ijpa7sNnAN" role="3tpDZA">
+              <ref role="1Pybhc" to="tpcp:4Ijpa7sLFz4" resolve="SuppressionUtil" />
+              <ref role="37wK5l" to="tpcp:4Ijpa7sLJhv" resolve="ensureNotTooLong" />
+              <node concept="Xl_RD" id="4Ijpa7sNnAO" role="37wK5m">
+                <property role="Xl_RC" value="Short error message" />
+              </node>
+            </node>
+          </node>
+        </node>
+      </node>
+      <node concept="3s$Bmu" id="4Ijpa7sNnAP" role="3s_gse">
+        <property role="3s$Bm0" value="exactBoundaryLength" />
+        <node concept="3Tm1VV" id="4Ijpa7sNnAS" role="1B3o_S" />
+        <node concept="3cqZAl" id="4Ijpa7sNnAT" role="3clF45" />
+        <node concept="3clFbS" id="4Ijpa7sNnAU" role="3clF47">
+          <node concept="3vlDli" id="4Ijpa7sNnAV" role="3cqZAp">
+            <node concept="Xl_RD" id="4Ijpa7sNnAW" role="3tpDZB">
+              <property role="Xl_RC" value="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" />
+            </node>
+            <node concept="2YIFZM" id="4Ijpa7sNnAX" role="3tpDZA">
+              <ref role="1Pybhc" to="tpcp:4Ijpa7sLFz4" resolve="SuppressionUtil" />
+              <ref role="37wK5l" to="tpcp:4Ijpa7sLJhv" resolve="ensureNotTooLong" />
+              <node concept="Xl_RD" id="4Ijpa7sNnAY" role="37wK5m">
+                <property role="Xl_RC" value="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" />
+              </node>
+            </node>
+          </node>
+        </node>
+      </node>
+      <node concept="3s$Bmu" id="4Ijpa7sNnAZ" role="3s_gse">
+        <property role="3s$Bm0" value="longMessageTruncatedAtWordBoundary" />
+        <node concept="3Tm1VV" id="4Ijpa7sNnB2" role="1B3o_S" />
+        <node concept="3cqZAl" id="4Ijpa7sNnB3" role="3clF45" />
+        <node concept="3clFbS" id="4Ijpa7sNnB4" role="3clF47">
+          <node concept="3vlDli" id="4Ijpa7sNnB5" role="3cqZAp">
+            <node concept="Xl_RD" id="4Ijpa7sNnB6" role="3tpDZB">
+              <property role="Xl_RC" value="This concept is an instance concept, never an interface concept, so..." />
+            </node>
+            <node concept="2YIFZM" id="4Ijpa7sNnB7" role="3tpDZA">
+              <ref role="1Pybhc" to="tpcp:4Ijpa7sLFz4" resolve="SuppressionUtil" />
+              <ref role="37wK5l" to="tpcp:4Ijpa7sLJhv" resolve="ensureNotTooLong" />
+              <node concept="Xl_RD" id="4Ijpa7sNnB8" role="37wK5m">
+                <property role="Xl_RC" value="This concept is an instance concept, never an interface concept, so isExactly(INamedConcept) is always false." />
+              </node>
+            </node>
+          </node>
+        </node>
+      </node>
+      <node concept="3s$Bmu" id="4Ijpa7sNnB9" role="3s_gse">
+        <property role="3s$Bm0" value="longMessageWithoutSpacesHardCut" />
+        <node concept="3Tm1VV" id="4Ijpa7sNnBc" role="1B3o_S" />
+        <node concept="3cqZAl" id="4Ijpa7sNnBd" role="3clF45" />
+        <node concept="3clFbS" id="4Ijpa7sNnBe" role="3clF47">
+          <node concept="3vlDli" id="4Ijpa7sNnBf" role="3cqZAp">
+            <node concept="Xl_RD" id="4Ijpa7sNnBg" role="3tpDZB">
+              <property role="Xl_RC" value="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa..." />
+            </node>
+            <node concept="2YIFZM" id="4Ijpa7sNnBh" role="3tpDZA">
+              <ref role="1Pybhc" to="tpcp:4Ijpa7sLFz4" resolve="SuppressionUtil" />
+              <ref role="37wK5l" to="tpcp:4Ijpa7sLJhv" resolve="ensureNotTooLong" />
+              <node concept="Xl_RD" id="4Ijpa7sNnBi" role="37wK5m">
+                <property role="Xl_RC" value="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" />
+              </node>
+            </node>
+          </node>
+        </node>
+      </node>
+      <node concept="3s$Bmu" id="4Ijpa7sNnBj" role="3s_gse">
+        <property role="3s$Bm0" value="trailingSpaceAtCutPoint" />
+        <node concept="3Tm1VV" id="4Ijpa7sNnBm" role="1B3o_S" />
+        <node concept="3cqZAl" id="4Ijpa7sNnBn" role="3clF45" />
+        <node concept="3clFbS" id="4Ijpa7sNnBo" role="3clF47">
+          <node concept="3vlDli" id="4Ijpa7sNnBp" role="3cqZAp">
+            <node concept="Xl_RD" id="4Ijpa7sNnBq" role="3tpDZB">
+              <property role="Xl_RC" value="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa..." />
+            </node>
+            <node concept="2YIFZM" id="4Ijpa7sNnBr" role="3tpDZA">
+              <ref role="1Pybhc" to="tpcp:4Ijpa7sLFz4" resolve="SuppressionUtil" />
+              <ref role="37wK5l" to="tpcp:4Ijpa7sLJhv" resolve="ensureNotTooLong" />
+              <node concept="Xl_RD" id="4Ijpa7sNnBs" role="37wK5m">
+                <property role="Xl_RC" value="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa bbbbb" />
+              </node>
+            </node>
+          </node>
+          <node concept="3vlDli" id="4Ijpa7sNnBt" role="3cqZAp">
+            <node concept="Xl_RD" id="4Ijpa7sNnBu" role="3tpDZB">
+              <property role="Xl_RC" value="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa..." />
+            </node>
+            <node concept="2YIFZM" id="4Ijpa7sNnBv" role="3tpDZA">
+              <ref role="1Pybhc" to="tpcp:4Ijpa7sLFz4" resolve="SuppressionUtil" />
+              <ref role="37wK5l" to="tpcp:4Ijpa7sLJhv" resolve="ensureNotTooLong" />
+              <node concept="Xl_RD" id="4Ijpa7sNnBw" role="37wK5m">
+                <property role="Xl_RC" value="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa bbbbb" />
+              </node>
+            </node>
+          </node>
+        </node>
+      </node>
+      <node concept="3s$Bmu" id="4Ijpa7sNnBx" role="3s_gse">
+        <property role="3s$Bm0" value="multilineMessages" />
+        <node concept="3Tm1VV" id="4Ijpa7sNnB$" role="1B3o_S" />
+        <node concept="3cqZAl" id="4Ijpa7sNnB_" role="3clF45" />
+        <node concept="3clFbS" id="4Ijpa7sNnBA" role="3clF47">
+          <node concept="3vlDli" id="4Ijpa7sNnBB" role="3cqZAp">
+            <node concept="Xl_RD" id="4Ijpa7sNnBC" role="3tpDZB">
+              <property role="Xl_RC" value="Line one Line two Line three" />
+            </node>
+            <node concept="2YIFZM" id="4Ijpa7sNnBD" role="3tpDZA">
+              <ref role="1Pybhc" to="tpcp:4Ijpa7sLFz4" resolve="SuppressionUtil" />
+              <ref role="37wK5l" to="tpcp:4Ijpa7sLJhv" resolve="ensureNotTooLong" />
+              <node concept="Xl_RD" id="4Ijpa7sNnBE" role="37wK5m">
+                <property role="Xl_RC" value="Line one\nLine two\r\nLine three" />
+              </node>
+            </node>
+          </node>
+          <node concept="3vlDli" id="4Ijpa7sNnBF" role="3cqZAp">
+            <node concept="Xl_RD" id="4Ijpa7sNnBG" role="3tpDZB">
+              <property role="Xl_RC" value="First Second" />
+            </node>
+            <node concept="2YIFZM" id="4Ijpa7sNnBH" role="3tpDZA">
+              <ref role="1Pybhc" to="tpcp:4Ijpa7sLFz4" resolve="SuppressionUtil" />
+              <ref role="37wK5l" to="tpcp:4Ijpa7sLJhv" resolve="ensureNotTooLong" />
+              <node concept="Xl_RD" id="4Ijpa7sNnBI" role="37wK5m">
+                <property role="Xl_RC" value="First\n\nSecond" />
+              </node>
+            </node>
+          </node>
+          <node concept="3vlDli" id="4Ijpa7sNnBJ" role="3cqZAp">
+            <node concept="Xl_RD" id="4Ijpa7sNnBK" role="3tpDZB">
+              <property role="Xl_RC" value="First line of error Second line of error that makes the overall message..." />
+            </node>
+            <node concept="2YIFZM" id="4Ijpa7sNnBL" role="3tpDZA">
+              <ref role="1Pybhc" to="tpcp:4Ijpa7sLFz4" resolve="SuppressionUtil" />
+              <ref role="37wK5l" to="tpcp:4Ijpa7sLJhv" resolve="ensureNotTooLong" />
+              <node concept="Xl_RD" id="4Ijpa7sNnBM" role="37wK5m">
+                <property role="Xl_RC" value="First line of error\nSecond line of error that makes the overall message exceed eighty characters" />
+              </node>
+            </node>
+          </node>
         </node>
       </node>
     </node>
