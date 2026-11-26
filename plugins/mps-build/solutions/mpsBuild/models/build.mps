@@ -57052,9 +57052,6 @@
       <property role="2eq24a" value="true" />
       <property role="26Ea6C" value="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5071" />
     </node>
-    <node concept="26Ea6D" id="6Wdujh_TwPT" role="3caU5o">
-      <property role="26Ea6C" value="-XX:-UseBASE64Intrinsics" />
-    </node>
   </node>
   <node concept="1l3spW" id="4O0hKJpjIUQ">
     <property role="TrG5h" value="mpsDevKit" />
