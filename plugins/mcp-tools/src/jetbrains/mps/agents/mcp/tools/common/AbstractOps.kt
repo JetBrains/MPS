@@ -21,6 +21,7 @@ import com.intellij.openapi.util.io.FileUtil
 import jetbrains.mps.checkers.ConstraintsChecker
 import jetbrains.mps.checkers.ErrorReportHelper
 import jetbrains.mps.smodel.adapter.structure.types.SEnumerationAdapter
+import jetbrains.mps.smodel.adapter.structure.types.SPrimitiveTypes
 import jetbrains.mps.smodel.SModelStereotype
 import jetbrains.mps.checkers.RefScopeChecker
 import jetbrains.mps.checkers.TargetConceptChecker2
@@ -1898,15 +1899,22 @@ abstract class AbstractOps : McpToolset {
             val stored = SNodeAccessUtil.hasProperty(node, prop)
             val displayValue = propertyDisplayValue(node, prop)
             val defaultLiteral = if (!stored) defaultEnumLiteralName(prop) else null
-            val value = defaultLiteral ?: displayValue
+            val isDefaultBoolean = !stored && prop.type == SPrimitiveTypes.BOOLEAN && (displayValue == null || displayValue == "false")
+            val value = when {
+                defaultLiteral != null -> defaultLiteral
+                isDefaultBoolean -> "false"
+                else -> displayValue
+            }
             if (value.isNullOrEmpty()) continue
             val propDeclarationNode = prop.sourceNode?.resolve(repository)
+            val deprecationInfo = getDeprecationInfo(propDeclarationNode)
+            if (isDefaultBoolean && deprecationInfo.startsWith("true")) continue
             val propObj = JsonObject()
             propObj.addProperty("name", prop.name)
             propObj.addProperty("type", getPropertyType(prop))
-            addDocAndDeprecated(propObj, getDoc(propDeclarationNode), getDeprecationInfo(propDeclarationNode))
+            addDocAndDeprecated(propObj, getDoc(propDeclarationNode), deprecationInfo)
             propObj.addProperty("value", value)
-            if (defaultLiteral != null) propObj.addProperty("isDefault", true)
+            if (defaultLiteral != null || isDefaultBoolean) propObj.addProperty("isDefault", true)
             properties.add(propObj)
         }
         // Stored values the concept does not declare (D89). Read raw: there may be no descriptor
@@ -2048,6 +2056,8 @@ abstract class AbstractOps : McpToolset {
     protected fun propertyDisplayValue(node: SNode, prop: SProperty): String? {
         val rawValue = SNodeAccessUtil.getPropertyValue(node, prop)
         return when {
+            // SPrimitiveTypes.BOOLEAN.toString(false) returns null; preserve "true"/"false" for display and JSON round-trip (D70).
+            prop.type == SPrimitiveTypes.BOOLEAN && rawValue is Boolean -> rawValue.toString()
             prop.type !is SEnumeration -> rawValue?.let { prop.type.toString(it) }
             // A stored value that is no literal of an enumeration without a raw member type: the invalid
             // literal's name is only the raw value's string form, so report no display value and let

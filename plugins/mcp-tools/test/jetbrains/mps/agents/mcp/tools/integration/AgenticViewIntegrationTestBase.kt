@@ -270,7 +270,7 @@ abstract class AgenticViewIntegrationTestBase : McpIntegrationTestBase() {
         }
         for ((k, v) in p.props) {
             if (k !in explained) {
-                assertTrue("$where: $k is explained only as a boolean false or a raw value", v.value == "false" || "!raw" in v.flags)
+                assertTrue("$where: $k is explained only as a raw value", "!raw" in v.flags)
             }
             if ("!undeclared" in v.flags) continue
             val prop = liveProperty(k, "!deprecated" in v.flags) ?: error("$where: printed $k is no property of the concept")

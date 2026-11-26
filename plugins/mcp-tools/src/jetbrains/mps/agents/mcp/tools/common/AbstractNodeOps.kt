@@ -50,6 +50,7 @@ import jetbrains.mps.smodel.adapter.ids.SContainmentLinkId
 import jetbrains.mps.smodel.adapter.ids.SPropertyId
 import jetbrains.mps.smodel.adapter.ids.SReferenceLinkId
 import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory
+import jetbrains.mps.smodel.adapter.structure.types.SPrimitiveTypes
 import jetbrains.mps.smodel.constraints.ModelConstraints
 import jetbrains.mps.smodel.language.ConceptRegistry
 import jetbrains.mps.smodel.runtime.illegal.IllegalConceptDescriptor
@@ -624,6 +625,9 @@ abstract class AbstractNodeOps : AbstractOps() {
     private fun isUnsetDefaultProperty(propObject: JsonObject, sProperty: SProperty, propValue: String?): Boolean {
         if (propObject.get("isDefault")?.takeIf { it.isJsonPrimitive && it.asJsonPrimitive.isBoolean }?.asBoolean != true) {
             return false
+        }
+        if (sProperty.type == SPrimitiveTypes.BOOLEAN) {
+            return propValue == "false"
         }
         val defaultLiteral = defaultEnumLiteralName(sProperty)
         return defaultLiteral != null && propValue == defaultLiteral
