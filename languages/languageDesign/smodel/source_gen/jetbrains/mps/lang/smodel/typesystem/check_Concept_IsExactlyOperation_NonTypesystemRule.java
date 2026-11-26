@@ -46,7 +46,7 @@ public class check_Concept_IsExactlyOperation_NonTypesystemRule extends Abstract
     if (SNodeOperations.isInstanceOf(target, CONCEPTS.InterfaceConceptDeclaration$CG)) {
       {
         final MessageTarget errorTarget = new NodeMessageTarget();
-        IErrorReporter _reporter_2309309498 = typeCheckingContext.reportWarning(op, "This concept is an instance concept, never an interface concept, so isExactly(" + SPropertyOperations.getString(target, PROPS.name$MnvL) + ") is always false. Use isSubConceptOf(" + SPropertyOperations.getString(target, PROPS.name$MnvL) + ") to test for any implementation, or compare with the instance concept of " + SPropertyOperations.getString(target, PROPS.name$MnvL) + " to test for nodes created for the interface itself.", "r:00000000-0000-4000-0000-011c895902fe(jetbrains.mps.lang.smodel.typesystem)", "2795977714474804731", null, errorTarget);
+        IErrorReporter _reporter_2309309498 = typeCheckingContext.reportWarning(op, "isExactly(" + SPropertyOperations.getString(target, PROPS.name$MnvL) + ") is always false: the operand is an instance concept, never an interface. Use isSubConceptOf for any implementor, or the instance concept of " + SPropertyOperations.getString(target, PROPS.name$MnvL) + " for nodes created for the interface itself.", "r:00000000-0000-4000-0000-011c895902fe(jetbrains.mps.lang.smodel.typesystem)", "2795977714474804731", null, errorTarget);
         {
           BaseQuickFixProvider intentionProvider = new BaseQuickFixProvider("jetbrains.mps.lang.smodel.typesystem.IsExactlyInterface_UseSubConceptOf_QuickFix", "2795977714474804752", false);
           _reporter_2309309498.addIntentionProvider(intentionProvider);

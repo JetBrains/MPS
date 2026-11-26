@@ -18238,37 +18238,22 @@
           <node concept="a7r0C" id="2rdjIFBbunV" role="3cqZAp">
             <node concept="3cpWs3" id="2rdjIFBbunW" role="a7wSD">
               <node concept="3cpWs3" id="2rdjIFBbunX" role="3uHU7B">
-                <node concept="3cpWs3" id="2rdjIFBbunY" role="3uHU7B">
-                  <node concept="3cpWs3" id="2rdjIFBbunZ" role="3uHU7B">
-                    <node concept="3cpWs3" id="2rdjIFBbuo0" role="3uHU7B">
-                      <node concept="3cpWs3" id="2rdjIFBbuo1" role="3uHU7B">
-                        <node concept="Xl_RD" id="2rdjIFBbuo2" role="3uHU7B">
-                          <property role="Xl_RC" value="This concept is an instance concept, never an interface concept, so isExactly(" />
-                        </node>
-                        <node concept="2OqwBi" id="2rdjIFBbuo3" role="3uHU7w">
-                          <node concept="37vLTw" id="2rdjIFBbuo4" role="2Oq$k0">
-                            <ref role="3cqZAo" node="2rdjIFBbun4" resolve="target" />
-                          </node>
-                          <node concept="3TrcHB" id="2rdjIFBbuo5" role="2OqNvi">
-                            <ref role="3TsBF5" to="tpck:h0TrG11" resolve="name" />
-                          </node>
-                        </node>
-                      </node>
-                      <node concept="Xl_RD" id="2rdjIFBbuo6" role="3uHU7w">
-                        <property role="Xl_RC" value=") is always false. Use isSubConceptOf(" />
-                      </node>
+                <node concept="3cpWs3" id="2rdjIFBbuo0" role="3uHU7B">
+                  <node concept="3cpWs3" id="2rdjIFBbuo1" role="3uHU7B">
+                    <node concept="Xl_RD" id="2rdjIFBbuo2" role="3uHU7B">
+                      <property role="Xl_RC" value="isExactly(" />
                     </node>
-                    <node concept="2OqwBi" id="2rdjIFBbuo7" role="3uHU7w">
-                      <node concept="37vLTw" id="2rdjIFBbuo8" role="2Oq$k0">
+                    <node concept="2OqwBi" id="2rdjIFBbuo3" role="3uHU7w">
+                      <node concept="37vLTw" id="2rdjIFBbuo4" role="2Oq$k0">
                         <ref role="3cqZAo" node="2rdjIFBbun4" resolve="target" />
                       </node>
-                      <node concept="3TrcHB" id="2rdjIFBbuo9" role="2OqNvi">
+                      <node concept="3TrcHB" id="2rdjIFBbuo5" role="2OqNvi">
                         <ref role="3TsBF5" to="tpck:h0TrG11" resolve="name" />
                       </node>
                     </node>
                   </node>
-                  <node concept="Xl_RD" id="2rdjIFBbuoa" role="3uHU7w">
-                    <property role="Xl_RC" value=") to test for any implementation, or compare with the instance concept of " />
+                  <node concept="Xl_RD" id="2rdjIFBbuo6" role="3uHU7w">
+                    <property role="Xl_RC" value=") is always false: the operand is an instance concept, never an interface. Use isSubConceptOf for any implementor, or the instance concept of " />
                   </node>
                 </node>
                 <node concept="2OqwBi" id="2rdjIFBbuob" role="3uHU7w">
@@ -18281,7 +18266,7 @@
                 </node>
               </node>
               <node concept="Xl_RD" id="2rdjIFBbuoe" role="3uHU7w">
-                <property role="Xl_RC" value=" to test for nodes created for the interface itself." />
+                <property role="Xl_RC" value=" for nodes created for the interface itself." />
               </node>
             </node>
             <node concept="1YBJjd" id="2rdjIFBbuof" role="1urrMF">
