@@ -68,7 +68,7 @@ public final class SuppressSpecificInspection_Intention extends AbstractIntentio
 
     @Override
     public String getDescription(final SNode node, final EditorContext editorContext) {
-      return "Suppress message '" + myParameter.getMessage() + "' for " + ICanSuppressErrors__BehaviorDescriptor.nodeDescription_id4oS1ku9jIXr.invoke(node);
+      return "Suppress message '" + SuppressionUtil.ensureNotTooLong(myParameter.getMessage()) + "' for " + ICanSuppressErrors__BehaviorDescriptor.nodeDescription_id4oS1ku9jIXr.invoke(node);
     }
 
     @Override

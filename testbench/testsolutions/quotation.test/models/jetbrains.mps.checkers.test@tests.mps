@@ -6,18 +6,11 @@
     <use id="f61473f9-130f-42f6-b98d-6c438812c2f6" name="jetbrains.mps.baseLanguage.unitTest" version="1" />
     <use id="3a13115c-633c-4c5c-bbcc-75c4219e9555" name="jetbrains.mps.lang.quotation" version="5" />
     <use id="7866978e-a0f0-4cc7-81bc-4d213d9375e1" name="jetbrains.mps.lang.smodel" version="19" />
+    <use id="f3061a53-9226-4cc5-a443-f952ceaf5816" name="jetbrains.mps.baseLanguage" version="12" />
   </languages>
   <imports>
-    <import index="wsw7" ref="r:ba41e9c6-15ca-4a47-95f2-6a81c2318547(jetbrains.mps.checkers)" />
-    <import index="tp5g" ref="r:00000000-0000-4000-0000-011c89590388(jetbrains.mps.lang.test.structure)" />
-    <import index="k8ev" ref="r:f39afe13-666a-48f2-9d7c-2f9366f78fe5(jetbrains.mps.typesystemEngine.checker)" />
-    <import index="d6hs" ref="6ed54515-acc8-4d1e-a16c-9fd6cfe951ea/java:jetbrains.mps.errors.item(MPS.Core/)" />
-    <import index="mk8z" ref="6ed54515-acc8-4d1e-a16c-9fd6cfe951ea/java:jetbrains.mps.progress(MPS.Core/)" />
-    <import index="mhbf" ref="8865b7a8-5271-43d3-884c-6fd1d9cfdd34/java:org.jetbrains.mps.openapi.model(MPS.OpenAPI/)" />
     <import index="tpeh" ref="r:00000000-0000-4000-0000-011c895902c5(jetbrains.mps.baseLanguage.typesystem)" />
-    <import index="tqvn" ref="6ed54515-acc8-4d1e-a16c-9fd6cfe951ea/java:jetbrains.mps.smodel.tempmodel(MPS.Core/)" />
-    <import index="18ew" ref="6ed54515-acc8-4d1e-a16c-9fd6cfe951ea/java:jetbrains.mps.util(MPS.Core/)" />
-    <import index="4szu" ref="6ed54515-acc8-4d1e-a16c-9fd6cfe951ea/java:jetbrains.mps.smodel.references(MPS.Core/)" />
+    <import index="tpcp" ref="r:00000000-0000-4000-0000-011c89590285(jetbrains.mps.lang.core.intentions)" />
   </imports>
   <registry>
     <language id="8585453e-6bfb-4d80-98de-b16074f1d86c" name="jetbrains.mps.lang.test">
@@ -46,18 +39,38 @@
       <concept id="1070475926800" name="jetbrains.mps.baseLanguage.structure.StringLiteral" flags="nn" index="Xl_RD">
         <property id="1070475926801" name="value" index="Xl_RC" />
       </concept>
+      <concept id="1081236700937" name="jetbrains.mps.baseLanguage.structure.StaticMethodCall" flags="nn" index="2YIFZM">
+        <reference id="1144433194310" name="classConcept" index="1Pybhc" />
+      </concept>
+      <concept id="1070534058343" name="jetbrains.mps.baseLanguage.structure.NullLiteral" flags="nn" index="10Nm6u" />
       <concept id="1092119917967" name="jetbrains.mps.baseLanguage.structure.MulExpression" flags="nn" index="17qRlL" />
+      <concept id="1068580123132" name="jetbrains.mps.baseLanguage.structure.BaseMethodDeclaration" flags="ng" index="3clF44">
+        <child id="1068580123133" name="returnType" index="3clF45" />
+        <child id="1068580123135" name="body" index="3clF47" />
+      </concept>
+      <concept id="1068580123136" name="jetbrains.mps.baseLanguage.structure.StatementList" flags="sn" stub="5293379017992965193" index="3clFbS">
+        <child id="1068581517665" name="statement" index="3cqZAp" />
+      </concept>
       <concept id="1068580320020" name="jetbrains.mps.baseLanguage.structure.IntegerConstant" flags="nn" index="3cmrfG">
         <property id="1068580320021" name="value" index="3cmrfH" />
       </concept>
       <concept id="1068581242875" name="jetbrains.mps.baseLanguage.structure.PlusExpression" flags="nn" index="3cpWs3" />
+      <concept id="1068581517677" name="jetbrains.mps.baseLanguage.structure.VoidType" flags="in" index="3cqZAl" />
       <concept id="1079359253375" name="jetbrains.mps.baseLanguage.structure.ParenthesizedExpression" flags="nn" index="1eOMI4">
         <child id="1079359253376" name="expression" index="1eOMHV" />
+      </concept>
+      <concept id="1204053956946" name="jetbrains.mps.baseLanguage.structure.IMethodCall" flags="ngI" index="1ndlxa">
+        <reference id="1068499141037" name="baseMethodDeclaration" index="37wK5l" />
+        <child id="1068499141038" name="actualArgument" index="37wK5m" />
       </concept>
       <concept id="1081773326031" name="jetbrains.mps.baseLanguage.structure.BinaryOperation" flags="nn" index="3uHJSO">
         <child id="1081773367579" name="rightExpression" index="3uHU7w" />
         <child id="1081773367580" name="leftExpression" index="3uHU7B" />
       </concept>
+      <concept id="1178549954367" name="jetbrains.mps.baseLanguage.structure.IVisible" flags="ngI" index="1B3ioH">
+        <child id="1178549979242" name="visibility" index="1B3o_S" />
+      </concept>
+      <concept id="1146644602865" name="jetbrains.mps.baseLanguage.structure.PublicVisibility" flags="nn" index="3Tm1VV" />
     </language>
     <language id="3a13115c-633c-4c5c-bbcc-75c4219e9555" name="jetbrains.mps.lang.quotation">
       <concept id="1196350785110" name="jetbrains.mps.lang.quotation.structure.AbstractAntiquotation" flags="ngI" index="2c44t0">
@@ -71,6 +84,26 @@
         <property id="2173356959483005420" name="stringValueMigrated" index="3qcH_f" />
       </concept>
       <concept id="1196866233735" name="jetbrains.mps.lang.quotation.structure.PropertyAntiquotation" flags="ng" index="2EMmih" />
+    </language>
+    <language id="f61473f9-130f-42f6-b98d-6c438812c2f6" name="jetbrains.mps.baseLanguage.unitTest">
+      <concept id="1171931690126" name="jetbrains.mps.baseLanguage.unitTest.structure.TestMethod" flags="ig" index="3s$Bmu">
+        <property id="1171931690128" name="methodName" index="3s$Bm0" />
+      </concept>
+      <concept id="1171931851043" name="jetbrains.mps.baseLanguage.unitTest.structure.BTestCase" flags="ig" index="3s_ewN">
+        <property id="1171931851045" name="testCaseName" index="3s_ewP" />
+        <child id="1171931851044" name="testMethodList" index="3s_ewO" />
+      </concept>
+      <concept id="1171931858461" name="jetbrains.mps.baseLanguage.unitTest.structure.TestMethodList" flags="ng" index="3s_gsd">
+        <child id="1171931858462" name="testMethod" index="3s_gse" />
+      </concept>
+      <concept id="8427750732757990717" name="jetbrains.mps.baseLanguage.unitTest.structure.BinaryAssert" flags="nn" index="3tpDYu">
+        <child id="8427750732757990725" name="actual" index="3tpDZA" />
+        <child id="8427750732757990724" name="expected" index="3tpDZB" />
+      </concept>
+      <concept id="1171978097730" name="jetbrains.mps.baseLanguage.unitTest.structure.AssertEquals" flags="nn" index="3vlDli" />
+      <concept id="1172028177041" name="jetbrains.mps.baseLanguage.unitTest.structure.AssertIsNull" flags="nn" index="3ykFI1">
+        <child id="1172028236559" name="expression" index="3ykU8v" />
+      </concept>
     </language>
     <language id="ceab5195-25ea-4f22-9b92-103b95ca8c0c" name="jetbrains.mps.lang.core">
       <concept id="1133920641626" name="jetbrains.mps.lang.core.structure.BaseConcept" flags="ng" index="2VYdi">
@@ -167,6 +200,182 @@
         <node concept="7CXmI" id="29gobADr4yZ" role="lGtFl">
           <node concept="7OXhh" id="29gobADr4z8" role="7EUXB">
             <property role="GvXf4" value="true" />
+          </node>
+        </node>
+      </node>
+    </node>
+  </node>
+  <node concept="3s_ewN" id="4Ijpa7sNnxm">
+    <property role="TrG5h" value="SuppressionUtil" />
+    <property role="3s_ewP" value="SuppressionUtil" />
+    <node concept="3Tm1VV" id="4Ijpa7sNnxn" role="1B3o_S" />
+    <node concept="3s_gsd" id="4Ijpa7sNnAz" role="3s_ewO">
+      <node concept="3s$Bmu" id="4Ijpa7sNnA$" role="3s_gse">
+        <property role="3s$Bm0" value="nullAndShortMessages" />
+        <node concept="3Tm1VV" id="4Ijpa7sNnAB" role="1B3o_S" />
+        <node concept="3cqZAl" id="4Ijpa7sNnAC" role="3clF45" />
+        <node concept="3clFbS" id="4Ijpa7sNnAD" role="3clF47">
+          <node concept="3ykFI1" id="4Ijpa7sNnAE" role="3cqZAp">
+            <node concept="2YIFZM" id="4Ijpa7sNnAF" role="3ykU8v">
+              <ref role="1Pybhc" to="tpcp:4Ijpa7sLFz4" resolve="SuppressionUtil" />
+              <ref role="37wK5l" to="tpcp:4Ijpa7sLJhv" resolve="ensureNotTooLong" />
+              <node concept="10Nm6u" id="4Ijpa7sNnAG" role="37wK5m" />
+            </node>
+          </node>
+          <node concept="3vlDli" id="4Ijpa7sNnAH" role="3cqZAp">
+            <node concept="Xl_RD" id="4Ijpa7sNnAI" role="3tpDZB">
+              <property role="Xl_RC" value="" />
+            </node>
+            <node concept="2YIFZM" id="4Ijpa7sNnAJ" role="3tpDZA">
+              <ref role="1Pybhc" to="tpcp:4Ijpa7sLFz4" resolve="SuppressionUtil" />
+              <ref role="37wK5l" to="tpcp:4Ijpa7sLJhv" resolve="ensureNotTooLong" />
+              <node concept="Xl_RD" id="4Ijpa7sNnAK" role="37wK5m">
+                <property role="Xl_RC" value="" />
+              </node>
+            </node>
+          </node>
+          <node concept="3vlDli" id="4Ijpa7sNnAL" role="3cqZAp">
+            <node concept="Xl_RD" id="4Ijpa7sNnAM" role="3tpDZB">
+              <property role="Xl_RC" value="Short error message" />
+            </node>
+            <node concept="2YIFZM" id="4Ijpa7sNnAN" role="3tpDZA">
+              <ref role="1Pybhc" to="tpcp:4Ijpa7sLFz4" resolve="SuppressionUtil" />
+              <ref role="37wK5l" to="tpcp:4Ijpa7sLJhv" resolve="ensureNotTooLong" />
+              <node concept="Xl_RD" id="4Ijpa7sNnAO" role="37wK5m">
+                <property role="Xl_RC" value="Short error message" />
+              </node>
+            </node>
+          </node>
+        </node>
+      </node>
+      <node concept="3s$Bmu" id="4Ijpa7sNnAP" role="3s_gse">
+        <property role="3s$Bm0" value="exactBoundaryLength" />
+        <node concept="3Tm1VV" id="4Ijpa7sNnAS" role="1B3o_S" />
+        <node concept="3cqZAl" id="4Ijpa7sNnAT" role="3clF45" />
+        <node concept="3clFbS" id="4Ijpa7sNnAU" role="3clF47">
+          <node concept="3vlDli" id="4Ijpa7sNnAV" role="3cqZAp">
+            <node concept="Xl_RD" id="4Ijpa7sNnAW" role="3tpDZB">
+              <property role="Xl_RC" value="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" />
+            </node>
+            <node concept="2YIFZM" id="4Ijpa7sNnAX" role="3tpDZA">
+              <ref role="1Pybhc" to="tpcp:4Ijpa7sLFz4" resolve="SuppressionUtil" />
+              <ref role="37wK5l" to="tpcp:4Ijpa7sLJhv" resolve="ensureNotTooLong" />
+              <node concept="Xl_RD" id="4Ijpa7sNnAY" role="37wK5m">
+                <property role="Xl_RC" value="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" />
+              </node>
+            </node>
+          </node>
+        </node>
+      </node>
+      <node concept="3s$Bmu" id="4Ijpa7sNnAZ" role="3s_gse">
+        <property role="3s$Bm0" value="longMessageTruncatedAtWordBoundary" />
+        <node concept="3Tm1VV" id="4Ijpa7sNnB2" role="1B3o_S" />
+        <node concept="3cqZAl" id="4Ijpa7sNnB3" role="3clF45" />
+        <node concept="3clFbS" id="4Ijpa7sNnB4" role="3clF47">
+          <node concept="3vlDli" id="4Ijpa7sNnB5" role="3cqZAp">
+            <node concept="Xl_RD" id="4Ijpa7sNnB6" role="3tpDZB">
+              <property role="Xl_RC" value="This concept is an instance concept, never an interface concept, so..." />
+            </node>
+            <node concept="2YIFZM" id="4Ijpa7sNnB7" role="3tpDZA">
+              <ref role="1Pybhc" to="tpcp:4Ijpa7sLFz4" resolve="SuppressionUtil" />
+              <ref role="37wK5l" to="tpcp:4Ijpa7sLJhv" resolve="ensureNotTooLong" />
+              <node concept="Xl_RD" id="4Ijpa7sNnB8" role="37wK5m">
+                <property role="Xl_RC" value="This concept is an instance concept, never an interface concept, so isExactly(INamedConcept) is always false." />
+              </node>
+            </node>
+          </node>
+        </node>
+      </node>
+      <node concept="3s$Bmu" id="4Ijpa7sNnB9" role="3s_gse">
+        <property role="3s$Bm0" value="longMessageWithoutSpacesHardCut" />
+        <node concept="3Tm1VV" id="4Ijpa7sNnBc" role="1B3o_S" />
+        <node concept="3cqZAl" id="4Ijpa7sNnBd" role="3clF45" />
+        <node concept="3clFbS" id="4Ijpa7sNnBe" role="3clF47">
+          <node concept="3vlDli" id="4Ijpa7sNnBf" role="3cqZAp">
+            <node concept="Xl_RD" id="4Ijpa7sNnBg" role="3tpDZB">
+              <property role="Xl_RC" value="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa..." />
+            </node>
+            <node concept="2YIFZM" id="4Ijpa7sNnBh" role="3tpDZA">
+              <ref role="1Pybhc" to="tpcp:4Ijpa7sLFz4" resolve="SuppressionUtil" />
+              <ref role="37wK5l" to="tpcp:4Ijpa7sLJhv" resolve="ensureNotTooLong" />
+              <node concept="Xl_RD" id="4Ijpa7sNnBi" role="37wK5m">
+                <property role="Xl_RC" value="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" />
+              </node>
+            </node>
+          </node>
+        </node>
+      </node>
+      <node concept="3s$Bmu" id="4Ijpa7sNnBj" role="3s_gse">
+        <property role="3s$Bm0" value="trailingSpaceAtCutPoint" />
+        <node concept="3Tm1VV" id="4Ijpa7sNnBm" role="1B3o_S" />
+        <node concept="3cqZAl" id="4Ijpa7sNnBn" role="3clF45" />
+        <node concept="3clFbS" id="4Ijpa7sNnBo" role="3clF47">
+          <node concept="3vlDli" id="4Ijpa7sNnBp" role="3cqZAp">
+            <node concept="Xl_RD" id="4Ijpa7sNnBq" role="3tpDZB">
+              <property role="Xl_RC" value="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa..." />
+            </node>
+            <node concept="2YIFZM" id="4Ijpa7sNnBr" role="3tpDZA">
+              <ref role="1Pybhc" to="tpcp:4Ijpa7sLFz4" resolve="SuppressionUtil" />
+              <ref role="37wK5l" to="tpcp:4Ijpa7sLJhv" resolve="ensureNotTooLong" />
+              <node concept="Xl_RD" id="4Ijpa7sNnBs" role="37wK5m">
+                <property role="Xl_RC" value="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa bbbbb" />
+              </node>
+            </node>
+          </node>
+          <node concept="3vlDli" id="4Ijpa7sNnBt" role="3cqZAp">
+            <node concept="Xl_RD" id="4Ijpa7sNnBu" role="3tpDZB">
+              <property role="Xl_RC" value="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa..." />
+            </node>
+            <node concept="2YIFZM" id="4Ijpa7sNnBv" role="3tpDZA">
+              <ref role="1Pybhc" to="tpcp:4Ijpa7sLFz4" resolve="SuppressionUtil" />
+              <ref role="37wK5l" to="tpcp:4Ijpa7sLJhv" resolve="ensureNotTooLong" />
+              <node concept="Xl_RD" id="4Ijpa7sNnBw" role="37wK5m">
+                <property role="Xl_RC" value="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa bbbbb" />
+              </node>
+            </node>
+          </node>
+        </node>
+      </node>
+      <node concept="3s$Bmu" id="4Ijpa7sNnBx" role="3s_gse">
+        <property role="3s$Bm0" value="multilineMessages" />
+        <node concept="3Tm1VV" id="4Ijpa7sNnB$" role="1B3o_S" />
+        <node concept="3cqZAl" id="4Ijpa7sNnB_" role="3clF45" />
+        <node concept="3clFbS" id="4Ijpa7sNnBA" role="3clF47">
+          <node concept="3vlDli" id="4Ijpa7sNnBB" role="3cqZAp">
+            <node concept="Xl_RD" id="4Ijpa7sNnBC" role="3tpDZB">
+              <property role="Xl_RC" value="Line one Line two Line three" />
+            </node>
+            <node concept="2YIFZM" id="4Ijpa7sNnBD" role="3tpDZA">
+              <ref role="1Pybhc" to="tpcp:4Ijpa7sLFz4" resolve="SuppressionUtil" />
+              <ref role="37wK5l" to="tpcp:4Ijpa7sLJhv" resolve="ensureNotTooLong" />
+              <node concept="Xl_RD" id="4Ijpa7sNnBE" role="37wK5m">
+                <property role="Xl_RC" value="Line one\nLine two\r\nLine three" />
+              </node>
+            </node>
+          </node>
+          <node concept="3vlDli" id="4Ijpa7sNnBF" role="3cqZAp">
+            <node concept="Xl_RD" id="4Ijpa7sNnBG" role="3tpDZB">
+              <property role="Xl_RC" value="First Second" />
+            </node>
+            <node concept="2YIFZM" id="4Ijpa7sNnBH" role="3tpDZA">
+              <ref role="1Pybhc" to="tpcp:4Ijpa7sLFz4" resolve="SuppressionUtil" />
+              <ref role="37wK5l" to="tpcp:4Ijpa7sLJhv" resolve="ensureNotTooLong" />
+              <node concept="Xl_RD" id="4Ijpa7sNnBI" role="37wK5m">
+                <property role="Xl_RC" value="First\n\nSecond" />
+              </node>
+            </node>
+          </node>
+          <node concept="3vlDli" id="4Ijpa7sNnBJ" role="3cqZAp">
+            <node concept="Xl_RD" id="4Ijpa7sNnBK" role="3tpDZB">
+              <property role="Xl_RC" value="First line of error Second line of error that makes the overall message..." />
+            </node>
+            <node concept="2YIFZM" id="4Ijpa7sNnBL" role="3tpDZA">
+              <ref role="1Pybhc" to="tpcp:4Ijpa7sLFz4" resolve="SuppressionUtil" />
+              <ref role="37wK5l" to="tpcp:4Ijpa7sLJhv" resolve="ensureNotTooLong" />
+              <node concept="Xl_RD" id="4Ijpa7sNnBM" role="37wK5m">
+                <property role="Xl_RC" value="First line of error\nSecond line of error that makes the overall message exceed eighty characters" />
+              </node>
+            </node>
           </node>
         </node>
       </node>

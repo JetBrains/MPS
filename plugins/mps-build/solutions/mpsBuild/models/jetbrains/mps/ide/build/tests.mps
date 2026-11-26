@@ -6993,6 +6993,11 @@
             </node>
           </node>
         </node>
+        <node concept="1SiIV0" id="6rgnZQVANlE" role="3bR37C">
+          <node concept="3bR9La" id="6rgnZQVANlF" role="1SiIV1">
+            <ref role="3bR37D" to="ffeo:7Kfy9QB6KXW" resolve="jetbrains.mps.lang.core" />
+          </node>
+        </node>
       </node>
     </node>
     <node concept="55IIr" id="3yaq6Y8lhoe" role="auvoZ">

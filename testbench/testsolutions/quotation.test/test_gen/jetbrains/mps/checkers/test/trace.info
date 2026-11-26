@@ -6,6 +6,40 @@
   <concept fqn="c:f3061a53-9226-4cc5-a443-f952ceaf5816/1068581242864:jetbrains.mps.baseLanguage.structure.LocalVariableDeclarationStatement" />
   <concept fqn="c:f3061a53-9226-4cc5-a443-f952ceaf5816/1070462154015:jetbrains.mps.baseLanguage.structure.StaticFieldDeclaration" />
   <concept fqn="c:f3061a53-9226-4cc5-a443-f952ceaf5816/1070475587102:jetbrains.mps.baseLanguage.structure.SuperConstructorInvocation" />
+  <root nodeRef="r:afa6200c-5e34-4244-b141-d3f095bc906f(jetbrains.mps.checkers.test@tests)/5445807020778027094">
+    <file name="SuppressionUtil_Test.java">
+      <node id="5445807020778027434" at="11,60,12,62" concept="1" />
+      <node id="5445807020778027437" at="12,62,13,66" concept="1" />
+      <node id="5445807020778027441" at="13,66,14,104" concept="1" />
+      <node id="5445807020778027451" at="17,59,18,226" concept="1" />
+      <node id="5445807020778027461" at="21,74,22,245" concept="1" />
+      <node id="5445807020778027471" at="25,71,26,227" concept="1" />
+      <node id="5445807020778027481" at="29,63,30,227" concept="1" />
+      <node id="5445807020778027485" at="30,227,31,229" concept="1" />
+      <node id="5445807020778027495" at="34,57,35,126" concept="1" />
+      <node id="5445807020778027499" at="35,126,36,93" concept="1" />
+      <node id="5445807020778027503" at="36,93,37,237" concept="1" />
+      <node id="5445807020778027445" at="16,0,20,0" concept="2" trace="test_exactBoundaryLength#()V" />
+      <node id="5445807020778027455" at="20,0,24,0" concept="2" trace="test_longMessageTruncatedAtWordBoundary#()V" />
+      <node id="5445807020778027465" at="24,0,28,0" concept="2" trace="test_longMessageWithoutSpacesHardCut#()V" />
+      <node id="5445807020778027475" at="28,0,33,0" concept="2" trace="test_trailingSpaceAtCutPoint#()V" />
+      <node id="5445807020778027428" at="10,0,16,0" concept="2" trace="test_nullAndShortMessages#()V" />
+      <node id="5445807020778027489" at="33,0,39,0" concept="2" trace="test_multilineMessages#()V" />
+      <scope id="5445807020778027450" at="17,59,18,226" />
+      <scope id="5445807020778027460" at="21,74,22,245" />
+      <scope id="5445807020778027470" at="25,71,26,227" />
+      <scope id="5445807020778027480" at="29,63,31,229" />
+      <scope id="5445807020778027433" at="11,60,14,104" />
+      <scope id="5445807020778027494" at="34,57,37,237" />
+      <scope id="5445807020778027445" at="16,0,20,0" />
+      <scope id="5445807020778027455" at="20,0,24,0" />
+      <scope id="5445807020778027465" at="24,0,28,0" />
+      <scope id="5445807020778027475" at="28,0,33,0" />
+      <scope id="5445807020778027428" at="10,0,16,0" />
+      <scope id="5445807020778027489" at="33,0,39,0" />
+      <unit id="5445807020778027094" at="9,0,40,0" name="jetbrains.mps.checkers.test.SuppressionUtil_Test" />
+    </file>
+  </root>
   <root nodeRef="r:afa6200c-5e34-4244-b141-d3f095bc906f(jetbrains.mps.checkers.test@tests)/6807933448480841880">
     <file name="SuppressErrorsTest_Test.java">
       <node id="6807933448480841880" at="25,36,26,60" concept="5" />
