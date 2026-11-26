@@ -7,6 +7,7 @@ import jetbrains.mps.agents.mcp.tools.references.*
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import com.google.gson.JsonPrimitive
 import com.google.gson.reflect.TypeToken
 import com.intellij.mcpserver.annotations.McpDescription
 import com.intellij.mcpserver.annotations.McpTool
@@ -1240,6 +1241,7 @@ class MPSLanguageStructureMcpToolset : AbstractNodeOps() {
         dataType: String?
     ): String = withMpsProject("Updating concept property '$propertyName'") { mpsProject ->
         var error: String? = null
+        var postEditReadiness: ConceptReadiness.NotBuilt? = null
         executeShortCommandOnEdt(mpsProject) {
             val (conceptNode, model) = when (val r = resolveEditableConceptNode(mpsProject, conceptRef)) {
                 is EditableNodeResolution.Ok -> r.node to r.model
@@ -1270,8 +1272,9 @@ class MPSLanguageStructureMcpToolset : AbstractNodeOps() {
                 propNode.setReferenceTarget(LINK_PropertyDeclaration_DataType, dataTypeNode)
             }
             saveModelAndModule(model)
+            postEditReadiness = postFeatureEditReadiness(model, mpsProject)
         }
-        error?.let { if (it.startsWith("{\"ok\":")) it else errJson(it) } ?: okJson("true")
+        error?.let { if (it.startsWith("{\"ok\":")) it else errJson(it) } ?: featureEditOkJson(postEditReadiness)
     }
 
     private suspend fun mps_mcp_update_concept_link(
@@ -1283,6 +1286,7 @@ class MPSLanguageStructureMcpToolset : AbstractNodeOps() {
         optional: Boolean = true
     ): String = withMpsProject("Updating concept ${if (isChild) "child" else "reference"} '$role'") { mpsProject ->
         var error: String? = null
+        var postEditReadiness: ConceptReadiness.NotBuilt? = null
         executeShortCommandOnEdt(mpsProject) {
             val (conceptNode, model) = when (val r = resolveEditableConceptNode(mpsProject, conceptRef)) {
                 is EditableNodeResolution.Ok -> r.node to r.model
@@ -1334,8 +1338,9 @@ class MPSLanguageStructureMcpToolset : AbstractNodeOps() {
                 SPropertyOperations.setEnum(linkNode, PROP_LinkDeclaration_SourceCardinality, cardinalityId, cardinalityName)
             }
             saveModelAndModule(model)
+            postEditReadiness = postFeatureEditReadiness(model, mpsProject)
         }
-        error?.let { if (it.startsWith("{\"ok\":")) it else errJson(it) } ?: okJson("true")
+        error?.let { if (it.startsWith("{\"ok\":")) it else errJson(it) } ?: featureEditOkJson(postEditReadiness)
     }
 
     private suspend fun mps_mcp_rename_concept_property(
@@ -1344,6 +1349,7 @@ class MPSLanguageStructureMcpToolset : AbstractNodeOps() {
         newName: String
     ): String = withMpsProject("Renaming concept property '$oldName' to '$newName'") { mpsProject ->
         var error: String? = null
+        var postEditReadiness: ConceptReadiness.NotBuilt? = null
         executeShortCommandOnEdt(mpsProject) {
             val (conceptNode, model) = when (val r = resolveEditableConceptNode(mpsProject, conceptRef)) {
                 is EditableNodeResolution.Ok -> r.node to r.model
@@ -1361,8 +1367,9 @@ class MPSLanguageStructureMcpToolset : AbstractNodeOps() {
 
             existingProp.setProperty(PROP_Name, newName)
             saveModelAndModule(model)
+            postEditReadiness = postFeatureEditReadiness(model, mpsProject)
         }
-        error?.let { if (it.startsWith("{\"ok\":")) it else errJson(it) } ?: okJson("true")
+        error?.let { if (it.startsWith("{\"ok\":")) it else errJson(it) } ?: featureEditOkJson(postEditReadiness)
     }
 
     private suspend fun mps_mcp_rename_concept_link(
@@ -1372,6 +1379,7 @@ class MPSLanguageStructureMcpToolset : AbstractNodeOps() {
         isChild: Boolean
     ): String = withMpsProject("Renaming concept ${if (isChild) "child" else "reference"} '$oldRole' to '$newRole'") { mpsProject ->
         var error: String? = null
+        var postEditReadiness: ConceptReadiness.NotBuilt? = null
         executeShortCommandOnEdt(mpsProject) {
             val (conceptNode, model) = when (val r = resolveEditableConceptNode(mpsProject, conceptRef)) {
                 is EditableNodeResolution.Ok -> r.node to r.model
@@ -1392,8 +1400,49 @@ class MPSLanguageStructureMcpToolset : AbstractNodeOps() {
 
             existingLink.setProperty(PROP_LinkDeclaration_Role, newRole)
             saveModelAndModule(model)
+            postEditReadiness = postFeatureEditReadiness(model, mpsProject)
         }
-        error?.let { if (it.startsWith("{\"ok\":")) it else errJson(it) } ?: okJson("true")
+        error?.let { if (it.startsWith("{\"ok\":")) it else errJson(it) } ?: featureEditOkJson(postEditReadiness)
+    }
+
+    /**
+     * Captures the language's post-edit build readiness while still inside the write command so the
+     * feature-mutation operations can remind callers to rebuild the language before reading runtime
+     * descriptors or writing instances against the edited feature (CF-015).
+     */
+    private fun postFeatureEditReadiness(model: SModel, mpsProject: MPSProject): ConceptReadiness.NotBuilt? {
+        val language = model.module as? Language ?: return null
+        return when (val readiness = LanguageReadiness.ofLanguage(language, mpsProject)) {
+            is ConceptReadiness.NotBuilt -> readiness
+            else -> ConceptReadiness.NotBuilt.Stale(
+                language.moduleName ?: MetaAdapterByDeclaration.getLanguage(language).qualifiedName,
+                language,
+                model,
+                LanguageReadiness.foreignBuildProjectPath(language, mpsProject),
+            )
+        }
+    }
+
+    private fun featureEditOkJson(notBuilt: ConceptReadiness.NotBuilt?): String {
+        if (notBuilt == null) return okJson("true")
+        val target = notBuilt.module?.let { PersistenceFacade.getInstance().asString(it.moduleReference) } ?: notBuilt.languageName
+        val consequence = when (notBuilt) {
+            is ConceptReadiness.NotBuilt.NoRuntime ->
+                "the compiled concept descriptor (get_concept_details runtime record and node writers) is unavailable until the language is built"
+            else ->
+                "the compiled concept descriptor (get_concept_details runtime record and node writers) stays stale until the language is rebuilt"
+        }
+        val foreign = notBuilt.buildProjectPath
+            ?.let { "The language belongs to another open project and MAKE builds only the selected project's modules, so pass projectPath:\"$it\". " }
+            ?: ""
+        val warning = "${LanguageReadiness.describe(notBuilt).replaceFirstChar { it.uppercase() }}; $consequence. " +
+            "Run mps_mcp_alter_nodes MAKE with modules:[\"$target\"] and rebuild:true to refresh the runtime descriptor. " +
+            "$foreign${LanguageReadiness.MAKE_CHANGES_NO_MODEL_NOTE}"
+        return okJson(
+            JsonPrimitive(true),
+            warnings = listOf(warning),
+            details = mapOf("languageBuild" to LanguageReadiness.languageBuildDetails(notBuilt)),
+        )
     }
 
 

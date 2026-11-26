@@ -2175,6 +2175,99 @@ class MPSLanguageStructureMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         assertEquals("no problems found", checkEnvelope.get("data").asString)
     }
 
+    @Test
+    fun `feature edits on an unbuilt language attach details languageBuild no_runtime and a MAKE reminder`() {
+        val ownerRef = createConceptRoot("FeatureNoteUnbuiltOwner")
+        val targetRef = createConceptRoot("FeatureNoteUnbuiltTarget")
+        val langName = readOnRepo { language.moduleName!! }
+        val langModuleRef = readOnRepo { PersistenceFacade.getInstance().asString(language.moduleReference) }
+
+        val calls = listOf(
+            MPSStructureAlterOperation.UPDATE_CONCEPT_PROPERTY to
+                """{"conceptRef":"$ownerRef","propertyName":"label","dataType":"string"}""",
+            MPSStructureAlterOperation.RENAME_CONCEPT_PROPERTY to
+                """{"conceptRef":"$ownerRef","oldName":"label","newName":"title"}""",
+            MPSStructureAlterOperation.UPDATE_CONCEPT_CHILD to
+                """{"conceptRef":"$ownerRef","role":"item","targetConcept":"$targetRef","multiple":false,"optional":true}""",
+            MPSStructureAlterOperation.RENAME_CONCEPT_CHILD to
+                """{"conceptRef":"$ownerRef","oldRole":"item","newRole":"entry"}""",
+            MPSStructureAlterOperation.UPDATE_CONCEPT_REFERENCE to
+                """{"conceptRef":"$ownerRef","role":"ref","targetConcept":"$targetRef","optional":true}""",
+            MPSStructureAlterOperation.RENAME_CONCEPT_REFERENCE to
+                """{"conceptRef":"$ownerRef","oldRole":"ref","newRole":"target"}""",
+        )
+
+        for ((op, params) in calls) {
+            val response = runTool { it.mps_mcp_alter_structure(op, params) }
+            val envelope = JsonParser.parseString(response).asJsonObject
+            assertTrue("$op: expected ok=true: $response", envelope.get("ok").asBoolean)
+            assertEquals("$op: data must stay boolean true: $response", true, envelope.get("data").asBoolean)
+            val build = envelope.getAsJsonObject("details")?.getAsJsonObject("languageBuild")
+                ?: error("$op: expected details.languageBuild: $response")
+            assertEquals("$op: status: $response", "no_runtime", build.get("status").asString)
+            assertEquals("$op: language: $response", langName, build.get("language").asString)
+            assertEquals("$op: module: $response", langModuleRef, build.get("module").asString)
+            val recovery = build.getAsJsonObject("recovery")
+            assertEquals("$op: recovery tool: $response", "mps_mcp_alter_nodes", recovery.get("tool").asString)
+            assertEquals("$op: recovery operation: $response", "MAKE", recovery.get("operation").asString)
+            val recoveryParams = recovery.getAsJsonObject("parameters")
+            assertEquals("$op: rebuild flag: $response", true, recoveryParams.get("rebuild").asBoolean)
+            assertEquals("$op: recovery module: $response", langModuleRef, recoveryParams.getAsJsonArray("modules").single().asString)
+            val warnings = envelope.getAsJsonArray("warnings")?.map { it.asString }.orEmpty()
+            assertTrue("$op: expected MAKE reminder warning: $response", warnings.any { it.contains("mps_mcp_alter_nodes MAKE") && it.contains(langModuleRef) })
+            assertTrue("$op: succeeded edit warning must not tell caller to retry: $response", warnings.none { it.contains("then retry") })
+        }
+    }
+
+    @Test
+    fun `feature edits on a built language attach details languageBuild stale without hollowing get_concept_details`() {
+        val createResp = runTool {
+            it.mps_mcp_alter_structure(
+                MPSStructureAlterOperation.CREATE_CONCEPTS,
+                """{"structureModelRef":"$structureModelRef","make":true,
+                    "conceptsJson":[{"name":"BuiltFeatureHost","rootable":true}]}""",
+            )
+        }
+        assertOk(createResp)
+        val langName = readOnRepo { language.moduleName!! }
+        val langModuleRef = readOnRepo { PersistenceFacade.getInstance().asString(language.moduleReference) }
+        val conceptFqn = "$langName.structure.BuiltFeatureHost"
+
+        val updateResp = runTool {
+            it.mps_mcp_alter_structure(
+                MPSStructureAlterOperation.UPDATE_CONCEPT_PROPERTY,
+                """{"conceptRef":"$conceptFqn","propertyName":"tag","dataType":"string"}""",
+            )
+        }
+        val updateEnv = JsonParser.parseString(updateResp).asJsonObject
+        assertTrue("expected ok=true: $updateResp", updateEnv.get("ok").asBoolean)
+        assertEquals(true, updateEnv.get("data").asBoolean)
+        val updateBuild = updateEnv.getAsJsonObject("details").getAsJsonObject("languageBuild")
+        assertEquals("stale", updateBuild.get("status").asString)
+        assertEquals(langModuleRef, updateBuild.get("module").asString)
+        val updateWarnings = updateEnv.getAsJsonArray("warnings").map { it.asString }
+        assertTrue("expected stale reminder warning: $updateResp", updateWarnings.any { it.contains("stale") && it.contains("mps_mcp_alter_nodes MAKE") })
+
+        val renameResp = runTool {
+            it.mps_mcp_alter_structure(
+                MPSStructureAlterOperation.RENAME_CONCEPT_PROPERTY,
+                """{"conceptRef":"$conceptFqn","oldName":"tag","newName":"label"}""",
+            )
+        }
+        val renameEnv = JsonParser.parseString(renameResp).asJsonObject
+        assertTrue("expected ok=true: $renameResp", renameEnv.get("ok").asBoolean)
+        assertEquals(true, renameEnv.get("data").asBoolean)
+        assertEquals("stale", renameEnv.getAsJsonObject("details").getAsJsonObject("languageBuild").get("status").asString)
+
+        val detailsResp = runTool(MPSLanguageMcpToolset()) {
+            it.mps_mcp_get_concept_details(conceptRefs = conceptFqn)
+        }
+        val detailsEnv = JsonParser.parseString(detailsResp).asJsonObject
+        assertTrue("expected ok=true: $detailsResp", detailsEnv.get("ok").asBoolean)
+        val conceptRecord = detailsEnv.getAsJsonArray("data").single().asJsonObject
+        assertNull("stale concept in get_concept_details must not be stamped hollow: $detailsResp", conceptRecord.get("descriptorStatus"))
+    }
+
     /**
      * Returns the java.io.File for the test language's structure model on disk.
      * The path follows the MPS convention: `<moduleDir>/languageModels/<longModelName>.mps`.
