@@ -13,14 +13,14 @@ Emitted sequence (outline):
   {
     "concept": "EmitWriteStatement",
     "children": [
-      {"role": "variable", "nodes": [{"concept": "NodeParameter"}]}
+      {"role": "variable", "nodes": [{"concept": "jetbrains.mps.lang.dataFlow.structure.NodeParameter"}]}
     ]
   },
   {
     "concept": "EmitCodeForStatement",
     "children": [
       {"role": "codeFor", "nodes": [{"concept": "DotExpression", "children": [
-        {"role": "operand", "nodes": [{"concept": "NodeParameter"}]},
+        {"role": "operand", "nodes": [{"concept": "jetbrains.mps.lang.dataFlow.structure.NodeParameter"}]},
         {"role": "operation", "nodes": [{"concept": "SLinkAccess", "references": [{"role": "link", "target": "initializer"}]}]}
       ]}]}
     ]

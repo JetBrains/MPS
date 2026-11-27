@@ -25,7 +25,7 @@ MPS tools use a single JSON blueprint shape for all insertions and updates:
 }
 ```
 
-* **Concept**: always use the fully qualified concept name.
+* **Concept**: always use the fully qualified concept name (e.g. `jetbrains.mps.lang.dataFlow.structure.NodeParameter`). Bare short names resolve only against the model's in-scope languages (used languages, used devkits, their extended languages, and languages imported earlier in the same blueprint), never auto-import unused languages, emit a warning naming the resolved FQN, and are rejected when 2+ in-scope concepts match.
 * **Optional sections**: `properties`, `children`, and `references` can be omitted if empty.
 * **Reference resolution**: `target` accepts a persistent node reference (`r:...`) or a node **name** for auto-resolution in scope. Auto-resolution is ideal for local references within the same blueprint.
 * **References inside one blueprint**: there is no local id, temp id or `"id"` key. To point at a node created in the same blueprint, give its `name` as `target`. The write resolves it in the reference's scope after the nodes exist; check `fixReferences.stillBroken` in the response. An unnamed target, or a name that is ambiguous in scope, needs a second write. Either insert the target in a write of its own, whose response carries its `reference`, or look the ref up with `mps_mcp_print_node` `format: "AGENTIC VIEW"`. Then set it with `mps_mcp_update_node` `SET` `REFERENCE`. A response holds only the ref of the write's top node, not of nodes nested in the blueprint.

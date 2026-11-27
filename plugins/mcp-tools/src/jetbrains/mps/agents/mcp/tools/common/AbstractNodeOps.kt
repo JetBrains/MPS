@@ -387,9 +387,13 @@ abstract class AbstractNodeOps : AbstractOps() {
         jsonPath: String,
         warnings: MutableList<String>?,
         mpsProject: MPSProject?,
-        gate: ConceptGate?
+        gate: ConceptGate?,
+        requireRootable: Boolean = false
     ): SNode {
-        val newNode = createNode(jsonObject, model, dryRun, jsonPath, warnings, mpsProject, gate, enclosingNode = null, link = null, index = -1)
+        val newNode = createNode(
+            jsonObject, model, dryRun, jsonPath, warnings, mpsProject, gate,
+            enclosingNode = null, link = null, index = -1, requireRootable = requireRootable
+        )
         fillChildren(newNode, jsonObject, model, dryRun, jsonPath, warnings, mpsProject, gate)
         return newNode
     }
@@ -419,27 +423,76 @@ abstract class AbstractNodeOps : AbstractOps() {
         gate: ConceptGate?,
         enclosingNode: SNode?,
         link: SContainmentLink?,
-        index: Int
+        index: Int,
+        requireRootable: Boolean = false
     ): SNode {
         val conceptName = jsonObject.optionalBlueprintString("concept", jsonPath)
         val conceptRef = jsonObject.optionalBlueprintString("conceptReference", jsonPath)
         
-        if (conceptName.isNullOrEmpty() && conceptRef.isNullOrEmpty()) {
+        if (conceptName.isNullOrBlank() && conceptRef.isNullOrBlank()) {
             throw McpInvalidRequestException("Missing 'concept' or 'conceptReference' property in JSON at path '$jsonPath'")
         }
-        rejectUnloadedConceptRecord(jsonObject, jsonPath, conceptName ?: conceptRef)
+        val displayConcept = conceptName?.takeIf { it.isNotBlank() } ?: conceptRef?.takeIf { it.isNotBlank() }
+        rejectUnloadedConceptRecord(jsonObject, jsonPath, displayConcept)
 
         // Try conceptReference first (c:... form), fall back to concept name if it fails or is absent.
         // Name-based resolution is more reliable because agents tend to get names right
         // but occasionally produce slightly incorrect concept reference IDs.
+        val repository = mpsProject?.repository ?: model.repository
         val resolve = { ref: String ->
             if (mpsProject != null) resolveConceptPreferringProject(mpsProject, ref) else resolveConcept(model.repository, ref)
         }
-        val rawByRef = if (!conceptRef.isNullOrEmpty()) resolve(conceptRef) else null
-        val rawByName = if (!conceptName.isNullOrEmpty()) resolve(conceptName) else null
+        val rawByRef = if (!conceptRef.isNullOrBlank() && !isUnqualifiedConceptName(conceptRef)) resolve(conceptRef) else null
         val byRef = rawByRef as? SConcept
+        var resolvedFromShortName = false
+        var shortNameWarning: String? = null
+        val rawByName: SAbstractConcept? = if (byRef != null || conceptName.isNullOrBlank()) {
+            null
+        } else if (isUnqualifiedConceptName(conceptName)) {
+            when (val resolved = resolveShortConceptInScope(
+                repository = repository,
+                model = model,
+                simpleName = conceptName,
+                extraLanguages = gate?.addedLanguages.orEmpty(),
+                pathSuffix = " at $jsonPath",
+            ) { candidate ->
+                isConcreteConcept(candidate, repository) && when {
+                    link != null -> candidate.isSubConceptOf(link.targetConcept)
+                    enclosingNode == null && requireRootable -> isRootable(candidate, repository)
+                    else -> true
+                }
+            }) {
+                is ShortConceptResolution.Resolved -> {
+                    resolvedFromShortName = true
+                    shortNameWarning = resolved.warning
+                    resolved.concept
+                }
+                is ShortConceptResolution.NotFoundInScope -> null
+                is ShortConceptResolution.Ambiguous -> {
+                    val fqns = resolved.candidates.map { structureQualifiedName(it) }
+                    throw McpInvalidRequestException(
+                        "Ambiguous short concept name '$conceptName' at $jsonPath: matches ${fqns.size} in-scope concepts (${fqns.joinToString(", ")}). Use a fully qualified concept name.",
+                        mapOf("candidates" to fqns)
+                    )
+                }
+                is ShortConceptResolution.NoneAssignable -> {
+                    val fqns = resolved.candidates.map { structureQualifiedName(it) }
+                    val requirement = when {
+                        link != null -> "a concrete subconcept of '${link.targetConcept.name}' for role '${link.name}'"
+                        enclosingNode == null && requireRootable -> "a concrete rootable concept"
+                        else -> "a concrete concept"
+                    }
+                    throw McpInvalidRequestException(
+                        "Short concept name '$conceptName' at $jsonPath matches ${fqns.size} in-scope concepts (${fqns.joinToString(", ")}), none of which is $requirement. Use a fully qualified concept name.",
+                        mapOf("candidates" to fqns)
+                    )
+                }
+            }
+        } else {
+            resolve(conceptName)
+        }
         val byName = rawByName as? SConcept
-        if (!conceptRef.isNullOrEmpty() && byRef == null && byName != null) {
+        if (!conceptRef.isNullOrBlank() && byRef == null && byName != null) {
             warnings?.add(
                 "conceptReference '$conceptRef' at $jsonPath does not resolve to a loaded concrete concept and was ignored; " +
                     "the node was created from concept '$conceptName'"
@@ -458,25 +511,34 @@ abstract class AbstractNodeOps : AbstractOps() {
                     "Concept '$interfaceValue' at $jsonPath ($interfaceKey) is an interface concept; a node needs a concrete concept"
                 )
             }
-            val hint = conceptHint(mpsProject?.repository ?: model.repository, mpsProject, conceptName, conceptRef)
+            val hint = conceptHint(repository, mpsProject, conceptName, conceptRef)
+            val isUnqualifiedMiss = !conceptName.isNullOrBlank() && isUnqualifiedConceptName(conceptName)
             throw McpNotFoundException(
                 when {
-                    conceptName.isNullOrEmpty() -> "Concept reference '$conceptRef' not found at $jsonPath"
-                    conceptRef.isNullOrEmpty() -> "Concept '$conceptName' not found at $jsonPath"
+                    conceptName.isNullOrBlank() -> "Concept reference '$conceptRef' not found at $jsonPath"
+                    isUnqualifiedMiss && conceptRef.isNullOrBlank() ->
+                        "Concept '$conceptName' not found in languages used by model '${model.name.value}' at $jsonPath " +
+                            "(use a fully qualified concept name to auto-import a language)"
+                    isUnqualifiedMiss ->
+                        "Concept '$conceptName' with reference '$conceptRef' not found in languages used by model '${model.name.value}' at $jsonPath"
+                    conceptRef.isNullOrBlank() -> "Concept '$conceptName' not found at $jsonPath"
                     else -> "Concept '$conceptName' with reference '$conceptRef' not found at $jsonPath"
                 } + hint.messageSuffix,
                 hint.details
             )
         }
+        if (shortNameWarning != null) {
+            warnings?.add(shortNameWarning)
+        }
 
         // Import the language that owns the concept's id, never the concept's own adapter: a parsed
         // reference can carry a fabricated language id. Checked before the dry-run guard so a dry run
         // reports the same failure.
-        val language = languageForId(mpsProject?.repository ?: model.repository, MetaIdHelper.getLanguage(sConcept.language))
+        val language = languageForId(repository, MetaIdHelper.getLanguage(sConcept.language))
             ?: throw McpNotFoundException("Language of concept '${sConcept.name}' at $jsonPath is not a loaded language: ${sConcept.language}")
         // Before the import, so a refused write leaves the model untouched; a dry run refuses alike.
         gate?.require(sConcept, "Concept '${structureQualifiedName(sConcept)}' at $jsonPath")
-        if (model is SModelInternal && !model.importedLanguageIds().contains(language)) {
+        if (!resolvedFromShortName && model is SModelInternal && !model.importedLanguageIds().contains(language)) {
             gate?.recordImport(model, language, made = !dryRun)
             if (!dryRun) model.addLanguage(language)
         }
@@ -550,7 +612,7 @@ abstract class AbstractNodeOps : AbstractOps() {
         if (parsedProperties != null) {
             for ((propPath, propObject, propName) in parsedProperties) {
                 if (propName == null) continue
-                val propValue = propObject.optionalBlueprintString("value", propPath)
+                val propValue = propObject.optionalBlueprintPropertyValue("value", propPath)
                 val sProperty = sConcept.properties.find { it.name == propName }
                 if (sProperty == null) {
                     gate?.staleFeature(sConcept, StructureDeclarations.FeatureKind.PROPERTY, propName, propPath)?.let { throw it }
@@ -1065,21 +1127,31 @@ abstract class AbstractNodeOps : AbstractOps() {
     ): SNode {
         val conceptName = blueprint.optionalBlueprintString("concept", jsonPath)
         val conceptRef = blueprint.optionalBlueprintString("conceptReference", jsonPath)
-        if (conceptName.isNullOrEmpty() && conceptRef.isNullOrEmpty()) {
+        if (conceptName.isNullOrBlank() && conceptRef.isNullOrBlank()) {
             throw McpInvalidRequestException("Missing 'concept' or 'conceptReference' at $jsonPath")
         }
+        val displayConcept = conceptName?.takeIf { it.isNotBlank() } ?: conceptRef?.takeIf { it.isNotBlank() }
         if (blueprint.get("conceptLoaded")?.let { it.isJsonPrimitive && it.asJsonPrimitive.isBoolean && !it.asBoolean } == true) {
             throw McpInvalidRequestException(
-                "Node at $jsonPath is marked conceptLoaded:false: concept '${conceptName ?: conceptRef}' was not loaded when the " +
+                "Node at $jsonPath is marked conceptLoaded:false: concept '$displayConcept' was not loaded when the " +
                     "type was printed, so the type cannot be rebuilt from this printout. Rebuild the language and read the type again"
             )
         }
-        val concept = listOfNotNull(conceptRef, conceptName).firstNotNullOfOrNull {
-            resolveConceptPreferringProject(mpsProject, it) as? SConcept
+        val repository = mpsProject.repository
+        val byRef = if (!conceptRef.isNullOrBlank() && !isUnqualifiedConceptName(conceptRef)) {
+            resolveConceptPreferringProject(mpsProject, conceptRef) as? SConcept
+        } else {
+            null
+        }
+        val concept = byRef ?: when {
+            conceptName.isNullOrBlank() -> null
+            isUnqualifiedConceptName(conceptName) ->
+                resolveShortConceptInRepository(repository, conceptName, jsonPath, requireConcrete = true) as? SConcept
+            else -> resolveConceptPreferringProject(mpsProject, conceptName) as? SConcept
         } ?: run {
-            val hint = conceptHint(mpsProject.repository, mpsProject, conceptName, conceptRef, concreteRequired = true)
+            val hint = conceptHint(repository, mpsProject, conceptName, conceptRef, concreteRequired = true)
             throw McpInvalidRequestException(
-                "Concept '${conceptName ?: conceptRef}' at $jsonPath is not a loaded concrete concept" + hint.messageSuffix,
+                "Concept '$displayConcept' at $jsonPath is not a loaded concrete concept" + hint.messageSuffix,
                 hint.details
             )
         }
@@ -1098,7 +1170,7 @@ abstract class AbstractNodeOps : AbstractOps() {
             val property = concept.properties.find { it.name == propName }
                 ?: throw if (isMarkedUndeclared(entry)) undeclaredTypeFeature("Property", propName, path, concept)
                 else McpInvalidRequestException("Unknown property '$propName' at $path: concept '${concept.name}' has no such property")
-            val propValue = entry.optionalBlueprintString("value", path)
+            val propValue = entry.optionalBlueprintPropertyValue("value", path)
             if (isUnsetDefaultProperty(entry, property, propValue)) {
                 node.setProperty(property, null)
                 return@forEachIndexed
@@ -1191,6 +1263,15 @@ abstract class AbstractNodeOps : AbstractOps() {
 
     private fun JsonObject.optionalBlueprintString(field: String, path: String): String? {
         val element = get(field)?.takeUnless { it.isJsonNull } ?: return null
+        if (!element.isJsonPrimitive || !element.asJsonPrimitive.isString) {
+            throw McpInvalidRequestException("'$field' at $path must be a string, got ${jsonKind(element)}")
+        }
+        return element.asString
+    }
+
+    /** Property values still accept JSON primitives (numbers/booleans) coerced to their MPS string form. */
+    private fun JsonObject.optionalBlueprintPropertyValue(field: String, path: String): String? {
+        val element = get(field)?.takeUnless { it.isJsonNull } ?: return null
         if (!element.isJsonPrimitive) throw McpInvalidRequestException("'$field' at $path must be a string, got ${jsonKind(element)}")
         return element.asString
     }
@@ -1232,7 +1313,7 @@ abstract class AbstractNodeOps : AbstractOps() {
                 val propPath = "$jsonPath.properties[$propIndex]"
                 val propObject = propElement.asBlueprintObject(propPath)
                 val propName = propObject.optionalBlueprintString("name", propPath) ?: return@forEachIndexed
-                val propValue = propObject.optionalBlueprintString("value", propPath)
+                val propValue = propObject.optionalBlueprintPropertyValue("value", propPath)
                 val sProperty = sConcept.properties.find { it.name == propName }
                     ?: run {
                         gate?.staleFeature(sConcept, StructureDeclarations.FeatureKind.PROPERTY, propName, propPath)?.let { throw it }

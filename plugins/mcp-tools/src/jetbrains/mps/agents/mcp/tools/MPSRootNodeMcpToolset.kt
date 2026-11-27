@@ -17,8 +17,10 @@ import jetbrains.mps.ide.project.ProjectHelper
 import jetbrains.mps.nodeEditor.InspectorTool
 import jetbrains.mps.nodefs.MPSNodeVirtualFile
 import jetbrains.mps.openapi.navigation.EditorNavigator
+import jetbrains.mps.smodel.SModelInternal
 import jetbrains.mps.smodel.SNodeUtil
 import jetbrains.mps.smodel.action.SNodeFactoryOperations
+import jetbrains.mps.smodel.adapter.ids.MetaIdHelper
 import jetbrains.mps.smodel.constraints.ModelConstraints
 import kotlinx.coroutines.currentCoroutineContext
 import org.jetbrains.mps.openapi.language.SLanguage
@@ -362,11 +364,29 @@ class MPSRootNodeMcpToolset : AbstractNodeOps() {
                 val gate = ConceptGate(mpsProject)
                 for ((index, jsonObject) in jsonObjects.withIndex()) {
                     val indexLabel = if (jsonObjects.size > 1) " [$index]" else ""
+                    val conceptElem = jsonObject.get("concept")
+                    if (conceptElem != null && !conceptElem.isJsonNull && !(conceptElem.isJsonPrimitive && conceptElem.asJsonPrimitive.isString)) {
+                        gate.undoImports()
+                        return@executeShortCommandOnEdt errJson(
+                            "'concept' at \$$indexLabel must be a string",
+                            McpErrorCode.INVALID_REQUEST
+                        )
+                    }
+                    val conceptRefElem = jsonObject.get("conceptReference")
+                    if (conceptRefElem != null && !conceptRefElem.isJsonNull && !(conceptRefElem.isJsonPrimitive && conceptRefElem.asJsonPrimitive.isString)) {
+                        gate.undoImports()
+                        return@executeShortCommandOnEdt errJson(
+                            "'conceptReference' at \$$indexLabel must be a string",
+                            McpErrorCode.INVALID_REQUEST
+                        )
+                    }
                     when (val r = resolveRootableConcept(
                         mpsProject,
-                        conceptName = jsonObject.get("concept")?.asString,
-                        conceptReference = jsonObject.get("conceptReference")?.asString,
-                        label = indexLabel
+                        conceptName = conceptElem?.takeUnless { it.isJsonNull }?.asString,
+                        conceptReference = conceptRefElem?.takeUnless { it.isJsonNull }?.asString,
+                        label = indexLabel,
+                        model = model,
+                        extraLanguages = gate.addedLanguages
                     )) {
                         is RootableConceptResolution.Ok -> {} // validated
                         is RootableConceptResolution.Err -> {
@@ -376,7 +396,7 @@ class MPSRootNodeMcpToolset : AbstractNodeOps() {
                     }
 
                     val newNode = try {
-                        instantiateNode(jsonObject, model, dryRun, "$", batchWarnings, mpsProject, gate)
+                        instantiateNode(jsonObject, model, dryRun, "$", batchWarnings, mpsProject, gate, requireRootable = true)
                     } catch (t: Throwable) {
                         // The earlier roots of the batch were never attached; their imports go too.
                         gate.undoImports()
@@ -432,7 +452,7 @@ class MPSRootNodeMcpToolset : AbstractNodeOps() {
 
     @McpTool
     @McpDescription("""
-        Creates a new root node in the specified model.
+        Creates a new root node in the specified model. When resolved from a fully qualified concept name or a persistent `c:...` `conceptReference`, a concept whose language the target model does not yet import gets the import automatically; the response lists it in `details.addedUsedLanguages` / `details.addedUsedLanguageDetails` (a language owned by another open project is marked there, and importing it is allowed; undo with `mps_mcp_model_used_language` DELETE). An unqualified short `concept` name is resolved only within the target model's already in-scope languages.
         Returns a JSON object with 'ok':true and 'data':{ name, concept, conceptReference, reference, parentReference, rootReference, modelReference, moduleReference, virtualFolder, isRoot, present:true } on success, or 'ok':false and 'error':"..." on failure.
     """)
     suspend fun mps_mcp_create_root_node(
@@ -452,47 +472,92 @@ class MPSRootNodeMcpToolset : AbstractNodeOps() {
                     is EditableModelResolution.Ok -> r.model
                     is EditableModelResolution.Err -> return@executeShortCommandOnEdt r.errJson
                 }
-                val sConcept = when (val r = resolveRootableConcept(
-                    mpsProject,
-                    conceptName = concept,
-                    conceptReference = conceptReference
-                )) {
-                    is RootableConceptResolution.Ok -> r.concept
-                    is RootableConceptResolution.Err -> return@executeShortCommandOnEdt r.errJson
-                }
-                ConceptGate(mpsProject).require(sConcept, "Concept '${structureQualifiedName(sConcept)}'", "the root cannot be created until the language is built")
-                val newNode = SNodeFactoryOperations.createNewRootNode(model, sConcept, null)
-                val nameProperty = SNodeUtil.property_INamedConcept_name
-                val warnings = mutableListOf<String>()
-                if (newNode.concept.properties.contains(nameProperty)) {
-                    newNode.setProperty(nameProperty, name)
-                } else if (name.isNotBlank()) {
-                    warnings += "concept '${sConcept.name}' has no 'name' property (it does not implement INamedConcept), so name '$name' was not applied"
-                }
-                // Initialize compulsory references with the first scope-available candidate
-                // as a placeholder. We deliberately do NOT call performFixReferences here:
-                // it would run ScopeResolver over every reference and re-resolve by name,
-                // which can overwrite the placeholder with a different node whenever the
-                // name is ambiguous in scope or when getAvailableElements() and
-                // Scope.resolve(name) disagree on ordering. Callers that want fully resolved
-                // references should use mps_mcp_insert_root_node_from_json / set_node_references
-                // / update_root_node_from_json, all of which feed real targets through
-                // applyReferenceUpdate and run performFixReferences appropriately.
-                val compulsoryRefs = sConcept.referenceLinks.filter { !it.isOptional }
-                if (compulsoryRefs.isNotEmpty()) {
-                    for (link in compulsoryRefs) {
-                        val scope = ModelConstraints.getReferenceDescriptor(newNode, link).scope
-                        val first = scope.getAvailableElements(null).firstOrNull()
-                        if (first != null) {
-                            newNode.setReferenceTarget(link, first)
-                        }
-                    }
-                }
-
-                saveModelAndModule(model)
-                okJson(nodeInfoJsonObject(newNode, mpsProject), warnings)
+                createRootNodeInModel(mpsProject, model, concept, conceptReference, name)
             }
         }
+    }
+
+    /**
+     * Resolves the target concept, auto-imports its language when given as an FQN or `c:` reference,
+     * attaches the new root node in [model], sets `name` when supported, and initializes compulsory
+     * reference links via [firstScopeCandidate]. Deletes the attached root and undoes language imports
+     * if any post-attach step throws, because MPS commands do not roll back.
+     */
+    internal fun createRootNodeInModel(
+        mpsProject: jetbrains.mps.project.MPSProject,
+        model: org.jetbrains.mps.openapi.model.EditableSModel,
+        concept: String,
+        conceptReference: String?,
+        name: String,
+        firstScopeCandidate: (org.jetbrains.mps.openapi.model.SNode, org.jetbrains.mps.openapi.language.SReferenceLink) -> org.jetbrains.mps.openapi.model.SNode? = { created, link ->
+            ModelConstraints.getReferenceDescriptor(created, link).scope.getAvailableElements(null).firstOrNull()
+        }
+    ): String {
+        val warnings = mutableListOf<String>()
+        val resolved = when (val r = resolveRootableConcept(
+            mpsProject,
+            conceptName = concept,
+            conceptReference = conceptReference,
+            model = model
+        )) {
+            is RootableConceptResolution.Ok -> {
+                warnings += r.warnings
+                r
+            }
+            is RootableConceptResolution.Err -> return r.errJson
+        }
+        val sConcept = resolved.concept
+        // Check owning language before ConceptGate.require so a moved concept whose kept
+        // languageId no loaded language owns fails with NOT_FOUND rather than LANGUAGE_NOT_BUILT,
+        // matching AbstractNodeOps.createNode.
+        val language = languageForId(mpsProject.repository, MetaIdHelper.getLanguage(sConcept.language))
+            ?: return errJson(
+                "Language of concept '${sConcept.name}' is not a loaded language: ${sConcept.language}",
+                McpErrorCode.NOT_FOUND
+            )
+        val gate = ConceptGate(mpsProject)
+        gate.require(sConcept, "Concept '${structureQualifiedName(sConcept)}'", "the root cannot be created until the language is built")
+        if (!resolved.resolvedFromShortName && model is SModelInternal && !model.importedLanguageIds().contains(language)) {
+            gate.recordImport(model, language, made = true)
+            model.addLanguage(language)
+        }
+        var created: org.jetbrains.mps.openapi.model.SNode? = null
+        val newNode = try {
+            val root = SNodeFactoryOperations.createNewRootNode(model, sConcept, null)
+            created = root
+            val nameProperty = SNodeUtil.property_INamedConcept_name
+            if (root.concept.properties.contains(nameProperty)) {
+                root.setProperty(nameProperty, name)
+            } else if (name.isNotBlank()) {
+                warnings += "concept '${sConcept.name}' has no 'name' property (it does not implement INamedConcept), so name '$name' was not applied"
+            }
+            // Initialize compulsory references with the first scope-available candidate
+            // as a placeholder. We deliberately do NOT call performFixReferences here:
+            // it would run ScopeResolver over every reference and re-resolve by name,
+            // which can overwrite the placeholder with a different node whenever the
+            // name is ambiguous in scope or when getAvailableElements() and
+            // Scope.resolve(name) disagree on ordering. Callers that want fully resolved
+            // references should use mps_mcp_insert_root_node_from_json / set_node_references
+            // / update_root_node_from_json, all of which feed real targets through
+            // applyReferenceUpdate and run performFixReferences appropriately.
+            val compulsoryRefs = sConcept.referenceLinks.filter { !it.isOptional }
+            if (compulsoryRefs.isNotEmpty()) {
+                for (link in compulsoryRefs) {
+                    val first = firstScopeCandidate(root, link)
+                    if (first != null) {
+                        root.setReferenceTarget(link, first)
+                    }
+                }
+            }
+            root
+        } catch (t: Throwable) {
+            runCatching { created?.delete() }.exceptionOrNull()?.let(t::addSuppressed)
+            gate.undoImports()
+            throw t
+        }
+
+        saveModelAndModule(model)
+        return okJson(nodeInfoJsonObject(newNode, mpsProject), warnings, details = addedUsedLanguagesDetails(gate.addedLanguages, mpsProject))
     }
 
     @McpTool

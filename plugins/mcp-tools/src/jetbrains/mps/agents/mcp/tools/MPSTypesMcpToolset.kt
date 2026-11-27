@@ -404,7 +404,11 @@ class MPSTypesMcpToolset : AbstractNodeOps() {
         val strong = params.paramBoolean("strong", default = false)
         return readWithEngine(mpsProject) { engine ->
             val type = typeOperands(listOf(params.get("type") to "parameters.type"), mpsProject, engine).single()
-            val concept = resolveConceptPreferringProject(mpsProject, conceptRef) ?: run {
+            val concept = (if (isUnqualifiedConceptName(conceptRef)) {
+                resolveShortConceptInRepository(mpsProject.repository, conceptRef, "parameters.conceptRef", requireConcrete = false)
+            } else {
+                resolveConceptPreferringProject(mpsProject, conceptRef)
+            }) ?: run {
                 // The parameter takes a name or a reference alike; conceptHint reads either from conceptReference.
                 val hint = conceptHint(mpsProject.repository, mpsProject, concept = null, conceptReference = conceptRef)
                 throw McpNotFoundException("Concept '$conceptRef' at parameters.conceptRef not found" + hint.messageSuffix, hint.details)
@@ -582,11 +586,18 @@ class MPSTypesMcpToolset : AbstractNodeOps() {
                 ?: throw McpInvalidRequestException("'$path.blueprint' must be a JSON object holding a type's node tree")
             val type = typeOperandNode(blueprint, mpsProject, "$path.blueprint")
             // A printed type object repeats its blueprint's concept; a mismatch means it was edited by hand.
-            val printedConcept = operand.get("conceptReference")?.takeIf { it.isJsonPrimitive }?.asString
-            if (printedConcept != null && resolveConceptPreferringProject(mpsProject, printedConcept) != type.concept) {
-                throw McpInvalidRequestException(
-                    "'$path.conceptReference' ($printedConcept) disagrees with the concept of '$path.blueprint' (${type.concept.name})"
-                )
+            val printedConceptElem = operand.get("conceptReference")?.takeUnless { it.isJsonNull }
+            if (printedConceptElem != null) {
+                if (!printedConceptElem.isJsonPrimitive || !printedConceptElem.asJsonPrimitive.isString) {
+                    throw McpInvalidRequestException("'$path.conceptReference' must be a string")
+                }
+                val printedConcept = printedConceptElem.asString
+                val resolvedPrinted = if (isUnqualifiedConceptName(printedConcept)) null else resolveConceptPreferringProject(mpsProject, printedConcept)
+                if (resolvedPrinted != type.concept) {
+                    throw McpInvalidRequestException(
+                        "'$path.conceptReference' ($printedConcept) disagrees with the concept of '$path.blueprint' (${type.concept.name})"
+                    )
+                }
             }
             return Operand.Type(type)
         }
@@ -619,7 +630,11 @@ class MPSTypesMcpToolset : AbstractNodeOps() {
     }
 
     private fun concreteConcept(conceptRef: String, path: String, mpsProject: MPSProject): SConcept {
-        val concept: SAbstractConcept = resolveConceptPreferringProject(mpsProject, conceptRef) ?: run {
+        val concept: SAbstractConcept = (if (isUnqualifiedConceptName(conceptRef)) {
+            resolveShortConceptInRepository(mpsProject.repository, conceptRef, path, requireConcrete = true)
+        } else {
+            resolveConceptPreferringProject(mpsProject, conceptRef)
+        }) ?: run {
             val hint = conceptHint(mpsProject.repository, mpsProject, concept = null, conceptReference = conceptRef, concreteRequired = true)
             throw McpNotFoundException("Concept '$conceptRef' at $path not found" + hint.messageSuffix, hint.details)
         }

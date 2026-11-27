@@ -30,6 +30,7 @@ class MPSConsoleMcpToolset : AbstractNodeOps() {
         // more statements in a BLCommand is how multiple statements become a single console command.
         // BLCommand extends GeneratedCommand which implements the console `Command` interface.
         private const val BL_COMMAND_CONCEPT = "jetbrains.mps.console.base.structure.BLCommand"
+        private const val STATEMENT_CONCEPT = "jetbrains.mps.baseLanguage.structure.Statement"
         private const val STATEMENT_LIST_CONCEPT = "jetbrains.mps.baseLanguage.structure.StatementList"
         private const val DIALOG_CONSOLE_TAB_FQN = "jetbrains.mps.console.tool.DialogConsoleTab"
 
@@ -94,47 +95,11 @@ class MPSConsoleMcpToolset : AbstractNodeOps() {
                     is ConsoleResolution.Err -> return@executeShortCommandOnEdt r.errJson
                 }
 
-                // The command holder accepts one Command. A single blueprint that already is a
-                // Command (e.g. BLExpression) is inserted as-is; anything else — a single non-Command
-                // node or several nodes — is treated as baseLanguage statement(s) and wrapped in a
-                // BLCommand ({ … } block), which is how multiple statements form one console command.
-                val commandConcept = consoleCommandConcept()
-                val blueprint: JsonObject = if (blueprints.size == 1) {
-                    val only = blueprints[0]
-                    val onlyConcept = resolveBlueprintConcept(console.consoleModel.repository, only)
-                    when {
-                        // Unresolved concept: instantiate the user blueprint directly so the error
-                        // names their concept, not the synthesized wrapper.
-                        onlyConcept == null -> only
-                        onlyConcept.isSubConceptOf(commandConcept) -> only
-                        else -> wrapStatementsInBlockCommand(blueprints)
-                    }
-                } else {
-                    wrapStatementsInBlockCommand(blueprints)
-                }
-
-                // Mirror mps_mcp_insert_root_node_from_json: catch every instantiation failure here
-                // (including McpUserException) so nothing escapes the command and trips
-                // ActionDispatcher's "Action dispatch failed" log; the message still carries the
-                // specific cause. Cancellation is rethrown so coroutine cancellation is honoured.
-                // Collected on both paths so a node-factory failure is reported for a real insert too.
                 val warnings = mutableListOf<String>()
-                val command = try {
-                    instantiateNode(blueprint, console.consoleModel, dryRun, warnings = warnings, readinessProject = mpsProject)
-                } catch (e: Exception) {
-                    return@executeShortCommandOnEdt instantiationFailed("Failed to instantiate console command from JSON", e, warnings)
-                }
-
-                // Defensive: the wrap path always yields a Command (BLCommand), and the direct path
-                // only runs when the concept is already a Command — but guard the insert anyway so a
-                // surprising concept produces a clear message instead of an opaque insertCommand failure.
-                if (!command.concept.isSubConceptOf(commandConcept)) {
-                    return@executeShortCommandOnEdt errJson(
-                        "Concept '${command.concept.name}' cannot be used as a console command; provide a " +
-                                "console Command (subconcept of '${commandConcept.name}') or one or more " +
-                                "baseLanguage statements to wrap in a block.",
-                        McpErrorCode.INVALID_REQUEST
-                    )
+                val instantiated = instantiateConsoleCommand(blueprints, console.consoleModel, mpsProject, dryRun, warnings)
+                val command = when (instantiated) {
+                    is ConsoleCommandInstantiation.Ok -> instantiated.command
+                    is ConsoleCommandInstantiation.Err -> return@executeShortCommandOnEdt instantiated.errJson
                 }
 
                 if (dryRun) {
@@ -151,6 +116,7 @@ class MPSConsoleMcpToolset : AbstractNodeOps() {
                     console.tab.javaClass.getMethod("insertCommand", SNode::class.java)
                         .invoke(console.tab, command)
                 } catch (e: ReflectiveOperationException) {
+                    instantiated.undoImports()
                     return@executeShortCommandOnEdt errJson(
                         "Failed to insert the command into the MPS Console: ${reflectionFailureDetail(e)}",
                         McpErrorCode.INTERNAL_ERROR
@@ -502,23 +468,126 @@ class MPSConsoleMcpToolset : AbstractNodeOps() {
         }
     }
 
+    internal sealed class ConsoleCommandInstantiation {
+        class Ok(val command: SNode, val undoImports: () -> Unit) : ConsoleCommandInstantiation()
+        class Err(val errJson: String) : ConsoleCommandInstantiation()
+    }
+
+    /**
+     * Classifies [blueprints] into a console `Command` (directly or wrapped in a `BLCommand` block)
+     * and instantiates the detached command node against [consoleModel], rolling back any
+     * auto-imported languages via [ConceptGate.undoImports] if instantiation or `Command` validation
+     * fails.
+     */
+    internal fun instantiateConsoleCommand(
+        blueprints: List<JsonObject>,
+        consoleModel: org.jetbrains.mps.openapi.model.SModel,
+        mpsProject: jetbrains.mps.project.MPSProject,
+        dryRun: Boolean,
+        warnings: MutableList<String>,
+        commandConcept: org.jetbrains.mps.openapi.language.SAbstractConcept = consoleCommandConcept(),
+        wrapStatements: (List<JsonObject>) -> JsonObject = ::wrapStatementsInBlockCommand
+    ): ConsoleCommandInstantiation {
+        // The command holder accepts one Command. A single blueprint that already is a
+        // Command (e.g. BLExpression) is inserted as-is; anything else — a single non-Command
+        // node or several nodes — is treated as baseLanguage statement(s) and wrapped in a
+        // BLCommand ({ … } block), which is how multiple statements form one console command.
+        val blueprint: JsonObject = if (blueprints.size == 1) {
+            val only = blueprints[0]
+            val onlyConcept = resolveBlueprintConcept(consoleModel, only, commandConcept)
+            when {
+                // Unresolved concept: instantiate the user blueprint directly so the error
+                // names their concept, not the synthesized wrapper.
+                onlyConcept == null -> only
+                onlyConcept.isSubConceptOf(commandConcept) -> only
+                else -> wrapStatements(blueprints)
+            }
+        } else {
+            wrapStatements(blueprints)
+        }
+
+        // Mirror mps_mcp_insert_root_node_from_json: catch every instantiation failure here
+        // (including McpUserException) so nothing escapes the command and trips
+        // ActionDispatcher's "Action dispatch failed" log; the message still carries the
+        // specific cause. Cancellation is rethrown so coroutine cancellation is honoured.
+        // Collected on both paths so a node-factory failure is reported for a real insert too.
+        val gate = ConceptGate(mpsProject)
+        val command = try {
+            instantiateNode(
+                blueprint,
+                consoleModel,
+                dryRun,
+                jsonPath = "$",
+                warnings = warnings,
+                mpsProject = null,
+                gate = gate
+            )
+        } catch (t: Throwable) {
+            gate.undoImports()
+            if (t !is Exception) throw t
+            return ConsoleCommandInstantiation.Err(
+                instantiationFailed("Failed to instantiate console command from JSON", t, warnings)
+            )
+        }
+
+        // Defensive: the wrap path always yields a Command (BLCommand), and the direct path
+        // only runs when the concept is already a Command — but guard the insert anyway so a
+        // surprising concept produces a clear message instead of an opaque insertCommand failure.
+        if (!command.concept.isSubConceptOf(commandConcept)) {
+            gate.undoImports()
+            return ConsoleCommandInstantiation.Err(
+                errJson(
+                    "Concept '${command.concept.name}' cannot be used as a console command; provide a " +
+                        "console Command (subconcept of '${commandConcept.name}') or one or more " +
+                        "baseLanguage statements to wrap in a block.",
+                    McpErrorCode.INVALID_REQUEST
+                )
+            )
+        }
+        return ConsoleCommandInstantiation.Ok(command) { gate.undoImports() }
+    }
+
     /**
      * Resolves the concept named by a blueprint's `conceptReference` (preferred) / `concept` field,
      * without instantiating it — used only to decide whether a single blueprint is already a console
      * Command (insert as-is) or a statement to wrap. Mirrors [instantiateNode]'s resolution order, so
      * the classification matches what instantiation would produce. Returns null if neither resolves.
      */
-    private fun resolveBlueprintConcept(repository: SRepository, blueprint: JsonObject): SConcept? {
+    internal fun resolveBlueprintConcept(
+        model: org.jetbrains.mps.openapi.model.SModel,
+        blueprint: JsonObject,
+        commandConcept: org.jetbrains.mps.openapi.language.SAbstractConcept = consoleCommandConcept()
+    ): SConcept? {
+        val repository = model.repository
         val conceptRef = blueprintStringField(blueprint, "conceptReference")
         val conceptName = blueprintStringField(blueprint, "concept")
-        val byRef = if (!conceptRef.isNullOrEmpty()) resolveConcept(repository, conceptRef) as? SConcept else null
-        val byName = if (!conceptName.isNullOrEmpty()) resolveConcept(repository, conceptName) as? SConcept else null
-        return byRef ?: byName
+        val byRef = if (!conceptRef.isNullOrBlank() && !isUnqualifiedConceptName(conceptRef)) {
+            resolveConcept(repository, conceptRef) as? SConcept
+        } else {
+            null
+        }
+        if (byRef != null) return byRef
+        if (conceptName.isNullOrBlank()) return null
+        if (isUnqualifiedConceptName(conceptName)) {
+            return when (val resolved = resolveShortConceptInScope(repository, model, conceptName) { isConcreteConcept(it, repository) }) {
+                is ShortConceptResolution.Resolved -> resolved.concept as? SConcept
+                is ShortConceptResolution.Ambiguous -> {
+                    val statementConcept = resolveConcept(repository, STATEMENT_CONCEPT)
+                    if (statementConcept != null && resolved.candidates.none { it.isSubConceptOf(commandConcept) }) {
+                        resolved.candidates.singleOrNull { it.isSubConceptOf(statementConcept) } as? SConcept
+                    } else {
+                        null
+                    }
+                }
+                else -> null
+            }
+        }
+        return resolveConcept(repository, conceptName) as? SConcept
     }
 
     private fun blueprintStringField(blueprint: JsonObject, field: String): String? {
         val element = blueprint.get(field) ?: return null
-        return if (element.isJsonPrimitive) element.asString else null
+        return if (element.isJsonPrimitive && element.asJsonPrimitive.isString) element.asString else null
     }
 
     /**

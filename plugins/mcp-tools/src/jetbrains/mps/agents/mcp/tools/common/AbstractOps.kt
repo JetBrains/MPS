@@ -1,5 +1,7 @@
 package jetbrains.mps.agents.mcp.tools.common
 
+import jetbrains.mps.agents.mcp.tools.languages.StructureDeclarations
+import jetbrains.mps.agents.mcp.tools.languages.StructureLanguageMeta
 import jetbrains.mps.agents.mcp.tools.logging.*
 import jetbrains.mps.agents.mcp.tools.migration.HeadlessMigrations
 import jetbrains.mps.agents.mcp.tools.migration.MigrationAssistantGuard
@@ -68,6 +70,8 @@ import jetbrains.mps.project.structure.modules.LanguageDescriptor
 import jetbrains.mps.project.structure.modules.ModuleDescriptor
 import jetbrains.mps.project.validation.StructureChecker
 import jetbrains.mps.smodel.Language
+import jetbrains.mps.smodel.ModelDependencyResolver
+import jetbrains.mps.smodel.SLanguageHierarchy
 import jetbrains.mps.smodel.SNodeUtil
 import jetbrains.mps.smodel.adapter.MetaAdapterByDeclaration
 import jetbrains.mps.smodel.adapter.ids.MetaIdByDeclaration
@@ -1311,64 +1315,290 @@ abstract class AbstractOps : McpToolset {
      * Result of resolving a concept reference and validating it is a rootable [SConcept].
      */
     protected sealed class RootableConceptResolution {
-        data class Ok(val concept: SConcept) : RootableConceptResolution()
+        data class Ok(
+            val concept: SConcept,
+            val warnings: List<String> = emptyList(),
+            val resolvedFromShortName: Boolean = false
+        ) : RootableConceptResolution()
         data class Err(val errJson: String) : RootableConceptResolution()
     }
 
-    /**
-     * Resolves a concept reference (or fully qualified name) and validates that the
-     * result is a rootable [SConcept]. Either [conceptName] or [conceptReference]
-     * (or both) must be non-empty; [conceptReference] is tried first. [label] is
-     * appended to error messages so batch callers can identify which entry failed
-     * (e.g. " [3]").
-     */
-    protected fun resolveRootableConcept(
-        repository: SRepository,
-        conceptName: String?,
-        conceptReference: String?,
-        label: String = ""
-    ): RootableConceptResolution {
-        if (conceptName.isNullOrEmpty() && conceptReference.isNullOrEmpty()) {
-            return RootableConceptResolution.Err(
-                errJson("Either 'concept' (qualifiedName) or 'conceptReference' must be provided$label", McpErrorCode.INVALID_REQUEST)
-            )
-        }
-        val sConcept = (if (!conceptReference.isNullOrEmpty()) resolveConcept(repository, conceptReference) else null)
-            ?: (if (!conceptName.isNullOrEmpty()) resolveConcept(repository, conceptName) else null)
-            ?: return RootableConceptResolution.Err(
-                errJson("Concept not found$label: concept='$conceptName', conceptReference='$conceptReference'", McpErrorCode.NOT_FOUND)
-            )
-        if (sConcept !is SConcept || !isRootable(sConcept, repository)) {
-            return RootableConceptResolution.Err(
-                errJson("Concept '${sConcept.name}' is not a rootable concept$label", McpErrorCode.INVALID_REQUEST)
-            )
-        }
-        return RootableConceptResolution.Ok(sConcept)
+    /** Result of resolving an unqualified short concept name within a model's in-scope languages. */
+    protected sealed class ShortConceptResolution {
+        data class Resolved(val concept: SAbstractConcept, val warning: String) : ShortConceptResolution()
+        object NotFoundInScope : ShortConceptResolution()
+        data class Ambiguous(val candidates: List<SAbstractConcept>) : ShortConceptResolution()
+        data class NoneAssignable(val candidates: List<SAbstractConcept>) : ShortConceptResolution()
     }
 
+    protected fun isUnqualifiedConceptName(name: String): Boolean =
+        name.isNotBlank() && !name.contains('.') && !name.contains('/') && !name.contains(':')
+
+    /**
+     * Languages in scope of [model] for short concept-name resolution: direct used languages and
+     * used-devkit exports ([ModelDependencyResolver.usedLanguages]), [extraLanguages] (e.g.
+     * `ConceptGate.addedLanguages` so dry-run and real writes agree), and their extended languages
+     * ([SLanguageHierarchy.getExtendedLangs] plus declared extended languages of language modules).
+     */
+    protected fun inScopeLanguages(
+        model: SModel,
+        extraLanguages: Collection<SLanguage> = emptyList()
+    ): Set<SLanguage> {
+        val scope = LinkedHashSet<SLanguage>(extraLanguages)
+        val repository = model.repository ?: return scope
+        val registry = LanguageRegistry.getInstance(repository)
+        scope.addAll(ModelDependencyResolver(registry, repository).usedLanguages(model))
+        val queue = ArrayDeque(scope)
+        val visited = HashSet(scope)
+        while (queue.isNotEmpty()) {
+            val lang = queue.removeFirst()
+            val module = languageModuleOf(repository, lang)
+            if (module != null) {
+                for (extRef in module.extendedLanguageRefs) {
+                    if (extRef.moduleId !is ModuleId.Regular) continue
+                    val extLang = languageForId(repository, MetaIdByDeclaration.ref2LangId(extRef)) ?: continue
+                    if (visited.add(extLang)) {
+                        scope.add(extLang)
+                        queue.add(extLang)
+                    }
+                }
+            }
+            for (extLang in SLanguageHierarchy(registry, listOf(lang)).getExtendedLangs { }) {
+                if (visited.add(extLang)) {
+                    scope.add(extLang)
+                    queue.add(extLang)
+                }
+            }
+        }
+        return scope
+    }
+
+    protected fun allRepositoryLanguages(repository: SRepository): Set<SLanguage> {
+        val languages = LinkedHashSet<SLanguage>()
+        languages.addAll(LanguageRegistry.getInstance(repository).allLanguages)
+        for (module in repository.modules) {
+            if (module is Language) languages.add(MetaAdapterByDeclaration.getLanguage(module))
+        }
+        return languages
+    }
+
+    protected fun conceptsNamedInLanguages(
+        repository: SRepository,
+        languages: Collection<SLanguage>,
+        simpleName: String
+    ): List<SAbstractConcept> {
+        val registry = LanguageRegistry.getInstance(repository)
+        val result = LinkedHashMap<SAbstractConcept, Unit>()
+        for (lang in languages) {
+            val runtime = registry.getLanguage(lang)
+            runtime?.concepts?.forEach { concept ->
+                if (concept.name == simpleName) result[concept] = Unit
+            }
+            val langModule = languageModuleOf(repository, lang)
+            val structure = langModule?.structureModelDescriptor
+                ?.takeIf { runtime == null || it.isLoaded || !langModule.isReadOnly }
+            structure?.rootNodes?.forEach { root ->
+                if (root.name == simpleName && root.concept.isSubConceptOf(SNodeUtil.concept_AbstractConceptDeclaration)) {
+                    val concept = StructureDeclarations.conceptOf(root) ?: return@forEach
+                    result.putIfAbsent(concept, Unit)
+                }
+            }
+        }
+        return result.keys.toList()
+    }
+
+    protected fun isConcreteConcept(concept: SAbstractConcept, repository: SRepository): Boolean {
+        if (concept !is SConcept) return false
+        if (concept.isValid) return !concept.isAbstract
+        val decl = concept.sourceNode?.resolve(repository)
+            ?: resolveConceptNode(repository, PersistenceFacade.getInstance().asString(concept))
+            ?: return false
+        return decl.getProperty(StructureLanguageMeta.abstractConceptDeclarationAbstractProperty) != "true"
+    }
+
+    protected fun resolveShortConceptInScope(
+        repository: SRepository,
+        model: SModel,
+        simpleName: String,
+        extraLanguages: Collection<SLanguage> = emptyList(),
+        pathSuffix: String = "",
+        narrowPredicate: (SAbstractConcept) -> Boolean
+    ): ShortConceptResolution {
+        val scope = inScopeLanguages(model, extraLanguages)
+        val matches = conceptsNamedInLanguages(repository, scope, simpleName)
+            .sortedBy { structureQualifiedName(it) }
+        return when (matches.size) {
+            0 -> ShortConceptResolution.NotFoundInScope
+            1 -> {
+                val single = matches.single()
+                ShortConceptResolution.Resolved(
+                    single,
+                    "Short concept name '$simpleName'$pathSuffix resolved to '${structureQualifiedName(single)}'; prefer the fully qualified name."
+                )
+            }
+            else -> {
+                val narrowed = matches.filter(narrowPredicate)
+                when (narrowed.size) {
+                    1 -> {
+                        val single = narrowed.single()
+                        ShortConceptResolution.Resolved(
+                            single,
+                            "Short concept name '$simpleName'$pathSuffix resolved to '${structureQualifiedName(single)}'; prefer the fully qualified name."
+                        )
+                    }
+                    0 -> ShortConceptResolution.NoneAssignable(matches)
+                    else -> ShortConceptResolution.Ambiguous(narrowed)
+                }
+            }
+        }
+    }
+
+    /**
+     * Resolves an unqualified short concept name across the repository for model-less callers
+     * (such as `query_types`), rejecting colliding names with [McpInvalidRequestException] and
+     * `details.candidates`. Returns `null` when no concept has that name.
+     */
+    protected fun resolveShortConceptInRepository(
+        repository: SRepository,
+        simpleName: String,
+        path: String,
+        requireConcrete: Boolean
+    ): SAbstractConcept? {
+        val allMatches = conceptsNamedInLanguages(repository, allRepositoryLanguages(repository), simpleName)
+            .sortedBy { structureQualifiedName(it) }
+        return when (allMatches.size) {
+            0 -> null
+            1 -> allMatches.single()
+            else -> {
+                val matching = if (requireConcrete) {
+                    allMatches.filter { isConcreteConcept(it, repository) }
+                } else {
+                    allMatches.filterIsInstance<SConcept>()
+                }
+                when (matching.size) {
+                    1 -> matching.single()
+                    0 -> {
+                        val fqns = allMatches.map { structureQualifiedName(it) }
+                        val requirement = if (requireConcrete) "concrete" else "a non-interface concept"
+                        throw McpInvalidRequestException(
+                            "Short concept name '$simpleName' at $path matches ${fqns.size} concepts (${fqns.joinToString(", ")}), none of which is $requirement. Use a fully qualified concept name.",
+                            mapOf("candidates" to fqns)
+                        )
+                    }
+                    else -> {
+                        val fqns = matching.map { structureQualifiedName(it) }
+                        val kind = if (requireConcrete) "concrete concepts" else "concepts"
+                        throw McpInvalidRequestException(
+                            "Ambiguous short concept name '$simpleName' at $path: matches ${fqns.size} $kind (${fqns.joinToString(", ")}). Use a fully qualified concept name.",
+                            mapOf("candidates" to fqns)
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Resolves a concept reference (or concept name) and validates that the result is
+     * a rootable [SConcept]. Either [conceptName] or [conceptReference] (or both) must
+     * be non-blank; [conceptReference] is tried first. Unqualified short names in
+     * [conceptName] are resolved only within [model]'s in-scope languages (plus
+     * [extraLanguages]). [label] is appended to error and warning messages so batch
+     * callers can identify which entry failed (e.g. " [3]").
+     */
     protected fun resolveRootableConcept(
         mpsProject: MPSProject,
         conceptName: String?,
         conceptReference: String?,
-        label: String = ""
+        label: String = "",
+        model: SModel? = null,
+        extraLanguages: Collection<SLanguage> = emptyList()
     ): RootableConceptResolution {
-        if (conceptName.isNullOrEmpty() && conceptReference.isNullOrEmpty()) {
+        if (conceptName.isNullOrBlank() && conceptReference.isNullOrBlank()) {
             return RootableConceptResolution.Err(
                 errJson("Either 'concept' (qualifiedName) or 'conceptReference' must be provided$label", McpErrorCode.INVALID_REQUEST)
             )
         }
         val repository = mpsProject.repository
-        val sConcept = (if (!conceptReference.isNullOrEmpty()) resolveConceptPreferringProject(mpsProject, conceptReference) else null)
-            ?: (if (!conceptName.isNullOrEmpty()) resolveConceptPreferringProject(mpsProject, conceptName) else null)
-            ?: return RootableConceptResolution.Err(
-                rootableConceptNotFound(mpsProject, conceptName, conceptReference, label)
-            )
+        val rawByRef = if (!conceptReference.isNullOrBlank() && !isUnqualifiedConceptName(conceptReference)) {
+            resolveConceptPreferringProject(mpsProject, conceptReference)
+        } else {
+            null
+        }
+        val byRef = rawByRef as? SConcept
+        var shortNameWarning: String? = null
+        var resolvedFromShortName = false
+        val sConcept: SAbstractConcept = byRef ?: when {
+            conceptName.isNullOrBlank() ->
+                rawByRef ?: return RootableConceptResolution.Err(rootableConceptNotFound(mpsProject, conceptName, conceptReference, label))
+            model != null && isUnqualifiedConceptName(conceptName) -> {
+                val pathSuffix = if (label.isEmpty()) "" else " at$label"
+                when (val resolved = resolveShortConceptInScope(repository, model, conceptName, extraLanguages, pathSuffix) {
+                    isConcreteConcept(it, repository) && isRootable(it, repository)
+                }) {
+                    is ShortConceptResolution.Resolved -> {
+                        shortNameWarning = resolved.warning
+                        resolvedFromShortName = true
+                        resolved.concept
+                    }
+                    is ShortConceptResolution.NotFoundInScope -> {
+                        if (rawByRef != null) {
+                            rawByRef
+                        } else {
+                            val hint = conceptHint(repository, mpsProject, conceptName, conceptReference) {
+                                it is SConcept && isRootable(it, repository)
+                            }
+                            return RootableConceptResolution.Err(
+                                errJson(
+                                    "Concept '$conceptName' not found in languages used by model '${model.name.value}'$label " +
+                                        "(use a fully qualified concept name to auto-import a language)" + hint.messageSuffix,
+                                    McpErrorCode.NOT_FOUND,
+                                    hint.details
+                                )
+                            )
+                        }
+                    }
+                    is ShortConceptResolution.Ambiguous -> {
+                        val fqns = resolved.candidates.map { structureQualifiedName(it) }
+                        return RootableConceptResolution.Err(
+                            errJson(
+                                "Ambiguous short concept name '$conceptName'$label: matches ${fqns.size} in-scope rootable concepts (${fqns.joinToString(", ")}). Use a fully qualified concept name.",
+                                McpErrorCode.INVALID_REQUEST,
+                                mapOf("candidates" to fqns)
+                            )
+                        )
+                    }
+                    is ShortConceptResolution.NoneAssignable -> {
+                        val fqns = resolved.candidates.map { structureQualifiedName(it) }
+                        return RootableConceptResolution.Err(
+                            errJson(
+                                "Short concept name '$conceptName'$label matches ${fqns.size} in-scope concepts (${fqns.joinToString(", ")}), none of which is a concrete rootable concept. Use a fully qualified concept name.",
+                                McpErrorCode.INVALID_REQUEST,
+                                mapOf("candidates" to fqns)
+                            )
+                        )
+                    }
+                }
+            }
+            else -> resolveConceptPreferringProject(mpsProject, conceptName)
+                ?: rawByRef
+                ?: return RootableConceptResolution.Err(rootableConceptNotFound(mpsProject, conceptName, conceptReference, label))
+        }
         if (sConcept !is SConcept || !isRootable(sConcept, repository)) {
             return RootableConceptResolution.Err(
                 errJson("Concept '${sConcept.name}' is not a rootable concept$label", McpErrorCode.INVALID_REQUEST)
             )
         }
-        return RootableConceptResolution.Ok(sConcept)
+        val warnings = buildList {
+            if (!conceptReference.isNullOrBlank() && byRef == null) {
+                add(
+                    "conceptReference '$conceptReference'$label does not resolve to a loaded concrete concept and was ignored; " +
+                        "the node was created from concept '$conceptName'"
+                )
+            }
+            if (shortNameWarning != null) add(shortNameWarning)
+        }
+        return RootableConceptResolution.Ok(sConcept, warnings, resolvedFromShortName)
     }
 
     private fun rootableConceptNotFound(
@@ -1377,10 +1607,11 @@ abstract class AbstractOps : McpToolset {
         conceptReference: String?,
         label: String
     ): String {
-        val foreignConcept = (if (!conceptReference.isNullOrEmpty()) resolveConcept(mpsProject.repository, conceptReference) else null)
-            ?: (if (!conceptName.isNullOrEmpty()) resolveConcept(mpsProject.repository, conceptName) else null)
+        val foreignConcept = (if (!conceptReference.isNullOrBlank() && !isUnqualifiedConceptName(conceptReference)) resolveConcept(mpsProject.repository, conceptReference) else null)
+            ?: (if (!conceptName.isNullOrBlank() && !isUnqualifiedConceptName(conceptName)) resolveConcept(mpsProject.repository, conceptName) else null)
         return if (foreignConcept != null && isConceptFromAnotherOpenProject(mpsProject, foreignConcept)) {
-            crossProjectErr("Concept '${conceptReference ?: conceptName}'")
+            val displayConcept = conceptReference?.takeIf { it.isNotBlank() } ?: conceptName?.takeIf { it.isNotBlank() }
+            crossProjectErr("Concept '$displayConcept'")
         }
         else {
             val repository = mpsProject.repository

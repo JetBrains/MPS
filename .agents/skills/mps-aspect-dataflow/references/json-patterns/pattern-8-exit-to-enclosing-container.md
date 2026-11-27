@@ -21,7 +21,7 @@ Emitted sequence (outline):
         {"role": "initializer", "nodes": [{
           "concept": "DotExpression",
           "children": [
-            {"role": "operand", "nodes": [{"concept": "NodeParameter"}]},
+            {"role": "operand", "nodes": [{"concept": "jetbrains.mps.lang.dataFlow.structure.NodeParameter"}]},
             {"role": "operation", "nodes": [{"concept": "jetbrains.mps.lang.behavior.structure.Node_ConceptMethodCall",
               "references": [{"role": "baseMethodDeclaration", "target": "getLoopOrSwitch"}]}]}
           ]

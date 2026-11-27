@@ -4,8 +4,14 @@ package jetbrains.mps.agents.mcp.tools.integration
 import jetbrains.mps.agents.mcp.tools.*
 import jetbrains.mps.agents.mcp.tools.common.*
 
+import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import jetbrains.mps.project.modules.LanguageProducer
+import jetbrains.mps.smodel.SModelInternal
+import jetbrains.mps.smodel.language.LanguageRegistry
+import org.jetbrains.mps.openapi.language.SAbstractConcept
+import org.jetbrains.mps.openapi.persistence.PersistenceFacade
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -175,5 +181,209 @@ class MPSConsoleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         val obj = JsonParser.parseString(response).asJsonObject
         assertFalse("expected the console-unavailable envelope: $response", obj.get("ok").asBoolean)
         assertEquals("a binding rejection is not the console-unavailable branch: $response", "NOT_FOUND", obj.get("code").asString)
+    }
+
+    /**
+     * Headless `McpToolsIntegrationTestSuite` does not deploy the optional `jetbrains.mps.console`
+     * plugin, so we substitute `jetbrains.mps.baseLanguage.structure.Classifier` as the command
+     * superconcept (`ClassConcept` stands in for a console `Command`, `InstanceInitializer` wraps
+     * statements inside a `ClassConcept`).
+     */
+    private fun baseLanguageConcept(simpleName: String): SAbstractConcept = readOnRepo {
+        LanguageRegistry.getInstance(myProject.repository)
+            .getLanguage("jetbrains.mps.baseLanguage")!!
+            .concepts
+            .single { it.name == simpleName }
+    }
+
+    private fun wrapStatementsInClassInitializer(statements: List<JsonObject>): JsonObject {
+        val statementNodes = JsonArray().apply { statements.forEach { add(it) } }
+        val statementList = JsonObject().apply {
+            addProperty("concept", "jetbrains.mps.baseLanguage.structure.StatementList")
+            add("children", JsonArray().apply {
+                add(JsonObject().apply {
+                    addProperty("role", "statement")
+                    add("nodes", statementNodes)
+                })
+            })
+        }
+        val initializer = JsonObject().apply {
+            addProperty("concept", "jetbrains.mps.baseLanguage.structure.InstanceInitializer")
+            add("children", JsonArray().apply {
+                add(JsonObject().apply {
+                    addProperty("role", "statementList")
+                    add("nodes", JsonArray().apply { add(statementList) })
+                })
+            })
+        }
+        return JsonObject().apply {
+            addProperty("concept", "jetbrains.mps.baseLanguage.structure.ClassConcept")
+            add("children", JsonArray().apply {
+                add(JsonObject().apply {
+                    addProperty("role", "member")
+                    add("nodes", JsonArray().apply { add(initializer) })
+                })
+            })
+        }
+    }
+
+    @Test
+    fun `resolveBlueprintConcept classifies Commands, narrows unique Statement collisions, and leaves Command or multi-Statement collisions unresolved`() {
+        val consoleToolset = MPSConsoleMcpToolset()
+        val modelToolset = MPSModelMcpToolset()
+        val fakeCommandConcept = baseLanguageConcept("Classifier")
+        val solution = createSolution()
+        val scratchModel = createModel(solution, "${solution.moduleName}.consoleprobe")
+        val scratchModelRef = modelRefOf(scratchModel)
+        for (lang in listOf("jetbrains.mps.baseLanguage", readOnRepo { language.moduleName!! })) {
+            assertTrue(
+                JsonParser.parseString(
+                    runTool(modelToolset) { it.mps_mcp_model_used_language(scratchModelRef, lang, "language", "ADD") }
+                ).asJsonObject.get("ok").asBoolean
+            )
+        }
+
+        // 1. Single Command passthrough by short name and FQN.
+        readOnRepo {
+            val byShort = consoleToolset.resolveBlueprintConcept(
+                scratchModel,
+                JsonParser.parseString("""{"concept":"ClassConcept"}""").asJsonObject,
+                fakeCommandConcept,
+            )
+            assertEquals("jetbrains.mps.baseLanguage.structure.ClassConcept", byShort?.let { "${it.language.qualifiedName}.structure.${it.name}" })
+            val byFqn = consoleToolset.resolveBlueprintConcept(
+                scratchModel,
+                JsonParser.parseString("""{"concept":"jetbrains.mps.baseLanguage.structure.ClassConcept"}""").asJsonObject,
+                fakeCommandConcept,
+            )
+            assertEquals("jetbrains.mps.baseLanguage.structure.ClassConcept", byFqn?.let { "${it.language.qualifiedName}.structure.${it.name}" })
+        }
+
+        // 2. Colliding short name where neither candidate is a Command and exactly one is a baseLanguage Statement:
+        //    add a non-Statement, non-Command concept named ReturnStatement in the fixture language.
+        expectOk(runTool {
+            it.mps_mcp_alter_structure(
+                MPSStructureAlterOperation.CREATE_CONCEPTS,
+                """{ "structureModelRef": "$structureModelRef", "conceptsJson": [ { "name": "ReturnStatement" } ] }""",
+            )
+        })
+        readOnRepo {
+            val narrowed = consoleToolset.resolveBlueprintConcept(
+                scratchModel,
+                JsonParser.parseString("""{"concept":"ReturnStatement"}""").asJsonObject,
+                fakeCommandConcept,
+            )
+            assertEquals(
+                "must narrow colliding non-Command ReturnStatement to the unique baseLanguage Statement",
+                "jetbrains.mps.baseLanguage.structure.ReturnStatement",
+                narrowed?.let { "${it.language.qualifiedName}.structure.${it.name}" },
+            )
+        }
+
+        // 3. Colliding short name involving a Command (ClassConcept): resolveBlueprintConcept returns null so
+        //    instantiateConsoleCommand rejects the ambiguous short name with both candidates.
+        expectOk(runTool {
+            it.mps_mcp_alter_structure(
+                MPSStructureAlterOperation.CREATE_CONCEPTS,
+                """{ "structureModelRef": "$structureModelRef", "conceptsJson": [ { "name": "ClassConcept" } ] }""",
+            )
+        })
+        readOnRepo {
+            val collidingCmd = consoleToolset.resolveBlueprintConcept(
+                scratchModel,
+                JsonParser.parseString("""{"concept":"ClassConcept"}""").asJsonObject,
+                fakeCommandConcept,
+            )
+            assertEquals("Command collision must not be narrowed", null, collidingCmd)
+        }
+        var cmdCollisionErr: String? = null
+        executeCommand {
+            val res = consoleToolset.instantiateConsoleCommand(
+                listOf(JsonParser.parseString("""{"concept":"ClassConcept"}""").asJsonObject),
+                scratchModel,
+                myProject,
+                dryRun = false,
+                warnings = mutableListOf(),
+                commandConcept = fakeCommandConcept,
+                wrapStatements = ::wrapStatementsInClassInitializer,
+            )
+            assertTrue("expected Err on colliding ClassConcept", res is MPSConsoleMcpToolset.ConsoleCommandInstantiation.Err)
+            cmdCollisionErr = (res as MPSConsoleMcpToolset.ConsoleCommandInstantiation.Err).errJson
+        }
+        val cmdErrObj = JsonParser.parseString(cmdCollisionErr!!).asJsonObject
+        assertEquals("INVALID_REQUEST", cmdErrObj.get("code").asString)
+        val candidates = cmdErrObj.getAsJsonObject("details").getAsJsonArray("candidates").map { it.asString }
+        assertTrue(candidates.toString(), "jetbrains.mps.baseLanguage.structure.ClassConcept" in candidates)
+        assertTrue(candidates.toString(), candidates.any { it.endsWith(".structure.ClassConcept") && !it.startsWith("jetbrains.mps.baseLanguage.") })
+
+        // 4. Multi-Statement collision: build a second language declaring ReturnStatement extends baseLanguage.Statement -> returns null.
+        val secondLangName = "test.lang2_${System.nanoTime()}"
+        val secondLangDir = createDirInProject(secondLangName)
+        var secondStructRef = ""
+        executeCommand {
+            val secondLang = LanguageProducer(myProject).withGenerator(false).create(secondLangName, secondLangDir)
+            val secondStruct = secondLang.models.single { it.name.longName.endsWith(".structure") }
+            secondStructRef = PersistenceFacade.getInstance().asString(secondStruct.reference)
+        }
+        expectOk(runTool {
+            it.mps_mcp_alter_structure(
+                MPSStructureAlterOperation.CREATE_CONCEPTS,
+                """{ "structureModelRef": "$secondStructRef", "make": true, "conceptsJson": [ { "name": "ReturnStatement", "extends": "jetbrains.mps.baseLanguage.structure.Statement" } ] }""",
+            )
+        })
+        assertTrue(
+            JsonParser.parseString(
+                runTool(modelToolset) { it.mps_mcp_model_used_language(scratchModelRef, secondLangName, "language", "ADD") }
+            ).asJsonObject.get("ok").asBoolean
+        )
+        readOnRepo {
+            val multiStmt = consoleToolset.resolveBlueprintConcept(
+                scratchModel,
+                JsonParser.parseString("""{"concept":"ReturnStatement"}""").asJsonObject,
+                fakeCommandConcept,
+            )
+            assertEquals("multi-Statement collision must not pick arbitrarily", null, multiStmt)
+        }
+    }
+
+    @Test
+    fun `instantiateConsoleCommand undoes auto-imported languages when nested blueprint fails`() {
+        val consoleToolset = MPSConsoleMcpToolset()
+        val fakeCommandConcept = baseLanguageConcept("Classifier")
+        val solution = createSolution()
+        val scratchModel = createModel(solution, "${solution.moduleName}.consoleleak")
+        val beforeLangs = readOnRepo {
+            (scratchModel as SModelInternal).importedLanguageIds().map { it.qualifiedName }.toSet()
+        }
+        assertFalse("precondition: baseLanguage is not imported yet", "jetbrains.mps.baseLanguage" in beforeLangs)
+        assertFalse("precondition: closures is not imported yet", "jetbrains.mps.baseLanguage.closures" in beforeLangs)
+
+        // Outer ReturnStatement (wrapped in ClassConcept/InstanceInitializer) auto-imports baseLanguage,
+        // and nested ClosureLiteral auto-imports closures before failing on noSuchProp: both imports must roll back.
+        var errJson: String? = null
+        executeCommand {
+            val res = consoleToolset.instantiateConsoleCommand(
+                listOf(
+                    JsonParser.parseString(
+                        """{"concept":"jetbrains.mps.baseLanguage.structure.ReturnStatement","children":[{"role":"expression","nodes":[{"concept":"jetbrains.mps.baseLanguage.closures.structure.ClosureLiteral","properties":[{"name":"noSuchProp","value":"x"}]}]}]}"""
+                    ).asJsonObject
+                ),
+                scratchModel,
+                myProject,
+                dryRun = false,
+                warnings = mutableListOf(),
+                commandConcept = fakeCommandConcept,
+                wrapStatements = ::wrapStatementsInClassInitializer,
+            )
+            assertTrue("expected Err on invalid nested child", res is MPSConsoleMcpToolset.ConsoleCommandInstantiation.Err)
+            errJson = (res as MPSConsoleMcpToolset.ConsoleCommandInstantiation.Err).errJson
+        }
+        val errObj = JsonParser.parseString(errJson!!).asJsonObject
+        assertEquals("INVALID_REQUEST", errObj.get("code").asString)
+        assertTrue(errObj.toString(), errObj.get("error").asString.contains("Unknown property 'noSuchProp'"))
+        val afterLangs = readOnRepo {
+            (scratchModel as SModelInternal).importedLanguageIds().map { it.qualifiedName }.toSet()
+        }
+        assertEquals("failed console blueprint must undo all auto-imported languages", beforeLangs, afterLangs)
     }
 }
