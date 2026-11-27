@@ -2296,6 +2296,8 @@ class AbstractOpsPropertyProblemsTest {
                     linkedSetOf("module-for:valid.model", "valid.module"),
                     result.modulesToMake,
                 )
+                assertEquals(linkedSetOf("valid.model"), result.explicitModels)
+                assertEquals(linkedSetOf("valid.module"), result.explicitModules)
                 assertEquals(
                     listOf(
                         "Unresolved model reference: missing.model",
@@ -2307,6 +2309,39 @@ class AbstractOpsPropertyProblemsTest {
 
             else -> fail("Expected successful resolution for mixed valid/invalid input")
         }
+    }
+
+    @Test
+    fun makeTargetResolutionSeparatesExplicitModelsFromModuleAndWholeProjectTargets() {
+        val modelsOnly = nodeToolset.resolveMakeTargets(
+            requestedModels = listOf("m1"),
+            requestedModules = emptyList(),
+            wholeProject = false,
+            allProjectModels = { listOf("m1", "m2") },
+            allProjectModules = { listOf("modA", "modB") },
+            resolveModel = { it },
+            resolveModule = { it },
+            moduleOfModel = { "modA" },
+            modelsOfModule = { listOf("m1", "m2") },
+        ) as MPSNodeMcpToolset.MakeTargetResolution.Ok
+        assertEquals(linkedSetOf("m1"), modelsOnly.explicitModels)
+        assertEquals(emptySet<String>(), modelsOnly.explicitModules)
+        assertEquals(linkedSetOf("modA"), modelsOnly.modulesToMake)
+
+        val wholeProj = nodeToolset.resolveMakeTargets(
+            requestedModels = emptyList(),
+            requestedModules = emptyList(),
+            wholeProject = true,
+            allProjectModels = { listOf("m1", "m2") },
+            allProjectModules = { listOf("modA", "modB") },
+            resolveModel = { null },
+            resolveModule = { null },
+            moduleOfModel = { null },
+            modelsOfModule = { emptyList() },
+        ) as MPSNodeMcpToolset.MakeTargetResolution.Ok
+        assertEquals(emptySet<String>(), wholeProj.explicitModels)
+        assertEquals(linkedSetOf("modA", "modB"), wholeProj.explicitModules)
+        assertEquals(linkedSetOf("m1", "m2"), wholeProj.modelsToMake)
     }
 
     @Test

@@ -283,7 +283,7 @@ class MPSNodeMcpToolset : AbstractNodeOps() {
     @McpTool
     @McpDescription("""        
         Structural node mutations and code generation: move a child within its role, move a node to a new parent or make it a root, create a deep copy of a node, make/rebuild models/modules/whole project, fix broken references. Parameters are a JSON object (real JSON or its string form). For MOVE_CHILD, supply `childNodeRef` (or `nodeReference`) for the child to move and `position`; `nodeReference` (the parent, when `childNodeRef` is also passed) and `childRole` are inferred from the child when omitted and validated when supplied; whatever was inferred is reported in `details` (`movedNode`, `parentReference`, `childRole`, `inferredParameters`), a lone `nodeReference` read as the child adds a `warnings` entry, and a lone `nodeReference` plus a `childRole` that the node's own concept also declares is rejected as ambiguous. For MOVE_NODE_TO_PARENT, supply a non-null `newParentRef` plus `role` to reparent; omit `newParentRef` and supply `modelReference` to intentionally promote the node to a root (its concept must be rootable; `role`/`position` are then ignored with a warning). Explicit `newParentRef:null`, and `newParentRef` together with `modelReference`, are rejected. Every MOVE_NODE_TO_PARENT check runs before the model changes: a new parent that is the node or its descendant, a concept the role does not accept, and a single-valued role that already holds another node are rejected (unlike update_node ADD CHILD, a move never replaces an occupant; the rejection names it in `details.occupant` and gives the update_node SET CHILD call that deletes it in `details.recovery`, after which the same move succeeds; when the moved node lies inside the occupant, `details.movedNodeInsideOccupant` is true and there is no `details.recovery`, since deleting the occupant would delete the node); an unknown `role` lists the roles that fit in `details.candidateRoles`. The response's `details` reports `movedNode`, `previousParentReference` (or `previousModelReference`), and `parentReference` plus `role`, or `modelReference`. A move to another model keeps the references within and out of the moved subtree resolvable (`data.fixReferences`), adding the model imports, module dependencies and used languages the subtree needs (languages added are listed in `details.addedUsedLanguages`, and `details.addedUsedLanguageDetails` has one object per language: `qualifiedName`, `languageReference`, plus `containingProject` / `editableFromCurrentProject:false` when another open project owns it), but does not update incoming references from elsewhere: a `warnings` entry says any such references stop resolving; use MPS's Move refactoring for a full move. For MOVE_CHILD and MOVE_NODE_TO_PARENT, `position` is 0-based and `-1` moves to the end; a `position` at or beyond the role's child count is clamped to the end (not rejected) and a negative value other than -1 is rejected — the response's `data.index` reports the moved (clamped) node's actual resulting index.
-         MAKE parameters: {"modules":[<moduleRef>,...]} | {"models":[<modelRef>,...]} | {"wholeProject":true}, plus optional "rebuild":bool and "saveTransientModels":bool; node references are not accepted — resolve the node's module or model first. MAKE targets must belong to the project selected by projectPath, so a language of another open project is built with that project's `projectPath`. `saveTransientModels` keeps (true) or drops (false) this make's transient models and generation trace, overriding the IDE setting for this make only (omitted = the IDE setting); keep them to read each step's output and trace nodes with `mps_mcp_generation`, which is cheap on a small sample model. Every make starts by discarding all earlier transient models except the shared `checkpoints` module: a make that ran reports `transientModels` {`saved`, `droppedPrevious` (earlier transient models existed and are now gone), `modules` [{`module`, `reference`, `models`}], `traceAvailableFor` (input models with a generation trace)}; "Nothing to make" reports no block. A successful make that built a language and reloaded its runtime adds `migrationsPending` (pending migrations of the project; apply them with `mps_mcp_run_migrations`). Returns `{"ok":true,"data":{...}}` on success or `{"ok":false,"error":"..."}` on failure. See `mps-node-editing` and `mps-mcp-workflow` skills.
+         MAKE parameters: {"modules":[<moduleRef>,...]} | {"models":[<modelRef>,...]} | {"wholeProject":true}, plus optional "rebuild":bool and "saveTransientModels":bool; node references are not accepted — resolve the node's module or model first. Module and wholeProject MAKE with rebuild=false (the default) is incremental: it generates only models where generationRequired is true, compiles any dirty source_gen/ into classes_gen/ (so retrying MAKE after a post-TextGen timeout compiles and reloads without regenerating), and returns "Nothing to make" when models and classes are already up to date. MAKE targets must belong to the project selected by projectPath, so a language of another open project is built with that project's `projectPath`. `saveTransientModels` keeps (true) or drops (false) this make's transient models and generation trace, overriding the IDE setting for this make only (omitted = the IDE setting); keep them to read each step's output and trace nodes with `mps_mcp_generation`, which is cheap on a small sample model. Every make starts by discarding all earlier transient models except the shared `checkpoints` module: a make that ran reports `transientModels` {`saved`, `droppedPrevious` (earlier transient models existed and are now gone), `modules` [{`module`, `reference`, `models`}], `traceAvailableFor` (input models with a generation trace)}; "Nothing to make" reports no block unless `saveTransientModels=false` discarded earlier transient models. A successful make that built a language and reloaded its runtime adds `migrationsPending` (pending migrations of the project; apply them with `mps_mcp_run_migrations`). Returns `{"ok":true,"data":{...}}` on success or `{"ok":false,"error":"..."}` on failure. See `mps-node-editing` and `mps-mcp-workflow` skills.
          For COPY_NODE, a root node is copied and added as a new root in the same model; a node inside a multi-child collection role (`[0..*]` or `[1..*]`) is copied and inserted as the next sibling; a node in a single-child role (`[0..1]` or `[1]`) returns an error because copying a singleton child makes no structural sense.
          Prefer COPY_NODE over hand-authoring a JSON blueprint when a new node should closely resemble one that already exists — it's fewer calls and guarantees a structurally valid clone; adjust the copy afterward with mps_mcp_update_node.
     """)
@@ -560,6 +560,8 @@ class MPSNodeMcpToolset : AbstractNodeOps() {
             val modulesToMake: Set<U>,
             val unresolvedModels: List<String>,
             val unresolvedModules: List<String>,
+            val explicitModels: Set<M> = emptySet(),
+            val explicitModules: Set<U> = emptySet(),
         ) : MakeTargetResolution<M, U>() {
             fun warnings(): List<String> = buildList {
                 unresolvedModels.forEach { add("Unresolved model reference: $it") }
@@ -595,11 +597,15 @@ class MPSNodeMcpToolset : AbstractNodeOps() {
 
         val modelsToMake = linkedSetOf<M>()
         val modulesToMake = linkedSetOf<U>()
+        val explicitModels = linkedSetOf<M>()
+        val explicitModules = linkedSetOf<U>()
         val unresolvedModels = mutableListOf<String>()
         val unresolvedModules = mutableListOf<String>()
 
         if (wholeProject) {
-            modulesToMake.addAll(allProjectModules())
+            val projectModules = allProjectModules().toList()
+            modulesToMake.addAll(projectModules)
+            explicitModules.addAll(projectModules)
             modelsToMake.addAll(allProjectModels())
         } else {
             requestedModels.forEach { requestedModel ->
@@ -613,6 +619,7 @@ class MPSNodeMcpToolset : AbstractNodeOps() {
                     unresolvedModels.add(requestedModel)
                 } else {
                     modelsToMake.add(model)
+                    explicitModels.add(model)
                     moduleOfModel(model)?.let { modulesToMake.add(it) }
                 }
             }
@@ -627,6 +634,7 @@ class MPSNodeMcpToolset : AbstractNodeOps() {
                     unresolvedModules.add(requestedModule)
                 } else {
                     modulesToMake.add(module)
+                    explicitModules.add(module)
                     modelsToMake.addAll(modelsOfModule(module))
                 }
             }
@@ -642,7 +650,14 @@ class MPSNodeMcpToolset : AbstractNodeOps() {
             )
         }
 
-        return MakeTargetResolution.Ok(modelsToMake, modulesToMake, unresolvedModels, unresolvedModules)
+        return MakeTargetResolution.Ok(
+            modelsToMake = modelsToMake,
+            modulesToMake = modulesToMake,
+            unresolvedModels = unresolvedModels,
+            unresolvedModules = unresolvedModules,
+            explicitModels = explicitModels,
+            explicitModules = explicitModules,
+        )
     }
 
     /**
@@ -753,11 +768,13 @@ class MPSNodeMcpToolset : AbstractNodeOps() {
             is MakeTargetResolution.Ok -> targetResolution
         }
 
-        // Use shared performMake function from AbstractOps
+        // Pass explicit models separately from module/wholeProject targets so pure `models: [...]`
+        // requests do not sweep sibling or owned-generator models into MResource, and module/project
+        // requests with rebuild=false can filter module models by generationRequired (D155).
         val makeResult = performMake(
             mpsProject,
-            resolvedTargets.modelsToMake.toList(),
-            resolvedTargets.modulesToMake.toList(),
+            resolvedTargets.explicitModels.toList(),
+            resolvedTargets.explicitModules.toList(),
             rebuild,
             saveTransientModels,
         )
