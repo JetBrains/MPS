@@ -55,6 +55,7 @@ class MPSModelMcpToolset : AbstractNodeOps() {
         )?.let { return it }
         val op = resolveOperationOrNull<DependencyOperation>(operation)
             ?: return unknownOperation<DependencyOperation>(operation)
+        rejectUnknownTopLevelParameters("mps_mcp_model_dependency")?.let { return it }
         return mps_mcp_model_dependency(modelReference, targetModels.text, op)
     }
 
@@ -249,6 +250,7 @@ class MPSModelMcpToolset : AbstractNodeOps() {
         )?.let { return it }
         val op = resolveOperationOrNull<DependencyOperation>(operation)
             ?: return unknownOperation<DependencyOperation>(operation)
+        rejectUnknownTopLevelParameters("mps_mcp_model_used_language")?.let { return it }
         return mps_mcp_model_used_language(modelReference, usedLanguage, kind, op)
     }
 
@@ -464,7 +466,8 @@ class MPSModelMcpToolset : AbstractNodeOps() {
         "mps_mcp_create_model",
         RequiredParameter("moduleName", moduleName, "the owning module's name or its module reference"),
         RequiredParameter("modelName", modelName, "the new model's name, e.g. `myLang.textGen` or `myTests@tests`"),
-    ) ?: withMpsProject("Create MPS model") { mpsProject ->
+    ) ?: rejectUnknownTopLevelParameters("mps_mcp_create_model")
+        ?: withMpsProject("Create MPS model") { mpsProject ->
         executeShortCommandOnEdt(mpsProject) {
             val module = resolveModule(mpsProject, moduleName, projectOnly = true)
                 ?: return@executeShortCommandOnEdt errJson("Module '$moduleName' not found", McpErrorCode.NOT_FOUND)
@@ -524,6 +527,7 @@ class MPSModelMcpToolset : AbstractNodeOps() {
         )?.let { return it }
         val op = resolveOperationOrNull<ModelOperation>(operation)
             ?: return unknownOperation<ModelOperation>(operation)
+        rejectUnknownTopLevelParameters("mps_mcp_update_model")?.let { return it }
         return mps_mcp_update_model(modelReference, newModelName, op, doNotGenerate)
     }
 

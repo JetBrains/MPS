@@ -2370,47 +2370,164 @@ class MPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     @Test
-    fun `check_root_node_problems names only the near-miss keys that were sent`() {
-        // D63: the rejection used to name modelReference whatever the caller sent.
+    fun `check_root_node_problems rejects unknown near-miss keys alongside nodeReference and tolerates JsonNull`() {
+        // D63 + D158: an extra near-miss key sent alongside nodeReference is rejected up front
+        // with INVALID_REQUEST and details.unknownParameters instead of being silently ignored;
+        // a lone nodeReference or an explicit JsonNull reaches resolution normally without naming
+        // any unsent near-miss key.
         val ghost = "r:00000000-0000-0000-0000-000000000000(ghost)/0"
-        val withModel = expectErr(callThroughBridge(
-            MPSNodeMcpToolset(), "mps_mcp_check_root_node_problems",
-            mapOf("nodeReference" to McpJsonPrimitive(ghost), "modelReference" to McpJsonPrimitive(structureModelRef)),
-        ))
-        assertTrue(withModel, withModel.contains("This tool has no 'modelReference' parameter; retry with nodeReference set to '$structureModelRef'."))
+        val withModelEnvelope = JsonParser.parseString(
+            callThroughBridge(
+                MPSNodeMcpToolset(), "mps_mcp_check_root_node_problems",
+                mapOf("nodeReference" to McpJsonPrimitive(ghost), "modelReference" to McpJsonPrimitive(structureModelRef)),
+            )
+        ).asJsonObject
+        assertFalse("unknown modelReference must be rejected: $withModelEnvelope", withModelEnvelope.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", withModelEnvelope.get("code").asString)
+        assertEquals(
+            listOf("modelReference"),
+            withModelEnvelope.getAsJsonObject("details").getAsJsonArray("unknownParameters").map { it.asString },
+        )
+        val withModel = withModelEnvelope.get("error").asString
+        assertTrue(withModel, withModel.contains("'modelReference' (did you mean 'nodeReference'?)"))
         assertFalse(withModel, withModel.contains("'moduleReference'"))
 
-        val withModule = expectErr(callThroughBridge(
-            MPSNodeMcpToolset(), "mps_mcp_check_root_node_problems",
-            mapOf("nodeReference" to McpJsonPrimitive(ghost), "moduleReference" to McpJsonPrimitive("some.module")),
-        ))
-        assertTrue(withModule, withModule.contains("This tool has no 'moduleReference' parameter; retry with nodeReference set to 'some.module'."))
+        val withModuleEnvelope = JsonParser.parseString(
+            callThroughBridge(
+                MPSNodeMcpToolset(), "mps_mcp_check_root_node_problems",
+                mapOf("nodeReference" to McpJsonPrimitive(ghost), "moduleReference" to McpJsonPrimitive("some.module")),
+            )
+        ).asJsonObject
+        assertFalse("unknown moduleReference must be rejected: $withModuleEnvelope", withModuleEnvelope.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", withModuleEnvelope.get("code").asString)
+        assertEquals(
+            listOf("moduleReference"),
+            withModuleEnvelope.getAsJsonObject("details").getAsJsonArray("unknownParameters").map { it.asString },
+        )
+        val withModule = withModuleEnvelope.get("error").asString
+        assertTrue(withModule, withModule.contains("'moduleReference' (did you mean 'nodeReference'?)"))
         assertFalse(withModule, withModule.contains("'modelReference'"))
 
-        val alone = expectErr(callThroughBridge(
-            MPSNodeMcpToolset(), "mps_mcp_check_root_node_problems",
-            mapOf("nodeReference" to McpJsonPrimitive(ghost)),
-        ))
-        assertFalse(alone, alone.contains("This tool has no"))
+        val aloneEnvelope = JsonParser.parseString(
+            callThroughBridge(
+                MPSNodeMcpToolset(), "mps_mcp_check_root_node_problems",
+                mapOf("nodeReference" to McpJsonPrimitive(ghost)),
+            )
+        ).asJsonObject
+        assertFalse("ghost reference must fail: $aloneEnvelope", aloneEnvelope.get("ok").asBoolean)
+        assertEquals("NOT_FOUND", aloneEnvelope.get("code").asString)
+        val alone = aloneEnvelope.get("error").asString
+        assertFalse(alone, alone.contains("Unknown parameter"))
 
         val withNull = expectErr(callThroughBridge(
             MPSNodeMcpToolset(), "mps_mcp_check_root_node_problems",
             mapOf("nodeReference" to McpJsonPrimitive(ghost), "modelReference" to McpJsonNull),
         ))
-        assertFalse("a key sent as null has no value to retry with: $withNull", withNull.contains("This tool has no"))
+        assertFalse("a key sent as null must be tolerated: $withNull", withNull.contains("Unknown parameter"))
     }
 
     @Test
-    fun `check_root_node_problems warns on success when a near-miss key was also sent`() {
+    fun `check_root_node_problems rejects an extra near-miss key instead of silently checking only nodeReference`() {
+        // D158: even when nodeReference is valid, an extra non-null modelReference is rejected
+        // rather than silently dropped with ok:true.
         val response = callThroughBridge(
             MPSNodeMcpToolset(), "mps_mcp_check_root_node_problems",
             mapOf("nodeReference" to McpJsonPrimitive(structureModelRef), "modelReference" to McpJsonPrimitive("other.model")),
         )
-        assertOk(response)
-        val warnings = JsonParser.parseString(response).asJsonObject.getAsJsonArray("warnings")?.map { it.asString }.orEmpty()
-        assertTrue("the dropped value must be named: $response", warnings.any {
-            it == "This tool has no 'modelReference' parameter, so its value 'other.model' was ignored; nodeReference '$structureModelRef' was checked."
-        })
+        val envelope = JsonParser.parseString(response).asJsonObject
+        assertFalse("extra modelReference must be rejected: $response", envelope.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", envelope.get("code").asString)
+        assertEquals(
+            listOf("modelReference"),
+            envelope.getAsJsonObject("details").getAsJsonArray("unknownParameters").map { it.asString },
+        )
+        assertTrue(envelope.get("error").asString, envelope.get("error").asString.contains("'modelReference' (did you mean 'nodeReference'?)"))
+    }
+
+    @Test
+    fun `print_node rejects unknown optional keys with hints and tolerates projectPath and JsonNull`() {
+        // D158: depth/outputFile alongside a valid nodeReference must fail with INVALID_REQUEST
+        // and details.unknownParameters rather than silently printing defaults.
+        val enumRef = createColorEnum()
+        val rejected = JsonParser.parseString(
+            callThroughBridge(
+                MPSNodeMcpToolset(), "mps_mcp_print_node",
+                mapOf(
+                    "nodeReference" to McpJsonPrimitive(enumRef),
+                    "format" to McpJsonPrimitive("AGENTIC VIEW"),
+                    "depth" to McpJsonPrimitive(2),
+                    "outputFile" to McpJsonPrimitive("/tmp/out.txt"),
+                ),
+            )
+        ).asJsonObject
+        assertFalse("unknown optional keys must be rejected: $rejected", rejected.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", rejected.get("code").asString)
+        assertEquals(
+            listOf("depth", "outputFile"),
+            rejected.getAsJsonObject("details").getAsJsonArray("unknownParameters").map { it.asString },
+        )
+        val error = rejected.get("error").asString
+        assertTrue("depth should suggest nodeDepth: $error", error.contains("'depth' (did you mean 'nodeDepth'?)"))
+        assertTrue("outputFile must be named: $error", error.contains("'outputFile'"))
+
+        val tolerated = callThroughBridge(
+            MPSNodeMcpToolset(), "mps_mcp_print_node",
+            mapOf(
+                "nodeReference" to McpJsonPrimitive(enumRef),
+                "format" to McpJsonPrimitive("AGENTIC VIEW"),
+                "projectPath" to McpJsonPrimitive("/tmp/ignored-project-path"),
+                "depth" to McpJsonNull,
+            ),
+        )
+        assertOk(tolerated)
+    }
+
+    @Test
+    fun `update_node rejects unknown optional keys after required checks and tolerates projectPath and JsonNull`() {
+        // D158: index on a complete ADD CHILD is rejected with a did-you-mean suggestion for position,
+        // without mutating the model; projectPath and explicit JsonNull are still tolerated.
+        val enumRef = createColorEnum()
+        val membersBefore = readOnRepo { membersOf(enumRef).size }
+
+        val rejected = JsonParser.parseString(
+            callThroughBridge(
+                MPSNodeMcpToolset(), "mps_mcp_update_node",
+                mapOf(
+                    "operation" to McpJsonPrimitive("ADD"),
+                    "kind" to McpJsonPrimitive("CHILD"),
+                    "nodeReference" to McpJsonPrimitive(enumRef),
+                    "childRole" to McpJsonPrimitive("members"),
+                    "childJson" to McpJsonPrimitive(memberJson("SHOULD_NOT_LAND")),
+                    "index" to McpJsonPrimitive(0),
+                ),
+            )
+        ).asJsonObject
+        assertFalse("unknown index parameter must be rejected: $rejected", rejected.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", rejected.get("code").asString)
+        assertEquals(
+            listOf("index"),
+            rejected.getAsJsonObject("details").getAsJsonArray("unknownParameters").map { it.asString },
+        )
+        assertTrue(
+            "index should suggest position: ${rejected.get("error").asString}",
+            rejected.get("error").asString.contains("'index' (did you mean 'position'?)"),
+        )
+        assertEquals("rejected call must not mutate the model", membersBefore, readOnRepo { membersOf(enumRef).size })
+
+        val tolerated = callThroughBridge(
+            MPSNodeMcpToolset(), "mps_mcp_update_node",
+            mapOf(
+                "operation" to McpJsonPrimitive("ADD"),
+                "kind" to McpJsonPrimitive("CHILD"),
+                "nodeReference" to McpJsonPrimitive(enumRef),
+                "childRole" to McpJsonPrimitive("members"),
+                "childJson" to McpJsonPrimitive(memberJson("TOLERATED")),
+                "projectPath" to McpJsonPrimitive("/tmp/ignored-project-path"),
+                "index" to McpJsonNull,
+            ),
+        )
+        assertOk(tolerated)
+        assertEquals(membersBefore + 1, readOnRepo { membersOf(enumRef).size })
     }
 
     @Test

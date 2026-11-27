@@ -132,6 +132,7 @@ class MPSDataflowMcpToolset : AbstractOps() {
             "mps_mcp_query_dataflow",
             requiredParametersBlob(parameters.text, op.name, queryDataflowParameterKeys(op)),
         )?.let { return it }
+        rejectUnknownTopLevelParameters("mps_mcp_query_dataflow")?.let { return it }
         return mps_mcp_query_dataflow(op, parameters.text, maxInlineBytes)
     }
 

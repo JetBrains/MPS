@@ -974,7 +974,8 @@ class MPSJavaMcpToolset : AbstractNodeOps() {
                 "featureKind — optional in `child` mode when `insert.parentRef` is a Classifier or ConceptBehavior — " +
                 "and optionally `recovery` and `postProcess`), which go inside it rather than at the top level",
         ),
-    ) ?: mps_mcp_parse_java_and_insert(parameters.text)
+    ) ?: rejectUnknownTopLevelParameters("mps_mcp_parse_java_and_insert")
+        ?: mps_mcp_parse_java_and_insert(parameters.text)
 
     /**
      * Internal string-typed entry point for [mps_mcp_parse_java_and_insert]; the [JsonOrText]

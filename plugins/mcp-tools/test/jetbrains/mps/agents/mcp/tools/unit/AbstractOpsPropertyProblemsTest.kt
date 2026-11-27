@@ -483,6 +483,29 @@ class AbstractOpsPropertyProblemsTest {
         assertTrue("expected near-miss hint for 'module': $error", error.contains("'module' (did you mean 'modules'?)"))
         assertTrue("expected RequiredParameterNearMisses hint for 'action': $error", error.contains("'action' (did you mean 'operation'?)"))
         assertTrue("expected case-insensitive RequiredParameterNearMisses hint for 'Action': $error", error.contains("'Action' (did you mean 'operation'?)"))
+
+        val zeroParamCallInfo = com.intellij.mcpserver.McpCallInfo(
+            0,
+            com.intellij.mcpserver.ClientInfo("diag", "0"),
+            dummyProject,
+            descriptor,
+            kotlinx.serialization.json.JsonObject(mapOf("extra" to kotlinx.serialization.json.JsonPrimitive("x"))),
+            kotlinx.serialization.json.JsonObject(emptyMap()),
+            com.intellij.mcpserver.impl.McpServerService.McpSessionOptions(
+                com.intellij.mcpserver.impl.McpServerService.AskCommandExecutionMode.DONT_ASK,
+                com.intellij.mcpserver.McpToolFilter.AllowAll,
+            ),
+            emptyMap(),
+        )
+        val zeroParamRejection = runBlocking(com.intellij.mcpserver.McpCallAdditionalDataElement(zeroParamCallInfo)) {
+            nodeOps.rejectUnknownTopLevelParametersForTest("mps_mcp_list_open_projects", emptySet())
+        }
+        assertTrue("zero-parameter tool must reject unknown keys", zeroParamRejection != null)
+        val zeroParamError = JsonParser.parseString(zeroParamRejection!!).asJsonObject.get("error").asString
+        assertTrue(
+            "zero-parameter tool must say it takes no parameters instead of empty Allowed: $zeroParamError",
+            zeroParamError.contains("This tool takes no parameters (other than 'projectPath').") && !zeroParamError.contains("Allowed:"),
+        )
     }
 
     @Test

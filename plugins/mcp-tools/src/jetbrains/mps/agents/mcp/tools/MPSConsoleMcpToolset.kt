@@ -60,6 +60,7 @@ class MPSConsoleMcpToolset : AbstractNodeOps() {
             "mps_mcp_insert_console_command_from_json",
             RequiredParameter("json", json.text, "the JSON blueprint (a console Command, a baseLanguage Statement, or a JSON array of Statements), or an absolute path to a temporary file holding it"),
         )?.let { return it }
+        rejectUnknownTopLevelParameters("mps_mcp_insert_console_command_from_json")?.let { return it }
         return withMpsProject("Inserting MPS console command from JSON") { mpsProject ->
             val actualJson = readNodeJsonOrFile(json.text, dryRun)
                 ?: return@withMpsProject invalidJson("JSON input is null or empty")
@@ -156,6 +157,7 @@ class MPSConsoleMcpToolset : AbstractNodeOps() {
         @McpDescription("Optional: also include the printed responses (output) interleaved with commands, as `kind`:`response` entries, each with a one-line `preview` of the printed text when it is short enough to render, and `previewComplete` saying whether that preview is already the exact text. Default: false (commands only).") includeResponses: Boolean = false,
         @McpDescription("Optional: keep only the most recent N entries (after the response filter). Default: all.") limit: Int? = null
     ): String {
+        rejectUnknownTopLevelParameters("mps_mcp_get_console_history")?.let { return it }
         return withMpsProject("Getting MPS console history") { mpsProject ->
             executeShortReadOnEdt(mpsProject) {
                 val console = when (val r = resolveConsoleEditableTab(mpsProject.project)) {
@@ -204,6 +206,7 @@ class MPSConsoleMcpToolset : AbstractNodeOps() {
             "mps_mcp_recall_console_command",
             RequiredParameter("historyNodeReference", historyNodeReference, "the persistent reference of a CommandHolder entry from mps_mcp_get_console_history"),
         )?.let { return it }
+        rejectUnknownTopLevelParameters("mps_mcp_recall_console_command")?.let { return it }
         return withMpsProject("Recalling MPS console command from history") { mpsProject ->
             executeShortCommandOnEdt(mpsProject) {
                 val console = when (val r = resolveConsoleEditableTab(mpsProject.project)) {
@@ -280,6 +283,7 @@ class MPSConsoleMcpToolset : AbstractNodeOps() {
     suspend fun mps_mcp_run_console_command(
         @McpDescription("Optional: if true, only check that a command is present in the console input without running it. Default: false.") dryRun: Boolean = false
     ): String {
+        rejectUnknownTopLevelParameters("mps_mcp_run_console_command")?.let { return it }
         currentCoroutineContext().reportToolActivity("Running the current MPS console command")
         val project = currentCoroutineContext().project
         return McpCallOutcomes.record(try {
@@ -363,6 +367,7 @@ class MPSConsoleMcpToolset : AbstractNodeOps() {
         @McpDescription("Optional: if true, also remove the current input command, so the console keeps no imports beyond the built-in ones. Default: false (the input stays, as with the Clear button).") clearInput: Boolean = false,
         @McpDescription("Optional: if true, only report what would be removed, without changing the console. Default: false.") dryRun: Boolean = false
     ): String {
+        rejectUnknownTopLevelParameters("mps_mcp_clear_console")?.let { return it }
         currentCoroutineContext().reportToolActivity("Clearing the MPS console")
         val project = currentCoroutineContext().project
         return McpCallOutcomes.record(try {

@@ -41,7 +41,8 @@ class MPSRootNodeMcpToolset : AbstractNodeOps() {
     ): String = rejectMissingParameters(
         "mps_mcp_open_node",
         RequiredParameter("nodeReference", nodeReference, "the persistent node reference to open"),
-    ) ?: withMpsProject("Opening MPS node in editor") { mpsProject ->
+    ) ?: rejectUnknownTopLevelParameters("mps_mcp_open_node")
+        ?: withMpsProject("Opening MPS node in editor") { mpsProject ->
         // resolveNodeReferencePreferringProject resolves the reference against the model
         // (SNodeReference.resolve), so it must run inside a read action — otherwise MPS throws
         // IllegalModelAccessError ("You can read model only inside read actions"). It handles
@@ -66,6 +67,7 @@ class MPSRootNodeMcpToolset : AbstractNodeOps() {
     suspend fun mps_mcp_get_current_editor_root_node(
         @McpDescription("Which editor to read: 'editor' (default) for the active MPS file editor's root node, 'console' for the current command in the MPS Console input editor, or 'inspector' for the node currently inspected in the Inspector tool window.") source: String = "editor"
     ): String {
+        rejectUnknownTopLevelParameters("mps_mcp_get_current_editor_root_node")?.let { return it }
         val normalizedSource = source.trim().lowercase()
         val activity = when (normalizedSource) {
             "console" -> "Getting current MPS console command"
@@ -249,6 +251,7 @@ class MPSRootNodeMcpToolset : AbstractNodeOps() {
             "mps_mcp_search_root_node_by_name",
             RequiredParameter("names", names.text, "a single root-node name or a JSON array of names"),
         )?.let { return it }
+        rejectUnknownTopLevelParameters("mps_mcp_search_root_node_by_name")?.let { return it }
         return withMpsProject("Searching for MPS root node by name") { mpsProject ->
             // Guard before the shared resolver: buildSearchScope does support 'roots', but this
             // tool exposes no 'roots' parameter, so letting it through would fail with the
@@ -328,6 +331,7 @@ class MPSRootNodeMcpToolset : AbstractNodeOps() {
             RequiredParameter("modelReference", modelReference, "the target model's persistent reference or name"),
             RequiredParameter("json", json.text, "the JSON blueprint (a single object or a top-level array), or an absolute path to a temporary file holding it"),
         )?.let { return it }
+        rejectUnknownTopLevelParameters("mps_mcp_insert_root_node_from_json")?.let { return it }
         return withMpsProject("Inserting MPS root node from JSON") { mpsProject ->
             val actualJson = readNodeJsonOrFile(json.text, dryRun)
                 ?: return@withMpsProject invalidJson("JSON input is null or empty")
@@ -466,6 +470,7 @@ class MPSRootNodeMcpToolset : AbstractNodeOps() {
             RequiredParameter("modelReference", modelReference, "the target model's persistent reference or name"),
             RequiredParameter("concept", concept.ifBlank { conceptReference.orEmpty() }, "a fully qualified concept name, or pass conceptReference"),
         )?.let { return it }
+        rejectUnknownTopLevelParameters("mps_mcp_create_root_node")?.let { return it }
         return withMpsProject("Creating MPS root node") { mpsProject ->
             executeShortCommandOnEdt(mpsProject) {
                 val model = when (val r = resolveEditableModel(mpsProject, modelReference)) {
@@ -576,6 +581,7 @@ class MPSRootNodeMcpToolset : AbstractNodeOps() {
         )?.let { return it }
         val op = resolveOperationOrNull<RootNodeOperation>(operation)
             ?: return unknownOperation<RootNodeOperation>(operation)
+        rejectUnknownTopLevelParameters("mps_mcp_update_root_node_from_json")?.let { return it }
         return mps_mcp_update_root_node_from_json(nodeReference, json.text, dryRun, op)
     }
 

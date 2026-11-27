@@ -245,6 +245,7 @@ class MPSNodeMcpToolset : AbstractNodeOps() {
             "mps_mcp_query_nodes",
             requiredParametersBlob(parameters.text, op.name, queryNodesParameterKeys(op)),
         )?.let { return it }
+        rejectUnknownTopLevelParameters("mps_mcp_query_nodes")?.let { return it }
         return mps_mcp_query_nodes(op, parameters.text, maxInlineBytes)
     }
 
@@ -299,9 +300,10 @@ class MPSNodeMcpToolset : AbstractNodeOps() {
         @McpDescription("Required. Parameters for the operation, as a JSON object — sent as real JSON or as its string form.") parameters: JsonOrText = JsonOrText.EMPTY
     ): String {
         // D43: only a blank *operation* is answered here. Once the operation is known, a blank
-        // `parameters` keeps D29's per-operation missingAlterNodesParameters (MAKE_INPUT_INVALID
-        // plus `expectedParameters` for MAKE) in the overload below; it cannot be chosen without
-        // an operation, so a blank blob beside a blank operation is reported here instead.
+        // `parameters` is handled right below via D29's per-operation missingAlterNodesParameters
+        // (MAKE_INPUT_INVALID plus `expectedParameters` for MAKE) before rejectUnknownTopLevelParameters
+        // so callers who put MAKE keys at the top level keep D29's guidance; it cannot be chosen
+        // without an operation, so a blank blob beside a blank operation is reported here instead.
         if (operation.isBlank()) {
             rejectMissingParameters(
                 "mps_mcp_alter_nodes",
@@ -311,6 +313,8 @@ class MPSNodeMcpToolset : AbstractNodeOps() {
         }
         val op = resolveOperationOrNull<MPSAlterOperation>(operation)
             ?: return McpCallOutcomes.record(unknownOperation<MPSAlterOperation>(operation))
+        if (parameters.text.isBlank()) return McpCallOutcomes.record(missingAlterNodesParameters(op))
+        rejectUnknownTopLevelParameters("mps_mcp_alter_nodes")?.let { return it }
         return mps_mcp_alter_nodes(op, parameters.text)
     }
 
@@ -319,12 +323,12 @@ class MPSNodeMcpToolset : AbstractNodeOps() {
      * registered `@McpTool` (see [resolveOperationOrNull] for the rationale).
      */
     suspend fun mps_mcp_alter_nodes(operation: MPSAlterOperation, parameters: String): String {
-        // Guarded here rather than in the wrapper so neither entry point can reach the Gson parse
-        // with no object to parse: blank text decodes to a null JsonObject (a bare `null` fails the parse).
-        // `rejectUnknownParameterKeys` already answers that for the four operations with a key
-        // list, but MAKE has none and dereferenced it into an opaque INTERNAL_ERROR. Recorded
-        // explicitly because this returns before `withMpsProject`, the only other call site that
-        // reports the envelope to the call log (see McpCallOutcomes).
+        // Also guarded here (in addition to the String wrapper above) so direct in-process callers
+        // cannot reach the Gson parse with no object to parse: blank text decodes to a null
+        // JsonObject (a bare `null` fails the parse). `rejectUnknownParameterKeys` already answers
+        // that for the four operations with a key list, but MAKE has none and dereferenced it into
+        // an opaque INTERNAL_ERROR. Recorded explicitly because this returns before `withMpsProject`,
+        // the only other call site that reports the envelope to the call log (see McpCallOutcomes).
         if (parameters.isBlank()) return McpCallOutcomes.record(missingAlterNodesParameters(operation))
         return withMpsProject("Altering MPS nodes: $operation") { mpsProject ->
             val params = try {
@@ -1113,17 +1117,17 @@ class MPSNodeMcpToolset : AbstractNodeOps() {
                     "all of them go under nodeReference, since this tool has no modelReference or moduleReference parameter",
             ),
         )?.let { return it }
+        rejectUnknownTopLevelParameters("mps_mcp_check_root_node_problems")?.let { return it }
         // Taken before the EDT dispatch: the modal timeout also covers the wait for the EDT and
         // the read lock, so a budget that started in the body could still overrun it.
         val deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(moduleCheckBudgetMs)
-        val nearMisses = sentNearMisses("mps_mcp_check_root_node_problems", "nodeReference")
         return withMpsProject("Checking MPS problems") { mpsProject ->
             // Auto-apply mutates the model, so it needs a write command; the default (report-only)
             // mode keeps the read wrapper to avoid needless write locks.
             if (autoApplyQuickFixes) {
-                executeShortCommandOnEdt(mpsProject) { checkRootNodeProblemsBody(mpsProject, nodeReference, onlyNodesWithProblems, applyFixes = true, maxInlineBytes = maxInlineBytes, perRoot = perRoot, nearMisses = nearMisses, deadline = deadline) }
+                executeShortCommandOnEdt(mpsProject) { checkRootNodeProblemsBody(mpsProject, nodeReference, onlyNodesWithProblems, applyFixes = true, maxInlineBytes = maxInlineBytes, perRoot = perRoot, deadline = deadline) }
             } else {
-                executeShortReadOnEdt(mpsProject) { checkRootNodeProblemsBody(mpsProject, nodeReference, onlyNodesWithProblems, applyFixes = false, maxInlineBytes = maxInlineBytes, perRoot = perRoot, nearMisses = nearMisses, deadline = deadline) }
+                executeShortReadOnEdt(mpsProject) { checkRootNodeProblemsBody(mpsProject, nodeReference, onlyNodesWithProblems, applyFixes = false, maxInlineBytes = maxInlineBytes, perRoot = perRoot, deadline = deadline) }
             }
         }
     }
@@ -1135,15 +1139,9 @@ class MPSNodeMcpToolset : AbstractNodeOps() {
         applyFixes: Boolean,
         maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES,
         perRoot: Boolean = false,
-        nearMisses: List<Pair<String, String>> = emptyList(),
         deadline: Long,
     ): String {
         val repo = mpsProject.repository
-        // A near-miss key the binder dropped: say so even on success, or the value sent under it
-        // (say a model next to a root in nodeReference) silently goes unchecked (D63).
-        val nearMissWarnings = nearMisses.map { (key, value) ->
-            "This tool has no '$key' parameter, so its value '$value' was ignored; nodeReference '$nodeReference' was checked."
-        }
 
         // Try resolving as node reference
         val sNodeRef = try {
@@ -1155,7 +1153,7 @@ class MPSNodeMcpToolset : AbstractNodeOps() {
         val node = sNodeRef?.resolve(repo)
 
         if (node != null) {
-            val nodeScopeWarnings = nearMissWarnings + listOfNotNull(
+            val nodeScopeWarnings = listOfNotNull(
                 if (perRoot) "perRoot applies only to model and module references; ignored for node reference '$nodeReference'" else null,
             )
             val nodeRef = node.reference
@@ -1268,7 +1266,6 @@ class MPSNodeMcpToolset : AbstractNodeOps() {
                     )
                 }
             }
-            warnings.addAll(nearMissWarnings)
             val check = checkModel(mpsProject, model)
             val details = mutableMapOf<String, Any?>("scope" to "model", "rootsChecked" to check.roots.size)
             val unchecked = check.uncheckedSubtrees.sum()
@@ -1301,16 +1298,13 @@ class MPSNodeMcpToolset : AbstractNodeOps() {
 
         val module = resolveModulePreferringProject(mpsProject, nodeReference)
         if (module != null) {
-            return checkModuleProblems(mpsProject, module, onlyNodesWithProblems, applyFixes, maxInlineBytes, perRoot, nearMissWarnings, deadline)
+            return checkModuleProblems(mpsProject, module, onlyNodesWithProblems, applyFixes, maxInlineBytes, perRoot, deadline)
         }
 
-        val retryLines = nearMisses.joinToString("") { (key, value) ->
-            " This tool has no '$key' parameter; retry with nodeReference set to '$value'."
-        }
         return errJson(
             "Reference '$nodeReference' resolved to neither a node, a model, nor a module. " +
                 "Pass a node reference (r:<uuid>(model)/<node-id>), a model reference (r:<uuid>(model)) or qualified model name, " +
-                "or a module reference (<uuid>(module)) or module name in nodeReference." + retryLines,
+                "or a module reference (<uuid>(module)) or module name in nodeReference.",
             McpErrorCode.NOT_FOUND,
         )
     }
@@ -1388,14 +1382,12 @@ class MPSNodeMcpToolset : AbstractNodeOps() {
         applyFixes: Boolean,
         maxInlineBytes: Int,
         perRoot: Boolean,
-        nearMissWarnings: List<String>,
         deadline: Long,
     ): String {
         val warnings = mutableListOf<String>()
         if (applyFixes) {
             warnings.add("autoApplyQuickFixes applies only to node references; ignored for a module reference")
         }
-        warnings.addAll(nearMissWarnings)
         val modules = expandModules(listOf(module)).toList()
         if (module is DevKit) {
             warnings.add("A DevKit owns no models; only the module itself was validated")
@@ -1624,6 +1616,7 @@ class MPSNodeMcpToolset : AbstractNodeOps() {
                     "read a model with mps_mcp_get_compact_project_structure instead)",
             ),
         )?.let { return it }
+        rejectUnknownTopLevelParameters("mps_mcp_print_node")?.let { return it }
         val normalizedFormat = format.uppercase().trim()
         val hints = parseNullableStringOrJsonArray(editorHints)
         val projection = when (normalizedFormat) {
@@ -1791,6 +1784,7 @@ class MPSNodeMcpToolset : AbstractNodeOps() {
                         ),
                         operation = "ADD CHILD",
                     )?.let { return it }
+                    rejectUnknownTopLevelParameters("mps_mcp_update_node")?.let { return it }
                     update_node_child(nodeReference, childRole, childJson, null, position, dryRun, responseDetail)
                 }
                 NodeUpdateOperation.SET -> {
@@ -1802,6 +1796,7 @@ class MPSNodeMcpToolset : AbstractNodeOps() {
                         ),
                         operation = "SET CHILD",
                     )?.let { return it }
+                    rejectUnknownTopLevelParameters("mps_mcp_update_node")?.let { return it }
                     update_node_child(null, null, childJson, childNodeRef, null, dryRun)
                 }
             }
@@ -1815,6 +1810,7 @@ class MPSNodeMcpToolset : AbstractNodeOps() {
                         listOf(RequiredParameter("properties", "", "the triplet array [[nodeRef, propertyName, value], ...]")),
                         "SET PROPERTY",
                     )
+                    rejectUnknownTopLevelParameters("mps_mcp_update_node")?.let { return it }
                     val results = mutableListOf<String>()
                     var allSucceeded = true
                     for (triplet in triplets) {
@@ -1853,6 +1849,7 @@ class MPSNodeMcpToolset : AbstractNodeOps() {
                         ),
                         "SET REFERENCE",
                     )
+                    rejectUnknownTopLevelParameters("mps_mcp_update_node")?.let { return it }
                     val results = mutableListOf<String>()
                     var allSucceeded = true
                     for (triplet in triplets) {

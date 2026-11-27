@@ -1,6 +1,6 @@
 # Customer Feedback Wave 2 — Phased Execution Roadmap
 
-**Status (2026-11-27):** Phases 1, 2, 3, and 4 re-evaluated against the live `plugins/mcp-tools` and MPS codebase; Phase 1 rewritten (§1.2, §2) and in progress (`D127` in `36f2311debcd`, `CF-015` note in `5926dd7cab6b` / `40960a87321d`; `D158` pending), Phase 2 dropped/deferred in full (§1.3), **Phase 3 narrowed, hardened, and completed** (§1.4, §3: `D70` in `8414491a7f2d`, `D114` completed 2026-11-27), and **Phase 4 completed** (§1.5, §4: Option 1 — incremental module/project `MAKE` + interrupted-compile recovery — completed 2026-11-27, with async/status polling `Option 2` and full deferral `Option 3` marked out of scope).
+**Status (2026-11-27):** Phases 1, 2, 3, and 4 re-evaluated against the live `plugins/mcp-tools` and MPS codebase; **Phase 1 completed** (§1.2, §2: `D127` in `36f2311debcd`, `CF-015` note in `5926dd7cab6b` / `40960a87321d`, `D158` completed 2026-11-27), Phase 2 dropped/deferred in full (§1.3), **Phase 3 narrowed, hardened, and completed** (§1.4, §3: `D70` in `8414491a7f2d`, `D114` completed 2026-11-27), and **Phase 4 completed** (§1.5, §4: Option 1 — incremental module/project `MAKE` + interrupted-compile recovery — completed 2026-11-27, with async/status polling `Option 2` and full deferral `Option 3` marked out of scope).
 - Wave 1 (`93bc835ddce8`) remediated all confirmed live `mcp-tools` bugs (`CF-001`–`CF-005`, `CF-012`, `CF-013` / `D138`, `D141`, `D149`–`D153`) and documented core-MPS/MCP workarounds across all three skill trees (`CF-018`, `CF-021`–`CF-034` / `D140`, `D159`–`D163`).
 - Wave 2 addresses the remaining server-side feature candidates and open server defects from [`customer-feedback-triage.md`](customer-feedback-triage.md) and [`../study/instructions/defects.md`](../study/instructions/defects.md) across **3 active risk-graduated phases** (Phases 1, 3, and 4; Phase 2 deferred after the 2026-11-26 audit) executed in independent sessions.
 - **Checkbox rule:** Tick a box (`[x]`) only when the item is implemented **and** verified as stated; record commit hashes in the Phase Matrix below as each phase lands.
@@ -44,7 +44,7 @@ Every session executing a phase or item from this roadmap must follow [`.agents/
 
 | Phase | Items | Summary | Primary Files | Required Test Gate | Effort | Status / Commit |
 |---|---|---|---|---|---|---|
-| **Phase 1** | `D158` (`CF-010`), `D127` (`CF-017`), *(opt.)* `CF-015` note | Universal `rejectUnknownTopLevelParameters` guard (post-missing-check) + accurate `"imports"` hint & `parameters-rules.md` FQN fix | `common/AbstractOps.kt`, `common/McpToolInputSchemas.kt`, all 17 `*McpToolset.kt`, `mps-baselanguage/.../parameters-rules.md` | `McpContractAndSkillsTestSuite` + full `McpToolsIntegrationTestSuite` (`common/` touched) | ~0.5–1 d | In progress (`D127`: `36f2311debcd`; `CF-015` note: `5926dd7cab6b`, `40960a87321d`; `D158` pending) |
+| **Phase 1** | `D158` (`CF-010`), `D127` (`CF-017`), *(opt.)* `CF-015` note | Universal `rejectUnknownTopLevelParameters` guard (post-missing-check) + accurate `"imports"` hint & `parameters-rules.md` FQN fix | `common/AbstractOps.kt`, `common/RequiredParameters.kt`, `common/McpToolInputSchemas.kt`, all 17 `*McpToolset.kt`, `mps-baselanguage/.../parameters-rules.md` | `McpContractAndSkillsTestSuite` + full `McpToolsIntegrationTestSuite` (`common/` touched) | ~0.5–1 d | Complete (`D127`: `36f2311debcd`; `CF-015` note: `5926dd7cab6b`, `40960a87321d`; `D158` done 2026-11-27) |
 | ~~**Phase 2**~~ | ~~`D156` (`CF-008`), `D157` (`CF-009`)~~ | *Dropped / deferred in 2026-11-26 Phase 2 relevance audit — see §1.3 (`RENAME_CONCEPT` dropped; `UPDATE_CONCEPT_IMPLEMENTS`, `UPDATE_ENUM_MEMBER`, and `D157` deferred to existing tool & Wave 1 skill coverage).* | — | — | 0 d | Deferred (§1.3) |
 | **Phase 3** | `D70` (`CF-014`, `BOOLEAN` only), `D114` (`CF-011`) | Boolean `"false"` display & unset `"isDefault": true` round-trip + scoped short concept disambiguation & `mps-aspect-dataflow` blueprint fixes | `common/AbstractOps.kt`, `common/AbstractNodeOps.kt`, `MPSRootNodeMcpToolset.kt`, `MPSConsoleMcpToolset.kt`, `MPSTypesMcpToolset.kt`, `mps-aspect-dataflow/.../pattern-*.md`, `mps-node-editing/...`, `mps-aspect-accessories/...`, `integration/SkillBlueprintShapesTest.kt` | `McpNodeToolsTestSuite`, `McpContractAndSkillsTestSuite` + full `McpToolsIntegrationTestSuite` (`common/` touched) | ~1.5–2 d | Complete (`D70`: `8414491a7f2d`; `D114` done 2026-11-27) |
 | **Phase 4** | `D155` (`CF-007`, Option 1) | Incremental module/project `MAKE` (`generationRequired`) + `ModuleMaker` dirty-source compile recovery & reload (`async: true` / `MAKE_STATUS` out of scope — §1.5) | `common/AbstractOps.kt`, `common/TransientModelsOps.kt`, `migration/HeadlessMigrations.kt`, `MPSNodeMcpToolset.kt`, `unit/AbstractOpsPropertyProblemsTest.kt`, `integration/AbstractOpsMakeTest.kt`, `mps-mcp-workflow/.../node-editing-rules.md` | `AbstractOpsMakeTest`, `McpNodeToolsTestSuite`, `McpContractAndSkillsTestSuite` + full `McpToolsIntegrationTestSuite` (`common/` touched) | ~0.5–1 d | Complete (`D155` Option 1 done 2026-11-27) |
@@ -165,9 +165,9 @@ Phase 4 (`D155` / `CF-007`) was audited against live MPS MCP behavior, `MPSNodeM
 - Optionally add `"index"` -> `"position"` (or verify `suggestParameterName` / `RequiredParameterNearMisses` hints) so `mps_mcp_update_node(..., index = 0)` and `mps_mcp_create_run_configuration(..., name = "...")` surface helpful `"did you mean '...'"` suggestions when helpful, without violating `McpToolParameterOptionalityTest`'s rule that no near-miss alias of parameter P may be a real parameter of the same tool.
 
 **Checklist:**
-- [ ] Implement universal post-required `rejectUnknownTopLevelParameters` across all `@McpTool` methods in all 17 `*McpToolset` classes (`common/AbstractOps.kt` + `MPS*McpToolset.kt`), preserving `D43`/`D56`/`D63` missing-parameter precedence.
-- [ ] Extend `unit/McpToolParameterOptionalityTest.kt` (`McpContractAndSkillsTestSuite`) to assert every `@McpTool` registered in `plugins/mcp-tools/META-INF/plugin.xml` has a matching parameter allow-list / guard coverage.
-- [ ] Add wire-level `callThroughBridge` tests verifying:
+- [x] Implement universal post-required `rejectUnknownTopLevelParameters` across all `@McpTool` methods in all 17 `*McpToolset` classes (`common/AbstractOps.kt` + `MPS*McpToolset.kt`), preserving `D43`/`D56`/`D63` missing-parameter precedence.
+- [x] Extend `unit/McpToolParameterOptionalityTest.kt` (`McpContractAndSkillsTestSuite`) to assert every `@McpTool` registered in `plugins/mcp-tools/META-INF/plugin.xml` has a matching parameter allow-list / guard coverage.
+- [x] Add wire-level `callThroughBridge` tests verifying:
   - Unknown optional/extra keys are rejected with `McpErrorCode.INVALID_REQUEST` and `details.unknownParameters` (covering `index` on `mps_mcp_update_node`, `depth`/`outputFile` on `mps_mcp_print_node`, and `name` on `mps_mcp_create_run_configuration`).
   - Missing required parameter + near-miss key (e.g. `blueprint` instead of `json`) still returns `details.missingParameters` and the `D43` retry sentence rather than `details.unknownParameters`.
   - `projectPath` (`TOLERATED_PARAMETER_KEYS`) and `JsonNull` values remain tolerated.
@@ -197,12 +197,12 @@ Phase 4 (`D155` / `CF-007`) was audited against live MPS MCP behavior, `MPSNodeM
 
 ### 2.4 Phase 1 Verification, Records & Commit Gate
 
-- [ ] Run IDEA `get_file_problems` on all modified Kotlin files.
-- [ ] Run focused tests: `MCP_TESTS=McpToolParameterOptionalityTest,McpToolInputSchemasTest`, then `MCP_TESTS=McpContractAndSkillsTestSuite`.
-- [ ] Run the full unfiltered `McpToolsIntegrationTestSuite` (mandatory because `common/AbstractOps.kt` and `common/McpToolInputSchemas.kt` are modified) and confirm 0 failures on JDK 25.
-- [ ] Run `python3 plugins/mcp-tools/scripts/validate_skill_catalog.py --self-test plugins/mcp-tools/resources/jetbrains/mps/agents/mcp/skills`.
-- [ ] Exercise unknown top-level parameter rejection and `parse_java_and_insert` `"imports"` rejection against a live MPS if running, and inspect `mps_mcp_read_ide_log(minLevel="WARN")` (or record explicitly if skipped because no MPS instance is open).
-- [ ] Archive `D158` and `D127` from `study/instructions/defects.md` into `study/instructions/defects-archive.md` and update `CF-010` / `CF-017` in `docs/customer-feedback-triage.md`.
+- [x] Run IDEA `get_file_problems` on all modified Kotlin files.
+- [x] Run focused tests: `MCP_TESTS=McpToolParameterOptionalityTest,McpToolInputSchemasTest`, then `MCP_TESTS=McpContractAndSkillsTestSuite`.
+- [x] Run the full unfiltered `McpToolsIntegrationTestSuite` (mandatory because `common/AbstractOps.kt` and `common/McpToolInputSchemas.kt` are modified) and confirm 0 failures on JDK 25.
+- [x] Run `python3 plugins/mcp-tools/scripts/validate_skill_catalog.py --self-test plugins/mcp-tools/resources/jetbrains/mps/agents/mcp/skills`.
+- [x] Exercise unknown top-level parameter rejection and `parse_java_and_insert` `"imports"` rejection against a live MPS if running, and inspect `mps_mcp_read_ide_log(minLevel="WARN")` (or record explicitly if skipped because no MPS instance is open).
+- [x] Archive `D158` and `D127` from `study/instructions/defects.md` into `study/instructions/defects-archive.md` and update `CF-010` / `CF-017` in `docs/customer-feedback-triage.md`.
 - [ ] Commit Phase 1 per `.agents/git.md` and record the commit hash in §1.1.
 
 ---

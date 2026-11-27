@@ -273,6 +273,7 @@ class MPSTypesMcpToolset : AbstractNodeOps() {
             "mps_mcp_query_types",
             requiredParametersBlob(parameters.text, op.name, queryTypesParameterKeys(op)),
         )?.let { return it }
+        rejectUnknownTopLevelParameters("mps_mcp_query_types")?.let { return it }
         return mps_mcp_query_types(op, parameters.text, maxInlineBytes)
     }
 

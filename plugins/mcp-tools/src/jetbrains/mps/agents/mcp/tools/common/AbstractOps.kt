@@ -9,6 +9,7 @@ import jetbrains.mps.agents.mcp.tools.migration.MigrationAssistantGuard
 import com.google.gson.*
 import com.intellij.mcpserver.McpCallAdditionalDataElement
 import com.intellij.mcpserver.McpToolset
+import com.intellij.mcpserver.annotations.McpTool
 import com.intellij.mcpserver.project
 import com.intellij.mcpserver.reportToolActivity
 import com.intellij.openapi.application.ApplicationManager
@@ -102,6 +103,9 @@ import jetbrains.mps.smodel.resources.ModelsToResources
 import jetbrains.mps.typesystemEngine.checker.NonTypesystemChecker
 import jetbrains.mps.typesystemEngine.checker.TypesystemChecker
 import kotlinx.coroutines.*
+import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.memberFunctions
+import kotlin.reflect.full.valueParameters
 import org.jetbrains.mps.openapi.language.*
 import org.jetbrains.mps.openapi.model.*
 import org.jetbrains.mps.openapi.module.SModule
@@ -262,6 +266,19 @@ abstract class AbstractOps : McpToolset {
 
         // Shared by all MCP toolset instances: a file created by one toolset may be consumed by another.
         private val createdTempJsonFiles = ConcurrentHashMap.newKeySet<String>()
+
+        // Cached @McpTool parameter allow-lists derived from Kotlin reflection so parameter changes
+        // cannot drift from rejectUnknownTopLevelParameters (D158).
+        private val toolParameterNamesCache = ConcurrentHashMap<Class<out AbstractOps>, Map<String, Set<String>>>()
+
+        internal fun declaredToolParameterNames(toolsetClass: Class<out AbstractOps>): Map<String, Set<String>> =
+            toolParameterNamesCache.computeIfAbsent(toolsetClass) { cls ->
+                cls.kotlin.memberFunctions
+                    .filter { it.findAnnotation<McpTool>() != null }
+                    .associate { fn ->
+                        fn.name to fn.valueParameters.mapNotNull { it.name }.toSet()
+                    }
+            }
 
         // Structure-language meta descriptors used by smart-reference detection. Hoisted from per-call
         // MetaAdapterFactory lookups so the IDs are grep-able from a single location and the lookups
@@ -445,24 +462,21 @@ abstract class AbstractOps : McpToolset {
     )
 
     /**
-     * `key to value` for each near-miss spelling of [parameter] ([RequiredParameterNearMisses]) that
-     * the caller actually sent. The binder drops such a key, but the platform keeps it in the call's
-     * raw arguments, so a tool can name the key only when it was really sent (D63). A string value
-     * is returned as its content, any other value as its JSON text, and a JSON null is skipped; empty
-     * outside an MCP call.
+     * Rejects unrecognized top-level arguments recorded in the MCP call's `rawArguments` (study defects D138, D158),
+     * deriving the allowed parameter names from this toolset's `@McpTool` method signature so the allow-list cannot
+     * drift when parameters are added or renamed.
+     *
+     * Must be called **after** [rejectMissingParameters] and any upfront required-selector checks so that a caller
+     * who misspelled a required key still receives the D43/D56/D63 `missingParameters` retry guidance.
      */
-    protected suspend fun sentNearMisses(tool: String, parameter: String): List<Pair<String, String>> {
-        val raw = currentCoroutineContext()[McpCallAdditionalDataElement.Key]?.additionalData?.rawArguments
-            ?: return emptyList()
-        return RequiredParameterNearMisses.of(tool, parameter).mapNotNull { key ->
-            // A client echoing an unset optional key as null sent no value worth naming.
-            val value = raw[key]?.takeIf { it !is kotlinx.serialization.json.JsonNull } ?: return@mapNotNull null
-            key to ((value as? kotlinx.serialization.json.JsonPrimitive)?.takeIf { it.isString }?.content ?: value.toString())
-        }
+    protected suspend fun rejectUnknownTopLevelParameters(tool: String): String? {
+        val allowed = declaredToolParameterNames(this::class.java)[tool]
+            ?: error("No @McpTool method named '$tool' declared on ${this::class.java.simpleName}")
+        return rejectUnknownTopLevelParameters(tool, allowed)
     }
 
     /**
-     * Rejects unrecognized top-level arguments recorded in the MCP call's `rawArguments` (study defect D138).
+     * Rejects unrecognized top-level arguments recorded in the MCP call's `rawArguments` (study defects D138, D158).
      * The platform's parameter binder silently ignores keys that do not match a `@McpTool` method's Kotlin
      * parameters, which otherwise turns a mistyped filter or action key into an unfiltered default run.
      */
@@ -491,10 +505,15 @@ abstract class AbstractOps : McpToolset {
             val suggestion = nearMissTargets[key.lowercase()] ?: suggestParameterName(key, sortedAllowed)
             if (suggestion != null) "'$key' (did you mean '$suggestion'?)" else "'$key'"
         }
+        val allowedClause = if (sortedAllowed.isEmpty()) {
+            "This tool takes no parameters (other than 'projectPath')."
+        } else {
+            "Allowed: ${sortedAllowed.joinToString(", ") { "'$it'" }}."
+        }
         return McpCallOutcomes.record(
             errJson(
                 "Unknown ${if (unknown.size == 1) "parameter" else "parameters"} in '$tool': " +
-                    "$named. Allowed: ${sortedAllowed.joinToString(", ") { "'$it'" }}.",
+                    "$named. $allowedClause",
                 McpErrorCode.INVALID_REQUEST,
                 mapOf("unknownParameters" to unknown),
             )

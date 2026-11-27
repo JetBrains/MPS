@@ -210,6 +210,7 @@ class MPSLanguageStructureMcpToolset : AbstractNodeOps() {
             "mps_mcp_query_structure",
             requiredParametersBlob(parameters.text, op.name, queryStructureParameterKeys(op)),
         )?.let { return it }
+        rejectUnknownTopLevelParameters("mps_mcp_query_structure")?.let { return it }
         return mps_mcp_query_structure(op, parameters.text)
     }
 
@@ -399,6 +400,7 @@ class MPSLanguageStructureMcpToolset : AbstractNodeOps() {
             "mps_mcp_alter_structure",
             requiredParametersBlob(parameters.text, op.name, alterStructureParameterKeys(op)),
         )?.let { return it }
+        rejectUnknownTopLevelParameters("mps_mcp_alter_structure")?.let { return it }
         return mps_mcp_alter_structure(op, parameters.text)
     }
 
