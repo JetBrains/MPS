@@ -40,6 +40,7 @@ One hotspot file per written-up round. Gaps are named below; they are not implie
 | 50 | [`hotspot/round-50.md`](hotspot/round-50.md) |
 | 51 | [`hotspot/round-51.md`](hotspot/round-51.md) |
 | 52 | [`hotspot/round-52.md`](hotspot/round-52.md) |
+| 53 | [`hotspot/round-53.md`](hotspot/round-53.md) |
 
 No committed hotspot file for rounds: 7, 27, 28, 29, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 46, 47.
 

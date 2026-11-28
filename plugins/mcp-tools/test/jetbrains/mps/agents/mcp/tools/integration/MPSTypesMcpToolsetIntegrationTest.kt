@@ -84,6 +84,123 @@ class MPSTypesMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     @Test
+    fun `typeOperandNode rejects colliding bare concept names and resolves unique ones`() {
+        val colliding = JsonParser.parseString(
+            query(TypesQueryOperation.SUPERTYPES, """{"type":{"blueprint":{"concept":"NodeParameter"}}}""")
+        ).asJsonObject
+        assertFalse("colliding bare NodeParameter must fail: $colliding", colliding.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", colliding.get("code").asString)
+        val error = colliding.get("error").asString
+        assertTrue(error, error.contains("jetbrains.mps.lang.dataFlow.structure.NodeParameter"))
+        assertTrue(error, error.contains("jetbrains.mps.lang.textGen.structure.NodeParameter"))
+        val candidates = colliding.getAsJsonObject("details").getAsJsonArray("candidates").map { it.asString }
+        assertEquals(
+            listOf("jetbrains.mps.lang.dataFlow.structure.NodeParameter", "jetbrains.mps.lang.textGen.structure.NodeParameter"),
+            candidates,
+        )
+
+        val bareRefOnly = JsonParser.parseString(
+            query(TypesQueryOperation.SUPERTYPES, """{"type":{"blueprint":{"conceptReference":"NodeParameter"}}}""")
+        ).asJsonObject
+        assertFalse("bare conceptReference alone must fail: $bareRefOnly", bareRefOnly.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", bareRefOnly.get("code").asString)
+
+        val collidingWithRef = JsonParser.parseString(
+            query(TypesQueryOperation.SUPERTYPES, """{"type":{"blueprint":{"concept":"NodeParameter","conceptReference":"NodeParameter"}}}""")
+        ).asJsonObject
+        assertFalse("colliding bare NodeParameter with bare conceptReference must fail: $collidingWithRef", collidingWithRef.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", collidingWithRef.get("code").asString)
+        assertEquals(
+            listOf("jetbrains.mps.lang.dataFlow.structure.NodeParameter", "jetbrains.mps.lang.textGen.structure.NodeParameter"),
+            collidingWithRef.getAsJsonObject("details").getAsJsonArray("candidates").map { it.asString },
+        )
+
+        val unique = data(query(TypesQueryOperation.SUPERTYPES, """{"type":{"blueprint":{"concept":"IntegerType"}}}"""))
+        assertEquals("int", unique.getAsJsonObject("type").get("presentation").asString)
+
+        // Colliding bare names must also be rejected outside blueprint (typeConceptRef, operatorConceptRef, COERCE conceptRef).
+        val expectedNodeParamCandidates = listOf(
+            "jetbrains.mps.lang.dataFlow.structure.NodeParameter",
+            "jetbrains.mps.lang.textGen.structure.NodeParameter",
+        )
+        val collidingTypeConcept = JsonParser.parseString(
+            query(TypesQueryOperation.SUPERTYPES, """{"type":{"typeConceptRef":"NodeParameter"}}""")
+        ).asJsonObject
+        assertFalse("colliding typeConceptRef must fail: $collidingTypeConcept", collidingTypeConcept.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", collidingTypeConcept.get("code").asString)
+        assertEquals(
+            expectedNodeParamCandidates,
+            collidingTypeConcept.getAsJsonObject("details").getAsJsonArray("candidates").map { it.asString },
+        )
+
+        val collidingOperatorConcept = JsonParser.parseString(
+            query(TypesQueryOperation.OPERATION_TYPE, """{"operatorConceptRef":"NodeParameter","left":{"typeConceptRef":"$INTEGER_TYPE"},"right":{"typeConceptRef":"$INTEGER_TYPE"}}""")
+        ).asJsonObject
+        assertFalse("colliding operatorConceptRef must fail: $collidingOperatorConcept", collidingOperatorConcept.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", collidingOperatorConcept.get("code").asString)
+        assertEquals(
+            expectedNodeParamCandidates,
+            collidingOperatorConcept.getAsJsonObject("details").getAsJsonArray("candidates").map { it.asString },
+        )
+
+        val collidingCoerceConcept = JsonParser.parseString(
+            query(TypesQueryOperation.COERCE, """{"type":{"typeConceptRef":"$INTEGER_TYPE"},"conceptRef":"NodeParameter"}""")
+        ).asJsonObject
+        assertFalse("colliding COERCE conceptRef must fail: $collidingCoerceConcept", collidingCoerceConcept.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", collidingCoerceConcept.get("code").asString)
+        assertEquals(
+            expectedNodeParamCandidates,
+            collidingCoerceConcept.getAsJsonObject("details").getAsJsonArray("candidates").map { it.asString },
+        )
+
+        // Unqualified conceptReference beside blueprint must be rejected even when the name matches the blueprint concept.
+        for (bareOuterRef in listOf("IntegerType", "NodeParameter", "1206442747519")) {
+            val badOuter = JsonParser.parseString(
+                query(TypesQueryOperation.SUPERTYPES, """{"type":{"blueprint":{"concept":"IntegerType"},"conceptReference":"$bareOuterRef"}}""")
+            ).asJsonObject
+            assertFalse("unqualified outer conceptReference '$bareOuterRef' must fail: $badOuter", badOuter.get("ok").asBoolean)
+            assertEquals("INVALID_REQUEST", badOuter.get("code").asString)
+        }
+
+        // Quoted numeric concept IDs must not resolve in blueprint or typeConceptRef.
+        for (quotedNumeric in listOf(
+            """{"type":{"blueprint":{"concept":"1206442747519"}}}""",
+            """{"type":{"blueprint":{"conceptReference":"1206442747519"}}}""",
+            """{"type":{"typeConceptRef":"1206442747519"}}""",
+        )) {
+            val badNum = JsonParser.parseString(query(TypesQueryOperation.SUPERTYPES, quotedNumeric)).asJsonObject
+            assertFalse("quoted numeric ID $quotedNumeric must fail: $badNum", badNum.get("ok").asBoolean)
+        }
+
+        for (badParams in listOf(
+            """{"type":{"blueprint":{"concept":true}}}""",
+            """{"type":{"blueprint":{"concept":42}}}""",
+            """{"type":{"blueprint":{"concept":1206442747519}}}""",
+            """{"type":{"blueprint":{"conceptReference":true}}}""",
+            """{"type":{"blueprint":{"conceptReference":1206442747519}}}""",
+            """{"type":{"blueprint":{"concept":"IntegerType"},"conceptReference":42}}""",
+            """{"type":{"blueprint":{"concept":"IntegerType"},"conceptReference":true}}""",
+        )) {
+            val bad = JsonParser.parseString(query(TypesQueryOperation.SUPERTYPES, badParams)).asJsonObject
+            assertFalse("non-string primitive $badParams must fail: $bad", bad.get("ok").asBoolean)
+            assertEquals("INVALID_REQUEST", bad.get("code").asString)
+            assertTrue("expected 'must be a string' for $badParams: $bad", bad.get("error").asString.contains("must be a string"))
+        }
+
+        // Blank concept paired with an unresolvable or unloaded conceptReference must format the non-blank conceptReference, not '   '.
+        val blankWithBadRef = JsonParser.parseString(
+            query(TypesQueryOperation.SUPERTYPES, """{"type":{"blueprint":{"concept":"   ","conceptReference":"c:00000000-0000-0000-0000-000000000000/1"}}}""")
+        ).asJsonObject
+        assertEquals("INVALID_REQUEST", blankWithBadRef.get("code").asString)
+        assertTrue(blankWithBadRef.toString(), blankWithBadRef.get("error").asString.contains("Concept 'c:00000000-0000-0000-0000-000000000000/1'"))
+        val blankUnloaded = JsonParser.parseString(
+            query(TypesQueryOperation.SUPERTYPES, """{"type":{"blueprint":{"concept":"   ","conceptReference":"c:00000000-0000-0000-0000-000000000000/1","conceptLoaded":false}}}""")
+        ).asJsonObject
+        assertEquals("INVALID_REQUEST", blankUnloaded.get("code").asString)
+        assertTrue(blankUnloaded.toString(), blankUnloaded.get("error").asString.contains("concept 'c:00000000-0000-0000-0000-000000000000/1'"))
+    }
+
+    @Test
     fun `an unknown typeConceptRef names the closest concepts, by alias and marked abstract`() {
         // D116, study run r44 S11-sonnet-1: the caller names a type by the alias the editor shows.
         val byAlias = JsonParser.parseString(query(TypesQueryOperation.IS_SUBTYPE, """{"sub":{"typeConceptRef":"int"},"super":${conceptOperand(LONG_TYPE)}}""")).asJsonObject

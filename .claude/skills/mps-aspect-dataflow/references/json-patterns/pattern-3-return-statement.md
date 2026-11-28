@@ -28,7 +28,7 @@ Evaluates the optional return expression, then checks whether a return-jump targ
                           "nodes": [{
                             "concept": "DotExpression",
                             "children": [
-                              {"role": "operand", "nodes": [{"concept": "NodeParameter"}]},
+                              {"role": "operand", "nodes": [{"concept": "jetbrains.mps.lang.dataFlow.structure.NodeParameter"}]},
                               {"role": "operation", "nodes": [{"concept": "SLinkAccess", "references": [{"role": "link", "target": "expression"}]}]}
                             ]
                           }]
@@ -48,7 +48,7 @@ Evaluates the optional return expression, then checks whether a return-jump targ
                                 "nodes": [{
                                   "concept": "DotExpression",
                                   "children": [
-                                    {"role": "operand", "nodes": [{"concept": "NodeParameter"}]},
+                                    {"role": "operand", "nodes": [{"concept": "jetbrains.mps.lang.dataFlow.structure.NodeParameter"}]},
                                     {"role": "operation", "nodes": [{"concept": "jetbrains.mps.lang.behavior.structure.Node_ConceptMethodCall", "references": [{"role": "baseMethodDeclaration", "target": "getReturnJumpTarget"}]}]}
                                   ]
                                 }]
@@ -77,7 +77,7 @@ Evaluates the optional return expression, then checks whether a return-jump targ
                                             "nodes": [{
                                               "concept": "DotExpression",
                                               "children": [
-                                                {"role": "operand", "nodes": [{"concept": "NodeParameter"}]},
+                                                {"role": "operand", "nodes": [{"concept": "jetbrains.mps.lang.dataFlow.structure.NodeParameter"}]},
                                                 {"role": "operation", "nodes": [{"concept": "jetbrains.mps.lang.behavior.structure.Node_ConceptMethodCall", "references": [{"role": "baseMethodDeclaration", "target": "getReturnJumpTarget"}]}]}
                                               ]
                                             }]

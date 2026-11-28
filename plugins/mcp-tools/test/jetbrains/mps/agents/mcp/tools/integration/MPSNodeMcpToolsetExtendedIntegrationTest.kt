@@ -2005,9 +2005,10 @@ class MPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase() {
         assertTrue("the printed default must be flagged: $entry", entry.get("isDefault").asBoolean)
         for ((name, property) in properties) {
             if (!property.has("isDefault")) continue
+            val type = property.get("type").asString
             assertTrue(
-                "only an enum property can be flagged as holding its default, but '$name' is ${property.get("type")}",
-                property.get("type").asString.startsWith("enum:"),
+                "only an enum or boolean property can be flagged as holding its default, but '$name' is $type",
+                type.startsWith("enum:") || type == "boolean",
             )
         }
     }
@@ -2052,6 +2053,192 @@ class MPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase() {
         }
         val data = expectOk(response)
         assertTrue("the printout must validate as a blueprint: $response", data.get("dryRun").asBoolean)
+    }
+
+    @Test
+    fun `print_node_json emits stored and unset false booleans, omits deprecated unset booleans, and keeps integers unchanged`() {
+        val sol = createSolution("d70.bool.sol${System.nanoTime()}")
+        val model = createModel(sol, "d70.bool.model")
+        val modelRef = modelRefOf(model)
+
+        // Insert a ClassConcept with two static fields: BooleanConstant(false) and IntegerConstant(0).
+        val classBlueprint = """
+            {
+              "concept": "jetbrains.mps.baseLanguage.structure.ClassConcept",
+              "properties": [ { "name": "name", "value": "BoolIntProbe" } ],
+              "children": [
+                {
+                  "role": "member",
+                  "nodes": [
+                    {
+                      "concept": "jetbrains.mps.baseLanguage.structure.StaticFieldDeclaration",
+                      "properties": [ { "name": "name", "value": "B" } ],
+                      "children": [
+                        { "role": "type", "nodes": [ { "concept": "jetbrains.mps.baseLanguage.structure.BooleanType" } ] },
+                        { "role": "initializer", "nodes": [ { "concept": "jetbrains.mps.baseLanguage.structure.BooleanConstant", "properties": [ { "name": "value", "value": "false" } ] } ] }
+                      ]
+                    },
+                    {
+                      "concept": "jetbrains.mps.baseLanguage.structure.StaticFieldDeclaration",
+                      "properties": [ { "name": "name", "value": "I" } ],
+                      "children": [
+                        { "role": "type", "nodes": [ { "concept": "jetbrains.mps.baseLanguage.structure.IntegerType" } ] },
+                        { "role": "initializer", "nodes": [ { "concept": "jetbrains.mps.baseLanguage.structure.IntegerConstant", "properties": [ { "name": "value", "value": "0" } ] } ] }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+        """.trimIndent()
+        val classRef = expectOk(runTool(MPSRootNodeMcpToolset()) {
+            it.mps_mcp_insert_root_node_from_json(modelRef, JsonOrText(classBlueprint))
+        }).get("reference").asString
+
+        val (boolRef, intRef) = readOnRepo {
+            val root = resolveNode(classRef)
+            val descendants = jetbrains.mps.lang.smodel.generator.smodelAdapter.SNodeOperations.getNodeDescendants(root, null, false, emptyArray())
+            val boolNode = descendants.single { it.concept.name == "BooleanConstant" }
+            val intNode = descendants.single { it.concept.name == "IntegerConstant" }
+            PersistenceFacade.getInstance().asString(boolNode.reference) to PersistenceFacade.getInstance().asString(intNode.reference)
+        }
+
+        // 1. Stored BooleanConstant(false): printed as "value":"false" WITHOUT "isDefault".
+        val storedBoolPrinted = payloadObjectFromOkData(runTool(toolset) { it.mps_mcp_print_node(boolRef, deep = false) })
+        val storedBoolProp = storedBoolPrinted.getAsJsonArray("properties").map { it.asJsonObject }.single { it.get("name").asString == "value" }
+        assertEquals("false", storedBoolProp.get("value").asString)
+        assertFalse("stored false boolean must not be flagged isDefault: $storedBoolProp", storedBoolProp.has("isDefault"))
+
+        // 2. Unset BooleanConstant.value: printed as "value":"false" WITH "isDefault":true.
+        executeCommand {
+            val node = resolveNode(boolRef)
+            val valueProp = node.concept.properties.single { it.name == "value" }
+            node.setProperty(valueProp, null)
+        }
+        val unsetBoolPrinted = payloadObjectFromOkData(runTool(toolset) { it.mps_mcp_print_node(boolRef, deep = false) })
+        val unsetBoolProp = unsetBoolPrinted.getAsJsonArray("properties").map { it.asJsonObject }.single { it.get("name").asString == "value" }
+        assertEquals("false", unsetBoolProp.get("value").asString)
+        assertTrue("unset false boolean must be flagged isDefault: $unsetBoolProp", unsetBoolProp.get("isDefault")?.asBoolean == true)
+
+        // 3. Deprecated unset booleans on ClassConcept must be omitted while non-deprecated unset booleans are emitted.
+        val classPrinted = payloadObjectFromOkData(runTool(toolset) { it.mps_mcp_print_node(classRef, deep = false) })
+        val classProps = classPrinted.getAsJsonArray("properties").map { it.asJsonObject }
+        val abstractProp = classProps.singleOrNull { it.get("name").asString == "abstractClass" }
+        assertNotNull("non-deprecated unset boolean 'abstractClass' must be printed: $classPrinted", abstractProp)
+        assertEquals("false", abstractProp!!.get("value").asString)
+        assertTrue("unset 'abstractClass' must be flagged isDefault: $abstractProp", abstractProp.get("isDefault")?.asBoolean == true)
+        for (prop in classProps) {
+            val isDeprecated = prop.get("deprecated")?.asString?.startsWith("true") == true
+            val isDefault = prop.get("isDefault")?.asBoolean == true
+            assertFalse("deprecated unset property must not be emitted with isDefault: $prop", isDeprecated && isDefault)
+        }
+
+        // 4. Stored IntegerConstant(0): printed as "value":"0" WITHOUT "isDefault".
+        val intPrinted = payloadObjectFromOkData(runTool(toolset) { it.mps_mcp_print_node(intRef, deep = false) })
+        val intProp = intPrinted.getAsJsonArray("properties").map { it.asJsonObject }.single { it.get("name").asString == "value" }
+        assertEquals("0", intProp.get("value").asString)
+        assertFalse("stored integer 0 must not be flagged isDefault: $intProp", intProp.has("isDefault"))
+
+        // 5. Unset integer property (PureMigrationScript.fromVersion): must remain omitted.
+        val migBlueprint = """
+            {
+              "concept": "jetbrains.mps.lang.migration.structure.PureMigrationScript",
+              "properties": [ { "name": "name", "value": "UnversionedIntProbe" }, { "name": "fromVersion" } ]
+            }
+        """.trimIndent()
+        val migRef = expectOk(runTool(MPSRootNodeMcpToolset()) {
+            it.mps_mcp_insert_root_node_from_json(modelRef, JsonOrText(migBlueprint))
+        }).get("reference").asString
+        val migPrinted = payloadObjectFromOkData(runTool(toolset) { it.mps_mcp_print_node(migRef, deep = false) })
+        val migPropNames = migPrinted.getAsJsonArray("properties").map { it.asJsonObject.get("name").asString }
+        assertFalse("unset integer property fromVersion must remain omitted: $migPrinted", "fromVersion" in migPropNames)
+    }
+
+    @Test
+    fun `print_node_json boolean round-trip preserves false on factory-initialized boolean and honors edited isDefault true`() {
+        val sol = createSolution("d70.style.sol${System.nanoTime()}")
+        val model = createModel(sol, "d70.style.model")
+        val modelRef = modelRefOf(model)
+
+        // ConceptEditorDeclaration -> CellModel_Constant -> PunctuationLeftStyleClassItem (constructor/factory initializes flag=true).
+        val editorBlueprint = """
+            {
+              "concept": "jetbrains.mps.lang.editor.structure.ConceptEditorDeclaration",
+              "children": [
+                {
+                  "role": "cellModel",
+                  "nodes": [
+                    {
+                      "concept": "jetbrains.mps.lang.editor.structure.CellModel_Constant",
+                      "properties": [ { "name": "text", "value": "x" } ],
+                      "children": [
+                        {
+                          "role": "styleItem",
+                          "nodes": [
+                            { "concept": "jetbrains.mps.lang.editor.structure.PunctuationLeftStyleClassItem" }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+        """.trimIndent()
+        val editorRef = expectOk(runTool(MPSRootNodeMcpToolset()) {
+            it.mps_mcp_insert_root_node_from_json(modelRef, JsonOrText(editorBlueprint))
+        }).get("reference").asString
+
+        val (cellRef, itemRef) = readOnRepo {
+            val root = resolveNode(editorRef)
+            val cell = root.children.single { it.concept.name == "CellModel_Constant" }
+            val item = cell.children.single { it.concept.name == "PunctuationLeftStyleClassItem" }
+            val flagProp = item.concept.properties.single { it.name == "flag" }
+            assertEquals("precondition: factory/constructor initializes flag to true", true, org.jetbrains.mps.openapi.model.SNodeAccessUtil.getPropertyValue(item, flagProp))
+            PersistenceFacade.getInstance().asString(cell.reference) to PersistenceFacade.getInstance().asString(item.reference)
+        }
+
+        // Unset flag (false, as SPropertyOperations.assign(item, flag, false) does).
+        executeCommand {
+            val item = resolveNode(itemRef)
+            val flagProp = item.concept.properties.single { it.name == "flag" }
+            item.setProperty(flagProp, null)
+        }
+
+        val printedItem = payloadObjectFromOkData(runTool(toolset) { it.mps_mcp_print_node(itemRef, deep = true) })
+        val flagEntry = printedItem.getAsJsonArray("properties").map { it.asJsonObject }.single { it.get("name").asString == "flag" }
+        assertEquals("false", flagEntry.get("value").asString)
+        assertTrue("unset false flag must carry isDefault:true: $flagEntry", flagEntry.get("isDefault")?.asBoolean == true)
+
+        // Replay printed JSON into styleItem: must preserve false (clearing the constructor/factory's true).
+        val replayedRef = expectOk(runTool(toolset) {
+            it.mps_mcp_update_node(
+                NodeUpdateOperation.ADD, NodeUpdateKind.CHILD,
+                nodeReference = cellRef, childRole = "styleItem", childJson = printedItem.toString(),
+            )
+        }).get("reference").asString
+        readOnRepo {
+            val replayed = resolveNode(replayedRef)
+            val flagProp = replayed.concept.properties.single { it.name == "flag" }
+            assertFalse("replayed isDefault:true false must remain unset", org.jetbrains.mps.openapi.model.SNodeAccessUtil.hasProperty(replayed, flagProp))
+            assertEquals("replayed PunctuationLeftStyleClassItem.flag must stay false", false, org.jetbrains.mps.openapi.model.SNodeAccessUtil.getPropertyValue(replayed, flagProp))
+        }
+
+        // Edit "value" to "true" while leaving "isDefault": true intact: must write true.
+        val editedItem = printedItem.deepCopy()
+        editedItem.getAsJsonArray("properties").map { it.asJsonObject }.single { it.get("name").asString == "flag" }
+            .addProperty("value", "true")
+        val editedRef = expectOk(runTool(toolset) {
+            it.mps_mcp_update_node(
+                NodeUpdateOperation.ADD, NodeUpdateKind.CHILD,
+                nodeReference = cellRef, childRole = "styleItem", childJson = editedItem.toString(),
+            )
+        }).get("reference").asString
+        readOnRepo {
+            val edited = resolveNode(editedRef)
+            val flagProp = edited.concept.properties.single { it.name == "flag" }
+            assertEquals("edited isDefault:true value:'true' must write true", true, org.jetbrains.mps.openapi.model.SNodeAccessUtil.getPropertyValue(edited, flagProp))
+        }
     }
 
     // ── print_node_json: stored features the concept does not declare (D89) ─────────────

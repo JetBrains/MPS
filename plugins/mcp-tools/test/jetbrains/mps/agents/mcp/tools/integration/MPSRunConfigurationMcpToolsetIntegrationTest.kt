@@ -763,6 +763,79 @@ class MPSRunConfigurationMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     @Test
+    fun `unknown top-level name key is rejected after required checks while projectPath and JsonNull are tolerated`() {
+        // D158: passing 'name' instead of 'configurationName' alongside a valid target must fail
+        // with INVALID_REQUEST and details.unknownParameters; omitting the target still reports
+        // details.missingParameters first (D43).
+        val model = newModel("unknownkey")
+        val root = createTestRoot(model, "UnknownKeyTarget")
+        val before = currentConfigurationCount()
+
+        val rejected = JsonParser.parseString(
+            callThroughBridge(
+                MPSRunConfigurationMcpToolset(), "mps_mcp_create_run_configuration",
+                mapOf(
+                    "nodeReference" to kotlinx.serialization.json.JsonPrimitive(root),
+                    "name" to kotlinx.serialization.json.JsonPrimitive("CustomName"),
+                ),
+            )
+        ).asJsonObject
+        assertFalse("unknown 'name' key must be rejected: $rejected", rejected.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", rejected.get("code").asString)
+        assertEquals(
+            listOf("name"),
+            rejected.getAsJsonObject("details").getAsJsonArray("unknownParameters").map { it.asString },
+        )
+        assertTrue(
+            "error should suggest configurationName: ${rejected.get("error").asString}",
+            rejected.get("error").asString.contains("'name' (did you mean 'configurationName'?)"),
+        )
+        assertEquals("rejected call must not create a configuration", before, currentConfigurationCount())
+
+        val pluralModels = JsonParser.parseString(
+            callThroughBridge(
+                MPSRunConfigurationMcpToolset(), "mps_mcp_create_run_configuration",
+                mapOf(
+                    "nodeReference" to kotlinx.serialization.json.JsonPrimitive(root),
+                    "models" to kotlinx.serialization.json.JsonPrimitive(modelRefOf(model)),
+                ),
+            )
+        ).asJsonObject
+        assertFalse("unknown 'models' key must be rejected: $pluralModels", pluralModels.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", pluralModels.get("code").asString)
+        assertTrue(
+            "plural 'models' alongside nodeReference should suggest modelReference: ${pluralModels.get("error").asString}",
+            pluralModels.get("error").asString.contains("'models' (did you mean 'modelReference'?)"),
+        )
+
+        val missingTarget = JsonParser.parseString(
+            callThroughBridge(
+                MPSRunConfigurationMcpToolset(), "mps_mcp_create_run_configuration",
+                mapOf(
+                    "nodeRef" to kotlinx.serialization.json.JsonPrimitive(root),
+                    "name" to kotlinx.serialization.json.JsonPrimitive("CustomName"),
+                ),
+            )
+        ).asJsonObject
+        assertFalse("missing required target must fail: $missingTarget", missingTarget.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", missingTarget.get("code").asString)
+        assertEquals(
+            listOf("nodeReference"),
+            missingTarget.getAsJsonObject("details").getAsJsonArray("missingParameters").map { it.asString },
+        )
+
+        val tolerated = callThroughBridge(
+            MPSRunConfigurationMcpToolset(), "mps_mcp_create_run_configuration",
+            mapOf(
+                "nodeReference" to kotlinx.serialization.json.JsonPrimitive(root),
+                "projectPath" to kotlinx.serialization.json.JsonPrimitive("/tmp/ignored-project-path"),
+                "name" to kotlinx.serialization.json.JsonNull,
+            ),
+        )
+        assertOkData(tolerated)
+    }
+
+    @Test
     fun `a scalar written as a JSON string unwraps`() {
         val model = newModel("quoted")
         val root = createTestRoot(model, "Quoted")

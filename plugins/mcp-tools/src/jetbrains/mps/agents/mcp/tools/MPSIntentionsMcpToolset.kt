@@ -89,6 +89,7 @@ class MPSIntentionsMcpToolset : AbstractNodeOps() {
             "mps_mcp_list_node_intentions",
             RequiredParameter("nodeReference", nodeReference, "the persistent reference of the node to inspect"),
         )?.let { return it }
+        rejectUnknownTopLevelParameters("mps_mcp_list_node_intentions")?.let { return it }
         return withMpsProject("Listing MPS node intentions") { mpsProject ->
             executeShortReadOnEdt(mpsProject) {
                 val repo = mpsProject.repository
@@ -211,6 +212,7 @@ class MPSIntentionsMcpToolset : AbstractNodeOps() {
             RequiredParameter("nodeReference", nodeReference, "the entry's targetNode or the problem node's reference"),
             RequiredParameter("intentionId", intentionId, "the entry's id (intention persistentStateKey or quick-fix runtime-class FQN)"),
         )?.let { return it }
+        rejectUnknownTopLevelParameters("mps_mcp_apply_intention")?.let { return it }
         return withMpsProject("Applying MPS intention/quick fix") { mpsProject ->
             executeShortCommandOnEdt(mpsProject) {
                 val repo = mpsProject.repository

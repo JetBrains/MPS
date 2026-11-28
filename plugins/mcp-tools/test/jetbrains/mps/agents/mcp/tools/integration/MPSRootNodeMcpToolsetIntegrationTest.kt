@@ -8,6 +8,7 @@ import com.google.gson.JsonNull
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.google.gson.JsonPrimitive
+import jetbrains.mps.extapi.model.SModelBase
 import jetbrains.mps.project.MPSProject
 import jetbrains.mps.smodel.SModelInternal
 import jetbrains.mps.smodel.SNodeUtil
@@ -16,6 +17,7 @@ import jetbrains.mps.smodel.adapter.ids.MetaIdHelper
 import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory
 import jetbrains.mps.smodel.language.LanguageRegistry
 import org.jetbrains.mps.openapi.language.SConcept
+import org.jetbrains.mps.openapi.model.EditableSModel
 import org.jetbrains.mps.openapi.model.SNode
 import org.jetbrains.mps.openapi.module.SModule
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
@@ -96,7 +98,12 @@ class MPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
                 name = "FromConceptName",
             )
         }
+        val envelope = JsonParser.parseString(response).asJsonObject
         expectOk(response)
+        assertTrue(
+            "expected ignored-conceptReference warning on create_root_node: $response",
+            envelope.getAsJsonArray("warnings")?.any { it.asString.contains("was ignored") } == true,
+        )
         readOnRepo {
             val match = structureModel.rootNodes.singleOrNull { it.name == "FromConceptName" }
             assertEquals(conceptByName(conceptDeclarationFqn), match?.concept)
@@ -804,10 +811,99 @@ class MPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             val err = expectErr(response)
             assertTrue("dryRun=$dryRun must name the unloaded language: $err", err.contains("is not a loaded language"))
         }
+        val createResponse = runTool(toolset) {
+            it.mps_mcp_create_root_node(modelRefOf(target), concept = "", conceptReference = conceptRef, name = "MovedRoot")
+        }
+        val createObj = JsonParser.parseString(createResponse).asJsonObject
+        assertFalse("create_root_node must fail on kept foreign languageId: $createObj", createObj.get("ok").asBoolean)
+        assertEquals("create_root_node must report NOT_FOUND rather than LANGUAGE_NOT_BUILT: $createObj", "NOT_FOUND", createObj.get("code").asString)
+        assertTrue("create_root_node must name the unloaded language: $createObj", createObj.get("error").asString.contains("is not a loaded language"))
         readOnRepo {
             assertTrue("a refused insert must not add a root", target.rootNodes.none())
             val ids = (target as SModelInternal).importedLanguageIds().map { MetaIdHelper.getLanguage(it).idValue }
             assertFalse("the kept language id must not be imported: $ids", ids.contains(keptLanguage))
+        }
+    }
+
+    @Test
+    fun `create_root_node deletes attached root and undoes auto-imported language when compulsory reference scope throws`() {
+        val solution = createSolution()
+        val target = createModel(solution, "test.rollback${System.nanoTime()}")
+        var attachedDuringCallback = false
+
+        val thrown = runCatching {
+            executeCommand {
+                toolset.createRootNodeInModel(
+                    mpsProject = myProject,
+                    model = target as EditableSModel,
+                    concept = "jetbrains.mps.lang.dataFlow.structure.DataFlowBuilderDeclaration",
+                    conceptReference = null,
+                    name = "OrphanCandidate",
+                ) { created, _ ->
+                    attachedDuringCallback = created.model == target
+                    throw IllegalStateException("simulated compulsory-ref scope failure")
+                }
+            }
+        }.exceptionOrNull()
+
+        assertTrue("expected compulsory-ref scope callback to run after root attach", attachedDuringCallback)
+        assertTrue("expected IllegalStateException to propagate, got: $thrown", thrown is IllegalStateException)
+        readOnRepo {
+            assertTrue("failed create_root_node must delete the attached root: ${target.rootNodes.toList()}", target.rootNodes.none())
+            val imported = (target as SModelInternal).importedLanguageIds().map { it.qualifiedName }.toSet()
+            assertFalse("failed create_root_node must undo auto-imported dataFlow language: $imported", "jetbrains.mps.lang.dataFlow" in imported)
+        }
+    }
+
+    @Test
+    fun `short concept resolution finds unbuilt concept in unloaded editable structure model of a built language`() {
+        val builtName = "BuiltRoot${System.nanoTime()}"
+        val buildParams = """
+            { "structureModelRef": "$structureModelRef",
+              "make": true,
+              "conceptsJson": [ { "name": "$builtName", "rootable": true } ] }
+        """.trimIndent()
+        expectOk(runTool { it.mps_mcp_alter_structure(MPSStructureAlterOperation.CREATE_CONCEPTS, buildParams) })
+        readOnRepo {
+            val langRuntime = LanguageRegistry.getInstance(myProject.repository).getLanguage(MetaAdapterByDeclaration.getLanguage(language))
+            assertNotNull("precondition: built fixture language must have a registered runtime", langRuntime)
+        }
+
+        val unbuiltName = "UnbuiltAfterUnload${System.nanoTime()}"
+        createRootableConcept(unbuiltName)
+        val solution = createSolution()
+        val target = createModel(solution, "test.unloadedstruct${System.nanoTime()}")
+        val targetRef = modelRefOf(target)
+        val langName = readOnRepo { language.moduleName!! }
+        assertTrue(
+            JsonParser.parseString(
+                runTool(MPSModelMcpToolset()) { it.mps_mcp_model_used_language(targetRef, langName, "language", "ADD") }
+            ).asJsonObject.get("ok").asBoolean
+        )
+
+        // Save to disk, then invoke SModelBase.doUnload directly to put the saved .structure descriptor into the exact
+        // ModelLoadingState.NOT_LOADED state of a cold-opened project (public unload() fires modelReplaced, which triggers
+        // live-edit structure listeners to reload immediately).
+        executeCommand { (structureModel as EditableSModel).save() }
+        val doUnload = SModelBase::class.java.getDeclaredMethod("doUnload").apply { isAccessible = true }
+        myProject.modelAccess.runWriteAction { doUnload.invoke(structureModel) }
+        readOnRepo {
+            assertFalse("precondition: editable .structure model is NOT_LOADED", (structureModel as SModelBase).isLoaded)
+        }
+
+        // Short-name lookup must load the editable .structure model from disk, find UnbuiltAfterUnload, and hit ConceptGate
+        // (LANGUAGE_NOT_BUILT) rather than failing with NOT_FOUND ("not found in languages used by model").
+        val createUnbuilt = JsonParser.parseString(
+            runTool(toolset) { it.mps_mcp_create_root_node(targetRef, concept = unbuiltName, name = "Probe") }
+        ).asJsonObject
+        assertFalse("unbuilt concept must be gated: $createUnbuilt", createUnbuilt.get("ok").asBoolean)
+        assertEquals(
+            "expected LANGUAGE_NOT_BUILT (resolved from unloaded editable .structure), not NOT_FOUND: $createUnbuilt",
+            "LANGUAGE_NOT_BUILT",
+            createUnbuilt.get("code").asString,
+        )
+        readOnRepo {
+            assertTrue("editable .structure model should now be loaded from disk", (structureModel as SModelBase).isLoaded)
         }
     }
 
@@ -1935,6 +2031,245 @@ class MPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             "error must fail on properties[0] first as non-object: ${nonObjectFirstEnv.get("error")}",
             nonObjectFirstEnv.get("error").asString.contains("$.properties[0] must be a JSON object"),
         )
+    }
+
+    // ── D114: scoped short concept name disambiguation for root tools ─────────────────────
+
+    @Test
+    fun `root tools scope short concept names with dryRun parity and collision rejection and JsonNull guard`() {
+        // 1. Single in-scope match on structureModel -> succeeds with warning naming FQN.
+        val created = JsonParser.parseString(
+            runTool(toolset) { it.mps_mcp_create_root_node(structureModelRef, concept = "ConceptDeclaration", name = "ShortCreatedRoot") }
+        ).asJsonObject
+        assertTrue("in-scope bare ConceptDeclaration must succeed: $created", created.get("ok").asBoolean)
+        assertTrue(
+            "expected short-name warning naming ConceptDeclaration FQN: $created",
+            created.getAsJsonArray("warnings")?.any { it.asString.contains(conceptDeclarationFqn) } == true,
+        )
+
+        // 2. Out-of-scope bare root name on structureModel -> NOT_FOUND + suggestions, no language imported.
+        val usedBefore = readOnRepo { (structureModel as SModelInternal).importedLanguageIds().map { it.qualifiedName }.toSet() }
+        val outOfScopeCreate = JsonParser.parseString(
+            runTool(toolset) { it.mps_mcp_create_root_node(structureModelRef, concept = "DataFlowBuilderDeclaration", name = "ShouldFail") }
+        ).asJsonObject
+        assertFalse("out-of-scope DataFlowBuilderDeclaration must fail: $outOfScopeCreate", outOfScopeCreate.get("ok").asBoolean)
+        assertEquals("NOT_FOUND", outOfScopeCreate.get("code").asString)
+        assertTrue(
+            "expected lang.dataFlow.DataFlowBuilderDeclaration in suggestions: $outOfScopeCreate",
+            suggestedNames(outOfScopeCreate).contains("jetbrains.mps.lang.dataFlow.structure.DataFlowBuilderDeclaration"),
+        )
+        val outOfScopeInsert = rejectedBlueprint("""{ "concept": "DataFlowBuilderDeclaration" }""")
+        assertEquals("NOT_FOUND", outOfScopeInsert.get("code").asString)
+        assertTrue(
+            "expected lang.dataFlow.DataFlowBuilderDeclaration in suggestions: $outOfScopeInsert",
+            suggestedNames(outOfScopeInsert).contains("jetbrains.mps.lang.dataFlow.structure.DataFlowBuilderDeclaration"),
+        )
+        val outOfScopeCreateByRef = JsonParser.parseString(
+            runTool(toolset) { it.mps_mcp_create_root_node(structureModelRef, concept = "", conceptReference = "DataFlowBuilderDeclaration", name = "ShouldFailRef") }
+        ).asJsonObject
+        assertFalse("out-of-scope bare conceptReference in create_root_node must fail: $outOfScopeCreateByRef", outOfScopeCreateByRef.get("ok").asBoolean)
+        assertEquals("NOT_FOUND", outOfScopeCreateByRef.get("code").asString)
+        assertTrue(
+            "expected lang.dataFlow.DataFlowBuilderDeclaration in suggestions: $outOfScopeCreateByRef",
+            suggestedNames(outOfScopeCreateByRef).contains("jetbrains.mps.lang.dataFlow.structure.DataFlowBuilderDeclaration"),
+        )
+        val outOfScopeInsertByRef = JsonParser.parseString(
+            runTool(toolset) { it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText("""{ "conceptReference": "DataFlowBuilderDeclaration" }"""), dryRun = false) }
+        ).asJsonObject
+        assertFalse("out-of-scope bare conceptReference in insert_root_node_from_json must fail: $outOfScopeInsertByRef", outOfScopeInsertByRef.get("ok").asBoolean)
+        assertEquals("NOT_FOUND", outOfScopeInsertByRef.get("code").asString)
+        assertTrue(
+            "expected lang.dataFlow.DataFlowBuilderDeclaration in suggestions: $outOfScopeInsertByRef",
+            suggestedNames(outOfScopeInsertByRef).contains("jetbrains.mps.lang.dataFlow.structure.DataFlowBuilderDeclaration"),
+        )
+        assertEquals(
+            "failed bare root concept must not import unused language",
+            usedBefore,
+            readOnRepo { (structureModel as SModelInternal).importedLanguageIds().map { it.qualifiedName }.toSet() },
+        )
+
+        // 2b. Quoted numeric concept IDs must not bypass model scoping or auto-import unused languages.
+        val dfBuilderId = readOnRepo {
+            LanguageRegistry.getInstance(myProject.repository).getLanguage("jetbrains.mps.lang.dataFlow")!!
+                .concepts.single { it.name == "DataFlowBuilderDeclaration" }.sourceNode?.nodeId?.toString()
+        }
+        assertNotNull("DataFlowBuilderDeclaration must have a source node id", dfBuilderId)
+        val numericCreate = JsonParser.parseString(
+            runTool(toolset) { it.mps_mcp_create_root_node(structureModelRef, concept = dfBuilderId!!, name = "NumericFail") }
+        ).asJsonObject
+        assertFalse("quoted numeric ID in create_root_node must fail: $numericCreate", numericCreate.get("ok").asBoolean)
+        assertEquals("NOT_FOUND", numericCreate.get("code").asString)
+        val numericCreateByRef = JsonParser.parseString(
+            runTool(toolset) { it.mps_mcp_create_root_node(structureModelRef, concept = "", conceptReference = dfBuilderId!!, name = "NumericRefFail") }
+        ).asJsonObject
+        assertFalse("quoted numeric conceptReference in create_root_node must fail: $numericCreateByRef", numericCreateByRef.get("ok").asBoolean)
+        assertEquals("NOT_FOUND", numericCreateByRef.get("code").asString)
+        val numericInsert = rejectedBlueprint("""{ "concept": "$dfBuilderId" }""")
+        assertEquals("NOT_FOUND", numericInsert.get("code").asString)
+        val numericInsertByRef = rejectedBlueprint("""{ "conceptReference": "$dfBuilderId" }""")
+        assertEquals("NOT_FOUND", numericInsertByRef.get("code").asString)
+        assertEquals(
+            "quoted numeric concept IDs must not import unused language",
+            usedBefore,
+            readOnRepo { (structureModel as SModelInternal).importedLanguageIds().map { it.qualifiedName }.toSet() },
+        )
+
+        // 2c. create_root_node with an out-of-scope FQN auto-imports the language and reports addedUsedLanguages,
+        // matching the hint emitted on out-of-scope short-name rejection.
+        val fqnImportSolution = createSolution()
+        val fqnImportModel = createModel(fqnImportSolution, "${fqnImportSolution.moduleName}.autoimport")
+        val fqnImportModelRef = modelRefOf(fqnImportModel)
+        val createdWithImport = JsonParser.parseString(
+            runTool(toolset) {
+                it.mps_mcp_create_root_node(fqnImportModelRef, concept = "jetbrains.mps.baseLanguage.structure.ClassConcept", name = "AutoImported")
+            }
+        ).asJsonObject
+        assertTrue("create_root_node with FQN must succeed: $createdWithImport", createdWithImport.get("ok").asBoolean)
+        val addedLangs = createdWithImport.getAsJsonObject("details")?.getAsJsonArray("addedUsedLanguages")?.map { it.asString }.orEmpty()
+        assertTrue("expected baseLanguage in addedUsedLanguages: $createdWithImport", "jetbrains.mps.baseLanguage" in addedLangs)
+        readOnRepo {
+            val imported = (fqnImportModel as SModelInternal).importedLanguageIds().map { it.qualifiedName }.toSet()
+            assertTrue("model must import baseLanguage after FQN create_root_node: $imported", "jetbrains.mps.baseLanguage" in imported)
+        }
+        // Subsequent short-name call on the same model now sees baseLanguage in scope.
+        val createdShortAfterImport = JsonParser.parseString(
+            runTool(toolset) { it.mps_mcp_create_root_node(fqnImportModelRef, concept = "ClassConcept", name = "ShortAfterImport") }
+        ).asJsonObject
+        assertTrue("short ClassConcept must succeed after FQN auto-import: $createdShortAfterImport", createdShortAfterImport.get("ok").asBoolean)
+        assertFalse("already-imported language must not be reported as newly added: $createdShortAfterImport", createdShortAfterImport.has("details"))
+
+        // 3. gate.addedLanguages parity: outer FQN imports baseLanguage, inner bare child resolves on both dryRun=true and false.
+        val solution = createSolution()
+        val emptyModel = createModel(solution, "${solution.moduleName}.fresh")
+        val emptyModelRef = modelRefOf(emptyModel)
+        val outerFqnInnerShort = """
+            {
+              "concept": "jetbrains.mps.baseLanguage.structure.ClassConcept",
+              "properties": [{ "name": "name", "value": "GateParity" }],
+              "children": [{
+                "role": "member",
+                "nodes": [{
+                  "concept": "FieldDeclaration",
+                  "properties": [{ "name": "name", "value": "x" }]
+                }]
+              }]
+            }
+        """.trimIndent()
+        val dryRunParity = JsonParser.parseString(
+            runTool(toolset) { it.mps_mcp_insert_root_node_from_json(emptyModelRef, JsonOrText(outerFqnInnerShort), dryRun = true) }
+        ).asJsonObject
+        assertTrue("dryRun must see outer FQN language in gate.addedLanguages: $dryRunParity", dryRunParity.get("ok").asBoolean)
+        assertTrue(
+            "dryRun must warn about bare FieldDeclaration: $dryRunParity",
+            dryRunParity.getAsJsonArray("warnings")?.any { it.asString.contains("jetbrains.mps.baseLanguage.structure.FieldDeclaration") } == true,
+        )
+        val realParity = JsonParser.parseString(
+            runTool(toolset) { it.mps_mcp_insert_root_node_from_json(emptyModelRef, JsonOrText(outerFqnInnerShort), dryRun = false) }
+        ).asJsonObject
+        assertTrue("real insert must match dryRun: $realParity", realParity.get("ok").asBoolean)
+        assertTrue(
+            "real insert must warn about bare FieldDeclaration: $realParity",
+            realParity.getAsJsonArray("warnings")?.any { it.asString.contains("jetbrains.mps.baseLanguage.structure.FieldDeclaration") } == true,
+        )
+
+        // 4. Colliding in-scope rootable concepts (lang.migration.MigrationScript vs lang.script.MigrationScript) -> INVALID_REQUEST.
+        val collideModel = createModel(solution, "${solution.moduleName}.rootcollide")
+        val collideModelRef = modelRefOf(collideModel)
+        val modelToolset = MPSModelMcpToolset()
+        assertTrue(JsonParser.parseString(runTool(modelToolset) {
+            it.mps_mcp_model_used_language(collideModelRef, "jetbrains.mps.lang.migration", "language", "ADD")
+        }).asJsonObject.get("ok").asBoolean)
+        assertTrue(JsonParser.parseString(runTool(modelToolset) {
+            it.mps_mcp_model_used_language(collideModelRef, "jetbrains.mps.lang.script", "language", "ADD")
+        }).asJsonObject.get("ok").asBoolean)
+        val collideCreate = JsonParser.parseString(
+            runTool(toolset) { it.mps_mcp_create_root_node(collideModelRef, concept = "MigrationScript", name = "Dup") }
+        ).asJsonObject
+        assertFalse("colliding bare MigrationScript must fail: $collideCreate", collideCreate.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", collideCreate.get("code").asString)
+        val collideErr = collideCreate.get("error").asString
+        assertTrue(collideErr, collideErr.contains("jetbrains.mps.lang.migration.structure.MigrationScript"))
+        assertTrue(collideErr, collideErr.contains("jetbrains.mps.lang.script.structure.MigrationScript"))
+
+        val collideInsert = JsonParser.parseString(
+            runTool(toolset) {
+                it.mps_mcp_insert_root_node_from_json(collideModelRef, JsonOrText("""{ "concept": "MigrationScript" }"""), dryRun = true)
+            }
+        ).asJsonObject
+        assertFalse("colliding bare MigrationScript in insert must fail: $collideInsert", collideInsert.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", collideInsert.get("code").asString)
+
+        val collideInsertByRef = JsonParser.parseString(
+            runTool(toolset) {
+                it.mps_mcp_insert_root_node_from_json(collideModelRef, JsonOrText("""{ "concept": "MigrationScript", "conceptReference": "MigrationScript" }"""), dryRun = true)
+            }
+        ).asJsonObject
+        assertFalse("colliding bare MigrationScript with bare conceptReference must fail: $collideInsertByRef", collideInsertByRef.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", collideInsertByRef.get("code").asString)
+
+        // 5. JsonNull, whitespace-only, interface conceptReference fallback, and non-string primitive guards.
+        val nullConceptOnly = rejectedBlueprint("""{ "concept": null }""")
+        assertEquals("INVALID_REQUEST", nullConceptOnly.get("code").asString)
+        val blankConceptOnly = rejectedBlueprint("""{ "concept": "   " }""")
+        assertEquals("INVALID_REQUEST", blankConceptOnly.get("code").asString)
+        val interfaceRef = PersistenceFacade.getInstance().asString(SNodeUtil.concept_INamedConcept)
+        val interfaceRefAlone = rejectedBlueprint("""{ "conceptReference": "$interfaceRef" }""")
+        assertEquals("INVALID_REQUEST", interfaceRefAlone.get("code").asString)
+        assertTrue(interfaceRefAlone.toString(), interfaceRefAlone.get("error").asString.contains("is not a rootable concept"))
+        val interfaceRefFallback = JsonParser.parseString(
+            runTool(toolset) {
+                it.mps_mcp_insert_root_node_from_json(
+                    structureModelRef,
+                    JsonOrText("""{ "concept": "$conceptDeclarationFqn", "conceptReference": "$interfaceRef", "properties": [{ "name": "name", "value": "InterfaceRefFallback" }] }"""),
+                    dryRun = true,
+                )
+            }
+        ).asJsonObject
+        assertTrue("interface conceptReference with valid rootable concept must fall back to concept: $interfaceRefFallback", interfaceRefFallback.get("ok").asBoolean)
+        assertTrue(
+            "fallback must warn that interface conceptReference was ignored: $interfaceRefFallback",
+            interfaceRefFallback.getAsJsonArray("warnings")?.any { it.asString.contains("was ignored") } == true,
+        )
+        val createInterfaceFallback = JsonParser.parseString(
+            runTool(toolset) {
+                it.mps_mcp_create_root_node(structureModelRef, concept = conceptDeclarationFqn, conceptReference = interfaceRef, name = "CreateInterfaceRefFallback")
+            }
+        ).asJsonObject
+        assertTrue("create_root_node with interface conceptReference and FQN concept must succeed: $createInterfaceFallback", createInterfaceFallback.get("ok").asBoolean)
+        assertTrue(
+            "create_root_node fallback must warn that interface conceptReference was ignored: $createInterfaceFallback",
+            createInterfaceFallback.getAsJsonArray("warnings")?.any { it.asString.contains("was ignored") } == true,
+        )
+        val createInterfaceShortFallback = JsonParser.parseString(
+            runTool(toolset) {
+                it.mps_mcp_create_root_node(structureModelRef, concept = "ConceptDeclaration", conceptReference = interfaceRef, name = "CreateInterfaceShortFallback")
+            }
+        ).asJsonObject
+        assertTrue("create_root_node with interface conceptReference and short concept must succeed: $createInterfaceShortFallback", createInterfaceShortFallback.get("ok").asBoolean)
+        val bothWarnings = createInterfaceShortFallback.getAsJsonArray("warnings")?.map { it.asString }.orEmpty()
+        assertTrue("must carry ignored-conceptReference warning: $bothWarnings", bothWarnings.any { it.contains("was ignored") })
+        assertTrue("must also carry short-name FQN warning: $bothWarnings", bothWarnings.any { it.contains(conceptDeclarationFqn) })
+        for (badBlueprint in listOf(
+            """{ "concept": true }""",
+            """{ "concept": 42 }""",
+            """{ "conceptReference": true }""",
+            """{ "conceptReference": 42 }""",
+        )) {
+            val bad = rejectedBlueprint(badBlueprint)
+            assertEquals("non-string primitive $badBlueprint must fail with INVALID_REQUEST: $bad", "INVALID_REQUEST", bad.get("code").asString)
+            assertTrue("expected 'must be a string' message for $badBlueprint: $bad", bad.get("error").asString.contains("must be a string"))
+        }
+        val conceptRef = expectOk(created.toString()).get("conceptReference").asString
+        val nullConceptWithRef = JsonParser.parseString(
+            runTool(toolset) {
+                it.mps_mcp_insert_root_node_from_json(
+                    structureModelRef,
+                    JsonOrText("""{ "concept": null, "conceptReference": "$conceptRef", "properties": [{ "name": "name", "value": "NullConceptWithRef" }] }"""),
+                    dryRun = true,
+                )
+            }
+        ).asJsonObject
+        assertTrue("concept:null with valid conceptReference must succeed cleanly: $nullConceptWithRef", nullConceptWithRef.get("ok").asBoolean)
     }
 
 }

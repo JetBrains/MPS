@@ -97,12 +97,14 @@ class MPSLanguageMcpToolset : AbstractOps() {
         @McpDescription("A persistent reference (SLanguage) or qualified language name, or a JSON array of them (a real array or the array written as a string). All concepts and interface concepts of these languages will be returned. A plain name also resolves another open project's language, built or not; this project's language is preferred when names collide.") languageRefs: JsonOrText = JsonOrText.EMPTY,
         @McpDescription("Detail level: \"full\" (default) for the complete records, or \"shape\" for the structural projection only (no docs, no sampleNode).") detail: String = "full",
         @McpDescription("Inline the result in `data` when it is at most this many characters; larger results are saved to a temp file whose path is returned instead (default 20000).") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
-    ): String = mps_mcp_get_concept_details(
-        parseStringOrJsonArray(conceptRefs),
-        parseStringOrJsonArray(languageRefs),
-        detail,
-        maxInlineBytes,
-    )
+    ): String {
+        val parsedConcepts = parseStringOrJsonArray(conceptRefs)
+        val parsedLanguages = parseStringOrJsonArray(languageRefs)
+        if (parsedConcepts.isNotEmpty() || parsedLanguages.isNotEmpty()) {
+            rejectUnknownTopLevelParameters("mps_mcp_get_concept_details")?.let { return it }
+        }
+        return mps_mcp_get_concept_details(parsedConcepts, parsedLanguages, detail, maxInlineBytes)
+    }
 
     /**
      * Internal list-typed entry point for [mps_mcp_get_concept_details]. Deliberately *not*
@@ -300,6 +302,7 @@ class MPSLanguageMcpToolset : AbstractOps() {
                 McpErrorCode.INVALID_REQUEST,
             )
         }
+        rejectUnknownTopLevelParameters("mps_mcp_search_concepts")?.let { return it }
         return mps_mcp_search_concepts(terms, modelReference, detail, scope, maxInlineBytes)
     }
 

@@ -6,7 +6,6 @@ Source: `r:00000000-0000-4000-0000-011c895902c2(jetbrains.mps.baseLanguage.dataF
 ```json
 {
   "concept": "DataFlowBuilderDeclaration",
-  "properties": {"name": "VariableReference_DataFlow"},
   "references": [{"role": "conceptDeclaration", "target": "VariableReference"}],
   "children": [
     {
@@ -30,7 +29,7 @@ Source: `r:00000000-0000-4000-0000-011c895902c2(jetbrains.mps.baseLanguage.dataF
                           "nodes": [{
                             "concept": "DotExpression",
                             "children": [
-                              {"role": "operand", "nodes": [{"concept": "NodeParameter"}]},
+                              {"role": "operand", "nodes": [{"concept": "jetbrains.mps.lang.dataFlow.structure.NodeParameter"}]},
                               {"role": "operation", "nodes": [{"concept": "SLinkAccess", "references": [{"role": "link", "target": "variableDeclaration"}]}]}
                             ]
                           }]

@@ -8,7 +8,7 @@ The actual builder evaluates the condition constant (`ConditionUtil.getCondition
     "concept": "EmitCodeForStatement",
     "children": [
       {"role": "codeFor", "nodes": [{"concept": "DotExpression", "children": [
-        {"role": "operand", "nodes": [{"concept": "NodeParameter"}]},
+        {"role": "operand", "nodes": [{"concept": "jetbrains.mps.lang.dataFlow.structure.NodeParameter"}]},
         {"role": "operation", "nodes": [{"concept": "SLinkAccess", "references": [{"role": "link", "target": "condition"}]}]}
       ]}]}
     ]
@@ -40,7 +40,7 @@ The actual builder evaluates the condition constant (`ConditionUtil.getCondition
           {"role": "statement", "nodes": [{
             "concept": "EmitIfJumpStatement",
             "children": [{"role": "jumpTo", "nodes": [{"concept": "AfterPosition", "children": [
-              {"role": "relativeTo", "nodes": [{"concept": "NodeParameter"}]}
+              {"role": "relativeTo", "nodes": [{"concept": "jetbrains.mps.lang.dataFlow.structure.NodeParameter"}]}
             ]}]}]
           }]}
         ]}]}]
@@ -51,7 +51,7 @@ The actual builder evaluates the condition constant (`ConditionUtil.getCondition
     "concept": "EmitCodeForStatement",
     "children": [
       {"role": "codeFor", "nodes": [{"concept": "DotExpression", "children": [
-        {"role": "operand", "nodes": [{"concept": "NodeParameter"}]},
+        {"role": "operand", "nodes": [{"concept": "jetbrains.mps.lang.dataFlow.structure.NodeParameter"}]},
         {"role": "operation", "nodes": [{"concept": "SLinkAccess", "references": [{"role": "link", "target": "body"}]}]}
       ]}]}
     ]
@@ -63,7 +63,7 @@ The actual builder evaluates the condition constant (`ConditionUtil.getCondition
         "concept": "EmitJumpStatement",
         "children": [
           {"role": "jumpTo", "nodes": [{"concept": "BeforePosition", "children": [
-            {"role": "relativeTo", "nodes": [{"concept": "NodeParameter"}]}
+            {"role": "relativeTo", "nodes": [{"concept": "jetbrains.mps.lang.dataFlow.structure.NodeParameter"}]}
           ]}]}
         ]
       }]}

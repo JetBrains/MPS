@@ -16,7 +16,7 @@ The dataflow aspect (`jetbrains.mps.lang.dataFlow`, `l:7fa12e9c-b949-4976-b4fa-1
 
 Each `DataFlowBuilderDeclaration` answers: *given a node of concept X, in what order might execution visit its children, and which variables are read or written?*
 
-The builder body is a **BL `StatementList`** (inside a `BuilderBlock`). You use normal BL control flow (`if`, `foreach`, local variables) to compute which **emit instructions** to output at runtime. The `node` implicit parameter (concept `NodeParameter`) is always in scope — its type is the concept referenced by `conceptDeclaration`, giving smodel-typed access to children and references.
+The builder body is a **BL `StatementList`** (inside a `BuilderBlock`). You use normal BL control flow (`if`, `foreach`, local variables) to compute which **emit instructions** to output at runtime. The `node` implicit parameter (concept `jetbrains.mps.lang.dataFlow.structure.NodeParameter` — always qualify it in JSON blueprints because `jetbrains.mps.lang.textGen.structure.NodeParameter` shares the short name) is always in scope — its type is the concept referenced by `conceptDeclaration`, giving smodel-typed access to children and references.
 
 The MPS dataflow engine builds a control-flow graph from the emitted instructions, then runs analyses (unreachable code, uninitialised variable reads) on that graph. The engine only traces the paths you declare; if no builder exists for a concept, MPS falls back to delegating all children in declaration order.
 
