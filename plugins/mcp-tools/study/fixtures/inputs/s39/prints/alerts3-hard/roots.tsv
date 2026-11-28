@@ -1,4 +1,4 @@
-# recipe v2; pinned 2026-11-15T09:04:15+01:00; plugin 5965f2c6e715; classes AbstractOps 2026-11-13T15:33, CellPlainText 2026-11-13T15:33, JetBrainsMPSNodeMcpToolset 2026-11-15T07:03; MPS 261.25134; open projects alerts3-hard; 67 roots
+# recipe v2; pinned 2026-11-27T22:33:48+01:00; plugin 6c5a6e13e3be; classes AbstractOps 2026-11-27T17:21, CellPlainText 2026-11-16T15:12, MPSNodeMcpToolset 2026-11-27T17:21; MPS 261.25134; open projects alerts3-hard; 67 roots
 sandbox	Ops	AlertBook	6330044388206401724	995e7e7fcdc2674c	96295247f92a861a
 sandbox	Staging	AlertBook	6330044388206401755	2c71ad45832ea51d	5f7c9bc56f5a5d6b
 sandbox	Night	AlertBook	7871449508078870915	26c0d587ac2126f5	19dcbdf60c81c20c
@@ -21,7 +21,7 @@ editor	Paren_Editor	ConceptEditorDeclaration	6330044388206345375	9d6e1fb1634ad40
 editor	AlertStyles	StyleSheet	6330044388206401791	491a019870407a5b	828b689548a8566e
 editor	Member_SubstituteMenu	SubstituteMenu	581195628549735294	4b4862a32d08b026	34a5b09c707dfd07
 editor	AlertHeader	EditorComponentDeclaration	581195628549735302	cc7d8a34cc00ba79	2c9272bd66c2321c
-editor	Alert_MutedKeyword_Actions	CellActionMapDeclaration	581195628549737111	2ae5af1b0ed69c81	7d2439bcf1f7de56
+editor	Alert_MutedKeyword_Actions	CellActionMapDeclaration	581195628549737111	a2d2acbba4113c05	7d2439bcf1f7de56
 editor	Alert_TransformationMenu	TransformationMenu	581195628549737473	5d8a94503a76bd89	a4868afad6e936ef
 editor	AlertHints	ConceptEditorContextHints	8865239763066188322	37f34f73eb33d5cc	b06d8b1d453a76ae
 editor	Alert_compact_Editor	ConceptEditorDeclaration	8865239763066199127	9f6b3d7dd73e2f2a	de8bedc00a0b5940
@@ -58,7 +58,7 @@ structure	Paren	ConceptDeclaration	6330044388206341932	80db5e930e62d215	29ef427e
 tests@tests	T1_TypeThresholdName	EditorTestCase	581195628549808170	e75ceb0f4f5cec91	506008bd1c0b8b59
 tests@tests	T2_TypeWindowMinutes	EditorTestCase	581195628549808183	f97fc4bed0bd8362	5e6c040366a256c8
 tests@tests	T3_ParenText	EditorTestCase	581195628549808384	24b3a3d805c9a895	ffd5d9980182361e
-tests@tests	T4_UnmuteTwoStep	EditorTestCase	581195628549813574	fac12a41b04277ce	2fa32899326bafdd
+tests@tests	T4_UnmuteTwoStep	EditorTestCase	581195628549813574	6146e2cb3d5c3a07	2fa32899326bafdd
 tests@tests	T5_NotifyAfterSeverity	EditorTestCase	581195628549813590	e818756568f40a4d	8bbb4c03a25cd057
 tests@tests	T6_MemberCompletionHidesEmptyLine	EditorTestCase	581195628549813610	b4b29007d9d8fb04	38478fd365817ef8
 tests@tests	CompactViewTestUtil	ClassConcept	8865239763065891586	205c6985c02410b2	9c43fd519439f6fa
