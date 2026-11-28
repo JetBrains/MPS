@@ -52,7 +52,8 @@ class MPSInitMcpToolset(
                     "whereas `targetDirectory` is where files are written and may be an ancestor of the project."
         )
         targetDirectory: String? = null
-    ): String = McpCallOutcomes.record(initializeProjectForAgents(targetDirectory))
+    ): String = rejectUnknownTopLevelParameters("mps_mcp_initialize_project_for_agents")
+        ?: McpCallOutcomes.record(initializeProjectForAgents(targetDirectory))
 
     /**
      * Actual implementation of [mps_mcp_initialize_project_for_agents], split out so its several

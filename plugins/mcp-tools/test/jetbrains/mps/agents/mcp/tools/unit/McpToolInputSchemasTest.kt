@@ -1409,6 +1409,63 @@ class McpToolInputSchemasTest {
         }
     }
 
+    @Test
+    fun javaInsertRejectsImportsKeyWithAccurateGuidance_D127() {
+        val expectedHint =
+            "There is no 'imports' parameter (and only featureKind 'CLASS' accepts leading `import` statements): " +
+                "write external classes fully qualified (`java.util.List`) so they resolve against module dependencies " +
+                "and auto-import into the target model, or add model imports first with `mps_mcp_model_dependency` " +
+                "when using short names, adding a new module dependency, or targeting `modelReference: \"console\"`."
+        for (key in listOf("imports", "import", "Imports")) {
+            assertSchemaFailure(
+                "Unknown parameter in 'parameters' for mps_mcp_parse_java_and_insert: '$key'. " +
+                    "Accepted: 'code', 'featureKind', 'recovery', 'contextNodeRef', 'insert', 'postProcess'. " +
+                    "An unrecognised key is rejected rather than ignored, so a misspelling cannot silently " +
+                    "drop the value you passed. $expectedHint"
+            ) {
+                parseJavaParseInsertRequest(
+                    """{"code":"List x = null;","featureKind":"STATEMENTS","$key":["java.util.List"],"insert":{"mode":"child","parentRef":"r:m#p","role":"statement"}}"""
+                )
+            }
+        }
+    }
+
+    @Test
+    fun javaInsertRejectsImportsCombinedWithAnotherUnknownKey_D127() {
+        val message = catchSchemaFailure {
+            parseJavaParseInsertRequest(
+                """{"code":"int x = 1;","featureKind":"STATEMENTS","imports":["java.util.List"],"dryRun":true,"insert":{"mode":"child","parentRef":"r:m#p","role":"statement"}}"""
+            )
+        }
+        assertTrue(message, message.startsWith("Unknown parameters in 'parameters' for mps_mcp_parse_java_and_insert: 'imports', 'dryRun'."))
+        assertTrue(message, message.contains("There is no 'imports' parameter"))
+        assertTrue(message, message.contains("mps_mcp_model_dependency"))
+    }
+
+    @Test
+    fun javaInsertRejectsDryRunAndGeneralUnknownKeysWithoutImportsHint_D127() {
+        for ((key, value) in listOf("dryRun" to "true", "extraFlag" to "1")) {
+            assertSchemaFailure(
+                "Unknown parameter in 'parameters' for mps_mcp_parse_java_and_insert: '$key'. " +
+                    "Accepted: 'code', 'featureKind', 'recovery', 'contextNodeRef', 'insert', 'postProcess'. " +
+                    "An unrecognised key is rejected rather than ignored, so a misspelling cannot silently " +
+                    "drop the value you passed."
+            ) {
+                parseJavaParseInsertRequest(
+                    """{"code":"class Foo {}","featureKind":"CLASS","$key":$value,"insert":{"mode":"root","modelRef":"r:m"}}"""
+                )
+            }
+        }
+    }
+
+    @Test
+    fun javaInsertTreatsExplicitNullImportsAsAbsent_D127() {
+        val request = parseJavaParseInsertRequest(
+            """{"code":"class Foo {}","featureKind":"CLASS","imports":null,"insert":{"mode":"root","modelRef":"r:m"}}"""
+        )
+        assertEquals("CLASS", read(request, "getFeatureKindText"))
+    }
+
     // ---- alias-fallback regression tests ----
 
     @Test

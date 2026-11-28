@@ -70,6 +70,14 @@ internal object HeadlessMigrations {
      */
     val applyRunning = AtomicBoolean(false)
 
+    /**
+     * Guards `AbstractOps.performMake` across its entire lifetime (including incremental
+     * `ModuleMaker` compilation on the empty-`resourcesList` fast path and post-session compilation
+     * + `ClassLoaderManager.reload`), so concurrent MCP `MAKE` calls, `TransientModelsOps`, and
+     * `mps_mcp_run_migrations` `APPLY` exclude each other even outside `MakeService.isSessionActive`.
+     */
+    val mcpMakeRunning = AtomicBoolean(false)
+
     data class PendingScript(
         val script: String,
         val reference: String,
@@ -160,10 +168,12 @@ internal object HeadlessMigrations {
     }
 
     /**
-     * True when a make session is currently open in [mpsProject]. Safe to call outside model access.
+     * True when a make session or MCP direct-compile make is currently running in [mpsProject].
+     * Safe to call outside model access.
      */
     fun isMakeSessionActive(mpsProject: MPSProject): Boolean =
-        mpsProject.getComponent(MakeServiceComponent::class.java)?.get()?.isSessionActive == true
+        mcpMakeRunning.get() ||
+            mpsProject.getComponent(MakeServiceComponent::class.java)?.get()?.isSessionActive == true
 
     /**
      * Conditions under which APPLY refuses. Requires model read. A make session would race the run

@@ -899,6 +899,35 @@ class MPSProjectMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         assertFalse("MODAL_BLOCKED details must carry modalDialogOpen=false when no modal is open: $details", details.get("modalDialogOpen").asBoolean)
     }
 
+    @Test
+    fun `list_open_projects rejects unknown top-level keys and tolerates projectPath and JsonNull`() {
+        val rejected = JsonParser.parseString(
+            callThroughBridge(
+                MPSProjectMcpToolset(), "mps_mcp_list_open_projects",
+                mapOf("includeClosed" to kotlinx.serialization.json.JsonPrimitive(true)),
+            )
+        ).asJsonObject
+        assertFalse("unknown key on zero-parameter tool must be rejected: $rejected", rejected.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", rejected.get("code").asString)
+        assertEquals(
+            listOf("includeClosed"),
+            rejected.getAsJsonObject("details").getAsJsonArray("unknownParameters").map { it.asString },
+        )
+        assertTrue(
+            "zero-parameter rejection must state no parameters are accepted: ${rejected.get("error").asString}",
+            rejected.get("error").asString.contains("This tool takes no parameters (other than 'projectPath')."),
+        )
+
+        val tolerated = callThroughBridge(
+            MPSProjectMcpToolset(), "mps_mcp_list_open_projects",
+            mapOf(
+                "projectPath" to kotlinx.serialization.json.JsonPrimitive("/tmp/ignored-project-path"),
+                "includeClosed" to kotlinx.serialization.json.JsonNull,
+            ),
+        )
+        expectOk(tolerated)
+    }
+
     private fun rootNamed(payload: JsonObject, rootName: String): JsonObject =
         payload.getAsJsonArray("rootNodes")?.map { it.asJsonObject }?.singleOrNull { it.get("name").asString == rootName }
             ?: error("root '$rootName' must appear in the dump: $payload")

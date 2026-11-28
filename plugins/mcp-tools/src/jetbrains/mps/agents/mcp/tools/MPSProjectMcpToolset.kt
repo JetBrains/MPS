@@ -111,6 +111,7 @@ class MPSProjectMcpToolset(
     """
     )
     suspend fun mps_mcp_list_open_projects(): String {
+        rejectUnknownTopLevelParameters("mps_mcp_list_open_projects")?.let { return it }
         val currentIdeaProject = currentIdeaProjectOrNull()
         return McpCallOutcomes.record(
             try {
@@ -183,6 +184,7 @@ class MPSProjectMcpToolset(
         @McpDescription("When false, return only each record's first line, without `stackTrace` (default true).") includeStackTraces: Boolean = true,
         @McpDescription("Inline the result in `data` when it is at most this many characters; larger results are saved to a temp file whose path is returned instead (default 20000).") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
     ): String {
+        rejectUnknownTopLevelParameters("mps_mcp_read_ide_log")?.let { return it }
         val query = try {
             require(tailLines in 1..IdeLogReader.MAX_TAIL_RECORDS) {
                 "Invalid tailLines $tailLines: must be between 1 and ${IdeLogReader.MAX_TAIL_RECORDS}"
@@ -293,6 +295,7 @@ class MPSProjectMcpToolset(
         @McpDescription("With includeNodes, how many levels to inline below each root: -1 (default) for the whole tree, 0 for the root record alone, n for n levels. At the cut-off a role lists its children as {name, reference} and is marked childrenTruncated.") nodeDepth: Int = -1,
         @McpDescription("Inline the dump in `data` when it is at most this many characters; larger dumps are saved to a temp file whose path is returned instead (default 20000).") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
     ): String {
+        rejectUnknownTopLevelParameters("mps_mcp_get_project_structure")?.let { return it }
         if (!startingPoint.isNullOrBlank() && !moduleKind.isNullOrBlank()) {
             return McpCallOutcomes.record(
                 errJson(
@@ -401,6 +404,7 @@ class MPSProjectMcpToolset(
                 "a model reference or qualified model name, a module reference or name, or a node reference",
             ),
         )?.let { return it }
+        rejectUnknownTopLevelParameters("mps_mcp_get_compact_project_structure")?.let { return it }
         return withMpsProject("Reading MPS project structure as AGENTIC VIEW") { mpsProject ->
             executeShortReadOnEdt(mpsProject) {
                 val renderer = agenticViewRenderer(mpsProject)
@@ -906,7 +910,9 @@ class MPSProjectMcpToolset(
         Returns a JSON object with 'ok':true and 'data':"All modules reloaded successfully" on success, or 'ok':false and 'error':"..." on failure.
     """
     )
-    suspend fun mps_mcp_reload_all(): String = withMpsProject("Reloading all MPS modules") { mpsProject ->
+    suspend fun mps_mcp_reload_all(): String =
+        rejectUnknownTopLevelParameters("mps_mcp_reload_all")
+            ?: withMpsProject("Reloading all MPS modules") { mpsProject ->
         val clm = mpsProject.getComponent(jetbrains.mps.classloading.ClassLoaderManager::class.java)
             ?: return@withMpsProject errJson("ClassLoaderManager not found", McpErrorCode.NOT_FOUND)
 
@@ -955,6 +961,7 @@ class MPSProjectMcpToolset(
         @McpDescription("If true, force-close without save/can-close confirmation dialogs and without waiting for an already-open modal. Unsaved editor changes are discarded. Default false.")
         force: Boolean = false
     ): String {
+        rejectUnknownTopLevelParameters("mps_mcp_close_project")?.let { return it }
         currentCoroutineContext().reportToolActivity("Closing the current MPS project")
         return McpCallOutcomes.record(
             try {

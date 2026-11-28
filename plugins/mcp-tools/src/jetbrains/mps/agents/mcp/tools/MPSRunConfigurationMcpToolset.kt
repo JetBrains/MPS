@@ -109,7 +109,8 @@ class MPSRunConfigurationMcpToolset : AbstractOps() {
             nodeReference.text.ifBlank { modelReference?.text.orEmpty() },
             "a root reference (or an array of test roots), or set modelReference to a model (or an array of models)",
         ),
-    ) ?: withMpsProject("Creating MPS run configuration") { mpsProject ->
+    ) ?: rejectUnknownTopLevelParameters("mps_mcp_create_run_configuration")
+        ?: withMpsProject("Creating MPS run configuration") { mpsProject ->
         executeShortCommandOnEdt(mpsProject) {
             try {
                 createRunConfiguration(mpsProject, nodeReference, modelReference, configurationName)

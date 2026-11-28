@@ -114,7 +114,7 @@ class MPSEditorMcpToolset : AbstractNodeOps() {
         "mps_mcp_scaffold_editor",
         RequiredParameter("conceptRef", conceptRef, "the target concept's persistent reference (c:... or r:...) or fully qualified name"),
         RequiredParameter("modelReference", modelReference, "the target editor model's persistent reference or name"),
-    ) ?: mps_mcp_scaffold_editor(
+    ) ?: rejectUnknownTopLevelParameters("mps_mcp_scaffold_editor") ?: mps_mcp_scaffold_editor(
         conceptRef,
         modelReference,
         keywordStyle,

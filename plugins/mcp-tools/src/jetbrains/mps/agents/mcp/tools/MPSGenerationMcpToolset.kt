@@ -126,6 +126,7 @@ class MPSGenerationMcpToolset : AbstractOps() {
             "mps_mcp_generation",
             requiredParametersBlob(parameters.text, op.name, generationParameterKeys(op)),
         )?.let { return it }
+        rejectUnknownTopLevelParameters("mps_mcp_generation")?.let { return it }
         return mps_mcp_generation(op, parameters.text, maxInlineBytes)
     }
 

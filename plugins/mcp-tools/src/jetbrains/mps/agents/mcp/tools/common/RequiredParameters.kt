@@ -23,8 +23,9 @@ package jetbrains.mps.agents.mcp.tools.common
 class RequiredParameter(val name: String, val supplied: String, val expected: String)
 
 /**
- * The spellings a caller plausibly sends *instead of* a required parameter, so the rejection can
- * say which of them never reached the tool. Keyed by parameter name, or by `<tool>.<parameter>`
+ * The spellings a caller plausibly sends *instead of* a parameter, so missing-parameter rejections
+ * can say which of them never reached the tool and [AbstractOps.rejectUnknownTopLevelParameters]
+ * can offer `did you mean '...'?` suggestions. Keyed by parameter name, or by `<tool>.<parameter>`
  * where one tool's guesses differ from the shared ones; the qualified key wins.
  *
  * A near-miss must never be a real parameter of the same tool — the message would then tell the
@@ -36,6 +37,7 @@ object RequiredParameterNearMisses {
         "concept" to listOf("conceptName", "conceptRef"),
         "conceptRef" to listOf("conceptReference", "concept", "conceptName"),
         "conceptRefs" to listOf("conceptRef", "conceptReference", "concept", "conceptName", "conceptNames"),
+        "configurationName" to listOf("name", "configName"),
         "facetType" to listOf("facet", "type"),
         "historyNodeReference" to listOf("nodeReference", "historyNode", "historyRef"),
         "intentionId" to listOf("intention", "intentionName", "id"),
@@ -50,8 +52,14 @@ object RequiredParameterNearMisses {
         "moduleName" to listOf("moduleReference", "moduleRef", "module"),
         "name" to listOf("nodeName", "rootName"),
         "names" to listOf("name", "searchTexts", "rootNames"),
+        "nodeDepth" to listOf("depth"),
         "nodeReference" to listOf("nodeRef", "node", "reference"),
-        // modelReference is a real parameter of this tool, so it must not appear here.
+        // modelReference is a real parameter of this tool, so it must not appear under nodeReference.
+        // Keep models/modelReferences under both so missing-target rejections (folded into nodeReference)
+        // still name them while unknown-key rejections alongside a valid target suggest modelReference.
+        "mps_mcp_create_run_configuration.modelReference" to listOf(
+            "modelRef", "model", "modelName", "models", "modelReferences",
+        ),
         "mps_mcp_create_run_configuration.nodeReference" to listOf(
             "nodeRef", "node", "reference", "nodeReferences",
             "model", "modelRef", "models", "modelReferences", "testCases",
@@ -69,6 +77,7 @@ object RequiredParameterNearMisses {
         ),
         // ADD CHILD's parent. Not 'target', which parse_java_and_insert uses for the node replaced.
         "mps_mcp_update_node.nodeReference" to listOf("parentRef", "nodeRef"),
+        "mps_mcp_update_node.position" to listOf("index"),
     )
 
     fun of(tool: String, parameter: String): List<String> =

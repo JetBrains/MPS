@@ -1,5 +1,7 @@
 package jetbrains.mps.agents.mcp.tools.common
 
+import jetbrains.mps.agents.mcp.tools.languages.StructureDeclarations
+import jetbrains.mps.agents.mcp.tools.languages.StructureLanguageMeta
 import jetbrains.mps.agents.mcp.tools.logging.*
 import jetbrains.mps.agents.mcp.tools.migration.HeadlessMigrations
 import jetbrains.mps.agents.mcp.tools.migration.MigrationAssistantGuard
@@ -7,6 +9,7 @@ import jetbrains.mps.agents.mcp.tools.migration.MigrationAssistantGuard
 import com.google.gson.*
 import com.intellij.mcpserver.McpCallAdditionalDataElement
 import com.intellij.mcpserver.McpToolset
+import com.intellij.mcpserver.annotations.McpTool
 import com.intellij.mcpserver.project
 import com.intellij.mcpserver.reportToolActivity
 import com.intellij.openapi.application.ApplicationManager
@@ -14,13 +17,16 @@ import com.intellij.openapi.application.EDT
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.asContextElement
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.io.FileUtil
 import jetbrains.mps.checkers.ConstraintsChecker
 import jetbrains.mps.checkers.ErrorReportHelper
+import jetbrains.mps.compiler.JavaCompilerOptionsComponent
 import jetbrains.mps.smodel.adapter.structure.types.SEnumerationAdapter
+import jetbrains.mps.smodel.adapter.structure.types.SPrimitiveTypes
 import jetbrains.mps.smodel.SModelStereotype
 import jetbrains.mps.checkers.RefScopeChecker
 import jetbrains.mps.checkers.TargetConceptChecker2
@@ -42,15 +48,23 @@ import jetbrains.mps.errors.messageTargets.ReferenceMessageTarget
 import jetbrains.mps.extapi.model.GeneratableSModel
 import jetbrains.mps.extapi.model.SModelBase
 import jetbrains.mps.extapi.module.TransientSModule
+import jetbrains.mps.generator.GenerationFacade
 import jetbrains.mps.generator.GenerationSettingsProvider
+import jetbrains.mps.generator.ModelGenerationStatusManager
 import jetbrains.mps.generator.TransientModelsProvider
 import jetbrains.mps.ide.MPSCoreComponents
+import jetbrains.mps.ide.platform.watching.ReloadManager
 import jetbrains.mps.ide.project.ProjectHelper
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.IAttributeDescriptor
 import jetbrains.mps.make.IMakeNotificationListener
+import jetbrains.mps.make.MPSCompilationResult
 import jetbrains.mps.make.MakeNotification
 import jetbrains.mps.make.MakeServiceComponent
 import jetbrains.mps.make.MakeSession
+import jetbrains.mps.make.ModuleMaker
+import jetbrains.mps.make.kotlin.KotlinCompilerOptions
+import jetbrains.mps.make.kotlin.cache.JvmKotlinCompileCacheHandler
+import jetbrains.mps.make.resources.IResource
 import jetbrains.mps.messages.IMessage
 import jetbrains.mps.messages.IMessageHandler
 import jetbrains.mps.messages.MessageKind
@@ -61,12 +75,16 @@ import jetbrains.mps.project.DevKit
 import jetbrains.mps.project.MPSProject
 import jetbrains.mps.project.ModuleId
 import jetbrains.mps.project.ProjectRepository
+import jetbrains.mps.project.dependency.GlobalModuleDependenciesManager
+import jetbrains.mps.project.dependency.GlobalModuleDependenciesManager.Deptype
 import jetbrains.mps.project.facets.JavaModuleFacet
 import jetbrains.mps.project.structure.modules.DevkitDescriptor
 import jetbrains.mps.project.structure.modules.LanguageDescriptor
 import jetbrains.mps.project.structure.modules.ModuleDescriptor
 import jetbrains.mps.project.validation.StructureChecker
 import jetbrains.mps.smodel.Language
+import jetbrains.mps.smodel.ModelDependencyResolver
+import jetbrains.mps.smodel.SLanguageHierarchy
 import jetbrains.mps.smodel.SNodeUtil
 import jetbrains.mps.smodel.adapter.MetaAdapterByDeclaration
 import jetbrains.mps.smodel.adapter.ids.MetaIdByDeclaration
@@ -85,6 +103,9 @@ import jetbrains.mps.smodel.resources.ModelsToResources
 import jetbrains.mps.typesystemEngine.checker.NonTypesystemChecker
 import jetbrains.mps.typesystemEngine.checker.TypesystemChecker
 import kotlinx.coroutines.*
+import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.memberFunctions
+import kotlin.reflect.full.valueParameters
 import org.jetbrains.mps.openapi.language.*
 import org.jetbrains.mps.openapi.model.*
 import org.jetbrains.mps.openapi.module.SModule
@@ -92,9 +113,14 @@ import org.jetbrains.mps.openapi.module.SModuleReference
 import org.jetbrains.mps.openapi.module.SRepository
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
 import org.jetbrains.mps.openapi.util.Consumer
+import org.jetbrains.mps.openapi.util.ProgressMonitor
+import jetbrains.mps.util.Computable
+import jetbrains.mps.vfs.IFile
+import jetbrains.mps.vfs.VFSManager
 import java.io.File
 import java.io.IOException
 import java.nio.file.Paths
+import java.util.Collections
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
@@ -240,6 +266,19 @@ abstract class AbstractOps : McpToolset {
 
         // Shared by all MCP toolset instances: a file created by one toolset may be consumed by another.
         private val createdTempJsonFiles = ConcurrentHashMap.newKeySet<String>()
+
+        // Cached @McpTool parameter allow-lists derived from Kotlin reflection so parameter changes
+        // cannot drift from rejectUnknownTopLevelParameters (D158).
+        private val toolParameterNamesCache = ConcurrentHashMap<Class<out AbstractOps>, Map<String, Set<String>>>()
+
+        internal fun declaredToolParameterNames(toolsetClass: Class<out AbstractOps>): Map<String, Set<String>> =
+            toolParameterNamesCache.computeIfAbsent(toolsetClass) { cls ->
+                cls.kotlin.memberFunctions
+                    .filter { it.findAnnotation<McpTool>() != null }
+                    .associate { fn ->
+                        fn.name to fn.valueParameters.mapNotNull { it.name }.toSet()
+                    }
+            }
 
         // Structure-language meta descriptors used by smart-reference detection. Hoisted from per-call
         // MetaAdapterFactory lookups so the IDs are grep-able from a single location and the lookups
@@ -423,24 +462,21 @@ abstract class AbstractOps : McpToolset {
     )
 
     /**
-     * `key to value` for each near-miss spelling of [parameter] ([RequiredParameterNearMisses]) that
-     * the caller actually sent. The binder drops such a key, but the platform keeps it in the call's
-     * raw arguments, so a tool can name the key only when it was really sent (D63). A string value
-     * is returned as its content, any other value as its JSON text, and a JSON null is skipped; empty
-     * outside an MCP call.
+     * Rejects unrecognized top-level arguments recorded in the MCP call's `rawArguments` (study defects D138, D158),
+     * deriving the allowed parameter names from this toolset's `@McpTool` method signature so the allow-list cannot
+     * drift when parameters are added or renamed.
+     *
+     * Must be called **after** [rejectMissingParameters] and any upfront required-selector checks so that a caller
+     * who misspelled a required key still receives the D43/D56/D63 `missingParameters` retry guidance.
      */
-    protected suspend fun sentNearMisses(tool: String, parameter: String): List<Pair<String, String>> {
-        val raw = currentCoroutineContext()[McpCallAdditionalDataElement.Key]?.additionalData?.rawArguments
-            ?: return emptyList()
-        return RequiredParameterNearMisses.of(tool, parameter).mapNotNull { key ->
-            // A client echoing an unset optional key as null sent no value worth naming.
-            val value = raw[key]?.takeIf { it !is kotlinx.serialization.json.JsonNull } ?: return@mapNotNull null
-            key to ((value as? kotlinx.serialization.json.JsonPrimitive)?.takeIf { it.isString }?.content ?: value.toString())
-        }
+    protected suspend fun rejectUnknownTopLevelParameters(tool: String): String? {
+        val allowed = declaredToolParameterNames(this::class.java)[tool]
+            ?: error("No @McpTool method named '$tool' declared on ${this::class.java.simpleName}")
+        return rejectUnknownTopLevelParameters(tool, allowed)
     }
 
     /**
-     * Rejects unrecognized top-level arguments recorded in the MCP call's `rawArguments` (study defect D138).
+     * Rejects unrecognized top-level arguments recorded in the MCP call's `rawArguments` (study defects D138, D158).
      * The platform's parameter binder silently ignores keys that do not match a `@McpTool` method's Kotlin
      * parameters, which otherwise turns a mistyped filter or action key into an unfiltered default run.
      */
@@ -469,10 +505,15 @@ abstract class AbstractOps : McpToolset {
             val suggestion = nearMissTargets[key.lowercase()] ?: suggestParameterName(key, sortedAllowed)
             if (suggestion != null) "'$key' (did you mean '$suggestion'?)" else "'$key'"
         }
+        val allowedClause = if (sortedAllowed.isEmpty()) {
+            "This tool takes no parameters (other than 'projectPath')."
+        } else {
+            "Allowed: ${sortedAllowed.joinToString(", ") { "'$it'" }}."
+        }
         return McpCallOutcomes.record(
             errJson(
                 "Unknown ${if (unknown.size == 1) "parameter" else "parameters"} in '$tool': " +
-                    "$named. Allowed: ${sortedAllowed.joinToString(", ") { "'$it'" }}.",
+                    "$named. $allowedClause",
                 McpErrorCode.INVALID_REQUEST,
                 mapOf("unknownParameters" to unknown),
             )
@@ -1310,64 +1351,290 @@ abstract class AbstractOps : McpToolset {
      * Result of resolving a concept reference and validating it is a rootable [SConcept].
      */
     protected sealed class RootableConceptResolution {
-        data class Ok(val concept: SConcept) : RootableConceptResolution()
+        data class Ok(
+            val concept: SConcept,
+            val warnings: List<String> = emptyList(),
+            val resolvedFromShortName: Boolean = false
+        ) : RootableConceptResolution()
         data class Err(val errJson: String) : RootableConceptResolution()
     }
 
-    /**
-     * Resolves a concept reference (or fully qualified name) and validates that the
-     * result is a rootable [SConcept]. Either [conceptName] or [conceptReference]
-     * (or both) must be non-empty; [conceptReference] is tried first. [label] is
-     * appended to error messages so batch callers can identify which entry failed
-     * (e.g. " [3]").
-     */
-    protected fun resolveRootableConcept(
-        repository: SRepository,
-        conceptName: String?,
-        conceptReference: String?,
-        label: String = ""
-    ): RootableConceptResolution {
-        if (conceptName.isNullOrEmpty() && conceptReference.isNullOrEmpty()) {
-            return RootableConceptResolution.Err(
-                errJson("Either 'concept' (qualifiedName) or 'conceptReference' must be provided$label", McpErrorCode.INVALID_REQUEST)
-            )
-        }
-        val sConcept = (if (!conceptReference.isNullOrEmpty()) resolveConcept(repository, conceptReference) else null)
-            ?: (if (!conceptName.isNullOrEmpty()) resolveConcept(repository, conceptName) else null)
-            ?: return RootableConceptResolution.Err(
-                errJson("Concept not found$label: concept='$conceptName', conceptReference='$conceptReference'", McpErrorCode.NOT_FOUND)
-            )
-        if (sConcept !is SConcept || !isRootable(sConcept, repository)) {
-            return RootableConceptResolution.Err(
-                errJson("Concept '${sConcept.name}' is not a rootable concept$label", McpErrorCode.INVALID_REQUEST)
-            )
-        }
-        return RootableConceptResolution.Ok(sConcept)
+    /** Result of resolving an unqualified short concept name within a model's in-scope languages. */
+    protected sealed class ShortConceptResolution {
+        data class Resolved(val concept: SAbstractConcept, val warning: String) : ShortConceptResolution()
+        object NotFoundInScope : ShortConceptResolution()
+        data class Ambiguous(val candidates: List<SAbstractConcept>) : ShortConceptResolution()
+        data class NoneAssignable(val candidates: List<SAbstractConcept>) : ShortConceptResolution()
     }
 
+    protected fun isUnqualifiedConceptName(name: String): Boolean =
+        name.isNotBlank() && !name.contains('.') && !name.contains('/') && !name.contains(':')
+
+    /**
+     * Languages in scope of [model] for short concept-name resolution: direct used languages and
+     * used-devkit exports ([ModelDependencyResolver.usedLanguages]), [extraLanguages] (e.g.
+     * `ConceptGate.addedLanguages` so dry-run and real writes agree), and their extended languages
+     * ([SLanguageHierarchy.getExtendedLangs] plus declared extended languages of language modules).
+     */
+    protected fun inScopeLanguages(
+        model: SModel,
+        extraLanguages: Collection<SLanguage> = emptyList()
+    ): Set<SLanguage> {
+        val scope = LinkedHashSet<SLanguage>(extraLanguages)
+        val repository = model.repository ?: return scope
+        val registry = LanguageRegistry.getInstance(repository)
+        scope.addAll(ModelDependencyResolver(registry, repository).usedLanguages(model))
+        val queue = ArrayDeque(scope)
+        val visited = HashSet(scope)
+        while (queue.isNotEmpty()) {
+            val lang = queue.removeFirst()
+            val module = languageModuleOf(repository, lang)
+            if (module != null) {
+                for (extRef in module.extendedLanguageRefs) {
+                    if (extRef.moduleId !is ModuleId.Regular) continue
+                    val extLang = languageForId(repository, MetaIdByDeclaration.ref2LangId(extRef)) ?: continue
+                    if (visited.add(extLang)) {
+                        scope.add(extLang)
+                        queue.add(extLang)
+                    }
+                }
+            }
+            for (extLang in SLanguageHierarchy(registry, listOf(lang)).getExtendedLangs { }) {
+                if (visited.add(extLang)) {
+                    scope.add(extLang)
+                    queue.add(extLang)
+                }
+            }
+        }
+        return scope
+    }
+
+    protected fun allRepositoryLanguages(repository: SRepository): Set<SLanguage> {
+        val languages = LinkedHashSet<SLanguage>()
+        languages.addAll(LanguageRegistry.getInstance(repository).allLanguages)
+        for (module in repository.modules) {
+            if (module is Language) languages.add(MetaAdapterByDeclaration.getLanguage(module))
+        }
+        return languages
+    }
+
+    protected fun conceptsNamedInLanguages(
+        repository: SRepository,
+        languages: Collection<SLanguage>,
+        simpleName: String
+    ): List<SAbstractConcept> {
+        val registry = LanguageRegistry.getInstance(repository)
+        val result = LinkedHashMap<SAbstractConcept, Unit>()
+        for (lang in languages) {
+            val runtime = registry.getLanguage(lang)
+            runtime?.concepts?.forEach { concept ->
+                if (concept.name == simpleName) result[concept] = Unit
+            }
+            val langModule = languageModuleOf(repository, lang)
+            val structure = langModule?.structureModelDescriptor
+                ?.takeIf { runtime == null || it.isLoaded || !langModule.isReadOnly }
+            structure?.rootNodes?.forEach { root ->
+                if (root.name == simpleName && root.concept.isSubConceptOf(SNodeUtil.concept_AbstractConceptDeclaration)) {
+                    val concept = StructureDeclarations.conceptOf(root) ?: return@forEach
+                    result.putIfAbsent(concept, Unit)
+                }
+            }
+        }
+        return result.keys.toList()
+    }
+
+    protected fun isConcreteConcept(concept: SAbstractConcept, repository: SRepository): Boolean {
+        if (concept !is SConcept) return false
+        if (concept.isValid) return !concept.isAbstract
+        val decl = concept.sourceNode?.resolve(repository)
+            ?: resolveConceptNode(repository, PersistenceFacade.getInstance().asString(concept))
+            ?: return false
+        return decl.getProperty(StructureLanguageMeta.abstractConceptDeclarationAbstractProperty) != "true"
+    }
+
+    protected fun resolveShortConceptInScope(
+        repository: SRepository,
+        model: SModel,
+        simpleName: String,
+        extraLanguages: Collection<SLanguage> = emptyList(),
+        pathSuffix: String = "",
+        narrowPredicate: (SAbstractConcept) -> Boolean
+    ): ShortConceptResolution {
+        val scope = inScopeLanguages(model, extraLanguages)
+        val matches = conceptsNamedInLanguages(repository, scope, simpleName)
+            .sortedBy { structureQualifiedName(it) }
+        return when (matches.size) {
+            0 -> ShortConceptResolution.NotFoundInScope
+            1 -> {
+                val single = matches.single()
+                ShortConceptResolution.Resolved(
+                    single,
+                    "Short concept name '$simpleName'$pathSuffix resolved to '${structureQualifiedName(single)}'; prefer the fully qualified name."
+                )
+            }
+            else -> {
+                val narrowed = matches.filter(narrowPredicate)
+                when (narrowed.size) {
+                    1 -> {
+                        val single = narrowed.single()
+                        ShortConceptResolution.Resolved(
+                            single,
+                            "Short concept name '$simpleName'$pathSuffix resolved to '${structureQualifiedName(single)}'; prefer the fully qualified name."
+                        )
+                    }
+                    0 -> ShortConceptResolution.NoneAssignable(matches)
+                    else -> ShortConceptResolution.Ambiguous(narrowed)
+                }
+            }
+        }
+    }
+
+    /**
+     * Resolves an unqualified short concept name across the repository for model-less callers
+     * (such as `query_types`), rejecting colliding names with [McpInvalidRequestException] and
+     * `details.candidates`. Returns `null` when no concept has that name.
+     */
+    protected fun resolveShortConceptInRepository(
+        repository: SRepository,
+        simpleName: String,
+        path: String,
+        requireConcrete: Boolean
+    ): SAbstractConcept? {
+        val allMatches = conceptsNamedInLanguages(repository, allRepositoryLanguages(repository), simpleName)
+            .sortedBy { structureQualifiedName(it) }
+        return when (allMatches.size) {
+            0 -> null
+            1 -> allMatches.single()
+            else -> {
+                val matching = if (requireConcrete) {
+                    allMatches.filter { isConcreteConcept(it, repository) }
+                } else {
+                    allMatches.filterIsInstance<SConcept>()
+                }
+                when (matching.size) {
+                    1 -> matching.single()
+                    0 -> {
+                        val fqns = allMatches.map { structureQualifiedName(it) }
+                        val requirement = if (requireConcrete) "concrete" else "a non-interface concept"
+                        throw McpInvalidRequestException(
+                            "Short concept name '$simpleName' at $path matches ${fqns.size} concepts (${fqns.joinToString(", ")}), none of which is $requirement. Use a fully qualified concept name.",
+                            mapOf("candidates" to fqns)
+                        )
+                    }
+                    else -> {
+                        val fqns = matching.map { structureQualifiedName(it) }
+                        val kind = if (requireConcrete) "concrete concepts" else "concepts"
+                        throw McpInvalidRequestException(
+                            "Ambiguous short concept name '$simpleName' at $path: matches ${fqns.size} $kind (${fqns.joinToString(", ")}). Use a fully qualified concept name.",
+                            mapOf("candidates" to fqns)
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Resolves a concept reference (or concept name) and validates that the result is
+     * a rootable [SConcept]. Either [conceptName] or [conceptReference] (or both) must
+     * be non-blank; [conceptReference] is tried first. Unqualified short names in
+     * [conceptName] are resolved only within [model]'s in-scope languages (plus
+     * [extraLanguages]). [label] is appended to error and warning messages so batch
+     * callers can identify which entry failed (e.g. " [3]").
+     */
     protected fun resolveRootableConcept(
         mpsProject: MPSProject,
         conceptName: String?,
         conceptReference: String?,
-        label: String = ""
+        label: String = "",
+        model: SModel? = null,
+        extraLanguages: Collection<SLanguage> = emptyList()
     ): RootableConceptResolution {
-        if (conceptName.isNullOrEmpty() && conceptReference.isNullOrEmpty()) {
+        if (conceptName.isNullOrBlank() && conceptReference.isNullOrBlank()) {
             return RootableConceptResolution.Err(
                 errJson("Either 'concept' (qualifiedName) or 'conceptReference' must be provided$label", McpErrorCode.INVALID_REQUEST)
             )
         }
         val repository = mpsProject.repository
-        val sConcept = (if (!conceptReference.isNullOrEmpty()) resolveConceptPreferringProject(mpsProject, conceptReference) else null)
-            ?: (if (!conceptName.isNullOrEmpty()) resolveConceptPreferringProject(mpsProject, conceptName) else null)
-            ?: return RootableConceptResolution.Err(
-                rootableConceptNotFound(mpsProject, conceptName, conceptReference, label)
-            )
+        val rawByRef = if (!conceptReference.isNullOrBlank() && !isUnqualifiedConceptName(conceptReference)) {
+            resolveConceptPreferringProject(mpsProject, conceptReference)
+        } else {
+            null
+        }
+        val byRef = rawByRef as? SConcept
+        var shortNameWarning: String? = null
+        var resolvedFromShortName = false
+        val sConcept: SAbstractConcept = byRef ?: when {
+            conceptName.isNullOrBlank() ->
+                rawByRef ?: return RootableConceptResolution.Err(rootableConceptNotFound(mpsProject, conceptName, conceptReference, label))
+            model != null && isUnqualifiedConceptName(conceptName) -> {
+                val pathSuffix = if (label.isEmpty()) "" else " at$label"
+                when (val resolved = resolveShortConceptInScope(repository, model, conceptName, extraLanguages, pathSuffix) {
+                    isConcreteConcept(it, repository) && isRootable(it, repository)
+                }) {
+                    is ShortConceptResolution.Resolved -> {
+                        shortNameWarning = resolved.warning
+                        resolvedFromShortName = true
+                        resolved.concept
+                    }
+                    is ShortConceptResolution.NotFoundInScope -> {
+                        if (rawByRef != null) {
+                            rawByRef
+                        } else {
+                            val hint = conceptHint(repository, mpsProject, conceptName, conceptReference) {
+                                it is SConcept && isRootable(it, repository)
+                            }
+                            return RootableConceptResolution.Err(
+                                errJson(
+                                    "Concept '$conceptName' not found in languages used by model '${model.name.value}'$label " +
+                                        "(use a fully qualified concept name to auto-import a language)" + hint.messageSuffix,
+                                    McpErrorCode.NOT_FOUND,
+                                    hint.details
+                                )
+                            )
+                        }
+                    }
+                    is ShortConceptResolution.Ambiguous -> {
+                        val fqns = resolved.candidates.map { structureQualifiedName(it) }
+                        return RootableConceptResolution.Err(
+                            errJson(
+                                "Ambiguous short concept name '$conceptName'$label: matches ${fqns.size} in-scope rootable concepts (${fqns.joinToString(", ")}). Use a fully qualified concept name.",
+                                McpErrorCode.INVALID_REQUEST,
+                                mapOf("candidates" to fqns)
+                            )
+                        )
+                    }
+                    is ShortConceptResolution.NoneAssignable -> {
+                        val fqns = resolved.candidates.map { structureQualifiedName(it) }
+                        return RootableConceptResolution.Err(
+                            errJson(
+                                "Short concept name '$conceptName'$label matches ${fqns.size} in-scope concepts (${fqns.joinToString(", ")}), none of which is a concrete rootable concept. Use a fully qualified concept name.",
+                                McpErrorCode.INVALID_REQUEST,
+                                mapOf("candidates" to fqns)
+                            )
+                        )
+                    }
+                }
+            }
+            else -> resolveConceptPreferringProject(mpsProject, conceptName)
+                ?: rawByRef
+                ?: return RootableConceptResolution.Err(rootableConceptNotFound(mpsProject, conceptName, conceptReference, label))
+        }
         if (sConcept !is SConcept || !isRootable(sConcept, repository)) {
             return RootableConceptResolution.Err(
                 errJson("Concept '${sConcept.name}' is not a rootable concept$label", McpErrorCode.INVALID_REQUEST)
             )
         }
-        return RootableConceptResolution.Ok(sConcept)
+        val warnings = buildList {
+            if (!conceptReference.isNullOrBlank() && byRef == null) {
+                add(
+                    "conceptReference '$conceptReference'$label does not resolve to a loaded concrete concept and was ignored; " +
+                        "the node was created from concept '$conceptName'"
+                )
+            }
+            if (shortNameWarning != null) add(shortNameWarning)
+        }
+        return RootableConceptResolution.Ok(sConcept, warnings, resolvedFromShortName)
     }
 
     private fun rootableConceptNotFound(
@@ -1376,10 +1643,11 @@ abstract class AbstractOps : McpToolset {
         conceptReference: String?,
         label: String
     ): String {
-        val foreignConcept = (if (!conceptReference.isNullOrEmpty()) resolveConcept(mpsProject.repository, conceptReference) else null)
-            ?: (if (!conceptName.isNullOrEmpty()) resolveConcept(mpsProject.repository, conceptName) else null)
+        val foreignConcept = (if (!conceptReference.isNullOrBlank() && !isUnqualifiedConceptName(conceptReference)) resolveConcept(mpsProject.repository, conceptReference) else null)
+            ?: (if (!conceptName.isNullOrBlank() && !isUnqualifiedConceptName(conceptName)) resolveConcept(mpsProject.repository, conceptName) else null)
         return if (foreignConcept != null && isConceptFromAnotherOpenProject(mpsProject, foreignConcept)) {
-            crossProjectErr("Concept '${conceptReference ?: conceptName}'")
+            val displayConcept = conceptReference?.takeIf { it.isNotBlank() } ?: conceptName?.takeIf { it.isNotBlank() }
+            crossProjectErr("Concept '$displayConcept'")
         }
         else {
             val repository = mpsProject.repository
@@ -1898,15 +2166,22 @@ abstract class AbstractOps : McpToolset {
             val stored = SNodeAccessUtil.hasProperty(node, prop)
             val displayValue = propertyDisplayValue(node, prop)
             val defaultLiteral = if (!stored) defaultEnumLiteralName(prop) else null
-            val value = defaultLiteral ?: displayValue
+            val isDefaultBoolean = !stored && prop.type == SPrimitiveTypes.BOOLEAN && (displayValue == null || displayValue == "false")
+            val value = when {
+                defaultLiteral != null -> defaultLiteral
+                isDefaultBoolean -> "false"
+                else -> displayValue
+            }
             if (value.isNullOrEmpty()) continue
             val propDeclarationNode = prop.sourceNode?.resolve(repository)
+            val deprecationInfo = getDeprecationInfo(propDeclarationNode)
+            if (isDefaultBoolean && deprecationInfo.startsWith("true")) continue
             val propObj = JsonObject()
             propObj.addProperty("name", prop.name)
             propObj.addProperty("type", getPropertyType(prop))
-            addDocAndDeprecated(propObj, getDoc(propDeclarationNode), getDeprecationInfo(propDeclarationNode))
+            addDocAndDeprecated(propObj, getDoc(propDeclarationNode), deprecationInfo)
             propObj.addProperty("value", value)
-            if (defaultLiteral != null) propObj.addProperty("isDefault", true)
+            if (defaultLiteral != null || isDefaultBoolean) propObj.addProperty("isDefault", true)
             properties.add(propObj)
         }
         // Stored values the concept does not declare (D89). Read raw: there may be no descriptor
@@ -2048,6 +2323,8 @@ abstract class AbstractOps : McpToolset {
     protected fun propertyDisplayValue(node: SNode, prop: SProperty): String? {
         val rawValue = SNodeAccessUtil.getPropertyValue(node, prop)
         return when {
+            // SPrimitiveTypes.BOOLEAN.toString(false) returns null; preserve "true"/"false" for display and JSON round-trip (D70).
+            prop.type == SPrimitiveTypes.BOOLEAN && rawValue is Boolean -> rawValue.toString()
             prop.type !is SEnumeration -> rawValue?.let { prop.type.toString(it) }
             // A stored value that is no literal of an enumeration without a raw member type: the invalid
             // literal's name is only the raw value's string form, so report no display value and let
@@ -4583,7 +4860,7 @@ abstract class AbstractOps : McpToolset {
      * across coroutine context boundaries.
      */
     private data class MakePreparation(
-        val resourcesList: List<jetbrains.mps.make.resources.IResource>,
+        val resourcesList: List<IResource>,
         val session: MakeSession,
         val targetLanguageIds: Set<SLanguageId>,
         val targetLanguageModuleRefs: Set<SModuleReference>,
@@ -4592,6 +4869,20 @@ abstract class AbstractOps : McpToolset {
         val transientsPresent: Boolean,
         /** Generator modules in this make (requested, or owned by a requested language); reloaded with the languages. */
         val generatorModuleRefs: Set<SModuleReference>,
+        /** True when at least one generatable model or `Compile.MPS` module was supplied. */
+        val hasAnyCandidates: Boolean,
+        /** Editable `Compile.MPS` modules in `expandedModules` that have no models in [resourcesList] (`rebuild == false`). */
+        val cleanModelCompileCandidates: Set<SModuleReference>,
+        /** Subset of [cleanModelCompileCandidates] with no transitive dependency/used-language edge into [resourcesList] modules. */
+        val preMakeCompileCandidates: Set<SModuleReference>,
+        /** Disjoint complement `[cleanModelCompileCandidates] - [preMakeCompileCandidates]`, compiled after `MakeSession`. */
+        val postMakeCompileCandidates: Set<SModuleReference>,
+        /** Languages/generators in [preMakeCompileCandidates] whose on-disk classes must be reloaded before `MakeSession` runs. */
+        val preMakeReloadCandidates: Set<SModuleReference>,
+        /** Maps each generator in [preMakeCompileCandidates] to its source language when that language is also in [preMakeCompileCandidates]. */
+        val preMakeGeneratorSourceLanguages: Map<SModuleReference, SModuleReference>,
+        /** True when `rebuild == false` and compiled classes exist on disk for a language/generator not yet live in [LanguageRegistry]. */
+        val needsRuntimeReload: Boolean,
     )
 
     /** Outcome of [ensureLanguageRuntime]: every make that ran (last one is decisive), the extra stage if any, and what is still not served. */
@@ -4644,14 +4935,14 @@ abstract class AbstractOps : McpToolset {
             val makeService = makeServiceComponent.get()
                 ?: return MakeResult(false, "No active make service", runtimeReady = false)
 
-            if (makeService.isSessionActive) {
+            if (makeService.isSessionActive || HeadlessMigrations.mcpMakeRunning.get()) {
                 return MakeResult(false, "Another make session is already active", runtimeReady = false)
             }
             if (HeadlessMigrations.applyRunning.get()) {
                 return MakeResult(false, "a run_migrations APPLY is running", runtimeReady = false)
             }
 
-            val messages = mutableListOf<MakeMessage>()
+            val messages = Collections.synchronizedList(mutableListOf<MakeMessage>())
             val makeMonitor = coroutineProgressMonitor()
             val handler = IMessageHandler { msg: IMessage ->
                 if (msg.kind == MessageKind.ERROR || msg.kind == MessageKind.WARNING) {
@@ -4667,6 +4958,26 @@ abstract class AbstractOps : McpToolset {
             val preparation = executeBackgroundRead(mpsProject) {
                 // Expand modules to include generators for languages
                 val expandedModules = expandModules(modules)
+                val isGeneratable: (SModel) -> Boolean = { md ->
+                    GenerationFacade.canGenerate(md) && md.module?.isPackaged != true
+                }
+                val statusManager = mpsProject.getComponent(ModelGenerationStatusManager::class.java)
+                val explicitGeneratableModels = models.filter(isGeneratable)
+                val allModuleGeneratableModels = expandedModules.asSequence()
+                    .flatMap { it.models.asSequence() }
+                    .filter(isGeneratable)
+                    .toList()
+                // Explicit `models: [...]` targets (and `rebuild == true` or `saveTransientModels == true`)
+                // always enter ModelsToResources; module / wholeProject targets with `rebuild == false`
+                // filter by `generationRequired` like MPS's UI MakeActionParameters.collectInput (D155).
+                val moduleModelsToGenerate = if (rebuild || saveTransientModels == true || statusManager == null) {
+                    allModuleGeneratableModels
+                } else {
+                    allModuleGeneratableModels.filter { statusManager.generationRequired(it) }
+                }
+                val selectedModels = (explicitGeneratableModels.asSequence() + moduleModelsToGenerate.asSequence())
+                    .distinct()
+                    .toList()
 
                 // Derive the Language modules from both the provided models and the
                 // explicit/expanded modules list.
@@ -4690,31 +5001,100 @@ abstract class AbstractOps : McpToolset {
                     }
                 }
 
-                // Compose resources from provided models and explicit modules
-                val list = mutableListOf<jetbrains.mps.make.resources.IResource>()
-                val seenModules = HashSet<String>()
+                // Compose resources from selected models and (for clean rebuilds only) explicit modules
+                val list = mutableListOf<IResource>()
+                val seenModuleRefs = HashSet<SModuleReference>()
 
-                // 1) Resources for models (grouped by module, clean/rebuild propagated)
-                val modelResources = ModelsToResources(models, rebuild).resources()
+                // 1) Resources for selected models (grouped by module, clean/rebuild propagated)
+                val modelResources = ModelsToResources(selectedModels, rebuild)
+                    .canGenerateCondition(isGeneratable)
+                    .resources()
                 for (r in modelResources) {
                     list.add(r)
                     if (r is MResource) {
-                        seenModules.add(PersistenceFacade.getInstance().asString(r.module().moduleReference))
+                        seenModuleRefs.add(r.module().moduleReference)
                     }
                 }
 
-                // 2) Ensure every requested module is present as a resource, even if it has no generatable models
-                for (m in expandedModules) {
-                    val key = PersistenceFacade.getInstance().asString(m.moduleReference)
-                    if (!seenModules.contains(key)) {
-                        val mr = MResource(m, m.models)
-                        if (rebuild) {
+                // 2) Only on `rebuild == true`, ensure every requested editable module is present as a
+                // clean-make resource even if it has no generatable models; when `rebuild == false`,
+                // feeding MResource(m, m.models) would force Generate_Facet / TextGen_Facet on clean models.
+                if (rebuild) {
+                    for (m in expandedModules) {
+                        if (!m.isReadOnly && !m.isPackaged && seenModuleRefs.add(m.moduleReference)) {
+                            val mr = MResource(m, m.models)
                             mr.setValue(MakeKeys.CLEAN_MAKE, true)
+                            list.add(mr)
                         }
-                        list.add(mr)
-                        seenModules.add(key)
                     }
                 }
+
+                val compileCandidateModules = if (!rebuild) {
+                    expandedModules.filter(::isCompileInMpsCandidate)
+                } else {
+                    emptyList()
+                }
+                val cleanModelCompileModules = compileCandidateModules.filter { it.moduleReference !in seenModuleRefs }
+                val cleanModelCompileRefs = cleanModelCompileModules.mapTo(LinkedHashSet()) { it.moduleReference }
+                val preMakeCompileModules = if (seenModuleRefs.isEmpty()) {
+                    emptyList()
+                } else {
+                    cleanModelCompileModules.filter { m ->
+                        val dependsOnDirty = GlobalModuleDependenciesManager(m).getModules(Deptype.EXECUTE)
+                            .any { dep -> dep.moduleReference in seenModuleRefs }
+                        val usesDirtyLanguage = m.usedLanguages.any { lang -> lang.sourceModuleReference in seenModuleRefs } ||
+                            (m is jetbrains.mps.smodel.Generator && m.sourceLanguage().sourceModuleReference in seenModuleRefs)
+                        !dependsOnDirty && !usesDirtyLanguage
+                    }
+                }
+                val preMakeCompileRefs = preMakeCompileModules.mapTo(LinkedHashSet()) { it.moduleReference }
+                val postMakeCompileRefs = cleanModelCompileRefs.filterTo(LinkedHashSet()) { it !in preMakeCompileRefs }
+
+                val registry = LanguageRegistry.getInstance(mpsProject.repository)
+                fun languageNeedsReload(lang: Language): Boolean {
+                    if (!hasCompiledClassesOnDisk(lang)) return false
+                    val langId = MetaIdByDeclaration.getLanguageId(lang)
+                    if (registry.getLanguage(langId) == null) return true
+                    val struct = lang.structureModelDescriptor ?: return false
+                    return struct.rootNodes
+                        .filter { it.isInstanceOfConcept(StructureLanguageMeta.abstractConceptDeclarationConcept) }
+                        .any { MetaAdapterByDeclaration.getConcept(it)?.isValid == false }
+                }
+                fun generatorNeedsReload(gen: jetbrains.mps.smodel.Generator): Boolean =
+                    hasCompiledClassesOnDisk(gen) &&
+                        gen.models.any(isGeneratable) &&
+                        registry.getLanguage(gen.sourceLanguage())?.generators
+                            ?.none { it.moduleReference == gen.moduleReference } == true
+
+                val preMakeReloadRefs = LinkedHashSet<SModuleReference>()
+                val preMakeGenSourceLangs = LinkedHashMap<SModuleReference, SModuleReference>()
+                if (!rebuild && preMakeCompileModules.isNotEmpty()) {
+                    for (m in preMakeCompileModules) {
+                        when {
+                            m is Language && languageNeedsReload(m) -> preMakeReloadRefs.add(m.moduleReference)
+                            m is jetbrains.mps.smodel.Generator -> {
+                                val srcRef = m.sourceLanguage().sourceModuleReference
+                                if (srcRef in preMakeCompileRefs) {
+                                    preMakeGenSourceLangs[m.moduleReference] = srcRef
+                                }
+                                if (generatorNeedsReload(m)) {
+                                    preMakeReloadRefs.add(m.moduleReference)
+                                    if (srcRef in preMakeCompileRefs) preMakeReloadRefs.add(srcRef)
+                                }
+                            }
+                        }
+                    }
+                }
+                val needsRuntimeReload = if (!rebuild) {
+                    expandedModules.filterIsInstance<Language>().any(::languageNeedsReload) ||
+                        expandedModules.filterIsInstance<jetbrains.mps.smodel.Generator>().any(::generatorNeedsReload)
+                } else {
+                    false
+                }
+
+                val hasAnyCandidates = explicitGeneratableModels.isNotEmpty() ||
+                    allModuleGeneratableModels.isNotEmpty() ||
+                    compileCandidateModules.isNotEmpty()
 
                 val s = MakeSession(mpsProject, handler, rebuild)
                 // A non-generatable model shares its trace key, the long name, with a generated `foo` when it is `foo@<stereotype>`.
@@ -4723,7 +5103,23 @@ abstract class AbstractOps : McpToolset {
                     .map { it.reference }.distinct().toList()
                 val generatorRefs = (expandedModules.asSequence() + models.asSequence().mapNotNull { it.module })
                     .filterIsInstance<jetbrains.mps.smodel.Generator>().map { it.moduleReference }.toSet()
-                MakePreparation(list, s, ids, refs, namespaces, inputModels, nonCheckpointTransientModules(mpsProject).isNotEmpty(), generatorRefs)
+                MakePreparation(
+                    resourcesList = list,
+                    session = s,
+                    targetLanguageIds = ids,
+                    targetLanguageModuleRefs = refs,
+                    targetLanguageNamespaces = namespaces,
+                    inputModels = inputModels,
+                    transientsPresent = nonCheckpointTransientModules(mpsProject).isNotEmpty(),
+                    generatorModuleRefs = generatorRefs,
+                    hasAnyCandidates = hasAnyCandidates,
+                    cleanModelCompileCandidates = cleanModelCompileRefs,
+                    preMakeCompileCandidates = preMakeCompileRefs,
+                    postMakeCompileCandidates = postMakeCompileRefs,
+                    preMakeReloadCandidates = preMakeReloadRefs,
+                    preMakeGeneratorSourceLanguages = preMakeGenSourceLangs,
+                    needsRuntimeReload = needsRuntimeReload,
+                )
             }
             val resourcesList = preparation.resourcesList
             val session = preparation.session
@@ -4731,224 +5127,267 @@ abstract class AbstractOps : McpToolset {
             val targetLanguageModuleRefs = preparation.targetLanguageModuleRefs
             val targetLanguageNamespaces = preparation.targetLanguageNamespaces
 
-            // Do not open a session for a no-op make. A session-open notification blocks
-            // migrations, while this return path does not call makeService.make(), which is
-            // responsible for closing the session again.
-            if (resourcesList.isEmpty()) {
+            // Do not open a session or acquire mcpMakeRunning for an empty-input no-op make.
+            if (resourcesList.isEmpty() && !preparation.hasAnyCandidates) {
                 return MakeResult(true, "Nothing to make (no inputs resolved)")
             }
 
-            // Open the make session OUTSIDE the model read action. WorkbenchMakeService.openNewSession
-            // calls DumbService.waitForSmartMode() on non-EDT threads, and the platform asserts that
-            // waitForSmartMode must not be invoked from inside a read action while in dumb mode.
-            val openNewSessionFlag = withContext(Dispatchers.Default) {
-                makeService.openNewSession(session)
+            // Serialize all MCP-initiated makes (including empty-resourcesList ModuleMaker passes,
+            // post-MakeSession compilation, and ClassLoaderManager.reload) and form Dekker exclusion
+            // with HeadlessMigrations.APPLY: we publish mcpMakeRunning before checking applyRunning,
+            // and APPLY publishes applyRunning before checking HeadlessMigrations.isMakeSessionActive.
+            if (!HeadlessMigrations.mcpMakeRunning.compareAndSet(false, true)) {
+                return MakeResult(false, "Another make session is already active", runtimeReady = false)
             }
-            if (!openNewSessionFlag) {
-                return MakeResult(false, "Opening the make session failed", runtimeReady = false)
-            }
-            // APPLY sets applyRunning, then checks isSessionActive; we open the session, then check
-            // applyRunning. With both sides publishing before checking the other, at most one proceeds.
-            if (HeadlessMigrations.applyRunning.get()) {
-                makeService.closeSession(session)
-                return MakeResult(false, "a run_migrations APPLY is running", runtimeReady = false)
-            }
-            val generationSettings = mpsProject.getComponent(GenerationSettingsProvider::class.java).generationSettings
-            val savedTransients = saveTransientModels ?: generationSettings.isSaveTransientModels
-
-            // The trigger checks for pending migrations inside this call (make sessionClosed,
-            // afterLanguagesLoaded); the heartbeat keeps the Migration Assistant suppressed for a
-            // make longer than the suppression window (D48).
-            MigrationAssistantGuard.holdingSuppression {
-                // Register the listener BEFORE starting the make so no afterLanguagesLoaded
-                // notification is missed even if the language is reloaded during the build.
-                val languageReloadLatch = CountDownLatch(1)
-                val reloadListener = object : LanguageRegistryListener {
-                    override fun afterLanguagesLoaded(languages: Iterable<LanguageRuntime>) {
-                        // Only count down when a language we're actually building is reloaded.
-                        // Ignoring unrelated background reloads prevents premature latch release
-                        // that would let concept-detail tools read a stale StructureAspectDescriptor.
-                        // When targetLanguageIds is empty (e.g. solution modules with no language
-                        // runtime) we fall back to accepting any reload to avoid an unnecessary wait.
-                        val noTargets = targetLanguageIds.isEmpty() && targetLanguageNamespaces.isEmpty()
-                        if (noTargets || languages.any { lr ->
-                                // Be tolerant to ID shape changes and classloader nuances.
-                                val idMatch = try {
-                                    val id = lr.id
-                                    (id is SLanguageId) && targetLanguageIds.contains(id)
-                                } catch (e: Throwable) {
-                                    rethrowIfCancellation(e)
-                                    false
-                                }
-                                val nsMatch = try {
-                                    targetLanguageNamespaces.contains(lr.namespace)
-                                } catch (e: Throwable) {
-                                    rethrowIfCancellation(e)
-                                    false
-                                }
-                                idMatch || nsMatch
-                            }) {
-                            languageReloadLatch.countDown()
-                        }
-                    }
+            try {
+                if (makeService.isSessionActive) {
+                    return MakeResult(false, "Another make session is already active", runtimeReady = false)
                 }
-                val languageRegistry = LanguageRegistry.getInstance(mpsProject.repository)
-                languageRegistry.addRegistryListener(reloadListener)
-
-                // A guard: WorkbenchMakeTask now runs done(), which closes the session, before it
-                // releases future.get() (MPS-40329), so the latch is normally counted down already when
-                // get() returns. Older MPS builds released get() first, and a tool that refuses to run
-                // during a make (TRACE, TRANSIENT_MODELS, ...) could then still see our session open
-                // right after this make returned. Only one session is open at a time,
-                // so the first SESSION_CLOSED after ours opened is practically always ours (a previous
-                // session's notification still in flight is the rare exception); waiting for it, rather
-                // than for isSessionActive to turn false, does not stall when another make opens right
-                // after. A cancelled make waits for the same latch under NonCancellable before
-                // rethrowing so withSaveTransientModels restores the setting only after the make stops
-                // reading it.
-                val sessionClosedLatch = CountDownLatch(1)
-                val sessionListener = object : IMakeNotificationListener {
-                    override fun sessionClosed(notification: MakeNotification) {
-                        sessionClosedLatch.countDown()
-                    }
+                if (HeadlessMigrations.applyRunning.get()) {
+                    return MakeResult(false, "a run_migrations APPLY is running", runtimeReady = false)
                 }
-                makeServiceComponent.addListener(sessionListener)
 
-                // Captured inside the `withContext` block below and read after the make finishes.
-                // Starts true so the "no language modules to track" path (targetLanguageIds empty)
-                // returns the N/A default; flipped to false only when the build succeeded but the
-                // 10 s reload-latch timed out for a language we were actually building.
-                var runtimeReady = true
-                val result = try {
-                    // The facet reads the setting on the make's background task, after make()
-                    // returned, so the flip spans future.get(); our session ownership keeps other
-                    // makes from reading it. Restored before the class reload below.
-                    val r = withSaveTransientModels(generationSettings, saveTransientModels) {
-                        val future = makeService.make(session, resourcesList, null, null, makeMonitor)
-                        val makeResult = try {
-                            // runInterruptible bridges Thread.interrupt() to coroutine cancellation so a
-                            // structured-cancel actually unblocks future.get() instead of waiting for the
-                            // build to finish.
-                            runInterruptible(Dispatchers.IO) {
-                                future.get()
-                            }
-                        } catch (e: CancellationException) {
-                            makeMonitor.cancel()
-                            future.cancel(true)
-                            withContext(NonCancellable + Dispatchers.IO) {
-                                val sessionClosed = sessionClosedLatch.await(SESSION_CLOSE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                                if (!sessionClosed) {
-                                    logger.warn("The make session was still open $SESSION_CLOSE_TIMEOUT_SECONDS s after the make was cancelled")
-                                }
-                            }
-                            throw e
+                if (resourcesList.isEmpty()) {
+                    val transientModels = if (saveTransientModels == false && preparation.transientsPresent) {
+                        withModalTimeoutOnEdt {
+                            mpsProject.getComponent(TransientModelsProvider::class.java)?.removeAllTransients(false)
                         }
-                        val sessionClosed = runInterruptible(Dispatchers.IO) {
-                            sessionClosedLatch.await(SESSION_CLOSE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                        }
-                        if (!sessionClosed) {
-                            logger.warn("The make session was still open $SESSION_CLOSE_TIMEOUT_SECONDS s after the make finished")
-                            messages.add(
-                                MakeMessage(
-                                    "WARNING",
-                                    "The make session was still open $SESSION_CLOSE_TIMEOUT_SECONDS s after the make finished; " +
-                                            "tools refused while a make session is active may need a retry."
-                                )
+                        transientModelsReport(
+                            mpsProject,
+                            saved = false,
+                            droppedPrevious = true,
+                            inputModels = emptyList(),
+                        )
+                    } else {
+                        null
+                    }
+                    return MigrationAssistantGuard.holdingSuppression {
+                        val languageReloadLatch = CountDownLatch(1)
+                        val reloadListener = createLanguageReloadListener(targetLanguageIds, targetLanguageNamespaces, languageReloadLatch)
+                        val languageRegistry = LanguageRegistry.getInstance(mpsProject.repository)
+                        languageRegistry.addRegistryListener(reloadListener)
+                        try {
+                            val cr = compileModulesIncrementally(
+                                mpsProject = mpsProject,
+                                moduleRefs = preparation.cleanModelCompileCandidates,
+                                handler = handler,
+                                monitor = makeMonitor,
                             )
+                            if (!cr.isOk) {
+                                MakeResult(false, "Make failed: $cr", messages.toList(), runtimeReady = false, transientModels = transientModels)
+                            } else if (!cr.isCompiledAnything && !preparation.needsRuntimeReload) {
+                                MakeResult(
+                                    true,
+                                    "Nothing to make (all models and classes up to date)",
+                                    messages.toList(),
+                                    runtimeReady = true,
+                                    transientModels = transientModels,
+                                )
+                            } else {
+                                val modulesToReload = buildSet {
+                                    addAll(targetLanguageModuleRefs)
+                                    addAll(preparation.generatorModuleRefs)
+                                    addAll(cr.affectedModules)
+                                }
+                                val runtimeReady = reloadAndAwaitLanguages(
+                                    mpsProject = mpsProject,
+                                    modulesToReload = modulesToReload,
+                                    targetLanguageIds = targetLanguageIds,
+                                    languageReloadLatch = languageReloadLatch,
+                                    messages = messages,
+                                )
+                                val migrationsPending = if (targetLanguageModuleRefs.isEmpty() || !runtimeReady) null else pendingMigrationCount(mpsProject)
+                                MakeResult(
+                                    true,
+                                    "Make successful",
+                                    messages.toList(),
+                                    runtimeReady = runtimeReady,
+                                    migrationsPending = migrationsPending,
+                                    transientModels = transientModels,
+                                )
+                            }
+                        } finally {
+                            languageRegistry.removeRegistryListener(reloadListener)
                         }
-                        makeResult
                     }
-                    withContext(Dispatchers.IO) {
-                        // isSucessful is a typo in the MPS IResult API (jetbrains.mps.make.script.IResult).
-                        if (r.isSucessful) {
-                            // The make pipeline only refreshes the language runtime indirectly:
-                            // Project.reconcileProjectFiles -> markDirtyAndRefresh -> module
-                            // events -> ClassLoaderManager.processModuleChanges -> notifyLoad
-                            // -> afterLanguagesLoaded. That chain is asynchronous (invokeLater)
-                            // and races EDT scheduling; under contention, or when the make
-                            // produced no class-file deltas, the latch can miss its window and
-                            // callers end up reading a stale StructureAspectDescriptor (empty
-                            // properties / references / children, null sourceNode).
-                            //
-                            // Drive the reload synchronously instead, mirroring what
-                            // DefaultMakeTask does after a regular UI make. CLM.reload is
-                            // idempotent and acquires its own write action, so calling it here
-                            // is safe even when a natural reload already happened earlier.
-                            // afterLanguagesLoaded fires synchronously inside CLM.reload, so
-                            // by the time it returns the latch is down for the target
-                            // languages.
-                            //
-                            // The make's generators are reloaded too, like DefaultMakeTask reloads the modules
-                            // its compilation affected: a generator registers with its language's runtime only
-                            // when its module loads with the generator's activator class present, and a rebuild
-                            // that reloads the language alone left a fresh language's runtime without its
-                            // generator (PLAN: NO_GENERATORS until mps_mcp_reload_all; see the test
-                            // `a language made with its generator lists the generator in its runtime`).
-                            val modulesToReload = targetLanguageModuleRefs + preparation.generatorModuleRefs
-                            if (modulesToReload.isNotEmpty()) {
-                                try {
-                                    val classLoaderManager = mpsProject.getComponent(ClassLoaderManager::class.java)
-                                    classLoaderManager?.reload(modulesToReload, EmptyProgressMonitor())
-                                    languageReloadLatch.countDown() // Treat explicit reload completion as definitive
+                }
+
+                val generationSettings = mpsProject.getComponent(GenerationSettingsProvider::class.java).generationSettings
+                val savedTransients = saveTransientModels ?: generationSettings.isSaveTransientModels
+
+                // The trigger checks for pending migrations inside this call (make sessionClosed,
+                // afterLanguagesLoaded); the heartbeat keeps the Migration Assistant suppressed for a
+                // make longer than the suppression window (D48).
+                MigrationAssistantGuard.holdingSuppression {
+                    // Register the listener BEFORE pre-make compilation/reload and MakeSession so no
+                    // afterLanguagesLoaded notification is missed.
+                    val languageReloadLatch = CountDownLatch(1)
+                    val reloadListener = createLanguageReloadListener(targetLanguageIds, targetLanguageNamespaces, languageReloadLatch)
+                    val languageRegistry = LanguageRegistry.getInstance(mpsProject.repository)
+                    languageRegistry.addRegistryListener(reloadListener)
+
+                    val sessionClosedLatch = CountDownLatch(1)
+                    val sessionListener = object : IMakeNotificationListener {
+                        override fun sessionClosed(notification: MakeNotification) {
+                            sessionClosedLatch.countDown()
+                        }
+                    }
+                    makeServiceComponent.addListener(sessionListener)
+
+                    var runtimeReady = true
+                    var preReloadFailed = false
+                    val affectedCompileModules = LinkedHashSet<SModuleReference>()
+                    var directCompileFailure: MPSCompilationResult? = null
+                    var sessionOwnedByUs = false
+                    val result = try {
+                        // Compile and reload upstream clean-model modules BEFORE opening MakeSession
+                        // (whose SESSION_OPENED notification suspends ReloadManagerComponent) so
+                        // Generate_Facet runs against live upstream languages/generators and a preCr
+                        // failure never opens or leaks a MakeSession.
+                        if (preparation.preMakeCompileCandidates.isNotEmpty()) {
+                            val preCr = compileModulesIncrementally(
+                                mpsProject = mpsProject,
+                                moduleRefs = preparation.preMakeCompileCandidates,
+                                handler = handler,
+                                monitor = makeMonitor,
+                            )
+                            affectedCompileModules.addAll(preCr.affectedModules)
+                            if (!preCr.isOk) {
+                                directCompileFailure = preCr
+                            } else {
+                                val preReloadTargets = buildSet {
+                                    addAll(preCr.affectedModules)
+                                    addAll(preparation.preMakeReloadCandidates)
+                                    for (affected in preCr.affectedModules) {
+                                        preparation.preMakeGeneratorSourceLanguages[affected]?.let(::add)
+                                    }
+                                }
+                                if (preReloadTargets.isNotEmpty()) {
+                                    preReloadFailed = !reloadModulesOnIo(mpsProject, preReloadTargets, messages)
+                                }
+                            }
+                        }
+                        if (directCompileFailure != null) {
+                            null
+                        } else {
+                            // Open the make session OUTSIDE any model read action.
+                            val openNewSessionFlag = withContext(Dispatchers.Default) {
+                                makeService.openNewSession(session)
+                            }
+                            if (!openNewSessionFlag) {
+                                return@holdingSuppression MakeResult(false, "Opening the make session failed", runtimeReady = false)
+                            }
+                            sessionOwnedByUs = true
+                            if (HeadlessMigrations.applyRunning.get()) {
+                                sessionOwnedByUs = false
+                                makeService.closeSession(session)
+                                return@holdingSuppression MakeResult(false, "a run_migrations APPLY is running", runtimeReady = false)
+                            }
+                            // The facet reads the setting on the make's background task, after make()
+                            // returned, so the flip spans future.get(); our session ownership keeps other
+                            // makes from reading it. Restored before the class reload below.
+                            val r = withSaveTransientModels(generationSettings, saveTransientModels) {
+                                val future = makeService.make(session, resourcesList, null, null, makeMonitor)
+                                sessionOwnedByUs = false
+                                val makeResult = try {
+                                    // runInterruptible bridges Thread.interrupt() to coroutine cancellation so a
+                                    // structured-cancel actually unblocks future.get() instead of waiting for the
+                                    // build to finish.
+                                    runInterruptible(Dispatchers.IO) {
+                                        future.get()
+                                    }
                                 } catch (e: CancellationException) {
+                                    makeMonitor.cancel()
+                                    future.cancel(true)
+                                    withContext(NonCancellable + Dispatchers.IO) {
+                                        val sessionClosed = sessionClosedLatch.await(SESSION_CLOSE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                                        if (!sessionClosed) {
+                                            logger.warn("The make session was still open $SESSION_CLOSE_TIMEOUT_SECONDS s after the make was cancelled")
+                                        }
+                                    }
                                     throw e
-                                } catch (e: ProcessCanceledException) {
-                                    throw e
-                                } catch (e: Exception) {
+                                }
+                                val sessionClosed = runInterruptible(Dispatchers.IO) {
+                                    sessionClosedLatch.await(SESSION_CLOSE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                                }
+                                if (!sessionClosed) {
+                                    logger.warn("The make session was still open $SESSION_CLOSE_TIMEOUT_SECONDS s after the make finished")
                                     messages.add(
                                         MakeMessage(
                                             "WARNING",
-                                            "Explicit ClassLoaderManager.reload failed: ${e.message}. " +
-                                                    "Concept descriptors may be stale; retry the build with " +
-                                                    "`rebuild = true` (mps_mcp_reload_all alone reloads from " +
-                                                    "disk and cannot fix stale aspect descriptor classes)."
+                                            "The make session was still open $SESSION_CLOSE_TIMEOUT_SECONDS s after the make finished; " +
+                                                "tools refused while a make session is active may need a retry."
                                         )
                                     )
                                 }
+                                makeResult
                             }
-                            // Short safety-net await: the listener should already have fired
-                            // synchronously inside CLM.reload above. We still wait briefly to
-                            // cover natural reloads (e.g. languages outside targetLanguageModuleRefs)
-                            // and to absorb any tail latency of LanguageRegistry notifications.
-                            // runInterruptible makes the blocking await honor coroutine cancellation.
-                            val latchFired = runInterruptible {
-                                languageReloadLatch.await(LANGUAGE_RELOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                            }
-                            if (!latchFired && targetLanguageIds.isNotEmpty()) {
-                                runtimeReady = false
-                                messages.add(
-                                    MakeMessage(
-                                        "WARNING",
-                                        "Language runtime did not reload within $LANGUAGE_RELOAD_TIMEOUT_SECONDS s after the build " +
-                                                "(languages: ${targetLanguageIds.joinToString()}). " +
-                                                "Concept descriptors (properties, references, children) may " +
-                                                "be stale. Retry the build with `rebuild = true` " +
-                                                "(`mps_mcp_reload_all` alone reloads from disk and cannot fix " +
-                                                "stale aspect descriptor classes); restart MPS as a last resort."
+                            if (r.isSucessful) {
+                                if (preparation.postMakeCompileCandidates.isNotEmpty()) {
+                                    val postCr = compileModulesIncrementally(
+                                        mpsProject = mpsProject,
+                                        moduleRefs = preparation.postMakeCompileCandidates,
+                                        handler = handler,
+                                        monitor = makeMonitor,
                                     )
-                                )
+                                    affectedCompileModules.addAll(postCr.affectedModules)
+                                    if (!postCr.isOk) {
+                                        directCompileFailure = postCr
+                                    }
+                                }
+                                if (directCompileFailure == null) {
+                                    // Drive the reload synchronously, mirroring DefaultMakeTask after a UI make.
+                                    // Reloads both target languages and their generators (D134) plus any clean-model
+                                    // modules recompiled by the incremental ModuleMaker pass (D155).
+                                    val modulesToReload = buildSet {
+                                        addAll(targetLanguageModuleRefs)
+                                        addAll(preparation.generatorModuleRefs)
+                                        addAll(affectedCompileModules)
+                                    }
+                                    val postReloaded = reloadAndAwaitLanguages(
+                                        mpsProject = mpsProject,
+                                        modulesToReload = modulesToReload,
+                                        targetLanguageIds = targetLanguageIds,
+                                        languageReloadLatch = languageReloadLatch,
+                                        messages = messages,
+                                    )
+                                    runtimeReady = !preReloadFailed && postReloaded
+                                }
                             }
+                            r
                         }
-                        r
+                    } catch (t: Throwable) {
+                        if (sessionOwnedByUs) {
+                            makeService.closeSession(session)
+                        }
+                        throw t
+                    } finally {
+                        languageRegistry.removeRegistryListener(reloadListener)
+                        makeServiceComponent.removeListener(sessionListener)
                     }
-                } finally {
-                    languageRegistry.removeRegistryListener(reloadListener)
-                    makeServiceComponent.removeListener(sessionListener)
-                }
 
-                val transientModels = transientModelsReport(
-                    mpsProject,
-                    saved = savedTransients,
-                    droppedPrevious = preparation.transientsPresent,
-                    inputModels = preparation.inputModels,
-                )
-                if (result.isSucessful) { // isSucessful: MPS IResult API typo
-                    // Only a reloaded runtime offers the new scripts, so a stale one would undercount.
-                    val migrationsPending = if (targetLanguageModuleRefs.isEmpty() || !runtimeReady) null else pendingMigrationCount(mpsProject)
-                    MakeResult(true, "Make successful", messages, runtimeReady = runtimeReady, migrationsPending = migrationsPending, transientModels = transientModels)
-                } else {
-                    MakeResult(false, "Make failed: ${result.message()}", messages, runtimeReady = false, transientModels = transientModels)
+                    if (result == null) {
+                        MakeResult(false, "Make failed: $directCompileFailure", messages.toList(), runtimeReady = false)
+                    } else {
+                        val transientModels = transientModelsReport(
+                            mpsProject,
+                            saved = savedTransients,
+                            droppedPrevious = preparation.transientsPresent,
+                            inputModels = preparation.inputModels,
+                        )
+                        if (directCompileFailure != null) {
+                            MakeResult(false, "Make failed: $directCompileFailure", messages.toList(), runtimeReady = false, transientModels = transientModels)
+                        } else if (result.isSucessful) { // isSucessful: MPS IResult API typo
+                            // Only a reloaded runtime offers the new scripts, so a stale one would undercount.
+                            val migrationsPending = if (targetLanguageModuleRefs.isEmpty() || !runtimeReady) null else pendingMigrationCount(mpsProject)
+                            MakeResult(true, "Make successful", messages.toList(), runtimeReady = runtimeReady, migrationsPending = migrationsPending, transientModels = transientModels)
+                        } else {
+                            MakeResult(false, "Make failed: ${result.message()}", messages.toList(), runtimeReady = false, transientModels = transientModels)
+                        }
+                    }
                 }
+            } finally {
+                HeadlessMigrations.mcpMakeRunning.set(false)
             }
         } catch (e: CancellationException) {
             throw e
@@ -4957,6 +5396,185 @@ abstract class AbstractOps : McpToolset {
         } catch (e: Exception) {
             MakeResult(false, "Make error: ${e.message?.takeIf { it.isNotBlank() } ?: e.toString()}", runtimeReady = false)
         }
+    }
+
+    /** Matches `ModuleMaker.isExcluded` (`!isReadOnly && !isPackaged && classesGen != null && compile == Compile.MPS`). Needs read access. */
+    private fun isCompileInMpsCandidate(module: SModule): Boolean {
+        if (module.isReadOnly || module.isPackaged) return false
+        val facet = module.getFacet(JavaModuleFacet::class.java) ?: return false
+        return facet.classesGen != null && facet.compile == JavaModuleFacet.Compile.MPS
+    }
+
+    /** True when [module]'s `classes_gen` directory exists and contains at least one `.class` file. Needs read access. */
+    private fun hasCompiledClassesOnDisk(module: SModule): Boolean {
+        val classesGen = module.getFacet(JavaModuleFacet::class.java)?.classesGen ?: return false
+        return classesGen.exists() && containsClassFile(classesGen)
+    }
+
+    private fun containsClassFile(dir: IFile): Boolean {
+        val children = dir.children ?: return false
+        return children.any { child ->
+            if (child.isDirectory) containsClassFile(child) else child.name.endsWith(".class")
+        }
+    }
+
+    /**
+     * Incremental `ModuleMaker` pass (`forceCompile = false`) mirroring `JavaCompile_Facet` and
+     * `StartupModuleMakerImpl`. Returns [MPSCompilationResult.ZERO_COMPILATION_RESULT] in milliseconds
+     * when `classes_gen/` is already up to date, and compiles dirty/missing `.class` files otherwise.
+     */
+    private suspend fun compileModulesIncrementally(
+        mpsProject: MPSProject,
+        moduleRefs: Set<SModuleReference>,
+        handler: IMessageHandler,
+        monitor: ProgressMonitor,
+    ): MPSCompilationResult {
+        if (moduleRefs.isEmpty()) return MPSCompilationResult.ZERO_COMPILATION_RESULT
+        val result = runInterruptible(Dispatchers.IO) {
+            val localFs = mpsProject.getComponent(VFSManager::class.java)?.getFileSystem(VFSManager.FILE_FS)
+            val fileTypeManager = ApplicationManager.getApplication()?.getService(FileTypeManager::class.java)
+            val maker = ModuleMaker(handler).ignoreFiles { f ->
+                (localFs != null && localFs.isFileIgnored(f.name)) ||
+                    (fileTypeManager != null && fileTypeManager.isFileIgnored(f.name))
+            }
+            val jcOptions = mpsProject.getComponent(JavaCompilerOptionsComponent::class.java)
+                ?.getJavaCompilerOptions(mpsProject)
+            if (jcOptions != null) {
+                maker.options(jcOptions)
+            }
+            val clientFile = KotlinCompilerOptions.createClientFile()
+            try {
+                maker.kotlinCompileCache(JvmKotlinCompileCacheHandler(handler))
+                    .kotlinOptions(KotlinCompilerOptions(clientFile))
+                val compileBlock = Computable {
+                    var targetCount = 0
+                    mpsProject.modelAccess.runReadAction {
+                        val targetModules = moduleRefs.mapNotNull { it.resolve(mpsProject.repository) }
+                        targetCount = targetModules.size
+                        if (targetModules.isNotEmpty()) {
+                            maker.prepare(targetModules, false, monitor)
+                        }
+                    }
+                    if (targetCount == 0) {
+                        MPSCompilationResult.ZERO_COMPILATION_RESULT
+                    } else {
+                        maker.make(monitor)
+                    }
+                }
+                val reloadManager = ReloadManager.getInstance()
+                if (reloadManager != null) {
+                    reloadManager.computeNoReload(compileBlock)
+                } else {
+                    compileBlock.compute()
+                }
+            } finally {
+                clientFile.delete()
+            }
+        }
+        currentCoroutineContext().ensureActive()
+        return result
+    }
+
+    private fun createLanguageReloadListener(
+        targetLanguageIds: Set<SLanguageId>,
+        targetLanguageNamespaces: Set<String>,
+        languageReloadLatch: CountDownLatch,
+    ): LanguageRegistryListener = object : LanguageRegistryListener {
+        override fun afterLanguagesLoaded(languages: Iterable<LanguageRuntime>) {
+            // Only count down when a language we're actually building is reloaded.
+            // Ignoring unrelated background reloads prevents premature latch release
+            // that would let concept-detail tools read a stale StructureAspectDescriptor.
+            // When targetLanguageIds is empty (e.g. solution modules with no language
+            // runtime) we fall back to accepting any reload to avoid an unnecessary wait.
+            val noTargets = targetLanguageIds.isEmpty() && targetLanguageNamespaces.isEmpty()
+            if (noTargets || languages.any { lr ->
+                    val idMatch = try {
+                        val id = lr.id
+                        (id is SLanguageId) && targetLanguageIds.contains(id)
+                    } catch (e: Throwable) {
+                        rethrowIfCancellation(e)
+                        false
+                    }
+                    val nsMatch = try {
+                        targetLanguageNamespaces.contains(lr.namespace)
+                    } catch (e: Throwable) {
+                        rethrowIfCancellation(e)
+                        false
+                    }
+                    idMatch || nsMatch
+                }) {
+                languageReloadLatch.countDown()
+            }
+        }
+    }
+
+    private suspend fun reloadModulesOnIo(
+        mpsProject: MPSProject,
+        modulesToReload: Set<SModuleReference>,
+        messages: MutableList<MakeMessage>,
+    ): Boolean = withContext(Dispatchers.IO) {
+        if (modulesToReload.isEmpty()) return@withContext true
+        try {
+            val classLoaderManager = mpsProject.getComponent(ClassLoaderManager::class.java)
+            classLoaderManager?.reload(modulesToReload, EmptyProgressMonitor())
+            true
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: ProcessCanceledException) {
+            throw e
+        } catch (e: Exception) {
+            messages.add(
+                MakeMessage(
+                    "WARNING",
+                    "Explicit ClassLoaderManager.reload failed: ${e.message}. " +
+                        "Concept descriptors may be stale; retry the build with " +
+                        "`rebuild = true` (mps_mcp_reload_all alone reloads from " +
+                        "disk and cannot fix stale aspect descriptor classes)."
+                )
+            )
+            false
+        }
+    }
+
+    private suspend fun reloadAndAwaitLanguages(
+        mpsProject: MPSProject,
+        modulesToReload: Set<SModuleReference>,
+        targetLanguageIds: Set<SLanguageId>,
+        languageReloadLatch: CountDownLatch,
+        messages: MutableList<MakeMessage>,
+    ): Boolean = withContext(Dispatchers.IO) {
+        var runtimeReady = true
+        if (modulesToReload.isNotEmpty()) {
+            val reloaded = reloadModulesOnIo(mpsProject, modulesToReload, messages)
+            if (reloaded) {
+                languageReloadLatch.countDown() // Treat explicit reload completion as definitive
+            } else {
+                runtimeReady = false
+            }
+        }
+        if (targetLanguageIds.isNotEmpty()) {
+            // Short safety-net await: the listener should already have fired synchronously inside
+            // CLM.reload above. We still wait briefly to cover natural reloads and absorb any tail
+            // latency of LanguageRegistry notifications.
+            val latchFired = runInterruptible {
+                languageReloadLatch.await(LANGUAGE_RELOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            }
+            if (!latchFired) {
+                runtimeReady = false
+                messages.add(
+                    MakeMessage(
+                        "WARNING",
+                        "Language runtime did not reload within $LANGUAGE_RELOAD_TIMEOUT_SECONDS s after the build " +
+                            "(languages: ${targetLanguageIds.joinToString()}). " +
+                            "Concept descriptors (properties, references, children) may " +
+                            "be stale. Retry the build with `rebuild = true` " +
+                            "(`mps_mcp_reload_all` alone reloads from disk and cannot fix " +
+                            "stale aspect descriptor classes); restart MPS as a last resort."
+                    )
+                )
+            }
+        }
+        runtimeReady
     }
 
     /** [TransientModelsOps.nonCheckpointModules] of the project, none without a provider. Needs a read action. */

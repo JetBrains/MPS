@@ -245,6 +245,7 @@ class MPSNodeMcpToolset : AbstractNodeOps() {
             "mps_mcp_query_nodes",
             requiredParametersBlob(parameters.text, op.name, queryNodesParameterKeys(op)),
         )?.let { return it }
+        rejectUnknownTopLevelParameters("mps_mcp_query_nodes")?.let { return it }
         return mps_mcp_query_nodes(op, parameters.text, maxInlineBytes)
     }
 
@@ -283,7 +284,7 @@ class MPSNodeMcpToolset : AbstractNodeOps() {
     @McpTool
     @McpDescription("""        
         Structural node mutations and code generation: move a child within its role, move a node to a new parent or make it a root, create a deep copy of a node, make/rebuild models/modules/whole project, fix broken references. Parameters are a JSON object (real JSON or its string form). For MOVE_CHILD, supply `childNodeRef` (or `nodeReference`) for the child to move and `position`; `nodeReference` (the parent, when `childNodeRef` is also passed) and `childRole` are inferred from the child when omitted and validated when supplied; whatever was inferred is reported in `details` (`movedNode`, `parentReference`, `childRole`, `inferredParameters`), a lone `nodeReference` read as the child adds a `warnings` entry, and a lone `nodeReference` plus a `childRole` that the node's own concept also declares is rejected as ambiguous. For MOVE_NODE_TO_PARENT, supply a non-null `newParentRef` plus `role` to reparent; omit `newParentRef` and supply `modelReference` to intentionally promote the node to a root (its concept must be rootable; `role`/`position` are then ignored with a warning). Explicit `newParentRef:null`, and `newParentRef` together with `modelReference`, are rejected. Every MOVE_NODE_TO_PARENT check runs before the model changes: a new parent that is the node or its descendant, a concept the role does not accept, and a single-valued role that already holds another node are rejected (unlike update_node ADD CHILD, a move never replaces an occupant; the rejection names it in `details.occupant` and gives the update_node SET CHILD call that deletes it in `details.recovery`, after which the same move succeeds; when the moved node lies inside the occupant, `details.movedNodeInsideOccupant` is true and there is no `details.recovery`, since deleting the occupant would delete the node); an unknown `role` lists the roles that fit in `details.candidateRoles`. The response's `details` reports `movedNode`, `previousParentReference` (or `previousModelReference`), and `parentReference` plus `role`, or `modelReference`. A move to another model keeps the references within and out of the moved subtree resolvable (`data.fixReferences`), adding the model imports, module dependencies and used languages the subtree needs (languages added are listed in `details.addedUsedLanguages`, and `details.addedUsedLanguageDetails` has one object per language: `qualifiedName`, `languageReference`, plus `containingProject` / `editableFromCurrentProject:false` when another open project owns it), but does not update incoming references from elsewhere: a `warnings` entry says any such references stop resolving; use MPS's Move refactoring for a full move. For MOVE_CHILD and MOVE_NODE_TO_PARENT, `position` is 0-based and `-1` moves to the end; a `position` at or beyond the role's child count is clamped to the end (not rejected) and a negative value other than -1 is rejected — the response's `data.index` reports the moved (clamped) node's actual resulting index.
-         MAKE parameters: {"modules":[<moduleRef>,...]} | {"models":[<modelRef>,...]} | {"wholeProject":true}, plus optional "rebuild":bool and "saveTransientModels":bool; node references are not accepted — resolve the node's module or model first. MAKE targets must belong to the project selected by projectPath, so a language of another open project is built with that project's `projectPath`. `saveTransientModels` keeps (true) or drops (false) this make's transient models and generation trace, overriding the IDE setting for this make only (omitted = the IDE setting); keep them to read each step's output and trace nodes with `mps_mcp_generation`, which is cheap on a small sample model. Every make starts by discarding all earlier transient models except the shared `checkpoints` module: a make that ran reports `transientModels` {`saved`, `droppedPrevious` (earlier transient models existed and are now gone), `modules` [{`module`, `reference`, `models`}], `traceAvailableFor` (input models with a generation trace)}; "Nothing to make" reports no block. A successful make that built a language and reloaded its runtime adds `migrationsPending` (pending migrations of the project; apply them with `mps_mcp_run_migrations`). Returns `{"ok":true,"data":{...}}` on success or `{"ok":false,"error":"..."}` on failure. See `mps-node-editing` and `mps-mcp-workflow` skills.
+         MAKE parameters: {"modules":[<moduleRef>,...]} | {"models":[<modelRef>,...]} | {"wholeProject":true}, plus optional "rebuild":bool and "saveTransientModels":bool; node references are not accepted — resolve the node's module or model first. Module and wholeProject MAKE with rebuild=false (the default) is incremental: it generates only models where generationRequired is true, compiles any dirty source_gen/ into classes_gen/ (so retrying MAKE after a post-TextGen timeout compiles and reloads without regenerating), and returns "Nothing to make" when models and classes are already up to date. MAKE targets must belong to the project selected by projectPath, so a language of another open project is built with that project's `projectPath`. `saveTransientModels` keeps (true) or drops (false) this make's transient models and generation trace, overriding the IDE setting for this make only (omitted = the IDE setting); keep them to read each step's output and trace nodes with `mps_mcp_generation`, which is cheap on a small sample model. Every make starts by discarding all earlier transient models except the shared `checkpoints` module: a make that ran reports `transientModels` {`saved`, `droppedPrevious` (earlier transient models existed and are now gone), `modules` [{`module`, `reference`, `models`}], `traceAvailableFor` (input models with a generation trace)}; "Nothing to make" reports no block unless `saveTransientModels=false` discarded earlier transient models. A successful make that built a language and reloaded its runtime adds `migrationsPending` (pending migrations of the project; apply them with `mps_mcp_run_migrations`). Returns `{"ok":true,"data":{...}}` on success or `{"ok":false,"error":"..."}` on failure. See `mps-node-editing` and `mps-mcp-workflow` skills.
          For COPY_NODE, a root node is copied and added as a new root in the same model; a node inside a multi-child collection role (`[0..*]` or `[1..*]`) is copied and inserted as the next sibling; a node in a single-child role (`[0..1]` or `[1]`) returns an error because copying a singleton child makes no structural sense.
          Prefer COPY_NODE over hand-authoring a JSON blueprint when a new node should closely resemble one that already exists — it's fewer calls and guarantees a structurally valid clone; adjust the copy afterward with mps_mcp_update_node.
     """)
@@ -299,9 +300,10 @@ class MPSNodeMcpToolset : AbstractNodeOps() {
         @McpDescription("Required. Parameters for the operation, as a JSON object — sent as real JSON or as its string form.") parameters: JsonOrText = JsonOrText.EMPTY
     ): String {
         // D43: only a blank *operation* is answered here. Once the operation is known, a blank
-        // `parameters` keeps D29's per-operation missingAlterNodesParameters (MAKE_INPUT_INVALID
-        // plus `expectedParameters` for MAKE) in the overload below; it cannot be chosen without
-        // an operation, so a blank blob beside a blank operation is reported here instead.
+        // `parameters` is handled right below via D29's per-operation missingAlterNodesParameters
+        // (MAKE_INPUT_INVALID plus `expectedParameters` for MAKE) before rejectUnknownTopLevelParameters
+        // so callers who put MAKE keys at the top level keep D29's guidance; it cannot be chosen
+        // without an operation, so a blank blob beside a blank operation is reported here instead.
         if (operation.isBlank()) {
             rejectMissingParameters(
                 "mps_mcp_alter_nodes",
@@ -311,6 +313,8 @@ class MPSNodeMcpToolset : AbstractNodeOps() {
         }
         val op = resolveOperationOrNull<MPSAlterOperation>(operation)
             ?: return McpCallOutcomes.record(unknownOperation<MPSAlterOperation>(operation))
+        if (parameters.text.isBlank()) return McpCallOutcomes.record(missingAlterNodesParameters(op))
+        rejectUnknownTopLevelParameters("mps_mcp_alter_nodes")?.let { return it }
         return mps_mcp_alter_nodes(op, parameters.text)
     }
 
@@ -319,12 +323,12 @@ class MPSNodeMcpToolset : AbstractNodeOps() {
      * registered `@McpTool` (see [resolveOperationOrNull] for the rationale).
      */
     suspend fun mps_mcp_alter_nodes(operation: MPSAlterOperation, parameters: String): String {
-        // Guarded here rather than in the wrapper so neither entry point can reach the Gson parse
-        // with no object to parse: blank text decodes to a null JsonObject (a bare `null` fails the parse).
-        // `rejectUnknownParameterKeys` already answers that for the four operations with a key
-        // list, but MAKE has none and dereferenced it into an opaque INTERNAL_ERROR. Recorded
-        // explicitly because this returns before `withMpsProject`, the only other call site that
-        // reports the envelope to the call log (see McpCallOutcomes).
+        // Also guarded here (in addition to the String wrapper above) so direct in-process callers
+        // cannot reach the Gson parse with no object to parse: blank text decodes to a null
+        // JsonObject (a bare `null` fails the parse). `rejectUnknownParameterKeys` already answers
+        // that for the four operations with a key list, but MAKE has none and dereferenced it into
+        // an opaque INTERNAL_ERROR. Recorded explicitly because this returns before `withMpsProject`,
+        // the only other call site that reports the envelope to the call log (see McpCallOutcomes).
         if (parameters.isBlank()) return McpCallOutcomes.record(missingAlterNodesParameters(operation))
         return withMpsProject("Altering MPS nodes: $operation") { mpsProject ->
             val params = try {
@@ -560,6 +564,8 @@ class MPSNodeMcpToolset : AbstractNodeOps() {
             val modulesToMake: Set<U>,
             val unresolvedModels: List<String>,
             val unresolvedModules: List<String>,
+            val explicitModels: Set<M> = emptySet(),
+            val explicitModules: Set<U> = emptySet(),
         ) : MakeTargetResolution<M, U>() {
             fun warnings(): List<String> = buildList {
                 unresolvedModels.forEach { add("Unresolved model reference: $it") }
@@ -595,11 +601,15 @@ class MPSNodeMcpToolset : AbstractNodeOps() {
 
         val modelsToMake = linkedSetOf<M>()
         val modulesToMake = linkedSetOf<U>()
+        val explicitModels = linkedSetOf<M>()
+        val explicitModules = linkedSetOf<U>()
         val unresolvedModels = mutableListOf<String>()
         val unresolvedModules = mutableListOf<String>()
 
         if (wholeProject) {
-            modulesToMake.addAll(allProjectModules())
+            val projectModules = allProjectModules().toList()
+            modulesToMake.addAll(projectModules)
+            explicitModules.addAll(projectModules)
             modelsToMake.addAll(allProjectModels())
         } else {
             requestedModels.forEach { requestedModel ->
@@ -613,6 +623,7 @@ class MPSNodeMcpToolset : AbstractNodeOps() {
                     unresolvedModels.add(requestedModel)
                 } else {
                     modelsToMake.add(model)
+                    explicitModels.add(model)
                     moduleOfModel(model)?.let { modulesToMake.add(it) }
                 }
             }
@@ -627,6 +638,7 @@ class MPSNodeMcpToolset : AbstractNodeOps() {
                     unresolvedModules.add(requestedModule)
                 } else {
                     modulesToMake.add(module)
+                    explicitModules.add(module)
                     modelsToMake.addAll(modelsOfModule(module))
                 }
             }
@@ -642,7 +654,14 @@ class MPSNodeMcpToolset : AbstractNodeOps() {
             )
         }
 
-        return MakeTargetResolution.Ok(modelsToMake, modulesToMake, unresolvedModels, unresolvedModules)
+        return MakeTargetResolution.Ok(
+            modelsToMake = modelsToMake,
+            modulesToMake = modulesToMake,
+            unresolvedModels = unresolvedModels,
+            unresolvedModules = unresolvedModules,
+            explicitModels = explicitModels,
+            explicitModules = explicitModules,
+        )
     }
 
     /**
@@ -753,11 +772,13 @@ class MPSNodeMcpToolset : AbstractNodeOps() {
             is MakeTargetResolution.Ok -> targetResolution
         }
 
-        // Use shared performMake function from AbstractOps
+        // Pass explicit models separately from module/wholeProject targets so pure `models: [...]`
+        // requests do not sweep sibling or owned-generator models into MResource, and module/project
+        // requests with rebuild=false can filter module models by generationRequired (D155).
         val makeResult = performMake(
             mpsProject,
-            resolvedTargets.modelsToMake.toList(),
-            resolvedTargets.modulesToMake.toList(),
+            resolvedTargets.explicitModels.toList(),
+            resolvedTargets.explicitModules.toList(),
             rebuild,
             saveTransientModels,
         )
@@ -1096,17 +1117,17 @@ class MPSNodeMcpToolset : AbstractNodeOps() {
                     "all of them go under nodeReference, since this tool has no modelReference or moduleReference parameter",
             ),
         )?.let { return it }
+        rejectUnknownTopLevelParameters("mps_mcp_check_root_node_problems")?.let { return it }
         // Taken before the EDT dispatch: the modal timeout also covers the wait for the EDT and
         // the read lock, so a budget that started in the body could still overrun it.
         val deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(moduleCheckBudgetMs)
-        val nearMisses = sentNearMisses("mps_mcp_check_root_node_problems", "nodeReference")
         return withMpsProject("Checking MPS problems") { mpsProject ->
             // Auto-apply mutates the model, so it needs a write command; the default (report-only)
             // mode keeps the read wrapper to avoid needless write locks.
             if (autoApplyQuickFixes) {
-                executeShortCommandOnEdt(mpsProject) { checkRootNodeProblemsBody(mpsProject, nodeReference, onlyNodesWithProblems, applyFixes = true, maxInlineBytes = maxInlineBytes, perRoot = perRoot, nearMisses = nearMisses, deadline = deadline) }
+                executeShortCommandOnEdt(mpsProject) { checkRootNodeProblemsBody(mpsProject, nodeReference, onlyNodesWithProblems, applyFixes = true, maxInlineBytes = maxInlineBytes, perRoot = perRoot, deadline = deadline) }
             } else {
-                executeShortReadOnEdt(mpsProject) { checkRootNodeProblemsBody(mpsProject, nodeReference, onlyNodesWithProblems, applyFixes = false, maxInlineBytes = maxInlineBytes, perRoot = perRoot, nearMisses = nearMisses, deadline = deadline) }
+                executeShortReadOnEdt(mpsProject) { checkRootNodeProblemsBody(mpsProject, nodeReference, onlyNodesWithProblems, applyFixes = false, maxInlineBytes = maxInlineBytes, perRoot = perRoot, deadline = deadline) }
             }
         }
     }
@@ -1118,15 +1139,9 @@ class MPSNodeMcpToolset : AbstractNodeOps() {
         applyFixes: Boolean,
         maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES,
         perRoot: Boolean = false,
-        nearMisses: List<Pair<String, String>> = emptyList(),
         deadline: Long,
     ): String {
         val repo = mpsProject.repository
-        // A near-miss key the binder dropped: say so even on success, or the value sent under it
-        // (say a model next to a root in nodeReference) silently goes unchecked (D63).
-        val nearMissWarnings = nearMisses.map { (key, value) ->
-            "This tool has no '$key' parameter, so its value '$value' was ignored; nodeReference '$nodeReference' was checked."
-        }
 
         // Try resolving as node reference
         val sNodeRef = try {
@@ -1138,7 +1153,7 @@ class MPSNodeMcpToolset : AbstractNodeOps() {
         val node = sNodeRef?.resolve(repo)
 
         if (node != null) {
-            val nodeScopeWarnings = nearMissWarnings + listOfNotNull(
+            val nodeScopeWarnings = listOfNotNull(
                 if (perRoot) "perRoot applies only to model and module references; ignored for node reference '$nodeReference'" else null,
             )
             val nodeRef = node.reference
@@ -1253,7 +1268,6 @@ class MPSNodeMcpToolset : AbstractNodeOps() {
                     )
                 }
             }
-            warnings.addAll(nearMissWarnings)
             val check = checkModel(mpsProject, model)
             val details = mutableMapOf<String, Any?>("scope" to "model", "rootsChecked" to check.roots.size)
             val unchecked = check.uncheckedSubtrees.sum()
@@ -1286,16 +1300,13 @@ class MPSNodeMcpToolset : AbstractNodeOps() {
 
         val module = resolveModulePreferringProject(mpsProject, nodeReference)
         if (module != null) {
-            return checkModuleProblems(mpsProject, module, onlyNodesWithProblems, applyFixes, maxInlineBytes, perRoot, nearMissWarnings, deadline)
+            return checkModuleProblems(mpsProject, module, onlyNodesWithProblems, applyFixes, maxInlineBytes, perRoot, deadline)
         }
 
-        val retryLines = nearMisses.joinToString("") { (key, value) ->
-            " This tool has no '$key' parameter; retry with nodeReference set to '$value'."
-        }
         return errJson(
             "Reference '$nodeReference' resolved to neither a node, a model, nor a module. " +
                 "Pass a node reference (r:<uuid>(model)/<node-id>), a model reference (r:<uuid>(model)) or qualified model name, " +
-                "or a module reference (<uuid>(module)) or module name in nodeReference." + retryLines,
+                "or a module reference (<uuid>(module)) or module name in nodeReference.",
             McpErrorCode.NOT_FOUND,
         )
     }
@@ -1373,14 +1384,12 @@ class MPSNodeMcpToolset : AbstractNodeOps() {
         applyFixes: Boolean,
         maxInlineBytes: Int,
         perRoot: Boolean,
-        nearMissWarnings: List<String>,
         deadline: Long,
     ): String {
         val warnings = mutableListOf<String>()
         if (applyFixes) {
             warnings.add("autoApplyQuickFixes applies only to node references; ignored for a module reference")
         }
-        warnings.addAll(nearMissWarnings)
         val modules = expandModules(listOf(module)).toList()
         if (module is DevKit) {
             warnings.add("A DevKit owns no models; only the module itself was validated")
@@ -1609,6 +1618,7 @@ class MPSNodeMcpToolset : AbstractNodeOps() {
                     "read a model with mps_mcp_get_compact_project_structure instead)",
             ),
         )?.let { return it }
+        rejectUnknownTopLevelParameters("mps_mcp_print_node")?.let { return it }
         val normalizedFormat = format.uppercase().trim()
         val hints = parseNullableStringOrJsonArray(editorHints)
         val projection = when (normalizedFormat) {
@@ -1776,6 +1786,7 @@ class MPSNodeMcpToolset : AbstractNodeOps() {
                         ),
                         operation = "ADD CHILD",
                     )?.let { return it }
+                    rejectUnknownTopLevelParameters("mps_mcp_update_node")?.let { return it }
                     update_node_child(nodeReference, childRole, childJson, null, position, dryRun, responseDetail)
                 }
                 NodeUpdateOperation.SET -> {
@@ -1787,6 +1798,7 @@ class MPSNodeMcpToolset : AbstractNodeOps() {
                         ),
                         operation = "SET CHILD",
                     )?.let { return it }
+                    rejectUnknownTopLevelParameters("mps_mcp_update_node")?.let { return it }
                     update_node_child(null, null, childJson, childNodeRef, null, dryRun)
                 }
             }
@@ -1800,6 +1812,7 @@ class MPSNodeMcpToolset : AbstractNodeOps() {
                         listOf(RequiredParameter("properties", "", "the triplet array [[nodeRef, propertyName, value], ...]")),
                         "SET PROPERTY",
                     )
+                    rejectUnknownTopLevelParameters("mps_mcp_update_node")?.let { return it }
                     val results = mutableListOf<String>()
                     var allSucceeded = true
                     for (triplet in triplets) {
@@ -1838,6 +1851,7 @@ class MPSNodeMcpToolset : AbstractNodeOps() {
                         ),
                         "SET REFERENCE",
                     )
+                    rejectUnknownTopLevelParameters("mps_mcp_update_node")?.let { return it }
                     val results = mutableListOf<String>()
                     var allSucceeded = true
                     for (triplet in triplets) {

@@ -278,6 +278,15 @@ Re-pinned 2026-11-15:
   found them equal).
 - Evidence: `~/MPSProjects/mcp-study/archive/runs/r51/A20-repro/`.
 
+Re-pinned 2026-11-27 (round 53 gate, uncommitted until the user says go):
+- Cause: D70 (`8414491a7f2d`) — the deep JSON print now emits explicitly stored `false` boolean properties, which the
+  2026-11-15 prints left out. On an unchanged fixture the gate failed on the two roots that store a `false`:
+  `editor/Alert_MutedKeyword_Actions` (`BooleanConstant.value`) and `tests@tests/T4_UnmuteTwoStep` (`Alert.muted`),
+  in both copies. Only their `deep` hashes moved; every `text` hash and all other roots stayed equal.
+- Environment: plugin `6c5a6e13e3be`, MPS 261.25134 from sources; each fixture alone on a fresh copy, MAKE first;
+  `check` after `pin`: 62/62 and 67/67 equal.
+- Evidence: `~/MPSProjects/mcp-study/runs/observer/gate.log` and `pins-before/` (moved with the round's runs).
+
 ## Step 5 — `alerts3-triage2` (S39a answer key, rev. 2)
 
 A copy of the closed `build/alerts3-triage` (its `workspace.xml` removed), opened alone; the ThresholdRef value display

@@ -166,12 +166,41 @@ class McpToolParameterOptionalityTest {
     }
 
     @Test
-    fun `rejectUnknownTopLevelParameters allowed sets match declared tool parameters`() {
-        val migrationTool = tools.getValue("mps_mcp_run_migrations")
-        assertEquals(
-            "MPSMigrationMcpToolset.RUN_MIGRATIONS_ALLOWED_PARAMETERS must match mps_mcp_run_migrations Kotlin parameters",
-            parameterNames(migrationTool),
-            jetbrains.mps.agents.mcp.tools.MPSMigrationMcpToolset.RUN_MIGRATIONS_ALLOWED_PARAMETERS,
+    fun `every registered McpTool has a matching allow-list and rejectUnknownTopLevelParameters guard`() {
+        val toolsets = registeredToolsets()
+        assertTrue("expected all 17 registered toolsets, found ${toolsets.size}", toolsets.size >= 17)
+
+        val unguarded = mutableListOf<String>()
+        for (toolset in toolsets) {
+            assertTrue(
+                "${toolset.qualifiedName} must extend AbstractOps to share rejectUnknownTopLevelParameters",
+                AbstractOps::class.java.isAssignableFrom(toolset.java),
+            )
+            @Suppress("UNCHECKED_CAST")
+            val abstractOpsClass = toolset.java as Class<out AbstractOps>
+            val cached = AbstractOps.declaredToolParameterNames(abstractOpsClass)
+            val declaredTools = toolset.declaredFunctions.filter { it.findAnnotation<McpTool>() != null }
+            assertEquals(
+                "AbstractOps.declaredToolParameterNames(${toolset.simpleName}) must match declared @McpTool methods",
+                declaredTools.associate { it.name to parameterNames(it) },
+                cached,
+            )
+
+            val sourcePath = SkillCatalogCheckout.root().resolve(
+                "plugins/mcp-tools/src/${toolset.qualifiedName!!.replace('.', '/')}.kt"
+            )
+            val source = sourcePath.readText()
+            for (tool in declaredTools) {
+                val guardCall = """rejectUnknownTopLevelParameters("${tool.name}""""
+                if (!source.contains(guardCall)) {
+                    unguarded.add("${toolset.simpleName}.${tool.name}")
+                }
+            }
+        }
+        assertTrue(
+            "every registered @McpTool must invoke rejectUnknownTopLevelParameters(\"<toolName>\") " +
+                "after required-parameter checks (D158); missing: $unguarded",
+            unguarded.isEmpty(),
         )
     }
 

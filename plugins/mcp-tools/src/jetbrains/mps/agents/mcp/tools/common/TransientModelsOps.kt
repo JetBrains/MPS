@@ -110,7 +110,8 @@ internal object TransientModelsOps {
         inputModels.filter { traceOf(provider, it, repository) != null }
 
     fun isMakeSessionActive(mpsProject: MPSProject): Boolean =
-        mpsProject.getComponent(MakeServiceComponent::class.java)?.get()?.isSessionActive == true
+        jetbrains.mps.agents.mcp.tools.migration.HeadlessMigrations.mcpMakeRunning.get() ||
+            mpsProject.getComponent(MakeServiceComponent::class.java)?.get()?.isSessionActive == true
 
     /** Refuses [operation] while a make runs: its transient modules are being replaced and must not be read or dropped. */
     fun refuseWhileMakeActive(mpsProject: MPSProject, operation: String) {

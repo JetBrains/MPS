@@ -273,7 +273,7 @@ class ProjectResolutionCrossProjectTest : McpIntegrationTestBase() {
         val model = createModel(solution, "mcp.test.jsonconcept.model${System.nanoTime()}")
         val modelRef = readIn(myProject) { PersistenceFacade.getInstance().asString(model.reference) }
         val response = runTool(rootNodeToolset) {
-            it.mps_mcp_insert_root_node_from_json(modelRef, JsonOrText("""{ "concept": "$conceptName" }"""), dryRun = false)
+            it.mps_mcp_insert_root_node_from_json(modelRef, JsonOrText("""{ "concept": "$languageName.structure.$conceptName" }"""), dryRun = false)
         }
         // Neither language is built, so the insert is refused (D112); the refusal names the language
         // the concept resolved to, which must be the selected project's, not the sibling's.

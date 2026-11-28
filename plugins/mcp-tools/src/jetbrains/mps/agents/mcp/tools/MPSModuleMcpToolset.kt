@@ -81,6 +81,7 @@ class MPSModuleMcpToolset : AbstractOps() {
         )?.let { return it }
         val op = resolveOperationOrNull<DependencyOperation>(operation)
             ?: return unknownOperation<DependencyOperation>(operation)
+        rejectUnknownTopLevelParameters("mps_mcp_module_dependency")?.let { return it }
         return mps_mcp_module_dependency(moduleName, targetModule, op, scope, reexport)
     }
 
@@ -356,7 +357,7 @@ class MPSModuleMcpToolset : AbstractOps() {
             RequiredParameter("name", name, "the new module's name or namespace")
                 .takeUnless { type.lowercase() == "generator" },
         ).toTypedArray(),
-    ) ?: mps_mcp_create_module(
+    ) ?: rejectUnknownTopLevelParameters("mps_mcp_create_module") ?: mps_mcp_create_module(
         type,
         name,
         directory,
@@ -823,6 +824,7 @@ class MPSModuleMcpToolset : AbstractOps() {
         )?.let { return it }
         val op = resolveOperationOrNull<ModuleOperation>(operation)
             ?: return unknownOperation<ModuleOperation>(operation)
+        rejectUnknownTopLevelParameters("mps_mcp_update_module")?.let { return it }
         val givenPlanModel = planModel?.trim()?.takeIf { it.isNotEmpty() }
         if (givenPlanModel != null && op != ModuleOperation.SET_GENERATION_PLAN) {
             return errJson(
@@ -1376,7 +1378,8 @@ class MPSModuleMcpToolset : AbstractOps() {
     @Suppress("DEPRECATION")
     suspend fun mps_mcp_list_facet_types(
         @McpDescription("Optional module name or reference to check applicability") @Nullable moduleName: String? = null
-    ): String = withMpsProject("Listing module facet types") { mpsProject ->
+    ): String = rejectUnknownTopLevelParameters("mps_mcp_list_facet_types")
+        ?: withMpsProject("Listing module facet types") { mpsProject ->
         executeShortReadOnEdt(mpsProject) {
             val ff = FacetsFacade.getInstance()
                 ?: throw McpUserException(McpErrorCode.INTERNAL_ERROR, "FacetsFacade service is not available")
@@ -1417,7 +1420,8 @@ class MPSModuleMcpToolset : AbstractOps() {
     ): String = rejectMissingParameters(
         "mps_mcp_get_module_facets",
         RequiredParameter("moduleName", moduleName, "the module's name or reference"),
-    ) ?: withMpsProject("Getting module facets") { mpsProject ->
+    ) ?: rejectUnknownTopLevelParameters("mps_mcp_get_module_facets")
+        ?: withMpsProject("Getting module facets") { mpsProject ->
         executeShortReadOnEdt(mpsProject) {
             val module = resolveModulePreferringProject(mpsProject, moduleName)
             if (module == null) {
@@ -1497,7 +1501,8 @@ class MPSModuleMcpToolset : AbstractOps() {
         "mps_mcp_update_module_facet",
         RequiredParameter("moduleName", moduleName, "the module's name or reference"),
         RequiredParameter("facetType", facetType, "the facet type to update"),
-    ) ?: withMpsProject("Updating module facet") { mpsProject ->
+    ) ?: rejectUnknownTopLevelParameters("mps_mcp_update_module_facet")
+        ?: withMpsProject("Updating module facet") { mpsProject ->
         val settings = settingsJson?.text
         val warnings = mutableListOf<String>()
         val validationError = withModalTimeoutOnEdt {
