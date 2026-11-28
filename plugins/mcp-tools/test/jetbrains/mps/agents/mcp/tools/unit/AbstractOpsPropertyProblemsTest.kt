@@ -494,7 +494,6 @@ class AbstractOpsPropertyProblemsTest {
                 com.intellij.mcpserver.impl.McpServerService.AskCommandExecutionMode.DONT_ASK,
                 com.intellij.mcpserver.McpToolFilter.AllowAll,
             ),
-            emptyMap(),
         )
         val zeroParamRejection = runBlocking(com.intellij.mcpserver.McpCallAdditionalDataElement(zeroParamCallInfo)) {
             nodeOps.rejectUnknownTopLevelParametersForTest("mps_mcp_list_open_projects", emptySet())
